@@ -15,4 +15,5 @@ export interface IWebsiteInfo {
     siteVisibility: string;
     siteManagementUrl: string;
     folderPath?: string;    
+    languageCode?: string;
 }

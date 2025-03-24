@@ -68,7 +68,8 @@ describe('InactiveGroupTreeItem', () => {
                         dataModel: WebsiteDataModel.Standard,
                         environmentId: "env1",
                         siteVisibility: "Public",
-                        siteManagementUrl: "http://site1.com/manage"
+                        siteManagementUrl: "http://site1.com/manage",
+                        languageCode: "1033"
                     },
                     {
                         websiteRecordId: "2",
@@ -79,7 +80,8 @@ describe('InactiveGroupTreeItem', () => {
                         dataModel: WebsiteDataModel.Enhanced,
                         environmentId: "env2",
                         siteVisibility: "Public",
-                        siteManagementUrl: "http://site1.com/manage"
+                        siteManagementUrl: "http://site1.com/manage",
+                        languageCode: "1033"
                     }
                 ];
 

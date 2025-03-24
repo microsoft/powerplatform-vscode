@@ -40,7 +40,8 @@ export class InactiveGroupTreeItem extends ActionsHubTreeItem {
                 status: WebsiteStatus.Inactive,
                 isCurrent: false,
                 siteVisibility: "",
-                siteManagementUrl: site.siteManagementUrl
+                siteManagementUrl: site.siteManagementUrl,
+                languageCode: site.languageCode
             };
             const siteItem = new SiteTreeItem(siteInfo);
             return siteItem;

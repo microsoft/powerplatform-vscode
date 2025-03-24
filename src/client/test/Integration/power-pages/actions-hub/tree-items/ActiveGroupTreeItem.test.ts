@@ -71,7 +71,8 @@ describe('ActiveGroupTreeItem', () => {
                         dataModel: WebsiteDataModel.Standard,
                         environmentId: "env1",
                         siteVisibility: "public",
-                        siteManagementUrl: "http://site1.com/manage"
+                        siteManagementUrl: "http://site1.com/manage",
+                        languageCode: "1033"
                     },
                     {
                         websiteRecordId: "2",
@@ -82,7 +83,8 @@ describe('ActiveGroupTreeItem', () => {
                         dataModel: WebsiteDataModel.Enhanced,
                         environmentId: "env2",
                         siteVisibility: "private",
-                        siteManagementUrl: "http://site2.com/manage"
+                        siteManagementUrl: "http://site2.com/manage",
+                        languageCode: "1033"
                     }
                 ];
 
@@ -126,7 +128,8 @@ describe('ActiveGroupTreeItem', () => {
                         dataModel: WebsiteDataModel.Standard,
                         environmentId: "env1",
                         siteVisibility: "public",
-                        siteManagementUrl: "http://site1.com/manage"
+                        siteManagementUrl: "http://site1.com/manage",
+                        languageCode: "1033"
                     }
                 ];
 
@@ -142,7 +145,8 @@ describe('ActiveGroupTreeItem', () => {
                     status: WebsiteStatus.Active,
                     isCurrent: false,
                     siteVisibility: "public",
-                    siteManagementUrl: "http://site1.com/manage"
+                    siteManagementUrl: "http://site1.com/manage",
+                    languageCode: "1033"
                 });
             });
 
@@ -159,7 +163,8 @@ describe('ActiveGroupTreeItem', () => {
                         dataModel: WebsiteDataModel.Standard,
                         environmentId: "env1",
                         siteVisibility: "public",
-                        siteManagementUrl: "http://site1.com/manage"
+                        siteManagementUrl: "http://site1.com/manage",
+                        languageCode: "1033"
                     }
                 ];
 

@@ -45,6 +45,7 @@ export interface IWebsiteDetails {
     websiteRecordId: string;
     type?: WebsiteApplicationType;
     siteManagementUrl: string;
+    languageCode: string;
 }
 
 export interface IOtherSiteInfo {

@@ -574,7 +574,7 @@ export const reactivateSite = async (siteTreeItem: SiteTreeItem) => {
     }
 
     //reactivateSiteUrl: https://your-domain.com/e/{environmentId}/portals/create?reactivation=true&websiteId=12345&siteName=MySite&siteAddress=mysite.example.com&siteLanguageId=1033&isNewDataModel=true
-    const reactivateSiteUrl = `${getStudioBaseUrl()}/e/${environmentId}/portals/create?reactivation=true&websiteId=${websiteId}&siteName=${siteTreeItem.siteInfo.name}&siteAddress=${siteTreeItem.siteInfo.websiteUrl}&siteLanguageId=1033&isNewDataModel=${isNewDataModel}`; //TODO: Get the site language ID dynamically
+    const reactivateSiteUrl = `${getStudioBaseUrl()}/e/${environmentId}/portals/create?reactivation=true&websiteId=${websiteId}&siteName=${siteTreeItem.siteInfo.name}&siteAddress=${siteTreeItem.siteInfo.websiteUrl}&siteLanguageId=${siteTreeItem.siteInfo.languageCode}&isNewDataModel=${isNewDataModel}`; 
 
 
     if (!reactivateSiteUrl) {
