@@ -31,7 +31,6 @@ describe('TelemetryHelper', () => {
         it('should return event info with orgId, orgUrl, and siteId', () => {
             const eventInfo = getBaseEventInfo();
             expect(eventInfo).to.deep.equal({
-                os: 'Windows',
                 stamp: 'testStamp',
                 geo: 'testGeo',
                 orgId: 'testOrgId',
@@ -46,7 +45,6 @@ describe('TelemetryHelper', () => {
             const eventInfo = getBaseEventInfo();
             expect(eventInfo).to.deep.equal({
                 currentSiteId: 'testSiteId',
-                os: 'Windows',
                 stamp: 'testStamp',
                 geo: 'testGeo',
                 tenantId: 'testTenantId'
@@ -59,7 +57,6 @@ describe('TelemetryHelper', () => {
             expect(eventInfo).to.deep.equal({
                 orgId: 'testOrgId',
                 orgUrl: 'testOrgUrl',
-                os: 'Windows',
                 stamp: 'testStamp',
                 geo: 'testGeo',
                 tenantId: 'testTenantId'
@@ -72,39 +69,33 @@ describe('TelemetryHelper', () => {
             authInfoStub.value(undefined);
             const eventInfo = getBaseEventInfo();
             expect(eventInfo).to.deep.equal({
-                os: 'Windows',
                 stamp: 'testStamp',
                 geo: 'testGeo'
             });
         });
 
-        it('should return event info with only os when all other values are undefined', () => {
+        it('should return empty event info when all other values are undefined', () => {
             orgInfoStub.value(undefined);
             siteIdStub.value(undefined);
             authInfoStub.value(undefined);
             sinon.stub(ArtemisContext, 'ServiceResponse').value(undefined);
             const eventInfo = getBaseEventInfo();
-            expect(eventInfo).to.deep.equal({
-                os: 'Windows'
-            });
+            expect(eventInfo).to.deep.equal({});
         });
 
-        it('should return event info with only os when all other values are null', () => {
+        it('should return empty event info when all other values are null', () => {
             orgInfoStub.value(null);
             siteIdStub.value(null);
             authInfoStub.value(null);
             sinon.stub(ArtemisContext, 'ServiceResponse').value(null);
             const eventInfo = getBaseEventInfo();
-            expect(eventInfo).to.deep.equal({
-                os: 'Windows'
-            });
+            expect(eventInfo).to.deep.equal({});
         });
 
         it('should not return tenant id when PacContext.AuthInfo is undefined', () => {
             authInfoStub.value(undefined);
             const eventInfo = getBaseEventInfo();
             expect(eventInfo).to.deep.equal({
-                os: 'Windows',
                 stamp: 'testStamp',
                 geo: 'testGeo',
                 orgId: 'testOrgId',
