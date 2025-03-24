@@ -34,11 +34,15 @@ export const getBaseEventInfo = () => {
     }
 
     if (PacContext.OrgInfo?.OrgId) {
-        eventInfo.orgId = PacContext.OrgInfo?.OrgId
+        eventInfo.orgId = PacContext.OrgInfo?.OrgId;
     }
 
     if (PacContext.OrgInfo?.OrgUrl) {
-        eventInfo.orgUrl = PacContext.OrgInfo?.OrgUrl
+        eventInfo.orgUrl = PacContext.OrgInfo?.OrgUrl;
+    }
+
+    if (PacContext.AuthInfo?.TenantId) {
+        eventInfo.tenantId = PacContext.AuthInfo?.TenantId;
     }
 
     if (CurrentSiteContext.currentSiteId) {

@@ -15,9 +15,11 @@ describe('TelemetryHelper', () => {
     describe('getBaseEventInfo', () => {
         let orgInfoStub: sinon.SinonStub;
         let siteIdStub: sinon.SinonStub;
+        let authInfoStub: sinon.SinonStub;
 
         beforeEach(() => {
             orgInfoStub = sinon.stub(PacContext, 'OrgInfo').value({ OrgId: 'testOrgId', OrgUrl: 'testOrgUrl' });
+            authInfoStub = sinon.stub(PacContext, 'AuthInfo').value({ TenantId: 'testTenantId' });
             siteIdStub = sinon.stub(CurrentSiteContext, 'currentSiteId').value('testSiteId');
             sinon.stub(ArtemisContext, 'ServiceResponse').value({ stamp: 'testStamp', response: { geoName: 'testGeo' } });
         });
@@ -34,7 +36,8 @@ describe('TelemetryHelper', () => {
                 geo: 'testGeo',
                 orgId: 'testOrgId',
                 orgUrl: 'testOrgUrl',
-                currentSiteId: 'testSiteId'
+                currentSiteId: 'testSiteId',
+                tenantId: 'testTenantId'
             });
         });
 
@@ -46,6 +49,7 @@ describe('TelemetryHelper', () => {
                 os: 'Windows',
                 stamp: 'testStamp',
                 geo: 'testGeo',
+                tenantId: 'testTenantId'
             });
         });
 
@@ -58,17 +62,54 @@ describe('TelemetryHelper', () => {
                 os: 'Windows',
                 stamp: 'testStamp',
                 geo: 'testGeo',
+                tenantId: 'testTenantId'
             });
         });
 
-        it('should return empty event info when PacContext.OrgInfo and CurrentSiteContext.currentSiteId are undefined', () => {
+        it('should return basic event info when PacContext.OrgInfo and CurrentSiteContext.currentSiteId are undefined', () => {
             orgInfoStub.value(undefined);
             siteIdStub.value(undefined);
+            authInfoStub.value(undefined);
+            const eventInfo = getBaseEventInfo();
+            expect(eventInfo).to.deep.equal({
+                os: 'Windows',
+                stamp: 'testStamp',
+                geo: 'testGeo'
+            });
+        });
+
+        it('should return event info with only os when all other values are undefined', () => {
+            orgInfoStub.value(undefined);
+            siteIdStub.value(undefined);
+            authInfoStub.value(undefined);
+            sinon.stub(ArtemisContext, 'ServiceResponse').value(undefined);
+            const eventInfo = getBaseEventInfo();
+            expect(eventInfo).to.deep.equal({
+                os: 'Windows'
+            });
+        });
+
+        it('should return event info with only os when all other values are null', () => {
+            orgInfoStub.value(null);
+            siteIdStub.value(null);
+            authInfoStub.value(null);
+            sinon.stub(ArtemisContext, 'ServiceResponse').value(null);
+            const eventInfo = getBaseEventInfo();
+            expect(eventInfo).to.deep.equal({
+                os: 'Windows'
+            });
+        });
+
+        it('should not return tenant id when PacContext.AuthInfo is undefined', () => {
+            authInfoStub.value(undefined);
             const eventInfo = getBaseEventInfo();
             expect(eventInfo).to.deep.equal({
                 os: 'Windows',
                 stamp: 'testStamp',
                 geo: 'testGeo',
+                orgId: 'testOrgId',
+                orgUrl: 'testOrgUrl',
+                currentSiteId: 'testSiteId'
             });
         });
     });
