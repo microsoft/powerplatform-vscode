@@ -11,7 +11,7 @@ import { ITelemetryLogger } from "./ITelemetryLogger";
 import { IContextInfo, IUserInfo } from "./IEventTypes";
 import { EventType, Severity } from "./telemetryConstants";
 import * as vscode from "vscode";
-import { getExtensionType, getExtensionVersion } from "../utilities/Utils";
+import { getExtensionType, getExtensionVersion, getOperatingSystem, getOperatingSystemLabel, getOperatingSystemVersion } from "../utilities/Utils";
 import { EXTENSION_ID } from "../constants";
 import { OneDSCollectorEventName } from "./EventContants";
 import { webExtensionTelemetryEventNames } from "./web/client/webExtensionTelemetryEvents";
@@ -316,8 +316,9 @@ export class OneDSLogger implements ITelemetryLogger {
                 envelope.data.browserVersion = "";
                 envelope.data.browserLanguage = "";
                 envelope.data.screenResolution = "";
-                envelope.data.osName = "";
-                envelope.data.osVersion = "";
+                envelope.data.osName = getOperatingSystem();
+                envelope.data.osVersion = getOperatingSystemVersion();
+                envelope.data.osLabel = getOperatingSystemLabel();
                 envelope.data.timestamp = new Date();
                 if (getExtensionType() == 'Web') {
                     this.populateVscodeWebAttributes(envelope);
@@ -330,6 +331,7 @@ export class OneDSLogger implements ITelemetryLogger {
                 envelope.data.context = JSON.stringify(OneDSLogger.contextInfo);
                 envelope.data.userRegion = OneDSLogger.userRegion;
                 envelope.data.orgGeo = OneDSLogger.orgGeo;
+                console.log("************************************************************** Telemetry event: " + JSON.stringify(envelope.data, null, 2));
                 // At the end of event enrichment, redact the sensitive data for all the applicable fields
                 //  envelope = this.redactSensitiveDataFromEvent(envelope);
             }
