@@ -17,12 +17,20 @@ type PowerPagesSiteRecords = {
     name: string;
     primarydomainname: string;
     powerpagesiteid: string;
+    createdon: string;
+    owninguser: {
+        fullname: string;
+    };
 }
 
 type AdxWebsiteRecords = {
     adx_name: string;
     adx_primarydomainname: string;
     adx_websiteid: string;
+    createdon: string;
+    owninguser: {
+        fullname: string;
+    };
 }
 
 type AppModule = {
@@ -66,7 +74,7 @@ export async function getAllWebsites(orgDetails: OrgInfo): Promise<IWebsiteDetai
         const [adxWebsiteRecords, powerPagesSiteRecords, appModules] = await Promise.all([
             getAdxWebsiteRecords(orgDetails.OrgUrl, dataverseToken),
             getPowerPagesSiteRecords(orgDetails.OrgUrl, dataverseToken),
-            getAppModules(orgDetails.OrgUrl)
+            getAppModules(orgDetails.OrgUrl, dataverseToken)
         ]);
 
         const powerPagesManagementAppId = getPowerPagesManagementAppId(appModules);
@@ -81,7 +89,10 @@ export async function getAllWebsites(orgDetails: OrgInfo): Promise<IWebsiteDetai
                 dataModel: WebsiteDataModel.Standard,
                 environmentId: orgDetails.EnvironmentId,
                 websiteRecordId: adxWebsite.adx_websiteid,
-                siteManagementUrl: getSiteManagementUrl(orgDetails.OrgUrl, portalManagementAppId, WebsiteDataModel.Standard, adxWebsite.adx_websiteid)
+                siteManagementUrl: getSiteManagementUrl(orgDetails.OrgUrl, portalManagementAppId, WebsiteDataModel.Standard, adxWebsite.adx_websiteid) || '',
+                createdOn: adxWebsite.createdon || '',
+                creator: adxWebsite.owninguser?.fullname || '',
+                siteVisibility: undefined
             });
         });
 
@@ -94,7 +105,10 @@ export async function getAllWebsites(orgDetails: OrgInfo): Promise<IWebsiteDetai
                 dataModel: WebsiteDataModel.Enhanced,
                 environmentId: orgDetails.EnvironmentId,
                 websiteRecordId: powerPagesSite.powerpagesiteid,
-                siteManagementUrl: getSiteManagementUrl(orgDetails.OrgUrl, powerPagesManagementAppId, WebsiteDataModel.Enhanced, powerPagesSite.powerpagesiteid)
+                siteManagementUrl: getSiteManagementUrl(orgDetails.OrgUrl, powerPagesManagementAppId, WebsiteDataModel.Enhanced, powerPagesSite.powerpagesiteid) || '',
+                createdOn: powerPagesSite.createdon || '',
+                creator: powerPagesSite.owninguser?.fullname || '',
+                siteVisibility: undefined
             });
         });
     }
@@ -146,9 +160,8 @@ async function getPowerPagesSiteRecords(orgUrl: string, token: string) {
     return [];
 }
 
-async function getAppModules(orgUrl: string) {
+async function getAppModules(orgUrl: string, accessToken: string) {
     try {
-        const { accessToken } = await dataverseAuthentication(orgUrl);
         const dataverseUrl = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}${APP_MODULES_PATH}`;
         const response = await callApi(dataverseUrl, accessToken);
 
