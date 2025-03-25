@@ -14,6 +14,7 @@ import { IWebsiteDetails } from "../../../../../../common/services/Interfaces";
 import sinon from "sinon";
 import { WebsiteStatus } from "../../../../../power-pages/actions-hub/models/WebsiteStatus";
 import CurrentSiteContext from "../../../../../power-pages/actions-hub/CurrentSiteContext";
+import { SiteVisibility } from "../../../../../power-pages/actions-hub/models/SiteVisibility";
 
 describe('ActiveGroupTreeItem', () => {
     it('should be of type ActionsHubTreeItem', () => {
@@ -70,8 +71,10 @@ describe('ActiveGroupTreeItem', () => {
                         dataverseOrganizationId: "org1",
                         dataModel: WebsiteDataModel.Standard,
                         environmentId: "env1",
-                        siteVisibility: "public",
-                        siteManagementUrl: "http://site1.com/manage"
+                        siteVisibility: SiteVisibility.Public,
+                        siteManagementUrl: "http://site1.com/manage",
+                        createdOn: "2025-03-20",
+                        creator: "Test Creator"
                     },
                     {
                         websiteRecordId: "2",
@@ -81,8 +84,10 @@ describe('ActiveGroupTreeItem', () => {
                         dataverseOrganizationId: "org2",
                         dataModel: WebsiteDataModel.Enhanced,
                         environmentId: "env2",
-                        siteVisibility: "private",
-                        siteManagementUrl: "http://site2.com/manage"
+                        siteVisibility: SiteVisibility.Private,
+                        siteManagementUrl: "http://site2.com/manage",
+                        createdOn: "2025-03-20",
+                        creator: "Test Creator"
                     }
                 ];
 
@@ -97,8 +102,10 @@ describe('ActiveGroupTreeItem', () => {
                     websiteUrl: 'http://site1.com',
                     status: WebsiteStatus.Active,
                     isCurrent: true,
-                    siteVisibility: "public",
-                    siteManagementUrl: "http://site1.com/manage"
+                    siteVisibility: SiteVisibility.Public,
+                    siteManagementUrl: "http://site1.com/manage",
+                    createdOn: "2025-03-20",
+                    creator: "Test Creator"
                 });
 
                 const site2 = children[1] as SiteTreeItem;
@@ -109,8 +116,10 @@ describe('ActiveGroupTreeItem', () => {
                     websiteUrl: 'http://site2.com',
                     status: WebsiteStatus.Active,
                     isCurrent: false,
-                    siteVisibility: "private",
-                    siteManagementUrl: "http://site2.com/manage"
+                    siteVisibility: SiteVisibility.Private,
+                    siteManagementUrl: "http://site2.com/manage",
+                    createdOn: "2025-03-20",
+                    creator: "Test Creator"
                 });
             });
 
@@ -125,8 +134,10 @@ describe('ActiveGroupTreeItem', () => {
                         dataverseOrganizationId: "org1",
                         dataModel: WebsiteDataModel.Standard,
                         environmentId: "env1",
-                        siteVisibility: "public",
-                        siteManagementUrl: "http://site1.com/manage"
+                        siteVisibility: SiteVisibility.Public,
+                        siteManagementUrl: "http://site1.com/manage",
+                        createdOn: "2025-03-20",
+                        creator: "Test Creator"
                     }
                 ];
 
@@ -142,7 +153,9 @@ describe('ActiveGroupTreeItem', () => {
                     status: WebsiteStatus.Active,
                     isCurrent: false,
                     siteVisibility: "public",
-                    siteManagementUrl: "http://site1.com/manage"
+                    siteManagementUrl: "http://site1.com/manage",
+                    createdOn: "2025-03-20",
+                    creator: "Test Creator"
                 });
             });
 
@@ -158,8 +171,10 @@ describe('ActiveGroupTreeItem', () => {
                         dataverseOrganizationId: "org1",
                         dataModel: WebsiteDataModel.Standard,
                         environmentId: "env1",
-                        siteVisibility: "public",
-                        siteManagementUrl: "http://site1.com/manage"
+                        siteVisibility: SiteVisibility.Public,
+                        siteManagementUrl: "http://site1.com/manage",
+                        createdOn: "2025-03-20",
+                        creator: "Test Creator"
                     }
                 ];
 
@@ -174,8 +189,10 @@ describe('ActiveGroupTreeItem', () => {
                     websiteUrl: 'http://site1.com',
                     status: WebsiteStatus.Active,
                     isCurrent: false,
-                    siteVisibility: "public",
-                    siteManagementUrl: "http://site1.com/manage"
+                    siteVisibility: SiteVisibility.Public,
+                    siteManagementUrl: "http://site1.com/manage",
+                    createdOn: "2025-03-20",
+                    creator: "Test Creator"
                 });
             });
         });

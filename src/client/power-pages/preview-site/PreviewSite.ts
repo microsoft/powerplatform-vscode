@@ -23,6 +23,7 @@ import CurrentSiteContext from '../actions-hub/CurrentSiteContext';
 import { IWebsiteDetails } from '../../../common/services/Interfaces';
 import { uploadSite } from '../actions-hub/ActionsHubCommandHandlers';
 import { SiteTreeItem } from '../actions-hub/tree-items/SiteTreeItem';
+import { SiteVisibility } from '../actions-hub/models/SiteVisibility';
 
 export const SITE_PREVIEW_COMMAND_ID = "microsoft.powerplatform.pages.preview-site";
 
@@ -74,6 +75,9 @@ export class PreviewSite {
             }
 
             PreviewSite._isInitialized = true;
+            oneDSLoggerWrapper.getLogger().traceInfo(Events.PREVIEW_SITE_INITIALIZED, {
+                isEnabled: isSiteRuntimePreviewEnabled.toString()
+            });
         } catch (exception) {
             const exceptionError = exception as Error;
             oneDSLoggerWrapper.getLogger().traceError(Events.PREVIEW_SITE_INITIALIZATION_FAILED, exceptionError.message, exceptionError);
@@ -116,8 +120,8 @@ export class PreviewSite {
         }
     }
 
-    public static async launchBrowserAndDevToolsWithinVsCode(webSitePreviewURL: string | undefined, dataModelVersion: 1 | 2, siteVisibility: string): Promise<void> {
-        if (!webSitePreviewURL || webSitePreviewURL === "") {
+    public static async launchBrowserAndDevToolsWithinVsCode(webSitePreviewURL: string | undefined, dataModelVersion: 1 | 2, siteVisibility: SiteVisibility | undefined): Promise<void> {
+        if (!webSitePreviewURL || webSitePreviewURL === "" || !siteVisibility) {
             return;
         }
 
@@ -130,7 +134,10 @@ export class PreviewSite {
 
         await showProgressWithNotification(
             Messages.OPENING_SITE_PREVIEW,
-            async () => await vscode.commands.executeCommand('vscode-edge-devtools.launch', { launchUrl: webSitePreviewURL })
+            async () => {
+                PreviewSite.closeExistingPreview();
+                await vscode.commands.executeCommand('vscode-edge-devtools.launch', { launchUrl: webSitePreviewURL });
+            }
         );
 
         const websitePath = CurrentSiteContext.currentSiteFolderPath;
@@ -139,7 +146,7 @@ export class PreviewSite {
         }
     }
 
-    private static async showUploadWarning(websitePath: string, dataModelVersion: 1 | 2, siteVisibility: string) {
+    private static async showUploadWarning(websitePath: string, dataModelVersion: 1 | 2, siteVisibility: SiteVisibility) {
         const pendingChangesResult = await PreviewSite._pacTerminal.getWrapper().pendingChanges(websitePath, dataModelVersion);
 
         try {
@@ -153,6 +160,8 @@ export class PreviewSite {
                         }
                     } as SiteTreeItem, websitePath);
                 }
+            } else {
+                await vscode.window.showInformationMessage(Messages.PREVIEW_SHOWN_FOR_PUBLISHED_CHANGES);
             }
         } catch (exception) {
             const exceptionError = exception as Error;
@@ -206,7 +215,7 @@ export class PreviewSite {
         await PreviewSite.launchBrowserAndDevToolsWithinVsCode(
             PreviewSite._websiteDetails.websiteUrl,
             PreviewSite._websiteDetails.dataModel === WebsiteDataModel.Standard ? 1 : 2,
-            PreviewSite._websiteDetails.siteVisibility ?? ""
+            PreviewSite._websiteDetails.siteVisibility
         );
     }
 
@@ -284,5 +293,20 @@ export class PreviewSite {
         }
 
         return shouldRepeatLoginFlow;
+    }
+
+    private static closeExistingPreview() {
+        try {
+            vscode.window.tabGroups.all.forEach((tabGroup) => {
+                tabGroup.tabs.forEach(async (tab) => {
+                    if (tab.label.toLowerCase().startsWith("edge devtools")) {
+                        await vscode.window.tabGroups.close(tab);
+                    }
+                });
+            });
+        } catch (error) {
+            const exceptionError = error as Error;
+            oneDSLoggerWrapper.getLogger().traceError(Events.PREVIEW_SITE_CLOSE_EXISTING_PREVIEW_FAILED, (error as Error).message, exceptionError);
+        }
     }
 }
