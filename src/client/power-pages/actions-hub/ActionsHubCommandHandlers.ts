@@ -566,20 +566,17 @@ export const openInStudio = async (siteTreeItem: SiteTreeItem) => {
 }
 
 export const reactivateSite = async (siteTreeItem: SiteTreeItem) => {
-    const websiteId = siteTreeItem.siteInfo.websiteId;
+    const { websiteId, name, websiteUrl, languageCode, dataModelVersion } = siteTreeItem.siteInfo;
     const environmentId = PacContext.AuthInfo?.EnvironmentId || "";
-    let isNewDataModel = false;
-    if(siteTreeItem.siteInfo.dataModelVersion === 2) {
-        isNewDataModel = true;
-    }
 
-    //reactivateSiteUrl: https://your-domain.com/e/{environmentId}/portals/create?reactivation=true&websiteId=12345&siteName=MySite&siteAddress=mysite.example.com&siteLanguageId=1033&isNewDataModel=true
-    const reactivateSiteUrl = `${getStudioBaseUrl()}/e/${environmentId}/portals/create?reactivation=true&websiteId=${websiteId}&siteName=${siteTreeItem.siteInfo.name}&siteAddress=${siteTreeItem.siteInfo.websiteUrl}&siteLanguageId=${siteTreeItem.siteInfo.languageCode}&isNewDataModel=${isNewDataModel}`; 
-
-
-    if (!reactivateSiteUrl) {
+    if (!websiteId || !environmentId || !name || !languageCode || !dataModelVersion) {
+        vscode.window.showErrorMessage(vscode.l10n.t("Missing required site information for reactivation."));
         return;
     }
 
+    const isNewDataModel = siteTreeItem.siteInfo.dataModelVersion === 2;
+
+    const reactivateSiteUrl = `${getStudioBaseUrl()}/e/${environmentId}/portals/create?reactivation=true&websiteId=${websiteId}&siteName=${encodeURIComponent(name)}&siteAddress=${encodeURIComponent(websiteUrl)}&siteLanguageId=${languageCode}&isNewDataModel=${isNewDataModel}`;
+
     await vscode.env.openExternal(vscode.Uri.parse(reactivateSiteUrl));
-}
+};
