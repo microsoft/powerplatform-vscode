@@ -18,6 +18,7 @@ import { BAP_API_VERSION, BAP_ENVIRONMENT_LIST_URL, BAP_SERVICE_ENDPOINT, Servic
 import { VSCODE_EXTENSION_GET_ENV_LIST_SUCCESS, VSCODE_EXTENSION_GET_ENV_LIST_FAILED, VSCODE_EXTENSION_GET_BAP_ENDPOINT_UNSUPPORTED_REGION } from "../services/TelemetryConstants";
 import { WorkspaceFolder } from "vscode-languageserver";
 import { Progress } from "vscode";
+import * as os from "os";
 
 export function getSelectedCode(editor: vscode.TextEditor): string {
     if (!editor) {
@@ -125,6 +126,55 @@ export function getExtensionVersion(): string {
 
 export function getExtensionType(): string {
     return vscode.env.uiKind === vscode.UIKind.Desktop ? "Desktop" : "Web";
+}
+
+export function getOperatingSystem(): string {
+    if (getExtensionType() === 'Web') {
+        const userAgent = navigator.userAgent;
+
+        if (userAgent.indexOf("Win") !== -1) {
+            return "Windows";
+        }
+
+        if (userAgent.indexOf("Mac") !== -1) {
+            return "macOS";
+        }
+
+
+        if (userAgent.indexOf("Linux") !== -1) {
+            return "Linux";
+        }
+
+        return "Unknown OS";
+    }
+
+    const platform = os.platform();
+    switch (platform) {
+        case 'win32':
+            return 'Windows';
+        case 'darwin':
+            return 'macOS';
+        case 'linux':
+            return 'Linux';
+        default:
+            return 'Unknown OS';
+    }
+}
+
+export function getOperatingSystemVersion(): string {
+    if (getExtensionType() === 'Web') {
+        return "";
+    }
+
+    return os.release();
+}
+
+export function getOperatingSystemLabel(): string {
+    if (getExtensionType() === 'Web') {
+        return "";
+    }
+
+    return os.version();
 }
 
 export function openWalkthrough(extensionUri: vscode.Uri) {

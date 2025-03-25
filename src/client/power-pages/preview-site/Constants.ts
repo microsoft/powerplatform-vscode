@@ -31,11 +31,13 @@ export const Messages = {
     AUTHENTICATING: vscode.l10n.t("Authenticating..."),
     UNABLE_TO_CLEAR_CACHE: vscode.l10n.t("Unable to clear cache"),
     PREVIEW_WARNING: vscode.l10n.t("Your preview isn't updated. Please upload your site to see the latest changes."),
-    UPLOAD_CHANGES: vscode.l10n.t("Upload changes")
+    UPLOAD_CHANGES: vscode.l10n.t("Upload changes"),
+    PREVIEW_SHOWN_FOR_PUBLISHED_CHANGES: vscode.l10n.t("The preview shown is for published changes. Please publish any pending changes to see them in the preview.")
 };
 
 export const Events = {
     PREVIEW_SITE_INITIALIZED: "PreviewSiteInitialized",
     PREVIEW_SITE_INITIALIZATION_FAILED: "PreviewSiteInitializationFailed",
-    PREVIEW_SITE_UPLOAD_WARNING_FAILED: "PreviewSiteUploadWarningFailed"
+    PREVIEW_SITE_UPLOAD_WARNING_FAILED: "PreviewSiteUploadWarningFailed",
+    PREVIEW_SITE_CLOSE_EXISTING_PREVIEW_FAILED: "PreviewSiteCloseExistingPreviewFailed"
 }

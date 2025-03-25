@@ -17,6 +17,10 @@ type PowerPagesSiteRecords = {
     name: string;
     primarydomainname: string;
     powerpagesiteid: string;
+    createdon: string;
+    owninguser: {
+        fullname: string;
+    };
     content?: string;
 }
 
@@ -24,6 +28,10 @@ type AdxWebsiteRecords = {
     adx_name: string;
     adx_primarydomainname: string;
     adx_websiteid: string;
+    createdon: string;
+    owninguser: {
+        fullname: string;
+    };
     adx_website_language: string;
 }
 
@@ -68,7 +76,7 @@ export async function getAllWebsites(orgDetails: OrgInfo): Promise<IWebsiteDetai
         const [adxWebsiteRecords, powerPagesSiteRecords, appModules] = await Promise.all([
             getAdxWebsiteRecords(orgDetails.OrgUrl, dataverseToken),
             getPowerPagesSiteRecords(orgDetails.OrgUrl, dataverseToken),
-            getAppModules(orgDetails.OrgUrl)
+            getAppModules(orgDetails.OrgUrl, dataverseToken)
         ]);
 
         const powerPagesManagementAppId = getPowerPagesManagementAppId(appModules);
@@ -84,7 +92,10 @@ export async function getAllWebsites(orgDetails: OrgInfo): Promise<IWebsiteDetai
                 environmentId: orgDetails.EnvironmentId,
                 websiteRecordId: adxWebsite.adx_websiteid,
                 siteManagementUrl: getSiteManagementUrl(orgDetails.OrgUrl, portalManagementAppId, WebsiteDataModel.Standard, adxWebsite.adx_websiteid),
-                languageCode: adxWebsite.adx_website_language
+                languageCode: adxWebsite.adx_website_language || '',
+                createdOn: adxWebsite.createdon || '',
+                creator: adxWebsite.owninguser?.fullname || '',
+                siteVisibility: undefined
             });
         });
 
@@ -98,7 +109,10 @@ export async function getAllWebsites(orgDetails: OrgInfo): Promise<IWebsiteDetai
                 environmentId: orgDetails.EnvironmentId,
                 websiteRecordId: powerPagesSite.powerpagesiteid,
                 siteManagementUrl: getSiteManagementUrl(orgDetails.OrgUrl, powerPagesManagementAppId, WebsiteDataModel.Enhanced, powerPagesSite.powerpagesiteid),
-                languageCode: powerPagesSite.website_language ?? "1033"
+                languageCode: powerPagesSite.website_language ?? "1033",
+                createdOn: powerPagesSite.createdon || '',
+                creator: powerPagesSite.owninguser?.fullname || '',
+                siteVisibility: undefined
             });
         });
     }
@@ -171,9 +185,8 @@ async function getPowerPagesSiteRecords(orgUrl: string, token: string) {
     return [];
 }
 
-async function getAppModules(orgUrl: string) {
+async function getAppModules(orgUrl: string, accessToken: string) {
     try {
-        const { accessToken } = await dataverseAuthentication(orgUrl);
         const dataverseUrl = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}${APP_MODULES_PATH}`;
         const response = await callApi(dataverseUrl, accessToken);
 

@@ -39,8 +39,10 @@ export class InactiveGroupTreeItem extends ActionsHubTreeItem {
                 websiteUrl: site.websiteUrl,
                 status: WebsiteStatus.Inactive,
                 isCurrent: false,
-                siteVisibility: "",
+                siteVisibility: undefined,
                 siteManagementUrl: site.siteManagementUrl,
+                creator: site.creator,
+                createdOn: site.createdOn,
                 languageCode: site.languageCode
             };
             const siteItem = new SiteTreeItem(siteInfo);
