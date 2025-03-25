@@ -747,7 +747,9 @@ export const reactivateSite = async (siteTreeItem: SiteTreeItem) => {
     const environmentId = PacContext.AuthInfo?.EnvironmentId || "";
 
     if (!websiteId || !environmentId || !name || !languageCode || !dataModelVersion) {
-        vscode.window.showErrorMessage(vscode.l10n.t("Missing required site information for reactivation."));
+        oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_SITE_REACTIVATION_FAILED, Constants.Strings.MISSING_REACTIVATION_URL_INFO, new Error(Constants.Strings.MISSING_REACTIVATION_URL_INFO), { methodName: reactivateSite.name, ...getBaseEventInfo() });
+
+        await vscode.window.showErrorMessage(Constants.Strings.MISSING_REACTIVATION_URL_INFO);
         return;
     }
 

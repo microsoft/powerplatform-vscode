@@ -1126,7 +1126,7 @@
         {
           "command": "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == inactiveSite",
-          "group": "siteAction@7"
+          "group": "siteAction@1"
         }
       ]
     },
