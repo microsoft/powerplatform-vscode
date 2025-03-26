@@ -87,8 +87,6 @@
     }
   ],
   "activationEvents": [
-    "onCommand:pacCLI.openDocumentation",
-    "onCommand:microsoft-powerapps-portals.webExtension.init",
     "onCommand:powerplatform-walkthrough.overview-learn-more",
     "onCommand:powerplatform-walkthrough.fileSystem-documentation",
     "onCommand:powerplatform-walkthrough.fileSystem-open-folder",
