@@ -331,7 +331,6 @@ export class OneDSLogger implements ITelemetryLogger {
                 envelope.data.context = JSON.stringify(OneDSLogger.contextInfo);
                 envelope.data.userRegion = OneDSLogger.userRegion;
                 envelope.data.orgGeo = OneDSLogger.orgGeo;
-                console.log("************************************************************** Telemetry event: " + JSON.stringify(envelope.data, null, 2));
                 // At the end of event enrichment, redact the sensitive data for all the applicable fields
                 //  envelope = this.redactSensitiveDataFromEvent(envelope);
             }
@@ -378,10 +377,12 @@ export class OneDSLogger implements ITelemetryLogger {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private populateVscodeDesktopAttributes(envelope: any) {
         if (envelope.data.eventName == desktopExtTelemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT) {
-            OneDSLogger.contextInfo.orgId = JSON.parse(envelope.data.eventInfo).OrgId;
-            OneDSLogger.contextInfo.envId = JSON.parse(envelope.data.eventInfo).EnvironmentId;
-            OneDSLogger.orgGeo = JSON.parse(envelope.data.eventInfo).orgGeo;
-            OneDSLogger.userInfo.oid = JSON.parse(envelope.data.eventInfo).AadId;
+            const eventInfo = JSON.parse(envelope.data.eventInfo);
+            OneDSLogger.userInfo.tid = eventInfo.tenantId ?? '';
+            OneDSLogger.contextInfo.orgId = eventInfo.OrgId;
+            OneDSLogger.contextInfo.envId = eventInfo.EnvironmentId;
+            OneDSLogger.orgGeo = eventInfo.orgGeo;
+            OneDSLogger.userInfo.oid = eventInfo.AadId;
             // TODO: Populate website id
             OneDSLogger.contextInfo.websiteId = 'test'
         }
