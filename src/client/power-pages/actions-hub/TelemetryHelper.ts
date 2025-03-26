@@ -6,6 +6,7 @@
 import PacContext from "../../pac/PacContext";
 import CurrentSiteContext from "./CurrentSiteContext";
 import ArtemisContext from '../../ArtemisContext';
+import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
 export const getBaseEventInfo = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -33,4 +34,16 @@ export const getBaseEventInfo = () => {
     }
 
     return eventInfo;
+}
+
+export const traceInfo = (eventName: string, eventInfo?: object) => {
+    const baseEventInfo = getBaseEventInfo();
+    const eventData = { ...baseEventInfo, ...eventInfo };
+    oneDSLoggerWrapper.getLogger().traceInfo(eventName, eventData);
+}
+
+export const traceError = (eventName: string, error: Error, eventInfo?: object) => {
+    const baseEventInfo = getBaseEventInfo();
+    const eventData = { ...baseEventInfo, error: error.message, ...eventInfo };
+    oneDSLoggerWrapper.getLogger().traceError(eventName, error.message, error, eventData);
 }
