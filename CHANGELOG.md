@@ -1,5 +1,11 @@
 # Change Log - Power Platform Extension
 
+## 2.0.81
+- pac CLI 1.40.4, (February 2025 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- Accessibility enhancements
+- Power Pages Actions for VS Code desktop.
+
+
 ## 2.0.78
 - pac CLI 1.39.3, (January 2025 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 - Bug Fixes
