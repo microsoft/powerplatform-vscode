@@ -331,7 +331,6 @@ export class OneDSLogger implements ITelemetryLogger {
                 envelope.data.context = JSON.stringify(OneDSLogger.contextInfo);
                 envelope.data.userRegion = OneDSLogger.userRegion;
                 envelope.data.orgGeo = OneDSLogger.orgGeo;
-                console.log("************************************************************** Telemetry event: " + JSON.stringify(envelope.data, null, 2));
                 // At the end of event enrichment, redact the sensitive data for all the applicable fields
                 //  envelope = this.redactSensitiveDataFromEvent(envelope);
             }
