@@ -126,6 +126,7 @@ export class PPAPIService {
             const accessToken = await powerPlatformAPIAuthentication(serviceEndpointStamp, true);
             const ppBaseEndpoint = await PPAPIService.getPPAPIServiceEndpoint(serviceEndpointStamp, environmentId);
 
+            // TODO: Review the endpoints once available in the PPAPI.
             // Build governance endpoint URL based on whether website ID is provided
             if (websiteId) {
                 // Site-specific governance check
