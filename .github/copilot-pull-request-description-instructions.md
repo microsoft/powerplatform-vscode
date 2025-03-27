@@ -4,7 +4,7 @@ Title Format: `<type>(<scope>): <description>`
 
 - `<type>`: One of `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`.
 - `<scope>`: Required. Affected module or feature (e.g., `auth`, `api`). Use `kebab-case`.
-- `<description>`: Brief and precise.
+- `<description>`: Required. See [Description](#description) for details on how to write it.
 
 ## Examples
 
@@ -18,7 +18,7 @@ Title Format: `<type>(<scope>): <description>`
 
 1. Explain what has changed in this PR.
 2. Explain why was was this change done.
-3. Use bullets for description.
+3. Use bullet points for description.
 
 ---
 
