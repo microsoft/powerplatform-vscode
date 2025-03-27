@@ -78,7 +78,7 @@ dark: vscode.Uri }).dark.path).to.be.equal('/src/client/assets/environment-icon/
                 dataverseOrganizationId: "org1",
                 dataModel: WebsiteDataModel.Standard,
                 environmentId: "env1",
-                siteManagementUrl: "http://siteManagement1.com",
+                siteManagementUrl: "http://siteManagement1.com", languageCode: "1033",
                 createdOn: '2023-01-01T00:00:00Z',
                 creator: 'Test creator',
                 siteVisibility: undefined
@@ -91,7 +91,7 @@ dark: vscode.Uri }).dark.path).to.be.equal('/src/client/assets/environment-icon/
                 dataverseOrganizationId: "org2",
                 dataModel: WebsiteDataModel.Enhanced,
                 environmentId: "env2",
-                siteManagementUrl: "http://siteManagement1.com",
+                siteManagementUrl: "http://siteManagement1.com", languageCode: "1033",
                 createdOn: '2023-01-01T00:00:00Z',
                 creator: 'Test creator',
                 siteVisibility: undefined
@@ -107,7 +107,7 @@ dark: vscode.Uri }).dark.path).to.be.equal('/src/client/assets/environment-icon/
                 dataverseOrganizationId: "org3",
                 dataModel: WebsiteDataModel.Standard,
                 environmentId: "env3",
-                siteManagementUrl: "http://siteManagement1.com",
+                siteManagementUrl: "http://siteManagement1.com", languageCode: "1033",
                 createdOn: '2023-01-01T00:00:00Z',
                 creator: 'Test creator',
                 siteVisibility: undefined
@@ -120,7 +120,7 @@ dark: vscode.Uri }).dark.path).to.be.equal('/src/client/assets/environment-icon/
                 dataverseOrganizationId: "org4",
                 dataModel: WebsiteDataModel.Enhanced,
                 environmentId: "env4",
-                siteManagementUrl: "http://siteManagement1.com",
+                siteManagementUrl: "http://siteManagement1.com", languageCode: "1033",
                 createdOn: '2023-01-01T00:00:00Z',
                 creator: 'Test creator',
                 siteVisibility: undefined

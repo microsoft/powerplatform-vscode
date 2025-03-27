@@ -729,3 +729,21 @@ export const openInStudio = async (siteTreeItem: SiteTreeItem) => {
         );
     }
 }
+
+export const reactivateSite = async (siteTreeItem: SiteTreeItem) => {
+    const { websiteId, name, websiteUrl, languageCode, dataModelVersion } = siteTreeItem.siteInfo;
+    const environmentId = PacContext.AuthInfo?.EnvironmentId || "";
+
+    if (!websiteId || !environmentId || !name || !languageCode || !dataModelVersion) {
+        oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_SITE_REACTIVATION_FAILED, Constants.Strings.MISSING_REACTIVATION_URL_INFO, new Error(Constants.Strings.MISSING_REACTIVATION_URL_INFO), { methodName: reactivateSite.name, ...getBaseEventInfo() });
+
+        await vscode.window.showErrorMessage(Constants.Strings.MISSING_REACTIVATION_URL_INFO);
+        return;
+    }
+
+    const isNewDataModel = siteTreeItem.siteInfo.dataModelVersion === 2;
+
+    const reactivateSiteUrl = `${getStudioBaseUrl()}/e/${environmentId}/portals/create?reactivation=true&websiteId=${websiteId}&siteName=${encodeURIComponent(name)}&siteAddress=${encodeURIComponent(websiteUrl)}&siteLanguageId=${languageCode}&isNewDataModel=${isNewDataModel}`;
+
+    await vscode.env.openExternal(vscode.Uri.parse(reactivateSiteUrl));
+};

@@ -43,7 +43,8 @@ export class ActiveGroupTreeItem extends ActionsHubTreeItem {
                 siteVisibility: site.siteVisibility,
                 siteManagementUrl: site.siteManagementUrl,
                 creator: site.creator,
-                createdOn: site.createdOn
+                createdOn: site.createdOn,
+                languageCode: site.languageCode,
             };
 
             return new SiteTreeItem(siteInfo);

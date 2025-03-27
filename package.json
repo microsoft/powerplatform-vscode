@@ -449,6 +449,10 @@
       {
         "command": "microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio",
         "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite",
+        "title": "%microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite.title%"
       }
     ],
     "configuration": {
@@ -945,6 +949,10 @@
         {
           "command": "microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio",
           "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite",
+          "when": "never"
         }
       ],
       "view/title": [
@@ -1112,6 +1120,11 @@
           "command": "microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio",
           "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite)",
           "group": "siteAction@6"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == inactiveSite",
+          "group": "siteAction@1"
         }
       ]
     },

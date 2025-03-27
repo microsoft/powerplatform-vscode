@@ -44,7 +44,8 @@ export const Constants = {
         ENVIRONMENT_CHANGED_SUCCESSFULLY: vscode.l10n.t("Environment changed successfully."),
         ORGANIZATION_URL_MISSING: "Organization URL is missing in the results.",
         EMPTY_RESULTS_ARRAY: "Results array is empty or not an array.",
-        PAC_AUTH_OUTPUT_FAILURE: "pacAuthCreateOutput is missing or unsuccessful."
+        PAC_AUTH_OUTPUT_FAILURE: "pacAuthCreateOutput is missing or unsuccessful.",
+        MISSING_REACTIVATION_URL_INFO: vscode.l10n.t("Missing required site information for reactivation.")
     },
     EventNames: {
         ACTIONS_HUB_ENABLED: "ActionsHubEnabled",
@@ -96,7 +97,8 @@ export const Constants = {
         ACTIONS_HUB_DOWNLOAD_SITE_FAILED: "ActionsHubDownloadSiteFailed",
         ACTIONS_HUB_DOWNLOAD_SITE_PAC_TRIGGERED: "ActionsHubDownloadSitePacTriggered",
         ACTIONS_HUB_OPEN_SITE_IN_STUDIO_CALLED: "ActionsHubOpenSiteInStudioCalled",
-        ACTIONS_HUB_OPEN_SITE_IN_STUDIO_FAILED: "ActionsHubOpenSiteInStudioFailed"
+        ACTIONS_HUB_OPEN_SITE_IN_STUDIO_FAILED: "ActionsHubOpenSiteInStudioFailed",
+        ACTIONS_HUB_SITE_REACTIVATION_FAILED: "ActionsHubSiteReactivationFailed",
     },
     FeatureNames: {
         REFRESH_ENVIRONMENT: "RefreshEnvironment"

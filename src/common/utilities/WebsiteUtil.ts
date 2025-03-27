@@ -5,7 +5,7 @@
 
 import { OrgInfo } from "../../client/pac/PacTypes";
 import { Constants } from "../../client/power-pages/actions-hub/Constants";
-import { ADX_WEBSITE_RECORDS_API_PATH, ADX_WEBSITE_RECORDS_FETCH_FAILED, GET_ALL_WEBSITES_FAILED, POWERPAGES_SITE_RECORDS_FETCH_FAILED, POWERPAGES_SITE_RECORDS_API_PATH, APP_MODULES_PATH, APP_MODULES_FETCH_FAILED } from "../constants";
+import { ADX_WEBSITE_RECORDS_API_PATH, ADX_WEBSITE_RECORDS_FETCH_FAILED, GET_ALL_WEBSITES_FAILED, POWERPAGES_SITE_RECORDS_FETCH_FAILED, POWERPAGES_SITE_RECORDS_API_PATH, APP_MODULES_PATH, APP_MODULES_FETCH_FAILED, POWERPAGES_SITE_RECORDS_CONTENT_PARSE_FAILED } from "../constants";
 import { oneDSLoggerWrapper } from "../OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { dataverseAuthentication } from "../services/AuthenticationProvider";
 import { ServiceEndpointCategory, WebsiteDataModel } from "../services/Constants";
@@ -21,6 +21,7 @@ type PowerPagesSiteRecords = {
     owninguser: {
         fullname: string;
     };
+    content?: string;
 }
 
 type AdxWebsiteRecords = {
@@ -31,6 +32,7 @@ type AdxWebsiteRecords = {
     owninguser: {
         fullname: string;
     };
+    adx_website_language: string;
 }
 
 type AppModule = {
@@ -89,7 +91,8 @@ export async function getAllWebsites(orgDetails: OrgInfo): Promise<IWebsiteDetai
                 dataModel: WebsiteDataModel.Standard,
                 environmentId: orgDetails.EnvironmentId,
                 websiteRecordId: adxWebsite.adx_websiteid,
-                siteManagementUrl: getSiteManagementUrl(orgDetails.OrgUrl, portalManagementAppId, WebsiteDataModel.Standard, adxWebsite.adx_websiteid) || '',
+                siteManagementUrl: getSiteManagementUrl(orgDetails.OrgUrl, portalManagementAppId, WebsiteDataModel.Standard, adxWebsite.adx_websiteid),
+                languageCode: adxWebsite.adx_website_language || '',
                 createdOn: adxWebsite.createdon || '',
                 creator: adxWebsite.owninguser?.fullname || '',
                 siteVisibility: undefined
@@ -105,7 +108,8 @@ export async function getAllWebsites(orgDetails: OrgInfo): Promise<IWebsiteDetai
                 dataModel: WebsiteDataModel.Enhanced,
                 environmentId: orgDetails.EnvironmentId,
                 websiteRecordId: powerPagesSite.powerpagesiteid,
-                siteManagementUrl: getSiteManagementUrl(orgDetails.OrgUrl, powerPagesManagementAppId, WebsiteDataModel.Enhanced, powerPagesSite.powerpagesiteid) || '',
+                siteManagementUrl: getSiteManagementUrl(orgDetails.OrgUrl, powerPagesManagementAppId, WebsiteDataModel.Enhanced, powerPagesSite.powerpagesiteid),
+                languageCode: powerPagesSite.website_language ?? "1033",
                 createdOn: powerPagesSite.createdon || '',
                 creator: powerPagesSite.owninguser?.fullname || '',
                 siteVisibility: undefined
@@ -145,9 +149,30 @@ async function getPowerPagesSiteRecords(orgUrl: string, token: string) {
         const response = await callApi(dataverseUrl, token);
 
         if (response.ok) {
-            // TODO: perform response format validation
             const data = await response.json() as { value: PowerPagesSiteRecords[] };
-            return data.value;
+
+            // Extract website_language from the content field if it exists
+            return data.value.map(record => {
+                let websiteLanguage = null;
+
+                if (record.content) {
+                    try {
+                        const contentJson = JSON.parse(record.content);
+                        websiteLanguage = contentJson.website_language || null;
+                    } catch (error) {
+                        oneDSLoggerWrapper.getLogger().traceError(
+                            POWERPAGES_SITE_RECORDS_CONTENT_PARSE_FAILED,
+                            `Failed to parse content field for record ${record.powerpagesiteid}`,
+                            error as Error
+                        );
+                    }
+                }
+
+                return {
+                    ...record,
+                    website_language: websiteLanguage
+                };
+            });
         }
 
         if (response.status !== 404) {

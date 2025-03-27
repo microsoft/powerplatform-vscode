@@ -113,5 +113,6 @@
   "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite.title": "Upload Site",
   "microsoft.powerplatform.pages.actionsHub.siteDetails.title": "Site Details",
   "microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite.title": "Download Site",
-  "microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio.title": "Open in Power Pages Studio"
+  "microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio.title": "Open in Power Pages Studio",
+  "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite.title": "Reactivate Site"
 }
