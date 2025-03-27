@@ -40,12 +40,12 @@ export const {
 });
 
 export const {
-    feature: EnableCopilotGovernanceCheck
+    feature: EnableProdevCopilotGovernanceCheck
 } = getFeatureConfigs({
     teamName: PowerPagesClientName,
-    description: 'Enable Copilot Governance Check for Power Pages',
+    description: 'Enable Copilot Governance Check for Pro Dev Copilot',
     fallback: {
-        enableCopilotGovernanceCheck: false,
+        enableProdevCopilotGovernanceCheck: false,
     },
 });
 
