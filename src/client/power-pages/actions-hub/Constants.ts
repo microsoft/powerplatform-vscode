@@ -44,7 +44,9 @@ export const Constants = {
         ENVIRONMENT_CHANGED_SUCCESSFULLY: vscode.l10n.t("Environment changed successfully."),
         ORGANIZATION_URL_MISSING: "Organization URL is missing in the results.",
         EMPTY_RESULTS_ARRAY: "Results array is empty or not an array.",
-        PAC_AUTH_OUTPUT_FAILURE: "pacAuthCreateOutput is missing or unsuccessful."
+        PAC_AUTH_OUTPUT_FAILURE: "pacAuthCreateOutput is missing or unsuccessful.",
+        CONFIGURATION_NAME: "powerPlatform.pages",
+        DOWNLOAD_SETTING_NAME: "downloadSiteFolder"
     },
     EventNames: {
         ACTIONS_HUB_ENABLED: "ActionsHubEnabled",
