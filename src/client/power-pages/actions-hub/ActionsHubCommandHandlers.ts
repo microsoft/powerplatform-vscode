@@ -598,6 +598,16 @@ const getDownloadFolderOptions = () => {
 
 const getDownloadPath = async () => {
     let downloadPath = "";
+    const config = vscode.workspace.getConfiguration(Constants.Strings.CONFIGURATION_NAME);
+    const hasConfiguredDownloadPath = config.has(Constants.Strings.DOWNLOAD_SETTING_NAME);
+
+    if (hasConfiguredDownloadPath) {
+        const configuredDownloadPath = config.get<string>(Constants.Strings.DOWNLOAD_SETTING_NAME) || "";
+        if (fs.existsSync(configuredDownloadPath)) {
+            return configuredDownloadPath;
+        }
+    }
+
     const option = await vscode.window.showQuickPick(getDownloadFolderOptions(), {
         canPickMany: false,
         placeHolder: Constants.Strings.SELECT_DOWNLOAD_FOLDER
