@@ -600,6 +600,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++bab36b47fe2dd4f2f7e8eb486f2e3546e27dc047e69f5b24307bc71e5be2a7cf">
       <source xml:lang="en">Unable to find that app</source>
     </trans-unit>
+    <trans-unit id="++CODE++3747890a3bfddec3123ce9a40cdd15f278d1335b382f80beb52bf18101ab02c2">
+      <source xml:lang="en">Unable to locate website root folder.</source>
+    </trans-unit>
     <trans-unit id="++CODE++b6038584b7b1f565be9c9d3f0ac11be70bd2e69e072ead52884ca7338a14ee67">
       <source xml:lang="en">Unique name: {0}</source>
       <note>{0} is the Unique name</note>
