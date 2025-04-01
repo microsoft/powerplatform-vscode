@@ -96,6 +96,7 @@
       "Do not translate 'PCF' as it is a product name."
     ]
   },
+  "Unable to locate website root folder.": "Unable to locate website root folder.",
   "File might be referenced by name {0} here./{0} represents the name of the file": {
     "message": "File might be referenced by name {0} here.",
     "comment": [
@@ -133,6 +134,7 @@
   "Unable to clear cache": "Unable to clear cache",
   "Your preview isn't updated. Please upload your site to see the latest changes.": "Your preview isn't updated. Please upload your site to see the latest changes.",
   "Upload changes": "Upload changes",
+  "The preview shown is for published changes. Please publish any pending changes to see them in the preview.": "The preview shown is for published changes. Please publish any pending changes to see them in the preview.",
   "Enter the name of the web template": "Enter the name of the web template",
   "Please enter a name for the web template.": "Please enter a name for the web template.",
   "A webtemplate with the same name already exists. Please enter a different name.": "A webtemplate with the same name already exists. Please enter a different name.",
