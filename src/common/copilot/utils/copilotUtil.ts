@@ -4,7 +4,7 @@
  */
 
 import { ECSFeaturesClient } from "../../ecs-features/ecsFeatureClient";
-import { CopilotDisableList, EnablePowerPagesGitHubCopilot, EnableProDevCopilot } from "../../ecs-features/ecsFeatureGates";
+import { CopilotDisableList, EnablePowerPagesGitHubCopilot, EnableProDevCopilot, EnableProdevCopilotGovernanceCheck } from "../../ecs-features/ecsFeatureGates";
 
 export function getDisabledOrgList() {
     const disallowedProDevCopilotOrgs = ECSFeaturesClient.getConfig(CopilotDisableList).disallowedProDevCopilotOrgs;
@@ -65,4 +65,13 @@ export function isPowerPagesGitHubCopilotEnabled() {
     }
 
     return enablePowerpagesInGithubCopilot;
+}
+
+export function isCopilotGovernanceCheckEnabled() {
+    const enableCopilotGovernanceCheck = ECSFeaturesClient.getConfig(EnableProdevCopilotGovernanceCheck).enableProdevCopilotGovernanceCheck;
+    if(enableCopilotGovernanceCheck === undefined) {
+        return false;
+    }
+
+    return enableCopilotGovernanceCheck;
 }
