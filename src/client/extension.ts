@@ -236,11 +236,15 @@ export async function activate(
                 PreviewSite.initialize(context, workspaceFolders, pacTerminal),
                 ActionsHub.initialize(context, pacTerminal)
             ]);
+
+            vscode.commands.executeCommand('setContext', 'microsoft.powerplatform.environment.initialized', true);
         }),
 
         orgChangeErrorEvent(async () => {
             //Even if auth change was unsuccessful, we should still initialize the actions hub
             await ActionsHub.initialize(context, pacTerminal);
+
+            vscode.commands.executeCommand('setContext', 'microsoft.powerplatform.environment.initialized', true);
         })
     );
 
