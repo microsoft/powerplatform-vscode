@@ -118,9 +118,9 @@ export class PPAPIService {
     ): Promise<boolean> {
 
         const currentWorkspaceFolder = vscode.workspace.workspaceFolders
-            ? vscode.workspace.getWorkspaceFolder(vscode.workspace.workspaceFolders[0].uri)
+            ? vscode.workspace.workspaceFolders[0].uri.fsPath
             : undefined;
-        const websiteId = getWebsiteRecordId(currentWorkspaceFolder?.uri.path || '');
+        const websiteId = getWebsiteRecordId(currentWorkspaceFolder || '');
         try {
             let governanceEndpoint: string;
             const accessToken = await powerPlatformAPIAuthentication(serviceEndpointStamp, true);
@@ -144,7 +144,7 @@ export class PPAPIService {
 
             if (response.ok) {
                 const result = await response.json();
-                const allowProDevCopilots = result.value === true;
+                const allowProDevCopilots = result === 'All';
 
                 sendTelemetryEvent({
                     eventName: VSCODE_EXTENSION_GOVERNANCE_CHECK_SUCCESS,
