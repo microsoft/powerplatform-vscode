@@ -11,8 +11,7 @@ import {
 import { ServiceEndpointCategory, PPAPI_WEBSITES_ENDPOINT, PPAPI_WEBSITES_API_VERSION } from "./Constants";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { IWebsiteDetails } from "./Interfaces";
-import { getWebsiteRecordId } from "../utilities/WorkspaceInfoFinderUtil";
-import * as vscode from "vscode";
+import { getCurrentSiteInfo } from "../utilities/Utils";
 
 export class PPAPIService {
     public static async getWebsiteDetailsById(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string, websitePreviewId: string): Promise<IWebsiteDetails | null> { // websitePreviewId aka portalId
@@ -116,11 +115,7 @@ export class PPAPIService {
         environmentId: string,
         sessionId: string,
     ): Promise<boolean> {
-
-        const currentWorkspaceFolder = vscode.workspace.workspaceFolders
-            ? vscode.workspace.workspaceFolders[0].uri.fsPath
-            : undefined;
-        const websiteId = getWebsiteRecordId(currentWorkspaceFolder || '');
+        const websiteId = getCurrentSiteInfo().currentSiteId;
         try {
             let governanceEndpoint: string;
             const accessToken = await powerPlatformAPIAuthentication(serviceEndpointStamp, true);
@@ -164,7 +159,7 @@ export class PPAPIService {
                 errorMsg: `HTTP Error: ${response.status}`
             });
 
-            return true;
+            return true; //Is fallback to true correct?
         } catch (error) {
             // Log error and default to true
             sendTelemetryEvent({
