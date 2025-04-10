@@ -14,7 +14,7 @@ import { BAPService } from "./BAPService";
 import { PPAPIService } from "./PPAPIService";
 
 export class ArtemisService {
-    public static async getIntelligenceEndpoint(orgId: string, sessionID: string, environmentId: string): Promise<IIntelligenceAPIEndpointInformation> {
+    public static async getIntelligenceEndpoint(orgId: string, sessionID: string, environmentId: string, websiteId?: string | null): Promise<IIntelligenceAPIEndpointInformation> {
 
         const artemisResponse = await ArtemisService.getArtemisResponse(orgId, sessionID);
 
@@ -37,7 +37,8 @@ export class ArtemisService {
             const governanceResult = await PPAPIService.getGovernanceFlag(
                 artemisResponse.stamp,
                 environmentId,
-                sessionID
+                sessionID,
+                websiteId ?? null
             );
             if (!governanceResult) {
                 // Governance flag is disabled

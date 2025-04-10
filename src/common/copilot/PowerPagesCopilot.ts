@@ -48,15 +48,19 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     private aibEndpoint: string | null = null;
     private geoName: string | null = null;
     private crossGeoDataMovementEnabledPPACFlag = false;
+    private websiteId: string | null;
 
     constructor(
         private readonly _extensionUri: vscode.Uri,
         _context: vscode.ExtensionContext,
         pacWrapper?: PacWrapper,
-        orgInfo?: IOrgInfo) {
+        orgInfo?: IOrgInfo,
+        websiteId?: string 
+    ) {
         this._extensionContext = _context;
         sessionID = uuidv4();
         this._pacWrapper = pacWrapper;
+        this.websiteId = websiteId ?? null;
 
         this._disposables.push(
             vscode.commands.registerCommand("powerpages.copilot.clearConversation", () => {
@@ -423,7 +427,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         sessionID = uuidv4(); // Generate a new session ID on org change
         sendTelemetryEvent({ eventName: CopilotOrgChangedEvent, copilotSessionId: sessionID, orgId: orgID });
 
-        const intelligenceAPIEndpointInfo = await ArtemisService.getIntelligenceEndpoint(orgID, sessionID, environmentId);
+        const intelligenceAPIEndpointInfo = await ArtemisService.getIntelligenceEndpoint(orgID, sessionID, environmentId, this.websiteId);
         if (!intelligenceAPIEndpointInfo.intelligenceEndpoint) {
             this.sendMessageToWebview({ type: 'Unavailable' });
             return;

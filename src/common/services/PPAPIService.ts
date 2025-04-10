@@ -8,10 +8,12 @@ import {
     VSCODE_EXTENSION_SERVICE_STAMP_NOT_FOUND, VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_FAILED, VSCODE_EXTENSION_GET_PPAPI_WEBSITES_ENDPOINT_UNSUPPORTED_REGION,
     VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_ID_COMPLETED, VSCODE_EXTENSION_PPAPI_GET_WEBSITE_DETAILS_FAILED, VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_RECORD_ID_COMPLETED, VSCODE_EXTENSION_GOVERNANCE_CHECK_SUCCESS, VSCODE_EXTENSION_GOVERNANCE_CHECK_FAILED
 } from "./TelemetryConstants";
-import { ServiceEndpointCategory, PPAPI_WEBSITES_ENDPOINT, PPAPI_WEBSITES_API_VERSION } from "./Constants";
+import { ServiceEndpointCategory, PPAPI_WEBSITES_ENDPOINT, PPAPI_WEBSITES_API_VERSION} from "./Constants";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { IWebsiteDetails } from "./Interfaces";
 import { getCurrentSiteInfo } from "../utilities/Utils";
+
+declare const IS_DESKTOP: string | undefined;
 
 export class PPAPIService {
     public static async getWebsiteDetailsById(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string, websitePreviewId: string): Promise<IWebsiteDetails | null> { // websitePreviewId aka portalId
@@ -114,8 +116,12 @@ export class PPAPIService {
         serviceEndpointStamp: ServiceEndpointCategory,
         environmentId: string,
         sessionId: string,
+        websiteId: string | null
     ): Promise<boolean> {
-        const websiteId = getCurrentSiteInfo().currentSiteId;
+
+        if (IS_DESKTOP && !websiteId) {
+            websiteId = getCurrentSiteInfo().currentSiteId;
+        } 
         try {
             let governanceEndpoint: string;
             const accessToken = await powerPlatformAPIAuthentication(serviceEndpointStamp, true);
