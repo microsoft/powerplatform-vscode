@@ -68,10 +68,16 @@
   "browser": "./dist/web/extension.js",
   "categories": [
     "Snippets",
-    "Other"
+    "Other",
+    "Chat",
+    "AI"
   ],
   "keywords": [
-    "Power Platform"
+    "Power Platform",
+    "Power Pages",
+    "Power Apps",
+    "copilot",
+    "chat"
   ],
   "icon": "src/client/assets/icon.png",
   "badges": [
@@ -116,7 +122,18 @@
         "name": "powerpages",
         "fullName": "Copilot for Power Pages",
         "description": "Copilot for Power Pages",
-        "isSticky": true
+        "isSticky": true,
+        "disambiguation": [
+          {
+            "category": "powerpages_questions",
+            "description": "This Copilot chat experience assists Power Pages developers to write code by describing their expected code behavior using natural language. They can then refine the generated code and use it when customizing their site.",
+            "examples": [
+              "Write JavaScript code for form field validation to check phone field value is in the valid format.",
+              "Write web API code to query active contact records.",
+              "Write JavaScript code to highlight the row where email field is empty in table list."
+            ]
+          }
+        ]
       }
     ],
     "problemMatchers": [
