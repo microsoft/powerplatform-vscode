@@ -184,7 +184,8 @@
       {
         "view": "microsoft.powerplatform.pages.actionsHub",
         "contents": "%microsoft.powerplatform.pages.actionsHub.login%",
-        "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported"
+        "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported",
+        "enablement": "microsoft.powerplatform.environment.initialized"
       }
     ],
     "commands": [
