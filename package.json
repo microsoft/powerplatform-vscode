@@ -1327,7 +1327,7 @@
     "yargs": "^16.2.0"
   },
   "dependencies": {
-    "@fluidframework/azure-client": "^1.2.0",
+    "@fluidframework/azure-client": "^2.31.1",
     "@microsoft/1ds-core-js": "4.0.5",
     "@microsoft/1ds-post-js": "4.0.5",
     "@microsoft/generator-powerpages": "1.21.19",
@@ -1338,7 +1338,7 @@
     "cockatiel": "^3.1.1",
     "command-exists": "^1.2.9",
     "find-process": "^1.4.7",
-    "fluid-framework": "^1.4.0",
+    "fluid-framework": "^2.31.1",
     "glob": "^7.1.7",
     "gpt-tokenizer": "^2.1.1",
     "gulp": "^5.0.0",
