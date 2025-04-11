@@ -127,11 +127,11 @@ export class PPAPIService {
             const accessToken = await powerPlatformAPIAuthentication(serviceEndpointStamp, true);
             const ppBaseEndpoint = await PPAPIService.getPPAPIServiceEndpoint(serviceEndpointStamp, environmentId);
 
-            // TODO: Review the endpoints once available in the PPAPI.
             // Build governance endpoint URL based on whether website ID is provided
             if (websiteId) {
                 // Site-specific governance check
-                governanceEndpoint = `${ppBaseEndpoint.split('?')[0]}/${websiteId}/governance/PowerPages_AllowProDevCopilotsForSites?api-version=${PPAPI_WEBSITES_API_VERSION}`;
+                const websiteDetails = await this.getWebsiteDetailsByWebsiteRecordId(serviceEndpointStamp, environmentId, websiteId);
+                governanceEndpoint = `${ppBaseEndpoint.split('?')[0]}/${websiteDetails?.id}/governance/PowerPages_AllowProDevCopilotsForSites?api-version=${PPAPI_WEBSITES_API_VERSION}`;
             } else {
                 // Environment-level governance check
                 const envEndpoint = ppBaseEndpoint.split('/websites')[0];
@@ -145,7 +145,7 @@ export class PPAPIService {
 
             if (response.ok) {
                 const result = await response.json();
-                const allowProDevCopilots = result === 'All';
+                const allowProDevCopilots = result === 'All' || result === 'true' ;
 
                 sendTelemetryEvent({
                     eventName: VSCODE_EXTENSION_GOVERNANCE_CHECK_SUCCESS,
