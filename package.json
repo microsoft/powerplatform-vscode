@@ -175,7 +175,7 @@
         "view": "pacCLI.authPanel",
         "contents": "%pacCLI.authPanel.welcome.whenInteractiveSupported%",
         "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported",
-        "enablement": "microsoft.powerplatform.authPanel.initialized"
+        "enablement": "!microsoft.powerplatform.authPanel.isInitializing"
       },
       {
         "view": "pacCLI.authPanel",
