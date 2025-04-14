@@ -612,7 +612,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
         // Try Loading default file first
         const referrer = WebExtensionContext.urlParametersMap.get(queryParameters.REFERRER) as string 
 
-        // If referrer is power pages home and DM is V1, incorrect home page id is being passed. Leading to error page.
+        // If referrer is power pages home and DM is V1, random home page id is being passed. Leading to error page.
         const shouldLoadDefaultFile = !(referrer === REFERRER.POWER_PAGES_HOME && isPortalVersionV1())
 
         if (WebExtensionContext.defaultEntityId !== "" && WebExtensionContext.defaultEntityType !== "" && shouldLoadDefaultFile) { 
