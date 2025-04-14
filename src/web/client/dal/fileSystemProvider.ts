@@ -9,6 +9,7 @@ import { isValidDirectoryPath, isValidFilePath, isWebFileWithLazyLoad } from "..
 import {
     PORTALS_URI_SCHEME,
     queryParameters,
+    REFERRER,
 } from "../common/constants";
 import WebExtensionContext from "../WebExtensionContext";
 import { fetchDataFromDataverseAndUpdateVFS } from "./remoteFetchProvider";
@@ -609,7 +610,8 @@ export class PortalsFS implements vscode.FileSystemProvider {
         );
 
         // Try Loading default file first
-        if (WebExtensionContext.defaultEntityId !== "" && WebExtensionContext.defaultEntityType !== "") {
+        const referrer = WebExtensionContext.urlParametersMap.get(queryParameters.REFERRER) as string 
+        if (WebExtensionContext.defaultEntityId !== "" && WebExtensionContext.defaultEntityType !== "" && referrer != REFERRER.POWER_PAGES_HOME ) { // If referrer is power pages home, incorrect home page id is being passed. Leading to error page.
             await fetchDataFromDataverseAndUpdateVFS(
                 this,
                 {
