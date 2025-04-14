@@ -30,7 +30,7 @@ import {
     updateFileDirtyChanges,
     updateFileEntityEtag,
 } from "../utilities/fileAndEntityUtil";
-import { getImageFileContent, getRangeForMultilineMatch, isImageFileSupportedForEdit, isVersionControlEnabled, updateFileContentInFileDataMap } from "../utilities/commonUtil";
+import { getImageFileContent, getRangeForMultilineMatch, isImageFileSupportedForEdit, isPortalVersionV1, isVersionControlEnabled, updateFileContentInFileDataMap } from "../utilities/commonUtil";
 import { IFileInfo, ISearchQueryMatch, ISearchQueryResults } from "../common/interfaces";
 import { ERROR_CONSTANTS } from "../../../common/ErrorConstants";
 
@@ -611,7 +611,11 @@ export class PortalsFS implements vscode.FileSystemProvider {
 
         // Try Loading default file first
         const referrer = WebExtensionContext.urlParametersMap.get(queryParameters.REFERRER) as string 
-        if (WebExtensionContext.defaultEntityId !== "" && WebExtensionContext.defaultEntityType !== "" && referrer != REFERRER.POWER_PAGES_HOME ) { // If referrer is power pages home, incorrect home page id is being passed. Leading to error page.
+
+        // If referrer is power pages home and DM is V1, incorrect home page id is being passed. Leading to error page.
+        const shouldLoadDefaultFile = !(referrer === REFERRER.POWER_PAGES_HOME && isPortalVersionV1())
+
+        if (WebExtensionContext.defaultEntityId !== "" && WebExtensionContext.defaultEntityType !== "" && shouldLoadDefaultFile) { 
             await fetchDataFromDataverseAndUpdateVFS(
                 this,
                 {
