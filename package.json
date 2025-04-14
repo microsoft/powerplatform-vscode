@@ -174,7 +174,8 @@
       {
         "view": "pacCLI.authPanel",
         "contents": "%pacCLI.authPanel.welcome.whenInteractiveSupported%",
-        "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported"
+        "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported",
+        "enablement": "microsoft.powerplatform.authPanel.initialized"
       },
       {
         "view": "pacCLI.authPanel",
@@ -185,7 +186,7 @@
         "view": "microsoft.powerplatform.pages.actionsHub",
         "contents": "%microsoft.powerplatform.pages.actionsHub.login%",
         "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported",
-        "enablement": "microsoft.powerplatform.environment.initialized"
+        "enablement": "microsoft.powerplatform.environment.initialized && !microsoft.powerplatform.pages.actionsHub.loadingWebsites"
       }
     ],
     "commands": [

@@ -54,6 +54,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     private async loadWebsites(): Promise<void> {
         if (this._loadWebsites) {
             try {
+                vscode.commands.executeCommand('setContext', 'microsoft.powerplatform.pages.actionsHub.loadingWebsites', true);
                 const websites = await fetchWebsites();
                 this._activeSites = websites.activeSites;
                 this._inactiveSites = websites.inactiveSites;
@@ -61,6 +62,8 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                 this._loadWebsites = false;
             } catch (error) {
                 oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_LOAD_WEBSITES_FAILED, error as string, error as Error, { methodName: this.loadWebsites, ...getBaseEventInfo() }, {});
+            } finally {
+                vscode.commands.executeCommand('setContext', 'microsoft.powerplatform.pages.actionsHub.loadingWebsites', false);
             }
         }
     }

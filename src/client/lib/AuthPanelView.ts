@@ -66,6 +66,7 @@ export class AuthTreeView implements vscode.TreeDataProvider<AuthProfileTreeItem
             return [];
         } else {
             const pacOutput = await this.dataSource();
+            vscode.commands.executeCommand('setContext', 'microsoft.powerplatform.authPanel.initialized', true);
             if (pacOutput && pacOutput.Status === "Success" && pacOutput.Results) {
                 const items = pacOutput.Results
                     .filter(item => item.Kind !== "ADMIN") // Only Universal and Dataverse profiles
