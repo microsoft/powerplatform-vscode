@@ -127,7 +127,7 @@ export enum GraphService {
     GRAPH_PROFILE_PICTURE = "profilePicture",
 }
 
-export enum REFERRER{
+export enum REFERRER {
     POWER_PAGES_HOME = "PowerPagesHome"
 }
 
