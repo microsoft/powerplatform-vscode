@@ -29,8 +29,6 @@ export async function sendApiRequest(params: IApiRequestParams) {
         relatedFiles
     } = params;
 
-    const aibEndpointTest = "https://aibuildertextapiservice.wus-il002.gateway.Test.island.powerapps.com/v1.0/ad48417c-a13d-ee11-be6a-00224804265b/appintelligence/chat"
-
     if (!aibEndpoint) {
         return NetworkError;
     }
