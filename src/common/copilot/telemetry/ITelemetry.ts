@@ -28,4 +28,5 @@ export interface IProDevCopilotTelemetryData {
     crossGeoDataMovementEnabledPPACFlag?: boolean;
     environmentId?: string;
     websiteId?: string;
+    copilotGovernanceResponse?: boolean
 }

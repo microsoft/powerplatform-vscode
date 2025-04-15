@@ -9,7 +9,7 @@ import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { CopilotArtemisFailureEvent, CopilotArtemisSuccessEvent, CopilotGovernanceCheckEnabled } from "../copilot/telemetry/telemetryConstants";
 import { ServiceEndpointCategory } from "./Constants";
 import { IArtemisAPIOrgResponse, IArtemisServiceEndpointInformation, IArtemisServiceResponse, IIntelligenceAPIEndpointInformation } from "./Interfaces";
-import { isCopilotDisabledInGeo, isCopilotGovernanceCheckEnabled, isCopilotSupportedInGeo } from "../copilot/utils/copilotUtil";
+import { getCopilotGovernanceSetting, isCopilotDisabledInGeo, isCopilotGovernanceCheckEnabled, isCopilotSupportedInGeo } from "../copilot/utils/copilotUtil";
 import { BAPService } from "./BAPService";
 import { PPAPIService } from "./PPAPIService";
 
@@ -31,6 +31,8 @@ export class ArtemisService {
 
         if (isGovernanceCheckEnabled) {
 
+            const copilotGovernanceSetting = getCopilotGovernanceSetting();
+
             sendTelemetryEvent({ eventName: CopilotGovernanceCheckEnabled, copilotSessionId: sessionID, orgId: orgId });
 
             // Use PPAPIService for governance flag check
@@ -38,6 +40,7 @@ export class ArtemisService {
                 artemisResponse.stamp,
                 environmentId,
                 sessionID,
+                copilotGovernanceSetting,
                 websiteId ?? null
             );
             if (!governanceResult) {

@@ -75,3 +75,12 @@ export function isCopilotGovernanceCheckEnabled() {
 
     return enableCopilotGovernanceCheck;
 }
+
+export function getCopilotGovernanceSetting() {
+    const copilotGovernanceSetting = ECSFeaturesClient.getConfig(EnableProdevCopilotGovernanceCheck).CopilotGovernanceSetting;
+    if(copilotGovernanceSetting === undefined) {
+        return "PowerPages_AllowProDevCopilotsForSites";
+    }
+
+    return copilotGovernanceSetting;
+}

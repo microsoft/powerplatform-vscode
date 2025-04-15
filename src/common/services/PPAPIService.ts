@@ -116,6 +116,7 @@ export class PPAPIService {
         serviceEndpointStamp: ServiceEndpointCategory,
         environmentId: string,
         sessionId: string,
+        copilotGovernanceSetting: string,
         websiteId: string | null
     ): Promise<boolean> {
 
@@ -129,13 +130,13 @@ export class PPAPIService {
 
             // Build governance endpoint URL based on whether website ID is provided
             if (websiteId) {
-                // Site-specific governance check
+                // When site context is present.
                 const websiteDetails = await this.getWebsiteDetailsByWebsiteRecordId(serviceEndpointStamp, environmentId, websiteId);
-                governanceEndpoint = `${ppBaseEndpoint.split('?')[0]}/${websiteDetails?.id}/governance/PowerPages_AllowProDevCopilotsForSites?api-version=${PPAPI_WEBSITES_API_VERSION}`;
+                governanceEndpoint = `${ppBaseEndpoint.split('?')[0]}/${websiteDetails?.id}/governance/${copilotGovernanceSetting}?api-version=${PPAPI_WEBSITES_API_VERSION}`;
             } else {
-                // Environment-level governance check
+                // Using copilot without site context.
                 const envEndpoint = ppBaseEndpoint.split('/websites')[0];
-                governanceEndpoint = `${envEndpoint}/governance/PowerPages_AllowProDevCopilotsForSites?api-version=${PPAPI_WEBSITES_API_VERSION}`;
+                governanceEndpoint = `${envEndpoint}/governance/${copilotGovernanceSetting}?api-version=${PPAPI_WEBSITES_API_VERSION}`;
             }
 
             const response = await fetch(governanceEndpoint, {
@@ -152,6 +153,7 @@ export class PPAPIService {
                     environmentId: environmentId,
                     websiteId: websiteId || '',
                     copilotSessionId: sessionId,
+                    copilotGovernanceResponse: allowProDevCopilots
                 });
 
                 return allowProDevCopilots;
@@ -165,9 +167,8 @@ export class PPAPIService {
                 errorMsg: `HTTP Error: ${response.status}`
             });
 
-            return true; //Is fallback to true correct?
+            return false; 
         } catch (error) {
-            // Log error and default to true
             sendTelemetryEvent({
                 eventName: VSCODE_EXTENSION_GOVERNANCE_CHECK_FAILED,
                 environmentId: environmentId,
@@ -176,7 +177,7 @@ export class PPAPIService {
                 errorMsg: (error as Error).message
             });
 
-            return true;
+            return false;
         }
     }
 }
