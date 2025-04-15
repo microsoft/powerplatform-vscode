@@ -80,7 +80,7 @@ export async function sendApiRequest(params: IApiRequestParams) {
     try {
         const startTime = performance.now();
 
-        const response = await fetch(aibEndpointTest, {
+        const response = await fetch(aibEndpoint, {
             ...requestInit
         });
 
