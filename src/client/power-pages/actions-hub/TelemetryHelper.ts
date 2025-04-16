@@ -13,8 +13,8 @@ export const getBaseEventInfo = () => {
     const eventInfo = {} as any;
 
     if (ArtemisContext.ServiceResponse) {
-        eventInfo.stamp = ArtemisContext.ServiceResponse.stamp;
-        eventInfo.geo = ArtemisContext.ServiceResponse.response.geoName;
+        eventInfo.stamp = ArtemisContext.ServiceResponse?.stamp ?? "";
+        eventInfo.geo = ArtemisContext.ServiceResponse?.response?.geoName ?? "";
     }
 
     if (PacContext.OrgInfo?.OrgId) {
