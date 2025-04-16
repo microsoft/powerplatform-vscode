@@ -1,15 +1,26 @@
 {
   "cSpell.words": [
     "appmoduleid",
+    "ation",
+    "contentsnippet",
     "createdon",
     "dataverse",
     "entityrecord",
     "Entra",
+    "fileicons",
+    "fluidframework",
     "lcid",
+    "liquidjs",
     "MSPP",
+    "nitializing",
     "nupkg",
+    "ompil",
+    "ompiled",
     "owninguser",
+    "pagetemplate",
     "pagetype",
+    "paportal",
+    "portalconfig",
     "powerapps",
     "powerpages",
     "powerpagesiteid",
@@ -17,9 +28,12 @@
     "PPAPI",
     "primarydomainname",
     "Puid",
+    "readlines",
     "testorg",
     "uniquename",
-    "websiteid"
+    "webfile",
+    "websiteid",
+    "webtemplate"
   ],
   "sarif-viewer.connectToGithubCodeScanning": "off"
 }

@@ -8,7 +8,6 @@ import * as sinon from 'sinon';
 import * as vscode from 'vscode';
 import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, createNewAuthProfile, previewSite, fetchWebsites, revealInOS, uploadSite, createKnownSiteIdsSet, findOtherSites, showSiteDetails, openSiteManagement, downloadSite, openInStudio } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
 import { Constants } from '../../../../power-pages/actions-hub/Constants';
-import { oneDSLoggerWrapper } from '../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import * as CommonUtils from '../../../../power-pages/commonUtility';
 import { AuthInfo, CloudInstance, EnvironmentType, OrgInfo } from '../../../../pac/PacTypes';
 import { PacTerminal } from '../../../../lib/PacTerminal';
@@ -77,14 +76,9 @@ describe('ActionsHubCommandHandlers', () => {
         mockShowInformationMessage = sandbox.stub(vscode.window, 'showInformationMessage');
         ArtemisContext["_artemisResponse"] = { stamp: ServiceEndpointCategory.TEST, response: artemisResponse };
         mockSetAuthInfo = sandbox.stub(PacContext, 'setContext');
-        traceErrorStub = sinon.stub();
+        traceErrorStub = sandbox.stub(TelemetryHelper, 'traceError');
         sandbox.stub(TelemetryHelper, "getBaseEventInfo").returns({ foo: 'bar' });
-        sandbox.stub(oneDSLoggerWrapper, 'getLogger').returns({
-            traceError: traceErrorStub,
-            traceInfo: sinon.stub(),
-            traceWarning: sinon.stub(),
-            featureUsage: sinon.stub(),
-        });
+        sandbox.stub(TelemetryHelper, "traceInfo");
     });
 
     afterEach(() => {
@@ -214,7 +208,9 @@ describe('ActionsHubCommandHandlers', () => {
 
             await refreshEnvironment(mockPacTerminal as unknown as PacTerminal);
 
-            expect(traceErrorStub.firstCall.args[3]).to.deep.equal({ methodName: 'refreshEnvironment' });
+            expect(traceErrorStub.firstCall.args[0]).to.equal(Constants.EventNames.ACTIONS_HUB_REFRESH_FAILED);
+            expect(traceErrorStub.firstCall.args[1]).to.equal(error);
+            expect(traceErrorStub.firstCall.args[2]).to.deep.equal({ methodName: 'refreshEnvironment' });
         });
     });
 
@@ -825,8 +821,7 @@ describe('ActionsHubCommandHandlers', () => {
             } as SiteTreeItem);
 
             expect(traceErrorStub.firstCall.args[0]).to.equal(Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND);
-            expect(traceErrorStub.firstCall.args[1]).to.equal(Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND);
-            expect(traceErrorStub.firstCall.args[3]).to.deep.equal({ method: openSiteManagement.name, foo: 'bar', siteId: 'test-id' });
+            expect(traceErrorStub.firstCall.args[2]).to.deep.equal({ method: openSiteManagement.name, siteId: 'test-id' });
         });
     });
 

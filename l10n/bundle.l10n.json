@@ -96,6 +96,7 @@
       "Do not translate 'PCF' as it is a product name."
     ]
   },
+  "Unable to locate website root folder.": "Unable to locate website root folder.",
   "File might be referenced by name {0} here./{0} represents the name of the file": {
     "message": "File might be referenced by name {0} here.",
     "comment": [

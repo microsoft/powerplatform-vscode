@@ -9,6 +9,7 @@ import { isValidDirectoryPath, isValidFilePath, isWebFileWithLazyLoad } from "..
 import {
     PORTALS_URI_SCHEME,
     queryParameters,
+    REFERRER,
 } from "../common/constants";
 import WebExtensionContext from "../WebExtensionContext";
 import { fetchDataFromDataverseAndUpdateVFS } from "./remoteFetchProvider";
@@ -29,7 +30,7 @@ import {
     updateFileDirtyChanges,
     updateFileEntityEtag,
 } from "../utilities/fileAndEntityUtil";
-import { getImageFileContent, getRangeForMultilineMatch, isImageFileSupportedForEdit, isVersionControlEnabled, updateFileContentInFileDataMap } from "../utilities/commonUtil";
+import { getImageFileContent, getRangeForMultilineMatch, isImageFileSupportedForEdit, isPortalVersionV1, isVersionControlEnabled, updateFileContentInFileDataMap } from "../utilities/commonUtil";
 import { IFileInfo, ISearchQueryMatch, ISearchQueryResults } from "../common/interfaces";
 import { ERROR_CONSTANTS } from "../../../common/ErrorConstants";
 
@@ -609,7 +610,12 @@ export class PortalsFS implements vscode.FileSystemProvider {
         );
 
         // Try Loading default file first
-        if (WebExtensionContext.defaultEntityId !== "" && WebExtensionContext.defaultEntityType !== "") {
+        const referrer = WebExtensionContext.urlParametersMap.get(queryParameters.REFERRER) as string 
+
+        // If referrer is power pages home and DM is V1, random home page id is being passed. Leading to error page.
+        const shouldLoadDefaultFile = !(referrer === REFERRER.POWER_PAGES_HOME && isPortalVersionV1())
+
+        if (WebExtensionContext.defaultEntityId !== "" && WebExtensionContext.defaultEntityType !== "" && shouldLoadDefaultFile) { 
             await fetchDataFromDataverseAndUpdateVFS(
                 this,
                 {
