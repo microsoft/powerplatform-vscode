@@ -33,7 +33,7 @@ export class ArtemisService {
 
             const copilotGovernanceSetting = getCopilotGovernanceSetting();
 
-            sendTelemetryEvent({ eventName: CopilotGovernanceCheckEnabled, copilotSessionId: sessionID, orgId: orgId });
+            sendTelemetryEvent({ eventName: CopilotGovernanceCheckEnabled, copilotSessionId: sessionID, orgId: orgId, isGovernanceCheckEnabled: isGovernanceCheckEnabled, copilotGovernanceSetting: copilotGovernanceSetting});
 
             // Use PPAPIService for governance flag check
             const governanceResult = await PPAPIService.getGovernanceFlag(

@@ -32,6 +32,8 @@ export function sendTelemetryEvent(telemetryData: IProDevCopilotTelemetryData): 
     telemetryDataProperties.environmentId = telemetryData.environmentId ? telemetryData.environmentId : '';
     telemetryDataProperties.websiteId = telemetryData.websiteId ? telemetryData.websiteId : '';
     telemetryDataProperties.copilotGovernanceResponse = telemetryData.copilotGovernanceResponse !== undefined ? String(telemetryData.copilotGovernanceResponse) : '';
+    telemetryDataProperties.isGovernanceCheckEnabled = telemetryData.isGovernanceCheckEnabled !== undefined  ? String(telemetryData.isGovernanceCheckEnabled) : '';
+    telemetryDataProperties.copilotGovernanceSetting = telemetryData.copilotGovernanceSetting ? telemetryData.copilotGovernanceSetting : '';
 
     if (telemetryData.error) {
         telemetryDataProperties.eventName = telemetryData.eventName;
