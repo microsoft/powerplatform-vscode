@@ -191,6 +191,8 @@ export async function activate(
                     AadObjectId = authInfo.EntraIdObjectId;
                     EnvID = authInfo.EnvironmentId;
                     TenantID = authInfo.TenantId;
+                } else {
+                    PacContext.clearContext();
                 }
 
                 if (EnvID && TenantID && AadObjectId) {

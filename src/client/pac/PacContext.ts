@@ -50,6 +50,24 @@ class PacContext implements IPacContext {
             this._onChanged.fire(this);
         }
     }
+
+    public clearContext(): void {
+        let shouldFireEvent = false;
+
+        if (this._authInfo !== null) {
+            this._authInfo = null;
+            shouldFireEvent = true;
+        }
+
+        if (this._orgInfo !== null) {
+            this._orgInfo = null;
+            shouldFireEvent = true;
+        }
+
+        if (shouldFireEvent) {
+            this._onChanged.fire(this);
+        }
+    }
 }
 
 export default new PacContext();
