@@ -46,7 +46,7 @@ export const {
     description: 'Enable Copilot Governance Check for Pro Dev Copilot',
     fallback: {
         enableProdevCopilotGovernanceCheck: false,
-        CopilotGovernanceSetting: 'PowerPages_AllowProDevCopilotsForSites'
+        copilotGovernanceSetting: 'PowerPages_AllowProDevCopilotsForSites'
     },
 });
 
