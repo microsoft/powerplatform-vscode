@@ -67,21 +67,3 @@ export interface WebsiteYaml {
     adx_website_language?: number | string;
     adx_websiteid?: string;
 }
-
-export interface IOtherSiteInfo {
-    name: string;
-    websiteId: string;
-    folderPath: string;
-}
-
-export interface WebsiteYaml {
-    adx_defaultbotconsumerid?: string;
-    adx_defaultlanguage?: string;
-    adx_footerwebtemplateid?: string;
-    adx_headerwebtemplateid?: string;
-    adx_name?: string;
-    adx_statecode?: number;
-    adx_statuscode?: number;
-    adx_website_language?: number | string;
-    adx_websiteid?: string;
-}

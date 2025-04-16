@@ -64,7 +64,10 @@ export class AuthTreeView implements vscode.TreeDataProvider<AuthProfileTreeItem
         if (element) {
             // This "Tree" view is a flat list, so return no children when not at the root
             return [];
-        } else {
+        }
+
+        vscode.commands.executeCommand('setContext', 'microsoft.powerplatform.authPanel.isInitializing', true);
+        try {
             const pacOutput = await this.dataSource();
             if (pacOutput && pacOutput.Status === "Success" && pacOutput.Results) {
                 const items = pacOutput.Results
@@ -74,6 +77,8 @@ export class AuthTreeView implements vscode.TreeDataProvider<AuthProfileTreeItem
             } else {
                 return [];
             }
+        } finally {
+            vscode.commands.executeCommand('setContext', 'microsoft.powerplatform.authPanel.isInitializing', false);
         }
     }
 
