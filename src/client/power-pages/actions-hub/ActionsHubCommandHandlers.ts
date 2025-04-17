@@ -60,6 +60,7 @@ const getEnvironmentDetails = () => {
     const artemisResponse = ArtemisContext.ServiceResponse.response;
 
     if (authInfo) {
+        detailsArray.push(vscode.l10n.t({ message: "Session ID: {0}", args: [vscode.env.sessionId], comment: "{0} is the Session ID" }));
         detailsArray.push(vscode.l10n.t({ message: "Tenant ID: {0}", args: [authInfo.TenantId], comment: "{0} is the Tenant ID" }));
         detailsArray.push(vscode.l10n.t({ message: "Object ID: {0}", args: [authInfo.EntraIdObjectId], comment: "{0} is the Object ID" }));
         detailsArray.push(vscode.l10n.t({ message: "Organization ID: {0}", args: [authInfo.OrganizationId], comment: "{0} is the Organization ID" }));
