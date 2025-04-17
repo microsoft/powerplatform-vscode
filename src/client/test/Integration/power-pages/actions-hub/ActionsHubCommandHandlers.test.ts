@@ -79,6 +79,7 @@ describe('ActionsHubCommandHandlers', () => {
         traceErrorStub = sandbox.stub(TelemetryHelper, 'traceError');
         sandbox.stub(TelemetryHelper, "getBaseEventInfo").returns({ foo: 'bar' });
         sandbox.stub(TelemetryHelper, "traceInfo");
+        sandbox.stub(vscode.env, 'sessionId').get(() => 'test-session-id');
     });
 
     afterEach(() => {
@@ -126,6 +127,7 @@ describe('ActionsHubCommandHandlers', () => {
 
             const message = mockShowInformationMessage.firstCall.args[1].detail;
             expect(message).to.include("Timestamp");
+            expect(message).to.include("Session ID: test-session-id");
             expect(message).to.include("Tenant ID: test-tenant");
             expect(message).to.include("Object ID: test-object-id");
             expect(message).to.include("Organization ID: test-org-id");

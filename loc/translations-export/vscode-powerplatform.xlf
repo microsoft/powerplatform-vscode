@@ -512,6 +512,10 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++142027a259879fdd2b6410360a9cd3798f433c2fc5668bb685dd4ff513072e16">
       <source xml:lang="en">Session Details</source>
     </trans-unit>
+    <trans-unit id="++CODE++08b44927dd7cd913d5c36c74e3ccf55ef966b6c2f067b173fbbe4e3c32f30d15">
+      <source xml:lang="en">Session ID: {0}</source>
+      <note>{0} is the Session ID</note>
+    </trans-unit>
     <trans-unit id="++CODE++899fb203e6c2faac8093e21a2fa8db0d4b13d16ea5492461d8b72dbcee3ecf2a">
       <source xml:lang="en">Show Output Panel</source>
     </trans-unit>
