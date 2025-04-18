@@ -10,7 +10,25 @@ import { EnvAndSolutionTreeView } from './EnvAndSolutionTreeView';
 import { PowerPagesCopilot } from '../../common/copilot/PowerPagesCopilot';
 import { PowerPagesChatParticipant } from '../../common/chat-participants/powerpages/PowerPagesChatParticipant';
 
+/**
+ * Registers all panels for the PAC Activity bar
+ * @param pacWrapper - The PAC wrapper instance
+ * @param context - The VS Code extension context
+ * @returns Array of disposable objects
+ */
 export function RegisterPanels(pacWrapper: PacWrapper, context: vscode.ExtensionContext): vscode.Disposable[] {
+    const basicPanels = RegisterBasicPanels(pacWrapper);
+    const copilotPanels = RegisterCopilotPanels(pacWrapper, context);
+
+    return [...basicPanels, ...copilotPanels];
+}
+
+/**
+ * Registers authentication and environment panels that don't require ECS initialization
+ * @param pacWrapper - The PAC wrapper instance
+ * @returns Array of disposable objects
+ */
+export function RegisterBasicPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
     const authPanel = new AuthTreeView(() => pacWrapper.authList(), pacWrapper);
     const envAndSolutionPanel = new EnvAndSolutionTreeView(
         () => pacWrapper.orgList(),
@@ -18,8 +36,17 @@ export function RegisterPanels(pacWrapper: PacWrapper, context: vscode.Extension
         authPanel.onDidChangeTreeData,
         pacWrapper);
 
-    const copilotPanel = new PowerPagesCopilot(context.extensionUri, context, pacWrapper);
+    return [authPanel, envAndSolutionPanel];
+}
 
+/**
+ * Registers copilot related panels that require ECS initialization
+ * @param pacWrapper - The PAC wrapper instance
+ * @param context - The VS Code extension context
+ * @returns Array of disposable objects
+ */
+export function RegisterCopilotPanels(pacWrapper: PacWrapper, context: vscode.ExtensionContext): vscode.Disposable[] {
+    const copilotPanel = new PowerPagesCopilot(context.extensionUri, context, pacWrapper);
     const powerPagesChatParticipant = PowerPagesChatParticipant.getInstance(context, pacWrapper);
 
     vscode.window.registerWebviewViewProvider('powerpages.copilot', copilotPanel, {
@@ -28,5 +55,5 @@ export function RegisterPanels(pacWrapper: PacWrapper, context: vscode.Extension
         },
     });
 
-    return [authPanel, envAndSolutionPanel, copilotPanel, powerPagesChatParticipant];
+    return [copilotPanel, powerPagesChatParticipant];
 }
