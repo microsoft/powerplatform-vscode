@@ -31,3 +31,5 @@ export const VSCODE_EXTENSION_PPAPI_GET_WEBSITE_DETAILS_FAILED = "VSCodeExtensio
 export const VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_RECORD_ID_COMPLETED = "VSCodeExtensionPPAPIGetWebsiteByRecordIdCompleted";
 export const VSCODE_EXTENSION_GET_WEBSITE_RECORD_ID_EMPTY = "VSCodeExtensionGetWebsiteRecordIdEmpty";
 export const VSCODE_EXTENSION_SITE_PREVIEW_ERROR = "VSCodeExtensionSitePreviewError";
+export const VSCODE_EXTENSION_GOVERNANCE_CHECK_SUCCESS = "VSCodeExtensionGovernanceCheckSuccess";
+export const VSCODE_EXTENSION_GOVERNANCE_CHECK_FAILED = "VSCodeExtensionGovernanceCheckFailed";
