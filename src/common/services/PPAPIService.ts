@@ -146,7 +146,7 @@ export class PPAPIService {
 
             if (response.ok) {
                 const result = await response.json();
-                const allowProDevCopilots = result === 'All' || result === 'true' ;
+                const allowProDevCopilots = ["all", "included", "excluded", "true"].includes(result.toLowerCase());
 
                 sendTelemetryEvent({
                     eventName: VSCODE_EXTENSION_GOVERNANCE_CHECK_SUCCESS,
