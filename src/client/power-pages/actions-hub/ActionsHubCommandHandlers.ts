@@ -199,9 +199,14 @@ export const previewSite = async (siteTreeItem: SiteTreeItem) => {
     }
 };
 
-export const createNewAuthProfile = async (pacWrapper: PacWrapper): Promise<void> => {
+export const createNewAuthProfile = async (pacWrapper: PacWrapper, orgUrl: string): Promise<void> => {
     traceInfo(Constants.EventNames.ACTIONS_HUB_CREATE_AUTH_PROFILE_CALLED, { methodName: createNewAuthProfile.name });
     try {
+        // if orgUrl is present then directly call dataverseAuthentication
+        if (orgUrl) {
+            await dataverseAuthentication(orgUrl, true);
+            return;
+        }
         const pacAuthCreateOutput = await createAuthProfileExp(pacWrapper);
         if (pacAuthCreateOutput && pacAuthCreateOutput.Status === SUCCESS) {
             const results = pacAuthCreateOutput.Results;
