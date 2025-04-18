@@ -285,6 +285,9 @@ export async function bapServiceAuthentication(
             });
         }
     } catch (error) {
+        if (error instanceof Error && error.message.includes("User did not consent to login.")) {
+            return '';
+        }
         showErrorDialog(
             vscode.l10n.t(
                 "Authorization Failed. Please run again to authorize it"

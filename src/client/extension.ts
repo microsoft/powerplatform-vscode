@@ -47,6 +47,7 @@ import { ActionsHub } from "./power-pages/actions-hub/ActionsHub";
 import { extractAuthInfo, extractOrgInfo } from "./power-pages/commonUtility";
 import PacContext from "./pac/PacContext";
 import ArtemisContext from "./ArtemisContext";
+import { bapServiceAuthentication } from "../common/services/AuthenticationProvider";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -84,6 +85,8 @@ export async function activate(
             "true"
         );
     }
+
+    await bapServiceAuthentication(); //Authentication for extension
 
     // portal web view panel
     _context.subscriptions.push(
