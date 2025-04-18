@@ -285,7 +285,7 @@ export async function bapServiceAuthentication(
             });
         }
     } catch (error) {
-        if (error instanceof Error && error.message.includes("User did not consent to login.")) {
+        if (error instanceof Error && error.message.includes("User did not consent to login.")) { //Error message when user did not consent to login
             return '';
         }
         showErrorDialog(
