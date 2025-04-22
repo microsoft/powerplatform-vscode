@@ -14,6 +14,7 @@ import { PacTerminal } from "../../lib/PacTerminal";
 import { createAuthProfileExp } from "../../../common/utilities/PacAuthUtil";
 import path from "path";
 import { getWebsiteRecordId } from "../../../common/utilities/WorkspaceInfoFinderUtil";
+import { PagesList } from "../../pac/PacTypes";
 
 export class MetadataDiffDesktop {
     private static _isInitialized = false;
@@ -81,7 +82,8 @@ export class MetadataDiffDesktop {
 
                 const workspaceFolders = vscode.workspace.workspaceFolders;
                 if (!workspaceFolders || workspaceFolders.length === 0) {
-                    return [];
+                    vscode.window.showErrorMessage("No folders opened in the current workspace.");
+                    return;
                 }
 
                 const currentWorkspaceFolder = workspaceFolders[0].uri.fsPath;
@@ -104,9 +106,18 @@ export class MetadataDiffDesktop {
                 };
                 let pacPagesDownload;
                 await vscode.window.withProgress(progressOptions, async (progress) => {
-                    progress.report({ message: "This may take a few minutes..." });
-                    pacPagesDownload = await pacWrapper.pagesDownload(storagePath, websiteId);
-                    vscode.window.showInformationMessage("Download completed.");
+                    progress.report({ message: "Looking for this website in the connected environment..." });
+                    const pacPagesList = await this.getPagesList(pacTerminal);
+                    if (pacPagesList && pacPagesList.length > 0) {
+                        const websiteRecord = pacPagesList.find((record) => record.id === websiteId);
+                        if (!websiteRecord) {
+                            vscode.window.showErrorMessage("Website not found in the connected environment.");
+                            return;
+                        }
+                        progress.report({ message: `Downloading "${websiteRecord.name}" as ${websiteRecord.modelVersion === "v2" ? "enhanced" : "standard"} data model. Please wait...` });
+                        pacPagesDownload = await pacWrapper.pagesDownload(storagePath, websiteId, websiteRecord.modelVersion == "v1" ? "1" : "2");
+                        vscode.window.showInformationMessage("Download completed.");
+                    }
                 });
                 if (pacPagesDownload) {
                     const treeDataProvider = MetadataDiffTreeDataProvider.initialize(context);
@@ -157,5 +168,42 @@ export class MetadataDiffDesktop {
             const exceptionError = exception as Error;
             oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.METADATA_DIFF_INITIALIZATION_FAILED, exceptionError.message, exceptionError);
         }
+    }
+
+    static async getPagesList(pacTerminal: PacTerminal): Promise<{ name: string, id: string, modelVersion: string }[]> {
+        const pacWrapper = pacTerminal.getWrapper();
+        const pagesListOutput = await pacWrapper.pagesList();
+        if (pagesListOutput && pagesListOutput.Status === SUCCESS && pagesListOutput.Information) {
+            // Parse the list of pages from the string output
+            const pagesList: PagesList[] = [];
+            if (Array.isArray(pagesListOutput.Information)) {
+                // If Information is already an array of strings
+                pagesListOutput.Information.forEach(line => {
+                    // Skip empty lines or header lines
+                    if (!line.trim() || !line.includes('[')) {
+                        return;
+                    }
+
+                    // Extract the relevant parts using regex
+                    const match = line.match(/\[\d+\]\s+([a-f0-9-]+)\s+(.*?)\s+(v[12])\s*$/i);
+                    if (match) {
+                        pagesList.push({
+                            WebsiteId: match[1].trim(),
+                            FriendlyName: match[2].trim(),
+                            ModelVersion: match[3].trim()
+                        });
+                    }
+                });
+            }
+            return pagesList.map((site) => {
+                return {
+                    name: site.FriendlyName,
+                    id: site.WebsiteId,
+                    modelVersion: site.ModelVersion
+                }
+            });
+        }
+
+        return [];
     }
 }

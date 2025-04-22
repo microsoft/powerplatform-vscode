@@ -62,6 +62,14 @@ export type OrgListOutput = {
 
 export type PacOrgListOutput = PacOutputWithResultList<OrgListOutput>;
 
+export type PagesList = {
+    FriendlyName: string,
+    WebsiteId: string,
+    ModelVersion: string
+}
+
+export type PacPagesListOutput = PacOutputWithResultList<PagesList>;
+
 export type ActiveOrgOutput = {
     OrgId: string,
     UniqueName: string,

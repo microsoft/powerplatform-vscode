@@ -9,7 +9,7 @@ import * as readline from "readline";
 import * as fs from "fs-extra";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { BlockingQueue } from "../../common/utilities/BlockingQueue";
-import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput, PacOrgListOutput, PacOrgWhoOutput, PacAuthWhoOutput } from "./PacTypes";
+import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput, PacOrgListOutput, PacOrgWhoOutput, PacAuthWhoOutput, PacPagesListOutput} from "./PacTypes";
 import { v4 } from "uuid";
 import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
@@ -180,8 +180,12 @@ export class PacWrapper {
         return this.executeCommandAndParseResults<PacOutput>(new PacArguments("telemetry", "disable"));
     }
 
-    public async pagesDownload(path: string, websiteId: string): Promise<string> {
-        return this.pacInterop.executeCommand(new PacArguments("pages", "download", "--path", path, "--webSiteId", websiteId));
+    public async pagesDownload(path: string, websiteId: string, modelVersion: string): Promise<string> {
+        return this.pacInterop.executeCommand(new PacArguments("pages", "download", "--path", path, "--webSiteId", websiteId, "--modelVersion", modelVersion));
+    }
+
+    public async pagesList(): Promise<PacPagesListOutput> {
+        return this.executeCommandAndParseResults<PacPagesListOutput>(new PacArguments("pages", "list", "--verbose"));
     }
 
     public exit(): void {
