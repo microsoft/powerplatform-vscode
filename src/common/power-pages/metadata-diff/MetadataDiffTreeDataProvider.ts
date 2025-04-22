@@ -12,22 +12,31 @@ import { oneDSLoggerWrapper } from "../../OneDSLoggerTelemetry/oneDSLoggerWrappe
 import { MetadataDiffFileItem } from "./tree-items/MetadataDiffFileItem";
 import { MetadataDiffFolderItem } from "./tree-items/MetadataDiffFolderItem";
 
+interface DiffFile {
+    relativePath: string;
+    changes: string;
+    type: string;
+    workspaceContent?: string;
+    storageContent?: string;
+}
+
 export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<MetadataDiffTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
     private readonly _context: vscode.ExtensionContext;
     private _onDidChangeTreeData: vscode.EventEmitter<MetadataDiffTreeItem | undefined | void> = new vscode.EventEmitter<MetadataDiffTreeItem | undefined | void>();
     readonly onDidChangeTreeData: vscode.Event<MetadataDiffTreeItem | undefined | void> = this._onDidChangeTreeData.event;
+    private _diffItems: MetadataDiffTreeItem[] = [];
 
-    private constructor(context: vscode.ExtensionContext) {
+    constructor(context: vscode.ExtensionContext) {
         this._context = context;
-    }
-
-    private refresh(): void {
-        this._onDidChangeTreeData.fire();
     }
 
     public static initialize(context: vscode.ExtensionContext): MetadataDiffTreeDataProvider {
         return new MetadataDiffTreeDataProvider(context);
+    }
+
+    private refresh(): void {
+        this._onDidChangeTreeData.fire();
     }
 
     getTreeItem(element: MetadataDiffTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
@@ -52,46 +61,78 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
     private async getDiffFiles(workspacePath: string, storagePath: string): Promise<Map<string, { workspaceFile?: string; storageFile?: string }>> {
         const diffFiles = new Map<string, { workspaceFile?: string; storageFile?: string }>();
 
+        // Get website directory from storage path
+        const websitePath = await this.getWebsitePath(storagePath);
+        if (!websitePath) {
+            return diffFiles;
+        }
+
         const workspaceFiles = this.getAllFilesRecursively(workspacePath);
-        const storageFiles = this.getAllFilesRecursively(storagePath);
+        const storageFiles = this.getAllFilesRecursively(websitePath);
 
-        const workspaceFileSet = new Set(workspaceFiles.map(f => path.relative(workspacePath, f)));
-        const storageFileSet = new Set(storageFiles.map(f => path.relative(storagePath, f)));
+        // Create normalized path maps for comparison
+        const workspaceMap = new Map(workspaceFiles.map(f => {
+            const normalized = path.relative(workspacePath, f).replace(/\\/g, '/');
+            return [normalized, f];
+        }));
 
-        // Files only in workspace or modified files
-        for (const relativePath of workspaceFileSet) {
-            const workspaceFile = path.join(workspacePath, relativePath);
-            const storageFile = path.join(storagePath, relativePath);
+        const storageMap = new Map(storageFiles.map(f => {
+            const normalized = path.relative(websitePath, f).replace(/\\/g, '/');
+            return [normalized, f];
+        }));
 
-            if (!storageFileSet.has(relativePath)) {
-                diffFiles.set(relativePath, { workspaceFile }); // File only in workspace
-            } else {
-                const workspaceContent = fs.readFileSync(workspaceFile, "utf8");
-                const storageContent = fs.readFileSync(storageFile, "utf8");
-                if (workspaceContent !== storageContent) {
-                    const normalizedWorkspaceContent = workspaceContent.replace(/\r\n/g, "\n");
-                    const normalizedStorageContent = storageContent.replace(/\r\n/g, "\n");
-                    if (normalizedWorkspaceContent !== normalizedStorageContent) {
-                        diffFiles.set(relativePath, { workspaceFile, storageFile }); // Modified file
-                    }
-                }
+        // Compare files
+        for (const [relativePath, workspaceFile] of workspaceMap.entries()) {
+            const storageFile = storageMap.get(relativePath);
+
+            if (!storageFile) {
+                // File only exists in workspace
+                diffFiles.set(relativePath, { workspaceFile });
+                continue;
+            }
+
+            // Compare content only if both files exist
+            const workspaceContent = fs.readFileSync(workspaceFile, 'utf8').replace(/\r\n/g, '\n');
+            const storageContent = fs.readFileSync(storageFile, 'utf8').replace(/\r\n/g, '\n');
+
+            if (workspaceContent !== storageContent) {
+                diffFiles.set(relativePath, { workspaceFile, storageFile });
             }
         }
 
-        // Files only in storage (deleted from workspace)
-        for (const relativePath of storageFileSet) {
-            if (!workspaceFileSet.has(relativePath)) {
-                const storageFile = path.join(storagePath, relativePath);
-                diffFiles.set(relativePath, { storageFile }); // File only in storage
+        // Check for files only in storage
+        for (const [relativePath, storageFile] of storageMap.entries()) {
+            if (!workspaceMap.has(relativePath)) {
+                diffFiles.set(relativePath, { storageFile });
             }
         }
 
         return diffFiles;
     }
 
+    private async getWebsitePath(storagePath: string): Promise<string | undefined> {
+        try {
+            const folders = fs.readdirSync(storagePath).filter(f =>
+                fs.statSync(path.join(storagePath, f)).isDirectory()
+            );
+
+            if (folders.length > 0) {
+                return path.join(storagePath, folders[0]);
+            }
+        } catch (error) {
+            console.error('Error finding website path:', error);
+        }
+        return undefined;
+    }
+
     async getChildren(element?: MetadataDiffTreeItem): Promise<MetadataDiffTreeItem[] | null | undefined> {
         if (element) {
             return element.getChildren();
+        }
+
+        // If we have imported diff items, return those
+        if (this._diffItems && this._diffItems.length > 0) {
+            return this._diffItems;
         }
 
         try {
@@ -106,13 +147,7 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
                 throw new Error("Storage path is not defined");
             }
 
-            const folderNames = fs.readdirSync(storagePath).filter(file => fs.statSync(path.join(storagePath, file)).isDirectory());
-            if (folderNames.length === 0) {
-                return [];
-            }
-            const websitePath = path.join(storagePath, folderNames[0]);
-
-            const diffFiles = await this.getDiffFiles(workspacePath, websitePath);
+            const diffFiles = await this.getDiffFiles(workspacePath, storagePath);
             if (diffFiles.size === 0) {
                 return [];
             }
@@ -131,57 +166,125 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
     }
 
     private buildTreeHierarchy(filePathMap: Map<string, { workspaceFile?: string; storageFile?: string }>): MetadataDiffTreeItem[] {
-        const rootItems: Map<string, MetadataDiffTreeItem> = new Map();
+        const rootNode = new MetadataDiffFolderItem('');
 
-        filePathMap.forEach(({ workspaceFile, storageFile }, relativePath) => {
-            const parts = relativePath.split(path.sep);
-            let currentLevel = rootItems;
-            let parentItem: MetadataDiffTreeItem | undefined;
+        for (const [relativePath, { workspaceFile, storageFile }] of filePathMap.entries()) {
+            const parts = relativePath.split('/');
+            let currentNode = rootNode;
 
-            for (let i = 0; i < parts.length; i++) {
-                const isFile = i === parts.length - 1;
-                const name = parts[i];
+            // Create folder hierarchy
+            for (let i = 0; i < parts.length - 1; i++) {
+                const folderName = parts[i];
+                let folderNode = currentNode.getChildrenMap().get(folderName) as MetadataDiffFolderItem;
 
-                if (!currentLevel.has(name)) {
-                    let newItem: MetadataDiffTreeItem;
-
-                    if (isFile) {
-                        const hasDiff = workspaceFile === undefined || storageFile === undefined || fs.readFileSync(workspaceFile, "utf8") !== fs.readFileSync(storageFile, "utf8");
-                        newItem = new MetadataDiffFileItem(name, workspaceFile, storageFile, hasDiff);
-                    } else {
-                        newItem = new MetadataDiffFolderItem(name);
-                    }
-
-                    if (parentItem) {
-                        (parentItem as MetadataDiffFolderItem).getChildrenMap().set(name, newItem);
-                    }
-
-                    currentLevel.set(name, newItem);
+                if (!folderNode) {
+                    folderNode = new MetadataDiffFolderItem(folderName);
+                    currentNode.getChildrenMap().set(folderName, folderNode);
                 }
 
-                parentItem = currentLevel.get(name);
-                if (!isFile) {
-                    currentLevel = (parentItem as MetadataDiffFolderItem).getChildrenMap();
-                }
+                currentNode = folderNode;
             }
-        });
 
-        // Filter out folders without changed files
-        const filterEmptyFolders = (items: MetadataDiffTreeItem[]): MetadataDiffTreeItem[] => {
-            return items.filter(item => {
-                if (item instanceof MetadataDiffFolderItem) {
-                    const childrenArray = Array.from(item.getChildrenMap().values());
-                    const filteredChildren = filterEmptyFolders(childrenArray);
-                    item.getChildrenMap().clear();
-                    filteredChildren.forEach(child => item.getChildrenMap().set(child.label, child));
-                    return filteredChildren.length > 0;
-                } else if (item instanceof MetadataDiffFileItem) {
-                    return item.hasDiff;
+            // Add file
+            const fileName = parts[parts.length - 1];
+            const fileNode = new MetadataDiffFileItem(
+                fileName,
+                workspaceFile,
+                storageFile,
+                true
+            );
+            fileNode.description = this.getChangeDescription(workspaceFile, storageFile);
+            currentNode.getChildrenMap().set(fileName, fileNode);
+        }
+
+        // Convert the root's children map to array
+        return Array.from(rootNode.getChildrenMap().values());
+    }
+
+    private getFileType(filePath: string): string {
+        const ext = path.extname(filePath).toLowerCase();
+        const basename = path.basename(filePath).toLowerCase();
+
+        if (basename === 'webrole.yml') return 'Roles';
+        if (basename === 'websitelanguage.yml') return 'Languages';
+        if (ext === '.yml' && filePath.includes('webpages')) return 'Pages';
+        if (ext === '.yml' && filePath.includes('webtemplates')) return 'Templates';
+        if (ext === '.yml' && filePath.includes('webfiles')) return 'Files';
+        return 'Other';
+    }
+
+    private getChangeDescription(workspaceFile?: string, storageFile?: string): string {
+        if (!workspaceFile) return 'Only in remote';
+        if (!storageFile) return 'Only in workspace';
+        return 'Modified';
+    }
+
+    async setDiffFiles(files: DiffFile[]): Promise<void> {
+        const rootNode = new MetadataDiffFolderItem('');
+        const sortedFiles = files.sort((a, b) => a.relativePath.localeCompare(b.relativePath));
+
+        // Get temp directory for storing imported file contents
+        const tempDir = path.join(this._context.storageUri?.fsPath || '', 'imported_diff');
+        if (!fs.existsSync(tempDir)) {
+            fs.mkdirSync(tempDir, { recursive: true });
+        }
+
+        for (const file of sortedFiles) {
+            const parts = file.relativePath.split('/');
+            let currentNode = rootNode;
+
+            // Create folder hierarchy
+            for (let i = 0; i < parts.length - 1; i++) {
+                const folderName = parts[i];
+                let folderNode = currentNode.getChildrenMap().get(folderName) as MetadataDiffFolderItem;
+
+                if (!folderNode) {
+                    // Create folder with expanded state in constructor
+                    folderNode = new MetadataDiffFolderItem(folderName, vscode.TreeItemCollapsibleState.Expanded);
+                    folderNode.iconPath = new vscode.ThemeIcon("folder");
+                    currentNode.getChildrenMap().set(folderName, folderNode);
                 }
-                return false;
-            });
-        };
 
-        return filterEmptyFolders(Array.from(rootItems.values()));
+                currentNode = folderNode;
+            }
+
+            // Rest of the file handling code...
+            const fileName = parts[parts.length - 1];
+            const filePath = path.join(tempDir, file.relativePath);
+            const dirPath = path.dirname(filePath);
+            fs.mkdirSync(dirPath, { recursive: true });
+
+            let workspaceFilePath: string | undefined;
+            let storageFilePath: string | undefined;
+
+            if (file.workspaceContent) {
+                workspaceFilePath = filePath + '.workspace';
+                fs.writeFileSync(workspaceFilePath, file.workspaceContent);
+            }
+
+            if (file.storageContent) {
+                storageFilePath = filePath + '.storage';
+                fs.writeFileSync(storageFilePath, file.storageContent);
+            }
+
+            const fileNode = new MetadataDiffFileItem(
+                fileName,
+                workspaceFilePath,
+                storageFilePath,
+                true
+            );
+            fileNode.description = file.changes;
+            fileNode.iconPath = new vscode.ThemeIcon("file");
+            fileNode.command = {
+                command: 'metadataDiff.openDiff',
+                title: 'Show Diff',
+                arguments: [workspaceFilePath, storageFilePath]
+            };
+
+            currentNode.getChildrenMap().set(fileName, fileNode);
+        }
+
+        this._diffItems = Array.from(rootNode.getChildrenMap().values());
+        this._onDidChangeTreeData.fire();
     }
 }

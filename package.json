@@ -448,6 +448,21 @@
       {
         "command": "microsoft.powerplatform.pages.metadataDiff.triggerFlow",
         "title": "%microsoft.powerplatform.pages.metadataDiff.login.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.metadataDiff.generateReport",
+        "title": "Generate Metadata Diff Report",
+        "icon": "$(output)"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.metadataDiff.exportReport",
+        "title": "Export Metadata Diff Report",
+        "icon": "$(save-as)"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.metadataDiff.importReport",
+        "title": "Import Metadata Diff Report",
+        "icon": "$(folder-opened)"
       }
     ],
     "configuration": {
@@ -958,6 +973,21 @@
         {
           "command": "powerpages.copilot.clearConversation",
           "when": "view == powerpages.copilot",
+          "group": "navigation"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.metadataDiff.generateReport",
+          "when": "view == microsoft.powerplatform.pages.metadataDiff",
+          "group": "navigation"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.metadataDiff.exportReport",
+          "when": "view == microsoft.powerplatform.pages.metadataDiff",
+          "group": "navigation"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.metadataDiff.importReport",
+          "when": "view == microsoft.powerplatform.pages.metadataDiff",
           "group": "navigation"
         }
       ],

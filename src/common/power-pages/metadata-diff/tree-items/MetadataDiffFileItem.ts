@@ -7,24 +7,29 @@ import * as vscode from "vscode";
 import { MetadataDiffTreeItem } from "./MetadataDiffTreeItem";
 
 export class MetadataDiffFileItem extends MetadataDiffTreeItem {
-    public readonly workspaceFile?: string;
-    public readonly storageFile?: string;
-    public readonly hasDiff: boolean;
-
     constructor(label: string, workspaceFile?: string, storageFile?: string, hasDiff = true) {
-        super(label, vscode.TreeItemCollapsibleState.None, "metadataDiffFileItem");
+        super(
+            label,
+            vscode.TreeItemCollapsibleState.None,
+            "metadataDiffFileItem",
+            workspaceFile,
+            storageFile
+        );
         this.workspaceFile = workspaceFile;
         this.storageFile = storageFile;
         this.hasDiff = hasDiff;
+        this.iconPath = new vscode.ThemeIcon("file");
 
-        const workspaceUri = workspaceFile ? vscode.Uri.file(workspaceFile) : vscode.Uri.parse(`untitled:${label} (Deleted)`);
-        const storedUri = storageFile ? vscode.Uri.file(storageFile) : vscode.Uri.parse(`untitled:${label} (Deleted)`);
-
-        this.resourceUri = workspaceUri;
-        this.command = {
-            command: 'vscode.diff',
-            title: 'Show Diff',
-            arguments: [storedUri, workspaceUri, `${label} (Diff)`]
-        };
+        if (hasDiff && (workspaceFile || storageFile)) {
+            this.command = {
+                command: 'metadataDiff.openDiff',
+                title: 'Show Diff',
+                arguments: [workspaceFile, storageFile]
+            };
+        }
     }
+
+    public readonly workspaceFile?: string;
+    public readonly storageFile?: string;
+    public readonly hasDiff: boolean;
 }

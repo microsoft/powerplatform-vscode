@@ -16,6 +16,19 @@ import path from "path";
 import { getWebsiteRecordId } from "../../../common/utilities/WorkspaceInfoFinderUtil";
 import { PagesList } from "../../pac/PacTypes";
 
+interface DiffFile {
+    relativePath: string;
+    changes: string;
+    type: string;
+    workspaceContent?: string;
+    storageContent?: string;
+}
+
+interface MetadataDiffReport {
+    generatedOn: string;
+    files: DiffFile[];
+}
+
 export class MetadataDiffDesktop {
     private static _isInitialized = false;
 
@@ -33,6 +46,28 @@ export class MetadataDiffDesktop {
         if (MetadataDiffDesktop._isInitialized) {
             return;
         }
+
+        // Register command for handling file diffs
+        vscode.commands.registerCommand('metadataDiff.openDiff', async (workspaceFile: string, storedFile: string) => {
+            try {
+                const workspaceUri = vscode.Uri.file(workspaceFile);
+                const storedUri = vscode.Uri.file(storedFile);
+                const fileName = path.basename(workspaceFile);
+
+                await vscode.commands.executeCommand('vscode.diff',
+                    storedUri,
+                    workspaceUri,
+                    `${fileName} (Metadata Diff)`
+                );
+            } catch (error) {
+                oneDSLoggerWrapper.getLogger().traceError(
+                    Constants.EventNames.METADATA_DIFF_REPORT_FAILED,
+                    error as string,
+                    error as Error
+                );
+                vscode.window.showErrorMessage("Failed to open diff view");
+            }
+        });
 
         vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.triggerFlow", async () => {
             try {
@@ -133,7 +168,126 @@ export class MetadataDiffDesktop {
             catch (error) {
                 oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.METADATA_DIFF_REFRESH_FAILED, error as string, error as Error, { methodName: null }, {});
             }
-        })
+        });
+
+        vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.generateReport", async () => {
+            try {
+                const workspaceFolders = vscode.workspace.workspaceFolders;
+                if (!workspaceFolders) {
+                    vscode.window.showErrorMessage("No workspace folder open");
+                    return;
+                }
+
+                const storagePath = context.storageUri?.fsPath;
+                if (!storagePath) {
+                    vscode.window.showErrorMessage("Storage path not found");
+                    return;
+                }
+
+                // Generate report content
+                const reportContent = await generateDiffReport(workspaceFolders[0].uri.fsPath, storagePath);
+
+                // Create and show the report document
+                const doc = await vscode.workspace.openTextDocument({
+                    content: reportContent,
+                    language: 'markdown'
+                });
+                await vscode.window.showTextDocument(doc, {
+                    preview: true,
+                    viewColumn: vscode.ViewColumn.Beside
+                });
+            } catch (error) {
+                oneDSLoggerWrapper.getLogger().traceError(
+                    Constants.EventNames.METADATA_DIFF_REPORT_FAILED,
+                    error as string,
+                    error as Error
+                );
+                vscode.window.showErrorMessage("Failed to generate metadata diff report");
+            }
+        });
+
+        vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.exportReport", async () => {
+            try {
+                const workspaceFolders = vscode.workspace.workspaceFolders;
+                if (!workspaceFolders) {
+                    vscode.window.showErrorMessage("No workspace folder open");
+                    return;
+                }
+
+                const storagePath = context.storageUri?.fsPath;
+                if (!storagePath) {
+                    vscode.window.showErrorMessage("Storage path not found");
+                    return;
+                }
+
+                // Get diff files
+                const diffFiles = await getAllDiffFiles(workspaceFolders[0].uri.fsPath, storagePath);
+
+                // Create report object
+                const report: MetadataDiffReport = {
+                    generatedOn: new Date().toISOString(),
+                    files: diffFiles
+                };
+
+                // Save dialog
+                const saveUri = await vscode.window.showSaveDialog({
+                    defaultUri: vscode.Uri.file('metadata-diff-report.json'),
+                    filters: {
+                        'JSON files': ['json']
+                    }
+                });
+
+                if (saveUri) {
+                    fs.writeFileSync(saveUri.fsPath, JSON.stringify(report, null, 2));
+                    vscode.window.showInformationMessage("Report exported successfully");
+                }
+            } catch (error) {
+                oneDSLoggerWrapper.getLogger().traceError(
+                    Constants.EventNames.METADATA_DIFF_REPORT_FAILED,
+                    error as string,
+                    error as Error
+                );
+                vscode.window.showErrorMessage("Failed to export metadata diff report");
+            }
+        });
+
+        vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.importReport", async () => {
+            try {
+                const fileUri = await vscode.window.showOpenDialog({
+                    canSelectFiles: true,
+                    canSelectFolders: false,
+                    canSelectMany: false,
+                    filters: {
+                        'JSON files': ['json']
+                    }
+                });
+
+                if (fileUri && fileUri[0]) {
+                    const reportContent = fs.readFileSync(fileUri[0].fsPath, 'utf8');
+                    const report = JSON.parse(reportContent) as MetadataDiffReport;
+
+                    // Clean up any existing tree data provider
+                    const treeDataProvider = new MetadataDiffTreeDataProvider(context);
+
+                    // Update the tree with imported data
+                    await treeDataProvider.setDiffFiles(report.files);
+
+                    // Register the new tree data provider
+                    context.subscriptions.push(
+                        vscode.window.registerTreeDataProvider("microsoft.powerplatform.pages.metadataDiff", treeDataProvider)
+                    );
+
+                    vscode.window.showInformationMessage("Report imported successfully");
+                }
+            } catch (error) {
+                oneDSLoggerWrapper.getLogger().traceError(
+                    Constants.EventNames.METADATA_DIFF_REPORT_FAILED,
+                    error as string,
+                    error as Error
+                );
+                vscode.window.showErrorMessage("Failed to import metadata diff report");
+            }
+        });
 
         try {
             const isMetadataDiffEnabled = MetadataDiffDesktop.isEnabled();
@@ -206,4 +360,153 @@ export class MetadataDiffDesktop {
 
         return [];
     }
+}
+
+async function generateDiffReport(workspacePath: string, storagePath: string): Promise<string> {
+    let report = '# Power Pages Metadata Diff Report\n\n';
+    report += `Generated on: ${new Date().toLocaleString()}\n\n`;
+
+    // Get diff files
+    const diffFiles = await getAllDiffFiles(workspacePath, storagePath);
+
+    // Group by folders
+    const folderStructure = new Map<string, DiffFile[]>();
+    diffFiles.forEach(file => {
+        const dirPath = path.dirname(file.relativePath);
+        if (!folderStructure.has(dirPath)) {
+            folderStructure.set(dirPath, []);
+        }
+        folderStructure.get(dirPath)!.push(file);
+    });
+
+    // Sort folders and generate report
+    const sortedFolders = Array.from(folderStructure.keys()).sort();
+    for (const folder of sortedFolders) {
+        const files = folderStructure.get(folder)!;
+
+        // Add folder header (skip for root)
+        if (folder !== '.') {
+            report += `## ${folder}\n\n`;
+        }
+
+        // Add files
+        for (const file of files.sort((a, b) => a.relativePath.localeCompare(b.relativePath))) {
+            report += `- ${path.basename(file.relativePath)}\n`;
+            report += `  - Changes: ${file.changes}\n`;
+        }
+        report += '\n';
+    }
+
+    return report;
+}
+
+async function getAllDiffFiles(workspacePath: string, storagePath: string): Promise<DiffFile[]> {
+    const diffFiles: DiffFile[] = [];
+
+    // Get website directory from storage path
+    const folderNames = fs.readdirSync(storagePath).filter(file =>
+        fs.statSync(path.join(storagePath, file)).isDirectory()
+    );
+    if (folderNames.length === 0) {
+        return diffFiles;
+    }
+    const websitePath = path.join(storagePath, folderNames[0]);
+
+    // Get all files
+    const workspaceFiles = await getAllFiles(workspacePath);
+    const storageFiles = await getAllFiles(websitePath);
+
+    // Create normalized path maps
+    const workspaceMap = new Map(workspaceFiles.map(f => {
+        const normalized = path.relative(workspacePath, f).replace(/\\/g, '/');
+        return [normalized, f];
+    }));
+    const storageMap = new Map(storageFiles.map(f => {
+        const normalized = path.relative(websitePath, f).replace(/\\/g, '/');
+        return [normalized, f];
+    }));
+
+    // Compare files
+    for (const [normalized, workspaceFile] of workspaceMap.entries()) {
+        const storageFile = storageMap.get(normalized);
+        if (!storageFile) {
+            diffFiles.push({
+                relativePath: normalized,
+                changes: 'Only in workspace',
+                type: getFileType(normalized),
+                workspaceContent: fs.readFileSync(workspaceFile, 'utf8').replace(/\r\n/g, '\n')
+            });
+            continue;
+        }
+
+        // Compare content
+        const workspaceContent = fs.readFileSync(workspaceFile, 'utf8').replace(/\r\n/g, '\n');
+        const storageContent = fs.readFileSync(storageFile, 'utf8').replace(/\r\n/g, '\n');
+        if (workspaceContent !== storageContent) {
+            diffFiles.push({
+                relativePath: normalized,
+                changes: 'Modified',
+                type: getFileType(normalized),
+                workspaceContent,
+                storageContent
+            });
+        }
+    }
+
+    // Check for files only in storage
+    for (const [normalized, storageFile] of storageMap.entries()) {
+        if (!workspaceMap.has(normalized)) {
+            diffFiles.push({
+                relativePath: normalized,
+                changes: 'Only in remote',
+                type: getFileType(normalized),
+                storageContent: fs.readFileSync(storageFile, 'utf8').replace(/\r\n/g, '\n')
+            });
+        }
+    }
+
+    return diffFiles;
+}
+
+async function getAllFiles(dirPath: string): Promise<string[]> {
+    const files: string[] = [];
+
+    function traverse(currentPath: string) {
+        const entries = fs.readdirSync(currentPath, { withFileTypes: true });
+        for (const entry of entries) {
+            const fullPath = path.join(currentPath, entry.name);
+            if (entry.isDirectory()) {
+                traverse(fullPath);
+            } else {
+                files.push(fullPath);
+            }
+        }
+    }
+
+    traverse(dirPath);
+    return files;
+}
+
+function getFileType(filePath: string): string {
+    const ext = path.extname(filePath).toLowerCase();
+    const basename = path.basename(filePath).toLowerCase();
+
+    if (basename === 'webrole.yml') return 'Roles';
+    if (basename === 'websitelanguage.yml') return 'Languages';
+    if (ext === '.yml' && filePath.includes('webpages')) return 'Pages';
+    if (ext === '.yml' && filePath.includes('webtemplates')) return 'Templates';
+    if (ext === '.yml' && filePath.includes('webfiles')) return 'Files';
+
+    return 'Other';
+}
+
+function groupDiffsByType(files: DiffFile[]): Record<string, DiffFile[]> {
+    return files.reduce((groups: Record<string, DiffFile[]>, file) => {
+        const type = file.type || 'Other';
+        if (!groups[type]) {
+            groups[type] = [];
+        }
+        groups[type].push(file);
+        return groups;
+    }, {});
 }

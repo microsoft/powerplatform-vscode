@@ -12,6 +12,7 @@ export const Constants = {
         ORGANIZATION_URL_MISSING: "Organization URL is missing in the results.",
         EMPTY_RESULTS_ARRAY: "Results array is empty or not an array.",
         PAC_AUTH_OUTPUT_FAILURE: "pacAuthCreateOutput is missing or unsuccessful.",
+        METADATA_DIFF_REPORT_FAILED: "metadataDiffReportFailed"
     }
 };
 export const SUCCESS = "Success";

@@ -5,17 +5,22 @@
 
 import * as vscode from "vscode";
 
-export abstract class MetadataDiffTreeItem extends vscode.TreeItem {
-    protected _children: Map<string, MetadataDiffTreeItem> = new Map();
+export class MetadataDiffTreeItem extends vscode.TreeItem {
+    private _childrenMap: Map<string, MetadataDiffTreeItem>;
 
     constructor(
         public readonly label: string,
         public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-        public readonly contextValue: string,
+        public readonly contextValue?: string,
         public readonly filePath?: string, // Workspace file path
         public readonly storedFilePath?: string // Backup copy path
     ) {
         super(label, collapsibleState);
+        this._childrenMap = new Map<string, MetadataDiffTreeItem>();
+        this.contextValue = contextValue;
+        this.iconPath = collapsibleState === vscode.TreeItemCollapsibleState.None ?
+            new vscode.ThemeIcon("file") :
+            new vscode.ThemeIcon("folder");
         this.tooltip = this.label;
 
         if (filePath && storedFilePath) {
@@ -28,10 +33,10 @@ export abstract class MetadataDiffTreeItem extends vscode.TreeItem {
     }
 
     public getChildren(): MetadataDiffTreeItem[] {
-        return Array.from(this._children.values());
+        return Array.from(this._childrenMap.values());
     }
 
     public getChildrenMap(): Map<string, MetadataDiffTreeItem> {
-        return this._children;
+        return this._childrenMap;
     }
 }
