@@ -38,6 +38,30 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
         }
     });
 
+    vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.clearView", async () => {
+        try {
+            MetadataDiffDesktop.resetTreeView();
+
+            // Set the context variable to false to show welcome message
+            await vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.metadataDiff.hasData", false);
+
+            // Reload tree data provider to show welcome message
+            const treeDataProvider = MetadataDiffTreeDataProvider.initialize(context);
+            context.subscriptions.push(
+                vscode.window.registerTreeDataProvider("microsoft.powerplatform.pages.metadataDiff", treeDataProvider)
+            );
+
+            vscode.window.showInformationMessage("Metadata diff view cleared successfully.");
+        } catch (error) {
+            oneDSLoggerWrapper.getLogger().traceError(
+                Constants.EventNames.METADATA_DIFF_REPORT_FAILED,
+                error as string,
+                error as Error
+            );
+            vscode.window.showErrorMessage("Failed to clear metadata diff view");
+        }
+    });
+
     vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.triggerFlow", async () => {
         try {
             const orgUrl = await vscode.window.showInputBox({

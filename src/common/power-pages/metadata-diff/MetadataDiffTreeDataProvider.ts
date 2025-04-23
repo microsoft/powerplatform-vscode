@@ -39,6 +39,23 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
         this._onDidChangeTreeData.fire();
     }
 
+    clearItems(): void {
+        this._diffItems = [];
+        // Reset any stored data
+        const storagePath = this._context.storageUri?.fsPath;
+        if (storagePath && fs.existsSync(storagePath)) {
+            try {
+                fs.rmSync(storagePath, { recursive: true, force: true });
+                fs.mkdirSync(storagePath, { recursive: true });
+            } catch (error) {
+                console.error('Error cleaning storage path:', error);
+            }
+        }
+        // Set context to show welcome message again
+        vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.metadataDiff.hasData", false);
+        this._onDidChangeTreeData.fire();
+    }
+
     getTreeItem(element: MetadataDiffTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
         return element;
     }

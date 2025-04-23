@@ -447,21 +447,32 @@
       },
       {
         "command": "microsoft.powerplatform.pages.metadataDiff.triggerFlow",
-        "title": "%microsoft.powerplatform.pages.metadataDiff.login.title%"
+        "title": "Connect & Download",
+        "category": "Power Pages Metadata Diff",
+        "icon": "$(cloud-download)"
       },
       {
         "command": "microsoft.powerplatform.pages.metadataDiff.generateReport",
-        "title": "Generate Metadata Diff Report",
-        "icon": "$(output)"
+        "title": "Generate Report",
+        "category": "Power Pages Metadata Diff",
+        "icon": "$(markdown)"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.metadataDiff.clearView",
+        "title": "Clear View",
+        "category": "Power Pages Metadata Diff",
+        "icon": "$(clear-all)"
       },
       {
         "command": "microsoft.powerplatform.pages.metadataDiff.exportReport",
-        "title": "Export Metadata Diff Report",
+        "title": "Export Report",
+        "category": "Power Pages Metadata Diff",
         "icon": "$(save-as)"
       },
       {
         "command": "microsoft.powerplatform.pages.metadataDiff.importReport",
-        "title": "Import Metadata Diff Report",
+        "title": "Import Report",
+        "category": "Power Pages Metadata Diff",
         "icon": "$(folder-opened)"
       }
     ],
@@ -977,6 +988,16 @@
         },
         {
           "command": "microsoft.powerplatform.pages.metadataDiff.generateReport",
+          "when": "view == microsoft.powerplatform.pages.metadataDiff",
+          "group": "navigation"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.metadataDiff.triggerFlow",
+          "when": "view == microsoft.powerplatform.pages.metadataDiff",
+          "group": "navigation"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.metadataDiff.clearView",
           "when": "view == microsoft.powerplatform.pages.metadataDiff",
           "group": "navigation"
         },

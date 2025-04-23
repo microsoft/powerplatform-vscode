@@ -16,6 +16,7 @@ import { registerMetadataDiffCommands } from "./MetadataDiffCommands";
 
 export class MetadataDiffDesktop {
     private static _isInitialized = false;
+    private static _treeDataProvider: MetadataDiffTreeDataProvider | undefined;
 
     static isEnabled(): boolean {
         const enableMetadataDiff = ECSFeaturesClient.getConfig(EnableMetadataDiff).enableMetadataDiff
@@ -25,6 +26,14 @@ export class MetadataDiffDesktop {
         }
 
         return enableMetadataDiff;
+    }
+
+    static resetTreeView(): void {
+        if (this._treeDataProvider) {
+            this._treeDataProvider.clearItems();
+            // Force reset tree view context to show welcome message
+            vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.metadataDiff.hasData", false);
+        }
     }
 
     static async initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal): Promise<void> {
@@ -57,6 +66,7 @@ export class MetadataDiffDesktop {
             await registerMetadataDiffCommands(context, pacTerminal);
 
             const treeDataProvider = MetadataDiffTreeDataProvider.initialize(context);
+            MetadataDiffDesktop._treeDataProvider = treeDataProvider;
             context.subscriptions.push(
                 vscode.window.registerTreeDataProvider("microsoft.powerplatform.pages.metadataDiff", treeDataProvider)
             );
