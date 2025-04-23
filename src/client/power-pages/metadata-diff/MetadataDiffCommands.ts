@@ -234,10 +234,16 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                 content: reportContent,
                 language: 'markdown'
             });
+
+            // Force the document to be opened in preview mode with explicit encoding
             await vscode.window.showTextDocument(doc, {
-                preview: true,
-                viewColumn: vscode.ViewColumn.Beside
+                preview: false, // Set to false to ensure it opens properly
+                viewColumn: vscode.ViewColumn.Beside,
+                preserveFocus: true
             });
+
+            // Force markdown preview to open
+            await vscode.commands.executeCommand('markdown.showPreview', doc.uri);
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(
                 Constants.EventNames.METADATA_DIFF_REPORT_FAILED,

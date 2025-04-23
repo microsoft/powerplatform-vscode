@@ -38,7 +38,8 @@ export async function generateDiffReport(workspacePath: string, storagePath: str
 
     // Sort folders and generate report
     const sortedFolders = Array.from(folderStructure.keys()).sort();
-    for (const folder of sortedFolders) {
+    for (let i = 0; i < sortedFolders.length; i++) {
+        const folder = sortedFolders[i];
         const files = folderStructure.get(folder)!;
 
         // Add folder header (skip for root)
@@ -50,11 +51,91 @@ export async function generateDiffReport(workspacePath: string, storagePath: str
         for (const file of files.sort((a, b) => a.relativePath.localeCompare(b.relativePath))) {
             report += `- ${path.basename(file.relativePath)}\n`;
             report += `  - Changes: ${file.changes}\n`;
+
+            // Add detailed YAML property changes for YAML files
+            if (path.extname(file.relativePath).toLowerCase() === '.yml' ||
+                path.extname(file.relativePath).toLowerCase() === '.yaml') {
+                try {
+                    if (file.workspaceContent && file.storageContent && file.changes === 'Modified') {
+                        const yaml = require('yaml');
+                        const workspaceYaml = yaml.parse(file.workspaceContent);
+                        const storageYaml = yaml.parse(file.storageContent);
+
+                        const propertyChanges = findYamlPropertyChanges(workspaceYaml, storageYaml);
+
+                        if (propertyChanges.length > 0) {
+                            report += `  - Property changes:\n`;
+                            propertyChanges.forEach(change => {
+                                report += `    - ${change}\n`;
+                            });
+                        }
+                    }
+                } catch (error) {
+                    report += `  - Failed to parse YAML content: ${error}\n`;
+                }
+            }
         }
-        report += '\n';
+
+        // Only add a blank line between folders, not after the last folder
+        if (i < sortedFolders.length - 1) {
+            report += '\n';
+        }
     }
 
     return report;
+}
+
+/**
+ * Finds differences between two YAML objects and returns a list of changes
+ * @param workspaceObj The workspace YAML object
+ * @param storageObj The storage YAML object
+ * @returns An array of change descriptions
+ */
+function findYamlPropertyChanges(workspaceObj: any, storageObj: any, path = ''): string[] {
+    if (!workspaceObj || !storageObj) {
+        return [];
+    }
+
+    const changes: string[] = [];
+
+    // Check all properties in workspace object
+    const workspaceKeys = Object.keys(workspaceObj);
+    for (const key of workspaceKeys) {
+        const currentPath = path ? `${path}.${key}` : key;
+
+        // Check if key exists in storage
+        if (!(key in storageObj)) {
+            changes.push(`Added property: \`${currentPath}\``);
+            continue;
+        }
+
+        // Check if both values are objects (for nested properties)
+        if (typeof workspaceObj[key] === 'object' && workspaceObj[key] !== null &&
+            typeof storageObj[key] === 'object' && storageObj[key] !== null) {
+            // Recursively check nested objects
+            const nestedChanges = findYamlPropertyChanges(
+                workspaceObj[key],
+                storageObj[key],
+                currentPath
+            );
+            changes.push(...nestedChanges);
+        }
+        // Check primitive values (string, number, boolean, etc.)
+        else if (JSON.stringify(workspaceObj[key]) !== JSON.stringify(storageObj[key])) {
+            changes.push(`Modified property: \`${currentPath}\``);
+        }
+    }
+
+    // Check for properties that exist in storage but not in workspace
+    const storageKeys = Object.keys(storageObj);
+    for (const key of storageKeys) {
+        const currentPath = path ? `${path}.${key}` : key;
+        if (!(key in workspaceObj)) {
+            changes.push(`Removed property: \`${currentPath}\``);
+        }
+    }
+
+    return changes;
 }
 
 export async function getAllDiffFiles(workspacePath: string, storagePath: string): Promise<DiffFile[]> {
