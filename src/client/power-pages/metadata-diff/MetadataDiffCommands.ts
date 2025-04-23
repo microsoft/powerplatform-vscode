@@ -64,10 +64,60 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
 
     vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.triggerFlow", async () => {
         try {
-            const orgUrl = await vscode.window.showInputBox({
-                prompt: "Enter the organization URL",
-                placeHolder: "https://your-org.crm.dynamics.com"
-            });
+            // Get the PAC wrapper to access org list
+            const pacWrapper = pacTerminal.getWrapper();
+
+            let orgUrl: string | undefined;
+
+            // Get list of available organizations
+            const orgListResult = await pacWrapper.orgList();
+
+            if (orgListResult && orgListResult.Status === SUCCESS && orgListResult.Results.length > 0) {
+                // Create items for QuickPick
+                const items = orgListResult.Results.map(org => {
+                    return {
+                        label: org.FriendlyName,
+                        description: org.EnvironmentUrl,
+                        detail: `${org.OrganizationId} (${org.EnvironmentId})`
+                    };
+                });
+
+                // Add option to enter URL manually
+                items.push({
+                    label: "$(plus) Enter organization URL manually",
+                    description: "",
+                    detail: "Enter a custom organization URL"
+                });
+
+                // Show QuickPick to select environment
+                const selected = await vscode.window.showQuickPick(items, {
+                    placeHolder: "Select an environment or enter URL manually",
+                    ignoreFocusOut: true
+                });
+
+                if (selected) {
+                    if (selected.description) {
+                        // Use the selected org URL
+                        orgUrl = selected.description;
+                    } else {
+                        // If manual entry option was selected
+                        orgUrl = await vscode.window.showInputBox({
+                            prompt: "Enter the organization URL",
+                            placeHolder: "https://your-org.crm.dynamics.com",
+                            validateInput: (input) => {
+                                const urlPattern = /^https:\/\/[a-zA-Z0-9.-]+\d*\.crm\.dynamics\.com\/?$/;
+                                return urlPattern.test(input) ? null : "Please enter a valid URL in the format: https://your-org.crm.dynamics.com";
+                            }
+                        });
+                    }
+                }
+            } else {
+                // Fallback to manual entry if no orgs are found
+                orgUrl = await vscode.window.showInputBox({
+                    prompt: "Enter the organization URL",
+                    placeHolder: "https://your-org.crm.dynamics.com"
+                });
+            }
 
             if (!orgUrl) {
                 vscode.window.showErrorMessage("Organization URL is required to trigger the metadata diff flow.");
@@ -80,7 +130,6 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                 return;
             }
 
-            const pacWrapper = pacTerminal.getWrapper()
             const pacActiveOrg = await pacWrapper.activeOrg();
             if(pacActiveOrg){
                 if (pacActiveOrg.Status === SUCCESS) {
