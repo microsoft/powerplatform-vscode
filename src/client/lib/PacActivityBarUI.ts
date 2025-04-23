@@ -11,19 +11,6 @@ import { PowerPagesCopilot } from '../../common/copilot/PowerPagesCopilot';
 import { PowerPagesChatParticipant } from '../../common/chat-participants/powerpages/PowerPagesChatParticipant';
 
 /**
- * Registers all panels for the PAC Activity bar
- * @param pacWrapper - The PAC wrapper instance
- * @param context - The VS Code extension context
- * @returns Array of disposable objects
- */
-export function RegisterPanels(pacWrapper: PacWrapper, context: vscode.ExtensionContext): vscode.Disposable[] {
-    const basicPanels = RegisterBasicPanels(pacWrapper);
-    const copilotPanels = RegisterCopilotPanels(pacWrapper, context);
-
-    return [...basicPanels, ...copilotPanels];
-}
-
-/**
  * Registers authentication and environment panels that don't require ECS initialization
  * @param pacWrapper - The PAC wrapper instance
  * @returns Array of disposable objects
