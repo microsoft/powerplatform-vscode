@@ -259,16 +259,21 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
             const dirPath = path.dirname(filePath);
             fs.mkdirSync(dirPath, { recursive: true });
 
+            // Extract original file extension to preserve it
+            const fileExt = path.extname(fileName);
+
             let workspaceFilePath: string | undefined;
             let storageFilePath: string | undefined;
 
             if (file.workspaceContent) {
-                workspaceFilePath = filePath + '.workspace';
+                // Use the original file extension in the temp file to preserve language identification
+                workspaceFilePath = `${filePath}.workspace${fileExt}`;
                 fs.writeFileSync(workspaceFilePath, file.workspaceContent);
             }
 
             if (file.storageContent) {
-                storageFilePath = filePath + '.storage';
+                // Use the original file extension in the temp file to preserve language identification
+                storageFilePath = `${filePath}.storage${fileExt}`;
                 fs.writeFileSync(storageFilePath, file.storageContent);
             }
 
