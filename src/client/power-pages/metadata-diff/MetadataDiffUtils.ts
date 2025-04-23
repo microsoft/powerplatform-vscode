@@ -90,7 +90,7 @@ export async function getAllDiffFiles(workspacePath: string, storagePath: string
             diffFiles.push({
                 relativePath: normalized,
                 changes: 'Only in workspace',
-                type: getFileType(normalized),
+                type: path.dirname(normalized) || 'Other',
                 workspaceContent: fs.readFileSync(workspaceFile, 'utf8').replace(/\r\n/g, '\n')
             });
             continue;
@@ -103,7 +103,7 @@ export async function getAllDiffFiles(workspacePath: string, storagePath: string
             diffFiles.push({
                 relativePath: normalized,
                 changes: 'Modified',
-                type: getFileType(normalized),
+                type: path.dirname(normalized) || 'Other',
                 workspaceContent,
                 storageContent
             });
@@ -116,7 +116,7 @@ export async function getAllDiffFiles(workspacePath: string, storagePath: string
             diffFiles.push({
                 relativePath: normalized,
                 changes: 'Only in remote',
-                type: getFileType(normalized),
+                type: path.dirname(normalized) || 'Other',
                 storageContent: fs.readFileSync(storageFile, 'utf8').replace(/\r\n/g, '\n')
             });
         }
@@ -142,19 +142,6 @@ export async function getAllFiles(dirPath: string): Promise<string[]> {
 
     traverse(dirPath);
     return files;
-}
-
-export function getFileType(filePath: string): string {
-    const ext = path.extname(filePath).toLowerCase();
-    const basename = path.basename(filePath).toLowerCase();
-
-    if (basename === 'webrole.yml') return 'Roles';
-    if (basename === 'websitelanguage.yml') return 'Languages';
-    if (ext === '.yml' && filePath.includes('webpages')) return 'Pages';
-    if (ext === '.yml' && filePath.includes('webtemplates')) return 'Templates';
-    if (ext === '.yml' && filePath.includes('webfiles')) return 'Files';
-
-    return 'Other';
 }
 
 export function groupDiffsByType(files: DiffFile[]): Record<string, DiffFile[]> {

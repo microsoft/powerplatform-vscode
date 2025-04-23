@@ -201,18 +201,6 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
         return Array.from(rootNode.getChildrenMap().values());
     }
 
-    private getFileType(filePath: string): string {
-        const ext = path.extname(filePath).toLowerCase();
-        const basename = path.basename(filePath).toLowerCase();
-
-        if (basename === 'webrole.yml') return 'Roles';
-        if (basename === 'websitelanguage.yml') return 'Languages';
-        if (ext === '.yml' && filePath.includes('webpages')) return 'Pages';
-        if (ext === '.yml' && filePath.includes('webtemplates')) return 'Templates';
-        if (ext === '.yml' && filePath.includes('webfiles')) return 'Files';
-        return 'Other';
-    }
-
     private getChangeDescription(workspaceFile?: string, storageFile?: string): string {
         if (!workspaceFile) return 'Only in remote';
         if (!storageFile) return 'Only in workspace';
