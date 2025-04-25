@@ -43,6 +43,7 @@ export class ArtemisService {
                 copilotGovernanceSetting,
                 websiteId ?? null
             );
+
             if (!governanceResult) {
                 // Governance flag is disabled
                 return { intelligenceEndpoint: COPILOT_UNAVAILABLE, geoName: null, crossGeoDataMovementEnabledPPACFlag: false };

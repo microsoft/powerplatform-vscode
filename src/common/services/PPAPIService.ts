@@ -122,7 +122,7 @@ export class PPAPIService {
 
         if (IS_DESKTOP && !websiteId) {
             websiteId = getCurrentSiteInfo().currentSiteId;
-        } 
+        }
         try {
             let governanceEndpoint: string;
             const accessToken = await powerPlatformAPIAuthentication(serviceEndpointStamp, true);
@@ -146,7 +146,7 @@ export class PPAPIService {
 
             if (response.ok) {
                 const result = await response.json();
-                const allowProDevCopilots = ["all", "included", "excluded", "true"].includes(result.toLowerCase());
+                const allowProDevCopilots = ["all", "include", "exclude", "true"].includes(result.toString().toLowerCase());
 
                 sendTelemetryEvent({
                     eventName: VSCODE_EXTENSION_GOVERNANCE_CHECK_SUCCESS,
@@ -167,7 +167,7 @@ export class PPAPIService {
                 errorMsg: `HTTP Error: ${response.status}`
             });
 
-            return false; 
+            return false;
         } catch (error) {
             sendTelemetryEvent({
                 eventName: VSCODE_EXTENSION_GOVERNANCE_CHECK_FAILED,
