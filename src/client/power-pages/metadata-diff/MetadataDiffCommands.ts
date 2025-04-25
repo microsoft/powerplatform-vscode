@@ -229,21 +229,28 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
             // Generate report content
             const reportContent = await generateDiffReport(workspaceFolders[0].uri.fsPath, storagePath);
 
-            // Create and show the report document
+            // Create the markdown document
             const doc = await vscode.workspace.openTextDocument({
                 content: reportContent,
                 language: 'markdown'
             });
 
-            // Force the document to be opened in preview mode with explicit encoding
+            // Show the document in column One
             await vscode.window.showTextDocument(doc, {
-                preview: false, // Set to false to ensure it opens properly
-                viewColumn: vscode.ViewColumn.Beside,
-                preserveFocus: true
+                preview: false,  // Don't use preview mode to ensure stability
+                viewColumn: vscode.ViewColumn.One,
+                preserveFocus: false // Ensure focus is on the document
             });
 
-            // Force markdown preview to open
-            await vscode.commands.executeCommand('markdown.showPreview', doc.uri);
+            // Increase delay to ensure document is fully loaded and stable
+            await new Promise(resolve => setTimeout(resolve, 800));
+
+            // Close any existing preview first to avoid conflicts
+            await vscode.commands.executeCommand('markdown.preview.refresh');
+
+            // Show preview in side-by-side mode
+            await vscode.commands.executeCommand('markdown.showPreviewToSide');
+
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(
                 Constants.EventNames.METADATA_DIFF_REPORT_FAILED,
