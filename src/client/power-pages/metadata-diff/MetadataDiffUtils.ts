@@ -5,6 +5,7 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import * as yaml from 'yaml';
 
 export interface DiffFile {
     relativePath: string;
@@ -57,7 +58,6 @@ export async function generateDiffReport(workspacePath: string, storagePath: str
                 path.extname(file.relativePath).toLowerCase() === '.yaml') {
                 try {
                     if (file.workspaceContent && file.storageContent && file.changes === 'Modified') {
-                        const yaml = require('yaml');
                         const workspaceYaml = yaml.parse(file.workspaceContent);
                         const storageYaml = yaml.parse(file.storageContent);
 
