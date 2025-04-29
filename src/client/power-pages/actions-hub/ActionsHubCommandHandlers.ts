@@ -204,7 +204,7 @@ export const createNewAuthProfile = async (pacWrapper: PacWrapper): Promise<void
     try {
         const orgUrl = PacContext.OrgInfo?.OrgUrl ?? '';
 
-        // if orgUrl is present then directly call dataverseAuthentication
+        // if orgUrl is present then directly authenticate in VS Code
         if (orgUrl) {
             await authenticateUser();
             return;
