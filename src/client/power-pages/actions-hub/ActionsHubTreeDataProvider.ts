@@ -44,7 +44,10 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
             // Register an event listener for org change error as action hub will not be re-initialized in extension.ts
             orgChangeErrorEvent(() => this.refresh()),
 
-            vscode.authentication.onDidChangeSessions((_) => this.refresh())
+            vscode.authentication.onDidChangeSessions((_) => {
+                this._loadWebsites = true;
+                this.refresh();
+            })
         );
         this._context = context;
     }
