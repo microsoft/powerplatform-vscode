@@ -359,7 +359,7 @@ export async function powerPlatformAPIAuthentication(
  * @returns A promise that resolves when the authentication is complete.
  *
  */
-export async function authenticateUser(isSilent = false): Promise<void> {
+export async function authenticateUserInVSCode(isSilent = false): Promise<void> {
     if (isSilent) {
         await authenticateUserInternal(false);
     } else {

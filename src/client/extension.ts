@@ -47,7 +47,7 @@ import { ActionsHub } from "./power-pages/actions-hub/ActionsHub";
 import { extractAuthInfo, extractOrgInfo } from "./power-pages/commonUtility";
 import PacContext from "./pac/PacContext";
 import ArtemisContext from "./ArtemisContext";
-import { authenticateUser } from "../common/services/AuthenticationProvider";
+import { authenticateUserInVSCode } from "../common/services/AuthenticationProvider";
 import { PROVIDER_ID } from "../common/services/Constants";
 
 let client: LanguageClient;
@@ -71,7 +71,7 @@ export async function activate(
     _context.subscriptions.push(
         vscode.authentication.onDidChangeSessions(async (event) => {
             if (event.provider.id === PROVIDER_ID) {
-                await authenticateUser(true);
+                await authenticateUserInVSCode(true);
             }
         })
     );
@@ -95,7 +95,7 @@ export async function activate(
         );
     }
 
-    await authenticateUser(); //Authentication for extension
+    await authenticateUserInVSCode(); //Authentication for extension
 
     // portal web view panel
     _context.subscriptions.push(
