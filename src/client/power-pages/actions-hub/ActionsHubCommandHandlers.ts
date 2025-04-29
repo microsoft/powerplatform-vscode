@@ -216,8 +216,7 @@ export const createNewAuthProfile = async (pacWrapper: PacWrapper): Promise<void
             if (Array.isArray(results) && results.length > 0) {
                 const orgUrl = results[0].ActiveOrganization?.Item2;
                 if (orgUrl) {
-                    // DV authentication is required to ensure PAC and VSCode accounts are in sync
-                    await dataverseAuthentication(orgUrl, true);
+                    await authenticateUser();
                 } else {
                     traceError(
                         createNewAuthProfile.name,
