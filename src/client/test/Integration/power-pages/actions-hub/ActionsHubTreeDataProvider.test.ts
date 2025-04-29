@@ -284,6 +284,7 @@ describe("ActionsHubTreeDataProvider", () => {
                 { name: "Baz", websiteId: 'baz' }
             ] as IOtherSiteInfo[];
             sinon.stub(CommandHandlers, 'fetchWebsites').resolves({ activeSites: mockActiveSites, inactiveSites: mockInactiveSites, otherSites: otherSites });
+            sinon.stub(vscode.authentication, 'getSession').resolves({ accessToken: 'foo' } as vscode.AuthenticationSession);
 
             sinon.stub(PacContext, "AuthInfo").get(() => ({
                 OrganizationFriendlyName: "TestOrg",
@@ -334,6 +335,17 @@ describe("ActionsHubTreeDataProvider", () => {
             expect(result).to.be.an('array').that.is.empty;
         });
 
+        it("should return empty array when VS Code auth is not available", async () => {
+            sinon.stub(PacContext, "AuthInfo").get(() => ({ OrganizationFriendlyName: 'Foo Bar' }));
+            sinon.stub(vscode.authentication, 'getSession').resolves({ accessToken: '' } as vscode.AuthenticationSession);
+
+            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            provider["_loadWebsites"] = false;
+            const result = await provider.getChildren();
+
+            expect(result).to.be.an('array').that.is.empty;
+        });
+
         it("should call element.getChildren when an element is passed", async () => {
             const element = new SiteTreeItem({} as IWebsiteInfo);
             const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
@@ -358,6 +370,7 @@ describe("ActionsHubTreeDataProvider", () => {
                 { name: "Baz", websiteId: 'baz' }
             ] as IOtherSiteInfo[];
             const mockFetchWebsites = sinon.stub(CommandHandlers, 'fetchWebsites').resolves({ activeSites: mockActiveSites, inactiveSites: mockInactiveSites, otherSites: otherSites });
+            sinon.stub(vscode.authentication, 'getSession').resolves({ accessToken: 'foo' } as vscode.AuthenticationSession);
 
             PacContext['_authInfo'] = {
                 OrganizationFriendlyName: "TestOrg",
