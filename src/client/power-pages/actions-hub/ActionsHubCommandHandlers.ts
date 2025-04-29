@@ -18,7 +18,7 @@ import { ServiceEndpointCategory, WebsiteDataModel } from '../../../common/servi
 import { SiteTreeItem } from './tree-items/SiteTreeItem';
 import { PreviewSite } from '../preview-site/PreviewSite';
 import { PacWrapper } from '../../pac/PacWrapper';
-import { dataverseAuthentication } from '../../../common/services/AuthenticationProvider';
+import { authenticateUser, dataverseAuthentication } from '../../../common/services/AuthenticationProvider';
 import { createAuthProfileExp } from '../../../common/utilities/PacAuthUtil';
 import { IOtherSiteInfo, IWebsiteDetails, WebsiteYaml } from '../../../common/services/Interfaces';
 import { getActiveWebsites, getAllWebsites } from '../../../common/utilities/WebsiteUtil';
@@ -199,14 +199,17 @@ export const previewSite = async (siteTreeItem: SiteTreeItem) => {
     }
 };
 
-export const createNewAuthProfile = async (pacWrapper: PacWrapper, orgUrl: string): Promise<void> => {
+export const createNewAuthProfile = async (pacWrapper: PacWrapper): Promise<void> => {
     traceInfo(Constants.EventNames.ACTIONS_HUB_CREATE_AUTH_PROFILE_CALLED, { methodName: createNewAuthProfile.name });
     try {
+        const orgUrl = PacContext.OrgInfo?.OrgUrl ?? '';
+
         // if orgUrl is present then directly call dataverseAuthentication
         if (orgUrl) {
-            await dataverseAuthentication(orgUrl, true);
+            await authenticateUser();
             return;
         }
+
         const pacAuthCreateOutput = await createAuthProfileExp(pacWrapper);
         if (pacAuthCreateOutput && pacAuthCreateOutput.Status === SUCCESS) {
             const results = pacAuthCreateOutput.Results;

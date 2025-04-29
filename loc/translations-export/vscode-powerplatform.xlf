@@ -460,6 +460,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++7f6276dc63b573d177b7d6e17f787b108e3c8c7d449324ac13a6d06b1be59d8e">
       <source xml:lang="en">Please enter a name for the webpage.</source>
     </trans-unit>
+    <trans-unit id="++CODE++6355962eca901310bd24d2142605263344a3f09fb4fc30fc0f9dcf4cd56bf534">
+      <source xml:lang="en">Please login to preview the site.</source>
+    </trans-unit>
     <trans-unit id="++CODE++1bac158cc07a75506df3774db0ad7c188c19ccad4943c4cf03da8b6700ef9ce4">
       <source xml:lang="en">Power Pages Copilot is now connected to the environment: {0} : {1}</source>
       <note>{0} represents the environment name</note>
@@ -795,7 +798,7 @@ The second line should be '[TRANSLATION HERE](command:microsoft.powerplatform.pa
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveNotSupported">
       <source xml:lang="en">No auth profiles found on this computer.
-Interactive Authentication is not availalbe for remote scenarios; auth profiles must be created by the command line.  The `--deviceCode` flow must be used for users with MFA requirements, or whose tenants use ADFS.
+Interactive Authentication is not available for remote scenarios; auth profiles must be created by the command line.  The `--deviceCode` flow must be used for users with MFA requirements, or whose tenants use ADFS.
 [View Auth Profile Help](command:pacCLI.pacAuthHelp)</source>
       <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should not translate the argument `--deviceCode`

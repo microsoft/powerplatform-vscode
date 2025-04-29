@@ -17,7 +17,7 @@ import CurrentSiteContext from "./CurrentSiteContext";
 import { IOtherSiteInfo, IWebsiteDetails } from "../../../common/services/Interfaces";
 import { orgChangeErrorEvent } from "../../OrgChangeNotifier";
 import { getBaseEventInfo } from "./TelemetryHelper";
-import { BAP_SERVICE_SCOPE_DEFAULT, PROVIDER_ID } from "../../../common/services/Constants";
+import { PROVIDER_ID } from "../../../common/services/Constants";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -42,7 +42,9 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
             CurrentSiteContext.onChanged(() => this.refresh()),
 
             // Register an event listener for org change error as action hub will not be re-initialized in extension.ts
-            orgChangeErrorEvent(() => this.refresh())
+            orgChangeErrorEvent(() => this.refresh()),
+
+            vscode.authentication.onDidChangeSessions((_) => this.refresh())
         );
         this._context = context;
     }
@@ -71,16 +73,13 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
     private async checkAuthInfo(): Promise<boolean> {
         const authInfo = PacContext.AuthInfo;
-        const session  = await vscode.authentication.getSession(
-                    PROVIDER_ID,
-                    [BAP_SERVICE_SCOPE_DEFAULT],
-                    { silent: true }
-                );
+        const session  = await vscode.authentication.getSession(PROVIDER_ID, [], { silent: true });
+
         if (session && session.accessToken && authInfo && authInfo.OrganizationFriendlyName) {
             return true;
-        } else {
-            return false; 
         }
+
+        return false;
     }
 
     public static initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal): ActionsHubTreeDataProvider {
@@ -145,7 +144,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.preview", previewSite),
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.newAuthProfile", async () => {
-                await createNewAuthProfile(pacTerminal.getWrapper(), PacContext.OrgInfo?.OrgUrl ?? '');
+                await createNewAuthProfile(pacTerminal.getWrapper());
             }),
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows", revealInOS),
