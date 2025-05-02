@@ -71,6 +71,11 @@ export async function getAllWebsites(orgDetails: OrgInfo): Promise<IWebsiteDetai
     const websites: IWebsiteDetails[] = [];
     try {
         const dataverseToken = (await dataverseAuthentication(orgDetails.OrgUrl ?? '', true)).accessToken;
+
+        if (!dataverseToken) {
+            throw new Error("Dataverse token is not available.");
+        }
+
         const [adxWebsiteRecords, powerPagesSiteRecords, appModules] = await Promise.all([
             getAdxWebsiteRecords(orgDetails.OrgUrl, dataverseToken),
             getPowerPagesSiteRecords(orgDetails.OrgUrl, dataverseToken),

@@ -43,12 +43,16 @@ import { ArtemisService } from "../../common/services/ArtemisService";
 import { showErrorDialog } from "../../common/utilities/errorHandlerUtil";
 import { EXTENSION_ID } from "../../common/constants";
 import { getECSOrgLocationValue } from "../../common/utilities/Utils";
+import { authenticateUserInVSCode } from "../../common/services/AuthenticationProvider";
 
-export function activate(context: vscode.ExtensionContext): void {
+export async function activate(context: vscode.ExtensionContext): Promise<void> {
     oneDSLoggerWrapper.instantiate(GeoNames.US);
     WebExtensionContext.setVscodeWorkspaceState(context.workspaceState);
 
     WebExtensionContext.telemetry.sendInfoTelemetry("activated");
+
+    await authenticateUserInVSCode(); //Authentication for extension
+
     const portalsFS = new PortalsFS();
     context.subscriptions.push(
         vscode.workspace.registerFileSystemProvider(
