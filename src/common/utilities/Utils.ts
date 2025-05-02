@@ -4,7 +4,7 @@
  */
 
 import * as vscode from "vscode";
-import { componentTypeSchema, EXTENSION_ID, EXTENSION_NAME, ICurrentSiteContext, IEnvInfo, IRelatedFiles, relatedFilesSchema, SETTINGS_EXPERIMENTAL_STORE_NAME, VSCODE_EXTENSION_COPILOT_CONTEXT_RELATED_FILES_FETCH_FAILED } from "../constants";
+import { componentTypeSchema, EXTENSION_ID, EXTENSION_NAME, IEnvInfo, IRelatedFiles, relatedFilesSchema, SETTINGS_EXPERIMENTAL_STORE_NAME, VSCODE_EXTENSION_COPILOT_CONTEXT_RELATED_FILES_FETCH_FAILED } from "../constants";
 import { CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME } from "../OneDSLoggerTelemetry/telemetryConstants";
 import { COPILOT_UNAVAILABLE, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap } from "../copilot/constants";
 import { IActiveFileData } from "../copilot/model";
@@ -19,7 +19,6 @@ import { VSCODE_EXTENSION_GET_ENV_LIST_SUCCESS, VSCODE_EXTENSION_GET_ENV_LIST_FA
 import { WorkspaceFolder } from "vscode-languageserver";
 import { Progress } from "vscode";
 import * as os from "os";
-import { findWebsiteYmlFolder, getWebsiteRecordId } from "./WorkspaceInfoFinderUtil";
 
 export function getSelectedCode(editor: vscode.TextEditor): string {
     if (!editor) {
@@ -455,28 +454,4 @@ export function getWorkspaceFolders(): WorkspaceFolder[] {
     return vscode.workspace.workspaceFolders?.map(
                 (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
             ) || [];
-}
-
-export function getCurrentSiteInfo(): ICurrentSiteContext {
-    const activeEditor = vscode.window.activeTextEditor;
-    if (activeEditor) {
-        const filePath = activeEditor.document.uri.fsPath;
-        const fileDirectory = path.dirname(filePath);
-        const websiteYmlFolder = findWebsiteYmlFolder(fileDirectory);
-
-        if (websiteYmlFolder) {
-            const siteId = getWebsiteRecordId(websiteYmlFolder);
-            if (siteId) {
-                return { currentSiteId: siteId, currentSiteFolderPath: websiteYmlFolder };
-            }
-        }
-    }
-
-    // Fallback: check first workspace folder
-    const workspaceFolders = vscode.workspace.workspaceFolders;
-    if (workspaceFolders && workspaceFolders.length > 0) {
-        return { currentSiteId: getWebsiteRecordId(workspaceFolders[0].uri.fsPath), currentSiteFolderPath: workspaceFolders[0].uri.fsPath };
-    }
-
-    return { currentSiteId: null, currentSiteFolderPath: null };
 }

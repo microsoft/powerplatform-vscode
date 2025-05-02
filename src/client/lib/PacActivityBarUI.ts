@@ -9,6 +9,7 @@ import { AuthTreeView } from './AuthPanelView';
 import { EnvAndSolutionTreeView } from './EnvAndSolutionTreeView';
 import { PowerPagesCopilot } from '../../common/copilot/PowerPagesCopilot';
 import { PowerPagesChatParticipant } from '../../common/chat-participants/powerpages/PowerPagesChatParticipant';
+import { getCurrentSiteInfo } from '../power-pages/actions-hub/CurrentSiteContext';
 
 export function RegisterPanels(pacWrapper: PacWrapper, context: vscode.ExtensionContext): vscode.Disposable[] {
     const authPanel = new AuthTreeView(() => pacWrapper.authList(), pacWrapper);
@@ -18,7 +19,10 @@ export function RegisterPanels(pacWrapper: PacWrapper, context: vscode.Extension
         authPanel.onDidChangeTreeData,
         pacWrapper);
 
-    const copilotPanel = new PowerPagesCopilot(context.extensionUri, context, pacWrapper);
+    const siteInfo = getCurrentSiteInfo();
+    const websiteId = siteInfo.currentSiteId;
+
+    const copilotPanel = new PowerPagesCopilot(context.extensionUri, context, pacWrapper, undefined, websiteId ?? undefined);
 
     const powerPagesChatParticipant = PowerPagesChatParticipant.getInstance(context, pacWrapper);
 

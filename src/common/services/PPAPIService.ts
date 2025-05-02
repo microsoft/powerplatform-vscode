@@ -11,9 +11,6 @@ import {
 import { ServiceEndpointCategory, PPAPI_WEBSITES_ENDPOINT, PPAPI_WEBSITES_API_VERSION} from "./Constants";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { IWebsiteDetails } from "./Interfaces";
-import { getCurrentSiteInfo } from "../utilities/Utils";
-
-declare const IS_DESKTOP: string | undefined;
 
 export class PPAPIService {
     public static async getWebsiteDetailsById(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string, websitePreviewId: string): Promise<IWebsiteDetails | null> { // websitePreviewId aka portalId
@@ -119,10 +116,6 @@ export class PPAPIService {
         copilotGovernanceSetting: string,
         websiteId: string | null
     ): Promise<boolean> {
-
-        if (IS_DESKTOP && !websiteId) {
-            websiteId = getCurrentSiteInfo().currentSiteId;
-        }
         try {
             let governanceEndpoint: string;
             const accessToken = await powerPlatformAPIAuthentication(serviceEndpointStamp, true);
