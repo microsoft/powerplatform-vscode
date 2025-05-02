@@ -239,6 +239,11 @@ export class PreviewSite {
 
                 const authResponse = await dataverseAuthentication(orgDetails.OrgUrl);
 
+                if (!authResponse) {
+                    progress.report({ message: Messages.LOGIN_REQUIRED });
+                    return;
+                }
+
                 const clearCacheResponse = await fetch(requestUrl, {
                     headers: {
                         authorization: "Bearer " + authResponse.accessToken,

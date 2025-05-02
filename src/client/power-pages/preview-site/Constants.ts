@@ -32,7 +32,8 @@ export const Messages = {
     UNABLE_TO_CLEAR_CACHE: vscode.l10n.t("Unable to clear cache"),
     PREVIEW_WARNING: vscode.l10n.t("Your preview isn't updated. Please upload your site to see the latest changes."),
     UPLOAD_CHANGES: vscode.l10n.t("Upload changes"),
-    PREVIEW_SHOWN_FOR_PUBLISHED_CHANGES: vscode.l10n.t("The preview shown is for published changes. Please publish any pending changes to see them in the preview.")
+    PREVIEW_SHOWN_FOR_PUBLISHED_CHANGES: vscode.l10n.t("The preview shown is for published changes. Please publish any pending changes to see them in the preview."),
+    LOGIN_REQUIRED: vscode.l10n.t("Please login to preview the site.")
 };
 
 export const Events = {

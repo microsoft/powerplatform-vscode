@@ -18,7 +18,7 @@ import { ServiceEndpointCategory, WebsiteDataModel } from '../../../common/servi
 import { SiteTreeItem } from './tree-items/SiteTreeItem';
 import { PreviewSite } from '../preview-site/PreviewSite';
 import { PacWrapper } from '../../pac/PacWrapper';
-import { dataverseAuthentication } from '../../../common/services/AuthenticationProvider';
+import { authenticateUserInVSCode, dataverseAuthentication } from '../../../common/services/AuthenticationProvider';
 import { createAuthProfileExp } from '../../../common/utilities/PacAuthUtil';
 import { IOtherSiteInfo, IWebsiteDetails, WebsiteYaml } from '../../../common/services/Interfaces';
 import { getActiveWebsites, getAllWebsites } from '../../../common/utilities/WebsiteUtil';
@@ -202,14 +202,21 @@ export const previewSite = async (siteTreeItem: SiteTreeItem) => {
 export const createNewAuthProfile = async (pacWrapper: PacWrapper): Promise<void> => {
     traceInfo(Constants.EventNames.ACTIONS_HUB_CREATE_AUTH_PROFILE_CALLED, { methodName: createNewAuthProfile.name });
     try {
+        const orgUrl = PacContext.OrgInfo?.OrgUrl ?? '';
+
+        // if orgUrl is present then directly authenticate in VS Code
+        if (orgUrl) {
+            await authenticateUserInVSCode();
+            return;
+        }
+
         const pacAuthCreateOutput = await createAuthProfileExp(pacWrapper);
         if (pacAuthCreateOutput && pacAuthCreateOutput.Status === SUCCESS) {
             const results = pacAuthCreateOutput.Results;
             if (Array.isArray(results) && results.length > 0) {
                 const orgUrl = results[0].ActiveOrganization?.Item2;
                 if (orgUrl) {
-                    // DV authentication is required to ensure PAC and VSCode accounts are in sync
-                    await dataverseAuthentication(orgUrl, true);
+                    await authenticateUserInVSCode();
                 } else {
                     traceError(
                         createNewAuthProfile.name,

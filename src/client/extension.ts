@@ -49,6 +49,8 @@ import PacContext from "./pac/PacContext";
 import ArtemisContext from "./ArtemisContext";
 import { RegisterBasicPanels, RegisterCopilotPanels } from "./lib/PacActivityBarUI";
 import { PacWrapper } from "./pac/PacWrapper";
+import { authenticateUserInVSCode } from "../common/services/AuthenticationProvider";
+import { PROVIDER_ID } from "../common/services/Constants";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -70,6 +72,14 @@ export async function activate(
         "pac.userId": readUserSettings().uniqueId
     });
 
+    _context.subscriptions.push(
+        vscode.authentication.onDidChangeSessions(async (event) => {
+            if (event.provider.id === PROVIDER_ID) {
+                await authenticateUserInVSCode(true);
+            }
+        })
+    );
+
     // Setup context switches
     if (
         vscode.env.remoteName === undefined ||
@@ -88,6 +98,8 @@ export async function activate(
             "true"
         );
     }
+
+    await authenticateUserInVSCode(); //Authentication for extension
 
     // portal web view panel
     _context.subscriptions.push(

@@ -540,12 +540,25 @@ describe('ActionsHubCommandHandlers', () => {
     describe('createNewAuthProfile', () => {
         let mockPacWrapper: sinon.SinonStubbedInstance<PacWrapper>;
         let mockCreateAuthProfileExp: sinon.SinonStub;
-        let mockDataverseAuthentication: sinon.SinonStub;
+        let mockAuthenticationInVsCode: sinon.SinonStub;
+        let orgInfoStub: sinon.SinonStub;
 
         beforeEach(() => {
             mockPacWrapper = sandbox.createStubInstance(PacWrapper);
             mockCreateAuthProfileExp = sandbox.stub(PacAuthUtil, 'createAuthProfileExp');
-            mockDataverseAuthentication = sandbox.stub(authProvider, 'dataverseAuthentication');
+            mockAuthenticationInVsCode = sandbox.stub(authProvider, 'authenticateUserInVSCode');
+            orgInfoStub = sandbox.stub(PacContext, 'OrgInfo').value({ OrgId: 'testOrgId', OrgUrl: '' });
+        });
+
+        it('should only authenticate in VS Code when PAC auth output is successful', async () => {
+            const mockResults = [{ ActiveOrganization: [null, null] }];
+            mockCreateAuthProfileExp.resolves({ Status: 'Success', Results: mockResults });
+            orgInfoStub.value({ OrgId: 'testOrgId', OrgUrl: 'https://test-org-url' });
+
+            await createNewAuthProfile(mockPacWrapper);
+
+            expect(mockCreateAuthProfileExp.calledOnce).to.be.false;
+            expect(mockAuthenticationInVsCode.calledOnce).to.be.true;
         });
 
         it('should handle missing organization URL', async () => {
@@ -555,7 +568,7 @@ describe('ActionsHubCommandHandlers', () => {
             await createNewAuthProfile(mockPacWrapper);
 
             expect(mockCreateAuthProfileExp.calledOnce).to.be.true;
-            expect(mockDataverseAuthentication.called).to.be.false;
+            expect(mockAuthenticationInVsCode.called).to.be.false;
             expect(traceErrorStub.calledOnce).to.be.true;
             expect(traceErrorStub.firstCall.args[0]).to.equal('createNewAuthProfile');
         });
@@ -566,7 +579,7 @@ describe('ActionsHubCommandHandlers', () => {
             await createNewAuthProfile(mockPacWrapper);
 
             expect(mockCreateAuthProfileExp.calledOnce).to.be.true;
-            expect(mockDataverseAuthentication.called).to.be.false;
+            expect(mockAuthenticationInVsCode.called).to.be.false;
             expect(traceErrorStub.calledOnce).to.be.true;
             expect(traceErrorStub.firstCall.args[0]).to.equal('createNewAuthProfile');
         });
@@ -577,7 +590,7 @@ describe('ActionsHubCommandHandlers', () => {
             await createNewAuthProfile(mockPacWrapper);
 
             expect(mockCreateAuthProfileExp.calledOnce).to.be.true;
-            expect(mockDataverseAuthentication.called).to.be.false;
+            expect(mockAuthenticationInVsCode.called).to.be.false;
             expect(traceErrorStub.calledOnce).to.be.true;
             expect(traceErrorStub.firstCall.args[0]).to.equal('createNewAuthProfile');
         });
@@ -589,7 +602,7 @@ describe('ActionsHubCommandHandlers', () => {
             await createNewAuthProfile(mockPacWrapper);
 
             expect(mockCreateAuthProfileExp.calledOnce).to.be.true;
-            expect(mockDataverseAuthentication.called).to.be.false;
+            expect(mockAuthenticationInVsCode.called).to.be.false;
             expect(traceErrorStub.calledOnce).to.be.true;
             expect(traceErrorStub.firstCall.args[0]).to.equal('ActionsHubCreateAuthProfileFailed');
         });
