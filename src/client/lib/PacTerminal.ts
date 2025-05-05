@@ -7,7 +7,6 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import * as os from 'os'
 import { PacInterop, PacWrapper } from '../pac/PacWrapper';
-import { RegisterPanels } from './PacActivityBarUI';
 import { PacWrapperContext } from '../pac/PacWrapperContext';
 import { RegisterUriHandler } from '../uriHandler';
 
@@ -64,7 +63,6 @@ export class PacTerminal implements vscode.Disposable {
             }
         }));
 
-        this._cmdDisposables.push(...RegisterPanels(this._pacWrapper, context));
         this._cmdDisposables.push(RegisterUriHandler(this._pacWrapper));
     }
 
