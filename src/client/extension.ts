@@ -47,6 +47,8 @@ import { ActionsHub } from "./power-pages/actions-hub/ActionsHub";
 import { extractAuthInfo, extractOrgInfo } from "./power-pages/commonUtility";
 import PacContext from "./pac/PacContext";
 import ArtemisContext from "./ArtemisContext";
+import { RegisterBasicPanels, RegisterCopilotPanels } from "./lib/PacActivityBarUI";
+import { PacWrapper } from "./pac/PacWrapper";
 import { authenticateUserInVSCode } from "../common/services/AuthenticationProvider";
 import { PROVIDER_ID } from "../common/services/Constants";
 
@@ -54,6 +56,8 @@ let client: LanguageClient;
 let _context: vscode.ExtensionContext;
 let htmlServerRunning = false;
 let yamlServerRunning = false;
+let copilotPanelsRegistered = false;
+let copilotPanelsDisposable: vscode.Disposable[] = [];
 
 
 export async function activate(
@@ -171,6 +175,11 @@ export async function activate(
     _context.subscriptions.push(cli);
     _context.subscriptions.push(pacTerminal);
 
+    // Register auth and env panels
+    const pacWrapper = pacTerminal.getWrapper();
+    const basicPanels = RegisterBasicPanels(pacWrapper);
+    _context.subscriptions.push(...basicPanels);
+
     let copilotNotificationShown = false;
 
     const workspaceFolders = getWorkspaceFolders();
@@ -206,6 +215,7 @@ export async function activate(
                 }
 
                 if (EnvID && TenantID && AadObjectId) {
+                    // Initialize ECS features client
                     await ECSFeaturesClient.init(
                         {
                             AppName: PowerPagesAppName,
@@ -216,6 +226,9 @@ export async function activate(
                             Location: getECSOrgLocationValue(clusterName, clusterNumber)
                         },
                         PowerPagesClientName, true);
+
+                    // Register copilot panels only after ECS initialization is complete
+                    registerCopilotPanels(pacWrapper);
                 }
 
                 oneDSLoggerWrapper.instantiate(geoName, geoLongName);
@@ -253,8 +266,11 @@ export async function activate(
         }),
 
         orgChangeErrorEvent(async () => {
-            //Even if auth change was unsuccessful, we should still initialize the actions hub
-            await ActionsHub.initialize(context, pacTerminal);
+            // Register copilot panels even if org change was unsuccessful
+            registerCopilotPanels(pacWrapper);
+
+            // Even if auth change was unsuccessful, we should still initialize the actions hub
+            await ActionsHub.initialize(_context, pacTerminal);
 
             vscode.commands.executeCommand('setContext', 'microsoft.powerplatform.environment.initialized', true);
         })
@@ -461,4 +477,23 @@ function showNotificationForCopilot(telemetryData: string, countOfActivePortals:
         copilotNotificationPanel(_context, telemetryData, countOfActivePortals);
     }
 
+}
+
+/**
+ * Registers copilot panels if they haven't been registered yet
+ * @param pacWrapper The PAC wrapper instance
+ */
+function registerCopilotPanels(pacWrapper: PacWrapper): void {
+    if (!copilotPanelsRegistered) {
+        // Dispose previous copilot panel registrations if they exist
+        for (const disposable of copilotPanelsDisposable) {
+            disposable.dispose();
+        }
+        copilotPanelsDisposable = [];
+
+        // Use RegisterCopilotPanels to register all copilot-related panels
+        copilotPanelsDisposable = RegisterCopilotPanels(pacWrapper, _context);
+        _context.subscriptions.push(...copilotPanelsDisposable);
+        copilotPanelsRegistered = true;
+    }
 }
