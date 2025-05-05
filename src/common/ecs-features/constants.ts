@@ -12,3 +12,5 @@ export type ProjectName = typeof PowerPagesAppName;
 
 export const VisualStudioCodeDevInsidersUrl = 'https://insiders.vscode.dev/power/portal'; // VScode dev insiders/pre-prod env
 export const VisualStudioCodeDevUrl = 'https://vscode.dev/power/portal'; // VScode dev GA/prod env
+
+export const COPILOT_GOVERNANCE_SETTING_NAME = 'PowerPages_AllowMakerCopilotsForNewSites';

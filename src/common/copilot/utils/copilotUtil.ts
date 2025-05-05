@@ -3,6 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import { COPILOT_GOVERNANCE_SETTING_NAME } from "../../ecs-features/constants";
 import { ECSFeaturesClient } from "../../ecs-features/ecsFeatureClient";
 import { CopilotDisableList, EnablePowerPagesGitHubCopilot, EnableProDevCopilot, EnableProdevCopilotGovernanceCheck } from "../../ecs-features/ecsFeatureGates";
 
@@ -79,7 +80,7 @@ export function isCopilotGovernanceCheckEnabled() {
 export function getCopilotGovernanceSetting() {
     const copilotGovernanceSetting = ECSFeaturesClient.getConfig(EnableProdevCopilotGovernanceCheck).copilotGovernanceSetting;
     if(copilotGovernanceSetting === undefined) {
-        return "PowerPages_AllowProDevCopilotsForSites";
+        return COPILOT_GOVERNANCE_SETTING_NAME;
     }
 
     return copilotGovernanceSetting;

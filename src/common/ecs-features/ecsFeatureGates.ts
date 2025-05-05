@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { PowerPagesClientName } from './constants';
+import { COPILOT_GOVERNANCE_SETTING_NAME, PowerPagesClientName } from './constants';
 import { getFeatureConfigs } from './ecsFeatureUtil';
 
 export const {
@@ -46,7 +46,7 @@ export const {
     description: 'Enable Copilot Governance Check for Pro Dev Copilot',
     fallback: {
         enableProdevCopilotGovernanceCheck: false,
-        copilotGovernanceSetting: 'PowerPages_AllowProDevCopilotsForSites'
+        copilotGovernanceSetting: COPILOT_GOVERNANCE_SETTING_NAME
     },
 });
 
