@@ -90,11 +90,6 @@ export interface IEnvInfo {
     envDisplayName: string;
 }
 
-export interface ICurrentSiteContext {
-    currentSiteId: string | null;
-    currentSiteFolderPath: string | null;
-}
-
 export const VSCODE_EXTENSION_COPILOT_CONTEXT_RELATED_FILES_FETCH_FAILED = "VSCodeExtensionCopilotContextRelatedFilesFetchFailed";
 export const ADX_WEBPAGE = 'adx_webpage'
 export const HTML_FILE_EXTENSION = '.html';

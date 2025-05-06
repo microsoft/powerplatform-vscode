@@ -175,7 +175,7 @@ export class OneDSLogger implements ITelemetryLogger {
                     case 'ae':
                     case 'kr':
                         instrumentationSettings.endpointURL = 'https://us-mobile.events.data.microsoft.com/OneCollector/1.0/',
-                        instrumentationSettings.instrumentationKey = '197418c5cb8c4426b201f9db2e87b914-87887378-2790-49b0-9295-51f43b6204b1-7172'
+                            instrumentationSettings.instrumentationKey = '197418c5cb8c4426b201f9db2e87b914-87887378-2790-49b0-9295-51f43b6204b1-7172'
                         break;
                     case 'eu':
                     case 'uk':

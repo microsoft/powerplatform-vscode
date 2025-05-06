@@ -4,9 +4,13 @@
  */
 
 import * as vscode from 'vscode';
-import { ICurrentSiteContext } from '../../../common/constants';
 import path from 'path';
 import { findWebsiteYmlFolder, getWebsiteRecordId } from '../../../common/utilities/WorkspaceInfoFinderUtil';
+
+export interface ICurrentSiteContext {
+    currentSiteId: string | null;
+    currentSiteFolderPath: string | null;
+}
 
 class CurrentSiteContext implements ICurrentSiteContext {
     private _currentSiteId: string | null = null;
@@ -19,7 +23,7 @@ class CurrentSiteContext implements ICurrentSiteContext {
     constructor() {
         // Initialize with default values, then update asynchronously
         this._initialize();
-        
+
         this._disposables.push(
             vscode.window.onDidChangeActiveTextEditor(() => {
                 this._updateSiteContext();
