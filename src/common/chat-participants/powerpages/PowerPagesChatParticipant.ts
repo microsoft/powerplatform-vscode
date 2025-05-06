@@ -119,17 +119,22 @@ export class PowerPagesChatParticipant {
 
             if (!intelligenceApiAuthResponse) {
                 return createErrorResult(AUTHENTICATION_FAILED_MSG, RESPONSE_SCENARIOS.AUTHENTICATION_FAILED, this.orgID);
-            }
-
-            const intelligenceApiToken = intelligenceApiAuthResponse.accessToken;
+            }            const intelligenceApiToken = intelligenceApiAuthResponse.accessToken;
             const userId = intelligenceApiAuthResponse.userId;
-            const intelligenceAPIEndpointInfo = await getEndpoint(this.orgID, this.environmentID, this.cachedEndpoint, this.powerPagesAgentSessionId);
-
-            if (!intelligenceAPIEndpointInfo.intelligenceEndpoint) {
-                return createErrorResult(COPILOT_NOT_AVAILABLE_MSG, RESPONSE_SCENARIOS.COPILOT_NOT_AVAILABLE, this.orgID);
-            }
-
-            const copilotAvailabilityStatus = checkCopilotAvailability(intelligenceAPIEndpointInfo.intelligenceEndpoint, this.orgID, this.powerPagesAgentSessionId);
+            
+            // Use cached endpoint info instead of calling getEndpoint on every request
+            if (!this.cachedEndpoint || !this.cachedEndpoint.intelligenceEndpoint) {
+                // If not yet initialized, initialize it now
+                const endpointInitialized = await this.initializeEndpoint();
+                if (!endpointInitialized) {
+                    return createErrorResult(COPILOT_NOT_AVAILABLE_MSG, RESPONSE_SCENARIOS.COPILOT_NOT_AVAILABLE, this.orgID);
+                }
+            }            
+            // Using non-null assertion since we've already checked above
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const intelligenceAPIEndpointInfo = this.cachedEndpoint!;
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const copilotAvailabilityStatus = checkCopilotAvailability(intelligenceAPIEndpointInfo.intelligenceEndpoint!, this.orgID, this.powerPagesAgentSessionId);
 
             if (!copilotAvailabilityStatus) {
                 return createErrorResult(COPILOT_NOT_AVAILABLE_MSG, RESPONSE_SCENARIOS.COPILOT_NOT_AVAILABLE, this.orgID);
@@ -162,7 +167,7 @@ export class PowerPagesChatParticipant {
                 const commandRequest = {
                     request,
                     stream,
-                    intelligenceAPIEndpointInfo,
+                    intelligenceAPIEndpointInfo: this.cachedEndpoint,
                     intelligenceApiToken,
                     powerPagesAgentSessionId: this.powerPagesAgentSessionId,
                     orgID: this.orgID,
@@ -203,9 +208,9 @@ export class PowerPagesChatParticipant {
                     sessionID: this.powerPagesAgentSessionId,
                     entityName: entityName,
                     entityColumns: componentInfo,
-                    aibEndpoint: intelligenceAPIEndpointInfo.intelligenceEndpoint,
-                    geoName: intelligenceAPIEndpointInfo.geoName,
-                    crossGeoDataMovementEnabledPPACFlag: intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag,
+                    aibEndpoint: this.cachedEndpoint?.intelligenceEndpoint || '',
+                    geoName: this.cachedEndpoint?.geoName || '',
+                    crossGeoDataMovementEnabledPPACFlag: this.cachedEndpoint?.crossGeoDataMovementEnabledPPACFlag || false,
                     relatedFiles: relatedFiles
                 };
 
@@ -247,6 +252,9 @@ export class PowerPagesChatParticipant {
             this.orgUrl = orgUrl;
             this.environmentID = environmentID;
             this.isOrgDetailsInitialized = true;
+            
+            // Initialize endpoint information after org details are set
+            await this.initializeEndpoint();
         } catch (error) {
             return;
         }
@@ -257,5 +265,27 @@ export class PowerPagesChatParticipant {
         this.orgID = orgID;
         this.orgUrl = orgUrl;
         this.environmentID = environmentID;
+        
+        // Re-initialize endpoint information after org change
+        await this.initializeEndpoint();
+    }
+
+    private async initializeEndpoint(): Promise<boolean> {
+        try {
+            if (!this.orgID || !this.environmentID) {
+                return false;
+            }
+            
+            this.cachedEndpoint = await getEndpoint(this.orgID, this.environmentID, this.cachedEndpoint, this.powerPagesAgentSessionId);
+            
+            if (!this.cachedEndpoint.intelligenceEndpoint) {
+                return false;
+            }
+            
+            return true;
+        } catch (error) {
+            oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ERROR, 'Failed to initialize endpoint', error as Error, { sessionId: this.powerPagesAgentSessionId }, {});
+            return false;
+        }
     }
 }
