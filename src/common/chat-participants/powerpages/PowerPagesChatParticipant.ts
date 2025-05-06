@@ -278,7 +278,7 @@ export class PowerPagesChatParticipant {
                 return false;
             }
 
-            this.cachedEndpoint = await getEndpoint(this.orgID, this.environmentID, this.cachedEndpoint, this.powerPagesAgentSessionId, this.websiteId);
+            this.cachedEndpoint = await getEndpoint(this.orgID, this.environmentID, this.powerPagesAgentSessionId, this.websiteId);
 
             if (!this.cachedEndpoint.intelligenceEndpoint) {
                 return false;
