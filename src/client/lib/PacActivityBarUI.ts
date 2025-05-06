@@ -40,7 +40,7 @@ export function RegisterCopilotPanels(pacWrapper: PacWrapper, context: vscode.Ex
 
 
     const copilotPanel = new PowerPagesCopilot(context.extensionUri, context, pacWrapper, undefined, websiteId ?? undefined);
-    const powerPagesChatParticipant = PowerPagesChatParticipant.getInstance(context, pacWrapper);
+    const powerPagesChatParticipant = PowerPagesChatParticipant.getInstance(context, pacWrapper, websiteId ?? undefined);
 
     vscode.window.registerWebviewViewProvider('powerpages.copilot', copilotPanel, {
         webviewOptions: {
