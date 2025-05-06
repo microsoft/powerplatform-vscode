@@ -121,7 +121,7 @@ export class PowerPagesChatParticipant {
                 return createErrorResult(AUTHENTICATION_FAILED_MSG, RESPONSE_SCENARIOS.AUTHENTICATION_FAILED, this.orgID);
             }            const intelligenceApiToken = intelligenceApiAuthResponse.accessToken;
             const userId = intelligenceApiAuthResponse.userId;
-            
+
             // Use cached endpoint info instead of calling getEndpoint on every request
             if (!this.cachedEndpoint || !this.cachedEndpoint.intelligenceEndpoint) {
                 // If not yet initialized, initialize it now
@@ -129,7 +129,7 @@ export class PowerPagesChatParticipant {
                 if (!endpointInitialized) {
                     return createErrorResult(COPILOT_NOT_AVAILABLE_MSG, RESPONSE_SCENARIOS.COPILOT_NOT_AVAILABLE, this.orgID);
                 }
-            }            
+            }
             // Using non-null assertion since we've already checked above
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const intelligenceAPIEndpointInfo = this.cachedEndpoint!;
@@ -252,7 +252,7 @@ export class PowerPagesChatParticipant {
             this.orgUrl = orgUrl;
             this.environmentID = environmentID;
             this.isOrgDetailsInitialized = true;
-            
+
             // Initialize endpoint information after org details are set
             await this.initializeEndpoint();
         } catch (error) {
@@ -265,7 +265,7 @@ export class PowerPagesChatParticipant {
         this.orgID = orgID;
         this.orgUrl = orgUrl;
         this.environmentID = environmentID;
-        
+
         // Re-initialize endpoint information after org change
         await this.initializeEndpoint();
     }
@@ -275,13 +275,13 @@ export class PowerPagesChatParticipant {
             if (!this.orgID || !this.environmentID) {
                 return false;
             }
-            
-            this.cachedEndpoint = await getEndpoint(this.orgID, this.environmentID, this.cachedEndpoint, this.powerPagesAgentSessionId);
-            
+
+            this.cachedEndpoint = await getEndpoint(this.orgID, this.environmentID, this.powerPagesAgentSessionId);
+
             if (!this.cachedEndpoint.intelligenceEndpoint) {
                 return false;
             }
-            
+
             return true;
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ERROR, 'Failed to initialize endpoint', error as Error, { sessionId: this.powerPagesAgentSessionId }, {});

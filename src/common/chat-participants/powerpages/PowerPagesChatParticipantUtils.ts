@@ -21,12 +21,11 @@ import * as vscode from 'vscode';
 export async function getEndpoint(
     orgID: string,
     environmentID: string,
-    cachedEndpoint: IIntelligenceAPIEndpointInformation | null,
     sessionID: string
 ): Promise<IIntelligenceAPIEndpointInformation> {
-    if (!cachedEndpoint) {
-        cachedEndpoint = await ArtemisService.getIntelligenceEndpoint(orgID, sessionID, environmentID) as IIntelligenceAPIEndpointInformation; // TODO - add session ID
-    }
+
+    const cachedEndpoint = await ArtemisService.getIntelligenceEndpoint(orgID, sessionID, environmentID) as IIntelligenceAPIEndpointInformation; // TODO - add session ID
+
     return cachedEndpoint;
 }
 
