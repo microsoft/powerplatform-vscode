@@ -146,7 +146,7 @@ export class PPAPIService {
                     environmentId: environmentId,
                     websiteId: websiteId || '',
                     copilotSessionId: sessionId,
-                    copilotGovernanceResponse: allowProDevCopilots
+                    copilotGovernanceResponse: result.toString(),
                 });
 
                 return allowProDevCopilots;
