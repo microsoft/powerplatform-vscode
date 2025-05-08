@@ -10,7 +10,7 @@
   "Preview site URL is not valid": "Preview site URL is not valid",
   "Opening preview site...": "Opening preview site...",
   "Power Pages studio URL is not available": "Power Pages studio URL is not available",
-  "Microsoft wants your feeback": "Microsoft wants your feeback",
+  "Microsoft wants your feedback": "Microsoft wants your feedback",
   "Check the URL and verify the parameters are correct": "Check the URL and verify the parameters are correct",
   "Unable to complete the request": "Unable to complete the request",
   "One or more attribute names have been changed or removed. Contact your admin.": "One or more attribute names have been changed or removed. Contact your admin.",
@@ -206,8 +206,11 @@
   "Site Details": "Site Details",
   "Browse...": "Browse...",
   "Select the folder that will contain your project root for your site": "Select the folder that will contain your project root for your site",
+  "Select the folder that contains your compiled output": "Select the folder that contains your compiled output",
   "Select Folder": "Select Folder",
   "Environment changed successfully.": "Environment changed successfully.",
+  "Please select the folder that contains your compiled output to upload your site.": "Please select the folder that contains your compiled output to upload your site.",
+  "Upload failed. Please try again later.": "Upload failed. Please try again later.",
   "Timestamp: {0}/{0} is the timestamp": {
     "message": "Timestamp: {0}",
     "comment": [

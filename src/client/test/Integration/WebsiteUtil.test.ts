@@ -77,7 +77,8 @@ describe("WebsiteUtil", () => {
                     siteManagementUrl: 'https://management.url/1',
                     siteVisibility: undefined,
                     creator: 'Test User',
-                    createdOn: '2025-03-01T12:00:00Z'
+                    createdOn: '2025-03-01T12:00:00Z',
+                    isCodeSite: false
                 },
                 {
                     name: 'Test Website 2',
@@ -90,7 +91,8 @@ describe("WebsiteUtil", () => {
                     siteManagementUrl: 'https://management.url/2',
                     siteVisibility: undefined,
                     creator: 'Another User',
-                    createdOn: '2025-03-15T12:00:00Z'
+                    createdOn: '2025-03-15T12:00:00Z',
+                    isCodeSite: false
                 }
             ];
 
@@ -190,6 +192,16 @@ describe("WebsiteUtil", () => {
             }
         ];
 
+        const mockPowerPagesSiteSettings = [
+            {
+                mspp_name: "CodeSite/Enabled",
+                mspp_value: "false",
+                _mspp_websiteid_value: "pp-id-1",
+                statecode: 0,
+                statuscode: 1
+            }
+        ];
+
         it("should return combined website details from ADX and Power Pages", async () => {
             // Arrange
             // Stub the dataverseAuthentication function directly
@@ -212,6 +224,12 @@ describe("WebsiteUtil", () => {
                 json: () => Promise.resolve({ value: mockAppModules })
             } as Response);
 
+            // Fourth call - Power Pages site settings
+            fetchStub.onCall(3).resolves({
+                ok: true,
+                json: () => Promise.resolve({ value: mockPowerPagesSiteSettings })
+            } as Response);
+
             // Act
             const result = await getAllWebsites(mockOrgDetails);
 
@@ -225,6 +243,8 @@ describe("WebsiteUtil", () => {
             expect(adxWebsite?.name).to.equal("ADX Website 1");
             expect(adxWebsite?.dataModel).to.equal(WebsiteDataModel.Standard);
             expect(adxWebsite?.siteManagementUrl).to.include("portal-app-id");
+            expect(adxWebsite?.websiteUrl).to.equal("https://adx1.powerapps.com");
+            expect(adxWebsite?.isCodeSite).to.be.false;
 
             // Verify Power Pages website details
             const ppWebsite = result.find(w => w.websiteRecordId === "pp-id-1");
@@ -232,6 +252,7 @@ describe("WebsiteUtil", () => {
             expect(ppWebsite?.name).to.equal("Power Pages Site 1");
             expect(ppWebsite?.dataModel).to.equal(WebsiteDataModel.Enhanced);
             expect(ppWebsite?.siteManagementUrl).to.include("pp-app-id");
+            expect(ppWebsite?.isCodeSite).to.be.false;
         });
 
         it("should handle errors when fetching ADX website records gracefully", async () => {
@@ -256,6 +277,12 @@ describe("WebsiteUtil", () => {
             fetchStub.onThirdCall().resolves({
                 ok: true,
                 json: () => Promise.resolve({ value: mockAppModules })
+            } as Response);
+
+            // Fourth call - Power Pages site settings
+            fetchStub.onCall(3).resolves({
+                ok: true,
+                json: () => Promise.resolve({ value: mockPowerPagesSiteSettings })
             } as Response);
 
             // Act
@@ -292,6 +319,12 @@ describe("WebsiteUtil", () => {
                 json: () => Promise.resolve({ value: mockAppModules })
             } as Response);
 
+            // Fourth call - Power Pages site settings
+            fetchStub.onCall(3).resolves({
+                ok: true,
+                json: () => Promise.resolve({ value: mockPowerPagesSiteSettings })
+            } as Response);
+
             // Act
             const result = await getAllWebsites(mockOrgDetails);
 
@@ -324,6 +357,12 @@ describe("WebsiteUtil", () => {
             fetchStub.onThirdCall().resolves({
                 ok: false,
                 status: 500
+            } as Response);
+
+            // Fourth call - Power Pages site settings
+            fetchStub.onCall(3).resolves({
+                ok: true,
+                json: () => Promise.resolve({ value: mockPowerPagesSiteSettings })
             } as Response);
 
             // Act
@@ -405,6 +444,12 @@ describe("WebsiteUtil", () => {
 
             // Third call - App modules empty
             fetchStub.onThirdCall().resolves({
+                ok: true,
+                json: () => Promise.resolve({ value: [] })
+            } as Response);
+
+            // Fourth call - Power Pages site settings
+            fetchStub.onCall(3).resolves({
                 ok: true,
                 json: () => Promise.resolve({ value: [] })
             } as Response);

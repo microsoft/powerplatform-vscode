@@ -74,7 +74,8 @@ describe('ActiveGroupTreeItem', () => {
                         siteVisibility: SiteVisibility.Public,
                         siteManagementUrl: "http://site1.com/manage",
                         createdOn: "2025-03-20",
-                        creator: "Test Creator"
+                        creator: "Test Creator",
+                        isCodeSite: true
                     },
                     {
                         websiteRecordId: "2",
@@ -87,7 +88,8 @@ describe('ActiveGroupTreeItem', () => {
                         siteVisibility: SiteVisibility.Private,
                         siteManagementUrl: "http://site2.com/manage",
                         createdOn: "2025-03-20",
-                        creator: "Test Creator"
+                        creator: "Test Creator",
+                        isCodeSite: false
                     }
                 ];
 
@@ -105,7 +107,8 @@ describe('ActiveGroupTreeItem', () => {
                     siteVisibility: SiteVisibility.Public,
                     siteManagementUrl: "http://site1.com/manage",
                     createdOn: "2025-03-20",
-                    creator: "Test Creator"
+                    creator: "Test Creator",
+                    isCodeSite: true
                 });
 
                 const site2 = children[1] as SiteTreeItem;
@@ -119,7 +122,8 @@ describe('ActiveGroupTreeItem', () => {
                     siteVisibility: SiteVisibility.Private,
                     siteManagementUrl: "http://site2.com/manage",
                     createdOn: "2025-03-20",
-                    creator: "Test Creator"
+                    creator: "Test Creator",
+                    isCodeSite: false
                 });
             });
 
@@ -137,7 +141,8 @@ describe('ActiveGroupTreeItem', () => {
                         siteVisibility: SiteVisibility.Public,
                         siteManagementUrl: "http://site1.com/manage",
                         createdOn: "2025-03-20",
-                        creator: "Test Creator"
+                        creator: "Test Creator",
+                        isCodeSite: true
                     }
                 ];
 
@@ -155,7 +160,8 @@ describe('ActiveGroupTreeItem', () => {
                     siteVisibility: "public",
                     siteManagementUrl: "http://site1.com/manage",
                     createdOn: "2025-03-20",
-                    creator: "Test Creator"
+                    creator: "Test Creator",
+                    isCodeSite: true
                 });
             });
 
@@ -174,7 +180,8 @@ describe('ActiveGroupTreeItem', () => {
                         siteVisibility: SiteVisibility.Public,
                         siteManagementUrl: "http://site1.com/manage",
                         createdOn: "2025-03-20",
-                        creator: "Test Creator"
+                        creator: "Test Creator",
+                        isCodeSite: true
                     }
                 ];
 
@@ -192,7 +199,8 @@ describe('ActiveGroupTreeItem', () => {
                     siteVisibility: SiteVisibility.Public,
                     siteManagementUrl: "http://site1.com/manage",
                     createdOn: "2025-03-20",
-                    creator: "Test Creator"
+                    creator: "Test Creator",
+                    isCodeSite: true
                 });
             });
         });

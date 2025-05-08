@@ -11,7 +11,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { parse } from 'yaml';
 import { GetWebsiteRecordID, sendTelemetryEvent } from '../OneDSLoggerTelemetry/telemetry/telemetry';
-import { WEBSITE_YML } from '../constants';
+import { POWERPAGES_SITE_FOLDER, WEBSITE_YML } from '../constants';
 
 export function getPortalsOrgURLs(workspaceRootFolders: WorkspaceFolder[] | null) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -73,6 +73,21 @@ export function findWebsiteYmlFolder(startPath: string): string | null {
     let currentPath = startPath;
     while (currentPath) {
         if (fs.existsSync(path.join(currentPath, WEBSITE_YML))) {
+            return currentPath;
+        }
+        const parentPath = path.dirname(currentPath);
+        if (parentPath === currentPath) {
+            break;
+        }
+        currentPath = parentPath;
+    }
+    return null;
+}
+
+export function findPowerPagesSiteFolder(startPath: string): string | null {
+    let currentPath = startPath;
+    while (currentPath) {
+        if (fs.existsSync(path.join(currentPath, POWERPAGES_SITE_FOLDER))) {
             return currentPath;
         }
         const parentPath = path.dirname(currentPath);

@@ -40,13 +40,16 @@ export const Constants = {
         SITE_DETAILS: vscode.l10n.t("Site Details"),
         BROWSE: vscode.l10n.t("Browse..."),
         SELECT_DOWNLOAD_FOLDER: vscode.l10n.t("Select the folder that will contain your project root for your site"),
+        SELECT_COMPILED_OUTPUT_FOLDER: vscode.l10n.t("Select the folder that contains your compiled output"),
         SELECT_FOLDER: vscode.l10n.t("Select Folder"),
         ENVIRONMENT_CHANGED_SUCCESSFULLY: vscode.l10n.t("Environment changed successfully."),
         ORGANIZATION_URL_MISSING: "Organization URL is missing in the results.",
         EMPTY_RESULTS_ARRAY: "Results array is empty or not an array.",
         PAC_AUTH_OUTPUT_FAILURE: "pacAuthCreateOutput is missing or unsuccessful.",
         CONFIGURATION_NAME: "powerPlatform.pages",
-        DOWNLOAD_SETTING_NAME: "downloadSiteFolder"
+        DOWNLOAD_SETTING_NAME: "downloadSiteFolder",
+        UPLOAD_CODE_SITE_COMPILED_OUTPUT_FOLDER_NOT_FOUND: vscode.l10n.t("Please select the folder that contains your compiled output to upload your site."),
+        UPLOAD_CODE_SITE_FAILED: vscode.l10n.t("Upload failed. Please try again later.")
     },
     EventNames: {
         ACTIONS_HUB_ENABLED: "ActionsHubEnabled",
@@ -97,8 +100,12 @@ export const Constants = {
         ACTIONS_HUB_DOWNLOAD_SITE_CALLED: "ActionsHubDownloadSiteCalled",
         ACTIONS_HUB_DOWNLOAD_SITE_FAILED: "ActionsHubDownloadSiteFailed",
         ACTIONS_HUB_DOWNLOAD_SITE_PAC_TRIGGERED: "ActionsHubDownloadSitePacTriggered",
+        ACTIONS_HUB_DOWNLOAD_CODE_SITE_PAC_TRIGGERED: "ActionsHubDownloadCodeSitePacTriggered",
         ACTIONS_HUB_OPEN_SITE_IN_STUDIO_CALLED: "ActionsHubOpenSiteInStudioCalled",
-        ACTIONS_HUB_OPEN_SITE_IN_STUDIO_FAILED: "ActionsHubOpenSiteInStudioFailed"
+        ACTIONS_HUB_OPEN_SITE_IN_STUDIO_FAILED: "ActionsHubOpenSiteInStudioFailed",
+        ACTIONS_HUB_UPLOAD_CODE_SITE_CALLED: "ActionsHubUploadCodeSiteCalled",
+        ACTIONS_HUB_UPLOAD_CODE_SITE_FAILED: "ActionsHubUploadCodeSiteFailed",
+        ACTIONS_HUB_UPLOAD_OTHER_CODE_SITE_PAC_TRIGGERED: "ActionsHubUploadOtherCodeSitePacTriggered"
     },
     FeatureNames: {
         REFRESH_ENVIRONMENT: "RefreshEnvironment"

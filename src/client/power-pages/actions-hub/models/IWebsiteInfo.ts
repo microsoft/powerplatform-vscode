@@ -18,4 +18,5 @@ export interface IWebsiteInfo {
     folderPath?: string;
     creator: string;
     createdOn: string;
+    isCodeSite: boolean;
 }

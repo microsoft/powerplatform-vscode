@@ -25,7 +25,8 @@ describe('SiteTreeItem', () => {
             siteVisibility: SiteVisibility.Public,
             siteManagementUrl: "https://powerpagesmanagement.com",
             createdOn: "2025-03-20",
-            creator: "Test Creator"
+            creator: "Test Creator",
+            isCodeSite: true
         };
     });
 

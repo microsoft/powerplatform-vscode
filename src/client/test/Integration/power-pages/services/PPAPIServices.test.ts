@@ -32,18 +32,19 @@ describe('PPAPIService', () => {
         siteManagementUrl: 'https://mock-management-url',
         creator: 'Mock User',
         createdOn: '2025-01-01T00:00:00Z',
-        siteVisibility: undefined
+        siteVisibility: undefined,
+        isCodeSite: false
     };
-    
+
     const mockWebsiteDetailsArray: IWebsiteDetails[] = [mockWebsiteDetails];
 
     beforeEach(() => {
         // Create stubs for authentication, fetch and telemetry
         powerPlatformAPIAuthenticationStub = sinon.stub(AuthenticationProvider, 'powerPlatformAPIAuthentication').resolves(mockAccessToken);
-        
+
         // Create a stub for global fetch
         fetchStub = sinon.stub(global, 'fetch');
-        
+
         // Create a stub for telemetry
         sendTelemetryEventStub = sinon.stub(copilotTelemetry, 'sendTelemetryEvent');
     });
@@ -64,8 +65,8 @@ describe('PPAPIService', () => {
 
             // Call the function
             const result = await PPAPIService.getWebsiteDetailsById(
-                ServiceEndpointCategory.PROD, 
-                mockEnvironmentId, 
+                ServiceEndpointCategory.PROD,
+                mockEnvironmentId,
                 mockWebsitePreviewId
             );
 
@@ -82,8 +83,8 @@ describe('PPAPIService', () => {
 
             // Call the function
             const result = await PPAPIService.getWebsiteDetailsById(
-                ServiceEndpointCategory.PROD, 
-                mockEnvironmentId, 
+                ServiceEndpointCategory.PROD,
+                mockEnvironmentId,
                 mockWebsitePreviewId
             );
 
@@ -155,7 +156,7 @@ describe('PPAPIService', () => {
 
             // Call the function
             const result = await PPAPIService.getAllWebsiteDetails(
-                ServiceEndpointCategory.PROD, 
+                ServiceEndpointCategory.PROD,
                 mockEnvironmentId
             );
 
@@ -171,7 +172,7 @@ describe('PPAPIService', () => {
 
             // Call the function
             const result = await PPAPIService.getAllWebsiteDetails(
-                ServiceEndpointCategory.PROD, 
+                ServiceEndpointCategory.PROD,
                 mockEnvironmentId
             );
 
@@ -192,7 +193,7 @@ describe('PPAPIService', () => {
 
             // Call the function
             const result = await PPAPIService.getAllWebsiteDetails(
-                ServiceEndpointCategory.PROD, 
+                ServiceEndpointCategory.PROD,
                 mockEnvironmentId
             );
 
@@ -256,7 +257,7 @@ describe('PPAPIService', () => {
         it('should return true for allowed governance flag with website ID', async () => {
             // Setup stubs
             const getWebsiteDetailsByWebsiteRecordIdStub = sinon.stub(PPAPIService, 'getWebsiteDetailsByWebsiteRecordId').resolves(mockWebsiteDetails);
-            
+
             // Setup successful response with 'true'
             const mockResponse = {
                 ok: true,
@@ -282,7 +283,7 @@ describe('PPAPIService', () => {
         });        it('should return true for "all" governance flag response', async () => {
             // Setup stubs
             const getWebsiteDetailsByWebsiteRecordIdStub = sinon.stub(PPAPIService, 'getWebsiteDetailsByWebsiteRecordId').resolves(mockWebsiteDetails);
-            
+
             // Setup successful response with 'all'
             const mockResponse = {
                 ok: true,
@@ -308,7 +309,7 @@ describe('PPAPIService', () => {
 
         it('should return false for disallowed governance flag', async () => {
             // Setup stubs for environment without website ID
-            
+
             // Setup successful response with 'false'
             const mockResponse = {
                 ok: true,

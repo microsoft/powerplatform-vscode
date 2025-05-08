@@ -48,12 +48,14 @@ export interface IWebsiteDetails {
     siteManagementUrl: string;
     creator: string;
     createdOn: string;
+    isCodeSite: boolean;
 }
 
 export interface IOtherSiteInfo {
     name: string;
     websiteId: string;
     folderPath: string;
+    isCodeSite: boolean;
 }
 
 export interface WebsiteYaml {

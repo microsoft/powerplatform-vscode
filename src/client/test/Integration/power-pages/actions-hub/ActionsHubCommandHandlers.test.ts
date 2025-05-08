@@ -626,7 +626,8 @@ describe('ActionsHubCommandHandlers', () => {
                 siteVisibility: SiteVisibility.Public,
                 siteManagementUrl: 'https://test-site-management.com',
                 createdOn: "2025-03-20",
-                creator: "Test Creator"
+                creator: "Test Creator",
+                isCodeSite: false
             };
         });
 
@@ -699,7 +700,8 @@ describe('ActionsHubCommandHandlers', () => {
                     dataModel: WebsiteDataModel.Enhanced,
                     websiteUrl: 'https://active-site-1.com',
                     id: 'active-site-1',
-                    siteVisibility: "public"
+                    siteVisibility: "public",
+                    isCodeSite: false
                 }
             ] as IWebsiteDetails[];
             const inactiveSites = [
@@ -710,7 +712,8 @@ describe('ActionsHubCommandHandlers', () => {
                     websiteUrl: 'https://inactive-site-1.com',
                     id: 'inactive-site-1',
                     siteVisibility: 'private',
-                    siteManagementUrl: "https://inactive-site-1-management.com"
+                    siteManagementUrl: "https://inactive-site-1-management.com",
+                    isCodeSite: false
                 }
             ] as IWebsiteDetails[];
 
@@ -724,7 +727,7 @@ describe('ActionsHubCommandHandlers', () => {
 
             const response = await fetchWebsites();
 
-            expect(response.activeSites).to.deep.equal([...activeSites.map(site => ({ ...site, siteManagementUrl: "https://portalmanagement.com", createdOn: "2025-03-20", creator: "Test Creator" }))]);
+            expect(response.activeSites).to.deep.equal([...activeSites.map(site => ({ ...site, isCodeSite: false, siteManagementUrl: "https://portalmanagement.com", createdOn: "2025-03-20", creator: "Test Creator" }))]);
             expect(response.inactiveSites).to.deep.equal(inactiveSites);
         });
     });
@@ -869,7 +872,8 @@ describe('ActionsHubCommandHandlers', () => {
                 siteVisibility: SiteVisibility.Public,
                 siteManagementUrl: "https://inactive-site-1-management.com",
                 createdOn: "2025-03-20",
-                creator: "Test Creator"
+                creator: "Test Creator",
+                isCodeSite: false
             });
             mockShowInformationMessage.resolves(Constants.Strings.YES);
 
@@ -892,7 +896,8 @@ describe('ActionsHubCommandHandlers', () => {
                 siteVisibility: SiteVisibility.Public,
                 siteManagementUrl: "https://inactive-site-1-management.com",
                 createdOn: "2025-03-20",
-                creator: "Test Creator"
+                creator: "Test Creator",
+                isCodeSite: false
             });
             mockShowInformationMessage.resolves(undefined);
 
@@ -913,13 +918,42 @@ describe('ActionsHubCommandHandlers', () => {
                 siteVisibility: SiteVisibility.Private,
                 siteManagementUrl: "https://inactive-site-1-management.com",
                 createdOn: "2025-03-20",
-                creator: "Test Creator"
+                creator: "Test Creator",
+                isCodeSite: false
             });
 
             await uploadSite(mockSiteTreeItem, "");
 
             expect(mockShowInformationMessage.called).to.be.false;
             expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
+        });
+
+        it('should upload code site', async () => {
+            mockSiteTreeItem = new SiteTreeItem({
+                name: "Test Site",
+                websiteId: "test-id",
+                dataModelVersion: 1,
+                status: WebsiteStatus.Active,
+                websiteUrl: 'https://test-site.com',
+                isCurrent: false,
+                siteVisibility: SiteVisibility.Private,
+                siteManagementUrl: "https://inactive-site-1-management.com",
+                createdOn: "2025-03-20",
+                creator: "Test Creator",
+                isCodeSite: true
+            });
+
+            const mockQuickPick = sinon.stub(vscode.window, 'showQuickPick');
+            mockQuickPick.resolves({ label: "Browse..." });
+
+            const mockShowOpenDialog = sinon.stub(vscode.window, 'showOpenDialog');
+            mockShowOpenDialog.resolves([{ fsPath: "D:/foo" } as unknown as vscode.Uri]);
+
+            await uploadSite(mockSiteTreeItem, "");
+
+            expect(mockQuickPick.calledOnce, "showQuickPick was not called").to.be.true;
+            expect(mockShowOpenDialog.calledOnce, "showOpenDialog was not called").to.be.true;
+            expect(mockSendText.firstCall.args[0]).to.equal(`pac pages upload-code-site --rootPath "test-path" --compiledPath "D:/foo" --siteName "Test Site"`);
         });
 
         it('should handle case sensitivity for public site visibility', async () => {
@@ -933,7 +967,8 @@ describe('ActionsHubCommandHandlers', () => {
                 siteVisibility: SiteVisibility.Public,
                 siteManagementUrl: "https://inactive-site-1-management.com",
                 createdOn: "2025-03-20",
-                creator: "Test Creator"
+                creator: "Test Creator",
+                isCodeSite: false
             });
             mockShowInformationMessage.resolves(Constants.Strings.YES);
 
@@ -954,7 +989,8 @@ describe('ActionsHubCommandHandlers', () => {
                 siteVisibility: SiteVisibility.Private,
                 siteManagementUrl: "https://inactive-site-1-management.com",
                 createdOn: "2025-03-20",
-                creator: "Test Creator"
+                creator: "Test Creator",
+                isCodeSite: false
             });
 
             mockSendText.throws(new Error('Upload failed'));

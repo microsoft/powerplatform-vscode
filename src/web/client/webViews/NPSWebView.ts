@@ -81,7 +81,7 @@ export class NPSWebView {
     public static createOrShow(extensionUri: vscode.Uri): NPSWebView {
         const webview = vscode.window.createWebviewPanel(
             "testCESSurvey",
-            vscode.l10n.t("Microsoft wants your feeback"),
+            vscode.l10n.t("Microsoft wants your feedback"),
             { viewColumn: vscode.ViewColumn.One, preserveFocus: false },
             {
                 enableScripts: true,

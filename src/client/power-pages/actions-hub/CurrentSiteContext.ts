@@ -5,7 +5,8 @@
 
 import * as vscode from 'vscode';
 import path from 'path';
-import { findWebsiteYmlFolder, getWebsiteRecordId } from '../../../common/utilities/WorkspaceInfoFinderUtil';
+import { findPowerPagesSiteFolder, findWebsiteYmlFolder, getWebsiteRecordId } from '../../../common/utilities/WorkspaceInfoFinderUtil';
+import { POWERPAGES_SITE_FOLDER } from '../../../common/constants';
 
 export interface ICurrentSiteContext {
     currentSiteId: string | null;
@@ -72,12 +73,19 @@ export function getCurrentSiteInfo():ICurrentSiteContext {
     if (activeEditor) {
         const filePath = activeEditor.document.uri.fsPath;
         const fileDirectory = path.dirname(filePath);
-        const websiteYmlFolder = findWebsiteYmlFolder(fileDirectory);
+        let websiteYmlFolder = findWebsiteYmlFolder(fileDirectory);
+        let currentSiteFolderPath = websiteYmlFolder;
+        const powerPagesSiteFolder = findPowerPagesSiteFolder(fileDirectory);
+
+        if (!websiteYmlFolder && powerPagesSiteFolder) {
+            websiteYmlFolder = path.join(powerPagesSiteFolder, POWERPAGES_SITE_FOLDER);
+            currentSiteFolderPath = powerPagesSiteFolder;
+        }
 
         if (websiteYmlFolder) {
             const siteId = getWebsiteRecordId(websiteYmlFolder);
             if (siteId) {
-                return { currentSiteId: siteId, currentSiteFolderPath: websiteYmlFolder };
+                return { currentSiteId: siteId, currentSiteFolderPath: currentSiteFolderPath };
             }
         }
     }
@@ -85,7 +93,17 @@ export function getCurrentSiteInfo():ICurrentSiteContext {
     // Fallback: check first workspace folder
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (workspaceFolders && workspaceFolders.length > 0) {
-        const siteId = getWebsiteRecordId(workspaceFolders[0].uri.fsPath);
+        const workingDirectory = workspaceFolders[0].uri.fsPath;
+        let siteId = getWebsiteRecordId(workingDirectory);
+
+        if (!siteId) {
+            const powerPagesSiteFolder = findPowerPagesSiteFolder(workingDirectory);
+
+            if (powerPagesSiteFolder) {
+                siteId = getWebsiteRecordId(path.join(powerPagesSiteFolder, POWERPAGES_SITE_FOLDER));
+            }
+        }
+
         return { currentSiteId: siteId, currentSiteFolderPath: workspaceFolders[0].uri.fsPath };
     }
 
