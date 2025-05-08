@@ -97,6 +97,7 @@ export const Constants = {
         ACTIONS_HUB_DOWNLOAD_SITE_CALLED: "ActionsHubDownloadSiteCalled",
         ACTIONS_HUB_DOWNLOAD_SITE_FAILED: "ActionsHubDownloadSiteFailed",
         ACTIONS_HUB_DOWNLOAD_SITE_PAC_TRIGGERED: "ActionsHubDownloadSitePacTriggered",
+        ACTIONS_HUB_DOWNLOAD_CODE_SITE_PAC_TRIGGERED: "ActionsHubDownloadCodeSitePacTriggered",
         ACTIONS_HUB_OPEN_SITE_IN_STUDIO_CALLED: "ActionsHubOpenSiteInStudioCalled",
         ACTIONS_HUB_OPEN_SITE_IN_STUDIO_FAILED: "ActionsHubOpenSiteInStudioFailed"
     },

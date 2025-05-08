@@ -270,6 +270,7 @@ export const fetchWebsites = async (): Promise<{ activeSites: IWebsiteDetails[],
                 return {
                     ...detail,
                     siteManagementUrl: site.siteManagementUrl,
+                    isCodeSite: site.isCodeSite,
                     createdOn: site.createdOn,
                     creator: site.creator,
                 }
@@ -338,7 +339,7 @@ export const uploadSite = async (siteTreeItem: SiteTreeItem, websitePath: string
     traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE_CALLED, { methodName: uploadSite.name, siteIdToUpload: siteTreeItem.siteInfo.websiteId });
     try {
         // Handle upload for "other" sites (sites not in the current environment)
-        if (siteTreeItem.contextValue === Constants.ContextValues.OTHER_SITE) {
+        if (siteTreeItem && siteTreeItem.contextValue === Constants.ContextValues.OTHER_SITE) {
             await uploadOtherSite(siteTreeItem);
             return;
         }
@@ -488,7 +489,8 @@ export function findOtherSites(knownSiteIds: Set<string>, fsModule = fs, yamlMod
                         otherSites.push({
                             name: websiteData?.adx_name || path.basename(dir), // Use folder name as fallback
                             websiteId: websiteId,
-                            folderPath: dir
+                            folderPath: dir,
+                            isCodeSite: hasPowerPagesSiteFolder
                         });
                     }
                 } catch (error) {
@@ -647,6 +649,24 @@ const getDownloadPath = async () => {
     return downloadPath;
 }
 
+const executeCodeSiteDownloadCommand = (siteInfo: IWebsiteInfo, downloadPath: string) => {
+    const downloadCommandParts = ["pac", "pages", "download-code-site"];
+    downloadCommandParts.push("--overwrite");
+    downloadCommandParts.push(`--path "${downloadPath}"`);
+    downloadCommandParts.push(`--webSiteId ${siteInfo.websiteId}`);
+
+    const downloadCommand = downloadCommandParts.join(" ");
+
+    traceInfo(
+        Constants.EventNames.ACTIONS_HUB_DOWNLOAD_CODE_SITE_PAC_TRIGGERED,
+        {
+            methodName: executeCodeSiteDownloadCommand.name,
+            siteId: siteInfo.websiteId,
+            ...getBaseEventInfo()
+        }
+    );
+    PacTerminal.getTerminal().sendText(downloadCommand);
+}
 
 const executeSiteDownloadCommand = (siteInfo: IWebsiteInfo, downloadPath: string) => {
     const modelVersion = siteInfo.dataModelVersion;
@@ -661,7 +681,7 @@ const executeSiteDownloadCommand = (siteInfo: IWebsiteInfo, downloadPath: string
     traceInfo(
         Constants.EventNames.ACTIONS_HUB_DOWNLOAD_SITE_PAC_TRIGGERED,
         {
-            methodName: downloadSite.name,
+            methodName: executeSiteDownloadCommand.name,
             siteId: siteInfo.websiteId,
             dataModelVersion: modelVersion,
             ...getBaseEventInfo()
@@ -685,7 +705,7 @@ export const downloadSite = async (siteTreeItem: SiteTreeItem) => {
         let downloadPath = "";
         const { siteInfo } = siteTreeItem;
 
-        if (siteInfo.isCurrent && CurrentSiteContext.currentSiteFolderPath) {
+        if (siteInfo && siteInfo.isCurrent && CurrentSiteContext.currentSiteFolderPath) {
             downloadPath = path.dirname(CurrentSiteContext.currentSiteFolderPath);
         } else {
             downloadPath = await getDownloadPath();
@@ -695,7 +715,11 @@ export const downloadSite = async (siteTreeItem: SiteTreeItem) => {
             return;
         }
 
-        executeSiteDownloadCommand(siteInfo, downloadPath);
+        if (siteInfo.isCodeSite) {
+            executeCodeSiteDownloadCommand(siteInfo, downloadPath);
+        } else {
+            executeSiteDownloadCommand(siteInfo, downloadPath);
+        }
     } catch (error) {
         traceError(
             Constants.EventNames.ACTIONS_HUB_DOWNLOAD_SITE_FAILED,
