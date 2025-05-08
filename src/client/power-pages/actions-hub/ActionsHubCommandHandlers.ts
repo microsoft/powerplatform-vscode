@@ -355,6 +355,24 @@ export const uploadSite = async (siteTreeItem: SiteTreeItem, websitePath: string
     }
 };
 
+const uploadCodeSite = async (siteInfo: IWebsiteInfo, uploadPath: string) => {
+    traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_CODE_SITE_CALLED, { methodName: uploadCodeSite.name, siteIdToUpload: siteInfo.websiteId });
+    try {
+        const compiledPath = await getCompiledOutputFolderPath();
+
+        if (!compiledPath) {
+            await vscode.window.showErrorMessage(vscode.l10n.t(Constants.Strings.UPLOAD_CODE_SITE_COMPILED_OUTPUT_FOLDER_NOT_FOUND));
+            return;
+        }
+
+        traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_OTHER_SITE_PAC_TRIGGERED, { methodName: uploadCodeSite.name, siteIdToUpload: siteInfo.websiteId });
+        PacTerminal.getTerminal().sendText(`pac pages upload-code-site --rootPath "${uploadPath}" --compiledPath "${compiledPath}" --siteName ${siteInfo.name}`);
+    } catch (error) {
+        traceError(Constants.EventNames.ACTIONS_HUB_UPLOAD_CODE_SITE_FAILED, error as Error, { methodName: uploadCodeSite.name, siteIdToUpload: siteInfo.websiteId });
+        await vscode.window.showErrorMessage(vscode.l10n.t(Constants.Strings.UPLOAD_CODE_SITE_FAILED));
+    }
+}
+
 /**
  * Uploads a site that isn't in the current environment
  * @param siteTreeItem The site tree item containing site information
@@ -367,6 +385,11 @@ async function uploadOtherSite(siteTreeItem: SiteTreeItem): Promise<void> {
         return;
     }
 
+    if (siteTreeItem.siteInfo.isCodeSite) {
+        await uploadCodeSite(siteTreeItem.siteInfo, websitePath);
+        return;
+    }
+
     // Check if EDM is supported to determine the correct model version
     let modelVersionParam = '';
     let dataModelVersion = 1;
@@ -376,7 +399,7 @@ async function uploadOtherSite(siteTreeItem: SiteTreeItem): Promise<void> {
     if (dataverseAccessToken) {
         const isEdmSupported = await isEdmEnvironment(currentOrgUrl, dataverseAccessToken.accessToken);
         if (isEdmSupported) {
-            modelVersionParam = ' --modelVersion 2';
+            modelVersionParam = '--modelVersion 2';
             dataModelVersion = 2;
         }
     }
@@ -395,8 +418,7 @@ async function uploadCurrentSite(siteTreeItem: SiteTreeItem, websitePath: string
         {
             methodName: uploadSite.name,
             siteIdToUpload: siteTreeItem.siteInfo.websiteId,
-            modelVersion: siteTreeItem.siteInfo.dataModelVersion,
-            ...getBaseEventInfo()
+            modelVersion: siteTreeItem.siteInfo.dataModelVersion
         }
     );
 
@@ -412,8 +434,7 @@ async function uploadCurrentSite(siteTreeItem: SiteTreeItem, websitePath: string
             traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_CURRENT_SITE_CANCELLED_PUBLIC_SITE, {
                 methodName: uploadSite.name,
                 siteId: siteTreeItem.siteInfo.websiteId,
-                modelVersion: siteTreeItem.siteInfo.dataModelVersion,
-                ...getBaseEventInfo()
+                modelVersion: siteTreeItem.siteInfo.dataModelVersion
             });
             return;
         }
@@ -422,6 +443,11 @@ async function uploadCurrentSite(siteTreeItem: SiteTreeItem, websitePath: string
     const websitePathToUpload = websitePath || CurrentSiteContext.currentSiteFolderPath;
     if (!websitePathToUpload) {
         vscode.window.showErrorMessage(vscode.l10n.t(Constants.Strings.CURRENT_SITE_PATH_NOT_FOUND));
+        return;
+    }
+
+    if (siteTreeItem.siteInfo.isCodeSite) {
+        await uploadCodeSite(siteTreeItem.siteInfo, websitePathToUpload);
         return;
     }
 
@@ -514,7 +540,7 @@ export function findOtherSites(knownSiteIds: Set<string>, fsModule = fs, yamlMod
     }
 }
 
-function createKnownSiteIdsSet(
+export function createKnownSiteIdsSet(
     activeSites: IWebsiteDetails[] | undefined,
     inactiveSites: IWebsiteDetails[] | undefined
 ): Set<string> {
@@ -543,8 +569,7 @@ export const showSiteDetails = async (siteTreeItem: SiteTreeItem) => {
         {
             methodName: showSiteDetails.name,
             siteId: siteInfo.websiteId,
-            dataModelVersion: siteInfo.dataModelVersion,
-            ...getBaseEventInfo()
+            dataModelVersion: siteInfo.dataModelVersion
         }
     );
 
@@ -577,8 +602,7 @@ export const showSiteDetails = async (siteTreeItem: SiteTreeItem) => {
                 {
                     methodName: showSiteDetails.name,
                     siteId: siteInfo.websiteId,
-                    dataModelVersion: siteInfo.dataModelVersion,
-                    ...getBaseEventInfo()
+                    dataModelVersion: siteInfo.dataModelVersion
                 }
             );
             await vscode.env.clipboard.writeText(formattedDetails);
@@ -590,8 +614,7 @@ export const showSiteDetails = async (siteTreeItem: SiteTreeItem) => {
             {
                 methodName: showSiteDetails.name,
                 siteId: siteInfo.websiteId,
-                dataModelVersion: siteInfo.dataModelVersion,
-                ...getBaseEventInfo()
+                dataModelVersion: siteInfo.dataModelVersion
             }
         );
     }
@@ -613,6 +636,43 @@ const getDownloadFolderOptions = () => {
     }
 
     return options;
+}
+
+const getCompiledOutputFolderOptions = () => {
+    const options = [
+        {
+            label: Constants.Strings.BROWSE,
+            iconPath: new vscode.ThemeIcon("folder")
+        }
+    ] as { label: string, iconPath: vscode.ThemeIcon | undefined }[];
+
+    return options;
+}
+
+const getCompiledOutputFolderPath = async () => {
+    let compiledOutputPath = "";
+
+    const option = await vscode.window.showQuickPick(getCompiledOutputFolderOptions(), {
+        canPickMany: false,
+        placeHolder: Constants.Strings.SELECT_COMPILED_OUTPUT_FOLDER
+    });
+
+    if (option?.label === Constants.Strings.BROWSE) {
+        const folderUri = await vscode.window.showOpenDialog({
+            canSelectFolders: true,
+            canSelectFiles: false,
+            openLabel: Constants.Strings.SELECT_FOLDER,
+            title: Constants.Strings.SELECT_COMPILED_OUTPUT_FOLDER
+        });
+
+        if (folderUri && folderUri.length > 0) {
+            compiledOutputPath = folderUri[0].fsPath;
+        }
+    } else {
+        compiledOutputPath = option?.label || "";
+    }
+    return compiledOutputPath;
+
 }
 
 const getDownloadPath = async () => {
@@ -661,8 +721,7 @@ const executeCodeSiteDownloadCommand = (siteInfo: IWebsiteInfo, downloadPath: st
         Constants.EventNames.ACTIONS_HUB_DOWNLOAD_CODE_SITE_PAC_TRIGGERED,
         {
             methodName: executeCodeSiteDownloadCommand.name,
-            siteId: siteInfo.websiteId,
-            ...getBaseEventInfo()
+            siteId: siteInfo.websiteId
         }
     );
     PacTerminal.getTerminal().sendText(downloadCommand);
@@ -683,8 +742,7 @@ const executeSiteDownloadCommand = (siteInfo: IWebsiteInfo, downloadPath: string
         {
             methodName: executeSiteDownloadCommand.name,
             siteId: siteInfo.websiteId,
-            dataModelVersion: modelVersion,
-            ...getBaseEventInfo()
+            dataModelVersion: modelVersion
         }
     );
     PacTerminal.getTerminal().sendText(downloadCommand);
@@ -696,8 +754,7 @@ export const downloadSite = async (siteTreeItem: SiteTreeItem) => {
         {
             methodName: downloadSite.name,
             siteId: siteTreeItem.siteInfo.websiteId,
-            dataModelVersion: siteTreeItem.siteInfo.dataModelVersion,
-            ...getBaseEventInfo()
+            dataModelVersion: siteTreeItem.siteInfo.dataModelVersion
         }
     );
 
@@ -727,8 +784,7 @@ export const downloadSite = async (siteTreeItem: SiteTreeItem) => {
             {
                 methodName: downloadSite.name,
                 siteId: siteTreeItem.siteInfo.websiteId,
-                dataModelVersion: siteTreeItem.siteInfo.dataModelVersion,
-                ...getBaseEventInfo()
+                dataModelVersion: siteTreeItem.siteInfo.dataModelVersion
             }
         );
     }
@@ -754,8 +810,7 @@ export const openInStudio = async (siteTreeItem: SiteTreeItem) => {
         {
             methodName: openInStudio.name,
             siteId: siteTreeItem.siteInfo.websiteId,
-            dataModelVersion: siteTreeItem.siteInfo.dataModelVersion,
-            ...getBaseEventInfo()
+            dataModelVersion: siteTreeItem.siteInfo.dataModelVersion
         }
     );
     try {
@@ -774,8 +829,7 @@ export const openInStudio = async (siteTreeItem: SiteTreeItem) => {
             {
                 methodName: openInStudio.name,
                 siteId: siteTreeItem.siteInfo.websiteId,
-                dataModelVersion: siteTreeItem.siteInfo.dataModelVersion,
-                ...getBaseEventInfo()
+                dataModelVersion: siteTreeItem.siteInfo.dataModelVersion
             }
         );
     }
