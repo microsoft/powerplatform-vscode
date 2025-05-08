@@ -103,3 +103,4 @@ export const POWERPAGES_SITE_RECORDS_FETCH_FAILED = 'PowerPagesSiteRecordsFetchF
 export const APP_MODULES_FETCH_FAILED = 'AppModulesFetchFailed';
 export const GET_ALL_WEBSITES_FAILED = 'GetAllWebsitesFailed';
 export const WEBSITE_YML = 'website.yml';
+export const POWERPAGES_SITE_FOLDER = ".powerpages-site";

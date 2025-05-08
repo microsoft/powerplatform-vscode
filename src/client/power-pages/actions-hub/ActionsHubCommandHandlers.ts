@@ -8,7 +8,7 @@ import * as fs from 'fs';
 import * as yaml from 'yaml';
 import { Constants } from './Constants';
 import { PacTerminal } from '../../lib/PacTerminal';
-import { SUCCESS, UTF8_ENCODING, WEBSITE_YML } from '../../../common/constants';
+import { POWERPAGES_SITE_FOLDER, SUCCESS, UTF8_ENCODING, WEBSITE_YML } from '../../../common/constants';
 import { AuthInfo, OrgListOutput } from '../../pac/PacTypes';
 import { extractAuthInfo } from '../commonUtility';
 import { showProgressWithNotification } from '../../../common/utilities/Utils';
@@ -294,7 +294,7 @@ export const revealInOS = async (siteTreeItem: SiteTreeItem) => {
     traceInfo(Constants.EventNames.ACTIONS_HUB_REVEAL_IN_OS_CALLED, { methodName: revealInOS.name });
     try {
         let folderPath = CurrentSiteContext.currentSiteFolderPath;
-        if (siteTreeItem.contextValue === Constants.ContextValues.OTHER_SITE) {
+        if (siteTreeItem && siteTreeItem.contextValue === Constants.ContextValues.OTHER_SITE) {
             folderPath = siteTreeItem.siteInfo.folderPath || "";
         }
 
@@ -459,16 +459,25 @@ export function findOtherSites(knownSiteIds: Set<string>, fsModule = fs, yamlMod
             directories.push(currentWorkspaceFolder);
         }
 
+        // Check each directory for website.yml or .powerpages-site folder
         const otherSites: IOtherSiteInfo[] = [];
-
-        // Check each directory for website.yml
         for (const dir of directories) {
-            const websiteYamlPath = path.join(dir, WEBSITE_YML);
+            let websiteYamlPath = path.join(dir, WEBSITE_YML);
+            let hasWebsiteYaml = fsModule.existsSync(websiteYamlPath);
+            const powerPagesSiteFolderPath = path.join(dir, POWERPAGES_SITE_FOLDER);
+            const hasPowerPagesSiteFolder = fsModule.existsSync(powerPagesSiteFolderPath);
+            let workingDir = dir;
 
-            if (fsModule.existsSync(websiteYamlPath)) {
+            if (hasPowerPagesSiteFolder) {
+                workingDir = path.join(dir, POWERPAGES_SITE_FOLDER);
+                websiteYamlPath = path.join(workingDir, WEBSITE_YML);
+                hasWebsiteYaml = fsModule.existsSync(websiteYamlPath);
+            }
+
+            if (hasWebsiteYaml) {
                 try {
                     // Use the utility function to get website record ID
-                    const websiteId = getWebsiteRecordId(dir);
+                    const websiteId = getWebsiteRecordId(workingDir);
 
                     // Only include sites that aren't already in active or inactive sites
                     if (websiteId && !knownSiteIds.has(websiteId.toLowerCase())) {
