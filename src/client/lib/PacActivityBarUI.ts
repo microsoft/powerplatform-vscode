@@ -9,6 +9,7 @@ import { AuthTreeView } from './AuthPanelView';
 import { EnvAndSolutionTreeView } from './EnvAndSolutionTreeView';
 import { PowerPagesCopilot } from '../../common/copilot/PowerPagesCopilot';
 import { PowerPagesChatParticipant } from '../../common/chat-participants/powerpages/PowerPagesChatParticipant';
+import { getCurrentSiteInfo } from '../power-pages/actions-hub/CurrentSiteContext';
 
 /**
  * Registers authentication and environment panels that don't require ECS initialization
@@ -33,8 +34,13 @@ export function RegisterBasicPanels(pacWrapper: PacWrapper): vscode.Disposable[]
  * @returns Array of disposable objects
  */
 export function RegisterCopilotPanels(pacWrapper: PacWrapper, context: vscode.ExtensionContext): vscode.Disposable[] {
-    const copilotPanel = new PowerPagesCopilot(context.extensionUri, context, pacWrapper);
-    const powerPagesChatParticipant = PowerPagesChatParticipant.getInstance(context, pacWrapper);
+
+    const siteInfo = getCurrentSiteInfo();
+    const websiteId = siteInfo.currentSiteId;
+
+
+    const copilotPanel = new PowerPagesCopilot(context.extensionUri, context, pacWrapper, undefined, websiteId ?? undefined);
+    const powerPagesChatParticipant = PowerPagesChatParticipant.getInstance(context, pacWrapper, websiteId ?? undefined);
 
     vscode.window.registerWebviewViewProvider('powerpages.copilot', copilotPanel, {
         webviewOptions: {

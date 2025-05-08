@@ -32,12 +32,12 @@ export class PowerPagesChatParticipant {
     private readonly _disposables: vscode.Disposable[] = [];
     private cachedEndpoint: IIntelligenceAPIEndpointInformation | null = null;
     private powerPagesAgentSessionId: string;
-
+    private websiteId: string | undefined;
     private orgID: string | undefined;
     private orgUrl: string | undefined;
     private environmentID: string | undefined;
 
-    private constructor(context: vscode.ExtensionContext, pacWrapper?: PacWrapper) {
+    private constructor(context: vscode.ExtensionContext, pacWrapper?: PacWrapper, websiteId?: string) {
 
         this.chatParticipant = createChatParticipant(POWERPAGES_CHAT_PARTICIPANT_ID, this.handler);
 
@@ -59,6 +59,8 @@ export class PowerPagesChatParticipant {
 
         this._pacWrapper = pacWrapper;
 
+        this.websiteId = websiteId;
+
         registerButtonCommands();
 
         this._disposables.push(orgChangeEvent(async (orgDetails: ActiveOrgOutput) => {
@@ -70,9 +72,9 @@ export class PowerPagesChatParticipant {
         }));
     }
 
-    public static getInstance(context: vscode.ExtensionContext, pacWrapper?: PacWrapper) {
+    public static getInstance(context: vscode.ExtensionContext, pacWrapper?: PacWrapper, websiteId?: string): PowerPagesChatParticipant {
         if (!PowerPagesChatParticipant.instance) {
-            PowerPagesChatParticipant.instance = new PowerPagesChatParticipant(context, pacWrapper);
+            PowerPagesChatParticipant.instance = new PowerPagesChatParticipant(context, pacWrapper, websiteId);
         }
 
         return PowerPagesChatParticipant.instance;
@@ -276,7 +278,7 @@ export class PowerPagesChatParticipant {
                 return false;
             }
 
-            this.cachedEndpoint = await getEndpoint(this.orgID, this.environmentID, this.powerPagesAgentSessionId);
+            this.cachedEndpoint = await getEndpoint(this.orgID, this.environmentID, this.powerPagesAgentSessionId, this.websiteId);
 
             if (!this.cachedEndpoint.intelligenceEndpoint) {
                 return false;

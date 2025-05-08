@@ -585,10 +585,15 @@ export function registerCopilot(context: vscode.ExtensionContext) {
             tenantId: WebExtensionContext.urlParametersMap.get(queryParameters.TENANT_ID) as string,
         } as IOrgInfo;
 
+        const websiteId = WebExtensionContext.urlParametersMap.get(
+            queryParameters.WEBSITE_ID
+        ) as string
+
         const copilotPanel = new copilot.PowerPagesCopilot(context.extensionUri,
             context,
             undefined,
-            orgInfo);
+            orgInfo,
+            websiteId);
 
         context.subscriptions.push(vscode.window.registerWebviewViewProvider(copilot.PowerPagesCopilot.viewType, copilotPanel, {
             webviewOptions: {

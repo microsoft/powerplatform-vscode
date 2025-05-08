@@ -41,4 +41,5 @@ export const CopilotNotificationTryGitHubCopilotClicked = 'CopilotNotificationTr
 export const CopilotPanelTryGitHubCopilotClicked = 'CopilotPanelTryGitHubCopilotClicked ';
 export const VSCodeExtensionGitHubChatPanelOpened = 'VSCodeExtensionGitHubChatPanelOpened';
 export const VSCodeExtensionGitHubChatNotFound = 'VSCodeExtensionGitHubChatNotFound';
+export const CopilotGovernanceCheckEnabled = 'CopilotGovernanceCheckEnabled';
 
