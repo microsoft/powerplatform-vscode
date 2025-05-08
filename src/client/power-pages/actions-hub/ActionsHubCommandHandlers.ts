@@ -29,7 +29,7 @@ import { isEdmEnvironment } from '../../../common/copilot/dataverseMetadata';
 import { IWebsiteInfo } from './models/IWebsiteInfo';
 import moment from 'moment';
 import { SiteVisibility } from './models/SiteVisibility';
-import { getBaseEventInfo, traceError, traceInfo } from './TelemetryHelper';
+import { traceError, traceInfo } from './TelemetryHelper';
 
 const sortByCreatedOn = <T extends { createdOn?: string | null }>(item1: T, item2: T): number => {
     const date1 = new Date(item1.createdOn || '').valueOf(); //NaN if createdOn is null or undefined
@@ -366,7 +366,7 @@ const uploadCodeSite = async (siteInfo: IWebsiteInfo, uploadPath: string) => {
         }
 
         traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_OTHER_SITE_PAC_TRIGGERED, { methodName: uploadCodeSite.name, siteIdToUpload: siteInfo.websiteId });
-        PacTerminal.getTerminal().sendText(`pac pages upload-code-site --rootPath "${uploadPath}" --compiledPath "${compiledPath}" --siteName ${siteInfo.name}`);
+        PacTerminal.getTerminal().sendText(`pac pages upload-code-site --rootPath "${uploadPath}" --compiledPath "${compiledPath}" --siteName "${siteInfo.name}"`);
     } catch (error) {
         traceError(Constants.EventNames.ACTIONS_HUB_UPLOAD_CODE_SITE_FAILED, error as Error, { methodName: uploadCodeSite.name, siteIdToUpload: siteInfo.websiteId });
         await vscode.window.showErrorMessage(vscode.l10n.t(Constants.Strings.UPLOAD_CODE_SITE_FAILED));
