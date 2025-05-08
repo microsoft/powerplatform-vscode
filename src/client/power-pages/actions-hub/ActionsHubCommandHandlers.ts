@@ -512,7 +512,7 @@ export function findOtherSites(knownSiteIds: Set<string>, fsModule = fs, yamlMod
     }
 }
 
-export function createKnownSiteIdsSet(
+function createKnownSiteIdsSet(
     activeSites: IWebsiteDetails[] | undefined,
     inactiveSites: IWebsiteDetails[] | undefined
 ): Set<string> {
