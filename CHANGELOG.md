@@ -1,5 +1,13 @@
 # Change Log - Power Platform Extension
 
+## 2.0.84
+- pac CLI 1.42.1, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- Download/Upload support for code sites in Actions hub.
+- Accessibility enhancements
+- Improved efficiency of @powerpages calls.
+- Bug Fixes
+  - Updated authentication flow for VS Code desktop.
+
 ## 2.0.82
 - pac CLI 1.41.1, (March 2025 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 - Accessibility enhancements
@@ -15,7 +23,7 @@
   - Fixed a minor content snippets related bug
 
 ## 2.0.76
-- pac CLI 1.37.4, (November 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/)) 
+- pac CLI 1.37.4, (November 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 
 ## 2.0.74
 - pac CLI 1.35.1, (September 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))

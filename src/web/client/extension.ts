@@ -43,12 +43,16 @@ import { ArtemisService } from "../../common/services/ArtemisService";
 import { showErrorDialog } from "../../common/utilities/errorHandlerUtil";
 import { EXTENSION_ID } from "../../common/constants";
 import { getECSOrgLocationValue } from "../../common/utilities/Utils";
+import { authenticateUserInVSCode } from "../../common/services/AuthenticationProvider";
 
-export function activate(context: vscode.ExtensionContext): void {
+export async function activate(context: vscode.ExtensionContext): Promise<void> {
     oneDSLoggerWrapper.instantiate(GeoNames.US);
     WebExtensionContext.setVscodeWorkspaceState(context.workspaceState);
 
     WebExtensionContext.telemetry.sendInfoTelemetry("activated");
+
+    await authenticateUserInVSCode(); //Authentication for extension
+
     const portalsFS = new PortalsFS();
     context.subscriptions.push(
         vscode.workspace.registerFileSystemProvider(
@@ -581,10 +585,15 @@ export function registerCopilot(context: vscode.ExtensionContext) {
             tenantId: WebExtensionContext.urlParametersMap.get(queryParameters.TENANT_ID) as string,
         } as IOrgInfo;
 
+        const websiteId = WebExtensionContext.urlParametersMap.get(
+            queryParameters.WEBSITE_ID
+        ) as string
+
         const copilotPanel = new copilot.PowerPagesCopilot(context.extensionUri,
             context,
             undefined,
-            orgInfo);
+            orgInfo,
+            websiteId);
 
         context.subscriptions.push(vscode.window.registerWebviewViewProvider(copilot.PowerPagesCopilot.viewType, copilotPanel, {
             webviewOptions: {

@@ -13,7 +13,7 @@ import { IIntelligenceAPIEndpointInformation } from "../../services/Interfaces";
 import { EditableFileSystemProvider } from "../../utilities/EditableFileSystemProvider";
 import { CREATE_SITE_BTN_CMD } from "./commands/create-site/CreateSiteConstants";
 import { collectSiteCreationInputs, getUpdatedPageContent } from "./commands/create-site/CreateSiteHelper";
-import { SUPPORTED_ENTITIES, EXPLAIN_CODE_PROMPT, FORM_PROMPT, LIST_PROMPT, STATER_PROMPTS, WEB_API_PROMPT  } from "./PowerPagesChatParticipantConstants";
+import { SUPPORTED_ENTITIES, EXPLAIN_CODE_PROMPT, FORM_PROMPT, LIST_PROMPT, STATER_PROMPTS, WEB_API_PROMPT } from "./PowerPagesChatParticipantConstants";
 import { VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSUP, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSDOWN } from "./PowerPagesChatParticipantTelemetryConstants";
 import { IComponentInfo, IPowerPagesChatResult } from "./PowerPagesChatParticipantTypes";
 import * as vscode from 'vscode';
@@ -21,12 +21,12 @@ import * as vscode from 'vscode';
 export async function getEndpoint(
     orgID: string,
     environmentID: string,
-    cachedEndpoint: IIntelligenceAPIEndpointInformation | null,
-    sessionID: string
+    sessionID: string,
+    websiteID: string | null = null
 ): Promise<IIntelligenceAPIEndpointInformation> {
-    if (!cachedEndpoint) {
-        cachedEndpoint = await ArtemisService.getIntelligenceEndpoint(orgID, sessionID, environmentID) as IIntelligenceAPIEndpointInformation; // TODO - add session ID
-    }
+
+    const cachedEndpoint = await ArtemisService.getIntelligenceEndpoint(orgID, sessionID, environmentID, websiteID) as IIntelligenceAPIEndpointInformation;
+
     return cachedEndpoint;
 }
 
@@ -60,7 +60,7 @@ export function isEntityInSupportedList(entity: string): boolean {
     return SUPPORTED_ENTITIES.includes(entity);
 }
 
-export function handleChatParticipantFeedback (feedback: vscode.ChatResultFeedback, sessionId: string) {
+export function handleChatParticipantFeedback(feedback: vscode.ChatResultFeedback, sessionId: string) {
     const scenario = feedback.result.metadata?.scenario;
     const orgId = feedback.result.metadata?.orgId;
     if (feedback.kind === 1) {
@@ -72,9 +72,9 @@ export function handleChatParticipantFeedback (feedback: vscode.ChatResultFeedba
 export function createAndReferenceLocation(activeFileUri: vscode.Uri, startLine: number, endLine: number): vscode.Location {
 
     const positionStart = new vscode.Position(startLine, 0),
-          positionEnd = new vscode.Position(endLine, 0),
-          activeFileRange = new vscode.Range(positionStart, positionEnd),
-          location = new vscode.Location(activeFileUri, activeFileRange);
+        positionEnd = new vscode.Position(endLine, 0),
+        activeFileRange = new vscode.Range(positionStart, positionEnd),
+        location = new vscode.Location(activeFileUri, activeFileRange);
 
     return location;
 }
@@ -131,8 +131,8 @@ export function registerButtonCommands() {
     vscode.commands.registerCommand(CREATE_SITE_BTN_CMD, async (siteName: string, sitePages, envList, contentProvider: EditableFileSystemProvider, isCreateSiteInputsReceived) => {
         if (!isCreateSiteInputsReceived) {
             //Update Page Content will be used for the site creation
-           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-           sitePages.map((page: any) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            sitePages.map((page: any) => {
                 return {
                     ...page,
                     code: getUpdatedPageContent(contentProvider, page.metadata.pageTitle)
