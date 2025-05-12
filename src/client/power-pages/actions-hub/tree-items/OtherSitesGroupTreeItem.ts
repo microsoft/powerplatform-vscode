@@ -37,7 +37,8 @@ export class OtherSitesGroupTreeItem extends ActionsHubTreeItem {
                 siteManagementUrl: "",
                 folderPath : site.folderPath,
                 createdOn: "",
-                creator: ""
+                creator: "",
+                isCodeSite: site.isCodeSite
             };
             return new SiteTreeItem(siteInfo);
         });
