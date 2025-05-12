@@ -6,14 +6,15 @@
 import fetch, { RequestInit } from "node-fetch";
 import { COPILOT_UNAVAILABLE } from "../copilot/constants";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
-import { CopilotArtemisFailureEvent, CopilotArtemisSuccessEvent } from "../copilot/telemetry/telemetryConstants";
+import { CopilotArtemisFailureEvent, CopilotArtemisSuccessEvent, CopilotGovernanceCheckEnabled } from "../copilot/telemetry/telemetryConstants";
 import { ServiceEndpointCategory } from "./Constants";
 import { IArtemisAPIOrgResponse, IArtemisServiceEndpointInformation, IArtemisServiceResponse, IIntelligenceAPIEndpointInformation } from "./Interfaces";
-import { isCopilotDisabledInGeo, isCopilotSupportedInGeo } from "../copilot/utils/copilotUtil";
+import { getCopilotGovernanceSetting, isCopilotDisabledInGeo, isCopilotGovernanceCheckEnabled, isCopilotSupportedInGeo } from "../copilot/utils/copilotUtil";
 import { BAPService } from "./BAPService";
+import { PPAPIService } from "./PPAPIService";
 
 export class ArtemisService {
-    public static async getIntelligenceEndpoint(orgId: string, sessionID: string, environmentId: string): Promise<IIntelligenceAPIEndpointInformation> {
+    public static async getIntelligenceEndpoint(orgId: string, sessionID: string, environmentId: string, websiteId?: string | null): Promise<IIntelligenceAPIEndpointInformation> {
 
         const artemisResponse = await ArtemisService.getArtemisResponse(orgId, sessionID);
 
@@ -25,7 +26,31 @@ export class ArtemisService {
         const { geoName, environment, clusterNumber } = artemisResponse.response as IArtemisAPIOrgResponse;
         sendTelemetryEvent({ eventName: CopilotArtemisSuccessEvent, copilotSessionId: sessionID, geoName: String(geoName), orgId: orgId });
 
-        const crossGeoDataMovementEnabledPPACFlag = await BAPService.getCrossGeoCopilotDataMovementEnabledFlag(artemisResponse.stamp,environmentId);
+        // Check if governance FCB is enabled
+        const isGovernanceCheckEnabled = isCopilotGovernanceCheckEnabled();
+
+        if (isGovernanceCheckEnabled) {
+
+            const copilotGovernanceSetting = getCopilotGovernanceSetting();
+
+            sendTelemetryEvent({ eventName: CopilotGovernanceCheckEnabled, copilotSessionId: sessionID, orgId: orgId, isGovernanceCheckEnabled: isGovernanceCheckEnabled, copilotGovernanceSetting: copilotGovernanceSetting});
+
+            // Use PPAPIService for governance flag check
+            const governanceResult = await PPAPIService.getGovernanceFlag(
+                artemisResponse.stamp,
+                environmentId,
+                sessionID,
+                copilotGovernanceSetting,
+                websiteId ?? null
+            );
+
+            if (!governanceResult) {
+                // Governance flag is disabled
+                return { intelligenceEndpoint: COPILOT_UNAVAILABLE, geoName: null, crossGeoDataMovementEnabledPPACFlag: false };
+            }
+        }
+
+        const crossGeoDataMovementEnabledPPACFlag = await BAPService.getCrossGeoCopilotDataMovementEnabledFlag(artemisResponse.stamp, environmentId);
 
         if (isCopilotDisabledInGeo().includes(geoName)) {
             return { intelligenceEndpoint: COPILOT_UNAVAILABLE, geoName: geoName, crossGeoDataMovementEnabledPPACFlag: crossGeoDataMovementEnabledPPACFlag };

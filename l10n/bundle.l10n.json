@@ -10,7 +10,7 @@
   "Preview site URL is not valid": "Preview site URL is not valid",
   "Opening preview site...": "Opening preview site...",
   "Power Pages studio URL is not available": "Power Pages studio URL is not available",
-  "Microsoft wants your feeback": "Microsoft wants your feeback",
+  "Microsoft wants your feedback": "Microsoft wants your feedback",
   "Check the URL and verify the parameters are correct": "Check the URL and verify the parameters are correct",
   "Unable to complete the request": "Unable to complete the request",
   "One or more attribute names have been changed or removed. Contact your admin.": "One or more attribute names have been changed or removed. Contact your admin.",
@@ -135,6 +135,7 @@
   "Your preview isn't updated. Please upload your site to see the latest changes.": "Your preview isn't updated. Please upload your site to see the latest changes.",
   "Upload changes": "Upload changes",
   "The preview shown is for published changes. Please publish any pending changes to see them in the preview.": "The preview shown is for published changes. Please publish any pending changes to see them in the preview.",
+  "Please login to preview the site.": "Please login to preview the site.",
   "Enter the name of the web template": "Enter the name of the web template",
   "Please enter a name for the web template.": "Please enter a name for the web template.",
   "A webtemplate with the same name already exists. Please enter a different name.": "A webtemplate with the same name already exists. Please enter a different name.",
@@ -205,12 +206,21 @@
   "Site Details": "Site Details",
   "Browse...": "Browse...",
   "Select the folder that will contain your project root for your site": "Select the folder that will contain your project root for your site",
+  "Select the folder that contains your compiled output": "Select the folder that contains your compiled output",
   "Select Folder": "Select Folder",
   "Environment changed successfully.": "Environment changed successfully.",
+  "Please select the folder that contains your compiled output to upload your site.": "Please select the folder that contains your compiled output to upload your site.",
+  "Upload failed. Please try again later.": "Upload failed. Please try again later.",
   "Timestamp: {0}/{0} is the timestamp": {
     "message": "Timestamp: {0}",
     "comment": [
       "{0} is the timestamp"
+    ]
+  },
+  "Session ID: {0}/{0} is the Session ID": {
+    "message": "Session ID: {0}",
+    "comment": [
+      "{0} is the Session ID"
     ]
   },
   "Tenant ID: {0}/{0} is the Tenant ID": {

@@ -17,6 +17,7 @@ import CurrentSiteContext from "./CurrentSiteContext";
 import { IOtherSiteInfo, IWebsiteDetails } from "../../../common/services/Interfaces";
 import { orgChangeErrorEvent } from "../../OrgChangeNotifier";
 import { getBaseEventInfo } from "./TelemetryHelper";
+import { PROVIDER_ID } from "../../../common/services/Constants";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -41,7 +42,12 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
             CurrentSiteContext.onChanged(() => this.refresh()),
 
             // Register an event listener for org change error as action hub will not be re-initialized in extension.ts
-            orgChangeErrorEvent(() => this.refresh())
+            orgChangeErrorEvent(() => this.refresh()),
+
+            vscode.authentication.onDidChangeSessions((_) => {
+                this._loadWebsites = true;
+                this.refresh();
+            })
         );
         this._context = context;
     }
@@ -68,6 +74,17 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
         }
     }
 
+    private async checkAuthInfo(): Promise<boolean> {
+        const authInfo = PacContext.AuthInfo;
+        const session  = await vscode.authentication.getSession(PROVIDER_ID, [], { silent: true });
+
+        if (session && session.accessToken && authInfo && authInfo.OrganizationFriendlyName) {
+            return true;
+        }
+
+        return false;
+    }
+
     public static initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal): ActionsHubTreeDataProvider {
         return new ActionsHubTreeDataProvider(context, pacTerminal);
     }
@@ -78,7 +95,6 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
     async getChildren(element?: ActionsHubTreeItem): Promise<ActionsHubTreeItem[] | null | undefined> {
         oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_TREE_GET_CHILDREN_CALLED, { methodName: this.getChildren.name, ...getBaseEventInfo() });
-        await this.loadWebsites();
 
         if (element) {
             return element.getChildren();
@@ -86,9 +102,11 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
         try {
             const authInfo = PacContext.AuthInfo;
-            if (authInfo && authInfo.OrganizationFriendlyName) {
+            if (await this.checkAuthInfo() === true ) {
+                await this.loadWebsites();
                 const currentEnvInfo: IEnvironmentInfo = {
-                    currentEnvironmentName: authInfo.OrganizationFriendlyName
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    currentEnvironmentName: authInfo!.OrganizationFriendlyName //Already checked in checkAuthInfo
                 };
 
                 if(!this._otherSites.length){
