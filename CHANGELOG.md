@@ -2,6 +2,7 @@
 
 ## 2.0.84
 - pac CLI 1.42.1, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- Download/Upload support for code sites in Actions hub.
 - Accessibility enhancements
 - Improved efficiency of @powerpages calls.
 - Bug Fixes
