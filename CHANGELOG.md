@@ -1,5 +1,10 @@
 # Change Log - Power Platform Extension
 
+## 2.0.86
+- pac CLI 1.43.6, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- Bug Fixes
+  - Fixed authentication flow for Copilot experiences on desktop.
+
 ## 2.0.84
 - pac CLI 1.42.1, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 - Download/Upload support for code sites in Actions hub.

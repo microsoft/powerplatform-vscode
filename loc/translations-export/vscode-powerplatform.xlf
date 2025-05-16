@@ -54,8 +54,8 @@
     <trans-unit id="++CODE++1f6087c22e8b59c12a5a95c61f5811ecd795e553b7a0d7f2e337e36dc26fe509">
       <source xml:lang="en">Authenticating...</source>
     </trans-unit>
-    <trans-unit id="++CODE++4190475b52357e7ad3da76828784a5b9f291519e331b0c0e71f5d14e946bbc4b">
-      <source xml:lang="en">Authentication failed. Please try again.</source>
+    <trans-unit id="++CODE++93c83aa255a01cb4ee50d86e561c78b6c28e3e0f7fd9143dd7817b93b3c5a198">
+      <source xml:lang="en">Authentication failed. Please login and try again.</source>
     </trans-unit>
     <trans-unit id="++CODE++a57666e58a53eea23667fddf0a7c41bdc64abfc5eae94637e88388a6b139b314">
       <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
@@ -339,6 +339,9 @@ Return to this chat and @powerpages can help you write and edit your website cod
     </trans-unit>
     <trans-unit id="++CODE++9d6322c1f4d9d3f38aed8bfbe0b2bcadf66ad82c008476fa62541fa069138e94">
       <source xml:lang="en">Login</source>
+    </trans-unit>
+    <trans-unit id="++CODE++9ecf75483ab77698700a9c2bc98a0b615500ce13cb9e487795f6c4dd782989cc">
+      <source xml:lang="en">Login to PowerPages</source>
     </trans-unit>
     <trans-unit id="++CODE++1be32f89a3d1d98bb7011850e83b5753124d58f684bae063674bfdb106026e6d">
       <source xml:lang="en">Make sure AI-generated content is accurate and appropriate before using. &lt;a href=&quot;https://go.microsoft.com/fwlink/?linkid=2240145&quot;&gt;Learn more&lt;/a&gt; | &lt;a href=&quot;https://go.microsoft.com/fwlink/?linkid=2189520&quot;&gt;View

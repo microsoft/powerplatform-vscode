@@ -140,7 +140,7 @@ const getStudioBaseUrl = (): string => {
         case ServiceEndpointCategory.TEST:
             return Constants.StudioEndpoints.TEST;
         case ServiceEndpointCategory.PREPROD:
-            return Constants.StudioEndpoints.PREPROD;
+            return Constants.StudioEndpoints.TEST; //Studio for preprod is same as test
         case ServiceEndpointCategory.PROD:
             return Constants.StudioEndpoints.PROD;
         case ServiceEndpointCategory.DOD:

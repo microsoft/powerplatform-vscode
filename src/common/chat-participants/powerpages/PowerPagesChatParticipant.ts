@@ -10,7 +10,7 @@ import { sendApiRequest } from '../../copilot/IntelligenceApiService';
 import { PacWrapper } from '../../../client/pac/PacWrapper';
 import { intelligenceAPIAuthentication } from '../../services/AuthenticationProvider';
 import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
-import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, COPILOT_NOT_RELEASED_MSG, DISCLAIMER_MESSAGE, INVALID_RESPONSE, NO_PROMPT_MESSAGE, PAC_AUTH_INPUT, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, POWERPAGES_COMMANDS, RESPONSE_AWAITED_MSG, RESPONSE_SCENARIOS, SKIP_CODES, STATER_PROMPTS, WELCOME_MESSAGE, WELCOME_PROMPT } from './PowerPagesChatParticipantConstants';
+import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, COPILOT_NOT_RELEASED_MSG, DISCLAIMER_MESSAGE, INVALID_RESPONSE, LOGIN_BTN_CMD, LOGIN_BTN_TITLE, LOGIN_BTN_TOOLTIP, NO_PROMPT_MESSAGE, PAC_AUTH_INPUT, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, POWERPAGES_COMMANDS, RESPONSE_AWAITED_MSG, RESPONSE_SCENARIOS, SKIP_CODES, STATER_PROMPTS, WELCOME_MESSAGE, WELCOME_PROMPT } from './PowerPagesChatParticipantConstants';
 import { ORG_DETAILS_KEY, handleOrgChangeSuccess, initializeOrgDetails } from '../../utilities/OrgHandlerUtils';
 import { createAndReferenceLocation, getComponentInfo, getEndpoint, provideChatParticipantFollowups, handleChatParticipantFeedback, createErrorResult, createSuccessResult, removeChatVariables, registerButtonCommands } from './PowerPagesChatParticipantUtils';
 import { checkCopilotAvailability, fetchRelatedFiles, getActiveEditorContent } from '../../utilities/Utils';
@@ -115,13 +115,19 @@ export class PowerPagesChatParticipant {
                 stream.markdown(COPILOT_NOT_RELEASED_MSG);
                 oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NOT_AVAILABLE_ECS, { sessionId: this.powerPagesAgentSessionId, orgID: this.orgID });
                 return createSuccessResult('', RESPONSE_SCENARIOS.COPILOT_NOT_RELEASED, this.orgID);
-            }
+            }            const intelligenceApiAuthResponse = await intelligenceAPIAuthentication(this.powerPagesAgentSessionId, this.orgID, true);
 
-            const intelligenceApiAuthResponse = await intelligenceAPIAuthentication(this.powerPagesAgentSessionId, this.orgID, true);
+            if (!intelligenceApiAuthResponse || !intelligenceApiAuthResponse.accessToken || intelligenceApiAuthResponse.accessToken === '') {
+                
+                stream.button({
+                    command: LOGIN_BTN_CMD,
+                    title: LOGIN_BTN_TITLE,
+                    tooltip: LOGIN_BTN_TOOLTIP
+                });
 
-            if (!intelligenceApiAuthResponse) {
                 return createErrorResult(AUTHENTICATION_FAILED_MSG, RESPONSE_SCENARIOS.AUTHENTICATION_FAILED, this.orgID);
-            }            const intelligenceApiToken = intelligenceApiAuthResponse.accessToken;
+            }
+            const intelligenceApiToken = intelligenceApiAuthResponse.accessToken;
             const userId = intelligenceApiAuthResponse.userId;
 
             // Use cached endpoint info instead of calling getEndpoint on every request
