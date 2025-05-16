@@ -6,7 +6,7 @@
 
 import * as vscode from "vscode";
 import { sendApiRequest } from "./IntelligenceApiService";
-import { dataverseAuthentication, getOIDFromToken, intelligenceAPIAuthentication } from "../services/AuthenticationProvider";
+import { authenticateUserInVSCode, dataverseAuthentication, getOIDFromToken, intelligenceAPIAuthentication } from "../services/AuthenticationProvider";
 import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ADX_ENTITYFORM, ADX_ENTITYLIST, AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_IN_POWERPAGES, COPILOT_UNAVAILABLE, CopilotStylePathSegments, EXPLAIN_CODE, GITHUB_COPILOT_CHAT_EXT, PowerPagesParticipantDocLink, PowerPagesParticipantPrompt, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, THUMBS_DOWN, THUMBS_UP, WebViewMessage, sendIconSvg } from "./constants";
@@ -55,7 +55,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         _context: vscode.ExtensionContext,
         pacWrapper?: PacWrapper,
         orgInfo?: IOrgInfo,
-        websiteId?: string 
+        websiteId?: string
     ) {
         this._extensionContext = _context;
         sessionID = uuidv4();
@@ -323,7 +323,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         const pacOutput = await this._pacWrapper?.activeOrg();
         if (pacOutput && pacOutput.Status === SUCCESS) {
             this.handleOrgChangeSuccess.call(this, pacOutput.Results);
-
+            await authenticateUserInVSCode();
             intelligenceAPIAuthentication(sessionID, orgID).then(({ accessToken, user, userId }) => {
                 this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user, userId);
             });
@@ -343,8 +343,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             }
             const pacAuthCreateOutput = await showProgressWithNotification(AUTH_CREATE_MESSAGE, async () => { return await this._pacWrapper?.authCreateNewAuthProfileForOrg(userOrgUrl) });
             pacAuthCreateOutput && pacAuthCreateOutput.Status === SUCCESS
-                ? intelligenceAPIAuthentication(sessionID, orgID).then(({ accessToken, user, userId }) =>
-                    this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user, userId)
+                ? (await authenticateUserInVSCode(),
+                    intelligenceAPIAuthentication(sessionID, orgID).then(({ accessToken, user, userId }) =>
+                        this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user, userId)
+                    )
                 )
                 : vscode.window.showErrorMessage(AUTH_CREATE_FAILED);
 
@@ -367,9 +369,14 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     private async authenticateAndSendAPIRequest(data: UserPrompt[], orgID: string) {
         return intelligenceAPIAuthentication(sessionID, orgID)
             .then(async ({ accessToken, user, userId }) => {
-                intelligenceApiToken = accessToken;
-                userName = getUserName(user);
-                userID = userId;
+                if(accessToken === '') {
+                   await authenticateUserInVSCode();
+                   await this.checkAuthentication();
+                } else{
+                    intelligenceApiToken = accessToken;
+                    userName = getUserName(user);
+                    userID = userId;
+                }
 
                 this.sendMessageToWebview({ type: 'userName', value: userName });
 

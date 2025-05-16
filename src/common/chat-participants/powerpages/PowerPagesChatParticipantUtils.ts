@@ -8,12 +8,12 @@ import { getEntityColumns, getEntityName, getFormXml } from "../../copilot/datav
 import { IActiveFileParams } from "../../copilot/model";
 import { oneDSLoggerWrapper } from "../../OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { ArtemisService } from "../../services/ArtemisService";
-import { dataverseAuthentication } from "../../services/AuthenticationProvider";
+import { authenticateUserInVSCode, dataverseAuthentication } from "../../services/AuthenticationProvider";
 import { IIntelligenceAPIEndpointInformation } from "../../services/Interfaces";
 import { EditableFileSystemProvider } from "../../utilities/EditableFileSystemProvider";
 import { CREATE_SITE_BTN_CMD } from "./commands/create-site/CreateSiteConstants";
 import { collectSiteCreationInputs, getUpdatedPageContent } from "./commands/create-site/CreateSiteHelper";
-import { SUPPORTED_ENTITIES, EXPLAIN_CODE_PROMPT, FORM_PROMPT, LIST_PROMPT, STATER_PROMPTS, WEB_API_PROMPT } from "./PowerPagesChatParticipantConstants";
+import { SUPPORTED_ENTITIES, EXPLAIN_CODE_PROMPT, FORM_PROMPT, LIST_PROMPT, LOGIN_BTN_CMD, STATER_PROMPTS, WEB_API_PROMPT } from "./PowerPagesChatParticipantConstants";
 import { VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSUP, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSDOWN } from "./PowerPagesChatParticipantTelemetryConstants";
 import { IComponentInfo, IPowerPagesChatResult } from "./PowerPagesChatParticipantTypes";
 import * as vscode from 'vscode';
@@ -143,5 +143,10 @@ export function registerButtonCommands() {
                 isCreateSiteInputsReceived = true;
             }
         }
+    });
+
+    // Register the login button command
+    vscode.commands.registerCommand(LOGIN_BTN_CMD, async () => {
+        await authenticateUserInVSCode();
     });
 }
