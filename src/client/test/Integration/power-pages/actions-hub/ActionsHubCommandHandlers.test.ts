@@ -366,7 +366,7 @@ describe('ActionsHubCommandHandlers', () => {
                 await openActiveSitesInStudio();
 
                 expect(mockUrl.calledOnce).to.be.true;
-                expect(mockUrl.firstCall.args[0]).to.equal('https://make.preprod.powerpages.microsoft.com/environments/test-env-id/portals/home/?tab=active');
+                expect(mockUrl.firstCall.args[0]).to.equal('https://make.test.powerpages.microsoft.com/environments/test-env-id/portals/home/?tab=active');
             });
         });
 
@@ -467,7 +467,7 @@ describe('ActionsHubCommandHandlers', () => {
                 await openInactiveSitesInStudio();
 
                 expect(mockUrl.calledOnce).to.be.true;
-                expect(mockUrl.firstCall.args[0]).to.equal('https://make.preprod.powerpages.microsoft.com/environments/test-env-id/portals/home/?tab=inactive');
+                expect(mockUrl.firstCall.args[0]).to.equal('https://make.test.powerpages.microsoft.com/environments/test-env-id/portals/home/?tab=inactive');
             });
         });
 
