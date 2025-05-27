@@ -1330,6 +1330,7 @@
   },
   "dependencies": {
     "@fluidframework/azure-client": "2.31.1",
+    "@fluidframework/tree": "^2.40.0",
     "@microsoft/1ds-core-js": "4.0.5",
     "@microsoft/1ds-post-js": "4.0.5",
     "@microsoft/generator-powerpages": "1.21.19",

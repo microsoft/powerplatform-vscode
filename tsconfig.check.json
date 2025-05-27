@@ -8,14 +8,15 @@
     "lib": [ "es2020", "WebWorker", "DOM.Iterable", "ES2020.Promise" ],
     "noImplicitAny": true,
     "strictPropertyInitialization": true,
-		"strict": true,
+    "strict": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "noEmit": true
   },
   "include": [
-    "src"
+    "src/**/*.ts"
   ],
   "exclude": [
     "node_modules",
