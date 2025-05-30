@@ -30,6 +30,7 @@ import { IWebsiteInfo } from './models/IWebsiteInfo';
 import moment from 'moment';
 import { SiteVisibility } from './models/SiteVisibility';
 import { traceError, traceInfo } from './TelemetryHelper';
+import { IPowerPagesConfig, IPowerPagesConfigData } from './models/IPowerPagesConfig';
 
 const sortByCreatedOn = <T extends { createdOn?: string | null }>(item1: T, item2: T): number => {
     const date1 = new Date(item1.createdOn || '').valueOf(); //NaN if createdOn is null or undefined
@@ -355,23 +356,103 @@ export const uploadSite = async (siteTreeItem: SiteTreeItem, websitePath: string
     }
 };
 
-const uploadCodeSite = async (siteInfo: IWebsiteInfo, uploadPath: string) => {
-    traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_CODE_SITE_CALLED, { methodName: uploadCodeSite.name, siteIdToUpload: siteInfo.websiteId });
-    try {
-        const compiledPath = await getCompiledOutputFolderPath();
+/**
+ * Reads and parses the powerpages.config.json file
+ * @param configFilePath Path to the configuration file
+ * @returns Parsed configuration data
+ */
+const readPowerPagesConfig = (configFilePath: string): IPowerPagesConfigData => {
+    if (!fs.existsSync(configFilePath)) {
+        return { hasCompiledPath: false, hasSiteName: false };
+    }
 
+    try {
+        const configContent = fs.readFileSync(configFilePath, UTF8_ENCODING);
+        const config: IPowerPagesConfig = JSON.parse(configContent);
+
+        const hasCompiledPath = Boolean(config?.compiledPath);
+        const hasSiteName = Boolean(config?.siteName);
+
+        return { hasCompiledPath, hasSiteName };
+    } catch (configError) {
+        traceError(Constants.EventNames.POWER_PAGES_CONFIG_PARSE_FAILED, configError as Error, { methodName: readPowerPagesConfig.name });
+    }
+    return { hasCompiledPath: false, hasSiteName: false };
+};
+
+/**
+ * Builds the upload code site command for pac pages upload-code-site
+ * @param uploadPath Root path for the upload
+ * @param siteInfo Site information
+ * @param configData Configuration data
+ * @returns The complete upload command as a string
+ */
+const buildUploadCodeSiteCommand = async (
+    uploadPath: string,
+    siteInfo: IWebsiteInfo,
+    configData: IPowerPagesConfigData
+): Promise<string> => {
+    const commandParts = ["pac", "pages", "upload-code-site"];
+
+    commandParts.push("--rootPath", `"${uploadPath}"`);
+
+    if (!configData.hasCompiledPath) {
+        const compiledPath = await getCompiledOutputFolderPath();
         if (!compiledPath) {
-            await vscode.window.showErrorMessage(vscode.l10n.t(Constants.Strings.UPLOAD_CODE_SITE_COMPILED_OUTPUT_FOLDER_NOT_FOUND));
+            await vscode.window.showErrorMessage(
+                vscode.l10n.t(Constants.Strings.UPLOAD_CODE_SITE_COMPILED_OUTPUT_FOLDER_NOT_FOUND)
+            );
+            return "";
+        }
+        commandParts.push("--compiledPath", `"${compiledPath}"`);
+    }
+
+    if (!configData.hasSiteName) {
+        commandParts.push("--siteName", `"${siteInfo.name}"`);
+    }
+
+    return commandParts.join(" ");
+};
+
+/**
+ * Uploads a Power Pages code site to the environment
+ * @param siteInfo Information about the site to upload
+ * @param uploadPath Path to the site folder to upload
+ */
+const uploadCodeSite = async (siteInfo: IWebsiteInfo, uploadPath: string) => {
+    traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_CODE_SITE_CALLED, {
+        methodName: uploadCodeSite.name,
+        siteIdToUpload: siteInfo.websiteId
+    });
+
+    try {
+        const configFilePath = path.join(uploadPath, Constants.Strings.POWER_PAGES_CONFIG_FILE_NAME);
+        const configData = readPowerPagesConfig(configFilePath);
+
+        const uploadCommand = await buildUploadCodeSiteCommand(
+            uploadPath,
+            siteInfo,
+            configData
+        );
+
+        if (!uploadCommand) {
             return;
         }
 
-        traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_OTHER_SITE_PAC_TRIGGERED, { methodName: uploadCodeSite.name, siteIdToUpload: siteInfo.websiteId });
-        PacTerminal.getTerminal().sendText(`pac pages upload-code-site --rootPath "${uploadPath}" --compiledPath "${compiledPath}" --siteName "${siteInfo.name}"`);
+        traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_OTHER_SITE_PAC_TRIGGERED, {
+            methodName: uploadCodeSite.name,
+            siteIdToUpload: siteInfo.websiteId
+        });
+
+        PacTerminal.getTerminal().sendText(uploadCommand);
     } catch (error) {
-        traceError(Constants.EventNames.ACTIONS_HUB_UPLOAD_CODE_SITE_FAILED, error as Error, { methodName: uploadCodeSite.name, siteIdToUpload: siteInfo.websiteId });
+        traceError(Constants.EventNames.ACTIONS_HUB_UPLOAD_CODE_SITE_FAILED, error as Error, {
+            methodName: uploadCodeSite.name,
+            siteIdToUpload: siteInfo.websiteId
+        });
         await vscode.window.showErrorMessage(vscode.l10n.t(Constants.Strings.UPLOAD_CODE_SITE_FAILED));
     }
-}
+};
 
 /**
  * Uploads a site that isn't in the current environment
