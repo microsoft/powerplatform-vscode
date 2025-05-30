@@ -755,7 +755,7 @@ export const reactivateSite = async (siteTreeItem: SiteTreeItem) => {
 
     const isNewDataModel = siteTreeItem.siteInfo.dataModelVersion === 2;
 
-    const reactivateSiteUrl = `${getStudioBaseUrl()}/e/${environmentId}/portals/create?reactivation=true&websiteId=${websiteId}&siteName=${encodeURIComponent(name)}&siteAddress=${encodeURIComponent(websiteUrl)}&siteLanguageId=${languageCode}&isNewDataModel=${isNewDataModel}`;
+    const reactivateSiteUrl = `${getStudioBaseUrl()}/e/${environmentId}/portals/create?reactivateWebsiteId=${websiteId}&siteName=${encodeURIComponent(name)}&siteAddress=${encodeURIComponent(websiteUrl)}&siteLanguageId=${languageCode}&isNewDataModel=${isNewDataModel}`;
 
     await vscode.env.openExternal(vscode.Uri.parse(reactivateSiteUrl));
 };
