@@ -956,6 +956,70 @@ describe('ActionsHubCommandHandlers', () => {
             expect(mockSendText.firstCall.args[0]).to.equal(`pac pages upload-code-site --rootPath "test-path" --compiledPath "D:/foo" --siteName "Test Site"`);
         });
 
+        it('should not upload code site when compiledPath selection is cancelled', async () => {
+            mockSiteTreeItem = new SiteTreeItem({
+                name: "Test Site",
+                websiteId: "test-id",
+                dataModelVersion: 1,
+                status: WebsiteStatus.Active,
+                websiteUrl: 'https://test-site.com',
+                isCurrent: false,
+                siteVisibility: SiteVisibility.Private,
+                siteManagementUrl: "https://inactive-site-1-management.com",
+                createdOn: "2025-03-20",
+                creator: "Test Creator",
+                isCodeSite: true
+            });
+
+            const mockQuickPick = sinon.stub(vscode.window, 'showQuickPick');
+            mockQuickPick.resolves({ label: "Browse..." });
+
+            const mockShowOpenDialog = sinon.stub(vscode.window, 'showOpenDialog');
+            mockShowOpenDialog.resolves(undefined);
+
+            const mockShowErrorMessage = sinon.stub(vscode.window, 'showErrorMessage');
+
+            await uploadSite(mockSiteTreeItem, "");
+
+            expect(mockQuickPick.calledOnce).to.be.true;
+            expect(mockShowOpenDialog.calledOnce).to.be.true;
+            expect(mockShowErrorMessage.calledOnce).to.be.true;
+            expect(mockSendText.called).to.be.false;
+        });
+
+        it('should handle errors during code site upload', async () => {
+            mockSiteTreeItem = new SiteTreeItem({
+                name: "Test Site",
+                websiteId: "test-id",
+                dataModelVersion: 1,
+                status: WebsiteStatus.Active,
+                websiteUrl: 'https://test-site.com',
+                isCurrent: false,
+                siteVisibility: SiteVisibility.Private,
+                siteManagementUrl: "https://inactive-site-1-management.com",
+                createdOn: "2025-03-20",
+                creator: "Test Creator",
+                isCodeSite: true
+            });
+
+            const mockQuickPick = sinon.stub(vscode.window, 'showQuickPick');
+            mockQuickPick.resolves({ label: "Browse..." });
+
+            const mockShowOpenDialog = sinon.stub(vscode.window, 'showOpenDialog');
+            mockShowOpenDialog.resolves([{ fsPath: "D:/foo" } as unknown as vscode.Uri]);
+
+            const mockShowErrorMessage = sinon.stub(vscode.window, 'showErrorMessage');
+            mockSendText.throws(new Error('Upload code site failed'));
+
+            await uploadSite(mockSiteTreeItem, "");
+
+            expect(mockQuickPick.calledOnce).to.be.true;
+            expect(mockShowOpenDialog.calledOnce).to.be.true;
+            expect(traceErrorStub.calledOnce).to.be.true;
+            expect(traceErrorStub.firstCall.args[0]).to.equal(Constants.EventNames.ACTIONS_HUB_UPLOAD_CODE_SITE_FAILED);
+            expect(mockShowErrorMessage.calledOnce).to.be.true;
+        });
+
         it('should handle case sensitivity for public site visibility', async () => {
             mockSiteTreeItem = new SiteTreeItem({
                 name: "Test Site",
