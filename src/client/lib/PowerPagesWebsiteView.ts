@@ -10,11 +10,11 @@ import * as vscode from 'vscode';
 import { WebsiteListOutput, WebsiteListing, } from '../pac/PacTypes';
 import { PacWrapper } from '../pac/PacWrapper';
 
-export class WebsiteTreeView implements vscode.TreeDataProvider<AuthProfileTreeItem>, vscode.Disposable {
+export class WebsiteTreeView implements vscode.TreeDataProvider<WebsiteTreeItem>, vscode.Disposable {
     private readonly _disposables: vscode.Disposable[] = [];
     private _refreshTimeout?: NodeJS.Timeout;
-    private _onDidChangeTreeData: vscode.EventEmitter<AuthProfileTreeItem | undefined | void> = new vscode.EventEmitter<AuthProfileTreeItem | undefined | void>();
-    public readonly onDidChangeTreeData: vscode.Event<AuthProfileTreeItem | undefined | void> = this._onDidChangeTreeData.event;
+    private _onDidChangeTreeData: vscode.EventEmitter<WebsiteTreeItem | undefined | void> = new vscode.EventEmitter<WebsiteTreeItem | undefined | void>();
+    public readonly onDidChangeTreeData: vscode.Event<WebsiteTreeItem | undefined | void> = this._onDidChangeTreeData.event;
 
     constructor(
         public readonly dataSource: () => Promise<WebsiteListOutput>,
@@ -57,11 +57,11 @@ export class WebsiteTreeView implements vscode.TreeDataProvider<AuthProfileTreeI
         this._onDidChangeTreeData.fire();
     }
 
-    public getTreeItem(element: AuthProfileTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
+    public getTreeItem(element: WebsiteTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
         return element;
     }
 
-    public async getChildren(element?: AuthProfileTreeItem): Promise<AuthProfileTreeItem[]> {
+    public async getChildren(element?: WebsiteTreeItem): Promise<WebsiteTreeItem[]> {
         if (element) {
             // This "Tree" view is a flat list, so return no children when not at the root
             return [];
@@ -69,7 +69,7 @@ export class WebsiteTreeView implements vscode.TreeDataProvider<AuthProfileTreeI
             const pacOutput = await this.dataSource();
             if (pacOutput && pacOutput.Status === "Success" && pacOutput.Information) {
                 const items = JSON.parse(pacOutput.Information[5])
-                    .map((item: { FriendlyName: string; }) => new AuthProfileTreeItem(item.FriendlyName))
+                    .map((item: WebsiteListing) => new WebsiteTreeItem(item))
                 return items;
             } else {
                 return [];
@@ -81,12 +81,12 @@ export class WebsiteTreeView implements vscode.TreeDataProvider<AuthProfileTreeI
         return [
             vscode.window.registerTreeDataProvider("powerpages.websitePanel", this),
             vscode.commands.registerCommand("powerpages.websitePanel.refresh", () => this.refresh()),
-            vscode.commands.registerCommand("powerpages.websitePanel.downloadWebsite", async () => {
+            vscode.commands.registerCommand("powerpages.websitePanel.downloadWebsite", async (item: WebsiteTreeItem) => {
                 const downloadPath: string | undefined = this.getCurrentWorkspacePath();
                 if (downloadPath && downloadPath.length > 0) {
                     const websiteDownloadPath = '"' + this.removeLeadingSlash(downloadPath) + '"';
                     vscode.window.showInformationMessage(vscode.l10n.t("Downloading website..."));
-                    vscode.commands.executeCommand("pacCLI.pacPaportalDownload", '7b9d41f2-9748-ee11-be6f-6045bd072a16', websiteDownloadPath, '-mv', '2');
+                    vscode.commands.executeCommand("pacCLI.pacPaportalDownload", item.model.WebsiteId, websiteDownloadPath, '-mv', item.model.ModelVersion);
                 }
             }),
             vscode.commands.registerCommand("powerpages.websitePanel.uploadWebsite", async () => {
@@ -183,16 +183,16 @@ export class WebsiteTreeView implements vscode.TreeDataProvider<AuthProfileTreeI
       }
 }
 
-class AuthProfileTreeItem extends vscode.TreeItem {
-    public constructor(public readonly model: string) {
-        super(AuthProfileTreeItem.createLabel(model), vscode.TreeItemCollapsibleState.Collapsed);
-        this.contextValue = model;
+class WebsiteTreeItem extends vscode.TreeItem {
+    public constructor(public readonly model: WebsiteListing) {
+        super(WebsiteTreeItem.createLabel(model), vscode.TreeItemCollapsibleState.Collapsed);
+        this.contextValue = model.FriendlyName;
         //this.tooltip = AuthProfileTreeItem.createTooltip(model);
         // if (model.IsActive){
         //     this.iconPath = new vscode.ThemeIcon("star-full")
         // }
     }
-    private static createLabel(profile: string): string {
+    private static createLabel(profile: WebsiteListing): string {
         // if (profile.Name) {
         //     return `${profile.Kind}: ${profile.Name}`;
         // } else if (profile.Kind === "ADMIN" || profile.Kind === "UNIVERSAL") {
@@ -200,7 +200,7 @@ class AuthProfileTreeItem extends vscode.TreeItem {
         // } else {
         //     return `${profile.Kind}: ${profile.Resource}`;
         // }
-        return `${profile}`;
+        return `${profile.FriendlyName} (v${profile.ModelVersion})`;
     }
     // private static createTooltip(profile: WebsiteListing): string {
     //     const tooltip = [

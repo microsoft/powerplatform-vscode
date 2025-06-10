@@ -77,9 +77,9 @@ export type WebsiteListOutput = PacOutput & {
 }
 
 export type WebsiteListing = {
-    Index: number;
     WebsiteId: string;
-    WebsiteName: string;
+    FriendlyName: string;
+    ModelVersion: number;
 }
 
 
