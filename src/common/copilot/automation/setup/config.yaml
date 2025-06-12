@@ -4,7 +4,8 @@
 # Description: This is the API endpoint to be used to run automation suite.
 # Type: string
 #endpoint: https://localhost:5001/v1.0/9ba620dc-4b37-430e-b779-2f9a7e7a52a6/appintelligence/chat
-endpoint: https://aibuildertextapiservice.us-il109.gateway.Prod.island.powerapps.com/v1.0/abcc137d-7ae6-ee11-9048-000d3a106507/appintelligence/chat
+#endpoint: https://aibuildertextapiservice.us-il109.gateway.Prod.island.powerapps.com/v1.0/abcc137d-7ae6-ee11-9048-000d3a106507/appintelligence/chat
+endpoint: https://aibuildertextapiservice.wus-il002.gateway.Test.island.powerapps.com/v1.0/ad48417c-a13d-ee11-be6a-00224804265b/appintelligence/chat
 
 # Required: YES
 # Description: This is the excel file to be used from Setup folder to run automation suite.
