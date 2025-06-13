@@ -12,7 +12,6 @@ import * as vscode from "vscode";
 // } from "../../../../src/web/client/common/constants";
 // import { ERRORS } from "../../../web/client/common/errorHandler";
 import { INAPPROPRIATE_CONTENT, INPUT_CONTENT_FILTERED, INVALID_INFERENCE_INPUT, InvalidResponse, MalaciousScenerioResponse, NetworkError, PROMPT_LIMIT_EXCEEDED, PromptLimitExceededResponse, RELEVANCY_CHECK_FAILED, RateLimitingResponse, UnauthorizedResponse } from "../constants";
-import { EXTENSION_NAME } from "../../../client/constants";
 import * as ExcelJS from 'exceljs';
 import * as fs from 'fs';
 import * as yaml from 'yaml';
@@ -21,7 +20,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { IApiRequestParams } from "./interfaces";
 import { getExtensionVersion } from "../../utilities/Utils";
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../services/Constants";
-import { ERRORS } from "../../ErrorConstants";
+import { EXTENSION_NAME } from "../../constants";
 
 const clientType = EXTENSION_NAME + '-' + 'Desktop';
 const clientVersion = getExtensionVersion();
@@ -43,8 +42,8 @@ export async function getIntelligenceAPIAccessToken() : Promise<{ accessToken: s
         }
         accessToken = session?.accessToken ?? '';
         if (!accessToken) {
-            console.log(ERRORS.NO_ACCESS_TOKEN);
-            throw new Error(ERRORS.NO_ACCESS_TOKEN);
+            console.log("Access token is not available. Please login to the Intelligence API.");
+            throw new Error("Access token is not available. Please login to the Intelligence API.");
         }
     }
     catch (error) {
