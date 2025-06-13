@@ -13,11 +13,11 @@ import {
     isPortalVersionV2,
     isWebfileContentLoadNeeded,
     setFileContent,
+    isNullOrUndefined,
 } from "../utilities/commonUtil";
 import { getCustomRequestURL, getMappingEntityContent, getMetadataInfo, getMappingEntityId, getMimeType, getRequestURL } from "../utilities/urlBuilderUtil";
 import { getCommonHeadersForDataverse } from "../../../common/services/AuthenticationProvider";
 import * as Constants from "../common/constants";
-import { showErrorDialog } from "../common/errorHandler";
 import { PortalsFS } from "./fileSystemProvider";
 import {
     encodeAsBase64,
@@ -27,12 +27,13 @@ import {
     isBase64Encoded,
 } from "../utilities/schemaHelperUtil";
 import WebExtensionContext from "../WebExtensionContext";
-import { telemetryEventNames } from "../telemetry/constants";
+import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 import { EntityMetadataKeyCore, SchemaEntityMetadata, folderExportType, schemaEntityKey, schemaEntityName, schemaKey } from "../schema/constants";
 import { getEntityNameForExpandedEntityContent, getRequestUrlForEntities } from "../utilities/folderHelperUtility";
 import { IAttributePath, IFileInfo } from "../common/interfaces";
 import { portal_schema_V2 } from "../schema/portalSchema";
-import { ERRORS } from "../../../common/ErrorConstants";
+import { ERROR_CONSTANTS } from "../../../common/ErrorConstants";
+import { showErrorDialog } from "../../../common/utilities/errorHandlerUtil";
 
 export async function fetchDataFromDataverseAndUpdateVFS(
     portalFs: PortalsFS,
@@ -49,7 +50,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
 
             if (defaultFileInfo === undefined) { // This will be undefined for bulk entity load
                 WebExtensionContext.telemetry.sendInfoTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_FILES_LOAD_SUCCESS,
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_FILES_LOAD_SUCCESS,
                     {
                         entityName: entity.entityName,
                         duration: (new Date().getTime() - startTime).toString(),
@@ -65,7 +66,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
                 "We encountered an error preparing the files for edit."
             )
         );
-        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_FAILED_TO_PREPARE_WORKSPACE, fetchDataFromDataverseAndUpdateVFS.name, errorMsg, error as Error);
+        WebExtensionContext.telemetry.sendErrorTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_FAILED_TO_PREPARE_WORKSPACE, fetchDataFromDataverseAndUpdateVFS.name, errorMsg, error as Error);
     }
 }
 
@@ -118,7 +119,7 @@ async function fetchFromDataverseAndCreateFiles(
 
             if (result[Constants.ODATA_COUNT] !== 0 && data.length === 0) {
                 console.error(vscode.l10n.t("Response data is empty"));
-                throw new Error(ERRORS.EMPTY_RESPONSE);
+                throw new Error(ERROR_CONSTANTS.EMPTY_RESPONSE);
             }
 
             WebExtensionContext.telemetry.sendAPISuccessTelemetry(
@@ -159,7 +160,7 @@ async function fetchFromDataverseAndCreateFiles(
                 );
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_SYSTEM_ERROR,
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_SYSTEM_ERROR,
                     fetchFromDataverseAndCreateFiles.name,
                     (error as Error)?.message,
                     error as Error
@@ -170,7 +171,7 @@ async function fetchFromDataverseAndCreateFiles(
 
     if (defaultFileInfo === undefined) {
         WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_DATAVERSE_API_CALL_FILE_FETCH_COUNT,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_DATAVERSE_API_CALL_FILE_FETCH_COUNT,
             { entityName: entityName, count: data.length.toString() }
         );
 
@@ -212,16 +213,16 @@ async function createContentFiles(
 
         // Validate entity schema details
         if (subUri?.length === 0) {
-            throw new Error(ERRORS.SUBURI_EMPTY);
+            throw new Error(ERROR_CONSTANTS.SUBURI_EMPTY);
         }
 
         if (!attributes || !attributeExtension) {
-            throw new Error(ERRORS.ATTRIBUTES_EMPTY);
+            throw new Error(ERROR_CONSTANTS.ATTRIBUTES_EMPTY);
         }
 
         const entityId = fetchedFileId ? result[fetchedFileId] : null;
         if (!entityId) {
-            throw new Error(ERRORS.FILE_ID_EMPTY);
+            throw new Error(ERROR_CONSTANTS.FILE_ID_EMPTY);
         }
 
         fileName = fetchedFileName
@@ -229,7 +230,7 @@ async function createContentFiles(
             : Constants.EMPTY_FILE_NAME;
 
         if (fileName === Constants.EMPTY_FILE_NAME) {
-            throw new Error(ERRORS.FILE_NAME_EMPTY);
+            throw new Error(ERROR_CONSTANTS.FILE_NAME_EMPTY);
         }
 
         // Create folder paths
@@ -245,11 +246,16 @@ async function createContentFiles(
             schemaEntityKey.LANGUAGE_FIELD
         );
 
+        let languageCode = WebExtensionContext.websiteLanguageCode;
+
         if (languageCodeAttribute && result[languageCodeAttribute] === null) {
-            throw new Error(ERRORS.LANGUAGE_CODE_ID_VALUE_NULL);
+            if (entityName !== schemaEntityName.CONTENTSNIPPETS) {
+                throw new Error(ERROR_CONSTANTS.LANGUAGE_CODE_ID_VALUE_NULL);
+            } else {
+                languageCode = Constants.DEFAULT_LANGUAGE_CODE; // Handles the case where language code is null for content snippets
+            }
         }
 
-        let languageCode = WebExtensionContext.websiteLanguageCode;
         if (defaultFileInfo?.fileName === undefined &&
             languageCodeAttribute &&
             result[languageCodeAttribute]) {
@@ -263,7 +269,7 @@ async function createContentFiles(
             ) as string;
 
             if (languageCode === Constants.DEFAULT_LANGUAGE_CODE || languageCode === undefined) {
-                throw new Error(ERRORS.LANGUAGE_CODE_EMPTY);
+                throw new Error(ERROR_CONSTANTS.LANGUAGE_CODE_EMPTY);
             }
         }
 
@@ -290,7 +296,7 @@ async function createContentFiles(
         const errorMsg = (error as Error)?.message;
         console.error(vscode.l10n.t("Failed to get file ready for edit: {0}", fileName));
         WebExtensionContext.telemetry.sendErrorTelemetry(
-            telemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED,
             createContentFiles.name,
             errorMsg,
             error as Error
@@ -333,7 +339,7 @@ async function processDataAndCreateFile(
         if (fileExtension === undefined) {
             const expandedContent = getAttributeContent(result, attributePath, entityName, entityId);
 
-            if (expandedContent !== Constants.NO_CONTENT) {
+            if (!isNullOrUndefined(expandedContent)) {
                 await processExpandedData(
                     entityName,
                     expandedContent,
@@ -382,9 +388,34 @@ async function processDataAndCreateFile(
     if (entityId === WebExtensionContext.defaultEntityId
         && defaultFileInfo !== undefined
         && defaultFileInfo.fileName === undefined) { // Triggered default file load defines this value
-        await WebExtensionContext.updateSingleFileUrisInContext(
-            vscode.Uri.parse(fileUri)
-        );
+
+        const sourceAttribute = WebExtensionContext.urlParametersMap.get(Constants.queryParameters.SOURCE_ATTRIBUTE);
+        let sourceAttributeExtension: string | undefined;
+
+        if (sourceAttribute) {
+            switch (sourceAttribute) {
+                case Constants.sourceAttribute.CUSTOM_CSS:
+                    sourceAttributeExtension = "customcss.css";
+                    break;
+                case Constants.sourceAttribute.CUSTOM_JAVASCRIPT:
+                    sourceAttributeExtension = "customjs.js";
+                    break;
+                default:
+                    WebExtensionContext.telemetry.sendErrorTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_SOURCE_ATTRIBUTE_INVALID, processDataAndCreateFile.name);
+                    sourceAttributeExtension = undefined;
+            }
+        }
+
+        if (sourceAttributeExtension) {
+            fileUri = filePathInPortalFS + GetFileNameWithExtension(entityName, fileName, languageCode, sourceAttributeExtension);
+            await WebExtensionContext.updateSingleFileUrisInContext(
+                vscode.Uri.parse(fileUri)
+            );
+        } else {
+            await WebExtensionContext.updateSingleFileUrisInContext(
+                vscode.Uri.parse(fileUri)
+            );
+        }
     }
 }
 
@@ -459,7 +490,7 @@ async function createFile(
     await createVirtualFile(
         portalsFS,
         fileUri,
-        convertContentToUint8Array(fileContent, base64Encoded),
+        convertContentToUint8Array(fileContent ?? Constants.NO_CONTENT, base64Encoded),
         entityId,
         attributePath,
         encodeAsBase64(entityName, attribute),
@@ -569,35 +600,43 @@ export async function preprocessData(
             formsData?.forEach((dataItem: any) => {
                 const entityId = fetchedFileId ? dataItem[fetchedFileId] : null;
                 if (!entityId) {
-                    throw new Error(ERRORS.FILE_ID_EMPTY);
+                    throw new Error(ERROR_CONSTANTS.FILE_ID_EMPTY);
                 }
                 advancedFormStepData.set(entityId, dataItem);
             });
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             data?.forEach((dataItem: any) => {
-                const webFormSteps = getAttributeContent(dataItem, attributePath, entityType, fetchedFileId as string) as [];
+                try {
+                    const webFormSteps = getAttributeContent(dataItem, attributePath, entityType, fetchedFileId as string) as [];
 
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const steps: any[] = [];
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const steps: any[] = [];
 
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                webFormSteps?.forEach((step: any) => {
-                    const formStepData = advancedFormStepData.get(step);
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    !isNullOrUndefined(webFormSteps) && webFormSteps?.forEach((step: any) => {
+                        const formStepData = advancedFormStepData.get(step);
 
-                    if (formStepData) {
-                        steps.push(formStepData);
-                    }
-                });
-                setFileContent(dataItem, attributePath, steps);
+                        if (formStepData) {
+                            steps.push(formStepData);
+                        }
+                    });
+                    setFileContent(dataItem, attributePath, steps);
+                }
+                catch (error) {
+                    const errorMsg = (error as Error)?.message;
+                    WebExtensionContext.telemetry.sendErrorTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_WEBFORM_STEPS_FAILED,
+                        preprocessData.name,
+                        errorMsg);
+                }
             });
-            WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_SUCCESS, { entityType: entityType });
+            WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_SUCCESS, { entityType: entityType });
         }
     }
     catch (error) {
         const errorMsg = (error as Error)?.message;
         WebExtensionContext.telemetry.sendErrorTelemetry(
-            telemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_FAILED,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_FAILED,
             preprocessData.name,
             errorMsg,
             error as Error
@@ -670,7 +709,7 @@ async function createVirtualFile(
         } catch (error) {
             const errorMsg = (error as Error)?.message;
             WebExtensionContext.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_FAILED_TO_UPDATE_FOREIGN_KEY_DETAILS,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_FAILED_TO_UPDATE_FOREIGN_KEY_DETAILS,
                 createVirtualFile.name,
                 errorMsg,
                 error as Error

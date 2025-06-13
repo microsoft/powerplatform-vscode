@@ -9,11 +9,12 @@ import { isValidDirectoryPath, isValidFilePath, isWebFileWithLazyLoad } from "..
 import {
     PORTALS_URI_SCHEME,
     queryParameters,
+    REFERRER,
 } from "../common/constants";
 import WebExtensionContext from "../WebExtensionContext";
 import { fetchDataFromDataverseAndUpdateVFS } from "./remoteFetchProvider";
 import { saveData } from "./remoteSaveProvider";
-import { telemetryEventNames } from "../telemetry/constants";
+import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 import { getFolderSubUris } from "../utilities/folderHelperUtility";
 import { EtagHandlerService } from "../services/etagHandlerService";
 import {
@@ -29,9 +30,9 @@ import {
     updateFileDirtyChanges,
     updateFileEntityEtag,
 } from "../utilities/fileAndEntityUtil";
-import { getImageFileContent, getRangeForMultilineMatch, isImageFileSupportedForEdit, isVersionControlEnabled, updateFileContentInFileDataMap } from "../utilities/commonUtil";
+import { getImageFileContent, getRangeForMultilineMatch, isImageFileSupportedForEdit, isPortalVersionV1, isVersionControlEnabled, updateFileContentInFileDataMap } from "../utilities/commonUtil";
 import { IFileInfo, ISearchQueryMatch, ISearchQueryResults } from "../common/interfaces";
-import { ERRORS } from "../../../common/ErrorConstants";
+import { ERROR_CONSTANTS } from "../../../common/ErrorConstants";
 
 export class File implements vscode.FileStat {
     type: vscode.FileType;
@@ -99,7 +100,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
                     updateFileEntityEtag(uri.fsPath, entityEtagValue);
                     await this.updateMtime(uri, latestContent);
                     WebExtensionContext.telemetry.sendInfoTelemetry(
-                        telemetryEventNames.WEB_EXTENSION_DIFF_VIEW_TRIGGERED
+                        webExtensionTelemetryEventNames.WEB_EXTENSION_DIFF_VIEW_TRIGGERED
                     );
                 }
             }
@@ -112,7 +113,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
         const result: [string, vscode.FileType][] = [];
         if (isActivationFlow && isValidDirectoryPath(uri.fsPath)) {
             WebExtensionContext.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_FETCH_DIRECTORY_TRIGGERED
+                webExtensionTelemetryEventNames.WEB_EXTENSION_FETCH_DIRECTORY_TRIGGERED
             );
             await this._loadFromDataverseToVFS();
             return result;
@@ -191,7 +192,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
         ) {
             if (isImageEdit) {
                 WebExtensionContext.telemetry.sendInfoTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_SAVE_IMAGE_FILE_TRIGGERED
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_SAVE_IMAGE_FILE_TRIGGERED
                 );
 
                 updateFileContentInFileDataMap(uri.fsPath, getImageFileContent(uri.fsPath, content), true);
@@ -206,7 +207,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
                 },
                 async () => {
                     WebExtensionContext.telemetry.sendInfoTelemetry(
-                        telemetryEventNames.WEB_EXTENSION_SAVE_FILE_TRIGGERED
+                        webExtensionTelemetryEventNames.WEB_EXTENSION_SAVE_FILE_TRIGGERED
                     );
                     await this._saveFileToDataverseFromVFS(uri);
                 }
@@ -243,7 +244,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
 
     async rename(): Promise<void> {
         WebExtensionContext.telemetry.sendErrorTelemetry(
-            telemetryEventNames.WEB_EXTENSION_RENAME_NOT_SUPPORTED,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_RENAME_NOT_SUPPORTED,
             this.rename.name
         );
         throw new Error("Method not implemented.");
@@ -251,7 +252,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
 
     async delete(): Promise<void> {
         WebExtensionContext.telemetry.sendErrorTelemetry(
-            telemetryEventNames.WEB_EXTENSION_DELETE_NOT_SUPPORTED,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_DELETE_NOT_SUPPORTED,
             this.delete.name
         );
         throw new Error("Method not implemented.");
@@ -293,7 +294,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
         });
 
         WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_SEARCH_FILE,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_SEARCH_FILE,
             {
                 duration: (Date.now() - startTime).toString(),
                 files: files.length.toString(),
@@ -416,7 +417,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
             const endFileTime = Date.now();
 
             WebExtensionContext.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_SEARCH_TEXT_RESULTS,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_SEARCH_TEXT_RESULTS,
                 {
                     duration: (endFileTime - startFileTime).toString(),
                     isMultiline: query.isMultiline ? "true" : "false",
@@ -433,7 +434,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
         // Record end time for search
         const endTime = Date.now();
         WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_SEARCH_TEXT,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_SEARCH_TEXT,
             {
                 duration: (endTime - startTime).toString(),
             }
@@ -542,14 +543,14 @@ export class PortalsFS implements vscode.FileSystemProvider {
     private async createFileSystem(portalFolderName: string) {
         if (portalFolderName.length === 0) {
             WebExtensionContext.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_EMPTY_PORTAL_FOLDER_NAME,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_EMPTY_PORTAL_FOLDER_NAME,
                 this.createFileSystem.name
             );
-            throw new Error(ERRORS.PORTAL_FOLDER_NAME_EMPTY);
+            throw new Error(ERROR_CONSTANTS.PORTAL_FOLDER_NAME_EMPTY);
         }
 
         WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_CREATE_ROOT_FOLDER
+            webExtensionTelemetryEventNames.WEB_EXTENSION_CREATE_ROOT_FOLDER
         );
         await this.createDirectory(
             vscode.Uri.parse(
@@ -579,11 +580,11 @@ export class PortalsFS implements vscode.FileSystemProvider {
         subUris.forEach(async (subUri) => {
             try {
                 if (subUri?.length === 0) {
-                    throw new Error(ERRORS.SUBURI_EMPTY);
+                    throw new Error(ERROR_CONSTANTS.SUBURI_EMPTY);
                 }
 
                 WebExtensionContext.telemetry.sendInfoTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_CREATE_ENTITY_FOLDER,
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_CREATE_ENTITY_FOLDER,
                     { entityFolderName: subUri }
                 );
 
@@ -593,7 +594,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
                 );
             } catch {
                 WebExtensionContext.telemetry.sendInfoTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_CREATE_ENTITY_FOLDER_FAILED
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_CREATE_ENTITY_FOLDER_FAILED
                 );
             }
         });
@@ -609,7 +610,12 @@ export class PortalsFS implements vscode.FileSystemProvider {
         );
 
         // Try Loading default file first
-        if (WebExtensionContext.defaultEntityId !== "" && WebExtensionContext.defaultEntityType !== "") {
+        const referrer = WebExtensionContext.urlParametersMap.get(queryParameters.REFERRER) as string 
+
+        // If referrer is power pages home and DM is V1, random home page id is being passed. Leading to error page.
+        const shouldLoadDefaultFile = !(referrer === REFERRER.POWER_PAGES_HOME && isPortalVersionV1())
+
+        if (WebExtensionContext.defaultEntityId !== "" && WebExtensionContext.defaultEntityType !== "" && shouldLoadDefaultFile) { 
             await fetchDataFromDataverseAndUpdateVFS(
                 this,
                 {
@@ -619,10 +625,10 @@ export class PortalsFS implements vscode.FileSystemProvider {
             );
 
             // Fire and forget
-            vscode.window.showTextDocument(WebExtensionContext.defaultFileUri, { preview: false, preserveFocus: true, viewColumn: vscode.ViewColumn.Active });
+            vscode.commands.executeCommand('vscode.open', WebExtensionContext.defaultFileUri, { preview: false, preserveFocus: true, viewColumn: vscode.ViewColumn.Active });
 
             WebExtensionContext.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_VSCODE_START_COMMAND,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_VSCODE_START_COMMAND,
                 {
                     commandId: "vscode.open",
                     type: "file",
@@ -640,7 +646,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
         }
 
         WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_PREPARE_WORKSPACE_SUCCESS,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_PREPARE_WORKSPACE_SUCCESS,
             {
                 isMultifileEnabled: WebExtensionContext.showMultifileInVSCode.toString(),
                 duration: (new Date().getTime() - WebExtensionContext.extensionActivationTime).toString(),
@@ -671,7 +677,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
             );
 
             WebExtensionContext.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_VSCODE_RELOAD_FILE,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_VSCODE_RELOAD_FILE,
                 { entityId: entityId, entityName: entityName }
             );
         }

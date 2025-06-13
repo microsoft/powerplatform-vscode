@@ -22,13 +22,11 @@ import {
 } from "./commonUtility";
 import { DataverseFieldAdxPartialUrl, PowerPagesEntityType } from "./constants";
 import { removeTrailingSlash } from "../../debugger/utils";
-import { ITelemetry } from "../telemetry/ITelemetry";
-import { CleanupRelatedFilesEvent, FileRenameValidationEvent, sendTelemetryEvent, UpdateEntityNameInYmlEvent, UpdateEntityPathNamesEvent } from "./telemetry";
+import { CleanupRelatedFilesEvent, FileRenameValidationEvent, sendTelemetryEvent, UpdateEntityNameInYmlEvent, UpdateEntityPathNamesEvent } from "../../common/OneDSLoggerTelemetry/telemetry/telemetry";
 
 export async function fileRenameValidation(oldUri: vscode.Uri,
     newUri: vscode.Uri,
-    oldFileProperties: IFileProperties,
-    telemetry: ITelemetry
+    oldFileProperties: IFileProperties
 ) {
     let success = true;
     try {
@@ -43,7 +41,7 @@ export async function fileRenameValidation(oldUri: vscode.Uri,
             }
         }
     } catch (e) {
-        sendTelemetryEvent(telemetry, {  methodName:fileRenameValidation.name,eventName: FileRenameValidationEvent, exception: e as Error });
+        sendTelemetryEvent({ methodName: fileRenameValidation.name, eventName: FileRenameValidationEvent, exception: e as Error });
     }
     return success;
 }
@@ -51,8 +49,7 @@ export async function fileRenameValidation(oldUri: vscode.Uri,
 export async function updateEntityPathNames(oldUri: vscode.Uri,
     newUri: vscode.Uri,
     oldFileProperties: IFileProperties,
-    fileEntityType: PowerPagesEntityType,
-    telemetry: ITelemetry
+    fileEntityType: PowerPagesEntityType
 ) {
     try {
         const entityFolderName = getEntityFolderName(oldUri.path);
@@ -84,7 +81,7 @@ export async function updateEntityPathNames(oldUri: vscode.Uri,
                 const ymlFileInFolder = await vscode.workspace.findFiles(isUpdateNeeded ?
                     `**/${entityFolderName}/${newFileProperties.fileName}.*.yml` : `**/${entityFolderName}/${oldFileProperties.fileName.toLowerCase()}/**/*.yml`);
                 ymlFileInFolder.forEach(file => {
-                    updateEntityNameInYml(file.path, fileEntityType, telemetry);
+                    updateEntityNameInYml(file.path, fileEntityType);
                 });
 
                 // FolderName update
@@ -96,14 +93,13 @@ export async function updateEntityPathNames(oldUri: vscode.Uri,
             }
         }
     } catch (e) {
-        sendTelemetryEvent(telemetry, { methodName:updateEntityPathNames.name,eventName: UpdateEntityPathNamesEvent, exception: e as Error });
+        sendTelemetryEvent({ methodName: updateEntityPathNames.name, eventName: UpdateEntityPathNamesEvent, exception: e as Error });
     }
 }
 
 export async function cleanupRelatedFiles(uriPath: string,
     fileEntityType: PowerPagesEntityType,
-    fileProperties: IFileProperties,
-    telemetry: ITelemetry
+    fileProperties: IFileProperties
 ) {
     try {
         const pathUris = getDeletePathUris(uriPath, fileEntityType, fileProperties);
@@ -111,13 +107,12 @@ export async function cleanupRelatedFiles(uriPath: string,
             await vscode.workspace.fs.delete(pathUri, { recursive: true, useTrash: true });
         });
     } catch (e) {
-        sendTelemetryEvent(telemetry, { methodName:cleanupRelatedFiles.name,eventName: CleanupRelatedFilesEvent, exception: e as Error });
+        sendTelemetryEvent({ methodName: cleanupRelatedFiles.name, eventName: CleanupRelatedFilesEvent, exception: e as Error });
     }
 }
 
 function updateEntityNameInYml(uriPath: string,
-    fileEntityType: PowerPagesEntityType,
-    telemetry: ITelemetry
+    fileEntityType: PowerPagesEntityType
 ) {
     try {
         const uri = vscode.Uri.file(uriPath);
@@ -138,6 +133,6 @@ function updateEntityNameInYml(uriPath: string,
         const newFileContents = YAML.stringify(parsedFileContents);
         fs.writeFileSync(uri.fsPath, newFileContents);
     } catch (e) {
-        sendTelemetryEvent(telemetry, {  methodName:updateEntityNameInYml.name,eventName: UpdateEntityNameInYmlEvent, exception: e as Error });
+        sendTelemetryEvent({ methodName: updateEntityNameInYml.name, eventName: UpdateEntityNameInYmlEvent, exception: e as Error });
     }
 }

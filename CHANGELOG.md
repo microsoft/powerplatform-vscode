@@ -1,5 +1,56 @@
 # Change Log - Power Platform Extension
 
+## 2.0.86
+- pac CLI 1.43.6, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- Bug Fixes
+  - Fixed authentication flow for Copilot experiences on desktop.
+
+## 2.0.84
+- pac CLI 1.42.1, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- Download/Upload support for code sites in Actions hub.
+- Accessibility enhancements
+- Improved efficiency of @powerpages calls.
+- Bug Fixes
+  - Updated authentication flow for VS Code desktop.
+
+## 2.0.82
+- pac CLI 1.41.1, (March 2025 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- Accessibility enhancements
+- Power Pages Actions for VS Code desktop.
+- Bug Fixes
+  - Fixed HTML document preview in VS Code desktop.
+
+
+## 2.0.78
+- pac CLI 1.39.3, (January 2025 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- Bug Fixes
+  - Accessibility enhancements
+  - Fixed a minor content snippets related bug
+
+## 2.0.76
+- pac CLI 1.37.4, (November 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+
+## 2.0.74
+- pac CLI 1.35.1, (September 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- Bug Fixes
+  - Copilot for Power Pages: "Not yet available in your region." [Issue #1046](https://github.com/microsoft/powerplatform-vscode/issues/1046) [Fix #1044](https://github.com/microsoft/powerplatform-vscode/pull/1044)
+  - Power Pages generator installation issue [Issue #1018](https://github.com/microsoft/powerplatform-vscode/issues/1018) [Fix #1049](https://github.com/microsoft/powerplatform-vscode/pull/1049)
+
+## 2.0.66
+- pac CLI 1.34.4, (August 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- Power Pages Chat participant release in GitHub Copilot Chat for Visual Studio Code
+- Web extension updates
+  - Bug Fixes
+    - Dual authentication on Web extension
+
+## 2.0.63
+- pac CLI 1.33.5, (July 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- Bug Fixes
+  - HTML/YML server crash issue
+- Web extension updates
+  - Bug Fixes
+    - Form steps not displayed for any Advanced form issue
+
 ## 2.0.59
 - pac CLI 1.32.8, (May 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 - Web extension updates

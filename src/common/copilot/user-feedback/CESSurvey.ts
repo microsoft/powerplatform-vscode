@@ -5,20 +5,19 @@
 
 import * as vscode from "vscode";
 import { npsAuthentication } from "../../services/AuthenticationProvider";
-import { SurveyConstants } from "../../../web/client/common/constants";
 import fetch from "node-fetch";
 import { getNonce } from "../../utilities/Utils";
-import { ITelemetry } from "../../../client/telemetry/ITelemetry";
 import { CopilotNpsAuthenticationCompleted, CopilotUserFeedbackFailureEvent, CopilotUserFeedbackSuccessEvent } from "../telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "../telemetry/copilotTelemetry";
 import { IFeedbackData } from "../model";
-import { ERRORS } from "../../ErrorConstants";
+import { ERROR_CONSTANTS } from "../../ErrorConstants";
 import { EUROPE_GEO, UK_GEO } from "../constants";
+import { SurveyConstants } from "./constants";
 
 let feedbackPanel: vscode.WebviewPanel | undefined;
 
 
-export async function CESUserFeedback(context: vscode.ExtensionContext, sessionId: string, userID: string, thumbType: string, telemetry: ITelemetry, geoName: string, messageScenario: string, tenantId?: string) {
+export async function CESUserFeedback(context: vscode.ExtensionContext, sessionId: string, userID: string, thumbType: string, geoName: string, messageScenario: string, tenantId?: string) {
 
     if (feedbackPanel) {
         feedbackPanel.dispose();
@@ -36,12 +35,12 @@ export async function CESUserFeedback(context: vscode.ExtensionContext, sessionI
 
     const feedbackData = initializeFeedbackData(sessionId, vscode.env.uiKind === vscode.UIKind.Web, geoName, messageScenario, tenantId);
 
-    const apiToken: string = await npsAuthentication(telemetry, SurveyConstants.AUTHORIZATION_ENDPOINT);
+    const apiToken: string = await npsAuthentication(SurveyConstants.AUTHORIZATION_ENDPOINT);
 
     if (apiToken) {
-        sendTelemetryEvent(telemetry, { eventName: CopilotNpsAuthenticationCompleted, feedbackType: thumbType, copilotSessionId: sessionId });
+        sendTelemetryEvent({ eventName: CopilotNpsAuthenticationCompleted, feedbackType: thumbType, copilotSessionId: sessionId });
     } else {
-        sendTelemetryEvent(telemetry, { eventName: CopilotUserFeedbackFailureEvent, feedbackType: thumbType, copilotSessionId: sessionId, error: new Error(ERRORS.NPS_FAILED_AUTH) });
+        sendTelemetryEvent({ eventName: CopilotUserFeedbackFailureEvent, feedbackType: thumbType, copilotSessionId: sessionId, error: new Error(ERROR_CONSTANTS.NPS_FAILED_AUTH) });
     }
 
     const endpointUrl = useEUEndpoint(geoName) ? `https://europe.ces.microsoftcloud.com/api/v1/portalsdesigner/Surveys/powerpageschatgpt/Feedbacks?userId=${userID}` :
@@ -52,14 +51,14 @@ export async function CESUserFeedback(context: vscode.ExtensionContext, sessionI
             switch (message.command) {
                 case "webViewLoaded": {
                     const copilotStrings = {
-                        LIKE_MESSAGE : vscode.l10n.t('Like something? Tell us more.'),
-                        DISLIKE_MESSAGE : vscode.l10n.t('Dislike something? Tell us more.'),
+                        LIKE_MESSAGE: vscode.l10n.t('Like something? Tell us more.'),
+                        DISLIKE_MESSAGE: vscode.l10n.t('Dislike something? Tell us more.'),
                     };
-                    feedbackPanel?.webview.postMessage({ type: "copilotStrings", value: copilotStrings});
+                    feedbackPanel?.webview.postMessage({ type: "copilotStrings", value: copilotStrings });
                     break;
                 }
                 case 'feedback':
-                    await handleFeedbackSubmission(message.text, endpointUrl, apiToken, feedbackData, telemetry, thumbType, sessionId);
+                    await handleFeedbackSubmission(message.text, endpointUrl, apiToken, feedbackData, thumbType, sessionId);
                     feedbackPanel?.dispose();
                     break;
             }
@@ -125,7 +124,7 @@ function initializeFeedbackData(sessionId: string, isWebExtension: boolean, geoN
     return feedbackData;
 }
 
-async function handleFeedbackSubmission(text: string, endpointUrl: string, apiToken: string, feedbackData: IFeedbackData, telemetry: ITelemetry, thumbType: string, sessionID: string) {
+async function handleFeedbackSubmission(text: string, endpointUrl: string, apiToken: string, feedbackData: IFeedbackData, thumbType: string, sessionID: string) {
     feedbackData.Feedbacks[0].value = thumbType + " - " + text;
     try {
         const response = await fetch(endpointUrl, {
@@ -141,15 +140,15 @@ async function handleFeedbackSubmission(text: string, endpointUrl: string, apiTo
             // Feedback sent successfully
             const responseJson = await response.json();
             const feedbackId = responseJson.FeedbackId;
-            sendTelemetryEvent(telemetry, { eventName: CopilotUserFeedbackSuccessEvent, feedbackType: thumbType, FeedbackId: feedbackId, copilotSessionId: sessionID });
+            sendTelemetryEvent({ eventName: CopilotUserFeedbackSuccessEvent, feedbackType: thumbType, FeedbackId: feedbackId, copilotSessionId: sessionID });
         } else {
             // Error sending feedback
             const feedBackError = new Error(response.statusText);
-            sendTelemetryEvent(telemetry, { eventName: CopilotUserFeedbackFailureEvent, feedbackType: thumbType, copilotSessionId: sessionID, error: feedBackError });
+            sendTelemetryEvent({ eventName: CopilotUserFeedbackFailureEvent, feedbackType: thumbType, copilotSessionId: sessionID, error: feedBackError });
         }
     } catch (error) {
         // Network error or other exception
-        sendTelemetryEvent(telemetry, { eventName: CopilotUserFeedbackFailureEvent, feedbackType: thumbType, copilotSessionId: sessionID, error: error as Error });
+        sendTelemetryEvent({ eventName: CopilotUserFeedbackFailureEvent, feedbackType: thumbType, copilotSessionId: sessionID, error: error as Error });
     }
 }
 
@@ -172,7 +171,7 @@ function getWebviewContent(feedbackCssUri: vscode.Uri, feedbackJsUri: vscode.Uri
     <textarea id="feedbackText" name="feedbackText" rows="5" required></textarea>
     <br/>
     <p class="privacy-statement">"${vscode.l10n.t('Try and be as specific as possible. Your feedback will be used to improve Copilot. <a href="https://privacy.microsoft.com/en-US/data-privacy-notice"> View privacy details </a>')}"</p>
-    <button type="submit" class="submit-feedback">"${vscode.l10n.t('Submit')}"</button>
+    <button tabindex="0" type="submit" title="${vscode.l10n.t('Submit')}" class="submit-feedback">"${vscode.l10n.t('Submit')}"</button>
   </form>
   <script type="module" nonce="${nonce}" src="${feedbackJsUri}"></script>
   </body>
@@ -182,4 +181,3 @@ function getWebviewContent(feedbackCssUri: vscode.Uri, feedbackJsUri: vscode.Uri
 function useEUEndpoint(geoName: string): boolean {
     return geoName === EUROPE_GEO || geoName === UK_GEO;
 }
-

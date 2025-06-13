@@ -22,7 +22,7 @@ import { BrowserFlavor } from "../browser/types/BrowserFlavor";
 import {
     EXTENSION_NAME,
     SETTINGS_DEBUGGER_DEFAULT_PORT,
-} from "../../client/constants";
+} from "../../common/constants";
 
 /**
  * Class that manages configuration of the extension.

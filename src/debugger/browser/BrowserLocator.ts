@@ -11,7 +11,6 @@ import { pathExists } from "fs-extra";
 import { ConfigurationManager } from "../configuration";
 import { IPcfLaunchConfig } from "../configuration/types";
 import { BrowserFlavor } from "./types/BrowserFlavor";
-import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { ErrorReporter } from "../../common/ErrorReporter";
 import { IBrowserPath, Platform } from "./types";
 
@@ -93,8 +92,7 @@ export class BrowserLocator {
      * @param logger Logger instance to use for logging.
      */
     constructor(
-        debugConfig: IPcfLaunchConfig,
-        private readonly logger: ITelemetry
+        debugConfig: IPcfLaunchConfig
     ) {
         this.browserFlavor =
             debugConfig.browserFlavor ||
@@ -112,7 +110,6 @@ export class BrowserLocator {
             return browserPath;
         } catch (error) {
             await ErrorReporter.report(
-                this.logger,
                 "BrowserLocator.getPath",
                 undefined,
                 "Microsoft Edge could not be found. Ensure you have installed Microsoft Edge and that you have selected 'default' or the appropriate version of Microsoft Edge in the extension settings panel."

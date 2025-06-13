@@ -10,12 +10,12 @@ import { saveData } from "../../dal/remoteSaveProvider";
 import * as schemaHelperUtil from "../../utilities/schemaHelperUtil";
 import WebExtensionContext from "../../../client/WebExtensionContext";
 import { expect } from "chai";
-import * as errorHandler from "../../common/errorHandler";
 import { BAD_REQUEST } from "../../common/constants";
 import * as urlBuilderUtil from "../../utilities/urlBuilderUtil";
 import { IAttributePath } from "../../common/interfaces";
-import { telemetryEventNames } from "../../telemetry/constants";
+import { webExtensionTelemetryEventNames } from "../../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 import { getUserAgent } from "../../../../common/utilities/Utils";
+import * as errorHandler from "../../../../common/utilities/errorHandlerUtil";
 
 describe("remoteSaveProvider", () => {
     afterEach(() => {
@@ -151,7 +151,7 @@ describe("remoteSaveProvider", () => {
         assert.calledOnce(sendErrorTelemetry);
         assert.calledOnceWithExactly(
             sendErrorTelemetry,
-            telemetryEventNames.WEB_EXTENSION_GET_SAVE_PARAMETERS_ERROR,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_GET_SAVE_PARAMETERS_ERROR,
             "getSaveParameters",
             BAD_REQUEST
         );

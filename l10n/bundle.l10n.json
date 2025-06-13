@@ -7,10 +7,10 @@
   "You are editing a live, public site ": "You are editing a live, public site ",
   "Preview site": "Preview site",
   "Open in Power Pages studio": "Open in Power Pages studio",
-  "Preview site URL is not available": "Preview site URL is not available",
+  "Preview site URL is not valid": "Preview site URL is not valid",
   "Opening preview site...": "Opening preview site...",
   "Power Pages studio URL is not available": "Power Pages studio URL is not available",
-  "Microsoft wants your feeback": "Microsoft wants your feeback",
+  "Microsoft wants your feedback": "Microsoft wants your feedback",
   "Check the URL and verify the parameters are correct": "Check the URL and verify the parameters are correct",
   "Unable to complete the request": "Unable to complete the request",
   "One or more attribute names have been changed or removed. Contact your admin.": "One or more attribute names have been changed or removed. Contact your admin.",
@@ -33,7 +33,6 @@
   "Enter the environment URL": "Enter the environment URL",
   "Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL.": "Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL.",
   "Selection is empty.": "Selection is empty.",
-  "Copilot In Power Pages": "Copilot In Power Pages",
   "PREVIEW": "PREVIEW",
   "Explain the following code snippet:": "Explain the following code snippet:",
   "Selection is too large. Try making a shorter selection.": "Selection is too large. Try making a shorter selection.",
@@ -53,13 +52,24 @@
   "Hi! Instantly generate code for Power Pages sites by typing in what you need. To start using Copilot, log in to your Microsoft account.": "Hi! Instantly generate code for Power Pages sites by typing in what you need. To start using Copilot, log in to your Microsoft account.",
   "Login": "Login",
   "Hi": "Hi",
+  "In your own words, describe what you need. You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.": "In your own words, describe what you need. You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.",
   "To know more, see <a href=\"https://go.microsoft.com/fwlink/?linkid=2206366\">Copilot in Power Pages documentation.": "To know more, see <a href=\"https://go.microsoft.com/fwlink/?linkid=2206366\">Copilot in Power Pages documentation.",
   "Working on it...": "Working on it...",
+  "You can use this in <a href=\"#\" id=\"github-copilot-link\">GitHub Copilot with @powerpages</a> and leverage best of both world.": "You can use this in <a href=\"#\" id=\"github-copilot-link\">GitHub Copilot with @powerpages</a> and leverage best of both world.",
+  "NEW": "NEW",
+  "Copilot Response": "Copilot Response",
+  "Code Block ": "Code Block ",
+  " End of Code Block ": " End of Code Block ",
   "Copied to clipboard!": "Copied to clipboard!",
   "What do you need help with?": "What do you need help with?",
+  "Make sure AI-generated content is accurate and appropriate before using. <a href=\"https://go.microsoft.com/fwlink/?linkid=2240145\">Learn more</a> | <a href=\"https://go.microsoft.com/fwlink/?linkid=2189520\">View\n              terms</a>": "Make sure AI-generated content is accurate and appropriate before using. <a href=\"https://go.microsoft.com/fwlink/?linkid=2240145\">Learn more</a> | <a href=\"https://go.microsoft.com/fwlink/?linkid=2189520\">View\n              terms</a>",
+  "Try @powerpages with GitHub Copilot": "Try @powerpages with GitHub Copilot",
+  "Get GitHub Copilot to try @powerpages": "Get GitHub Copilot to try @powerpages",
   "Let Copilot help you code": "Let Copilot help you code",
-  "Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you. ": "Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you. ",
-  "Try Copilot for Power Pages": "Try Copilot for Power Pages",
+  "Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.": "Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.",
+  "Continue with Copilot for Power Pages": "Continue with Copilot for Power Pages",
+  "Arrow icon": "Arrow icon",
+  "Copilot illustration": "Copilot illustration",
   "Do not show again": "Do not show again",
   "Like something? Tell us more.": "Like something? Tell us more.",
   "Dislike something? Tell us more.": "Dislike something? Tell us more.",
@@ -67,43 +77,66 @@
   "Tell us more.": "Tell us more.",
   "Try and be as specific as possible. Your feedback will be used to improve Copilot. <a href=\"https://privacy.microsoft.com/en-US/data-privacy-notice\"> View privacy details </a>": "Try and be as specific as possible. Your feedback will be used to improve Copilot. <a href=\"https://privacy.microsoft.com/en-US/data-privacy-notice\"> View privacy details </a>",
   "Submit": "Submit",
+  "Explain the following code {% include 'Page Copy'%}": "Explain the following code {% include 'Page Copy'%}",
+  "Hi! @powerpages can help you write, edit, and even summarize your website code.": "Hi! @powerpages can help you write, edit, and even summarize your website code.",
+  "Authentication failed. Please login and try again.": "Authentication failed. Please login and try again.",
+  "AI features have been disabled by your organization. Contact your admin for details. [Learn more](https://go.microsoft.com/fwlink/?linkid=2285848)": "AI features have been disabled by your organization. Contact your admin for details. [Learn more](https://go.microsoft.com/fwlink/?linkid=2285848)",
+  "Active auth profile is not found or has expired. Please try again.": "Active auth profile is not found or has expired. Please try again.",
+  "Something went wrong. Don’t worry, you can try again.": "Something went wrong. Don’t worry, you can try again.",
+  "Make sure AI-generated content is accurate and appropriate before using. [Learn more](https://go.microsoft.com/fwlink/?linkid=2240145) | [View terms](https://go.microsoft.com/fwlink/?linkid=2189520)": "Make sure AI-generated content is accurate and appropriate before using. [Learn more](https://go.microsoft.com/fwlink/?linkid=2240145) | [View terms](https://go.microsoft.com/fwlink/?linkid=2189520)",
+  "Hi! Power Pages lets you build secure, professional websites that you can quickly configure and publish across web browsers and devices.\n\nTo create your website, visit the [Power Pages](https://powerpages.microsoft.com/).\nReturn to this chat and @powerpages can help you write and edit your website code.": "Hi! Power Pages lets you build secure, professional websites that you can quickly configure and publish across web browsers and devices.\n\nTo create your website, visit the [Power Pages](https://powerpages.microsoft.com/).\nReturn to this chat and @powerpages can help you write and edit your website code.",
+  "Checking for active auth profile...": "Checking for active auth profile...",
+  "@PowerPages is not yet available in your region.": "@PowerPages is not yet available in your region.",
+  "Login to PowerPages": "Login to PowerPages",
+  "Generating webpages...": "Generating webpages...",
+  "Generating a new Power Pages site...": "Generating a new Power Pages site...",
+  "Failed to create a new Power Pages site. Please try again.": "Failed to create a new Power Pages site. Please try again.",
   "Select Folder for new PCF Control/Do not translate 'PCF' as it is a product name.": {
     "message": "Select Folder for new PCF Control",
     "comment": [
       "Do not translate 'PCF' as it is a product name."
     ]
   },
-  "Preparing pac CLI (v{0}).../{0} represents the version number": {
-    "message": "Preparing pac CLI (v{0})...",
-    "comment": [
-      "{0} represents the version number"
-    ]
-  },
-  "The pac CLI is ready for use in your VS Code terminal!": "The pac CLI is ready for use in your VS Code terminal!",
-  "Cannot install pac CLI: {0}/{0} represents the error message returned from the exception": {
-    "message": "Cannot install pac CLI: {0}",
-    "comment": [
-      "{0} represents the error message returned from the exception"
-    ]
-  },
-  "Installing Power Pages generator(v{0}).../{0} represents the version number": {
-    "message": "Installing Power Pages generator(v{0})...",
-    "comment": [
-      "{0} represents the version number"
-    ]
-  },
-  "dotnet sdk 6.0 or greater must be installed/Do not translate 'dotnet' or 'sdk'": {
-    "message": "dotnet sdk 6.0 or greater must be installed",
-    "comment": [
-      "Do not translate 'dotnet' or 'sdk'"
-    ]
-  },
+  "Unable to locate website root folder.": "Unable to locate website root folder.",
   "File might be referenced by name {0} here./{0} represents the name of the file": {
     "message": "File might be referenced by name {0} here.",
     "comment": [
       "{0} represents the name of the file"
     ]
   },
+  "Some references might be broken. Please check diagnostics for details.": "Some references might be broken. Please check diagnostics for details.",
+  "Cancel": "Cancel",
+  "Install": "Install",
+  "The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?/Do not translate 'Microsoft Edge Tools' ": {
+    "message": "The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?",
+    "comment": [
+      "Do not translate 'Microsoft Edge Tools' "
+    ]
+  },
+  "Opening site preview...": "Opening site preview...",
+  "Site runtime preview feature is not enabled.": "Site runtime preview feature is not enabled.",
+  "No workspace folder opened. Please open a site folder to preview.": "No workspace folder opened. Please open a site folder to preview.",
+  "Initializing site preview. Please try again after few seconds.": "Initializing site preview. Please try again after few seconds.",
+  "Website not found in the environment. Please check the credentials and login with correct account.": "Website not found in the environment. Please check the credentials and login with correct account.",
+  "Initializing site preview": "Initializing site preview",
+  "Getting organization details...": "Getting organization details...",
+  "Getting region information...": "Getting region information...",
+  "Failed to get website endpoint. Please try again later": "Failed to get website endpoint. Please try again later",
+  "Getting website endpoint...": "Getting website endpoint...",
+  "Failed to get organization details. Please try again later": "Failed to get organization details. Please try again later",
+  "Clearing cache. See [details](https://aka.ms/pages-clear-cache)./This is a markdown formatting which must persist across translations.The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).', keeping brackets and the text in the parentheses unmodified": {
+    "message": "Clearing cache. See [details](https://aka.ms/pages-clear-cache).",
+    "comment": [
+      "This is a markdown formatting which must persist across translations.",
+      "The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).', keeping brackets and the text in the parentheses unmodified"
+    ]
+  },
+  "Authenticating...": "Authenticating...",
+  "Unable to clear cache": "Unable to clear cache",
+  "Your preview isn't updated. Please upload your site to see the latest changes.": "Your preview isn't updated. Please upload your site to see the latest changes.",
+  "Upload changes": "Upload changes",
+  "The preview shown is for published changes. Please publish any pending changes to see them in the preview.": "The preview shown is for published changes. Please publish any pending changes to see them in the preview.",
+  "Please login to preview the site.": "Please login to preview the site.",
   "Enter the name of the web template": "Enter the name of the web template",
   "Please enter a name for the web template.": "Please enter a name for the web template.",
   "A webtemplate with the same name already exists. Please enter a different name.": "A webtemplate with the same name already exists. Please enter a different name.",
@@ -114,10 +147,17 @@
   "Choose page template": "Choose page template",
   "Choose parent page": "Choose parent page",
   "Please enter a name for the webpage.": "Please enter a name for the webpage.",
+  "Webpage names should contain only letters, numbers, hyphens, or underscores.": "Webpage names should contain only letters, numbers, hyphens, or underscores.",
   "A webpage with the same name already exists. Please enter a different name.": "A webpage with the same name already exists. Please enter a different name.",
   "No parent pages found for adding webfile": "No parent pages found for adding webfile",
   "File(s) already exist. No new files to add": "File(s) already exist. No new files to add",
   "Web files": "Web files",
+  "Adding {0} web file(s). Existing files will be skipped/{0} represents the number of web files": {
+    "message": "Adding {0} web file(s). Existing files will be skipped",
+    "comment": [
+      "{0} represents the number of web files"
+    ]
+  },
   "Webfile(s) added successfully": "Webfile(s) added successfully",
   "Page Template name cannot be empty.": "Page Template name cannot be empty.",
   "New Page Template": "New Page Template",
@@ -126,6 +166,8 @@
   "A page template with the same name already exists. Please enter a different name.": "A page template with the same name already exists. Please enter a different name.",
   "No Website Data Found in Current Directory. Please switch to a directory that contains the PAC downloaded website data to continue.": "No Website Data Found in Current Directory. Please switch to a directory that contains the PAC downloaded website data to continue.",
   "No workspace folder found": "No workspace folder found",
+  "Operation failed. See output panel for details.": "Operation failed. See output panel for details.",
+  "Show Output Panel": "Show Output Panel",
   "New Content Snippet": "New Content Snippet",
   "Add content snippet name (name should be unique)": "Add content snippet name (name should be unique)",
   "Select Type": "Select Type",
@@ -149,6 +191,135 @@
       "{0} will be replaced by the error message."
     ]
   },
+  "Other Sites": "Other Sites",
+  "Active Sites": "Active Sites",
+  "Inactive Sites": "Inactive Sites",
+  "No sites found": "No sites found",
+  "No environments found": "No environments found",
+  "Select an environment": "Select an environment",
+  "Session Details": "Session Details",
+  "Changing environment...": "Changing environment...",
+  "Current": "Current",
+  "Site management URL not found for the selected site. Please try again after refreshing the environment.": "Site management URL not found for the selected site. Please try again after refreshing the environment.",
+  "Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?": "Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?",
+  "Yes": "Yes",
+  "Current site path not found.": "Current site path not found.",
+  "Site Details": "Site Details",
+  "Browse...": "Browse...",
+  "Select the folder that will contain your project root for your site": "Select the folder that will contain your project root for your site",
+  "Select the folder that contains your compiled output": "Select the folder that contains your compiled output",
+  "Select Folder": "Select Folder",
+  "Environment changed successfully.": "Environment changed successfully.",
+  "Please select the folder that contains your compiled output to upload your site.": "Please select the folder that contains your compiled output to upload your site.",
+  "Upload failed. Please try again later.": "Upload failed. Please try again later.",
+  "Timestamp: {0}/{0} is the timestamp": {
+    "message": "Timestamp: {0}",
+    "comment": [
+      "{0} is the timestamp"
+    ]
+  },
+  "Session ID: {0}/{0} is the Session ID": {
+    "message": "Session ID: {0}",
+    "comment": [
+      "{0} is the Session ID"
+    ]
+  },
+  "Tenant ID: {0}/{0} is the Tenant ID": {
+    "message": "Tenant ID: {0}",
+    "comment": [
+      "{0} is the Tenant ID"
+    ]
+  },
+  "Object ID: {0}/{0} is the Object ID": {
+    "message": "Object ID: {0}",
+    "comment": [
+      "{0} is the Object ID"
+    ]
+  },
+  "Organization ID: {0}/{0} is the Organization ID": {
+    "message": "Organization ID: {0}",
+    "comment": [
+      "{0} is the Organization ID"
+    ]
+  },
+  "Unique name: {0}/{0} is the Unique name": {
+    "message": "Unique name: {0}",
+    "comment": [
+      "{0} is the Unique name"
+    ]
+  },
+  "Instance url: {0}/{0} is the Instance Url": {
+    "message": "Instance url: {0}",
+    "comment": [
+      "{0} is the Instance Url"
+    ]
+  },
+  "Environment ID: {0}/{0} is the Environment ID": {
+    "message": "Environment ID: {0}",
+    "comment": [
+      "{0} is the Environment ID"
+    ]
+  },
+  "Cluster environment: {0}/{0} is the Cluster environment": {
+    "message": "Cluster environment: {0}",
+    "comment": [
+      "{0} is the Cluster environment"
+    ]
+  },
+  "Cluster category: {0}/{0} is the Cluster category": {
+    "message": "Cluster category: {0}",
+    "comment": [
+      "{0} is the Cluster category"
+    ]
+  },
+  "Cluster geo name: {0}/{0} is the cluster geo name": {
+    "message": "Cluster geo name: {0}",
+    "comment": [
+      "{0} is the cluster geo name"
+    ]
+  },
+  "Friendly name: {0}/{0} is the website name": {
+    "message": "Friendly name: {0}",
+    "comment": [
+      "{0} is the website name"
+    ]
+  },
+  "Website Id: {0}/{0} is the website ID": {
+    "message": "Website Id: {0}",
+    "comment": [
+      "{0} is the website ID"
+    ]
+  },
+  "Data model version: {0}/{0} is the data model version": {
+    "message": "Data model version: {0}",
+    "comment": [
+      "{0} is the data model version"
+    ]
+  },
+  "Website Url: {0}/{0} is the website Url": {
+    "message": "Website Url: {0}",
+    "comment": [
+      "{0} is the website Url"
+    ]
+  },
+  "Site visibility: {0}/{0} is the site visibility": {
+    "message": "Site visibility: {0}",
+    "comment": [
+      "{0} is the site visibility"
+    ]
+  },
+  "Creator: {0}/{0} is the creator": {
+    "message": "Creator: {0}",
+    "comment": [
+      "{0} is the creator"
+    ]
+  },
+  "Created on: {0}/{0} is the created date": {
+    "message": "Created on: {0}",
+    "comment": [
+      "{0} is the created date"
+    ]
+  },
   "PAC Telemetry enabled": "PAC Telemetry enabled",
   "Failed to enable PAC telemetry.": "Failed to enable PAC telemetry.",
   "PAC Telemetry disabled": "PAC Telemetry disabled",
@@ -157,6 +328,12 @@
     "message": "Cannot install Power Pages generator. Please install npm and try again.",
     "comment": [
       "Do not translate 'npm'"
+    ]
+  },
+  "Installing Power Pages generator(v{0}).../{0} represents the version number": {
+    "message": "Installing Power Pages generator(v{0})...",
+    "comment": [
+      "{0} represents the version number"
     ]
   },
   "Cannot install Power Pages generator: {0}/{0} represents the error message returned from the exception": {
@@ -188,9 +365,27 @@
       "The {3} represents Dataverse Environment's Organization ID (GUID)"
     ]
   },
+  "Preparing pac CLI (v{0}).../{0} represents the version number": {
+    "message": "Preparing pac CLI (v{0})...",
+    "comment": [
+      "{0} represents the version number"
+    ]
+  },
+  "The pac CLI is ready for use in your VS Code terminal!": "The pac CLI is ready for use in your VS Code terminal!",
+  "Cannot install pac CLI: {0}/{0} represents the error message returned from the exception": {
+    "message": "Cannot install pac CLI: {0}",
+    "comment": [
+      "{0} represents the error message returned from the exception"
+    ]
+  },
+  "dotnet sdk 6.0 or greater must be installed/Do not translate 'dotnet' or 'sdk'": {
+    "message": "dotnet sdk 6.0 or greater must be installed",
+    "comment": [
+      "Do not translate 'dotnet' or 'sdk'"
+    ]
+  },
   "Confirm": "Confirm",
   "Are you sure you want to clear all the Auth Profiles?": "Are you sure you want to clear all the Auth Profiles?",
-  "Cancel": "Cancel",
   "Are you sure you want to delete the Auth Profile {0}-{1}?/{0} is the user name, {1} is the URL of environment of the auth profile": {
     "message": "Are you sure you want to delete the Auth Profile {0}-{1}?",
     "comment": [

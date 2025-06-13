@@ -56,7 +56,7 @@
     "email": "PPTools@microsoft.com"
   },
   "engines": {
-    "vscode": "^1.89.0",
+    "vscode": "^1.91.0",
     "npm": ">=8.3.0"
   },
   "extensionKind": [
@@ -68,10 +68,16 @@
   "browser": "./dist/web/extension.js",
   "categories": [
     "Snippets",
-    "Other"
+    "Other",
+    "Chat",
+    "AI"
   ],
   "keywords": [
-    "Power Platform"
+    "Power Platform",
+    "Power Pages",
+    "Power Apps",
+    "copilot",
+    "chat"
   ],
   "icon": "src/client/assets/icon.png",
   "badges": [
@@ -87,8 +93,6 @@
     }
   ],
   "activationEvents": [
-    "onCommand:pacCLI.openDocumentation",
-    "onCommand:microsoft-powerapps-portals.webExtension.init",
     "onCommand:powerplatform-walkthrough.overview-learn-more",
     "onCommand:powerplatform-walkthrough.fileSystem-documentation",
     "onCommand:powerplatform-walkthrough.fileSystem-open-folder",
@@ -112,6 +116,32 @@
     }
   },
   "contributes": {
+    "jsonValidation": [
+      {
+        "fileMatch": "powerpages.config.json",
+        "url": "https://json.schemastore.org/powerpages.config.json"
+      }
+    ],
+    "chatParticipants": [
+      {
+        "id": "powerpages",
+        "name": "powerpages",
+        "fullName": "Copilot for Power Pages",
+        "description": "Copilot for Power Pages",
+        "isSticky": true,
+        "disambiguation": [
+          {
+            "category": "powerpages_questions",
+            "description": "This Copilot chat experience assists Power Pages developers to write code by describing their expected code behavior using natural language. They can then refine the generated code and use it when customizing their site.",
+            "examples": [
+              "Write JavaScript code for form field validation to check phone field value is in the valid format.",
+              "Write web API code to query active contact records.",
+              "Write JavaScript code to highlight the row where email field is empty in table list."
+            ]
+          }
+        ]
+      }
+    ],
     "problemMatchers": [
       {
         "name": "pcf-scripts-build",
@@ -150,12 +180,19 @@
       {
         "view": "pacCLI.authPanel",
         "contents": "%pacCLI.authPanel.welcome.whenInteractiveSupported%",
-        "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported"
+        "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported",
+        "enablement": "!microsoft.powerplatform.authPanel.isInitializing"
       },
       {
         "view": "pacCLI.authPanel",
         "contents": "%pacCLI.authPanel.welcome.whenInteractiveNotSupported%",
         "when": "!virtualWorkspace && !pacCLI.authPanel.interactiveLoginSupported"
+      },
+      {
+        "view": "microsoft.powerplatform.pages.actionsHub",
+        "contents": "%microsoft.powerplatform.pages.actionsHub.login%",
+        "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported",
+        "enablement": "microsoft.powerplatform.environment.initialized && !microsoft.powerplatform.pages.actionsHub.loadingWebsites"
       }
     ],
     "commands": [
@@ -178,17 +215,12 @@
       },
       {
         "command": "powerpages.powerPagesFileExplorer.powerPagesRuntimePreview",
-        "title": "Preview site",
-        "when": "never"
+        "title": "Preview site"
       },
       {
         "command": "powerpages.powerPagesFileExplorer.backToStudio",
         "title": "Open in Power Pages",
         "when": "never"
-      },
-      {
-        "command": "extension.createChatView",
-        "title": "Create Chat View"
       },
       {
         "command": "pacCLI.openDocumentation",
@@ -368,7 +400,84 @@
       {
         "command": "powerPlatform.previewCurrentActiveUsers",
         "title": "Current Active Users",
-        "icon": "$(person)"
+        "icon": "$(person)",
+        "when": "isWeb && virtualWorkspace"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.preview-site",
+        "category": "Powerpages",
+        "title": "%powerplatform.pages.previewSite.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.refresh",
+        "title": "%microsoft.powerplatform.pages.actionsHub.refresh.title%",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails",
+        "title": "%microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails.title%",
+        "icon": "$(info)"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.switchEnvironment",
+        "title": "%microsoft.powerplatform.pages.actionsHub.switchEnvironment.title%",
+        "icon": "$(arrow-swap)"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.openActiveSitesInStudio",
+        "title": "%microsoft.powerplatform.pages.actionsHub.openSitesInStudio.title%",
+        "icon": {
+          "dark": "./src/client/assets/open-icon/dark/open.svg",
+          "light": "./src/client/assets/open-icon/light/open.svg"
+        }
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.openInactiveSitesInStudio",
+        "title": "%microsoft.powerplatform.pages.actionsHub.openSitesInStudio.title%",
+        "icon": {
+          "dark": "./src/client/assets/open-icon/dark/open.svg",
+          "light": "./src/client/assets/open-icon/light/open.svg"
+        }
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.activeSite.preview",
+        "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.previewSite.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.newAuthProfile",
+        "title": "%microsoft.powerplatform.pages.actionsHub.login.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows",
+        "title": "%microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac",
+        "title": "%microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux",
+        "title": "%microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement",
+        "title": "%microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite",
+        "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.siteDetails",
+        "title": "%microsoft.powerplatform.pages.actionsHub.siteDetails.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite",
+        "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio",
+        "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio.title%"
       }
     ],
     "configuration": {
@@ -495,6 +604,11 @@
             "telemetry",
             "usesOnlineServices"
           ]
+        },
+        "powerPlatform.pages.downloadSiteFolder": {
+          "type": "string",
+          "description": "%microsoft.powerplatform.pages.actionsHub.configuration.downloadSite.description%",
+          "default": ""
         }
       }
     },
@@ -657,12 +771,10 @@
         {
           "when": "resourceLangId == html && !virtualWorkspace",
           "command": "microsoft-powerapps-portals.preview-show",
-          "alt": "microsoft-powerapps-portals.preview-show",
           "group": "navigation"
         },
         {
           "command": "powerPlatform.previewCurrentActiveUsers",
-          "alt": "current active users",
           "group": "navigation",
           "when": "isWeb && virtualWorkspace"
         }
@@ -683,6 +795,10 @@
         {
           "command": "pacCLI.authPanel.newAuthProfile",
           "when": "pacCLI.authPanel.interactiveLoginSupported"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.newAuthProfile",
+          "when": "never"
         },
         {
           "command": "pacCLI.envAndSolutionsPanel.copyFriendlyName",
@@ -807,6 +923,62 @@
         {
           "command": "microsoft-powerapps-portals.pagetemplate",
           "when": "config.powerPlatform.generatorInstalled"
+        },
+        {
+          "command": "powerpages.powerPagesFileExplorer.powerPagesRuntimePreview",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.preview-site",
+          "when": "microsoft.powerplatform.pages.siteRuntimePreviewEnabled && workspaceFolderCount == 1 && !isWeb"
+        },
+        {
+          "command": "powerPlatform.previewCurrentActiveUsers",
+          "when": "isWeb && virtualWorkspace"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.refresh",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.preview",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.siteDetails",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio",
+          "when": "never"
         }
       ],
       "view/title": [
@@ -904,6 +1076,76 @@
           "command": "powerpages.collaboration.openMail",
           "group": "inline",
           "when": "viewItem == userNode"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.refresh",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == environmentGroup",
+          "group": "inline@1"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.switchEnvironment",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == environmentGroup",
+          "group": "inline@2"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == environmentGroup",
+          "group": "inline@3"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.openActiveSitesInStudio",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == activeSitesGroup",
+          "group": "inline"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.openInactiveSitesInStudio",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == inactiveSitesGroup",
+          "group": "inline"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.preview",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite)",
+          "group": "siteAction@1"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == otherSite)",
+          "group": "siteAction@2"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite)",
+          "group": "siteAction@3"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.siteDetails",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite || viewItem == inactiveSite)",
+          "group": "siteAction@4"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == otherSite) && isWindows",
+          "group": "siteAction@5"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == otherSite) && isMac",
+          "group": "siteAction@5"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == otherSite) && isLinux",
+          "group": "siteAction@5"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == inactiveSite",
+          "group": "siteAction@3"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite)",
+          "group": "siteAction@6"
         }
       ]
     },
@@ -961,6 +1203,14 @@
           "name": "People On The Site",
           "when": "isWeb && virtualWorkspace",
           "contextualTitle": "People On The Site",
+          "visibility": "visible"
+        },
+        {
+          "id": "microsoft.powerplatform.pages.actionsHub",
+          "name": "%microsoft.powerplatform.pages.actionsHub.title%",
+          "when": "microsoft.powerplatform.pages.actionsHubEnabled && !isWeb",
+          "icon": "./src/client/assets/powerPages.svg",
+          "contextualTitle": "%microsoft.powerplatform.pages.actionsHub.title%",
           "visibility": "visible"
         }
       ]
@@ -1041,13 +1291,13 @@
     "@types/sinon": "^10.0.12",
     "@types/unzip-stream": "^0.3.0",
     "@types/uuid": "^8.3.0",
-    "@types/vscode": "^1.89.0",
+    "@types/vscode": "^1.91.0",
     "@types/vscode-webview": "^1.57.1",
     "@types/webpack": "^5.28.0",
     "@types/webpack-env": "^1.17.0",
     "@typescript-eslint/eslint-plugin": "^5.15.0",
     "@typescript-eslint/parser": "^5.15.0",
-    "@vscode/l10n-dev": "^0.0.24",
+    "@vscode/l10n-dev": "^0.0.35",
     "@vscode/test-electron": "^2.3.8",
     "@vscode/test-web": "^0.0.50",
     "@vscode/vsce": "^2.19.0",
@@ -1059,16 +1309,16 @@
     "fancy-log": "^1.3.3",
     "fs-extra": "^9.0.1",
     "get-func-name": "^2.0.2",
-    "gulp": "^4.0.2",
     "gulp-eslint": "^6.0.0",
     "gulp-filter": "^7.0.0",
-    "gulp-mocha": "^8.0.0",
+    "gulp-mocha": "^10.0.1",
+    "gulp-plumber": "^1.2.1",
     "gulp-rename": "^2.0.0",
     "gulp-replace": "^1.1.3",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-typescript": "^6.0.0-alpha.1",
     "jwt-decode": "2.2.0",
-    "mocha": "^9.2.2",
+    "mocha": "^11.1.0",
     "moment": "^2.29.4",
     "nanoid": "^3.1.31",
     "node-fetch": "^2.6.7",
@@ -1083,13 +1333,13 @@
     "ts-loader": "^9.2.8",
     "ts-node": "^10.7.0",
     "typescript": "^4.6.2",
-    "webpack": "^5.76.0",
+    "webpack": "^5.94.0",
     "webpack-cli": "^4.7.0",
     "webpack-stream": "^7.0.0",
     "yargs": "^16.2.0"
   },
   "dependencies": {
-    "@fluidframework/azure-client": "^1.2.0",
+    "@fluidframework/azure-client": "^2.31.1",
     "@microsoft/1ds-core-js": "4.0.5",
     "@microsoft/1ds-post-js": "4.0.5",
     "@microsoft/generator-powerpages": "1.21.19",
@@ -1101,23 +1351,24 @@
     "command-exists": "^1.2.9",
     "exceljs": "^4.4.0",
     "find-process": "^1.4.7",
-    "fluid-framework": "^1.4.0",
+    "fluid-framework": "^2.31.1",
     "glob": "^7.1.7",
     "gpt-tokenizer": "^2.1.1",
+    "gulp": "^5.0.0",
     "https-browserify": "^1.0.0",
     "liquidjs": "^10.2.0",
     "n-readlines": "^1.0.1",
-    "puppeteer-core": "^14.4.1",
+    "puppeteer-core": "^22.12.1",
     "recursive-readdir": "^2.2.3",
     "stream-http": "^3.2.0",
     "tty-browserify": "^0.0.1",
-    "unzip-stream": "^0.3.1",
+    "unzip-stream": "^0.3.2",
     "uuid": "^8.3.2",
     "vscode-languageclient": "^7.0.0",
     "vscode-languageserver": "^7.0.0",
     "vscode-languageserver-textdocument": "^1.0.1",
     "worker-loader": "^3.0.8",
-    "yaml": "^2.2.2"
+    "yaml": "^2.7.0"
   },
   "__metadata": {
     "id": "b8680bb6-eaa9-481a-ae0b-83574fa58620",

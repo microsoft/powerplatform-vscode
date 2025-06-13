@@ -10,7 +10,6 @@ import {
     CO_PRESENCE_FEATURE_SETTING_NAME,
     DATA,
     MULTI_FILE_FEATURE_SETTING_NAME,
-    NO_CONTENT,
     STUDIO_PROD_REGION,
     VERSION_CONTROL_FOR_WEB_EXTENSION_SETTING_NAME,
     portalSchemaVersion,
@@ -18,11 +17,14 @@ import {
 } from "../common/constants";
 import { IAttributePath } from "../common/interfaces";
 import { schemaEntityName } from "../schema/constants";
-import { telemetryEventNames } from "../telemetry/constants";
+import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 import WebExtensionContext from "../WebExtensionContext";
-import { SETTINGS_EXPERIMENTAL_STORE_NAME } from "../../../client/constants";
+import { SETTINGS_EXPERIMENTAL_STORE_NAME } from "../../../common/constants";
 import { doesFileExist, getFileAttributePath, getFileEntityName, updateEntityColumnContent, updateFileDirtyChanges } from "./fileAndEntityUtil";
 import { isWebFileV2 } from "./schemaHelperUtil";
+import { ServiceEndpointCategory } from "../../../common/services/Constants";
+import { PPAPIService } from "../../../common/services/PPAPIService";
+import * as Constants from "../common/constants";
 
 // decodes file content to UTF-8
 export function convertContentToUint8Array(content: string, isBase64Encoded: boolean): Uint8Array {
@@ -41,15 +43,18 @@ export function GetFileNameWithExtension(
     languageCode: string,
     extension: string
 ) {
-    fileName = isLanguageCodeNeededInFileName(entity) ? `${fileName}.${languageCode}` : fileName;
+    if (entity === schemaEntityName.CONTENTSNIPPETS) {
+        fileName = languageCode && languageCode != Constants.DEFAULT_LANGUAGE_CODE ? `${fileName}.${languageCode}` : fileName; // Handle the case where language is not provided for content snippets
+    } else {
+        fileName = isLanguageCodeNeededInFileName(entity) ? `${fileName}.${languageCode}` : fileName;
+    }
     fileName = isExtensionNeededInFileName(entity) ? `${fileName}.${extension}` : fileName;
 
     return getSanitizedFileName(fileName);
 }
 
 export function isLanguageCodeNeededInFileName(entity: string) {
-    return entity === schemaEntityName.WEBPAGES ||
-        entity === schemaEntityName.CONTENTSNIPPETS;
+    return entity === schemaEntityName.WEBPAGES || entity === schemaEntityName.CONTENTSNIPPETS;
 }
 
 export function isExtensionNeededInFileName(entity: string) {
@@ -63,19 +68,20 @@ export function isExtensionNeededInFileName(entity: string) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getAttributeContent(result: any, attributePath: IAttributePath, entityName: string, entityId: string) {
-    let value = result[attributePath.source] ?? NO_CONTENT;
+    let value = result[attributePath.source];
 
     try {
         if (result[attributePath.source] && attributePath.relativePath.length) {
             value =
-                JSON.parse(result[attributePath.source])[attributePath.relativePath] ?? NO_CONTENT;
+                JSON.parse(result[attributePath.source])[attributePath.relativePath];
         }
     }
     catch (error) {
         const errorMsg = (error as Error)?.message;
-        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_ATTRIBUTE_CONTENT_ERROR,
+        WebExtensionContext.telemetry.sendErrorTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_ATTRIBUTE_CONTENT_ERROR,
             getAttributeContent.name,
             `For ${entityName} with entityId ${entityId} and attributePath ${JSON.stringify(attributePath)} error: ${errorMsg}`);
+        return undefined;
     }
 
     return value;
@@ -98,7 +104,7 @@ export function setFileContent(result: any, attributePath: IAttributePath, conte
         }
     } catch (error) {
         const errorMsg = (error as Error)?.message;
-        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_SET_FILE_CONTENT_ERROR, setFileContent.name, errorMsg);
+        WebExtensionContext.telemetry.sendErrorTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_SET_FILE_CONTENT_ERROR, setFileContent.name, errorMsg);
     }
 }
 
@@ -109,7 +115,7 @@ export function isVersionControlEnabled() {
 
     if (!isVersionControlEnabled) {
         WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_DIFF_VIEW_FEATURE_FLAG_DISABLED
+            webExtensionTelemetryEventNames.WEB_EXTENSION_DIFF_VIEW_FEATURE_FLAG_DISABLED
         );
     }
 
@@ -123,12 +129,12 @@ export function isMultifileEnabled() {
 
     if (!isMultifileEnabled) {
         WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_MULTI_FILE_FEATURE_FLAG_DISABLED
+            webExtensionTelemetryEventNames.WEB_EXTENSION_MULTI_FILE_FEATURE_FLAG_DISABLED
         );
     }
     else {
         WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_MULTI_FILE_FEATURE_FLAG_ENABLED
+            webExtensionTelemetryEventNames.WEB_EXTENSION_MULTI_FILE_FEATURE_FLAG_ENABLED
         );
     }
 
@@ -142,12 +148,12 @@ export function isCoPresenceEnabled() {
 
     if (!isCoPresenceEnabled) {
         WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_CO_PRESENCE_FEATURE_FLAG_DISABLED
+            webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_FEATURE_FLAG_DISABLED
         );
     }
     else {
         WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_CO_PRESENCE_FEATURE_FLAG_ENABLED
+            webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_FEATURE_FLAG_ENABLED
         );
     }
 
@@ -191,7 +197,7 @@ export function isWebfileContentLoadNeeded(fileName: string, fsPath: string): bo
     const fileExtension = getFileExtension(fileName) as string;
     const validImageExtensions = getFileExtensionForPreload();
 
-    WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_WEBFILE_EXTENSION,
+    WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_WEBFILE_EXTENSION,
         { fileExtension: fileExtension });
 
     return fileExtension !== undefined ?
@@ -217,13 +223,13 @@ export function getWorkSpaceName(websiteId: string): string {
 
 // ENV_ID is the last part of the parameter value sent in the vscode URL from studio
 export function getEnvironmentIdFromUrl() {
-    return (WebExtensionContext.urlParametersMap.get(queryParameters.ENV_ID) as string).split("/")?.pop() as string;
+    return (WebExtensionContext.urlParametersMap.get(queryParameters.ENV_ID))?.toString().split("/")?.pop() as string;
 }
 
 export function getBackToStudioURL() {
     const region = WebExtensionContext.urlParametersMap.get(queryParameters.REGION) as string;
 
-    if (isStringUndefinedOrEmpty(WebExtensionContext.urlParametersMap.get(queryParameters.ENV_ID)) ||
+    if (isStringUndefinedOrEmpty(getEnvironmentIdFromUrl()) ||
         isStringUndefinedOrEmpty(WebExtensionContext.urlParametersMap.get(queryParameters.REGION)) ||
         isStringUndefinedOrEmpty(WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_ID))) {
         return undefined;
@@ -246,7 +252,7 @@ export function isImageFileSupportedForEdit(fileName: string): boolean {
         supportedImageFileExtensions.includes(fileExtension.toLowerCase()) : false;
 
     if (isSupported) {
-        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_IMAGE_EDIT_SUPPORTED_FILE_EXTENSION,
+        WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_IMAGE_EDIT_SUPPORTED_FILE_EXTENSION,
             { fileExtension: fileExtension });
     }
 
@@ -302,4 +308,35 @@ export function getRangeForMultilineMatch(text: string, pattern: string, index: 
 
     const range = new vscode.Range(startLine, startIndex, endLine, endIndex);
     return range;
+}
+
+export async function getValidWebsitePreviewUrl(): Promise<{ websiteUrl: string, isValid: boolean }> {
+    const envId = getEnvironmentIdFromUrl();
+    const serviceEndpointStamp = WebExtensionContext.serviceEndpointCategory;
+    const websitePreviewId = WebExtensionContext.urlParametersMap?.get(queryParameters.PORTAL_ID);
+
+    if (serviceEndpointStamp === ServiceEndpointCategory.NONE || !envId || !websitePreviewId) {
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            webExtensionTelemetryEventNames.WEB_EXTENSION_WEBSITE_PREVIEW_URL_VALIDATION_INSUFFICIENT_PARAMETERS,
+            getValidWebsitePreviewUrl.name,
+            `serviceEndpointStamp:${serviceEndpointStamp}, envId:${envId}, websitePreviewId:${websitePreviewId}`
+        );
+        return { websiteUrl: '', isValid: false };
+    }
+
+    const siteDetails = await PPAPIService.getWebsiteDetailsById(serviceEndpointStamp, envId, websitePreviewId);
+
+    if (siteDetails == null) {
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            webExtensionTelemetryEventNames.WEB_EXTENSION_WEBSITE_PREVIEW_URL_VALIDATION_SITE_DETAILS_FETCH_FAILED,
+            getValidWebsitePreviewUrl.name,
+        );
+        return { websiteUrl: '', isValid: false };
+    }
+
+    if (siteDetails.websiteUrl.length !== 0) {
+        return { websiteUrl: siteDetails.websiteUrl, isValid: true };
+    }
+
+    return { websiteUrl: '', isValid: false };
 }

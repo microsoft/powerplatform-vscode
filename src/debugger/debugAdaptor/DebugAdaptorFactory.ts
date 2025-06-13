@@ -15,7 +15,6 @@ import {
 } from "vscode";
 
 import { Debugger } from "./Debugger";
-import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { ErrorReporter } from "../../common/ErrorReporter";
 import { BrowserManager } from "../browser";
 import { BundleLoader } from "../BundleLoader";
@@ -30,12 +29,6 @@ import { BrowserLocator } from "../browser/BrowserLocator";
  */
 export class DebugAdaptorFactory implements DebugAdapterDescriptorFactory {
     /**
-     * Creates a new DebugAdaptorFactory instance.
-     * @param logger The telemetry reporter to use for telemetry.
-     */
-    constructor(private readonly logger: ITelemetry) {}
-
-    /**
      * Creates the dependencies for the debugger.
      * @param session The {@link DebugSession debug session} for which the debug adapter will be used.
      * @param workspaceFolder The current workspace folder for the debugger to use.
@@ -49,31 +42,25 @@ export class DebugAdaptorFactory implements DebugAdapterDescriptorFactory {
 
         const bundleWatcher = new FileWatcher(
             debugConfig.file,
-            workspaceFolder,
-            this.logger
+            workspaceFolder
         );
 
         const bundleLoader = new BundleLoader(
             debugConfig.file,
-            workspaceFolder,
-            this.logger
+            workspaceFolder
         );
-        const bundleInterceptor = new RequestInterceptor(
-            bundleLoader,
-            this.logger
-        );
+        const bundleInterceptor = new RequestInterceptor(bundleLoader);
 
-        const controlLocator = new ControlLocator(debugConfig, this.logger);
+        const controlLocator = new ControlLocator(debugConfig);
 
-        const browserLocator = new BrowserLocator(debugConfig, this.logger);
+        const browserLocator = new BrowserLocator(debugConfig);
 
         return new BrowserManager(
             bundleWatcher,
             bundleInterceptor,
             controlLocator,
             browserLocator,
-            debugConfig,
-            this.logger
+            debugConfig
         );
     }
 
@@ -99,8 +86,7 @@ export class DebugAdaptorFactory implements DebugAdapterDescriptorFactory {
         const debugAdaptor = new Debugger(
             browserManager,
             session,
-            workspaceFolder,
-            this.logger
+            workspaceFolder
         );
         return new DebugAdapterInlineImplementation(debugAdaptor);
     }
@@ -114,7 +100,6 @@ export class DebugAdaptorFactory implements DebugAdapterDescriptorFactory {
         const workspaceFolder = folders[0];
         if (!workspaceFolder) {
             void ErrorReporter.report(
-                this.logger,
                 "DebugAdaptorFactory.getWorkspaceFolder",
                 undefined,
                 "Could not find workspace folder for debugger. Please make sure you've opened a workspace and try again."

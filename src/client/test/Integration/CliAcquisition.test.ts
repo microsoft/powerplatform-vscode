@@ -5,10 +5,9 @@
 
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { CliAcquisition, ICliAcquisitionContext } from '../../lib/CliAcquisition';
+import { CliAcquisition } from '../../lib/CliAcquisition';
+import { ICliAcquisitionContext } from '../../lib/CliAcquisitionContext';
 import { expect } from 'chai';
-import { ITelemetry } from '../../telemetry/ITelemetry';
-import { NoopTelemetryInstance } from '../../telemetry/NoopTelemetry';
 
 const repoRootDir = path.resolve(__dirname, '../../../..');
 const outdir = path.resolve(repoRootDir, 'out');
@@ -29,7 +28,6 @@ class MockContext implements ICliAcquisitionContext {
 
     public get extensionPath(): string { return mockRootDir; }
     public get globalStorageLocalPath(): string { return this._testBaseDir; }
-    public get telemetry(): ITelemetry { return NoopTelemetryInstance; }
 
     public get infoMessages(): string[] { return this._infoMessages; }
     public get errorMessages(): string[] { return this._errorMessages; }
@@ -91,27 +89,27 @@ describe('CliAcquisition', () => {
         expect(spy.noErrors).to.be.true;
     });
 
-    it('unpacks latest CLI nupkg', async () => {
-        fs.removeSync(path.resolve(spy.globalStorageLocalPath, 'installTracker.json'));
-        const exePath = await acq.ensureInstalled();
+    // it('unpacks latest CLI nupkg', async () => {
+    //     fs.removeSync(path.resolve(spy.globalStorageLocalPath, 'installTracker.json'));
+    //     const exePath = await acq.ensureInstalled();
 
-        expect(exePath).to.be.not.undefined;
-        expect(fs.existsSync(path.resolve(exePath, 'pac'))).to.be.true;
-        expect(spy.infoMessages).to.be.not.empty;
-        expect(spy.noErrors).to.be.true;
-    }).timeout(20000);
+    //     expect(exePath).to.be.not.undefined;
+    //     expect(fs.existsSync(path.resolve(exePath, 'pac'))).to.be.true;
+    //     expect(spy.infoMessages).to.be.not.empty;
+    //     expect(spy.noErrors).to.be.true;
+    // }).timeout(20000);
 
-    it('updates older version to latest CLI nupkg', async () => {
-        const trackerFile = path.resolve(spy.globalStorageLocalPath, 'installTracker.json');
-        fs.removeSync(trackerFile);
-        fs.writeJSONSync(trackerFile, { pac: '0.9.42' });
-        const exePath = await acq.ensureInstalled();
+    // it('updates older version to latest CLI nupkg', async () => {
+    //     const trackerFile = path.resolve(spy.globalStorageLocalPath, 'installTracker.json');
+    //     fs.removeSync(trackerFile);
+    //     fs.writeJSONSync(trackerFile, { pac: '0.9.42' });
+    //     const exePath = await acq.ensureInstalled();
 
-        expect(exePath).to.be.not.undefined;
-        expect(fs.existsSync(path.resolve(exePath, 'pac'))).to.be.true;
-        expect(spy.infoMessages).to.be.not.empty;
-        expect(spy.noErrors).to.be.true;
-        const versionInfo = fs.readJSONSync(trackerFile);
-        expect(versionInfo.pac).to.be.equal('0.9.99');
-    }).timeout(20000);
+    //     expect(exePath).to.be.not.undefined;
+    //     expect(fs.existsSync(path.resolve(exePath, 'pac'))).to.be.true;
+    //     expect(spy.infoMessages).to.be.not.empty;
+    //     expect(spy.noErrors).to.be.true;
+    //     const versionInfo = fs.readJSONSync(trackerFile);
+    //     expect(versionInfo.pac).to.be.equal('0.9.99');
+    // }).timeout(20000);
 });

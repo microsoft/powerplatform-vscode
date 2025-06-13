@@ -11,7 +11,6 @@ import {
     WorkspaceFolder,
     workspace,
 } from "vscode";
-import { ITelemetry } from "../client/telemetry/ITelemetry";
 import { ErrorReporter } from "../common/ErrorReporter";
 import { sleep } from "./utils";
 
@@ -49,7 +48,6 @@ export class FileWatcher implements Disposable {
     constructor(
         filePattern: string,
         workspaceFolder: WorkspaceFolder,
-        private readonly logger: ITelemetry,
         createFileSystemWatcher = workspace.createFileSystemWatcher
     ) {
         const pattern = new RelativePattern(workspaceFolder, filePattern);
@@ -84,7 +82,6 @@ export class FileWatcher implements Disposable {
                 await this.onFileChange();
             } catch (error) {
                 await ErrorReporter.report(
-                    this.logger,
                     "FileWatcher.onChange.error",
                     error,
                     "Could not execute file change action.",

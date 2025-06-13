@@ -4,8 +4,7 @@
  */
 
 import * as vscode from "vscode";
-import { EXTENSION_NAME } from "../../client/constants";
-import { ITelemetry } from "../../client/telemetry/ITelemetry";
+import { EXTENSION_NAME } from "../../common/constants";
 import { ErrorReporter } from "../../common/ErrorReporter";
 
 import { ConfigurationManager } from "./ConfigurationManager";
@@ -16,12 +15,6 @@ import { LaunchDebugConfiguration } from "./types";
  * A class that registers the extension as a debug provider.
  */
 export class LaunchDebugProvider implements vscode.DebugConfigurationProvider {
-    /**
-     * Creates a new LaunchDebugProvider instance.
-     * @param logger The logger to log telemetry events.
-     */
-    constructor(private readonly logger: ITelemetry) {}
-
     /**
      * Provides the supported debug configuration.
      * @returns The supported debug configuration.
@@ -54,7 +47,6 @@ export class LaunchDebugProvider implements vscode.DebugConfigurationProvider {
             }
         } else {
             void ErrorReporter.report(
-                this.logger,
                 "LaunchDebugProvider.resolveDebugConfigurationWithSubstitutedVariables",
                 undefined,
                 "Invalid or missing debug configuration in launch.json"

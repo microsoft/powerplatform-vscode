@@ -5,7 +5,6 @@
 
 import { Page } from "puppeteer-core";
 import sinon from "sinon";
-import { NoopTelemetryInstance } from "../../../client/telemetry/NoopTelemetry";
 import { ControlLocator } from "../../controlLocation";
 import {
     expectThrowsAsync,
@@ -50,7 +49,6 @@ describe("ControlLocator", () => {
             "https://ORG_URL.crm.dynamics.com/main.aspx?appid=f96ac8ee-529f-4510-af13-3fe5ff45f2b6&pagetype=control&controlName=ControlName";
         const instance = new ControlLocator(
             mockFullscreenControlConfiguration,
-            NoopTelemetryInstance,
             0,
             0
         );
@@ -64,7 +62,6 @@ describe("ControlLocator", () => {
         const expectedTabSelector = "li[aria-label='Control Tab']";
         const instance = new ControlLocator(
             mockTabbedControlConfiguration,
-            NoopTelemetryInstance,
             0,
             0
         );
@@ -77,7 +74,6 @@ describe("ControlLocator", () => {
     describe("no retry", () => {
         const instance = new ControlLocator(
             mockTabbedControlConfiguration,
-            NoopTelemetryInstance,
             0,
             0
         );
@@ -99,7 +95,6 @@ describe("ControlLocator", () => {
     describe("1 retry", () => {
         const instance = new ControlLocator(
             mockTabbedControlConfiguration,
-            NoopTelemetryInstance,
             0,
             1
         );

@@ -21,8 +21,7 @@ import {
     TableFolder,
     YoSubGenerator,
 } from "./CreateOperationConstants";
-import { ITelemetry } from "../../telemetry/ITelemetry";
-import { sendTelemetryEvent, UserFileCreateEvent } from "../telemetry";
+import { sendTelemetryEvent, UserFileCreateEvent } from "../../../common/OneDSLoggerTelemetry/telemetry/telemetry";
 
 interface State {
     title: string;
@@ -35,8 +34,7 @@ interface State {
 export const createContentSnippet = async (
     context: vscode.ExtensionContext,
     selectedWorkspaceFolder: string | undefined,
-    yoGenPath: string | null,
-    telemetry: ITelemetry
+    yoGenPath: string | null
 ): Promise<void> => {
     try {
         if (!selectedWorkspaceFolder) {
@@ -65,12 +63,11 @@ export const createContentSnippet = async (
                 CONTENT_SNIPPET,
                 command,
                 selectedWorkspaceFolder,
-                watcher,
-                telemetry
+                watcher
             );
         }
     } catch (error: any) {
-        sendTelemetryEvent(telemetry, { methodName:createContentSnippet.name,eventName: UserFileCreateEvent, fileEntityType:CONTENT_SNIPPET, exception: error as Error })
+        sendTelemetryEvent({ methodName: createContentSnippet.name, eventName: UserFileCreateEvent, fileEntityType: CONTENT_SNIPPET, exception: error as Error })
         throw new Error(error);
     }
 };
@@ -141,4 +138,3 @@ async function getContentSnippetInputs(selectedWorkspaceFolder: string) {
     const state = await collectInputs();
     return state;
 }
-

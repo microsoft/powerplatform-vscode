@@ -7,7 +7,6 @@ import fetch, { RequestInit } from "node-fetch";
 import path from "path";
 import * as vscode from "vscode";
 import yaml from 'yaml';
-import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { CopilotDataverseMetadataFailureEvent, CopilotDataverseMetadataSuccessEvent, CopilotGetEntityFailureEvent, CopilotYamlParsingFailureEvent } from "./telemetry/telemetryConstants";
 import { getEntityMetadata } from "../../web/client/utilities/fileAndEntityUtil";
@@ -18,7 +17,7 @@ import { getUserAgent } from "../utilities/Utils";
 
 declare const IS_DESKTOP: string | undefined;
 
-export async function getEntityColumns(entityName: string, orgUrl: string, apiToken: string, telemetry: ITelemetry, sessionID: string): Promise<string[]> {
+export async function getEntityColumns(entityName: string, orgUrl: string, apiToken: string, sessionID: string): Promise<string[]> {
     try {
         const dataverseURL = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}api/data/v9.2/EntityDefinitions(LogicalName='${entityName}')?$expand=Attributes`;
         const requestInit: RequestInit = {
@@ -36,16 +35,16 @@ export async function getEntityColumns(entityName: string, orgUrl: string, apiTo
         const responseTime = endTime - startTime || 0;
         const attributes = getAttributesFromResponse(jsonResponse); //Display name and logical name fetching from response
 
-        sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgUrl: orgUrl })
+        sendTelemetryEvent({ eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgUrl: orgUrl })
         return attributes
 
     } catch (error) {
-        sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataFailureEvent, copilotSessionId: sessionID, error: error as Error, orgUrl: orgUrl })
+        sendTelemetryEvent({ eventName: CopilotDataverseMetadataFailureEvent, copilotSessionId: sessionID, error: error as Error, orgUrl: orgUrl })
         return [];
     }
 }
 
-export async function getFormXml(entityName: string, formName: string, orgUrl: string, apiToken: string, telemetry: ITelemetry, sessionID: string): Promise<(string[])> {
+export async function getFormXml(entityName: string, formName: string, orgUrl: string, apiToken: string, sessionID: string): Promise<(string[])> {
     try {
         // Ensure the orgUrl ends with a '/'
         const formattedOrgUrl = orgUrl.endsWith('/') ? orgUrl : `${orgUrl}/`;
@@ -70,11 +69,11 @@ export async function getFormXml(entityName: string, formName: string, orgUrl: s
 
         const formxml = getFormXMLFromResponse(jsonResponse);
 
-        sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgUrl: orgUrl })
+        sendTelemetryEvent({ eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgUrl: orgUrl })
         return parseXML(formxml);
 
     } catch (error) {
-        sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataFailureEvent, copilotSessionId: sessionID, error: error as Error, orgUrl: orgUrl })
+        sendTelemetryEvent({ eventName: CopilotDataverseMetadataFailureEvent, copilotSessionId: sessionID, error: error as Error, orgUrl: orgUrl })
         return [];
     }
 }
@@ -163,7 +162,7 @@ function parseXML(formXml: string) {
 }
 
 
-export async function getEntityName(telemetry: ITelemetry, sessionID: string, dataverseEntity: string): Promise<{ entityName: string, formName: string }> {
+export async function getEntityName(sessionID: string, dataverseEntity: string): Promise<{ entityName: string, formName: string }> {
     let entityName = '';
     let formName = '';
 
@@ -183,7 +182,7 @@ export async function getEntityName(telemetry: ITelemetry, sessionID: string, da
                 const diskRead = await import('fs');
                 const yamlFilePath = path.join(activeFileFolderPath, matchingFiles[0]);
                 const yamlContent = diskRead.readFileSync(yamlFilePath, 'utf8');
-                const parsedData = parseYamlContent(yamlContent, telemetry, sessionID, dataverseEntity);
+                const parsedData = parseYamlContent(yamlContent, sessionID, dataverseEntity);
                 entityName = parsedData['adx_entityname'] || parsedData['adx_targetentitylogicalname'];
                 formName = parsedData['adx_formname'];
             } else if (!IS_DESKTOP) {
@@ -193,7 +192,7 @@ export async function getEntityName(telemetry: ITelemetry, sessionID: string, da
             }
         }
     } catch (error) {
-        sendTelemetryEvent(telemetry, { eventName: CopilotGetEntityFailureEvent, copilotSessionId: sessionID, dataverseEntity: dataverseEntity, error: error as Error });
+        sendTelemetryEvent({ eventName: CopilotGetEntityFailureEvent, copilotSessionId: sessionID, dataverseEntity: dataverseEntity, error: error as Error });
         entityName = '';
     }
     return { entityName, formName };
@@ -211,12 +210,39 @@ async function getMatchingFiles(folderPath: string, fileNameFirstPart: string): 
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function parseYamlContent(content: string, telemetry: ITelemetry, sessionID: string, dataverseEntity: string): any {
+function parseYamlContent(content: string, sessionID: string, dataverseEntity: string): any {
     try {
         return yaml.parse(content);
     } catch (error) {
-        sendTelemetryEvent(telemetry, { eventName: CopilotYamlParsingFailureEvent, copilotSessionId: sessionID, dataverseEntity: dataverseEntity, error: error as Error });
+        sendTelemetryEvent({ eventName: CopilotYamlParsingFailureEvent, copilotSessionId: sessionID, dataverseEntity: dataverseEntity, error: error as Error });
         return {};
     }
 }
 
+
+//make call to https://org955590f3.crm10.dynamics.com/api/data/v9.2/EntityDefinitions(LogicalName='powerpagesite') to check if the response object contains MetadataId
+export async function isEdmEnvironment(orgUrl: string, apiToken: string): Promise<boolean> {
+    try {
+        const dataverseURL = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}api/data/v9.2/EntityDefinitions(LogicalName='powerpagesite')`;
+        const requestInit: RequestInit = {
+            method: "GET",
+            headers: {
+                'Content-Type': "application/json",
+                Authorization: `Bearer ${apiToken}`,
+                "x-ms-user-agent": getUserAgent()
+            },
+        };
+
+        const startTime = performance.now();
+        const jsonResponse = await fetchJsonResponse(dataverseURL, requestInit);
+        const endTime = performance.now();
+        const responseTime = endTime - startTime || 0;
+
+        sendTelemetryEvent({ eventName: isEdmEnvironment.name, durationInMills: responseTime, orgUrl: orgUrl })
+        return jsonResponse.MetadataId !== undefined
+
+    } catch (error) {
+        sendTelemetryEvent({ eventName: isEdmEnvironment.name, error: error as Error, orgUrl: orgUrl})
+        return false;
+    }
+}

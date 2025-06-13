@@ -21,6 +21,7 @@ import gulpWebpack from 'webpack-stream';
 import webpack from 'webpack';
 import vsce from '@vscode/vsce';
 import yargs from 'yargs';
+import plumber from 'gulp-plumber';
 const argv = yargs(process.argv.slice(2)).argv; // skip 'node' and 'gulp.js' args
 
 import fetch from 'node-fetch';
@@ -41,6 +42,7 @@ const packagedir = path.resolve('./package');
 const feedPAT = argv.feedPAT || process.env['AZ_DevOps_Read_PAT'];
 const isOfficialBuild = argv.isOfficialBuild && argv.isOfficialBuild.toLowerCase() == "true";
 const isPreviewBuild = argv.isPreviewBuild && argv.isPreviewBuild.toLowerCase() == "true";
+const feedName = argv.useFeed || 'nuget.org';
 
 async function clean() {
     (await pslist())
@@ -51,17 +53,6 @@ async function clean() {
         });
     fs.emptyDirSync(outdir);
     return fs.emptyDir(distdir);
-}
-
-function setTelemetryTarget() {
-    const telemetryConfigurationSource = isOfficialBuild
-        ? 'src/common/telemetry/telemetryConfigurationProd.ts'
-        : 'src/common/telemetry/telemetryConfigurationDev.ts';
-
-    return gulp
-        .src(telemetryConfigurationSource)
-        .pipe(rename('telemetryConfiguration.ts'))
-        .pipe(gulp.dest(path.join('src', 'common', 'telemetry-generated')));
 }
 
 function setBuildRegion() {
@@ -79,6 +70,7 @@ function setBuildRegion() {
 function compile() {
     return gulp
         .src('src/**/*.ts')
+        .pipe(plumber()) // Added error handling
         .pipe(gulpWebpack(nodeConfig, webpack))
         .pipe(replace("src\\\\client\\\\lib\\\\", "src/client/lib/")) // Hacky fix: vscode-nls-dev/lib/webpack-loader uses Windows style paths when built on Windows, breaking localization on Linux & Mac
         .pipe(gulp.dest(distdir));
@@ -87,6 +79,7 @@ function compile() {
 function compileWeb() {
     return gulp
         .src('src/web/**/*.ts')
+        .pipe(plumber()) // Added error handling
         .pipe(gulpWebpack(webConfig, webpack))
         .pipe(replace("src\\\\client\\\\lib\\\\", "src/client/lib/")) // Hacky fix: vscode-nls-dev/lib/webpack-loader uses Windows style paths when built on Windows, breaking localization on Linux & Mac
         .pipe(gulp.dest(path.resolve(`${distdir}/web`)));
@@ -96,6 +89,7 @@ function compileWeb() {
 function compileWorker() {
     return gulp
         .src(["src/web/**/*.ts"])
+        .pipe(plumber()) // Added error handling
         .pipe(gulpWebpack(webWorkerConfig, webpack))
         .pipe(gulp.dest(path.resolve(`${distdir}/web`)));
 }
@@ -117,6 +111,10 @@ async function nugetInstall(nugetSource, packageName, version, targetDir) {
             // https://dev.azure.com/msazure/One/_packaging?_a=feed&feed=CAP_ISVExp_Tools_Stable
             baseUrl: 'https://pkgs.dev.azure.com/msazure/_packaging/b0441cf8-0bc8-4fad-b126-841a6184e784/nuget/v3/flat2/'
         },
+        'Power_Platform_Tools_Feed': {
+            authenticated: true,
+            baseUrl: 'https://pkgs.dev.azure.com/dynamicscrm/OneCRM/_packaging/6f6505ca-e632-4c4c-9115-6d45f61758cc/nuget/v3/flat2/'
+        }
     }
 
     const selectedFeed = feeds[nugetSource];
@@ -206,17 +204,8 @@ function testUnitTests() {
         );
 }
 
-function testWeb() {
-    return gulp.src(["src/web/client/test/unit/**/*.ts"], { read: false }).pipe(
-        mocha({
-            require: ["ts-node/register"],
-            ui: "bdd",
-        })
-    );
-}
-
 // unit tests without special test runner
-const test = gulp.series(testUnitTests, testWeb);
+const test = gulp.series(testUnitTests);
 
 /**
  * Compiles the integration tests and transpiles the results to /out
@@ -226,9 +215,13 @@ function compileIntegrationTests() {
         // to test puppeteer we need "dom".
         // since "dom" overlaps with "webworker" we need to overwrite the lib property.
         // This is a known ts issue (bot being able to have both webworker and dom): https://github.com/microsoft/TypeScript/issues/20595
-        lib: ["es2019", "dom", "dom.iterable"],
+        lib: ["es2019", "dom", "dom.iterable", "es2020"],
     });
     return gulp.src(["src/**/*.ts"]).pipe(tsProject()).pipe(gulp.dest("out"));
+}
+
+function copyTestNugetPackages() {
+    return gulp.src(["src/**/*.nupkg"]).pipe(gulp.dest("out"));
 }
 
 /**
@@ -256,7 +249,7 @@ const testWebInt = gulp.series(testWebIntegration);
 /**
  * Tests the power-pages integration tests after transpiling the source files to /out
  */
-const testDesktopIntegration = gulp.series(compileIntegrationTests, async () => {
+const testDesktopIntegration = gulp.series(copyTestNugetPackages, compileIntegrationTests, async () => {
     const testRunner = require("./out/client/test/runTest");
     await testRunner.main();
 });
@@ -346,8 +339,7 @@ async function snapshot() {
     }
 }
 
-const feedName = 'CAP_ISVExp_Tools_Stable';
-const cliVersion = '1.32.8';
+const cliVersion = '1.43.6';
 
 const recompile = gulp.series(
     clean,
@@ -355,7 +347,6 @@ const recompile = gulp.series(
     async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI.Tool', cliVersion, path.resolve(distdir, 'pac')),
     translationsExport,
     translationsImport,
-    setTelemetryTarget,
     setBuildRegion,
     compile,
     compileWeb,
@@ -426,7 +417,6 @@ export {
     snapshot,
     lint,
     test,
-    testWeb,
     compileIntegrationTests,
     testInt,
     testWebInt,

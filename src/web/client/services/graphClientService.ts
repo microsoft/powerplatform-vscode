@@ -7,7 +7,7 @@ import path from "path";
 import WebExtensionContext from "../WebExtensionContext";
 import { getCommonHeaders, graphClientAuthentication } from "../../../common/services/AuthenticationProvider";
 import * as Constants from "../common/constants";
-import { telemetryEventNames } from "../telemetry/constants";
+import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 
 export class GraphClientService {
     private _graphToken: string;
@@ -21,17 +21,17 @@ export class GraphClientService {
     }
 
     public async graphClientAuthentication(firstTimeAuth = false) {
-        const accessToken = await graphClientAuthentication(WebExtensionContext.telemetry.getTelemetryReporter(), firstTimeAuth);
+        const accessToken = await graphClientAuthentication(firstTimeAuth);
         if (!accessToken) {
             WebExtensionContext.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_FAILED,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_FAILED,
                 graphClientAuthentication.name
             );
         }
 
         if (firstTimeAuth && accessToken) {
             WebExtensionContext.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_COMPLETED
+                webExtensionTelemetryEventNames.WEB_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_COMPLETED
             );
         }
 
@@ -112,7 +112,7 @@ export class GraphClientService {
                 );
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_GET_FROM_GRAPH_CLIENT_FAILED,
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_GET_FROM_GRAPH_CLIENT_FAILED,
                     this.requestGraphClient.name,
                     Constants.WEB_EXTENSION_GET_FROM_GRAPH_CLIENT_FAILED,
                     error as Error
@@ -134,7 +134,7 @@ export class GraphClientService {
             return await response.mail;
         } catch (error) {
             WebExtensionContext.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_GET_EMAIL_FROM_GRAPH_CLIENT_FAILED,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_GET_EMAIL_FROM_GRAPH_CLIENT_FAILED,
                 this.getUserEmail.name,
                 (error as Error)?.message,
                 error as Error
@@ -155,7 +155,7 @@ export class GraphClientService {
             return await response;
         } catch (error) {
             WebExtensionContext.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_GET_PROFILE_PICTURE_FROM_GRAPH_CLIENT_FAILED,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_GET_PROFILE_PICTURE_FROM_GRAPH_CLIENT_FAILED,
                 this.getUserProfilePicture.name,
                 (error as Error)?.message,
                 error as Error

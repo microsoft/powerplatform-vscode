@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { ITelemetry } from "../client/telemetry/ITelemetry";
+import { oneDSLoggerWrapper } from "./OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import * as vscode from "vscode";
 /**
  * Static helper class to report errors to telemetry and show them as error dialogs.
@@ -19,7 +19,6 @@ export class ErrorReporter {
      * @param properties [Optional] Additional properties to include in the telemetry event.
      */
     public static async report(
-        logger: ITelemetry,
         errorIdentifier: string,
         error: unknown,
         message: string,
@@ -32,7 +31,9 @@ export class ErrorReporter {
             : "";
         const errorStack = errorObj ? ` - Stack: ${errorObj.stack}` : "";
         const errorMessage = `${message}${errorObjMessage}`;
-        logger.sendTelemetryException(
+        oneDSLoggerWrapper.getLogger().traceError(
+            errorIdentifier,
+            message,
             new Error(`${errorIdentifier}: ${errorMessage}${errorStack}`),
             properties
         );

@@ -10,8 +10,8 @@ import { spawnSync } from 'child_process';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
-import { PORTAL_YEOMAN_GENERATOR_PACKAGE_NAME, PORTAL_YEOMAN_GENERATOR_PACKAGE_TARBALL_NAME } from '../constants';
-import { ICliAcquisitionContext } from './CliAcquisition';
+import { PORTAL_YEOMAN_GENERATOR_PACKAGE_NAME, PORTAL_YEOMAN_GENERATOR_PACKAGE_TARBALL_NAME } from '../../common/constants';
+import { ICliAcquisitionContext } from './CliAcquisitionContext';
 import { glob } from 'glob';
 import commandExists from 'command-exists';
 import { oneDSLoggerWrapper } from '../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
@@ -69,7 +69,7 @@ export class GeneratorAcquisition implements IDisposable {
     }
 
     private npm(args: string[]) {
-        return spawnSync(/^win/.test(process.platform) ? 'npm.cmd' : 'npm', args, { cwd: this._ppagesGlobalPath });
+        return spawnSync(this.npmCommand, args, { cwd: this._ppagesGlobalPath, shell: true });
     }
 
     public ensureInstalled(): string | null {
@@ -105,7 +105,6 @@ export class GeneratorAcquisition implements IDisposable {
 
             const child = this.npm(['install']);
             if (child.error) {
-                this._context.telemetry.sendTelemetryErrorEvent('PowerPagesGeneratorInstallComplete', { cliVersion: this._generatorVersion }, {}, [String(child.error)]);
                 oneDSLoggerWrapper.getLogger().traceError(
                     'PowerPagesGeneratorInstallComplete',
                     String(child.error),
@@ -119,7 +118,6 @@ export class GeneratorAcquisition implements IDisposable {
                     comment: ["{0} represents the error message returned from the exception"]
                 }));
             } else {
-                this._context.telemetry.sendTelemetryEvent('PowerPagesGeneratorInstallComplete', { cliVersion: this._generatorVersion });
                 oneDSLoggerWrapper.getLogger().traceInfo('PowerPagesGeneratorInstallComplete', { cliVersion: this._generatorVersion });
                 this._context.showInformationMessage(vscode.l10n.t('The Power Pages generator is ready for use in your VS Code extension!'));
             }
@@ -141,4 +139,3 @@ export class GeneratorAcquisition implements IDisposable {
         }
     }
 }
-

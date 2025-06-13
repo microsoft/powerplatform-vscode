@@ -12,7 +12,6 @@ import {
     WorkspaceFolder,
     debug,
 } from "vscode";
-import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { ErrorReporter } from "../../common/ErrorReporter";
 
 import { BrowserManager } from "../browser";
@@ -20,6 +19,7 @@ import { IPcfLaunchConfig } from "../configuration/types/IPcfLaunchConfig";
 import { sleep } from "../utils";
 
 import { ProtocolMessage } from "./DebugProtocolMessage";
+import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
 /**
  * The default number of retries to attach the debugger.
@@ -78,7 +78,6 @@ export class Debugger implements Disposable, DebugAdapter {
         private readonly browserManager: BrowserManager,
         private readonly parentSession: DebugSession,
         private readonly workspaceFolder: WorkspaceFolder,
-        private readonly logger: ITelemetry,
         private readonly debuggingRetryCount: number = DEFAULT_DEBUGGING_RETRY_COUNT,
         private readonly debuggingRetryDelay: number = DEFAULT_DEBUGGING_RETRY_DELAY,
         private readonly debuggingDisposeTimeout: number = DEFAULT_DEBUGGING_DISPOSE_TIMEOUT
@@ -155,7 +154,7 @@ export class Debugger implements Disposable, DebugAdapter {
             return;
         }
 
-        this.logger.sendTelemetryEvent("Debugger.attachEdgeDebugger", {
+        oneDSLoggerWrapper.getLogger().traceInfo("Debugger.attachEdgeDebugger", {
             running: "" + this.isRunning,
             retryCount: `${retryCount}`,
         });
@@ -182,7 +181,6 @@ export class Debugger implements Disposable, DebugAdapter {
             );
         } catch (error) {
             await ErrorReporter.report(
-                this.logger,
                 "Debugger.startDebugging.error",
                 error,
                 "Exception starting debug session",
@@ -192,7 +190,7 @@ export class Debugger implements Disposable, DebugAdapter {
         }
 
         if (success) {
-            this.logger.sendTelemetryEvent(
+            oneDSLoggerWrapper.getLogger().traceInfo(
                 "Debugger.attachEdgeDebugger.success",
                 { running: "" + this.isRunning, retryCount: `${retryCount}` }
             );
@@ -209,7 +207,6 @@ export class Debugger implements Disposable, DebugAdapter {
         retryCount: number
     ): Promise<void> {
         await ErrorReporter.report(
-            this.logger,
             "Debugger.handleStartDebuggingNonSuccess",
             undefined,
             "Could not start debugging session. Retrying",
@@ -224,7 +221,6 @@ export class Debugger implements Disposable, DebugAdapter {
             await this.attachEdgeDebugger(retryCount - 1);
         } else {
             void ErrorReporter.report(
-                this.logger,
                 "Debugger.handleStartDebuggingNonSuccess.noRetry",
                 undefined,
                 "Could not start debugging session.",
@@ -254,7 +250,7 @@ export class Debugger implements Disposable, DebugAdapter {
                 (session) => void this.onDebugSessionStopped(session)
             );
 
-        this.logger.sendTelemetryEvent("Debugger.onDebugSessionStarted", {
+        oneDSLoggerWrapper.getLogger().traceInfo("Debugger.onDebugSessionStarted", {
             edgeDebugSessionId: this.edgeDebugSession?.id || "undefined",
             parentSessionId: this.parentSession.id || "undefined",
         });
@@ -264,7 +260,7 @@ export class Debugger implements Disposable, DebugAdapter {
      * Stops the debugging session.
      */
     public async stopDebugging(): Promise<void> {
-        this.logger.sendTelemetryEvent("debugger.stopDebugging", {
+        oneDSLoggerWrapper.getLogger().traceInfo("debugger.stopDebugging", {
             sessionId: this.edgeDebugSession?.id || "undefined",
         });
 
@@ -289,7 +285,7 @@ export class Debugger implements Disposable, DebugAdapter {
         if (this.isRunning) {
             return;
         }
-        void this.logger.sendTelemetryEvent(
+        oneDSLoggerWrapper.getLogger().traceInfo(
             "debugger.onDebugSessionStopped.stopped",
             {
                 sessionId: session.id,

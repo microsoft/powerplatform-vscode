@@ -22,7 +22,7 @@ import {
 import { getAttributePath, getEntity, getEntityFetchQuery } from "./schemaHelperUtil";
 import { getWorkSpaceName } from "./commonUtil";
 import * as Constants from "../common/constants";
-import { telemetryEventNames } from "../telemetry/constants";
+import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 
 export const getParameterizedRequestUrlTemplate = (
     useSingleEntityUrl: boolean
@@ -340,7 +340,7 @@ export async function getOrCreateSharedWorkspace(config: any) {
             );
         } else {
             WebExtensionContext.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_FETCH_GET_OR_CREATE_SHARED_WORK_SPACE_ERROR,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_FETCH_GET_OR_CREATE_SHARED_WORK_SPACE_ERROR,
                 getOrCreateSharedWorkspace.name,
                 Constants.WEB_EXTENSION_FETCH_GET_OR_CREATE_SHARED_WORK_SPACE_ERROR,
                 error as Error

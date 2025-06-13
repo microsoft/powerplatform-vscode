@@ -7,8 +7,6 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import * as os from 'os'
 import { PacInterop, PacWrapper } from '../pac/PacWrapper';
-import { ITelemetry } from '../telemetry/ITelemetry';
-import { RegisterPanels } from './PacActivityBarUI';
 import { PacWrapperContext } from '../pac/PacWrapperContext';
 import { RegisterUriHandler } from '../uriHandler';
 
@@ -21,9 +19,9 @@ export class PacTerminal implements vscode.Disposable {
         this._cmdDisposables.forEach(cmd => cmd.dispose());
     }
 
-    public constructor(context: vscode.ExtensionContext, telemetry: ITelemetry, cliPath: string) {
+    public constructor(context: vscode.ExtensionContext, cliPath: string) {
         this._context = context;
-        const pacContext = new PacWrapperContext(context, telemetry);
+        const pacContext = new PacWrapperContext(context);
         const interop = new PacInterop(pacContext, cliPath);
         this._pacWrapper = new PacWrapper(pacContext, interop);
 
@@ -33,7 +31,7 @@ export class PacTerminal implements vscode.Disposable {
         // Compatability for users on M1 Macs with .NET 6.0 installed - permit pac and pacTelemetryUpload
         // to roll up to 6.0 if 5.0 is not found on the system.
         if (os.platform() === 'darwin' && os.version().includes('ARM64')) {
-            this._context.environmentVariableCollection.replace('DOTNET_ROLL_FORWARD','Major');
+            this._context.environmentVariableCollection.replace('DOTNET_ROLL_FORWARD', 'Major');
         }
 
         this._cmdDisposables.push(
@@ -65,7 +63,6 @@ export class PacTerminal implements vscode.Disposable {
             }
         }));
 
-        this._cmdDisposables.push(...RegisterPanels(this._pacWrapper, context, telemetry));
         this._cmdDisposables.push(RegisterUriHandler(this._pacWrapper));
     }
 
@@ -77,7 +74,7 @@ export class PacTerminal implements vscode.Disposable {
         vscode.env.openExternal(vscode.Uri.parse('https://aka.ms/powerplatform-vscode-lab'));
     }
 
-    private static getTerminal(): vscode.Terminal {
+    public static getTerminal(): vscode.Terminal {
         const terminal = vscode.window.activeTerminal ?
             vscode.window.activeTerminal as vscode.Terminal :
             vscode.window.createTerminal();

@@ -5,12 +5,9 @@
 
 import { expect } from "chai";
 import { IPacInterop, IPacWrapperContext, PacArguments, PacWrapper } from "../../pac/PacWrapper";
-import { NoopTelemetryInstance } from "../../telemetry/NoopTelemetry";
-import { ITelemetry } from "../../telemetry/ITelemetry";
 
 class MockContext implements IPacWrapperContext {
     public get globalStorageLocalPath(): string { return ""; }
-    public get telemetry(): ITelemetry { return NoopTelemetryInstance; }
     public get automationAgent(): string { return "powerplatform-vscode-tests/0.1.0-dev"; }
     public IsTelemetryEnabled(): boolean { return true; }
     public GetCloudSetting(): string { return 'Public'; }
@@ -35,15 +32,15 @@ describe('PacWrapper', () => {
         const interop = new MockPacInterop();
         interop.executeReturnValue = "{\"Status\":\"Success\",\"Errors\":[],\"Information\":[\"Input commands: [\\\"auth\\\",\\\"list\\\"]\",\"Profiles (* indicates active):\"],"
             + "\"Results\":["
-                + "{"
-                    + "\"Index\":1,"
-                    + "\"IsActive\":true,"
-                    + "\"Kind\":\"CDS\","
-                    + "\"Name\":\"cctest\","
-                    + "\"ActiveOrganization\":{\"Item2\":\"https://contoso-mock.crmtest.dynamics.com\",\"Item1\":\"\"},"
-                    + "\"UserDisplayName\":\"bob@contoso.com\","
-                    + "\"CloudInstance\":\"Public\""
-                + "}"
+            + "{"
+            + "\"Index\":1,"
+            + "\"IsActive\":true,"
+            + "\"Kind\":\"CDS\","
+            + "\"Name\":\"cctest\","
+            + "\"ActiveOrganization\":{\"Item2\":\"https://contoso-mock.crmtest.dynamics.com\",\"Item1\":\"\"},"
+            + "\"UserDisplayName\":\"bob@contoso.com\","
+            + "\"CloudInstance\":\"Public\""
+            + "}"
             + "]}";
         const wrapper = new PacWrapper(new MockContext, interop);
 

@@ -7,7 +7,7 @@ import * as vscode from "vscode";
 import WebExtensionContext from "../WebExtensionContext";
 import { queryParameters } from "../common/constants";
 import { getDeviceType } from "../utilities/deviceType";
-import { telemetryEventNames } from "../telemetry/constants";
+import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 import { getEnvironmentIdFromUrl } from "../utilities/commonUtil";
 
 export class NPSWebView {
@@ -46,7 +46,7 @@ export class NPSWebView {
             const formsProEligibilityId =
                 WebExtensionContext.formsProEligibilityId;
             WebExtensionContext.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_RENDER_NPS
+                webExtensionTelemetryEventNames.WEB_EXTENSION_RENDER_NPS
             );
             return `<!DOCTYPE html>
             <html lang="en">
@@ -64,7 +64,7 @@ export class NPSWebView {
             </html>`;
         } catch (error) {
             WebExtensionContext.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_RENDER_NPS_FAILED,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_RENDER_NPS_FAILED,
                 this._getHtml.name,
                 (error as Error)?.message
             );
@@ -81,7 +81,7 @@ export class NPSWebView {
     public static createOrShow(extensionUri: vscode.Uri): NPSWebView {
         const webview = vscode.window.createWebviewPanel(
             "testCESSurvey",
-            vscode.l10n.t("Microsoft wants your feeback"),
+            vscode.l10n.t("Microsoft wants your feedback"),
             { viewColumn: vscode.ViewColumn.One, preserveFocus: false },
             {
                 enableScripts: true,

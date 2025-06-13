@@ -10,31 +10,17 @@ import * as fs from 'fs-extra';
 import * as glob from 'glob';
 import * as os from 'os';
 import { Extract } from 'unzip-stream'
-import { ITelemetry } from '../telemetry/ITelemetry';
 import find from 'find-process';
 import { spawnSync } from 'child_process';
 import commandExists from 'command-exists';
 import { oneDSLoggerWrapper } from '../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
-
-// allow for DI without direct reference to vscode's d.ts file: that definintions file is being generated at VS Code runtime
-export interface ICliAcquisitionContext {
-    readonly extensionPath: string;
-    readonly globalStorageLocalPath: string;
-    readonly telemetry: ITelemetry;
-    showInformationMessage(message: string, ...items: string[]): void;
-    showErrorMessage(message: string, ...items: string[]): void;
-    showCliPreparingMessage(version: string): void;
-    showCliReadyMessage(): void;
-    showCliInstallFailedError(err: string): void;
-    locDotnetNotInstalledOrInsufficient(): string;
-}
+import { ICliAcquisitionContext } from './CliAcquisitionContext';
 
 export interface IDisposable {
     dispose(): void;
 }
 
 export class CliAcquisition implements IDisposable {
-
     private readonly _context: ICliAcquisitionContext;
     private readonly _cliPath: string;
     private readonly _cliVersion: string;
@@ -101,7 +87,6 @@ export class CliAcquisition implements IDisposable {
                     { encoding: "utf-8" });
 
                 if (install.status != 0) {
-                    this._context.telemetry.sendTelemetryErrorEvent("PacInstallError", { "stdout": install.stdout, "stderr": install.stderr });
                     oneDSLoggerWrapper.getLogger().traceError(
                         'PacInstallError',
                         'PacInstallError',
@@ -119,7 +104,6 @@ export class CliAcquisition implements IDisposable {
                     this._context.showCliInstallFailedError(errorMessage);
                     reject(errorMessage);
                 } else {
-                    this._context.telemetry.sendTelemetryEvent('PacCliInstalled', { cliVersion: this.cliVersion });
                     oneDSLoggerWrapper.getLogger().traceInfo('PacCliInstalled', { cliVersion: this.cliVersion });
                     this._context.showCliReadyMessage();
                     this.setInstalledVersion(this._cliVersion);
@@ -133,7 +117,6 @@ export class CliAcquisition implements IDisposable {
                 fs.createReadStream(pathToNupkg)
                     .pipe(Extract({ path: this._cliPath }))
                     .on('close', () => {
-                        this._context.telemetry.sendTelemetryEvent('PacCliInstalled', { cliVersion: this.cliVersion });
                         oneDSLoggerWrapper.getLogger().traceInfo('PacCliInstalled', { cliVersion: this.cliVersion });
                         this._context.showCliReadyMessage();
                         if (os.platform() !== 'win32') {
@@ -241,4 +224,3 @@ export class CliAcquisition implements IDisposable {
         }
     }
 }
-

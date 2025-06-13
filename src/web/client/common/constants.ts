@@ -96,11 +96,16 @@ export enum queryParameters {
     ENV_ID = "envid",
     GEO = "geo", // User geo location
     ENABLE_MULTIFILE = "enablemultifile",
-    WEBSITE_PREVIEW_URL = "websitepreviewurl",
     ENTITY = "entity",
     ENTITY_ID = "entityid",
     REFERRER_SOURCE = "referrersource",
     SKU = "sku",
+    SOURCE_ATTRIBUTE = "source_attribute"
+}
+
+export enum sourceAttribute {
+    CUSTOM_CSS = "customcss",
+    CUSTOM_JAVASCRIPT = "customjavascript",
 }
 
 export enum httpMethod {
@@ -108,13 +113,6 @@ export enum httpMethod {
     GET = "GET",
     POST = "POST",
     DELETE = "DELETE",
-}
-
-export enum SurveyConstants {
-    TEAM_NAME = "PowerPages",
-    SURVEY_NAME = "PowerPages-NPS",
-    EVENT_NAME = "VscodeWeb",
-    AUTHORIZATION_ENDPOINT = "https://microsoft.onmicrosoft.com/cessurvey/user",
 }
 
 export enum portalSchemaVersion {
@@ -127,6 +125,10 @@ export const MICROSOFT_GRAPH_USERS_BASE_URL = "https://graph.microsoft.com/v1.0/
 export enum GraphService {
     GRAPH_MAIL = "mail",
     GRAPH_PROFILE_PICTURE = "profilePicture",
+}
+
+export enum REFERRER {
+    POWER_PAGES_HOME = "PowerPagesHome"
 }
 
 export const MICROSOFT_GRAPH_PROFILE_PICTURE_SERVICE_CALL = "/photo/$value";

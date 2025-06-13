@@ -8,12 +8,9 @@
   "pacCLI.pacSolutionHelp.title": "Show PAC Solution Help",
   "pacCLI.disableTelemetry.title": "Disable PAC Telemetry",
   "pacCLI.enableTelemetry.title": "Enable PAC telemetry",
-
   "power-platform-activitybar.title": "Power Platform",
-
   "powerpages.copilotPanel.title": "Copilot In Power Pages",
   "powerpages.copilotPanel.clearConversation.title": "Clear Conversation",
-
   "pacCLI.authPanel.title": "Auth Profiles",
   "pacCLI.authPanel.welcome.whenInteractiveSupported": {
     "message": "No auth profiles found on this computer.\n[Add Auth Profile](command:pacCLI.authPanel.newAuthProfile)",
@@ -23,7 +20,7 @@
     ]
   },
   "pacCLI.authPanel.welcome.whenInteractiveNotSupported": {
-    "message": "No auth profiles found on this computer.\nInteractive Authentication is not availalbe for remote scenarios; auth profiles must be created by the command line.  The `--deviceCode` flow must be used for users with MFA requirements, or whose tenants use ADFS.\n[View Auth Profile Help](command:pacCLI.pacAuthHelp)",
+    "message": "No auth profiles found on this computer.\nInteractive Authentication is not available for remote scenarios; auth profiles must be created by the command line.  The `--deviceCode` flow must be used for users with MFA requirements, or whose tenants use ADFS.\n[View Auth Profile Help](command:pacCLI.pacAuthHelp)",
     "comment": [
       "This is a Markdown formatted string, and the formatting must persist across translations.",
       "The second line should not translate the argument `--deviceCode`",
@@ -38,7 +35,6 @@
   "pacCLI.authPanel.nameAuthProfile.title": "Name/Rename Auth Profile",
   "pacCLI.authPanel.navigateToResource.title": "Navigate to Resource",
   "pacCLI.authPanel.copyUser.title": "Copy User",
-
   "pacCLI.envAndSolutionsPanel.title": "Environments & Solutions",
   "pacCLI.envAndSolutionsPanel.refresh.title": "Refresh",
   "pacCLI.envAndSolutionsPanel.selectEnvironment.title": "Select Environment",
@@ -46,11 +42,9 @@
   "pacCLI.envAndSolutionsPanel.copyEnvironmentId.title": "Copy Environment Id",
   "pacCLI.envAndSolutionsPanel.copyEnvironmentUrl.title": "Copy Environment Url",
   "pacCLI.envAndSolutionsPanel.copyOrganizationId.title": "Copy Organization Id",
-
   "pacCLI.envAndSolutionsPanel.copyFriendlyName.title": "Copy Friendly Name",
   "pacCLI.envAndSolutionsPanel.copyUniqueName.title": "Copy Unique Name",
   "pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Copy Version Number",
-
   "powerPlatform.auth.cloud.description": "Which Azure Cloud Power Platform Tools should use for authentication.",
   "powerPlatform.experimental.auth.testCloudOverride.description": {
     "message": "Overrides `#powerPlatform.auth.cloud#` for test targets. Leave blank for default behavior.",
@@ -58,7 +52,6 @@
       "This is a Markdown formatted string, and `#powerPlatform.auth.cloud#` must remain unmodified."
     ]
   },
-
   "microsoft-powerapps-portals.preview-show.title": "PowerApps Portal -> Show preview",
   "microsoft-powerapps-portals.webExtension.init.title": "Initialize Web Extension",
   "microsoft-powerapps-portals.walkthrough.title": "Edit Power Pages code",
@@ -97,5 +90,29 @@
       "The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.saveConflict-learn-more).', keeping brackets and the text in the parentheses unmodified"
     ]
   },
-  "microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title": "POWER PAGES ACTIONS"
+  "microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title": "POWER PAGES ACTIONS",
+  "powerplatform.pages.previewSite.title": "Preview Site",
+  "microsoft.powerplatform.pages.actionsHub.title": "POWER PAGES ACTIONS",
+  "microsoft.powerplatform.pages.actionsHub.refresh.title": "Refresh",
+  "microsoft.powerplatform.pages.actionsHub.switchEnvironment.title": "Change Environment",
+  "microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails.title": "Show Environment Details",
+  "microsoft.powerplatform.pages.actionsHub.openSitesInStudio.title": "Open in Power Pages Studio",
+  "microsoft.powerplatform.pages.actionsHub.activeSite.previewSite.title": "Preview",
+  "microsoft.powerplatform.pages.actionsHub.login":{
+    "message":  "Login and connect to a Power Pages environment to use Power Pages actions. [Learn more](https://go.microsoft.com/fwlink/?linkid=2305702).\n[Login](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile)",
+    "comment": [
+      "This is a Markdown formatted string, and the formatting must persist across translations.",
+      "The second line should be '[TRANSLATION HERE](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile).', keeping brackets and the text in the parentheses unmodified"
+    ]
+  },
+  "microsoft.powerplatform.pages.actionsHub.login.title": "Add New Auth Profile",
+  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows.title": "Reveal in Explorer",
+  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac.title": "Reveal in Finder",
+  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title": "Open Containing Folder",
+  "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement.title": "Open site management",
+  "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite.title": "Upload Site",
+  "microsoft.powerplatform.pages.actionsHub.siteDetails.title": "Site Details",
+  "microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite.title": "Download Site",
+  "microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio.title": "Open in Power Pages Studio",
+  "microsoft.powerplatform.pages.actionsHub.configuration.downloadSite.description": "The folder where site will be downloaded when using Power Pages Actions. Leave this empty to ask for a folder every time you download a site."
 }

@@ -5,7 +5,7 @@
 
 import * as vscode from "vscode";
 import * as path from "path";
-import { searchPortalConfigFolder } from "../common/PortalConfigFinder";
+import { findWebsiteYmlFolder } from "../common/utilities/WorkspaceInfoFinderUtil";
 
 /**
  * Displays Portal html webpage preview
@@ -35,25 +35,35 @@ export class PortalWebView {
             return;
         }
 
-        const column = vscode.window.activeTextEditor
-            ? vscode.window.activeTextEditor.viewColumn
-            : undefined;
-
         // If we already have a panel, show it.
         if (PortalWebView.currentPanel) {
+            const column = vscode.window.activeTextEditor
+                ? vscode.window.activeTextEditor.viewColumn
+                : undefined;
+
             PortalWebView.currentPanel._update();
             PortalWebView.currentPanel._panel.reveal(column);
             return;
         }
+
+        if (!vscode.window.activeTextEditor) {
+            return;
+        }
+        const repoRoot = PortalWebView.getPortalRootFolder();
+
+        if (!repoRoot) {
+            vscode.window.showErrorMessage(vscode.l10n.t("Unable to locate website root folder."));
+            return;
+        }
+
+        const localResourceRootFolder = vscode.Uri.joinPath(repoRoot, "web-files");
 
         const panel = vscode.window.createWebviewPanel(
             PortalWebView.viewType,
             "Portal Preview",
             vscode.ViewColumn.Two,
             {
-                localResourceRoots: [
-                    vscode.Uri.joinPath(PortalWebView.getPortalRootFolder() as vscode.Uri, "web-files"),
-                ],
+                localResourceRoots: [localResourceRootFolder]
             }
         );
 
@@ -130,7 +140,7 @@ export class PortalWebView {
         if (uri) {
             // Add bootstrap.min.css
             let url = webview.asWebviewUri(
-                vscode.Uri.joinPath( uri as vscode.Uri, "web-files", "bootstrap.min.css")
+                vscode.Uri.joinPath(uri as vscode.Uri, "web-files", "bootstrap.min.css")
             );
             const bootstrap = `<link href="${url}" rel="stylesheet" />`;
             html += bootstrap;
@@ -173,13 +183,14 @@ export class PortalWebView {
     private static getPortalRootFolder(): vscode.Uri | null {
         const fileBeingEdited = vscode.window.activeTextEditor as vscode.TextEditor;
         if (fileBeingEdited) {
-            for (let i = 0; !!(vscode.workspace.workspaceFolders) && (i < vscode.workspace.workspaceFolders?.length); i++) {
-                const portalConfigFolderUrl = searchPortalConfigFolder(vscode.workspace.workspaceFolders[i]?.uri?.toString(), fileBeingEdited?.document?.uri?.toString());
-                if (portalConfigFolderUrl) {
-                    const portalRootFolder = path.dirname(portalConfigFolderUrl.href);
-                    return vscode.Uri.parse(portalRootFolder);
-                }
+            const repoRoot = findWebsiteYmlFolder(fileBeingEdited.document.uri.fsPath);
+
+            if (!repoRoot) {
+                return null;
             }
+
+            const rootFolder = vscode.Uri.file(repoRoot);
+            return rootFolder;
         }
         return null;
     }

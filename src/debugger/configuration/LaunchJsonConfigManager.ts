@@ -4,7 +4,7 @@
  */
 
 import * as vscode from "vscode";
-import { EXTENSION_NAME } from "../../client/constants";
+import { EXTENSION_NAME } from "../../common/constants";
 
 import { ControlLocation } from "../controlLocation";
 
@@ -43,7 +43,7 @@ export class LaunchJsonConfigManager {
         ) {
             throw new Error(
                 "Could not get launch configuration from user config. Config: " +
-                    JSON.stringify(debugConfig)
+                JSON.stringify(debugConfig)
             );
         }
     }

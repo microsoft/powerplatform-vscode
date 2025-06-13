@@ -22,6 +22,10 @@
         <source xml:lang="en">AI-generated content can contain mistakes</source>
         <target state="translated">AI 생성 콘텐츠에는 오류가 있을 수 있습니다</target>
       </trans-unit>
+      <trans-unit id="++CODE++5f9c7a14b3c0c2971e4a8f4471af5071dbd3cf37f96fa09fe1257124c0b7e921">
+        <source xml:lang="en">Active auth profile is not found or has expired. Please try again.</source>
+        <target state="translated">활성 인증 프로필을 찾을 수 없거나 만료되었습니다. 다시 시도해 주세요.</target>
+      </trans-unit>
       <trans-unit id="++CODE++5d8300ceca093c3e9b111bbcadfac87c89ca4274fc9a7fe3267f037a5ab4ceac">
         <source xml:lang="en">Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL.</source>
         <target state="translated">활성 인증 프로필을 찾을 수 없거나 만료되었습니다. 새 인증 프로필을 만들려면 환경 URL을 입력하세요.</target>
@@ -29,6 +33,11 @@
       <trans-unit id="++CODE++b544cb198e99ff113ac41467fc99191f11916287ccdb1ae619dba61dd6bbeff6">
         <source xml:lang="en">Add content snippet name (name should be unique)</source>
         <target state="translated">콘텐츠 조각 이름 추가(고유한 이름이어야 함)</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e7027d80d4c05ae510621f20062db71d499cbd4f8760e3076a3530220fbf0a18">
+        <source xml:lang="en">Adding {0} web file(s). Existing files will be skipped</source>
+        <note>{0} represents the number of web files</note>
+        <target state="translated">{0}개 웹 파일을 추가하는 중입니다. 기존 파일은 건너뜁니다.</target>
       </trans-unit>
       <trans-unit id="++CODE++3f82badfcbab5f7d6e5a4886a6df032cc28cdf5fe200a85bafd86101efe126c9">
         <source xml:lang="en">Are you sure you want to clear all the Auth Profiles?</source>
@@ -38,6 +47,10 @@
         <source xml:lang="en">Are you sure you want to delete the Auth Profile {0}-{1}?</source>
         <note>{0} is the user name, {1} is the URL of environment of the auth profile</note>
         <target state="translated">인증 프로필 {0}-{1}을(를) 삭제하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="++CODE++4190475b52357e7ad3da76828784a5b9f291519e331b0c0e71f5d14e946bbc4b">
+        <source xml:lang="en">Authentication failed. Please try again.</source>
+        <target state="translated">인증 실패. 다시 시도해 주세요.</target>
       </trans-unit>
       <trans-unit id="++CODE++a57666e58a53eea23667fddf0a7c41bdc64abfc5eae94637e88388a6b139b314">
         <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
@@ -70,6 +83,10 @@
         <source xml:lang="en">Check the URL and verify the parameters are correct</source>
         <target state="translated">URL을 확인하고 매개 변수가 올바른지 확인하세요</target>
       </trans-unit>
+      <trans-unit id="++CODE++c724a9256b7af89455e04cc3611e5df1030c25f92652356f205c15f02c2da28e">
+        <source xml:lang="en">Checking for active auth profile...</source>
+        <target state="translated">활성 인증 프로필을 확인하는 중...</target>
+      </trans-unit>
       <trans-unit id="++CODE++e1c3ec6d279ce7c1a208abce1314435297d8369739967d8a9db962ab572c617f">
         <source xml:lang="en">Choose page template</source>
         <target state="translated">페이지 템플릿 선택</target>
@@ -91,9 +108,17 @@
         <source xml:lang="en">Confirm</source>
         <target state="translated">확인</target>
       </trans-unit>
+      <trans-unit id="++CODE++02c3c88b02a43e1818bf427f60d8e58b84d40c0990e09d01c75fff4a934221d0">
+        <source xml:lang="en">Continue with Copilot for Power Pages</source>
+        <target state="translated">Power Pages용 Copilot으로 계속</target>
+      </trans-unit>
       <trans-unit id="++CODE++916fa4a51e4d90e09a42289aa7961a6aff3401424f633240c630ac47f58a6d30">
         <source xml:lang="en">Copied to clipboard!</source>
         <target state="translated">클립보드에 복사되었습니다.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++6f6ff1fc17821e030a88681092957c279c6a5b1177f940017a4c5fd99fd1ea7b">
+        <source xml:lang="en">Copilot is not available. Please contact your administrator.</source>
+        <target state="translated">Copilot을 사용할 수 없습니다. 시스템 관리자에게 문의하세요.</target>
       </trans-unit>
       <trans-unit id="++CODE++b749e205302cc21952a1e9646569ca0af9017cc5f39dd741830551bdd4ae823e">
         <source xml:lang="en">Copy to clipboard</source>
@@ -108,6 +133,10 @@
         <source xml:lang="en">Default Environment: {0}</source>
         <note>The {0} represents profile's resource/environment URL</note>
         <target state="translated">기본 환경: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++21c02244893ddc07c4494a2ac7eb69a143e75d7b49d04f10234a1865c2111310">
+        <source xml:lang="en">Dislike something? Tell us more.</source>
+        <target state="translated">불만이 있나요? 자세히 알려주세요.</target>
       </trans-unit>
       <trans-unit id="++CODE++e9f79ac902b11087dd0d34e8afc1de54df4e48d45861a0c0b6e4edd3c204f314">
         <source xml:lang="en">Display Name: {0}
@@ -152,6 +181,10 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
         <source xml:lang="en">Explain the following code snippet:</source>
         <target state="translated">다음 코드 조각 설명:</target>
       </trans-unit>
+      <trans-unit id="++CODE++f9e17ed11037dab93f8820c30db63b2ff2a045b5761f71818b7291afae60f199">
+        <source xml:lang="en">Explain the following code {% include 'Page Copy'%}</source>
+        <target state="translated">{% include 'Page Copy'%} 코드 설명</target>
+      </trans-unit>
       <trans-unit id="++CODE++2310c6b7e5953cab877859ba1fcfa98e58e1508677df9412010e9b578ea237f4">
         <source xml:lang="en">Failed to create: {0}.</source>
         <note>{0} will be replaced by the error message.</note>
@@ -177,6 +210,10 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
         <source xml:lang="en">Feature is not enabled for this geo.</source>
         <target state="translated">기능이 이 지역에 대해 기능을 사용할 수 없습니다.</target>
       </trans-unit>
+      <trans-unit id="++CODE++aac77df347205252b074d45aff7891debdba0ff1466cc0c351416d1662bb71ab">
+        <source xml:lang="en">Feedback</source>
+        <target state="translated">피드백</target>
+      </trans-unit>
       <trans-unit id="++CODE++2a8ddde521f14ecd4a8717f2bcf9a2b021fa38a578518066d2ae32271aa95237">
         <source xml:lang="en">Fetching your file ...</source>
         <target state="translated">파일을 가져오는 중...</target>
@@ -194,6 +231,10 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
         <source xml:lang="en">GETTING STARTED</source>
         <target state="translated">시작</target>
       </trans-unit>
+      <trans-unit id="++CODE++ee1d3100df4b00eabd74481b92106e42cce956213372a914082f82702f56470d">
+        <source xml:lang="en">Get GitHub Copilot to try @powerpages</source>
+        <target state="translated">GitHub Copilot을 가져와 @powerpages 시작</target>
+      </trans-unit>
       <trans-unit id="++CODE++b9f4adbdfa2deef1eaa415a914f63329ee06c604b5a1bf34645175b9e28a9712">
         <source xml:lang="en">Here are a few suggestions to get you started</source>
         <target state="translated">시작하기 위한 몇 가지 제안입니다</target>
@@ -202,13 +243,31 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
         <source xml:lang="en">Hi</source>
         <target state="translated">안녕하세요</target>
       </trans-unit>
+      <trans-unit id="++CODE++f307e9947391e3b9ba6e7a7da781c995fcfc8647e780127a4c475b67fccd4d0c">
+        <source xml:lang="en">Hi! @powerpages can help you write, edit, and even summarize your website code.</source>
+        <target state="translated">안녕하세요! @powerpages는 웹 사이트 코드를 작성, 편집 및 요약할 수 있습니다.</target>
+      </trans-unit>
       <trans-unit id="++CODE++57fa6bc42ff8a73f5c9271ebe8a92febd9ec652aea94798eb9023c5512b9dab1">
         <source xml:lang="en">Hi! Instantly generate code for Power Pages sites by typing in what you need. To start using Copilot, log in to your Microsoft account.</source>
         <target state="translated">안녕하세요! 필요한 것을 입력하여 Power Pages 사이트의 코드를 즉시 생성합니다. Copilot을 사용하려면 Microsoft 계정에 로그인하세요.</target>
       </trans-unit>
+      <trans-unit id="++CODE++61dd014ff85ae4c042dbfd3b581668ee350e515d4abbf0d682df335b22bf703a">
+        <source xml:lang="en">Hi! Power Pages lets you build secure, professional websites that you can quickly configure and publish across web browsers and devices.
+
+To create your website, visit the [Power Pages](https://powerpages.microsoft.com/).
+Return to this chat and @powerpages can help you write and edit your website code.</source>
+        <target state="translated">안녕하세요! Power Pages를 사용하면 웹 브라우저 및 디바이스에 신속하게 구성하고 게시할 수 있는 보안 전문가 웹 사이트를 빌드할 수 있습니다.
+
+웹 사이트를 만들려면 [Power Pages](https://powerpages.microsoft.com/)를 참고하세요.
+이 채팅으로 돌아가세요. @powerpages가 웹 사이트 코드를 작성하고 편집하는 데 도움이 될 수 있습니다.</target>
+      </trans-unit>
       <trans-unit id="++CODE++1d9bc50f05b58d430726840f771cd25056be57873eb33a5d6aeedfff2ca7e2db">
         <source xml:lang="en">Hi! Your Microsoft account doesnâ€™t currently support Copilot. Contact your admin for details.</source>
         <target state="translated">안녕하세요! Microsoft 계정이 현재 Copilot을 지원하지 않습니다. 자세한 내용은 관리자에게 문의하세요.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++08295f3385931e35c850b945e2ae04882452c4bf0dd575f70e95aaa6ed00daa9">
+        <source xml:lang="en">In your own words, describe what you need. You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.</source>
+        <target state="translated">필요한 것이 무엇인지 자신의 말로 설명해 주세요. HTML, CSS 및 JS 언어로 Power Pages 사이트의 코드를 작성하는 데 도움을 받을 수 있습니다.</target>
       </trans-unit>
       <trans-unit id="++CODE++e992151b1efc99f93484c7d7f3076b66ab072a8af2383e96104cc597c971339c">
         <source xml:lang="en">Insert code into editor</source>
@@ -227,9 +286,23 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
         <source xml:lang="en">Let Copilot help you code</source>
         <target state="translated">코딩에 Copilot 도움받기</target>
       </trans-unit>
+      <trans-unit id="++CODE++39a6dab1c2d4a37e541c3b2672a019f937698e02ea34d22d502f60fc6dadc0ca">
+        <source xml:lang="en">Like something? Tell us more.</source>
+        <target state="translated">마음에 드는 점이 있나요? 자세히 알려주세요.</target>
+      </trans-unit>
       <trans-unit id="++CODE++9d6322c1f4d9d3f38aed8bfbe0b2bcadf66ad82c008476fa62541fa069138e94">
         <source xml:lang="en">Login</source>
         <target state="translated">로그인</target>
+      </trans-unit>
+      <trans-unit id="++CODE++1be32f89a3d1d98bb7011850e83b5753124d58f684bae063674bfdb106026e6d">
+        <source xml:lang="en">Make sure AI-generated content is accurate and appropriate before using. &lt;a href="https://go.microsoft.com/fwlink/?linkid=2240145"&gt;Learn more&lt;/a&gt; | &lt;a href="https://go.microsoft.com/fwlink/?linkid=2189520"&gt;View
+              terms&lt;/a&gt;</source>
+        <target state="translated">사용하기 전에 AI 생성 콘텐츠가 정확하고 적절한지 확인하세요. &lt;a href="https://go.microsoft.com/fwlink/?linkid=2240145"&gt;자세히 알아보기&lt;/a&gt; | &lt;a href="https://go.microsoft.com/fwlink/?linkid=2189520"&gt;보기
+              약관&lt;/a&gt;</target>
+      </trans-unit>
+      <trans-unit id="++CODE++74f89e02b8d346f38df55113eee5dcbb0c0f31471876c67a9c13a3ff7caeebf9">
+        <source xml:lang="en">Make sure AI-generated content is accurate and appropriate before using. [Learn more](https://go.microsoft.com/fwlink/?linkid=2240145) | [View terms](https://go.microsoft.com/fwlink/?linkid=2189520)</source>
+        <target state="translated">사용하기 전에 AI 생성 콘텐츠가 정확하고 적절한지 확인하세요. [자세히 알아보기](https://go.microsoft.com/fwlink/?linkid=2240145) | [약관 보기](https://go.microsoft.com/fwlink/?linkid=2189520)</target>
       </trans-unit>
       <trans-unit id="++CODE++8f2de600bf940a26c63a7ac23984a12ca8970fcf1a85947aa5566c34e23eea07">
         <source xml:lang="en">Managed</source>
@@ -242,6 +315,10 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
       <trans-unit id="++CODE++7fcd8b1c5225f7d9a771a4a02ca3e4795c3c9202cf2b3c3c879c625abb8b43e4">
         <source xml:lang="en">Microsoft wants your feeback</source>
         <target state="translated">Microsoft는 여러분의 피드백을 기다립니다.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++a253ff09c5a8678e1fd1962b2c329245e139e45f9cc6ced4e5d7ad42c4108fc0">
+        <source xml:lang="en">NEW</source>
+        <target state="translated">새로 만들기</target>
       </trans-unit>
       <trans-unit id="++CODE++9ecf722faa0944de54826f72fe9d734c59300a093bcce9cc47b507460ac80710">
         <source xml:lang="en">Name/Rename Auth Profile</source>
@@ -311,6 +388,10 @@ URL: {1}
         <source xml:lang="en">Opening preview site...</source>
         <target state="translated">프리뷰 사이트 여는 중...</target>
       </trans-unit>
+      <trans-unit id="++CODE++5cac0147c19013eb88b1fc8dc0d066b48e9f5cfcdbc9737a29d544d9bd61db55">
+        <source xml:lang="en">Operation failed. See output panel for details.</source>
+        <target state="translated">작업이 실패했습니다. 자세한 내용은 출력 패널을 참조하세요.</target>
+      </trans-unit>
       <trans-unit id="++CODE++d4dc9d620b68b70e7de4aeaa15e1d83dddb457c64a3cadb35cf1b55025ad194f">
         <source xml:lang="en">PAC Telemetry disabled</source>
         <target state="translated">PAC 원격 분석 사용 중지됨</target>
@@ -365,6 +446,10 @@ URL: {1}
         <source xml:lang="en">Preview site URL is not available</source>
         <target state="translated">프리뷰 사이트 URL을 사용할 수 없음</target>
       </trans-unit>
+      <trans-unit id="++CODE++1cc20af81855b8570858ea1ac0491000d230bcf2ac53c1c1b30243a9b58a2036">
+        <source xml:lang="en">Preview site URL is not valid</source>
+        <target state="translated">프리뷰 사이트 URL이 올바르지 않습니다</target>
+      </trans-unit>
       <trans-unit id="++CODE++7a6098eb5ff2c2401890216bb502ce6583ff7bddc99e62f8751551eab45ae1b4">
         <source xml:lang="en">Profile Kind: {0}</source>
         <note>The {0} represents the profile type (Admin vs Dataverse)</note>
@@ -394,6 +479,26 @@ URL: {1}
       <trans-unit id="++CODE++d4e969ee5e3ea8fe5e7f9195be448fd5fd5d2cb6f487929c3e495cbbe7e8f1e8">
         <source xml:lang="en">Selection is too large. Try making a shorter selection.</source>
         <target state="translated">너무 많이 선택했습니다. 더 짧은 선택을 시도하세요.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++899fb203e6c2faac8093e21a2fa8db0d4b13d16ea5492461d8b72dbcee3ecf2a">
+        <source xml:lang="en">Show Output Panel</source>
+        <target state="translated">출력 표시 패널</target>
+      </trans-unit>
+      <trans-unit id="++CODE++27dd8c8e67d15783f51c6b71ed60d5350731daa85b418f1e84c2e5828ae2d54e">
+        <source xml:lang="en">Some references might be broken. Please check diagnostics for details.</source>
+        <target state="translated">일부 참조가 깨졌을 수 있습니다. 자세한 내용은 진단을 확인하세요.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++189f24adc299ea91ceab21d8100a58d89294ed17395c4e4dbc4733c9b92543df">
+        <source xml:lang="en">Something went wrong. Donâ€™t worry, you can try again.</source>
+        <target state="translated">문제가 발생했습니다. 걱정하지 마세요, 다시 시도할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++155f816c0407310c0dab222493370773e045ee7fe04e6c9a951b07f495531264">
+        <source xml:lang="en">Submit</source>
+        <target state="translated">제출</target>
+      </trans-unit>
+      <trans-unit id="++CODE++550b4ee4e0ae69ddf9c18f9d46f59e59da633a2644633d140197d62ded3f2657">
+        <source xml:lang="en">Tell us more.</source>
+        <target state="translated">자세히 알려주세요.</target>
       </trans-unit>
       <trans-unit id="++CODE++618f7afd7be2f12bf2ebbaba5bc7e951d2ebfb11d4480647f991fbb664caa26e">
         <source xml:lang="en">The Power Pages generator is ready for use in your VS Code extension!</source>
@@ -431,13 +536,17 @@ URL: {1}
         <source xml:lang="en">To know more, see &lt;a href="https://go.microsoft.com/fwlink/?linkid=2206366"&gt;Copilot in Power Pages documentation.</source>
         <target state="translated">자세한 내용은 &lt;a href="https://go.microsoft.com/fwlink/?linkid=2206366"&gt;Power Pages 설명서에서 Copilot을 참조하세요.</target>
       </trans-unit>
-      <trans-unit id="++CODE++8d6329ce370e7f2cf3a5b77a73e0100c08550628408f2763deafe57dce769719">
-        <source xml:lang="en">Try Copilot for Power Pages</source>
-        <target state="translated">Power Pages에 Copilot 사용해 보기</target>
+      <trans-unit id="++CODE++4a7c431a6572c68bba17c3a5d858adbf5112462574953baf4d7d2fd0619807fe">
+        <source xml:lang="en">Try @powerpages with GitHub Copilot</source>
+        <target state="translated">GitHub Copilot으로 @powerpages를 시도해 보세요</target>
       </trans-unit>
       <trans-unit id="++CODE++d8b8392e2c542950ca64867168e4ef87d4ad606882d5898f826b51c6d553988f">
         <source xml:lang="en">Try again</source>
         <target state="translated">다시 시도</target>
+      </trans-unit>
+      <trans-unit id="++CODE++dabe9e12f081a01200dc7e96c5ae45a75ca20e6805dcf047778012f41ee33f31">
+        <source xml:lang="en">Try and be as specific as possible. Your feedback will be used to improve Copilot. &lt;a href="https://privacy.microsoft.com/en-US/data-privacy-notice"&gt; View privacy details &lt;/a&gt;</source>
+        <target state="translated">최대한 구체적으로 알려주세요. 피드백은 Copilot을 개선하는 데 사용됩니다. &lt;a href="https://privacy.microsoft.com/en-US/data-privacy-notice"&gt; 개인 정보 보호 세부정보 보기 &lt;/a&gt;</target>
       </trans-unit>
       <trans-unit id="++CODE++bd7b156375b48ce5797a3421150e6f5c3b71d3a30f823e957241589aea6236ca">
         <source xml:lang="en">Unable to complete the request</source>
@@ -468,9 +577,17 @@ URL: {1}
         <source xml:lang="en">Webfile(s) added successfully</source>
         <target state="translated">웹 파일 추가됨</target>
       </trans-unit>
-      <trans-unit id="++CODE++ab06f2880f954cfbc6788988300346315e8372cc05d92ce26ff6635c607e1406">
-        <source xml:lang="en">Whether itâ€™s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.</source>
-        <target state="translated">HTML, CSS, JS, Liquid 등 필요한 코드를 설명하면 AI가 대신 만들어줍니다.</target>
+      <trans-unit id="++CODE++00dc171124ab430bbbaae51ec39dda1c5e7d045f382f56b1767d9e733292731c">
+        <source xml:lang="en">Webpage names should contain only letters, numbers, hyphens, or underscores.</source>
+        <target state="translated">웹 페이지 이름은 문자, 숫자, 하이픈 또는 밑줄만 포함해야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e4bb03b399c07eeda658d87305435a58818cb5e0c3b76ae054d99564cf14ef6b">
+        <source xml:lang="en">What do you need help with?</source>
+        <target state="translated">어떤 도움이 필요하십니까?</target>
+      </trans-unit>
+      <trans-unit id="++CODE++6f65376f47dd6d9867102ea8c57d776161ac941091f2a9d52fdd4c8228575e7b">
+        <source xml:lang="en">Whether itâ€™s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you. </source>
+        <target state="translated">HTML, CSS, JS, Liquid 등 필요한 코드를 설명하면 AI가 대신 만들어줍니다. </target>
       </trans-unit>
       <trans-unit id="++CODE++47a853b9f140a6f231de8498ec559d7d882536070b83c1e45c16671fd48a0b65">
         <source xml:lang="en">Working on it...</source>
@@ -491,6 +608,10 @@ URL: {1}
       <trans-unit id="++CODE++3c65297a1fc0860c6993f5c8beb4341dd13b71d7f3957daba611adf04a6c971b">
         <source xml:lang="en">You are editing a live, public site </source>
         <target state="translated">라이브 상태인 공개 사이트를 편집하고 있습니다. </target>
+      </trans-unit>
+      <trans-unit id="++CODE++beb45bfdd4c3f6da9bb3687e4d9275790d086c1dffaec84839fa9ec9ce4e9ee2">
+        <source xml:lang="en">You can use this in &lt;a href="#" id="github-copilot-link"&gt;GitHub Copilot with @powerpages&lt;/a&gt; and leverage best of both world.</source>
+        <target state="translated">@powerpages로 &lt;a href="#" id="github-copilot-link"&gt;에서 GitHub Copilot 이 기능을 사용하고&lt;/a&gt; 두 세계에서 가장 최고를 활용할 수 있습니다.</target>
       </trans-unit>
       <trans-unit id="++CODE++3a928d0a6dd0e0c6b56eb3bf08b20e6361e876fd6b2eeca59f718cbfdc310472">
         <source xml:lang="en">dotnet sdk 6.0 or greater must be installed</source>

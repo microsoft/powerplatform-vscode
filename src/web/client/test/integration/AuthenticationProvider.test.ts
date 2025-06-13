@@ -10,11 +10,9 @@ import {
     getCommonHeaders,
 } from "../../../../common/services/AuthenticationProvider";
 import vscode from "vscode";
-import * as errorHandler from "../../common/errorHandler";
+import * as errorHandler from "../../../../common/utilities/errorHandlerUtil";
 import { oneDSLoggerWrapper } from "../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import * as copilotTelemetry from "../../../../common/copilot/telemetry/copilotTelemetry";
-import { WebExtensionTelemetry } from "../../telemetry/webExtensionTelemetry";
-import { vscodeExtAppInsightsResourceProvider } from "../../../../common/telemetry-generated/telemetryConfiguration";
 import { VSCODE_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED } from "../../../../common/services/TelemetryConstants";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -34,15 +32,6 @@ describe("Authentication Provider", () => {
         // Restore the default sandbox here
         sinon.restore();
     });
-
-    const webExtensionTelemetry = new WebExtensionTelemetry();
-    const appInsightsResource =
-        vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(
-            undefined
-        );
-    webExtensionTelemetry.setTelemetryReporter("", "", appInsightsResource);
-
-    const telemetry = webExtensionTelemetry.getTelemetryReporter();
 
     it("getHeader", () => {
         const accessToken = "f068ee9f-a010-47b9-b1e1-7e6353730e7d";
@@ -64,7 +53,7 @@ describe("Authentication Provider", () => {
                 scopes: [],
             });
 
-        const result = await dataverseAuthentication(telemetry, dataverseOrgURL);
+        const result = await dataverseAuthentication(dataverseOrgURL);
         sinon.assert.calledOnce(_mockgetSession);
         expect(result.accessToken).eq("f068ee9f-a010-47b9-b1e1-7e6353730e7d");
         expect(result.userId).empty;
@@ -92,14 +81,14 @@ describe("Authentication Provider", () => {
         );
 
         //Act
-        await dataverseAuthentication(telemetry, dataverseOrgURL);
+        await dataverseAuthentication(dataverseOrgURL);
 
         sinon.assert.calledWith(
             showErrorDialog,
             "Authorization Failed. Please run again to authorize it"
         );
 
-        sinon.assert.calledOnce(sendTelemetryEvent);
+        sinon.assert.calledTwice(sendTelemetryEvent);
         sinon.assert.calledOnce(showErrorDialog);
         sinon.assert.calledOnce(_mockgetSession);
     });
@@ -118,13 +107,13 @@ describe("Authentication Provider", () => {
         );
 
         // Act
-        const result = await dataverseAuthentication(telemetry, dataverseOrgURL);
+        const result = await dataverseAuthentication(dataverseOrgURL);
 
         //Assert
         sinon.assert.calledOnce(sendTelemetryEvent);
         sinon.assert.calledWith(
             sendTelemetryEvent,
-            telemetry, {
+            {
             eventName: VSCODE_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED,
             errorMsg: errorMessage
         }

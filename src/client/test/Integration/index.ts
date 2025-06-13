@@ -25,7 +25,7 @@ async function addTests(): Promise<void> {
     console.log("testsRoot", testsRoot);
 
     return new Promise((resolve, reject) => {
-        glob("**/integration/**.test.js", { cwd: testsRoot }, (err, files) => {
+        glob("**/integration/**/**.test.js", { cwd: testsRoot }, (err, files) => {
             if (err) {
                 return reject(err);
             }

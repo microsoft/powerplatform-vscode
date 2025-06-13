@@ -12,10 +12,10 @@ import { IPcfLaunchConfig } from "../configuration/types";
 import { ControlLocator } from "../controlLocation";
 
 import { BrowserLocator } from "./BrowserLocator";
-import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { ErrorReporter } from "../../common/ErrorReporter";
 import { BrowserArgsBuilder } from "./BrowserArgsBuilder";
 import { Disposable } from "vscode";
+import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
 /**
  * Callback that is invoked by the {@link BrowserManager browser manager} when the browser is closed.
@@ -83,9 +83,8 @@ export class BrowserManager implements Disposable {
         private readonly controlLocator: ControlLocator,
         private readonly browserLocator: BrowserLocator,
         private readonly debugConfig: IPcfLaunchConfig,
-        private readonly logger: ITelemetry,
         private readonly puppeteerLaunchWrapper = puppeteer.launch
-    ) {}
+    ) { }
 
     /**
      * Registers the callback that is invoked when the browser is closed.
@@ -112,7 +111,7 @@ export class BrowserManager implements Disposable {
             debugConfig: JSON.stringify(this.debugConfig),
             browserFlavor: ConfigurationManager.getBrowserFlavor(),
         };
-        this.logger.sendTelemetryEvent("BrowserManager.launch", telemetryProps);
+        oneDSLoggerWrapper.getLogger().traceInfo("BrowserManager.launch", telemetryProps);
 
         const browser = await this.getBrowser();
         const pages = await browser.pages();
@@ -122,7 +121,6 @@ export class BrowserManager implements Disposable {
                 await this.registerPage(pages[0]);
             } catch (error) {
                 await ErrorReporter.report(
-                    this.logger,
                     "BrowserManager.launch.registerPage",
                     error,
                     "Could not register page",
@@ -135,7 +133,6 @@ export class BrowserManager implements Disposable {
             const message =
                 "Could not start browser. Please try again. Browser instance does not have any active pages.";
             await ErrorReporter.report(
-                this.logger,
                 "BrowserManager.launch.noPages",
                 undefined,
                 message,
@@ -172,7 +169,7 @@ export class BrowserManager implements Disposable {
                 this.browserInstance = undefined;
             });
             const version = await this.browserInstance.version();
-            this.logger.sendTelemetryEvent("BrowserManager.getBrowser", {
+            oneDSLoggerWrapper.getLogger().traceInfo("BrowserManager.getBrowser", {
                 port: `${port}`,
                 processId: this.browserInstancePID,
                 wsEndpoint: this.browserInstance.wsEndpoint() || "unknown",
@@ -182,7 +179,6 @@ export class BrowserManager implements Disposable {
             return this.browserInstance;
         } catch (error) {
             await ErrorReporter.report(
-                this.logger,
                 "BrowserManager.getBrowser",
                 error,
                 "Could not launch browser Please check your settings and try again."
@@ -246,7 +242,6 @@ export class BrowserManager implements Disposable {
             await this.controlLocator?.navigateToControl(page);
         } catch (error) {
             await ErrorReporter.report(
-                this.logger,
                 "BrowserManager.registerPage",
                 error,
                 "Failed to start browser session."

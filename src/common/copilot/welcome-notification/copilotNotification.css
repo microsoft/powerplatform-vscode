@@ -73,6 +73,11 @@ button {
 
 }
 
+.walkthrough-content:focus {
+    outline: 2px solid #005a9e; /* High contrast color for focus indicator */
+    outline-offset: 2px;
+}
+
 .checkbox-container {
     display: flex;
     align-items: center;
@@ -83,6 +88,11 @@ button {
 
 #arrow-icon {
     margin-left: 6x;
+}
+
+.checkbox-container:focus-within {
+    outline: 2px solid var(--vscode-textLink-activeForeground);
+    outline-offset: 2px;
 }
 
 input[type="checkbox"] {

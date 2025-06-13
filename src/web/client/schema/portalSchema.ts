@@ -123,7 +123,7 @@ export const portal_schema_V1 = {
                 _fetchQueryParameters:
                     "?$filter=adx_contentsnippetid eq {entityId}&$select=adx_name,adx_value,_adx_contentsnippetlanguageid_value",
                 _multiFileFetchQueryParameters:
-                    "?$filter=_adx_websiteid_value eq {websiteId} and _adx_contentsnippetlanguageid_value ne null &$select=adx_name,adx_value,adx_contentsnippetid,_adx_contentsnippetlanguageid_value&$count=true",
+                    "?$filter=_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_value,adx_contentsnippetid,_adx_contentsnippetlanguageid_value&$count=true",
                 _attributes: "adx_value",
                 _attributesExtension: new Map([["adx_value", "html"]]),
             },
@@ -334,7 +334,7 @@ export const portal_schema_V2 = {
                 _fetchQueryParameters:
                     "?$filter=powerpagecomponentid eq {entityId}&$select=name,content",
                 _multiFileFetchQueryParameters:
-                    "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 7 and _powerpagesitelanguageid_value ne null &$select=name,content,_powerpagesitelanguageid_value&$count=true",
+                    "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 7 &$select=name,content,_powerpagesitelanguageid_value&$count=true",
                 _attributes: "content.value",
                 _attributesExtension: new Map([["content.value", "html"]]),
             },

@@ -8,7 +8,6 @@ import { Disposable } from "vscode";
 
 import { IPcfLaunchConfig } from "../configuration/types/IPcfLaunchConfig";
 import { sleep } from "../utils";
-import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { ErrorReporter } from "../../common/ErrorReporter";
 
 /**
@@ -50,7 +49,6 @@ export class ControlLocator implements Disposable {
      */
     constructor(
         private readonly debugConfig: IPcfLaunchConfig,
-        private readonly logger: ITelemetry,
         private readonly controlLocatorRetryTimeout: number = DEFAULT_CONTROL_LOCATOR_RETRY_TIMEOUT,
         private readonly controlLocatorRetries: number = DEFAULT_CONTROL_LOCATOR_RETRIES
     ) {
@@ -107,7 +105,6 @@ export class ControlLocator implements Disposable {
             await page.goto(this.pageUrl);
         } catch (error) {
             ErrorReporter.report(
-                this.logger,
                 "ControlLocator.navigateToPage.goto",
                 error,
                 "Could not navigate to form with url " + this.pageUrl,
@@ -158,7 +155,6 @@ export class ControlLocator implements Disposable {
                 return await this.navigateToTab(page, retryCount - 1);
             } else {
                 await ErrorReporter.report(
-                    this.logger,
                     "ControlLocation.navigateToTab.navigation",
                     error,
                     "Could not navigate to tab.",

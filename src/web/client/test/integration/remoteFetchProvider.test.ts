@@ -16,7 +16,7 @@ import * as urlBuilderUtil from "../../utilities/urlBuilderUtil";
 import * as commonUtil from "../../utilities/commonUtil";
 import { expect } from "chai";
 import * as authenticationProvider from "../../../../common/services/AuthenticationProvider";
-import { telemetryEventNames } from "../../telemetry/constants";
+import { webExtensionTelemetryEventNames } from "../../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 
 describe("remoteFetchProvider", () => {
     afterEach(() => {
@@ -485,7 +485,7 @@ describe("remoteFetchProvider", () => {
 
         //Assert
         assert.calledOnceWithMatch(sendErrorTelemetry,
-            telemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED,
             "createContentFiles");
         assert.calledOnce(_mockFetch);
     });
@@ -572,20 +572,20 @@ describe("remoteFetchProvider", () => {
         const sendErrorTelemetryCalls = sendErrorTelemetry.getCalls();
 
         assert.callCount(sendErrorTelemetry, 5);
-        assert.calledWithMatch(sendErrorTelemetryCalls[0], telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_ID_TO_LANGUAGE_SYSTEM_ERROR,
+        assert.calledWithMatch(sendErrorTelemetryCalls[0], webExtensionTelemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_ID_TO_LANGUAGE_SYSTEM_ERROR,
             "populateWebsiteIdToLanguageMap",
             "Only absolute URLs are supported");
-        assert.calledWithMatch(sendErrorTelemetryCalls[1], telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_LANGUAGE_ID_TO_PORTALLANGUAGE_SYSTEM_ERROR,
+        assert.calledWithMatch(sendErrorTelemetryCalls[1], webExtensionTelemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_LANGUAGE_ID_TO_PORTALLANGUAGE_SYSTEM_ERROR,
             "populateWebsiteLanguageIdToPortalLanguageMap",
             "Only absolute URLs are supported");
-        assert.calledWithMatch(sendErrorTelemetryCalls[2], telemetryEventNames.WEB_EXTENSION_POPULATE_LANGUAGE_ID_TO_CODE_SYSTEM_ERROR,
+        assert.calledWithMatch(sendErrorTelemetryCalls[2], webExtensionTelemetryEventNames.WEB_EXTENSION_POPULATE_LANGUAGE_ID_TO_CODE_SYSTEM_ERROR,
             "populateLanguageIdToCode",
             "Only absolute URLs are supported");
-        assert.calledWithMatch(sendErrorTelemetryCalls[3], telemetryEventNames.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SYSTEM_ERROR,
+        assert.calledWithMatch(sendErrorTelemetryCalls[3], webExtensionTelemetryEventNames.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SYSTEM_ERROR,
             "populateSharedWorkspace",
             "Web extension populate shared workspace system error");
         assert.calledWithMatch(sendErrorTelemetryCalls[4],
-            telemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_SYSTEM_ERROR,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_SYSTEM_ERROR,
             "fetchFromDataverseAndCreateFiles",
             `{"ok":false,"statusText":"statusText"}`);
         assert.calledOnce(_mockFetch);

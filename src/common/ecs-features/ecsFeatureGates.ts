@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { PowerPagesClientName } from './constants';
+import { COPILOT_GOVERNANCE_SETTING_NAME, PowerPagesClientName } from './constants';
 import { getFeatureConfigs } from './ecsFeatureUtil';
 
 export const {
@@ -36,5 +36,46 @@ export const {
         "capiSupportedProDevCopilotGeoList": "us,au,uk,eu,in",
         "unsupportedProDevCopilotGeoList": "ca",
         "capiSupportedProDevCopilotGeoWithCrossGeoDataFlow": "eu,se,ch,fr,de,no"
+    },
+});
+
+export const {
+    feature: EnableProdevCopilotGovernanceCheck
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable Copilot Governance Check for Pro Dev Copilot',
+    fallback: {
+        enableProdevCopilotGovernanceCheck: false,
+        copilotGovernanceSetting: COPILOT_GOVERNANCE_SETTING_NAME
+    },
+});
+
+export const {
+    feature: EnablePowerPagesGitHubCopilot
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable Power Pages GitHub Copilot',
+    fallback: {
+        enablePowerpagesInGithubCopilot: false,
+    },
+});
+
+export const {
+    feature: EnableSiteRuntimePreview
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable Site Runtime Preview in VS Code Desktop',
+    fallback: {
+        enableSiteRuntimePreview: false,
+    },
+});
+
+export const {
+    feature: EnableActionsHub
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable Actions Hub Panel in VS Code Desktop',
+    fallback: {
+        enableActionsHub: true,
     },
 });

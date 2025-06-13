@@ -43,9 +43,21 @@ jobs:
       env:
         AZ_DevOps_Read_PAT: ${{ secrets.AZ_DevOps_Read_PAT }}
 
-    - name: Run integration tests
+    - name: Run Debugger integration tests
       uses: coactions/setup-xvfb@v1
       with:
         run: |
          npm run test-integration
+
+    - name: Run Web integration tests
+      uses: coactions/setup-xvfb@v1
+      with:
+        run: |
          npm run test-web-integration
+
+    - name: Run Desktop integration tests
+      uses: coactions/setup-xvfb@v1
+      if: matrix.os == 'windows-latest'
+      with:
+        run: |
+         npm run test-desktop-int

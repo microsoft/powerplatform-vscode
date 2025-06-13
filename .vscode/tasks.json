@@ -14,6 +14,34 @@
       "group": "build",
       "problemMatcher": [],
       "label": "gulp: compileWeb"
+    },
+    {
+      "type": "npm",
+      "script": "test-desktop-int",
+      "group": "test",
+      "problemMatcher": [],
+      "label": "Run Integration Tests: VS Code Deskop"
+    },
+    {
+      "type": "npm",
+      "script": "test-web-integration",
+      "group": "test",
+      "problemMatcher": [],
+      "label": "Run Integration Tests: VS Code Web"
+    },
+    {
+      "type": "npm",
+      "script": "test",
+      "group": "test",
+      "problemMatcher": [],
+      "label": "Run Unit Tests"
+    },
+    {
+      "type": "npm",
+      "script": "coverage",
+      "group": "test",
+      "problemMatcher": [],
+      "label": "Run Code Coverage"
     }
   ]
 }

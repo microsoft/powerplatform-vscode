@@ -3,7 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { NoopTelemetryInstance } from "../../../client/telemetry/NoopTelemetry";
 import { BundleLoader } from "../../BundleLoader";
 import { expectThrowsAsync, getWorkspaceFolder } from "../helpers";
 import { TextDocument } from "vscode";
@@ -39,7 +38,6 @@ describe("BundleLoader", () => {
         const instance = new BundleLoader(
             mockFilePath,
             getWorkspaceFolder(),
-            NoopTelemetryInstance,
             getOpenTextDocumentMock(true)
         );
 
@@ -52,15 +50,10 @@ describe("BundleLoader", () => {
         const instance = new BundleLoader(
             mockFilePath,
             getWorkspaceFolder(),
-            NoopTelemetryInstance,
             getOpenTextDocumentMock(false)
         );
         await instance.loadFileContents();
-        sinon.assert.calledWith(
-            reporterSpy,
-            sinon.match.any,
-            "RequestInterceptor.warnIfNoSourceMap.error"
-        );
+        expect(reporterSpy.calledWith("RequestInterceptor.warnIfNoSourceMap.error", undefined, `Could not find inlined source map in 'mockFilePath'. Make sure you enable source maps in webpack with 'devtool: "inline-source-map"'. For local debugging, inlined source maps are required.`));
         reporterSpy.restore();
     });
 
@@ -68,7 +61,6 @@ describe("BundleLoader", () => {
         const instance = new BundleLoader(
             mockFilePath,
             getWorkspaceFolder(),
-            NoopTelemetryInstance,
             getOpenTextDocumentMock(false, true)
         );
 

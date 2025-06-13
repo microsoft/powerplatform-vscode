@@ -5,7 +5,6 @@
 
 import { EventEmitter, HTTPRequest, Page } from "puppeteer-core";
 import { Disposable } from "vscode";
-import { ITelemetry } from "../client/telemetry/ITelemetry";
 import { ErrorReporter } from "../common/ErrorReporter";
 import { BundleLoader } from "./BundleLoader";
 
@@ -30,7 +29,8 @@ export class RequestInterceptor implements Disposable {
     /**
      * Event emitter for {@link onRequestHandler} used to unregister the event.
      */
-    private requestEvent?: EventEmitter;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private requestEvent?: EventEmitter<any>;
 
     /**
      * Contents of the pcf control bundle.
@@ -43,9 +43,8 @@ export class RequestInterceptor implements Disposable {
      * @param logger The telemetry reporter to use for telemetry events.
      */
     constructor(
-        private readonly bundleLoader: BundleLoader,
-        private readonly logger: ITelemetry
-    ) {}
+        private readonly bundleLoader: BundleLoader
+    ) { }
 
     /**
      * Starts intercepting requests to the specified file.
@@ -119,7 +118,6 @@ export class RequestInterceptor implements Disposable {
             });
         } catch (error) {
             void ErrorReporter.report(
-                this.logger,
                 "RequestInterceptor.onRequest.respond.error",
                 error,
                 "Could not respond to request"
@@ -144,7 +142,6 @@ export class RequestInterceptor implements Disposable {
             await request.continue();
         } catch (error) {
             void ErrorReporter.report(
-                this.logger,
                 "RequestInterceptor.respondWithOriginalResource.error",
                 error,
                 "Could not respond to non-bundle request",

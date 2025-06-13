@@ -17,13 +17,12 @@ import { QuickPickItem } from "vscode";
 import { MultiStepInput } from "../../../common/utilities/MultiStepInput";
 import path from "path";
 import { statSync } from "fs";
-import { ITelemetry } from "../../telemetry/ITelemetry";
 import {
     TableFolder,
     Tables,
     YoSubGenerator,
 } from "./CreateOperationConstants";
-import { sendTelemetryEvent, UserFileCreateEvent } from "../telemetry";
+import { sendTelemetryEvent, UserFileCreateEvent } from "../../../common/OneDSLoggerTelemetry/telemetry/telemetry";
 
 interface IPagetemplateInputState {
     title: string;
@@ -36,8 +35,7 @@ interface IPagetemplateInputState {
 export const createPageTemplate = async (
     context: vscode.ExtensionContext,
     selectedWorkspaceFolder: string | undefined,
-    yoGenPath: string | null,
-    telemetry: ITelemetry
+    yoGenPath: string | null
 ): Promise<void> => {
     try {
         if (!selectedWorkspaceFolder) {
@@ -79,18 +77,17 @@ export const createPageTemplate = async (
             Tables.PAGETEMPLATE,
             command,
             portalDir,
-            watcher,
-            telemetry
+            watcher
         );
     } catch (error: any) {
-    sendTelemetryEvent(telemetry, {
-        methodName:createPageTemplate.name,
-        eventName: UserFileCreateEvent,
-        fileEntityType: Tables.PAGETEMPLATE,
-        exception: error as Error,
-    });
-    throw new Error(error);
-}
+        sendTelemetryEvent({
+            methodName: createPageTemplate.name,
+            eventName: UserFileCreateEvent,
+            fileEntityType: Tables.PAGETEMPLATE,
+            exception: error as Error,
+        });
+        throw new Error(error);
+    }
 };
 
 /*

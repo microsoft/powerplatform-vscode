@@ -14,57 +14,54 @@ import {
 import path from "path";
 import { statSync } from "fs";
 import { TableFolder, Tables, YoSubGenerator } from "./CreateOperationConstants";
-import { ITelemetry } from "../../telemetry/ITelemetry";
-import { sendTelemetryEvent, UserFileCreateEvent } from "../telemetry";
+import { sendTelemetryEvent, UserFileCreateEvent } from "../../../common/OneDSLoggerTelemetry/telemetry/telemetry";
 
 export const createWebTemplate = (
     context: vscode.ExtensionContext,
     selectedWorkspaceFolder: string | undefined,
-    yoPath: string | null,
-    telemetry: ITelemetry
+    yoPath: string | null
 ) => {
     try {
-    if (!selectedWorkspaceFolder) {
-        return;
-    }
-    vscode.window
-        .showInputBox({
-            placeHolder: vscode.l10n.t("Enter the name of the web template"),
-            validateInput: (name) =>
-                validateTemplateName(name, selectedWorkspaceFolder),
-        })
-        .then(async (webTemplateName) => {
-            if (!isNullOrEmpty(webTemplateName) && webTemplateName) {
+        if (!selectedWorkspaceFolder) {
+            return;
+        }
+        vscode.window
+            .showInputBox({
+                placeHolder: vscode.l10n.t("Enter the name of the web template"),
+                validateInput: (name) =>
+                    validateTemplateName(name, selectedWorkspaceFolder),
+            })
+            .then(async (webTemplateName) => {
+                if (!isNullOrEmpty(webTemplateName) && webTemplateName) {
 
-                const webTemplateFile = formatFileName(webTemplateName);
-                const webTemplateFolder = formatFolderName(webTemplateName);
+                    const webTemplateFile = formatFileName(webTemplateName);
+                    const webTemplateFolder = formatFolderName(webTemplateName);
 
-                const watcherPattern = path.join(
-                    TableFolder.WEBTEMPLATE_FOLDER,
-                    webTemplateFolder,
-                    `${webTemplateFile}.webtemplate.source.html`
-                )
+                    const watcherPattern = path.join(
+                        TableFolder.WEBTEMPLATE_FOLDER,
+                        webTemplateFolder,
+                        `${webTemplateFile}.webtemplate.source.html`
+                    )
 
-                const watcher = createFileWatcher(
-                    context,
-                    selectedWorkspaceFolder,
-                    watcherPattern
-                );
+                    const watcher = createFileWatcher(
+                        context,
+                        selectedWorkspaceFolder,
+                        watcherPattern
+                    );
 
-                const command = `"${yoPath}" ${YoSubGenerator.WEBTEMPLATE} "${webTemplateName}"`;
+                    const command = `"${yoPath}" ${YoSubGenerator.WEBTEMPLATE} "${webTemplateName}"`;
 
-                await createRecord (
-                    Tables.WEBTEMPLATE,
-                    command,
-                    selectedWorkspaceFolder,
-                    watcher,
-                    telemetry
-                );
-            }
-        });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    await createRecord(
+                        Tables.WEBTEMPLATE,
+                        command,
+                        selectedWorkspaceFolder,
+                        watcher
+                    );
+                }
+            });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-        sendTelemetryEvent(telemetry, { methodName:createWebTemplate.name,eventName: UserFileCreateEvent, fileEntityType:Tables.WEBTEMPLATE, exception: error as Error })
+        sendTelemetryEvent({ methodName: createWebTemplate.name, eventName: UserFileCreateEvent, fileEntityType: Tables.WEBTEMPLATE, exception: error as Error })
         throw new Error(error);
     }
 };
@@ -90,7 +87,7 @@ function validateTemplateName(
             if (stat) {
                 return vscode.l10n.t("A webtemplate with the same name already exists. Please enter a different name.");
             }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             if (error.code === "ENOENT") {
                 return undefined;

@@ -3,30 +3,18 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import TelemetryReporter from "@vscode/extension-telemetry";
-import { AppInsightsResource } from "../../../common/pp-tooling-telemetry-node/AppInsightsResource";
 import { queryParameters } from "../common/constants";
 import { sanitizeURL } from "../utilities/urlBuilderUtil";
-import { telemetryEventNames } from "./constants";
-import { IPortalWebExtensionInitQueryParametersTelemetryData, IWebExtensionAPITelemetryData, IWebExtensionExceptionTelemetryData, IWebExtensionInitPathTelemetryData, IWebExtensionPerfTelemetryData } from "./webExtensionTelemetryInterface";
-import { isNullOrUndefined } from '../utilities/commonUtil';
+import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
+import { IPortalWebExtensionInitQueryParametersTelemetryData, IWebExtensionAPITelemetryData, IWebExtensionExceptionTelemetryData, IWebExtensionInitPathTelemetryData, IWebExtensionPerfTelemetryData } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryInterface";
+import { getEnvironmentIdFromUrl, isNullOrUndefined } from '../utilities/commonUtil';
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
 export class WebExtensionTelemetry {
-    private _telemetry: TelemetryReporter | undefined;
-
-    setTelemetryReporter(extensionId: string, extensionVersion: string, appInsightsResource: AppInsightsResource) {
-        this._telemetry = new TelemetryReporter(extensionId, extensionVersion, appInsightsResource.instrumentationKey);
-    }
-
-    getTelemetryReporter() {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        return this._telemetry!;
-    }
 
     public sendExtensionInitPathParametersTelemetry(appName: string | undefined, entity: string | undefined, entityId: string | undefined) {
         const telemetryData: IWebExtensionInitPathTelemetryData = {
-            eventName: telemetryEventNames.WEB_EXTENSION_INIT_PATH_PARAMETERS,
+            eventName: webExtensionTelemetryEventNames.WEB_EXTENSION_INIT_PATH_PARAMETERS,
             properties: {
                 appName: this.getPathParameterValue(appName),
             }
@@ -34,16 +22,15 @@ export class WebExtensionTelemetry {
 
         if (entity && entityId) {
             telemetryData.properties.entity = this.getPathParameterValue(entity),
-            telemetryData.properties.entityId = this.getPathParameterValue(entityId)
+                telemetryData.properties.entityId = this.getPathParameterValue(entityId)
         }
 
-        this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
         oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryData.properties);
     }
 
     public sendExtensionInitQueryParametersTelemetry(queryParamsMap: Map<string, string>) {
         const telemetryData: IPortalWebExtensionInitQueryParametersTelemetryData = {
-            eventName: telemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS,
+            eventName: webExtensionTelemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS,
             properties: {
                 orgId: queryParamsMap.get(queryParameters.ORG_ID),
                 tenantId: queryParamsMap.get(queryParameters.TENANT_ID),
@@ -56,7 +43,7 @@ export class WebExtensionTelemetry {
                 siteVisibility: queryParamsMap.get(queryParameters.SITE_VISIBILITY),
                 region: queryParamsMap.get(queryParameters.REGION),
                 geo: queryParamsMap.get(queryParameters.GEO),
-                envId: queryParamsMap.get(queryParameters.ENV_ID),
+                envId: getEnvironmentIdFromUrl(),
                 referrerSource: queryParamsMap.get(queryParameters.REFERRER_SOURCE),
                 sku: queryParamsMap.get(queryParameters.SKU)
             }
@@ -67,7 +54,6 @@ export class WebExtensionTelemetry {
             telemetryData.properties.entityId = queryParamsMap.get(queryParameters.ENTITY_ID);
         }
 
-        this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
         oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryData.properties);
     }
 
@@ -85,18 +71,15 @@ export class WebExtensionTelemetry {
         }
         if (errorMessage || error) {
             const error: Error = new Error(errorMessage);
-            this._telemetry?.sendTelemetryException(error, telemetryData.properties);
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             oneDSLoggerWrapper.getLogger().traceError(eventName, errorMessage!, error, telemetryData.properties);
         } else {
-            this._telemetry?.sendTelemetryException(new Error(), telemetryData.properties);
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             oneDSLoggerWrapper.getLogger().traceError(eventName, errorMessage!, new Error(), telemetryData.properties);
         }
     }
 
     public sendInfoTelemetry(eventName: string, properties?: Record<string, string>) {
-        this._telemetry?.sendTelemetryEvent(eventName, properties);
         oneDSLoggerWrapper.getLogger().traceInfo(eventName, properties);
     }
 
@@ -112,7 +95,7 @@ export class WebExtensionTelemetry {
         eventName?: string,
         status?: string) {
 
-        eventName = eventName ?? telemetryEventNames.WEB_EXTENSION_API_REQUEST;
+        eventName = eventName ?? webExtensionTelemetryEventNames.WEB_EXTENSION_API_REQUEST;
 
         const telemetryData: IWebExtensionAPITelemetryData = {
             eventName: eventName,
@@ -131,11 +114,9 @@ export class WebExtensionTelemetry {
         }
         if (errorMessage) {
             const error: Error = new Error(errorMessage);
-            this._telemetry?.sendTelemetryException(error, { ...telemetryData.properties, eventName: eventName }, telemetryData.measurements);
             oneDSLoggerWrapper.getLogger().traceError(eventName, errorMessage, error, telemetryData.properties, telemetryData.measurements);
         } else {
-            this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties, telemetryData.measurements);
-            oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryData.properties,  telemetryData.measurements);
+            oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryData.properties, telemetryData.measurements);
         }
     }
 
@@ -158,7 +139,7 @@ export class WebExtensionTelemetry {
             true,
             duration,
             undefined,
-            !isNullOrUndefined(eventName) ? eventName : telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS,
+            !isNullOrUndefined(eventName) ? eventName : webExtensionTelemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS,
             status);
     }
 
@@ -182,7 +163,7 @@ export class WebExtensionTelemetry {
             false,
             duration,
             errorMessage,
-            !isNullOrUndefined(eventName) ? eventName : telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
+            !isNullOrUndefined(eventName) ? eventName : webExtensionTelemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
             status);
     }
 
@@ -193,7 +174,6 @@ export class WebExtensionTelemetry {
                 durationInMillis: (duration) ? duration : 0
             }
         }
-        this._telemetry?.sendTelemetryEvent(telemetryData.eventName, undefined, telemetryData.measurements);
         oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, undefined, telemetryData.measurements);
     }
 

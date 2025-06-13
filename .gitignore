@@ -22,3 +22,6 @@ telemetry-generated
 # tasks copy them to the correct location, but leave the originals where
 # we do not want them checked in
 l10n/package.nls.*.json
+
+# Code Coverage Output
+.nyc_output/

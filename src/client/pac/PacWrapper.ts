@@ -9,14 +9,12 @@ import * as readline from "readline";
 import * as fs from "fs-extra";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { BlockingQueue } from "../../common/utilities/BlockingQueue";
-import { ITelemetry } from "../telemetry/ITelemetry";
-import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput, PacOrgListOutput, PacOrgWhoOutput } from "./PacTypes";
+import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput, PacOrgListOutput, PacOrgWhoOutput, PacAuthWhoOutput } from "./PacTypes";
 import { v4 } from "uuid";
 import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
 export interface IPacWrapperContext {
     readonly globalStorageLocalPath: string;
-    readonly telemetry: ITelemetry;
     readonly automationAgent: string;
     IsTelemetryEnabled(): boolean;
     GetCloudSetting(): string;
@@ -28,10 +26,10 @@ export interface IPacInterop {
 }
 
 export class PacInterop implements IPacInterop {
-    private _proc : ChildProcessWithoutNullStreams | undefined;
+    private _proc: ChildProcessWithoutNullStreams | undefined;
     private outputQueue = new BlockingQueue<string>();
-    private tempWorkingDirectory : string;
-    private pacExecutablePath : string;
+    private tempWorkingDirectory: string;
+    private pacExecutablePath: string;
 
     public constructor(private readonly context: IPacWrapperContext, cliPath: string) {
         // Set the Working Directory to a random temp folder, as we do not want
@@ -54,12 +52,11 @@ export class PacInterop implements IPacInterop {
         }
     }
 
-    private async proc() : Promise<ChildProcessWithoutNullStreams> {
+    private async proc(): Promise<ChildProcessWithoutNullStreams> {
         if (!(this._proc)) {
-            this.context.telemetry.sendTelemetryEvent('InternalPacProcessStarting');
             oneDSLoggerWrapper.getLogger().traceInfo('InternalPacProcessStarting');
 
-            const env : NodeJS.ProcessEnv = {...process.env, 'PP_TOOLS_AUTOMATION_AGENT': this.context.automationAgent };
+            const env: NodeJS.ProcessEnv = { ...process.env, 'PP_TOOLS_AUTOMATION_AGENT': this.context.automationAgent };
 
             // If the VS Code telemetry is disabled, disable telemetry on the PAC backing the Extension's UI
             if (!this.context.IsTelemetryEnabled()) {
@@ -75,14 +72,13 @@ export class PacInterop implements IPacInterop {
             this._proc = spawn(this.pacExecutablePath, ["--non-interactive"], {
                 cwd: this.tempWorkingDirectory,
                 env: env
-                });
+            });
 
             const lineReader = readline.createInterface({ input: this._proc.stdout });
             lineReader.on('line', (line: string) => { this.outputQueue.enqueue(line); });
 
             // Grab the first output, which will be the PAC Version info
             await this.outputQueue.dequeue();
-            this.context.telemetry.sendTelemetryEvent('InternalPacProcessStarted');
             oneDSLoggerWrapper.getLogger().traceInfo('InternalPacProcessStarted');
         }
 
@@ -97,7 +93,7 @@ export class PacInterop implements IPacInterop {
         return result;
     }
 
-    public async exit() : Promise<void> {
+    public async exit(): Promise<void> {
         (await this.proc()).stdin.write(JSON.stringify(new PacArguments("exit")));
     }
 }
@@ -108,7 +104,7 @@ export class PacWrapper {
 
     private async executeCommandAndParseResults<T>(args: PacArguments): Promise<T> {
         const result = await this.pacInterop.executeCommand(args);
-        const parsed : T = JSON.parse(result);
+        const parsed: T = JSON.parse(result);
         return parsed;
     }
 
@@ -130,15 +126,15 @@ export class PacWrapper {
             new PacArguments("auth", "create", "--url", orgUrl));
     }
 
-    public async authSelectByIndex(index: number): Promise<PacOutput>{
+    public async authSelectByIndex(index: number): Promise<PacOutput> {
         return this.executeCommandAndParseResults<PacOutput>(new PacArguments("auth", "select", "--index", index.toString()))
     }
 
-    public async authDeleteByIndex(index: number): Promise<PacOutput>{
+    public async authDeleteByIndex(index: number): Promise<PacOutput> {
         return this.executeCommandAndParseResults<PacOutput>(new PacArguments("auth", "delete", "--index", index.toString()))
     }
 
-    public async authNameByIndex(index: number, name: string): Promise<PacOutput>{
+    public async authNameByIndex(index: number, name: string): Promise<PacOutput> {
         return this.executeCommandAndParseResults<PacOutput>(new PacArguments("auth", "name", "--index", index.toString(), "--name", name))
     }
 
@@ -164,11 +160,15 @@ export class PacWrapper {
         return this.executeCommandAndParseResults<PacOrgListOutput>(new PacArguments("org", "list"));
     }
 
-    public async activeOrg(): Promise <PacOrgWhoOutput> {
+    public async activeOrg(): Promise<PacOrgWhoOutput> {
         return this.executeCommandAndParseResults<PacOrgWhoOutput>(new PacArguments("org", "who"));
     }
 
-    public async pcfInit(outputDirectory : string): Promise<PacOutput> {
+    public async activeAuth(): Promise<PacAuthWhoOutput> {
+        return this.executeCommandAndParseResults<PacAuthWhoOutput>(new PacArguments("auth", "who"));
+    }
+
+    public async pcfInit(outputDirectory: string): Promise<PacOutput> {
         return this.executeCommandAndParseResults<PacOutput>(new PacArguments("pcf", "init", "--outputDirectory", outputDirectory));
     }
 
@@ -180,15 +180,19 @@ export class PacWrapper {
         return this.executeCommandAndParseResults<PacOutput>(new PacArguments("telemetry", "disable"));
     }
 
-    public exit() : void {
+    public async pendingChanges(websitePath: string, dataModelVersion: 1 | 2): Promise<PacOutput> {
+        return this.executeCommandAndParseResults<PacOutput>(new PacArguments("pages", "pending-changes", "-p", websitePath, "-mv", dataModelVersion.toString()));
+    }
+
+    public exit(): void {
         this.pacInterop.exit();
     }
 }
 
 export class PacArguments {
-    public Arguments : string[];
+    public Arguments: string[];
 
-    constructor(...args : string[]) {
+    constructor(...args: string[]) {
         this.Arguments = args;
     }
 }

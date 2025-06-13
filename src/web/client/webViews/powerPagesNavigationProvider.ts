@@ -6,14 +6,15 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import WebExtensionContext from "../WebExtensionContext";
-import { httpMethod, queryParameters } from '../common/constants';
-import { getBackToStudioURL, isStringUndefinedOrEmpty } from '../utilities/commonUtil';
-import { telemetryEventNames } from '../telemetry/constants';
+import { httpMethod } from '../common/constants';
+import { getBackToStudioURL, getValidWebsitePreviewUrl } from '../utilities/commonUtil';
+import { webExtensionTelemetryEventNames } from '../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents';
 
 export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<PowerPagesNode> {
 
     private _onDidChangeTreeData: vscode.EventEmitter<PowerPagesNode | undefined | void> = new vscode.EventEmitter<PowerPagesNode | undefined | void>();
     readonly onDidChangeTreeData: vscode.Event<PowerPagesNode | undefined | void> = this._onDidChangeTreeData.event;
+    private isWebsitePreviewURLValid: Promise<{ websiteUrl: string, isValid: boolean }> = getValidWebsitePreviewUrl();
 
     refresh(): void {
         this._onDidChangeTreeData.fire();
@@ -62,20 +63,22 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
 
     async previewPowerPageSite(): Promise<void> {
         let requestSentAtTime = new Date().getTime();
-        const websitePreviewUrl = WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_PREVIEW_URL) as string;
 
-        if (isStringUndefinedOrEmpty(websitePreviewUrl)) {
-            vscode.window.showErrorMessage(vscode.l10n.t("Preview site URL is not available"));
+        const { isValid, websiteUrl } = await this.isWebsitePreviewURLValid;
+
+        if (!isValid) {
+            vscode.window.showErrorMessage(vscode.l10n.t("Preview site URL is not valid"));
 
             WebExtensionContext.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_PREVIEW_SITE_TRIGGERED,
-                vscode.l10n.t("Preview site URL is not available")
+                webExtensionTelemetryEventNames.WEB_EXTENSION_WEBSITE_PREVIEW_URL_INVALID,
+                this.previewPowerPageSite.name,
+                `websitePreviewUrl:${websiteUrl}`
             );
             return;
         }
 
         // Runtime clear cache call
-        const requestUrl = `${websitePreviewUrl.endsWith('/') ? websitePreviewUrl : websitePreviewUrl.concat('/')}_services/cache/config`;
+        const requestUrl = `${websiteUrl.endsWith('/') ? websiteUrl : websiteUrl.concat('/')}_services/cache/config`;
 
         WebExtensionContext.telemetry.sendAPITelemetry(
             requestUrl,
@@ -127,8 +130,8 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             }
         );
 
-        vscode.env.openExternal(vscode.Uri.parse(websitePreviewUrl));
-        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_PREVIEW_SITE_TRIGGERED);
+        vscode.env.openExternal(vscode.Uri.parse(websiteUrl));
+        WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_PREVIEW_SITE_TRIGGERED);
     }
 
     backToStudio(): void {
@@ -138,7 +141,7 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             vscode.window.showErrorMessage(vscode.l10n.t("Power Pages studio URL is not available"));
 
             WebExtensionContext.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_BACK_TO_STUDIO_TRIGGERED,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_BACK_TO_STUDIO_TRIGGERED,
                 vscode.l10n.t("Power Pages studio URL is not available")
             );
             return;
@@ -146,7 +149,7 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
 
         vscode.env.openExternal(vscode.Uri.parse(backToStudioUrl));
 
-        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_BACK_TO_STUDIO_TRIGGERED, {
+        WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_BACK_TO_STUDIO_TRIGGERED, {
             backToStudioUrl: backToStudioUrl
         });
     }

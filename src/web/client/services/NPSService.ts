@@ -5,11 +5,12 @@
 
 import jwt_decode from 'jwt-decode';
 import { npsAuthentication } from "../../../common/services/AuthenticationProvider";
-import { SurveyConstants, httpMethod, queryParameters } from '../common/constants';
+import { httpMethod, queryParameters } from '../common/constants';
 import { RequestInit } from 'node-fetch'
 import WebExtensionContext from '../WebExtensionContext';
-import { telemetryEventNames } from '../telemetry/constants';
+import { webExtensionTelemetryEventNames } from '../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents';
 import { getCurrentDataBoundary } from '../utilities/dataBoundary';
+import { SurveyConstants } from '../../../common/copilot/user-feedback/constants';
 
 export class NPSService {
     public static getCesHeader(accessToken: string) {
@@ -65,10 +66,10 @@ export class NPSService {
         try {
 
             const baseApiUrl = this.getNpsSurveyEndpoint();
-            const accessToken: string = await npsAuthentication(WebExtensionContext.telemetry.getTelemetryReporter(), SurveyConstants.AUTHORIZATION_ENDPOINT);
+            const accessToken: string = await npsAuthentication(SurveyConstants.AUTHORIZATION_ENDPOINT);
 
             if (accessToken) {
-                WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_NPS_AUTHENTICATION_COMPLETED);
+                WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_NPS_AUTHENTICATION_COMPLETED);
             }
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -85,7 +86,7 @@ export class NPSService {
             const result = await response?.json();
             if (result?.Eligibility) {
                 WebExtensionContext.telemetry.sendAPISuccessTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_NPS_USER_ELIGIBLE,
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_NPS_USER_ELIGIBLE,
                     "NPS Api",
                     httpMethod.POST,
                     new Date().getTime() - requestSentAtTime,
@@ -95,7 +96,7 @@ export class NPSService {
                 WebExtensionContext.setFormsProEligibilityId(result?.FormsProEligibilityId);
             }
         } catch (error) {
-            WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_NPS_API_FAILED, this.setEligibility.name, (error as Error)?.message, error as Error);
+            WebExtensionContext.telemetry.sendErrorTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_NPS_API_FAILED, this.setEligibility.name, (error as Error)?.message, error as Error);
         }
     }
 }

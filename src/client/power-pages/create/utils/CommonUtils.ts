@@ -7,8 +7,7 @@ import { exec } from "child_process";
 import { existsSync, stat } from "fs";
 import path from "path";
 import * as vscode from "vscode";
-import { ITelemetry } from "../../../telemetry/ITelemetry";
-import { FileCreateEvent, sendTelemetryEvent} from "../../telemetry";
+import { FileCreateEvent, sendTelemetryEvent } from "../../../../common/OneDSLoggerTelemetry/telemetry/telemetry";
 import {
     ERROR_MESSAGE,
     NOT_A_PORTAL_DIRECTORY,
@@ -163,8 +162,7 @@ export async function createRecord(
     entityType: string,
     execCommand: string,
     portalDirectory: string,
-    watcher: vscode.FileSystemWatcher,
-    telemetry: ITelemetry
+    watcher: vscode.FileSystemWatcher
 ) {
     const startTime = performance.now();
     await vscode.window.withProgress(
@@ -203,10 +201,10 @@ export async function createRecord(
                             args: [error.message],
                             comment: ["{0} will be replaced by the error message."]
                         }));
-                        sendTelemetryEvent(telemetry, { methodName:createRecord.name,eventName: FileCreateEvent, fileEntityType: entityType, durationInMills: (performance.now() - startTime), exception: error as Error })
+                        sendTelemetryEvent({ methodName: createRecord.name, eventName: FileCreateEvent, fileEntityType: entityType, durationInMills: (performance.now() - startTime), exception: error as Error })
                         reject(error);
                     } else {
-                        sendTelemetryEvent(telemetry, { methodName:createRecord.name, eventName: FileCreateEvent, fileEntityType: entityType, durationInMills: (performance.now() - startTime) })
+                        sendTelemetryEvent({ methodName: createRecord.name, eventName: FileCreateEvent, fileEntityType: entityType, durationInMills: (performance.now() - startTime) })
                         progress.report({ increment: 100 });
                     }
                 });
@@ -298,11 +296,11 @@ export function logErrorAndNotifyUser(errorMessage: string) {
     const outputChannel = vscode.window.createOutputChannel("Powerplatfrom");
     outputChannel.appendLine(`Error: ${errorMessage}`);
     vscode.window.showErrorMessage(
-      ERROR_MESSAGE,
-      SHOW_OUTPUT_PANEL
+        ERROR_MESSAGE,
+        SHOW_OUTPUT_PANEL
     ).then((selection) => {
-      if (selection === SHOW_OUTPUT_PANEL) {
-        outputChannel.show();
-      }
+        if (selection === SHOW_OUTPUT_PANEL) {
+            outputChannel.show();
+        }
     });
-  }
+}

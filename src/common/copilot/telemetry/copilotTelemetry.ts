@@ -3,12 +3,11 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { ITelemetry } from "../../../client/telemetry/ITelemetry";
 import { oneDSLoggerWrapper } from "../../OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { IProDevCopilotTelemetryData } from "./ITelemetry";
 
 
-export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: IProDevCopilotTelemetryData): void {
+export function sendTelemetryEvent(telemetryData: IProDevCopilotTelemetryData): void {
     const telemetryDataProperties: Record<string, string> = {}
     const telemetryDataMeasurements: Record<string, number> = {}
 
@@ -29,14 +28,18 @@ export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: IProDev
     telemetryDataProperties.tokenSize = telemetryData.tokenSize ? telemetryData.tokenSize : '';
     telemetryDataProperties.isSuggestedPrompt = telemetryData.isSuggestedPrompt ? telemetryData.isSuggestedPrompt : '';
     telemetryDataProperties.subScenario = telemetryData.subScenario ? telemetryData.subScenario : '';
+    telemetryDataProperties.userId = telemetryData.userId ? telemetryData.userId : '';
+    telemetryDataProperties.environmentId = telemetryData.environmentId ? telemetryData.environmentId : '';
+    telemetryDataProperties.websiteId = telemetryData.websiteId ? telemetryData.websiteId : '';
+    telemetryDataProperties.copilotGovernanceResponse = telemetryData.copilotGovernanceResponse !== undefined ? String(telemetryData.copilotGovernanceResponse) : '';
+    telemetryDataProperties.isGovernanceCheckEnabled = telemetryData.isGovernanceCheckEnabled !== undefined  ? String(telemetryData.isGovernanceCheckEnabled) : '';
+    telemetryDataProperties.copilotGovernanceSetting = telemetryData.copilotGovernanceSetting ? telemetryData.copilotGovernanceSetting : '';
 
     if (telemetryData.error) {
         telemetryDataProperties.eventName = telemetryData.eventName;
-        telemetry.sendTelemetryException(telemetryData.error, telemetryDataProperties, telemetryDataMeasurements);
         oneDSLoggerWrapper.getLogger().traceError(telemetryData.error.name, telemetryData.error.message, telemetryData.error, telemetryDataProperties, telemetryDataMeasurements);
 
     } else {
-        telemetry.sendTelemetryEvent(telemetryData.eventName, telemetryDataProperties, telemetryDataMeasurements);
         oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryDataProperties, telemetryDataMeasurements);
     }
 }

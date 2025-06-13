@@ -23,17 +23,18 @@ import {
 } from "./utilities/schemaHelperUtil";
 import { getCustomRequestURL, getOrCreateSharedWorkspace } from "./utilities/urlBuilderUtil";
 import { SchemaEntityMetadata, schemaKey } from "./schema/constants";
-import { telemetryEventNames } from "./telemetry/constants";
+import { webExtensionTelemetryEventNames } from "../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 import { EntityDataMap } from "./context/entityDataMap";
 import { FileDataMap } from "./context/fileDataMap";
 import { IAttributePath, IEntityInfo } from "./common/interfaces";
 import { ConcurrencyHandler } from "./dal/concurrencyHandler";
-import { getMailToPath, getTeamChatURL, isMultifileEnabled } from "./utilities/commonUtil";
+import { getEnvironmentIdFromUrl, getMailToPath, getTeamChatURL, isMultifileEnabled } from "./utilities/commonUtil";
 import { IConnectionData, UserDataMap } from "./context/userDataMap";
 import { EntityForeignKeyDataMap } from "./context/entityForeignKeyDataMap";
 import { QuickPickProvider } from "./webViews/QuickPickProvider";
 import { UserCollaborationProvider } from "./webViews/userCollaborationProvider";
 import { GraphClientService } from "./services/graphClientService";
+import { ServiceEndpointCategory } from "../../common/services/Constants";
 
 export interface IWebExtensionContext {
     // From portalSchema properties
@@ -69,6 +70,11 @@ export interface IWebExtensionContext {
     isContextSet: boolean;
     currentSchemaVersion: string;
     websiteLanguageCode: string;
+    geoName: string;
+    geoLongName: string;
+    serviceEndpointCategory: ServiceEndpointCategory;
+    organizationId: string;
+    environmentId: string;
 
     // Telemetry and survey
     telemetry: WebExtensionTelemetry;
@@ -103,6 +109,12 @@ class WebExtensionContext implements IWebExtensionContext {
     private _isContextSet: boolean;
     private _currentSchemaVersion: string;
     private _websiteLanguageCode: string;
+    private _geoName: string;
+    private _geoLongName: string;
+    private _clusterLocation: string;
+    private _serviceEndpointCategory: ServiceEndpointCategory;
+    private _organizationId: string;
+    private _environmentId: string;
     private _telemetry: WebExtensionTelemetry;
     private _npsEligibility: boolean;
     private _userId: string;
@@ -187,6 +199,42 @@ class WebExtensionContext implements IWebExtensionContext {
     public get websiteLanguageCode() {
         return this._websiteLanguageCode;
     }
+    public get geoName() {
+        return this._geoName
+    }
+    public set geoName(name: string) {
+        this._geoName = name;
+    }
+    public get geoLongName() {
+        return this._geoLongName;
+    }
+    public set geoLongName(name: string) {
+        this._geoLongName = name;
+    }
+    public get clusterLocation() {
+        return this._clusterLocation;
+    }
+    public set clusterLocation(name: string) {
+        this._clusterLocation = name;
+    }
+    public get serviceEndpointCategory() {
+        return this._serviceEndpointCategory;
+    }
+    public set serviceEndpointCategory(name: ServiceEndpointCategory) {
+        this._serviceEndpointCategory = name;
+    }
+    public get organizationId() {
+        return this._organizationId;
+    }
+    public set organizationId(name: string) {
+        this._organizationId = name;
+    }
+    public get environmentId() {
+        return this._environmentId;
+    }
+    public set environmentId(name: string) {
+        this._environmentId = name;
+    }
     public get telemetry() {
         return this._telemetry;
     }
@@ -254,6 +302,12 @@ class WebExtensionContext implements IWebExtensionContext {
         this._isContextSet = false;
         this._currentSchemaVersion = "";
         this._websiteLanguageCode = "";
+        this._geoName = "";
+        this._geoLongName = "";
+        this._clusterLocation = "";
+        this._serviceEndpointCategory = ServiceEndpointCategory.NONE;
+        this._organizationId = "";
+        this._environmentId = "";
         this._telemetry = new WebExtensionTelemetry();
         this._npsEligibility = false;
         this._userId = "";
@@ -295,7 +349,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._showMultifileInVSCode = isMultifileEnabled() && isEnableMultifile;
 
         this.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_MULTI_FILE_FEATURE_AVAILABILITY,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_MULTI_FILE_FEATURE_AVAILABILITY,
             { showMultifileInVSCode: this._showMultifileInVSCode.toString() }
         );
 
@@ -307,6 +361,10 @@ class WebExtensionContext implements IWebExtensionContext {
             this.schemaEntitiesMap
         );
         this._isContextSet = true;
+
+        // Initialize org details
+        this._organizationId = queryParamsMap.get(Constants.queryParameters.ORG_ID) as string ?? "";
+        this._environmentId = getEnvironmentIdFromUrl();
     }
 
     public setVscodeWorkspaceState(workspaceState: vscode.Memento) {
@@ -315,11 +373,11 @@ class WebExtensionContext implements IWebExtensionContext {
                 const entityInfo = workspaceState.get(key) as IEntityInfo;
                 this._vscodeWorkspaceState.set(key, entityInfo);
             });
-            this.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_SET_VSCODE_WORKSPACE_STATE_SUCCESS,
+            this.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_SET_VSCODE_WORKSPACE_STATE_SUCCESS,
                 { count: this._vscodeWorkspaceState.size.toString() });
         } catch (error) {
             this.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_SET_VSCODE_WORKSPACE_STATE_FAILED,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_SET_VSCODE_WORKSPACE_STATE_FAILED,
                 this.setVscodeWorkspaceState.name,
                 error as string
             );
@@ -371,7 +429,6 @@ class WebExtensionContext implements IWebExtensionContext {
             Constants.queryParameters.ORG_URL
         ) as string;
         const { accessToken, userId } = await dataverseAuthentication(
-            this._telemetry.getTelemetryReporter(),
             dataverseOrgUrl,
             firstTimeAuth
         );
@@ -389,7 +446,7 @@ class WebExtensionContext implements IWebExtensionContext {
             this._languageIdCodeMap = new Map<string, string>();
 
             this.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING,
                 dataverseAuthentication.name
             );
             throw vscode.FileSystemError.NoPermissions();
@@ -400,7 +457,7 @@ class WebExtensionContext implements IWebExtensionContext {
 
         if (firstTimeAuth) {
             this._telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED,
                 {
                     userId: userId
                 }
@@ -527,7 +584,7 @@ class WebExtensionContext implements IWebExtensionContext {
                 );
             } else {
                 this.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_POPULATE_LANGUAGE_ID_TO_CODE_SYSTEM_ERROR,
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_POPULATE_LANGUAGE_ID_TO_CODE_SYSTEM_ERROR,
                     this.populateLanguageIdToCode.name,
                     (error as Error)?.message,
                     error as Error
@@ -590,7 +647,7 @@ class WebExtensionContext implements IWebExtensionContext {
                 );
             } else {
                 this.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_LANGUAGE_ID_TO_PORTALLANGUAGE_SYSTEM_ERROR,
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_LANGUAGE_ID_TO_PORTALLANGUAGE_SYSTEM_ERROR,
                     this.populateWebsiteLanguageIdToPortalLanguageMap.name,
                     (error as Error)?.message,
                     error as Error
@@ -652,7 +709,7 @@ class WebExtensionContext implements IWebExtensionContext {
                 );
             } else {
                 this.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_ID_TO_LANGUAGE_SYSTEM_ERROR,
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_ID_TO_LANGUAGE_SYSTEM_ERROR,
                     this.populateWebsiteIdToLanguageMap.name,
                     (error as Error)?.message,
                     error as Error
@@ -669,7 +726,7 @@ class WebExtensionContext implements IWebExtensionContext {
                 ) as string
             ) ?? "";
         this.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_EDIT_LCID,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_EDIT_LCID,
             { lcid: lcid ? lcid.toString() : "" }
         );
 
@@ -677,7 +734,7 @@ class WebExtensionContext implements IWebExtensionContext {
             lcid
         ) as string;
         this.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_WEBSITE_LANGUAGE_CODE,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_WEBSITE_LANGUAGE_CODE,
             { languageCode: this._websiteLanguageCode }
         );
     }
@@ -719,7 +776,7 @@ class WebExtensionContext implements IWebExtensionContext {
     public async getWorkerScript(workerUrl: URL): Promise<any> {
         try {
             this.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT
+                webExtensionTelemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT
             );
 
             const response = await this.concurrencyHandler.handleRequest(
@@ -733,14 +790,14 @@ class WebExtensionContext implements IWebExtensionContext {
             }
 
             this.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT_SUCCESS,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT_SUCCESS,
                 { workerUrl: workerUrl.toString() }
             );
 
             return await response.text();
         } catch (error) {
             this.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT_FAILED,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT_FAILED,
                 this.getWorkerScript.name,
                 Constants.WEB_EXTENSION_FETCH_WORKER_SCRIPT_FAILED,
                 error as Error
@@ -776,12 +833,12 @@ class WebExtensionContext implements IWebExtensionContext {
             this._sharedWorkSpaceMap = sharedWorkSpaceParamsMap;
 
             this.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SUCCESS,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SUCCESS,
                 { count: this._sharedWorkSpaceMap.size.toString() }
             );
         } catch (error) {
             this.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SYSTEM_ERROR,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SYSTEM_ERROR,
                 this.populateSharedWorkspace.name,
                 Constants.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SYSTEM_ERROR,
                 error as Error

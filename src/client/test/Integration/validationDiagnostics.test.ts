@@ -11,7 +11,6 @@ import {
 import { expect } from "chai";
 import path from "path";
 import sinon from "sinon";
-import { ITelemetry } from "../../telemetry/ITelemetry";
 
 describe("validationDiagnostics", () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -20,7 +19,7 @@ describe("validationDiagnostics", () => {
         sinon.restore();
     });
 
-    it("validateTextDocument_whenPattrenDoesNot_shouldNotSetValueInDiagnostics", async () => {
+    it("validateTextDocument_whenPatternDoesNot_shouldNotSetValueInDiagnostics", async () => {
         //Act
         const filePath = path.join(
             __dirname,
@@ -28,23 +27,26 @@ describe("validationDiagnostics", () => {
             "..",
             "..",
             "..",
-            "/src/client/test/Integration/MockValidationDiagnosticsTextDoc.txt"
+            "src",
+            "client",
+            "test",
+            "Integration",
+            "MockValidationDiagnosticsTextDoc.txt"
         );
 
-        const uri = vscode.Uri.parse(path.join("file:///", filePath));
+        const uri = vscode.Uri.file(filePath);
         const patterns = [/z/g];
         const searchByName = true;
-        const telemetry = {} as ITelemetry;
         //Action
-        await validateTextDocument(uri, patterns, searchByName,telemetry);
+        await validateTextDocument(uri, patterns, searchByName);
         //Assert
         const connection = await vscode.languages.getDiagnostics();
         expect(connection[0][0].scheme).eq("file");
-        expect(connection[0][0].path).eq("/\\" + filePath);
+        expect(connection[0][0].path.replace(/[/\\]/g, '')).eq(filePath.replace(/[/\\]/g, ''));
         expect(connection[0][1]).empty;
     });
 
-    it("validateTextDocument_whenPattrenIsEmptyArray_shouldNotSetValueInDiagnostics", async () => {
+    it("validateTextDocument_whenPatternIsEmptyArray_shouldNotSetValueInDiagnostics", async () => {
         //Act
         const filePath = path.join(
             __dirname,
@@ -52,23 +54,26 @@ describe("validationDiagnostics", () => {
             "..",
             "..",
             "..",
-            "/src/client/test/Integration/MockValidationDiagnosticsTextDoc.txt"
+            "src",
+            "client",
+            "test",
+            "Integration",
+            "MockValidationDiagnosticsTextDoc.txt"
         );
 
-        const uri = vscode.Uri.parse(path.join("file:///", filePath));
+        const uri = vscode.Uri.file(filePath);
         const patterns: RegExp[] = [];
         const searchByName = true;
-        const telemetry = {} as ITelemetry;
         //Action
-        await validateTextDocument(uri, patterns, searchByName,telemetry);
+        await validateTextDocument(uri, patterns, searchByName);
         //Assert
         const connection = await vscode.languages.getDiagnostics();
         expect(connection[0][0].scheme).eq("file");
-        expect(connection[0][0].path).eq("/\\" + filePath);
+        expect(connection[0][0].path.replace(/[/\\]/g, '')).eq(filePath.replace(/[/\\]/g, ''));
         expect(connection[0][1]).empty;
     });
 
-    it("validateTextDocument_whenPattrenMatchAndSearchByNameIsTrue_shouldSetValueInDiagnostics", async () => {
+    it("validateTextDocument_whenPatternMatchAndSearchByNameIsTrue_shouldSetValueInDiagnostics", async () => {
         //Act
         const filePath = path.join(
             __dirname,
@@ -76,19 +81,22 @@ describe("validationDiagnostics", () => {
             "..",
             "..",
             "..",
-            "/src/client/test/Integration/MockValidationDiagnosticsTextDoc.txt"
+            "src",
+            "client",
+            "test",
+            "Integration",
+            "MockValidationDiagnosticsTextDoc.txt"
         );
 
-        const uri = vscode.Uri.parse(path.join("file:///", filePath));
+        const uri = vscode.Uri.file(filePath);
         const patterns = [/keyword/g, /contains/g];
         const searchByName = true;
-        const telemetry = {} as ITelemetry;
         //Action
-        await validateTextDocument(uri, patterns, searchByName,telemetry);
+        await validateTextDocument(uri, patterns, searchByName);
         //Assert
         const connection = await vscode.languages.getDiagnostics();
         expect(connection[0][0].scheme).eq("file");
-        expect(connection[0][0].path).eq("/\\" + filePath);
+        expect(connection[0][0].path.replace(/[/\\]/g, '')).eq(filePath.replace(/[/\\]/g, ''));
 
         expect(connection[0][1][0].message).eq(
             'PowerPages: File might be referenced by name keyword here.'
@@ -111,7 +119,7 @@ describe("validationDiagnostics", () => {
         expect(connection[0][1][1].range).not.undefined;
     });
 
-    it("validateTextDocument_whenPattrenMatchAndSearchByNameIsFalse_shouldSetValueInDiagnostics", async () => {
+    it("validateTextDocument_whenPatternMatchAndSearchByNameIsFalse_shouldSetValueInDiagnostics", async () => {
         //Act
         const filePath = path.join(
             __dirname,
@@ -119,19 +127,22 @@ describe("validationDiagnostics", () => {
             "..",
             "..",
             "..",
-            "/src/client/test/Integration/MockValidationDiagnosticsTextDoc.txt"
+            "src",
+            "client",
+            "test",
+            "Integration",
+            "MockValidationDiagnosticsTextDoc.txt"
         );
 
-        const uri = vscode.Uri.parse(path.join("file:///", filePath));
+        const uri = vscode.Uri.file(filePath);
         const patterns = [/keyword/g, /contains/g];
         const searchByName = false;
-        const telemetry = {} as ITelemetry;
         //Action
-        await validateTextDocument(uri, patterns, searchByName,telemetry);
+        await validateTextDocument(uri, patterns, searchByName);
         //Assert
         const connection = await vscode.languages.getDiagnostics();
         expect(connection[0][0].scheme).eq("file");
-        expect(connection[0][0].path).eq("/\\" + filePath);
+        expect(connection[0][0].path.replace(/[/\\]/g, '')).eq(filePath.replace(/[/\\]/g, ''));
 
         expect(connection[0][1][0].message).eq("PowerPages: ");
         expect(connection[0][1][1].message).eq("PowerPages: ");

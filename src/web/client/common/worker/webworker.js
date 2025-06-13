@@ -84,6 +84,7 @@ async function loadContainer(config, swpId, entityInfo) {
     try {
         self.postMessage({
             type: "telemetry-info",
+            methodName: loadContainer.name,
             eventName: "webExtensionWebWorkerLoadContainerStart",
         });
 
@@ -139,6 +140,7 @@ async function loadContainer(config, swpId, entityInfo) {
                         self.postMessage({
                             type: "telemetry-error",
                             methodName: "webWorker initialLoad",
+                            eventName: "webExtensionContainerInitialPopulateFailed",
                             errorMessage: error?.message,
                             error: error,
                         });
@@ -147,6 +149,7 @@ async function loadContainer(config, swpId, entityInfo) {
 
                 self.postMessage({
                     type: "telemetry-info",
+                    methodName: "webWorker initialLoad",
                     eventName: "webExtensionContainerInitialPopulateSuccess",
                 });
             }
@@ -162,6 +165,7 @@ async function loadContainer(config, swpId, entityInfo) {
                 });
                 self.postMessage({
                     type: "telemetry-info",
+                    methodName: "webWorker memberRemoved",
                     eventName: "webExtensionWebWorkerMemberRemovedSuccess",
                     userId: member.additionalDetails.AadObjectId,
                 });
@@ -169,6 +173,7 @@ async function loadContainer(config, swpId, entityInfo) {
                 self.postMessage({
                     type: "telemetry-error",
                     methodName: "webWorker memberRemoved",
+                    eventName: "webExtensionWebWorkerMemberRemovedFailed",
                     errorMessage: "Web Extension WebWorker Member Removed Failed",
                 });
             }
@@ -203,14 +208,15 @@ async function loadContainer(config, swpId, entityInfo) {
 
                 self.postMessage({
                     type: "telemetry-info",
-                    eventName:
-                        "webExtensionWebWorkerGetUserIdByConnectionIdSuccess",
+                    methodName: "webWorker valueChanged",
+                    eventName: "webExtensionWebWorkerGetUserIdByConnectionIdSuccess",
                     userId: user.aadObjectId,
                 });
             } catch (error) {
                 self.postMessage({
                     type: "telemetry-error",
                     methodName: "webWorker valueChanged",
+                    eventName: "webExtensionWebWorkerGetUserIdByConnectionIdFailed",
                     errorMessage: error?.message,
                     error: error,
                 });

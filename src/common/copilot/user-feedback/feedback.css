@@ -30,7 +30,12 @@ body {
     color: var(--vscode-button-foreground);
     cursor: pointer;
     padding: 6px 11px;
-    outline: 1px solid transparent;
     outline-offset: 2px !important;
     border-radius: 2px;
+}
+
+a:focus {
+    color: var(--vscode-textLink-foreground);
+    outline: 2px solid var(--vscode-textLink-activeForeground);
+    outline-offset: 2px;
 }

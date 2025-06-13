@@ -73,3 +73,57 @@ export type ActiveOrgOutput = {
 }
 
 export type PacOrgWhoOutput = PacOutputWithResult<ActiveOrgOutput>;
+
+export type ActiveAuthOutput = {
+   Key: string,
+   Value: string
+}
+
+export type PacAuthWhoOutput = PacOutputWithResultList<ActiveAuthOutput>;
+
+export enum CloudInstance {
+    Public,
+    Preprod,
+    Test,
+    UsGov,
+    UsGovHigh,
+    UsGovDod,
+    China
+}
+
+export enum EnvironmentType {
+    Unknown,
+    Regular,
+    Default,
+    Legacy,
+    Provisioning
+}
+
+export type AuthInfo = {
+    UserType: string;
+    Cloud: CloudInstance;
+    TenantId: string;
+    TenantCountry: string;
+    User: string;
+    EntraIdObjectId: string;
+    Puid: string;
+    UserCountryRegion: string;
+    TokenExpires: string;
+    Authority: string;
+    EnvironmentGeo: string;
+    EnvironmentId: string;
+    EnvironmentType: EnvironmentType;
+    OrganizationId: string;
+    OrganizationUniqueName: string;
+    OrganizationFriendlyName: string;
+}
+
+export type OrgInfo = {
+    OrgId: string,
+    UniqueName: string,
+    FriendlyName: string,
+    OrgUrl: string,
+    UserEmail: string,
+    UserId: string,
+    EnvironmentId: string
+}
