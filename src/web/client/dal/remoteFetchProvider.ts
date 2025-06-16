@@ -8,12 +8,13 @@ import {
     convertContentToUint8Array,
     GetFileNameWithExtension,
     getAttributeContent,
-    getSanitizedFileName,
     isPortalVersionV1,
     isPortalVersionV2,
     isWebfileContentLoadNeeded,
     setFileContent,
     isNullOrUndefined,
+    clearFileNameTracker,
+    getFolderNameWithEntityId,
 } from "../utilities/commonUtil";
 import { getCustomRequestURL, getMappingEntityContent, getMetadataInfo, getMappingEntityId, getMimeType, getRequestURL } from "../utilities/urlBuilderUtil";
 import { getCommonHeadersForDataverse } from "../../../common/services/AuthenticationProvider";
@@ -40,6 +41,9 @@ export async function fetchDataFromDataverseAndUpdateVFS(
     defaultFileInfo?: IFileInfo,
 ) {
     try {
+        // Clear filename tracker for new batch processing to avoid false duplicates
+        clearFileNameTracker();
+
         const entityRequestURLs = getRequestUrlForEntities(defaultFileInfo?.entityId, defaultFileInfo?.entityName);
         const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
             Constants.queryParameters.ORG_URL
@@ -231,12 +235,11 @@ async function createContentFiles(
 
         if (fileName === Constants.EMPTY_FILE_NAME) {
             throw new Error(ERROR_CONSTANTS.FILE_NAME_EMPTY);
-        }
-
-        // Create folder paths
+        }        // Create folder paths
         filePathInPortalFS = filePathInPortalFS ?? `${Constants.PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/`;
         if (exportType && exportType === folderExportType.SubFolders) {
-            filePathInPortalFS = `${filePathInPortalFS}${getSanitizedFileName(fileName)}/`;
+            const folderName = getFolderNameWithEntityId(entityName, fileName, entityId);
+            filePathInPortalFS = `${filePathInPortalFS}${folderName}/`;
             await portalsFS.createDirectory(
                 vscode.Uri.parse(filePathInPortalFS, true)
             );
@@ -347,8 +350,7 @@ async function processDataAndCreateFile(
                     dataverseOrgUrl,
                     filePathInPortalFS);
             }
-        }
-        else {
+        }        else {
             let fileCreationValid = true;
             let fileNameWithExtension = GetFileNameWithExtension(entityName, fileName, languageCode, fileExtension);
 
@@ -404,9 +406,7 @@ async function processDataAndCreateFile(
                     WebExtensionContext.telemetry.sendErrorTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_SOURCE_ATTRIBUTE_INVALID, processDataAndCreateFile.name);
                     sourceAttributeExtension = undefined;
             }
-        }
-
-        if (sourceAttributeExtension) {
+        }        if (sourceAttributeExtension) {
             fileUri = filePathInPortalFS + GetFileNameWithExtension(entityName, fileName, languageCode, sourceAttributeExtension);
             await WebExtensionContext.updateSingleFileUrisInContext(
                 vscode.Uri.parse(fileUri)

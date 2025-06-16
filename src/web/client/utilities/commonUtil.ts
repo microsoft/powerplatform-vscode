@@ -26,6 +26,9 @@ import { ServiceEndpointCategory } from "../../../common/services/Constants";
 import { PPAPIService } from "../../../common/services/PPAPIService";
 import * as Constants from "../common/constants";
 
+// Map to track filename usage across entities
+const fileNameTracker = new Map<string, Set<string>>();
+
 // decodes file content to UTF-8
 export function convertContentToUint8Array(content: string, isBase64Encoded: boolean): Uint8Array {
     return isBase64Encoded ? new Uint8Array(Buffer.from(content, BASE_64)) :
@@ -339,4 +342,72 @@ export async function getValidWebsitePreviewUrl(): Promise<{ websiteUrl: string,
     }
 
     return { websiteUrl: '', isValid: false };
+}
+
+/**
+ * Get folder name with entity ID suffix for duplicates
+ * @param entity - The entity name
+ * @param folderName - The base folder name
+ * @param entityId - The entity ID
+ * @returns folder name with entity ID suffix if needed for duplicates
+ */
+export function getFolderNameWithEntityId(
+    entity: string,
+    folderName: string,
+    entityId?: string
+): string {
+    if (!entityId) {
+        return getSanitizedFileName(folderName);
+    }
+
+    // For webpages, check if we need to add entity ID to folder name for duplicates
+    if (entity === schemaEntityName.WEBPAGES && isDuplicateFolderName(entity, folderName, entityId)) {
+        return getSanitizedFileName(`${folderName}-${entityId}`);
+    }
+
+    return getSanitizedFileName(folderName);
+}
+
+/**
+ * Check if a folder name already exists for the given entity type and mark it as used
+ * @param entity - The entity name
+ * @param folderName - The folder name
+ * @param entityId - The entity ID
+ * @returns true if this is a duplicate folder name
+ */
+function isDuplicateFolderName(
+    entity: string,
+    folderName: string,
+    entityId: string
+): boolean {
+    const folderKey = `${entity}_folder_${folderName}`;
+
+    if (!fileNameTracker.has(folderKey)) {
+        fileNameTracker.set(folderKey, new Set<string>());
+    }
+
+    const entityIds = fileNameTracker.get(folderKey);
+    if (!entityIds) {
+        return false;
+    }
+
+    // If this entityId is already tracked, it's not a duplicate
+    if (entityIds.has(entityId)) {
+        return false;
+    }
+
+    // If there are already other entityIds with this folder name, it's a duplicate
+    const isDuplicate = entityIds.size > 0;
+
+    // Add this entityId to the set
+    entityIds.add(entityId);
+
+    return isDuplicate;
+}
+
+/**
+ * Clear the filename tracker (useful for testing or when starting fresh)
+ */
+export function clearFileNameTracker(): void {
+    fileNameTracker.clear();
 }
