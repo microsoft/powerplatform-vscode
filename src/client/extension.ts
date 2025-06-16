@@ -202,7 +202,7 @@ export async function activate(
             if (artemisResponse !== null && artemisResponse.response !== null) {
                 ArtemisContext.setContext(artemisResponse);
 
-                const { geoName, geoLongName, clusterName, clusterNumber } = artemisResponse.response;
+                const { geoName, geoLongName, clusterName, clusterNumber, environment } = artemisResponse.response;
                 let AadObjectId, EnvID, TenantID;
 
                 if ((pacActiveAuth && pacActiveAuth.Status === SUCCESS)) {
@@ -231,7 +231,7 @@ export async function activate(
                     registerCopilotPanels(pacWrapper);
                 }
 
-                oneDSLoggerWrapper.instantiate(geoName, geoLongName);
+                oneDSLoggerWrapper.instantiate(geoName, geoLongName, environment);
                 let initContext: object = { ...orgDetails, orgGeo: geoName };
                 if (AadObjectId) {
                     initContext = { ...initContext, AadId: AadObjectId }
