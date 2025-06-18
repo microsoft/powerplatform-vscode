@@ -116,6 +116,12 @@
     }
   },
   "contributes": {
+    "jsonValidation": [
+      {
+        "fileMatch": "powerpages.config.json",
+        "url": "https://json.schemastore.org/powerpages.config.json"
+      }
+    ],
     "chatParticipants": [
       {
         "id": "powerpages",
