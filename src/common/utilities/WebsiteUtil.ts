@@ -170,7 +170,7 @@ async function getPowerPagesSiteRecords(orgUrl: string, token: string) {
             const data = await response.json() as { value: PowerPagesSiteRecords[] };
 
             // Extract website_language from the content field if it exists
-            return data.value.map(record => {
+            return (data?.value ?? []).map(record => {
                 let websiteLanguage = null;
 
                 if (record.content) {
