@@ -8,7 +8,6 @@ import * as sinon from 'sinon';
 import * as vscode from 'vscode';
 import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, createNewAuthProfile, previewSite, fetchWebsites, revealInOS, uploadSite, createKnownSiteIdsSet, findOtherSites, showSiteDetails, openSiteManagement, downloadSite, openInStudio } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
 import { Constants } from '../../../../power-pages/actions-hub/Constants';
-import { oneDSLoggerWrapper } from '../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import * as CommonUtils from '../../../../power-pages/commonUtility';
 import { AuthInfo, CloudInstance, EnvironmentType, OrgInfo } from '../../../../pac/PacTypes';
 import { PacTerminal } from '../../../../lib/PacTerminal';
@@ -77,14 +76,10 @@ describe('ActionsHubCommandHandlers', () => {
         mockShowInformationMessage = sandbox.stub(vscode.window, 'showInformationMessage');
         ArtemisContext["_artemisResponse"] = { stamp: ServiceEndpointCategory.TEST, response: artemisResponse };
         mockSetAuthInfo = sandbox.stub(PacContext, 'setContext');
-        traceErrorStub = sinon.stub();
+        traceErrorStub = sandbox.stub(TelemetryHelper, 'traceError');
         sandbox.stub(TelemetryHelper, "getBaseEventInfo").returns({ foo: 'bar' });
-        sandbox.stub(oneDSLoggerWrapper, 'getLogger').returns({
-            traceError: traceErrorStub,
-            traceInfo: sinon.stub(),
-            traceWarning: sinon.stub(),
-            featureUsage: sinon.stub(),
-        });
+        sandbox.stub(TelemetryHelper, "traceInfo");
+        sandbox.stub(vscode.env, 'sessionId').get(() => 'test-session-id');
     });
 
     afterEach(() => {
@@ -132,6 +127,7 @@ describe('ActionsHubCommandHandlers', () => {
 
             const message = mockShowInformationMessage.firstCall.args[1].detail;
             expect(message).to.include("Timestamp");
+            expect(message).to.include("Session ID: test-session-id");
             expect(message).to.include("Tenant ID: test-tenant");
             expect(message).to.include("Object ID: test-object-id");
             expect(message).to.include("Organization ID: test-org-id");
@@ -214,7 +210,9 @@ describe('ActionsHubCommandHandlers', () => {
 
             await refreshEnvironment(mockPacTerminal as unknown as PacTerminal);
 
-            expect(traceErrorStub.firstCall.args[3]).to.deep.equal({ methodName: 'refreshEnvironment' });
+            expect(traceErrorStub.firstCall.args[0]).to.equal(Constants.EventNames.ACTIONS_HUB_REFRESH_FAILED);
+            expect(traceErrorStub.firstCall.args[1]).to.equal(error);
+            expect(traceErrorStub.firstCall.args[2]).to.deep.equal({ methodName: 'refreshEnvironment' });
         });
     });
 
@@ -368,7 +366,7 @@ describe('ActionsHubCommandHandlers', () => {
                 await openActiveSitesInStudio();
 
                 expect(mockUrl.calledOnce).to.be.true;
-                expect(mockUrl.firstCall.args[0]).to.equal('https://make.preprod.powerpages.microsoft.com/environments/test-env-id/portals/home/?tab=active');
+                expect(mockUrl.firstCall.args[0]).to.equal('https://make.test.powerpages.microsoft.com/environments/test-env-id/portals/home/?tab=active');
             });
         });
 
@@ -469,7 +467,7 @@ describe('ActionsHubCommandHandlers', () => {
                 await openInactiveSitesInStudio();
 
                 expect(mockUrl.calledOnce).to.be.true;
-                expect(mockUrl.firstCall.args[0]).to.equal('https://make.preprod.powerpages.microsoft.com/environments/test-env-id/portals/home/?tab=inactive');
+                expect(mockUrl.firstCall.args[0]).to.equal('https://make.test.powerpages.microsoft.com/environments/test-env-id/portals/home/?tab=inactive');
             });
         });
 
@@ -542,12 +540,25 @@ describe('ActionsHubCommandHandlers', () => {
     describe('createNewAuthProfile', () => {
         let mockPacWrapper: sinon.SinonStubbedInstance<PacWrapper>;
         let mockCreateAuthProfileExp: sinon.SinonStub;
-        let mockDataverseAuthentication: sinon.SinonStub;
+        let mockAuthenticationInVsCode: sinon.SinonStub;
+        let orgInfoStub: sinon.SinonStub;
 
         beforeEach(() => {
             mockPacWrapper = sandbox.createStubInstance(PacWrapper);
             mockCreateAuthProfileExp = sandbox.stub(PacAuthUtil, 'createAuthProfileExp');
-            mockDataverseAuthentication = sandbox.stub(authProvider, 'dataverseAuthentication');
+            mockAuthenticationInVsCode = sandbox.stub(authProvider, 'authenticateUserInVSCode');
+            orgInfoStub = sandbox.stub(PacContext, 'OrgInfo').value({ OrgId: 'testOrgId', OrgUrl: '' });
+        });
+
+        it('should only authenticate in VS Code when PAC auth output is successful', async () => {
+            const mockResults = [{ ActiveOrganization: [null, null] }];
+            mockCreateAuthProfileExp.resolves({ Status: 'Success', Results: mockResults });
+            orgInfoStub.value({ OrgId: 'testOrgId', OrgUrl: 'https://test-org-url' });
+
+            await createNewAuthProfile(mockPacWrapper);
+
+            expect(mockCreateAuthProfileExp.calledOnce).to.be.false;
+            expect(mockAuthenticationInVsCode.calledOnce).to.be.true;
         });
 
         it('should handle missing organization URL', async () => {
@@ -557,7 +568,7 @@ describe('ActionsHubCommandHandlers', () => {
             await createNewAuthProfile(mockPacWrapper);
 
             expect(mockCreateAuthProfileExp.calledOnce).to.be.true;
-            expect(mockDataverseAuthentication.called).to.be.false;
+            expect(mockAuthenticationInVsCode.called).to.be.false;
             expect(traceErrorStub.calledOnce).to.be.true;
             expect(traceErrorStub.firstCall.args[0]).to.equal('createNewAuthProfile');
         });
@@ -568,7 +579,7 @@ describe('ActionsHubCommandHandlers', () => {
             await createNewAuthProfile(mockPacWrapper);
 
             expect(mockCreateAuthProfileExp.calledOnce).to.be.true;
-            expect(mockDataverseAuthentication.called).to.be.false;
+            expect(mockAuthenticationInVsCode.called).to.be.false;
             expect(traceErrorStub.calledOnce).to.be.true;
             expect(traceErrorStub.firstCall.args[0]).to.equal('createNewAuthProfile');
         });
@@ -579,7 +590,7 @@ describe('ActionsHubCommandHandlers', () => {
             await createNewAuthProfile(mockPacWrapper);
 
             expect(mockCreateAuthProfileExp.calledOnce).to.be.true;
-            expect(mockDataverseAuthentication.called).to.be.false;
+            expect(mockAuthenticationInVsCode.called).to.be.false;
             expect(traceErrorStub.calledOnce).to.be.true;
             expect(traceErrorStub.firstCall.args[0]).to.equal('createNewAuthProfile');
         });
@@ -591,7 +602,7 @@ describe('ActionsHubCommandHandlers', () => {
             await createNewAuthProfile(mockPacWrapper);
 
             expect(mockCreateAuthProfileExp.calledOnce).to.be.true;
-            expect(mockDataverseAuthentication.called).to.be.false;
+            expect(mockAuthenticationInVsCode.called).to.be.false;
             expect(traceErrorStub.calledOnce).to.be.true;
             expect(traceErrorStub.firstCall.args[0]).to.equal('ActionsHubCreateAuthProfileFailed');
         });
@@ -615,7 +626,8 @@ describe('ActionsHubCommandHandlers', () => {
                 siteVisibility: SiteVisibility.Public,
                 siteManagementUrl: 'https://test-site-management.com',
                 createdOn: "2025-03-20",
-                creator: "Test Creator"
+                creator: "Test Creator",
+                isCodeSite: false
             };
         });
 
@@ -688,7 +700,8 @@ describe('ActionsHubCommandHandlers', () => {
                     dataModel: WebsiteDataModel.Enhanced,
                     websiteUrl: 'https://active-site-1.com',
                     id: 'active-site-1',
-                    siteVisibility: "public"
+                    siteVisibility: "public",
+                    isCodeSite: false
                 }
             ] as IWebsiteDetails[];
             const inactiveSites = [
@@ -699,7 +712,8 @@ describe('ActionsHubCommandHandlers', () => {
                     websiteUrl: 'https://inactive-site-1.com',
                     id: 'inactive-site-1',
                     siteVisibility: 'private',
-                    siteManagementUrl: "https://inactive-site-1-management.com"
+                    siteManagementUrl: "https://inactive-site-1-management.com",
+                    isCodeSite: false
                 }
             ] as IWebsiteDetails[];
 
@@ -713,7 +727,7 @@ describe('ActionsHubCommandHandlers', () => {
 
             const response = await fetchWebsites();
 
-            expect(response.activeSites).to.deep.equal([...activeSites.map(site => ({ ...site, siteManagementUrl: "https://portalmanagement.com", createdOn: "2025-03-20", creator: "Test Creator" }))]);
+            expect(response.activeSites).to.deep.equal([...activeSites.map(site => ({ ...site, isCodeSite: false, siteManagementUrl: "https://portalmanagement.com", createdOn: "2025-03-20", creator: "Test Creator" }))]);
             expect(response.inactiveSites).to.deep.equal(inactiveSites);
         });
     });
@@ -825,8 +839,7 @@ describe('ActionsHubCommandHandlers', () => {
             } as SiteTreeItem);
 
             expect(traceErrorStub.firstCall.args[0]).to.equal(Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND);
-            expect(traceErrorStub.firstCall.args[1]).to.equal(Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND);
-            expect(traceErrorStub.firstCall.args[3]).to.deep.equal({ method: openSiteManagement.name, foo: 'bar', siteId: 'test-id' });
+            expect(traceErrorStub.firstCall.args[2]).to.deep.equal({ method: openSiteManagement.name, siteId: 'test-id' });
         });
     });
 
@@ -859,7 +872,8 @@ describe('ActionsHubCommandHandlers', () => {
                 siteVisibility: SiteVisibility.Public,
                 siteManagementUrl: "https://inactive-site-1-management.com",
                 createdOn: "2025-03-20",
-                creator: "Test Creator"
+                creator: "Test Creator",
+                isCodeSite: false
             });
             mockShowInformationMessage.resolves(Constants.Strings.YES);
 
@@ -882,7 +896,8 @@ describe('ActionsHubCommandHandlers', () => {
                 siteVisibility: SiteVisibility.Public,
                 siteManagementUrl: "https://inactive-site-1-management.com",
                 createdOn: "2025-03-20",
-                creator: "Test Creator"
+                creator: "Test Creator",
+                isCodeSite: false
             });
             mockShowInformationMessage.resolves(undefined);
 
@@ -903,13 +918,106 @@ describe('ActionsHubCommandHandlers', () => {
                 siteVisibility: SiteVisibility.Private,
                 siteManagementUrl: "https://inactive-site-1-management.com",
                 createdOn: "2025-03-20",
-                creator: "Test Creator"
+                creator: "Test Creator",
+                isCodeSite: false
             });
 
             await uploadSite(mockSiteTreeItem, "");
 
             expect(mockShowInformationMessage.called).to.be.false;
             expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
+        });
+
+        it('should upload code site', async () => {
+            mockSiteTreeItem = new SiteTreeItem({
+                name: "Test Site",
+                websiteId: "test-id",
+                dataModelVersion: 1,
+                status: WebsiteStatus.Active,
+                websiteUrl: 'https://test-site.com',
+                isCurrent: false,
+                siteVisibility: SiteVisibility.Private,
+                siteManagementUrl: "https://inactive-site-1-management.com",
+                createdOn: "2025-03-20",
+                creator: "Test Creator",
+                isCodeSite: true
+            });
+
+            const mockQuickPick = sinon.stub(vscode.window, 'showQuickPick');
+            mockQuickPick.resolves({ label: "Browse..." });
+
+            const mockShowOpenDialog = sinon.stub(vscode.window, 'showOpenDialog');
+            mockShowOpenDialog.resolves([{ fsPath: "D:/foo" } as unknown as vscode.Uri]);
+
+            await uploadSite(mockSiteTreeItem, "");
+
+            expect(mockQuickPick.calledOnce, "showQuickPick was not called").to.be.true;
+            expect(mockShowOpenDialog.calledOnce, "showOpenDialog was not called").to.be.true;
+            expect(mockSendText.firstCall.args[0]).to.equal(`pac pages upload-code-site --rootPath "test-path" --compiledPath "D:/foo" --siteName "Test Site"`);
+        });
+
+        it('should not upload code site when compiledPath selection is cancelled', async () => {
+            mockSiteTreeItem = new SiteTreeItem({
+                name: "Test Site",
+                websiteId: "test-id",
+                dataModelVersion: 1,
+                status: WebsiteStatus.Active,
+                websiteUrl: 'https://test-site.com',
+                isCurrent: false,
+                siteVisibility: SiteVisibility.Private,
+                siteManagementUrl: "https://inactive-site-1-management.com",
+                createdOn: "2025-03-20",
+                creator: "Test Creator",
+                isCodeSite: true
+            });
+
+            const mockQuickPick = sinon.stub(vscode.window, 'showQuickPick');
+            mockQuickPick.resolves({ label: "Browse..." });
+
+            const mockShowOpenDialog = sinon.stub(vscode.window, 'showOpenDialog');
+            mockShowOpenDialog.resolves(undefined);
+
+            const mockShowErrorMessage = sinon.stub(vscode.window, 'showErrorMessage');
+
+            await uploadSite(mockSiteTreeItem, "");
+
+            expect(mockQuickPick.calledOnce).to.be.true;
+            expect(mockShowOpenDialog.calledOnce).to.be.true;
+            expect(mockShowErrorMessage.calledOnce).to.be.true;
+            expect(mockSendText.called).to.be.false;
+        });
+
+        it('should handle errors during code site upload', async () => {
+            mockSiteTreeItem = new SiteTreeItem({
+                name: "Test Site",
+                websiteId: "test-id",
+                dataModelVersion: 1,
+                status: WebsiteStatus.Active,
+                websiteUrl: 'https://test-site.com',
+                isCurrent: false,
+                siteVisibility: SiteVisibility.Private,
+                siteManagementUrl: "https://inactive-site-1-management.com",
+                createdOn: "2025-03-20",
+                creator: "Test Creator",
+                isCodeSite: true
+            });
+
+            const mockQuickPick = sinon.stub(vscode.window, 'showQuickPick');
+            mockQuickPick.resolves({ label: "Browse..." });
+
+            const mockShowOpenDialog = sinon.stub(vscode.window, 'showOpenDialog');
+            mockShowOpenDialog.resolves([{ fsPath: "D:/foo" } as unknown as vscode.Uri]);
+
+            const mockShowErrorMessage = sinon.stub(vscode.window, 'showErrorMessage');
+            mockSendText.throws(new Error('Upload code site failed'));
+
+            await uploadSite(mockSiteTreeItem, "");
+
+            expect(mockQuickPick.calledOnce).to.be.true;
+            expect(mockShowOpenDialog.calledOnce).to.be.true;
+            expect(traceErrorStub.calledOnce).to.be.true;
+            expect(traceErrorStub.firstCall.args[0]).to.equal(Constants.EventNames.ACTIONS_HUB_UPLOAD_CODE_SITE_FAILED);
+            expect(mockShowErrorMessage.calledOnce).to.be.true;
         });
 
         it('should handle case sensitivity for public site visibility', async () => {
@@ -923,7 +1031,8 @@ describe('ActionsHubCommandHandlers', () => {
                 siteVisibility: SiteVisibility.Public,
                 siteManagementUrl: "https://inactive-site-1-management.com",
                 createdOn: "2025-03-20",
-                creator: "Test Creator"
+                creator: "Test Creator",
+                isCodeSite: false
             });
             mockShowInformationMessage.resolves(Constants.Strings.YES);
 
@@ -944,7 +1053,8 @@ describe('ActionsHubCommandHandlers', () => {
                 siteVisibility: SiteVisibility.Private,
                 siteManagementUrl: "https://inactive-site-1-management.com",
                 createdOn: "2025-03-20",
-                creator: "Test Creator"
+                creator: "Test Creator",
+                isCodeSite: false
             });
 
             mockSendText.throws(new Error('Upload failed'));

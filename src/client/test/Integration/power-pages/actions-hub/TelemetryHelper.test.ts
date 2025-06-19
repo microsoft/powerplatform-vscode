@@ -7,11 +7,30 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import PacContext from '../../../../pac/PacContext';
 import CurrentSiteContext from '../../../../power-pages/actions-hub/CurrentSiteContext';
-import { getBaseEventInfo } from '../../../../power-pages/actions-hub/TelemetryHelper';
+import { getBaseEventInfo, traceError, traceInfo } from '../../../../power-pages/actions-hub/TelemetryHelper';
 import ArtemisContext from '../../../../ArtemisContext';
+import { oneDSLoggerWrapper } from '../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 
 
 describe('TelemetryHelper', () => {
+    let traceInfoStub: sinon.SinonStub;
+    let traceErrorStub: sinon.SinonStub;
+
+    beforeEach(() => {
+        traceInfoStub = sinon.stub();
+        traceErrorStub = sinon.stub();
+        sinon.stub(oneDSLoggerWrapper, 'getLogger').returns({
+            traceError: traceErrorStub,
+            traceInfo: traceInfoStub,
+            traceWarning: sinon.stub(),
+            featureUsage: sinon.stub(),
+        });
+    });
+
+    afterEach(() => {
+        sinon.restore();
+    });
+
     describe('getBaseEventInfo', () => {
         let orgInfoStub: sinon.SinonStub;
         let siteIdStub: sinon.SinonStub;
@@ -104,4 +123,41 @@ describe('TelemetryHelper', () => {
             });
         });
     });
+
+    describe('traceInfo', () => {
+        it('should call traceInfo with correct event name and data', () => {
+            const eventName = 'testEvent';
+            const eventData = { key: 'value' };
+
+            traceInfo(eventName, eventData);
+
+            expect(traceInfoStub.calledOnce).to.be.true;
+            expect(traceInfoStub.firstCall.args[0]).to.equal(eventName);
+            expect(traceInfoStub.firstCall.args[1]).to.deep.equal({
+                ...getBaseEventInfo(),
+                ...eventData
+            });
+        });
+    });
+
+    describe('traceError', () => {
+        it('should call traceError with correct event name and data', () => {
+            const eventName = 'testEvent';
+            const error = new Error('testError');
+            const eventData = { key: 'value' };
+
+            traceError(eventName, error, eventData);
+
+            expect(traceErrorStub.calledOnce).to.be.true;
+            expect(traceErrorStub.firstCall.args[0]).to.equal(eventName);
+            expect(traceErrorStub.firstCall.args[1]).to.equal(error.message);
+            expect(traceErrorStub.firstCall.args[2]).to.equal(error);
+            expect(traceErrorStub.firstCall.args[3]).to.deep.equal({
+                ...getBaseEventInfo(),
+                error: error.message,
+                ...eventData
+            });
+        });
+    });
+
 });

@@ -68,10 +68,16 @@
   "browser": "./dist/web/extension.js",
   "categories": [
     "Snippets",
-    "Other"
+    "Other",
+    "Chat",
+    "AI"
   ],
   "keywords": [
-    "Power Platform"
+    "Power Platform",
+    "Power Pages",
+    "Power Apps",
+    "copilot",
+    "chat"
   ],
   "icon": "src/client/assets/icon.png",
   "badges": [
@@ -87,8 +93,6 @@
     }
   ],
   "activationEvents": [
-    "onCommand:pacCLI.openDocumentation",
-    "onCommand:microsoft-powerapps-portals.webExtension.init",
     "onCommand:powerplatform-walkthrough.overview-learn-more",
     "onCommand:powerplatform-walkthrough.fileSystem-documentation",
     "onCommand:powerplatform-walkthrough.fileSystem-open-folder",
@@ -112,13 +116,30 @@
     }
   },
   "contributes": {
+    "jsonValidation": [
+      {
+        "fileMatch": "powerpages.config.json",
+        "url": "https://json.schemastore.org/powerpages.config.json"
+      }
+    ],
     "chatParticipants": [
       {
         "id": "powerpages",
         "name": "powerpages",
         "fullName": "Copilot for Power Pages",
         "description": "Copilot for Power Pages",
-        "isSticky": true
+        "isSticky": true,
+        "disambiguation": [
+          {
+            "category": "powerpages_questions",
+            "description": "This Copilot chat experience assists Power Pages developers to write code by describing their expected code behavior using natural language. They can then refine the generated code and use it when customizing their site.",
+            "examples": [
+              "Write JavaScript code for form field validation to check phone field value is in the valid format.",
+              "Write web API code to query active contact records.",
+              "Write JavaScript code to highlight the row where email field is empty in table list."
+            ]
+          }
+        ]
       }
     ],
     "problemMatchers": [
@@ -159,7 +180,8 @@
       {
         "view": "pacCLI.authPanel",
         "contents": "%pacCLI.authPanel.welcome.whenInteractiveSupported%",
-        "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported"
+        "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported",
+        "enablement": "!microsoft.powerplatform.authPanel.isInitializing"
       },
       {
         "view": "pacCLI.authPanel",
@@ -169,7 +191,8 @@
       {
         "view": "microsoft.powerplatform.pages.actionsHub",
         "contents": "%microsoft.powerplatform.pages.actionsHub.login%",
-        "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported"
+        "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported",
+        "enablement": "microsoft.powerplatform.environment.initialized && !microsoft.powerplatform.pages.actionsHub.loadingWebsites"
       }
     ],
     "commands": [
@@ -581,6 +604,11 @@
             "telemetry",
             "usesOnlineServices"
           ]
+        },
+        "powerPlatform.pages.downloadSiteFolder": {
+          "type": "string",
+          "description": "%microsoft.powerplatform.pages.actionsHub.configuration.downloadSite.description%",
+          "default": ""
         }
       }
     },
@@ -1320,7 +1348,7 @@
     "yargs": "^16.2.0"
   },
   "dependencies": {
-    "@fluidframework/azure-client": "^1.2.0",
+    "@fluidframework/azure-client": "^2.31.1",
     "@microsoft/1ds-core-js": "4.0.5",
     "@microsoft/1ds-post-js": "4.0.5",
     "@microsoft/generator-powerpages": "1.21.19",
@@ -1331,14 +1359,14 @@
     "cockatiel": "^3.1.1",
     "command-exists": "^1.2.9",
     "find-process": "^1.4.7",
-    "fluid-framework": "^1.4.0",
+    "fluid-framework": "^2.31.1",
     "glob": "^7.1.7",
     "gpt-tokenizer": "^2.1.1",
     "gulp": "^5.0.0",
     "https-browserify": "^1.0.0",
     "liquidjs": "^10.2.0",
     "n-readlines": "^1.0.1",
-    "puppeteer-core": "^22.12.1",
+    "puppeteer-core": "^22.13.1",
     "recursive-readdir": "^2.2.3",
     "stream-http": "^3.2.0",
     "tty-browserify": "^0.0.1",

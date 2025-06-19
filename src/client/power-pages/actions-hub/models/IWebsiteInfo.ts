@@ -19,4 +19,5 @@ export interface IWebsiteInfo {
     creator: string;
     createdOn: string;
     languageCode?: string;
+    isCodeSite: boolean;
 }

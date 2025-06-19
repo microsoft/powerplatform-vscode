@@ -45,6 +45,7 @@ export class ActiveGroupTreeItem extends ActionsHubTreeItem {
                 creator: site.creator,
                 createdOn: site.createdOn,
                 languageCode: site.languageCode,
+                isCodeSite: site.isCodeSite
             };
 
             return new SiteTreeItem(siteInfo);

@@ -49,12 +49,14 @@ export interface IWebsiteDetails {
     creator: string;
     createdOn: string;
     languageCode: string;
+    isCodeSite: boolean;
 }
 
 export interface IOtherSiteInfo {
     name: string;
     websiteId: string;
     folderPath: string;
+    isCodeSite: boolean;
 }
 
 export interface WebsiteYaml {

@@ -75,7 +75,8 @@ describe('ActiveGroupTreeItem', () => {
                         siteManagementUrl: "http://site1.com/manage",
                         createdOn: "2025-03-20",
                         creator: "Test Creator",
-                        languageCode: "1033"
+                        languageCode: "1033",
+                        isCodeSite: true
                     },
                     {
                         websiteRecordId: "2",
@@ -89,7 +90,8 @@ describe('ActiveGroupTreeItem', () => {
                         siteManagementUrl: "http://site2.com/manage",
                         createdOn: "2025-03-20",
                         creator: "Test Creator",
-                        languageCode: "1033"
+                        languageCode: "1033",
+                        isCodeSite: false
                     }
                 ];
 
@@ -108,7 +110,8 @@ describe('ActiveGroupTreeItem', () => {
                     siteManagementUrl: "http://site1.com/manage",
                     createdOn: "2025-03-20",
                     creator: "Test Creator",
-                    languageCode: "1033"
+                    languageCode: "1033",
+                    isCodeSite: true
                 });
 
                 const site2 = children[1] as SiteTreeItem;
@@ -123,7 +126,8 @@ describe('ActiveGroupTreeItem', () => {
                     siteManagementUrl: "http://site2.com/manage",
                     createdOn: "2025-03-20",
                     creator: "Test Creator",
-                    languageCode: "1033"
+                    languageCode: "1033",
+                    isCodeSite: false
                 });
             });
 
@@ -142,7 +146,8 @@ describe('ActiveGroupTreeItem', () => {
                         siteManagementUrl: "http://site1.com/manage",
                         createdOn: "2025-03-20",
                         creator: "Test Creator",
-                        languageCode: "1033"
+                        languageCode: "1033",
+                        isCodeSite: true
                     }
                 ];
 
@@ -161,7 +166,8 @@ describe('ActiveGroupTreeItem', () => {
                     siteManagementUrl: "http://site1.com/manage",
                     createdOn: "2025-03-20",
                     creator: "Test Creator",
-                    languageCode: "1033"
+                    languageCode: "1033",
+                    isCodeSite: true
                 });
             });
 
@@ -181,7 +187,8 @@ describe('ActiveGroupTreeItem', () => {
                         siteManagementUrl: "http://site1.com/manage",
                         createdOn: "2025-03-20",
                         creator: "Test Creator",
-                        languageCode: "1033"
+                        languageCode: "1033",
+                        isCodeSite: true
                     }
                 ];
 
@@ -200,7 +207,8 @@ describe('ActiveGroupTreeItem', () => {
                     siteManagementUrl: "http://site1.com/manage",
                     createdOn: "2025-03-20",
                     creator: "Test Creator",
-                    languageCode: "1033"
+                    languageCode: "1033",
+                    isCodeSite: true
                 });
             });
         });

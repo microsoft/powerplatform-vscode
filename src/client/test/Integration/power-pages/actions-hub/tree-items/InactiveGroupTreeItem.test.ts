@@ -72,7 +72,8 @@ describe('InactiveGroupTreeItem', () => {
                         siteManagementUrl: "http://site1.com/manage",
                         createdOn: "2025-03-20",
                         creator: "Test Creator",
-                        languageCode: "1033"
+                        languageCode: "1033",
+                        isCodeSite: true
                     },
                     {
                         websiteRecordId: "2",
@@ -86,7 +87,8 @@ describe('InactiveGroupTreeItem', () => {
                         siteManagementUrl: "http://site1.com/manage",
                         createdOn: "2025-03-20",
                         creator: "Test Creator",
-                        languageCode: "1033"
+                        languageCode: "1033",
+                        isCodeSite: false
                     }
                 ];
 
@@ -105,7 +107,8 @@ describe('InactiveGroupTreeItem', () => {
                     siteManagementUrl: "http://site1.com/manage",
                     createdOn: "2025-03-20",
                     creator: "Test Creator",
-                    languageCode: "1033"
+                    languageCode: "1033",
+                    isCodeSite: true
                 });
 
                 const site2 = children[1] as SiteTreeItem;
@@ -120,7 +123,8 @@ describe('InactiveGroupTreeItem', () => {
                     siteManagementUrl: "http://site1.com/manage",
                     createdOn: "2025-03-20",
                     creator: "Test Creator",
-                    languageCode: "1033"
+                    languageCode: "1033",
+                    isCodeSite: false
                 });
             });
         });

@@ -19,7 +19,7 @@ export class ActionsHub {
         const enableActionsHub = ECSFeaturesClient.getConfig(EnableActionsHub).enableActionsHub
 
         if (enableActionsHub === undefined) {
-            return false;
+            return true;
         }
 
         return enableActionsHub;

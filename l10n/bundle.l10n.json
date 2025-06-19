@@ -10,7 +10,7 @@
   "Preview site URL is not valid": "Preview site URL is not valid",
   "Opening preview site...": "Opening preview site...",
   "Power Pages studio URL is not available": "Power Pages studio URL is not available",
-  "Microsoft wants your feeback": "Microsoft wants your feeback",
+  "Microsoft wants your feedback": "Microsoft wants your feedback",
   "Check the URL and verify the parameters are correct": "Check the URL and verify the parameters are correct",
   "Unable to complete the request": "Unable to complete the request",
   "One or more attribute names have been changed or removed. Contact your admin.": "One or more attribute names have been changed or removed. Contact your admin.",
@@ -79,7 +79,7 @@
   "Submit": "Submit",
   "Explain the following code {% include 'Page Copy'%}": "Explain the following code {% include 'Page Copy'%}",
   "Hi! @powerpages can help you write, edit, and even summarize your website code.": "Hi! @powerpages can help you write, edit, and even summarize your website code.",
-  "Authentication failed. Please try again.": "Authentication failed. Please try again.",
+  "Authentication failed. Please login and try again.": "Authentication failed. Please login and try again.",
   "AI features have been disabled by your organization. Contact your admin for details. [Learn more](https://go.microsoft.com/fwlink/?linkid=2285848)": "AI features have been disabled by your organization. Contact your admin for details. [Learn more](https://go.microsoft.com/fwlink/?linkid=2285848)",
   "Active auth profile is not found or has expired. Please try again.": "Active auth profile is not found or has expired. Please try again.",
   "Something went wrong. Don’t worry, you can try again.": "Something went wrong. Don’t worry, you can try again.",
@@ -87,6 +87,7 @@
   "Hi! Power Pages lets you build secure, professional websites that you can quickly configure and publish across web browsers and devices.\n\nTo create your website, visit the [Power Pages](https://powerpages.microsoft.com/).\nReturn to this chat and @powerpages can help you write and edit your website code.": "Hi! Power Pages lets you build secure, professional websites that you can quickly configure and publish across web browsers and devices.\n\nTo create your website, visit the [Power Pages](https://powerpages.microsoft.com/).\nReturn to this chat and @powerpages can help you write and edit your website code.",
   "Checking for active auth profile...": "Checking for active auth profile...",
   "@PowerPages is not yet available in your region.": "@PowerPages is not yet available in your region.",
+  "Login to PowerPages": "Login to PowerPages",
   "Generating webpages...": "Generating webpages...",
   "Generating a new Power Pages site...": "Generating a new Power Pages site...",
   "Failed to create a new Power Pages site. Please try again.": "Failed to create a new Power Pages site. Please try again.",
@@ -96,6 +97,7 @@
       "Do not translate 'PCF' as it is a product name."
     ]
   },
+  "Unable to locate website root folder.": "Unable to locate website root folder.",
   "File might be referenced by name {0} here./{0} represents the name of the file": {
     "message": "File might be referenced by name {0} here.",
     "comment": [
@@ -134,6 +136,7 @@
   "Your preview isn't updated. Please upload your site to see the latest changes.": "Your preview isn't updated. Please upload your site to see the latest changes.",
   "Upload changes": "Upload changes",
   "The preview shown is for published changes. Please publish any pending changes to see them in the preview.": "The preview shown is for published changes. Please publish any pending changes to see them in the preview.",
+  "Please login to preview the site.": "Please login to preview the site.",
   "Enter the name of the web template": "Enter the name of the web template",
   "Please enter a name for the web template.": "Please enter a name for the web template.",
   "A webtemplate with the same name already exists. Please enter a different name.": "A webtemplate with the same name already exists. Please enter a different name.",
@@ -204,12 +207,21 @@
   "Site Details": "Site Details",
   "Browse...": "Browse...",
   "Select the folder that will contain your project root for your site": "Select the folder that will contain your project root for your site",
+  "Select the folder that contains your compiled output": "Select the folder that contains your compiled output",
   "Select Folder": "Select Folder",
   "Environment changed successfully.": "Environment changed successfully.",
+  "Please select the folder that contains your compiled output to upload your site.": "Please select the folder that contains your compiled output to upload your site.",
+  "Upload failed. Please try again later.": "Upload failed. Please try again later.",
   "Timestamp: {0}/{0} is the timestamp": {
     "message": "Timestamp: {0}",
     "comment": [
       "{0} is the timestamp"
+    ]
+  },
+  "Session ID: {0}/{0} is the Session ID": {
+    "message": "Session ID: {0}",
+    "comment": [
+      "{0} is the Session ID"
     ]
   },
   "Tenant ID: {0}/{0} is the Tenant ID": {

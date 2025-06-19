@@ -6,14 +6,15 @@
 import fetch, { RequestInit } from "node-fetch";
 import { COPILOT_UNAVAILABLE } from "../copilot/constants";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
-import { CopilotArtemisFailureEvent, CopilotArtemisSuccessEvent } from "../copilot/telemetry/telemetryConstants";
+import { CopilotArtemisFailureEvent, CopilotArtemisSuccessEvent, CopilotGovernanceCheckEnabled } from "../copilot/telemetry/telemetryConstants";
 import { ServiceEndpointCategory } from "./Constants";
 import { IArtemisAPIOrgResponse, IArtemisServiceEndpointInformation, IArtemisServiceResponse, IIntelligenceAPIEndpointInformation } from "./Interfaces";
-import { isCopilotDisabledInGeo, isCopilotSupportedInGeo } from "../copilot/utils/copilotUtil";
+import { getCopilotGovernanceSetting, isCopilotDisabledInGeo, isCopilotGovernanceCheckEnabled, isCopilotSupportedInGeo } from "../copilot/utils/copilotUtil";
 import { BAPService } from "./BAPService";
+import { PPAPIService } from "./PPAPIService";
 
 export class ArtemisService {
-    public static async getIntelligenceEndpoint(orgId: string, sessionID: string, environmentId: string): Promise<IIntelligenceAPIEndpointInformation> {
+    public static async getIntelligenceEndpoint(orgId: string, sessionID: string, environmentId: string, websiteId?: string | null): Promise<IIntelligenceAPIEndpointInformation> {
 
         const artemisResponse = await ArtemisService.getArtemisResponse(orgId, sessionID);
 
@@ -25,7 +26,31 @@ export class ArtemisService {
         const { geoName, environment, clusterNumber } = artemisResponse.response as IArtemisAPIOrgResponse;
         sendTelemetryEvent({ eventName: CopilotArtemisSuccessEvent, copilotSessionId: sessionID, geoName: String(geoName), orgId: orgId });
 
-        const crossGeoDataMovementEnabledPPACFlag = await BAPService.getCrossGeoCopilotDataMovementEnabledFlag(artemisResponse.stamp,environmentId);
+        // Check if governance FCB is enabled
+        const isGovernanceCheckEnabled = isCopilotGovernanceCheckEnabled();
+
+        if (isGovernanceCheckEnabled) {
+
+            const copilotGovernanceSetting = getCopilotGovernanceSetting();
+
+            sendTelemetryEvent({ eventName: CopilotGovernanceCheckEnabled, copilotSessionId: sessionID, orgId: orgId, isGovernanceCheckEnabled: isGovernanceCheckEnabled, copilotGovernanceSetting: copilotGovernanceSetting});
+
+            // Use PPAPIService for governance flag check
+            const governanceResult = await PPAPIService.getGovernanceFlag(
+                artemisResponse.stamp,
+                environmentId,
+                sessionID,
+                copilotGovernanceSetting,
+                websiteId ?? null
+            );
+
+            if (!governanceResult) {
+                // Governance flag is disabled
+                return { intelligenceEndpoint: COPILOT_UNAVAILABLE, geoName: null, crossGeoDataMovementEnabledPPACFlag: false };
+            }
+        }
+
+        const crossGeoDataMovementEnabledPPACFlag = await BAPService.getCrossGeoCopilotDataMovementEnabledFlag(artemisResponse.stamp, environmentId);
 
         if (isCopilotDisabledInGeo().includes(geoName)) {
             return { intelligenceEndpoint: COPILOT_UNAVAILABLE, geoName: geoName, crossGeoDataMovementEnabledPPACFlag: crossGeoDataMovementEnabledPPACFlag };
@@ -95,18 +120,18 @@ export class ArtemisService {
         const updatedOrgId = orgId.replace(/-/g, "");
         const domain = updatedOrgId.slice(0, -1);
         const domainProd = updatedOrgId.slice(0, -2);
-        const nonProdSegment = updatedOrgId.slice(-1);
-        const prodSegment = updatedOrgId.slice(-2);
-        const tstUrl = `https://${domain}.${nonProdSegment}.organization.api.test.powerplatform.com/gateway/cluster?api-version=1`;
-        const preprodUrl = `https://${domain}.${nonProdSegment}.organization.api.preprod.powerplatform.com/gateway/cluster?api-version=1`;
-        const prodUrl = `https://${domainProd}.${prodSegment}.organization.api.powerplatform.com/gateway/cluster?api-version=1`;
-        const gccUrl = `https://${domain}.${prodSegment}.organization.api.gov.powerplatform.microsoft.us/gateway/cluster?api-version=1`;
-        const highUrl = `https://${domain}.${prodSegment}.organization.api.high.powerplatform.microsoft.us/gateway/cluster?api-version=1`;
-        const mooncakeUrl = `https://${domain}.${prodSegment}.organization.api.powerplatform.partner.microsoftonline.cn/gateway/cluster?app-version=1`;
-        const dodUrl = `https://${domain}.${prodSegment}.organization.api.appsplatform.us/gateway/cluster?app-version=1`;
+        const singleDigitSuffix = updatedOrgId.slice(-1);
+        const doubleDigitSuffix = updatedOrgId.slice(-2);
+        const testUrl = `https://${domain}.${singleDigitSuffix}.organization.api.test.powerplatform.com/gateway/cluster?api-version=1`;
+        const preprodUrl = `https://${domain}.${singleDigitSuffix}.organization.api.preprod.powerplatform.com/gateway/cluster?api-version=1`;
+        const prodUrl = `https://${domainProd}.${doubleDigitSuffix}.organization.api.powerplatform.com/gateway/cluster?api-version=1`;
+        const gccUrl = `https://${domain}.${singleDigitSuffix}.organization.api.gov.powerplatform.microsoft.us/gateway/cluster?api-version=1`;
+        const highUrl = `https://${domain}.${singleDigitSuffix}.organization.api.high.powerplatform.microsoft.us/gateway/cluster?api-version=1`;
+        const mooncakeUrl = `https://${domain}.${singleDigitSuffix}.organization.api.powerplatform.partner.microsoftonline.cn/gateway/cluster?app-version=1`;
+        const dodUrl = `https://${domain}.${singleDigitSuffix}.organization.api.appsplatform.us/gateway/cluster?app-version=1`;
 
         return [
-            { stamp: ServiceEndpointCategory.TEST, endpoint: tstUrl },
+            { stamp: ServiceEndpointCategory.TEST, endpoint: testUrl },
             { stamp: ServiceEndpointCategory.PREPROD, endpoint: preprodUrl },
             { stamp: ServiceEndpointCategory.PROD, endpoint: prodUrl },
             { stamp: ServiceEndpointCategory.GCC, endpoint: gccUrl },

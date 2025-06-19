@@ -20,7 +20,7 @@
     ]
   },
   "pacCLI.authPanel.welcome.whenInteractiveNotSupported": {
-    "message": "No auth profiles found on this computer.\nInteractive Authentication is not availalbe for remote scenarios; auth profiles must be created by the command line.  The `--deviceCode` flow must be used for users with MFA requirements, or whose tenants use ADFS.\n[View Auth Profile Help](command:pacCLI.pacAuthHelp)",
+    "message": "No auth profiles found on this computer.\nInteractive Authentication is not available for remote scenarios; auth profiles must be created by the command line.  The `--deviceCode` flow must be used for users with MFA requirements, or whose tenants use ADFS.\n[View Auth Profile Help](command:pacCLI.pacAuthHelp)",
     "comment": [
       "This is a Markdown formatted string, and the formatting must persist across translations.",
       "The second line should not translate the argument `--deviceCode`",
@@ -114,5 +114,6 @@
   "microsoft.powerplatform.pages.actionsHub.siteDetails.title": "Site Details",
   "microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite.title": "Download Site",
   "microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio.title": "Open in Power Pages Studio",
-  "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite.title": "Reactivate Site"
+  "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite.title": "Reactivate Site",
+  "microsoft.powerplatform.pages.actionsHub.configuration.downloadSite.description": "The folder where site will be downloaded when using Power Pages Actions. Leave this empty to ask for a folder every time you download a site."
 }

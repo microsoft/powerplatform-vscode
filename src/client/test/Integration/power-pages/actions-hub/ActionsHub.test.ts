@@ -49,7 +49,7 @@ describe("ActionsHub", () => {
         it("should return false if enableActionsHub is undefined", () => {
             getConfigStub.returns({ enableActionsHub: undefined });
             const result = ActionsHub.isEnabled();
-            expect(result).to.be.false;
+            expect(result).to.be.true;
         });
 
         it("should return the actual boolean if enableActionsHub has a value", () => {

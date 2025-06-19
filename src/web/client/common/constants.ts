@@ -127,6 +127,10 @@ export enum GraphService {
     GRAPH_PROFILE_PICTURE = "profilePicture",
 }
 
+export enum REFERRER {
+    POWER_PAGES_HOME = "PowerPagesHome"
+}
+
 export const MICROSOFT_GRAPH_PROFILE_PICTURE_SERVICE_CALL = "/photo/$value";
 
 // User collaboration constants

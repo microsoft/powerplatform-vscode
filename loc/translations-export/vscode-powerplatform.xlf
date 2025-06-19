@@ -54,8 +54,8 @@
     <trans-unit id="++CODE++1f6087c22e8b59c12a5a95c61f5811ecd795e553b7a0d7f2e337e36dc26fe509">
       <source xml:lang="en">Authenticating...</source>
     </trans-unit>
-    <trans-unit id="++CODE++4190475b52357e7ad3da76828784a5b9f291519e331b0c0e71f5d14e946bbc4b">
-      <source xml:lang="en">Authentication failed. Please try again.</source>
+    <trans-unit id="++CODE++93c83aa255a01cb4ee50d86e561c78b6c28e3e0f7fd9143dd7817b93b3c5a198">
+      <source xml:lang="en">Authentication failed. Please login and try again.</source>
     </trans-unit>
     <trans-unit id="++CODE++a57666e58a53eea23667fddf0a7c41bdc64abfc5eae94637e88388a6b139b314">
       <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
@@ -340,6 +340,9 @@ Return to this chat and @powerpages can help you write and edit your website cod
     <trans-unit id="++CODE++9d6322c1f4d9d3f38aed8bfbe0b2bcadf66ad82c008476fa62541fa069138e94">
       <source xml:lang="en">Login</source>
     </trans-unit>
+    <trans-unit id="++CODE++9ecf75483ab77698700a9c2bc98a0b615500ce13cb9e487795f6c4dd782989cc">
+      <source xml:lang="en">Login to PowerPages</source>
+    </trans-unit>
     <trans-unit id="++CODE++1be32f89a3d1d98bb7011850e83b5753124d58f684bae063674bfdb106026e6d">
       <source xml:lang="en">Make sure AI-generated content is accurate and appropriate before using. &lt;a href=&quot;https://go.microsoft.com/fwlink/?linkid=2240145&quot;&gt;Learn more&lt;/a&gt; | &lt;a href=&quot;https://go.microsoft.com/fwlink/?linkid=2189520&quot;&gt;View
               terms&lt;/a&gt;</source>
@@ -353,8 +356,8 @@ Return to this chat and @powerpages can help you write and edit your website cod
     <trans-unit id="++CODE++8a194d5287e3da019883144787cd5f282753f5ce892d933be0833b3818c25503">
       <source xml:lang="en">Maximum 30 characters allowed</source>
     </trans-unit>
-    <trans-unit id="++CODE++7fcd8b1c5225f7d9a771a4a02ca3e4795c3c9202cf2b3c3c879c625abb8b43e4">
-      <source xml:lang="en">Microsoft wants your feeback</source>
+    <trans-unit id="++CODE++b1c8258fb401975727a82d9ce473af0a600f076cc7b73dbd16524e815cf4153d">
+      <source xml:lang="en">Microsoft wants your feedback</source>
     </trans-unit>
     <trans-unit id="++CODE++a253ff09c5a8678e1fd1962b2c329245e139e45f9cc6ced4e5d7ad42c4108fc0">
       <source xml:lang="en">NEW</source>
@@ -460,6 +463,12 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++7f6276dc63b573d177b7d6e17f787b108e3c8c7d449324ac13a6d06b1be59d8e">
       <source xml:lang="en">Please enter a name for the webpage.</source>
     </trans-unit>
+    <trans-unit id="++CODE++6355962eca901310bd24d2142605263344a3f09fb4fc30fc0f9dcf4cd56bf534">
+      <source xml:lang="en">Please login to preview the site.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++f413d35f48356c6c13c6c9d8947f011221acb3bea7d0ce74eb2f5ed217f26bad">
+      <source xml:lang="en">Please select the folder that contains your compiled output to upload your site.</source>
+    </trans-unit>
     <trans-unit id="++CODE++1bac158cc07a75506df3774db0ad7c188c19ccad4943c4cf03da8b6700ef9ce4">
       <source xml:lang="en">Power Pages Copilot is now connected to the environment: {0} : {1}</source>
       <note>{0} represents the environment name</note>
@@ -500,6 +509,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++87468e6a845b82466220c11dd0ca315a4389dc1cb8e0ee102035bb4ce5cb7e39">
       <source xml:lang="en">Select an environment</source>
     </trans-unit>
+    <trans-unit id="++CODE++259b03b37447930b5127e28e350f988803a3047bbb0c7be4441c7da4f9b517d4">
+      <source xml:lang="en">Select the folder that contains your compiled output</source>
+    </trans-unit>
     <trans-unit id="++CODE++26297069e403c73e147151f2964757b7e9149762cf3a8e04ffd833907fb979e4">
       <source xml:lang="en">Select the folder that will contain your project root for your site</source>
     </trans-unit>
@@ -511,6 +523,10 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++142027a259879fdd2b6410360a9cd3798f433c2fc5668bb685dd4ff513072e16">
       <source xml:lang="en">Session Details</source>
+    </trans-unit>
+    <trans-unit id="++CODE++08b44927dd7cd913d5c36c74e3ccf55ef966b6c2f067b173fbbe4e3c32f30d15">
+      <source xml:lang="en">Session ID: {0}</source>
+      <note>{0} is the Session ID</note>
     </trans-unit>
     <trans-unit id="++CODE++899fb203e6c2faac8093e21a2fa8db0d4b13d16ea5492461d8b72dbcee3ecf2a">
       <source xml:lang="en">Show Output Panel</source>
@@ -600,6 +616,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++bab36b47fe2dd4f2f7e8eb486f2e3546e27dc047e69f5b24307bc71e5be2a7cf">
       <source xml:lang="en">Unable to find that app</source>
     </trans-unit>
+    <trans-unit id="++CODE++3747890a3bfddec3123ce9a40cdd15f278d1335b382f80beb52bf18101ab02c2">
+      <source xml:lang="en">Unable to locate website root folder.</source>
+    </trans-unit>
     <trans-unit id="++CODE++b6038584b7b1f565be9c9d3f0ac11be70bd2e69e072ead52884ca7338a14ee67">
       <source xml:lang="en">Unique name: {0}</source>
       <note>{0} is the Unique name</note>
@@ -609,6 +628,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++7fce0124a7cb74955461f08e39ceaaed1e2850492f077f4e6defd82ef3ca6b0e">
       <source xml:lang="en">Upload changes</source>
+    </trans-unit>
+    <trans-unit id="++CODE++8a91e7caf57148c6be78b3986477464b36f0282a9e9a09b635b0db4fe6246132">
+      <source xml:lang="en">Upload failed. Please try again later.</source>
     </trans-unit>
     <trans-unit id="++CODE++696d5f7b79a75961bc5d99ecbbea7b535acc73160e0b6422daa45b0ae7c04368">
       <source xml:lang="en">User: {0}</source>
@@ -788,7 +810,7 @@ The second line should be '[TRANSLATION HERE](command:microsoft.powerplatform.pa
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveNotSupported">
       <source xml:lang="en">No auth profiles found on this computer.
-Interactive Authentication is not availalbe for remote scenarios; auth profiles must be created by the command line.  The `--deviceCode` flow must be used for users with MFA requirements, or whose tenants use ADFS.
+Interactive Authentication is not available for remote scenarios; auth profiles must be created by the command line.  The `--deviceCode` flow must be used for users with MFA requirements, or whose tenants use ADFS.
 [View Auth Profile Help](command:pacCLI.pacAuthHelp)</source>
       <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should not translate the argument `--deviceCode`
@@ -891,6 +913,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.siteDetails.title">
       <source xml:lang="en">Site Details</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.configuration.downloadSite.description">
+      <source xml:lang="en">The folder where site will be downloaded when using Power Pages Actions. Leave this empty to ask for a folder every time you download a site.</source>
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite.title">
       <source xml:lang="en">Upload Site</source>
