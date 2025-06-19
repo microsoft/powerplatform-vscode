@@ -48,6 +48,7 @@ export interface IWebsiteDetails {
     siteManagementUrl: string;
     creator: string;
     createdOn: string;
+    languageCode: string;
     isCodeSite: boolean;
 }
 

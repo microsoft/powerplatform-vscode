@@ -43,6 +43,7 @@ export class InactiveGroupTreeItem extends ActionsHubTreeItem {
                 siteManagementUrl: site.siteManagementUrl,
                 creator: site.creator,
                 createdOn: site.createdOn,
+                languageCode: site.languageCode,
                 isCodeSite: site.isCodeSite
             };
             const siteItem = new SiteTreeItem(siteInfo);

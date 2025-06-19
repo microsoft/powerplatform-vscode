@@ -78,6 +78,7 @@ describe("WebsiteUtil", () => {
                     siteVisibility: undefined,
                     creator: 'Test User',
                     createdOn: '2025-03-01T12:00:00Z',
+                    languageCode: '1033',
                     isCodeSite: false
                 },
                 {
@@ -92,6 +93,7 @@ describe("WebsiteUtil", () => {
                     siteVisibility: undefined,
                     creator: 'Another User',
                     createdOn: '2025-03-15T12:00:00Z',
+                    languageCode: '1033',
                     isCodeSite: false
                 }
             ];
