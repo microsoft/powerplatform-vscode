@@ -114,5 +114,6 @@
   "microsoft.powerplatform.pages.actionsHub.siteDetails.title": "Site Details",
   "microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite.title": "Download Site",
   "microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio.title": "Open in Power Pages Studio",
+  "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite.title": "Reactivate Site",
   "microsoft.powerplatform.pages.actionsHub.configuration.downloadSite.description": "The folder where site will be downloaded when using Power Pages Actions. Leave this empty to ask for a folder every time you download a site."
 }

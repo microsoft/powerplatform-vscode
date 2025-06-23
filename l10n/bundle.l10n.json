@@ -212,6 +212,7 @@
   "Environment changed successfully.": "Environment changed successfully.",
   "Please select the folder that contains your compiled output to upload your site.": "Please select the folder that contains your compiled output to upload your site.",
   "Upload failed. Please try again later.": "Upload failed. Please try again later.",
+  "Missing required site information for reactivation.": "Missing required site information for reactivation.",
   "Timestamp: {0}/{0} is the timestamp": {
     "message": "Timestamp: {0}",
     "comment": [
