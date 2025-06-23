@@ -359,6 +359,9 @@ Return to this chat and @powerpages can help you write and edit your website cod
     <trans-unit id="++CODE++b1c8258fb401975727a82d9ce473af0a600f076cc7b73dbd16524e815cf4153d">
       <source xml:lang="en">Microsoft wants your feedback</source>
     </trans-unit>
+    <trans-unit id="++CODE++5813bc61a859f78f4474b9c45e545b7da14fe71acdbb5b7c4cb7010628780513">
+      <source xml:lang="en">Missing required site information for reactivation.</source>
+    </trans-unit>
     <trans-unit id="++CODE++a253ff09c5a8678e1fd1962b2c329245e139e45f9cc6ced4e5d7ad42c4108fc0">
       <source xml:lang="en">NEW</source>
     </trans-unit>
@@ -868,6 +871,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="powerplatform.pages.previewSite.title">
       <source xml:lang="en">Preview Site</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite.title">
+      <source xml:lang="en">Reactivate Site</source>
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.refresh.title">
       <source xml:lang="en">Refresh</source>
