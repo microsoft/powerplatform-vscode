@@ -57,7 +57,8 @@
   },
   "engines": {
     "vscode": "^1.91.0",
-    "npm": ">=8.3.0"
+    "npm": ">=8.3.0",
+    "node": ">=20.0.0"
   },
   "extensionKind": [
     "workspace"

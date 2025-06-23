@@ -33,9 +33,9 @@ pool:
 
 steps:
 - task: NodeTool@0
-  displayName: 'Use nodejs 18.x'
+  displayName: 'Use nodejs 20.x'
   inputs:
-    versionSpec: '18.x'
+    versionSpec: '20.x'
 
 - task: Npm@1
   displayName: 'Restore (npm install)'
