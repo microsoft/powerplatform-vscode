@@ -49,7 +49,9 @@ export const Constants = {
         CONFIGURATION_NAME: "powerPlatform.pages",
         DOWNLOAD_SETTING_NAME: "downloadSiteFolder",
         UPLOAD_CODE_SITE_COMPILED_OUTPUT_FOLDER_NOT_FOUND: vscode.l10n.t("Please select the folder that contains your compiled output to upload your site."),
-        UPLOAD_CODE_SITE_FAILED: vscode.l10n.t("Upload failed. Please try again later.")
+        UPLOAD_CODE_SITE_FAILED: vscode.l10n.t("Upload failed. Please try again later."),
+        POWER_PAGES_CONFIG_FILE_NAME: "powerpages.config.json",
+        MISSING_REACTIVATION_URL_INFO: vscode.l10n.t("Missing required site information for reactivation.")
     },
     EventNames: {
         ACTIONS_HUB_ENABLED: "ActionsHubEnabled",
@@ -103,9 +105,11 @@ export const Constants = {
         ACTIONS_HUB_DOWNLOAD_CODE_SITE_PAC_TRIGGERED: "ActionsHubDownloadCodeSitePacTriggered",
         ACTIONS_HUB_OPEN_SITE_IN_STUDIO_CALLED: "ActionsHubOpenSiteInStudioCalled",
         ACTIONS_HUB_OPEN_SITE_IN_STUDIO_FAILED: "ActionsHubOpenSiteInStudioFailed",
+        ACTIONS_HUB_SITE_REACTIVATION_FAILED: "ActionsHubSiteReactivationFailed",
         ACTIONS_HUB_UPLOAD_CODE_SITE_CALLED: "ActionsHubUploadCodeSiteCalled",
         ACTIONS_HUB_UPLOAD_CODE_SITE_FAILED: "ActionsHubUploadCodeSiteFailed",
-        ACTIONS_HUB_UPLOAD_OTHER_CODE_SITE_PAC_TRIGGERED: "ActionsHubUploadOtherCodeSitePacTriggered"
+        ACTIONS_HUB_UPLOAD_OTHER_CODE_SITE_PAC_TRIGGERED: "ActionsHubUploadOtherCodeSitePacTriggered",
+        POWER_PAGES_CONFIG_PARSE_FAILED: "PowerPagesConfigParseFailed"
     },
     FeatureNames: {
         REFRESH_ENVIRONMENT: "RefreshEnvironment"

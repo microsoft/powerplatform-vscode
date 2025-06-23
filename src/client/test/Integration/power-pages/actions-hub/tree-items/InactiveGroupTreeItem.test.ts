@@ -72,6 +72,7 @@ describe('InactiveGroupTreeItem', () => {
                         siteManagementUrl: "http://site1.com/manage",
                         createdOn: "2025-03-20",
                         creator: "Test Creator",
+                        languageCode: "1033",
                         isCodeSite: true
                     },
                     {
@@ -86,6 +87,7 @@ describe('InactiveGroupTreeItem', () => {
                         siteManagementUrl: "http://site1.com/manage",
                         createdOn: "2025-03-20",
                         creator: "Test Creator",
+                        languageCode: "1033",
                         isCodeSite: false
                     }
                 ];
@@ -105,6 +107,7 @@ describe('InactiveGroupTreeItem', () => {
                     siteManagementUrl: "http://site1.com/manage",
                     createdOn: "2025-03-20",
                     creator: "Test Creator",
+                    languageCode: "1033",
                     isCodeSite: true
                 });
 
@@ -120,6 +123,7 @@ describe('InactiveGroupTreeItem', () => {
                     siteManagementUrl: "http://site1.com/manage",
                     createdOn: "2025-03-20",
                     creator: "Test Creator",
+                    languageCode: "1033",
                     isCodeSite: false
                 });
             });
