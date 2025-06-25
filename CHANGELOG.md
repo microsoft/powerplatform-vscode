@@ -1,6 +1,6 @@
 # Change Log - Power Platform Extension
 
-## 2.0.88
+## 2.0.89
 - pac CLI 1.44.2, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 - Reactivate inactive site support in Power Pages Actions (Desktop)
 
