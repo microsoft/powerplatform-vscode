@@ -932,7 +932,7 @@ export const reactivateSite = async (siteTreeItem: SiteTreeItem) => {
 
     let siteAddress = websiteUrl;
     if(siteAddress === null || siteAddress === undefined) {
-        siteAddress = "";
+        siteAddress = ""; // Studio generates a new URL for the site
     }
 
     const reactivateSiteUrl = `${getStudioBaseUrl()}/e/${environmentId}/portals/create?reactivateWebsiteId=${websiteId}&siteName=${encodeURIComponent(name)}&siteAddress=${encodeURIComponent(siteAddress)}&siteLanguageId=${languageCode}&isNewDataModel=${isNewDataModel}`;
