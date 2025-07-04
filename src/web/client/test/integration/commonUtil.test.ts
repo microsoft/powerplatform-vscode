@@ -9,6 +9,8 @@ import {
     convertContentToUint8Array,
     convertContentToString,
     GetFileNameWithExtension,
+    clearFileNameTracker,
+    getFolderNameWithEntityId,
 } from "../../utilities/commonUtil";
 
 describe("commonUtil", async () => {
@@ -60,9 +62,7 @@ describe("commonUtil", async () => {
         //Assert
         expect(uint8).instanceOf(Uint8Array);
         expect(uint8).eq(data);
-    });
-
-    it("GetFileNameWithExtension_withEntityWebpages_shouldAddFileNameWithExtension", () => {
+    });    it("GetFileNameWithExtension_withEntityWebpages_shouldAddFileNameWithExtension", () => {
         //Act
         const entity = schemaEntityName.WEBPAGES;
         const fileName = "test";
@@ -139,5 +139,75 @@ describe("commonUtil", async () => {
 
         //Assert
         expect(result).eq(fileName);
+    });
+
+    it("getFolderNameWithEntityId_withDuplicateWebpageFolders_shouldAddEntityIdSuffix", () => {
+        // Clear the tracker to start fresh
+        clearFileNameTracker();
+
+        //Act
+        const entity = schemaEntityName.WEBPAGES;
+        const folderName = "Home";
+        const entityId1 = "page-12345";
+        const entityId2 = "page-67890";
+
+        //Action - First webpage folder with this name
+        const result1 = getFolderNameWithEntityId(entity, folderName, entityId1);
+
+        //Action - Second webpage folder with same name (should get suffix)
+        const result2 = getFolderNameWithEntityId(entity, folderName, entityId2);
+
+        //Assert
+        const expectedResult1 = folderName;
+        const expectedResult2 = `${folderName}-${entityId2}`;
+        expect(result1).eq(expectedResult1);
+        expect(result2).eq(expectedResult2);
+    });
+
+    it("getFolderNameWithEntityId_withNonWebpageEntity_shouldNotAddEntityIdSuffix", () => {
+        // Clear the tracker to start fresh
+        clearFileNameTracker();
+
+        //Act
+        const entity = schemaEntityName.WEBTEMPLATES;
+        const folderName = "Template";
+        const entityId = "template-123";
+
+        //Action
+        const result = getFolderNameWithEntityId(entity, folderName, entityId);
+
+        //Assert - Should not add suffix for non-webpage entities
+        expect(result).eq(folderName);
+    });
+
+    it("getFolderNameWithEntityId_withoutEntityId_shouldReturnSanitizedFolderName", () => {
+        //Act
+        const entity = schemaEntityName.WEBPAGES;
+        const folderName = "My Special Folder!@#";
+
+        //Action - Called without entityId
+        const result = getFolderNameWithEntityId(entity, folderName);
+
+        //Assert - Should return sanitized folder name without entityId
+        const expectedResult = "My Special Folder";
+        expect(result).eq(expectedResult);
+    });
+
+    it("getFolderNameWithEntityId_withSameEntityIdCalledTwice_shouldReturnSameResult", () => {
+        // Clear the tracker to start fresh
+        clearFileNameTracker();
+
+        //Act
+        const entity = schemaEntityName.WEBPAGES;
+        const folderName = "Contact";
+        const entityId = "contact-abc123";
+
+        //Action - Same entity called twice
+        const result1 = getFolderNameWithEntityId(entity, folderName, entityId);
+        const result2 = getFolderNameWithEntityId(entity, folderName, entityId);
+
+        //Assert - Both should return the same result without suffix
+        expect(result1).eq(folderName);
+        expect(result2).eq(folderName);
     });
 });
