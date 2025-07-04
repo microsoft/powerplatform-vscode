@@ -474,6 +474,10 @@
       {
         "command": "microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio",
         "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite",
+        "title": "%microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite.title%"
       }
     ],
     "configuration": {
@@ -975,6 +979,10 @@
         {
           "command": "microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio",
           "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite",
+          "when": "never"
         }
       ],
       "view/title": [
@@ -1142,6 +1150,11 @@
           "command": "microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio",
           "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite)",
           "group": "siteAction@6"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == inactiveSite",
+          "group": "siteAction@1"
         }
       ]
     },
@@ -1323,7 +1336,7 @@
     "path-browserify": "^1.0.1",
     "process": "^0.11.10",
     "ps-list": "^7.2.0",
-    "release-it": "^16.2.1",
+    "release-it": "^19.0.3",
     "sinon": "^14.0.0",
     "stream-browserify": "^3.0.0",
     "ts-loader": "^9.2.8",
@@ -1353,7 +1366,7 @@
     "https-browserify": "^1.0.0",
     "liquidjs": "^10.2.0",
     "n-readlines": "^1.0.1",
-    "puppeteer-core": "^22.12.1",
+    "puppeteer-core": "^22.13.1",
     "recursive-readdir": "^2.2.3",
     "stream-http": "^3.2.0",
     "tty-browserify": "^0.0.1",

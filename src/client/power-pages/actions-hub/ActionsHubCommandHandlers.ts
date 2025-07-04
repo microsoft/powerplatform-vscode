@@ -29,8 +29,9 @@ import { isEdmEnvironment } from '../../../common/copilot/dataverseMetadata';
 import { IWebsiteInfo } from './models/IWebsiteInfo';
 import moment from 'moment';
 import { SiteVisibility } from './models/SiteVisibility';
-import { traceError, traceInfo } from './TelemetryHelper';
+import { getBaseEventInfo, traceError, traceInfo } from './TelemetryHelper';
 import { IPowerPagesConfig, IPowerPagesConfigData } from './models/IPowerPagesConfig';
+import { oneDSLoggerWrapper } from '../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 
 const sortByCreatedOn = <T extends { createdOn?: string | null }>(item1: T, item2: T): number => {
     const date1 = new Date(item1.createdOn || '').valueOf(); //NaN if createdOn is null or undefined
@@ -915,3 +916,26 @@ export const openInStudio = async (siteTreeItem: SiteTreeItem) => {
         );
     }
 }
+
+export const reactivateSite = async (siteTreeItem: SiteTreeItem) => {
+    const { websiteId, name, websiteUrl, languageCode, dataModelVersion } = siteTreeItem.siteInfo;
+    const environmentId = PacContext.AuthInfo?.EnvironmentId || "";
+
+    if (!websiteId || !environmentId || !name || !languageCode || !dataModelVersion) {
+        oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_SITE_REACTIVATION_FAILED, Constants.Strings.MISSING_REACTIVATION_URL_INFO, new Error(Constants.Strings.MISSING_REACTIVATION_URL_INFO), { methodName: reactivateSite.name, ...getBaseEventInfo() });
+
+        await vscode.window.showErrorMessage(Constants.Strings.MISSING_REACTIVATION_URL_INFO);
+        return;
+    }
+
+    const isNewDataModel = siteTreeItem.siteInfo.dataModelVersion === 2;
+
+    let siteAddress = websiteUrl;
+    if(siteAddress === null || siteAddress === undefined) {
+        siteAddress = ""; // Studio generates a new URL for the site
+    }
+
+    const reactivateSiteUrl = `${getStudioBaseUrl()}/e/${environmentId}/portals/create?reactivateWebsiteId=${websiteId}&siteName=${encodeURIComponent(name)}&siteAddress=${encodeURIComponent(siteAddress)}&siteLanguageId=${languageCode}&isNewDataModel=${isNewDataModel}`;
+
+    await vscode.env.openExternal(vscode.Uri.parse(reactivateSiteUrl));
+};

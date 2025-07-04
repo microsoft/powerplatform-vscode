@@ -101,6 +101,7 @@ export const POWERPAGES_SITE_SETTINGS_API_PATH = 'api/data/v9.2/mspp_sitesetting
 export const APP_MODULES_PATH = 'api/data/v9.2/appmodules';
 export const ADX_WEBSITE_RECORDS_FETCH_FAILED = 'AdxWebsiteRecordsFetchFailed';
 export const POWERPAGES_SITE_RECORDS_FETCH_FAILED = 'PowerPagesSiteRecordsFetchFailed';
+export const POWERPAGES_SITE_RECORDS_CONTENT_PARSE_FAILED = 'PowerPagesSiteRecordsContentParseFailed';
 export const POWERPAGES_SITE_SETTINGS_FETCH_FAILED = 'PowerPagesSiteSettingsFetchFailed';
 export const CODE_SITE_SETTING_NAME = 'CodeSite/Enabled';
 export const APP_MODULES_FETCH_FAILED = 'AppModulesFetchFailed';
