@@ -117,9 +117,25 @@ export class GeneratorAcquisition implements IDisposable {
                     args: [String(child.error)],
                     comment: ["{0} represents the error message returned from the exception"]
                 }));
+                return null;
             } else {
                 oneDSLoggerWrapper.getLogger().traceInfo('PowerPagesGeneratorInstallComplete', { cliVersion: this._generatorVersion });
-                this._context.showInformationMessage(vscode.l10n.t('The Power Pages generator is ready for use in your VS Code extension!'));
+                
+                // Verify that the yo command is actually available after installation
+                const installedYoPath = this.yoCommandPath;
+                if (installedYoPath) {
+                    this._context.showInformationMessage(vscode.l10n.t('The Power Pages generator is ready for use in your VS Code extension!'));
+                    return installedYoPath;
+                } else {
+                    oneDSLoggerWrapper.getLogger().traceError(
+                        'PowerPagesGeneratorYoPathNotFound',
+                        'Yo command not found after installation',
+                        { name: 'PowerPagesGeneratorYoPathNotFound', message: 'Yo command not found after installation' } as Error,
+                        { cliVersion: this._generatorVersion }, {}
+                    );
+                    this._context.showErrorMessage(vscode.l10n.t('Power Pages generator installation completed but yo command is not available. Please try restarting VS Code.'));
+                    return null;
+                }
             }
         }
         return this.yoCommandPath
