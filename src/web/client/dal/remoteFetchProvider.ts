@@ -41,6 +41,9 @@ export async function fetchDataFromDataverseAndUpdateVFS(
     defaultFileInfo?: IFileInfo,
 ) {
     try {
+        // Clear webpage names tracking for fresh start
+        WebExtensionContext.getWebpageNames().clear();
+
         const entityRequestURLs = getRequestUrlForEntities(defaultFileInfo?.entityId, defaultFileInfo?.entityName);
         const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
             Constants.queryParameters.ORG_URL
@@ -236,12 +239,20 @@ async function createContentFiles(
 
         let folderName = fileName;
         if (entityName === schemaEntityName.WEBPAGES) {
-            // Check if this webpage is marked as a duplicate
-            if (WebExtensionContext.isWebpageDuplicate(fileName, entityId)) {
+            // Simple inline duplicate handling
+            const webpageNames = WebExtensionContext.getWebpageNames();
+
+            console.log(`Processing webpage: ${fileName}, entityId: ${entityId}, already exists: ${webpageNames.has(fileName)}`);
+
+            if (webpageNames.has(fileName)) {
+                // This is a duplicate - append entity ID
                 folderName = getDuplicateFileName(fileName, entityId);
-                WebExtensionContext.updateWebpageNames(entityId, folderName);
+                console.log(`Created duplicate folder name: ${folderName}`);
+            } else {
+                // First occurrence - just track it
+                webpageNames.add(fileName);
+                console.log(`Added to tracking: ${fileName}`);
             }
-            // Note: We don't call updateWebpageNames for non-duplicates to avoid confusion
         }
 
         // Create folder paths
@@ -589,43 +600,6 @@ export async function preprocessData(
     entityType: string
 ) {
     try {
-        // Handle webpage duplicate names
-        if (entityType === schemaEntityName.WEBPAGES) {
-            const entityDetails = getEntity(entityType);
-            const fetchedFileName = entityDetails?.get(schemaEntityKey.FILE_NAME_FIELD);
-            const fetchedFileId = entityDetails?.get(schemaEntityKey.FILE_ID_FIELD);
-
-            if (fetchedFileName && fetchedFileId) {
-                // Clear any existing duplicate tracking for this session
-                WebExtensionContext.clearWebpageDuplicates();
-
-                // Count occurrences of each webpage name
-                const nameOccurrences = new Map<string, string[]>();
-
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                data?.forEach((dataItem: any) => {
-                    const fileName = dataItem[fetchedFileName] || Constants.EMPTY_FILE_NAME;
-                    const entityId = dataItem[fetchedFileId];
-
-                    if (fileName !== Constants.EMPTY_FILE_NAME && entityId) {
-                        if (!nameOccurrences.has(fileName)) {
-                            nameOccurrences.set(fileName, []);
-                        }
-                        nameOccurrences.get(fileName)?.push(entityId);
-                    }
-                });
-
-                // Mark duplicate names in WebExtensionContext
-                nameOccurrences.forEach((entityIds, fileName) => {
-                    if (entityIds.length > 1) {
-                        // Skip the first occurrence, mark starting from the second one
-                        const duplicateEntityIds = entityIds.slice(1); // Skip first element
-                        WebExtensionContext.markWebpageAsDuplicate(fileName, duplicateEntityIds);
-                    }
-                });
-            }
-        }
-
         const schema = WebExtensionContext.urlParametersMap
             .get(schemaKey.SCHEMA_VERSION)
             ?.toLowerCase() as string;
