@@ -16,7 +16,6 @@ export interface IFileData extends IFileInfo {
     mimeType: string | undefined;
     isContentLoaded?: boolean;
     logicalEntityName?: string;
-    webpageName?: string;
 }
 
 export class FileData implements IFileData {
@@ -32,7 +31,6 @@ export class FileData implements IFileData {
     private _mimeType: string | undefined;
     private _isContentLoaded: boolean | undefined;
     private _entityMetadata: SchemaEntityMetadata | undefined;
-    private _webpageName: string | undefined;
 
     // Getters
     public get entityName(): string {
@@ -73,10 +71,6 @@ export class FileData implements IFileData {
         return this._entityMetadata;
     }
 
-    public get webpageName(): string | undefined {
-        return this._webpageName;
-    }
-
     // Setters
     public set setHasDirtyChanges(value: boolean) {
         this._hasDirtyChanges = value;
@@ -90,10 +84,6 @@ export class FileData implements IFileData {
 
     public set setentityMetadata(value: SchemaEntityMetadata) {
         this._entityMetadata = value;
-    }
-
-    public set setWebpageName(value: string) {
-        this._webpageName = value;
     }
 
     constructor(
