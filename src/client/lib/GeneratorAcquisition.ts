@@ -53,7 +53,16 @@ export class GeneratorAcquisition implements IDisposable {
     public get yoCommandPath(): string | null {
         const execName = (os.platform() === 'win32') ? 'yo.cmd' : 'yo';
         const yoBinaryPath = path.join(this._ppagesGlobalPath, 'node_modules', ".bin", execName);
-        return fs.pathExistsSync(yoBinaryPath) ? yoBinaryPath : null;
+        const exists = fs.pathExistsSync(yoBinaryPath);
+        
+        oneDSLoggerWrapper.getLogger().traceInfo('YoCommandPathCheck', {
+            execName,
+            yoBinaryPath,
+            exists,
+            ppagesGlobalPath: this._ppagesGlobalPath
+        });
+        
+        return exists ? yoBinaryPath : null;
     }
 
     public constructor(context: ICliAcquisitionContext) {
@@ -104,6 +113,15 @@ export class GeneratorAcquisition implements IDisposable {
             fs.writeFileSync(path.join(this._ppagesGlobalPath, "package.json"), JSON.stringify(packageJson), 'utf-8');
 
             const child = this.npm(['install']);
+            
+            oneDSLoggerWrapper.getLogger().traceInfo('PowerPagesGeneratorNpmInstall', {
+                exitCode: child.status,
+                error: child.error ? String(child.error) : null,
+                stderr: child.stderr ? child.stderr.toString() : null,
+                stdout: child.stdout ? child.stdout.toString() : null,
+                cliVersion: this._generatorVersion
+            });
+            
             if (child.error) {
                 oneDSLoggerWrapper.getLogger().traceError(
                     'PowerPagesGeneratorInstallComplete',
