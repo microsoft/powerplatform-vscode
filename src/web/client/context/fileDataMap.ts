@@ -43,6 +43,15 @@ export class FileDataMap {
         this.fileMap.set(vscode.Uri.parse(fileUri).fsPath, fileData);
     }
 
+    public updateWebpageNames(entityId: string, webpageName: string) {
+        for (const [key, value] of this.fileMap.entries()) {
+            if (value.entityId === entityId) {
+                value.setWebpageName = webpageName;
+                this.fileMap.set(key, value);
+            }
+        }
+    }
+
     public updateDirtyChanges(fileFsPath: string, dirtyFlagValue: boolean) {
         const existingEntity = this.fileMap.get(fileFsPath);
 

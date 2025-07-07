@@ -83,6 +83,28 @@ export interface IWebExtensionContext {
 
     // Error handling
     concurrencyHandler: ConcurrencyHandler;
+
+    // Co-Presence for Power Pages Vscode for web
+    worker: Worker | undefined;
+    sharedWorkSpaceMap: Map<string, string>;
+    containerId: string;
+    currentConnectionId: string;
+    connectedUsers: UserDataMap;
+    quickPickProvider: QuickPickProvider;
+    userCollaborationProvider: UserCollaborationProvider;
+    graphClientService: GraphClientService;
+
+    webpageNames: Set<string>;
+    webpageEntities: Map<string, string>;
+    webpageDuplicates: Map<string, string[]>;
+
+    getWebpageNames(): Set<string>;
+    getWebpageEntities(): Map<string, string>;
+    markWebpageAsDuplicate(fileName: string, entityIds: string[]): void;
+    isWebpageDuplicate(fileName: string, entityId: string): boolean;
+    clearWebpageDuplicates(): void;
+
+    updateWebpageNames(entityId: string, webpageName: string): void;
 }
 
 class WebExtensionContext implements IWebExtensionContext {
@@ -120,7 +142,6 @@ class WebExtensionContext implements IWebExtensionContext {
     private _userId: string;
     private _formsProEligibilityId: string;
     private _concurrencyHandler: ConcurrencyHandler;
-    // Co-Presence for Power Pages Vscode for web
     private _worker: Worker | undefined;
     private _sharedWorkSpaceMap: Map<string, string>;
     private _containerId: string;
@@ -129,6 +150,9 @@ class WebExtensionContext implements IWebExtensionContext {
     private _quickPickProvider: QuickPickProvider;
     private _userCollaborationProvider: UserCollaborationProvider;
     private _graphClientService: GraphClientService;
+    private _webpageNames: Set<string>;
+    private _webpageEntities: Map<string, string>;
+    private _webpageDuplicates: Map<string, string[]>;
 
     public get schemaDataSourcePropertiesMap() {
         return this._schemaDataSourcePropertiesMap;
@@ -277,6 +301,15 @@ class WebExtensionContext implements IWebExtensionContext {
     public get graphClientService() {
         return this._graphClientService;
     }
+    public get webpageNames() {
+        return this._webpageNames;
+    }
+    public get webpageEntities() {
+        return this._webpageEntities;
+    }
+    public get webpageDuplicates() {
+        return this._webpageDuplicates;
+    }
 
     constructor() {
         this._schemaDataSourcePropertiesMap = new Map<string, string>();
@@ -320,6 +353,9 @@ class WebExtensionContext implements IWebExtensionContext {
         this._quickPickProvider = new QuickPickProvider();
         this._userCollaborationProvider = new UserCollaborationProvider();
         this._graphClientService = new GraphClientService();
+        this._webpageNames = new Set<string>();
+        this._webpageEntities = new Map<string, string>();
+        this._webpageDuplicates = new Map<string, string[]>();
     }
 
     public setWebExtensionContext(
@@ -463,6 +499,31 @@ class WebExtensionContext implements IWebExtensionContext {
                 }
             );
         }
+    }
+
+    public getWebpageNames() {
+        return this._webpageNames;
+    }
+
+    public getWebpageEntities() {
+        return this._webpageEntities;
+    }
+
+    public markWebpageAsDuplicate(fileName: string, entityIds: string[]) {
+        this._webpageDuplicates.set(fileName, entityIds);
+    }
+
+    public isWebpageDuplicate(fileName: string, entityId: string): boolean {
+        const entityIds = this._webpageDuplicates.get(fileName);
+        return entityIds ? entityIds.includes(entityId) : false;
+    }
+
+    public clearWebpageDuplicates() {
+        this._webpageDuplicates.clear();
+    }
+
+    public updateWebpageNames(entityId: string, webpageName: string) {
+        this.fileDataMap.updateWebpageNames(entityId, webpageName);
     }
 
     public async updateFileDetailsInContext(
