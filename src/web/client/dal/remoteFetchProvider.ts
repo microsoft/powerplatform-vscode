@@ -239,7 +239,6 @@ async function createContentFiles(
 
         let folderName = fileName;
         if (entityName === schemaEntityName.WEBPAGES) {
-            // Simple inline duplicate handling
             const webpageNames = WebExtensionContext.getWebpageNames();
 
             console.log(`Processing webpage: ${fileName}, entityId: ${entityId}, already exists: ${webpageNames.has(fileName)}`);
