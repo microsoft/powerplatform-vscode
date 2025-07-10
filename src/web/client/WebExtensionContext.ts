@@ -83,6 +83,20 @@ export interface IWebExtensionContext {
 
     // Error handling
     concurrencyHandler: ConcurrencyHandler;
+
+    // Co-Presence for Power Pages Vscode for web
+    worker: Worker | undefined;
+    sharedWorkSpaceMap: Map<string, string>;
+    containerId: string;
+    currentConnectionId: string;
+    connectedUsers: UserDataMap;
+    quickPickProvider: QuickPickProvider;
+    userCollaborationProvider: UserCollaborationProvider;
+    graphClientService: GraphClientService;
+
+    webpageNames: Set<string>;
+
+    getWebpageNames(): Set<string>;
 }
 
 class WebExtensionContext implements IWebExtensionContext {
@@ -120,7 +134,6 @@ class WebExtensionContext implements IWebExtensionContext {
     private _userId: string;
     private _formsProEligibilityId: string;
     private _concurrencyHandler: ConcurrencyHandler;
-    // Co-Presence for Power Pages Vscode for web
     private _worker: Worker | undefined;
     private _sharedWorkSpaceMap: Map<string, string>;
     private _containerId: string;
@@ -129,6 +142,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _quickPickProvider: QuickPickProvider;
     private _userCollaborationProvider: UserCollaborationProvider;
     private _graphClientService: GraphClientService;
+    private _webpageNames: Set<string>;
 
     public get schemaDataSourcePropertiesMap() {
         return this._schemaDataSourcePropertiesMap;
@@ -277,6 +291,9 @@ class WebExtensionContext implements IWebExtensionContext {
     public get graphClientService() {
         return this._graphClientService;
     }
+    public get webpageNames() {
+        return this._webpageNames;
+    }
 
     constructor() {
         this._schemaDataSourcePropertiesMap = new Map<string, string>();
@@ -320,6 +337,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._quickPickProvider = new QuickPickProvider();
         this._userCollaborationProvider = new UserCollaborationProvider();
         this._graphClientService = new GraphClientService();
+        this._webpageNames = new Set<string>();
     }
 
     public setWebExtensionContext(
@@ -463,6 +481,10 @@ class WebExtensionContext implements IWebExtensionContext {
                 }
             );
         }
+    }
+
+    public getWebpageNames() {
+        return this._webpageNames;
     }
 
     public async updateFileDetailsInContext(
