@@ -48,14 +48,24 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
                 arguments: []
             },
             'powerPages.svg');
+        const openInDesktop = new PowerPagesNode(vscode.l10n.t("Open in VS Code Desktop"),
+            {
+                command: 'powerpages.powerPagesFileExplorer.openInDesktop',
+                title: vscode.l10n.t("Open in VS Code Desktop"),
+                arguments: []
+            },
+            'desktop.svg');
 
         if (label && label === previewPowerPage.label) {
             nodes.push(previewPowerPage);
         } else if (label && label === backToStudio.label) {
             nodes.push(backToStudio);
+        } else if (label && label === openInDesktop.label) {
+            nodes.push(openInDesktop);
         } else {
             nodes.push(previewPowerPage);
             nodes.push(backToStudio);
+            nodes.push(openInDesktop);
         }
 
         return nodes;
@@ -152,6 +162,124 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
         WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_BACK_TO_STUDIO_TRIGGERED, {
             backToStudioUrl: backToStudioUrl
         });
+    }
+
+    openInDesktop(): void {
+        try {
+            const websiteId = WebExtensionContext.urlParametersMap?.get('websiteid');
+            const envId = WebExtensionContext.urlParametersMap?.get('envid');
+
+            // Validate required parameters
+            if (!websiteId) {
+                vscode.window.showErrorMessage(vscode.l10n.t("Website ID is not available"));
+                WebExtensionContext.telemetry.sendErrorTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_FAILED,
+                    this.openInDesktop.name,
+                    "Missing website ID"
+                );
+                return;
+            }
+
+            if (!envId) {
+                vscode.window.showErrorMessage(vscode.l10n.t("Environment ID is not available"));
+                WebExtensionContext.telemetry.sendErrorTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_FAILED,
+                    this.openInDesktop.name,
+                    "Missing environment ID"
+                );
+                return;
+            }
+
+            // Extract environment ID from the URL format if needed
+            const environmentId = envId.split("/").pop() || envId;
+
+            // Build VS Code desktop URI
+            const desktopUri = this.buildDesktopUri(websiteId, environmentId);
+
+            if (!desktopUri) {
+                vscode.window.showErrorMessage(vscode.l10n.t("Unable to generate VS Code Desktop URL"));
+                WebExtensionContext.telemetry.sendErrorTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_FAILED,
+                    this.openInDesktop.name,
+                    "Unable to generate desktop URI"
+                );
+                return;
+            }
+
+            // Open in VS Code Desktop
+            vscode.env.openExternal(vscode.Uri.parse(desktopUri));
+
+            // Show informational message with fallback options (don't await to avoid blocking)
+            vscode.window.showInformationMessage(
+                vscode.l10n.t("Opening in VS Code Desktop. If VS Code doesn't open, you may need to install it first."),
+                vscode.l10n.t("Download VS Code"),
+                vscode.l10n.t("Get Extension")
+            ).then((showInstructions) => {
+                if (showInstructions === vscode.l10n.t("Download VS Code")) {
+                    vscode.env.openExternal(vscode.Uri.parse("https://code.visualstudio.com/download"));
+                } else if (showInstructions === vscode.l10n.t("Get Extension")) {
+                    vscode.env.openExternal(vscode.Uri.parse("https://marketplace.visualstudio.com/items?itemName=microsoft-IsvExpTools.powerplatform-vscode"));
+                }
+            });
+
+            WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_TRIGGERED, {
+                websiteId: websiteId,
+                environmentId: environmentId,
+                desktopUri: desktopUri
+            });
+
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            vscode.window.showErrorMessage(vscode.l10n.t("Failed to open in VS Code Desktop: {0}", errorMessage));
+
+            WebExtensionContext.telemetry.sendErrorTelemetry(
+                webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_FAILED,
+                this.openInDesktop.name,
+                errorMessage
+            );
+        }
+    }
+
+    private buildDesktopUri(websiteId: string, environmentId: string): string | null {
+        try {
+            // Get current URL parameters
+            const orgUrl = WebExtensionContext.urlParametersMap?.get('orgurl');
+            const region = WebExtensionContext.urlParametersMap?.get('region');
+            const dataSource = WebExtensionContext.urlParametersMap?.get('datasource');
+            const schema = WebExtensionContext.urlParametersMap?.get('schema');
+            const tenantId = WebExtensionContext.urlParametersMap?.get('tenantid');
+            const portalId = WebExtensionContext.urlParametersMap?.get('websitepreviewid');
+
+            // Validate required parameters for desktop URI
+            if (!orgUrl || !dataSource || !schema) {
+                return null;
+            }
+
+            // Base desktop URI format - this should match the VS Code desktop extension's expected format
+            const baseUri = 'vscode://microsoft-IsvExpTools.powerplatform-vscode/open';
+
+            // Build query parameters for the desktop extension
+            const params = new URLSearchParams();
+            params.append('websiteid', websiteId);
+            params.append('envid', environmentId);
+            params.append('orgurl', orgUrl);
+            params.append('datasource', dataSource);
+            params.append('schema', schema);
+
+            if (region) params.append('region', region);
+            if (tenantId) params.append('tenantid', tenantId);
+            if (portalId) params.append('websitepreviewid', portalId);
+
+            return `${baseUri}?${params.toString()}`;
+
+        } catch (error) {
+            WebExtensionContext.telemetry.sendErrorTelemetry(
+                webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_FAILED,
+                this.buildDesktopUri.name,
+                `Error building desktop URI: ${error instanceof Error ? error.message : String(error)}`
+            );
+            return null;
+        }
     }
 }
 
