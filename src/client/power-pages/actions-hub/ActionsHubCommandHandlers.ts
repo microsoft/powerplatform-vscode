@@ -8,7 +8,7 @@ import * as fs from 'fs';
 import * as yaml from 'yaml';
 import { Constants } from './Constants';
 import { PacTerminal } from '../../lib/PacTerminal';
-import { POWERPAGES_SITE_FOLDER, SUCCESS, UTF8_ENCODING, WEBSITE_YML } from '../../../common/constants';
+import { POWERPAGES_SITE_FOLDER, SUCCESS, UTF8_ENCODING, WEBSITE_YML, CODEQL_EXTENSION_ID } from '../../../common/constants';
 import { AuthInfo, OrgListOutput } from '../../pac/PacTypes';
 import { extractAuthInfo } from '../commonUtility';
 import { showProgressWithNotification } from '../../../common/utilities/Utils';
@@ -32,6 +32,7 @@ import { SiteVisibility } from './models/SiteVisibility';
 import { getBaseEventInfo, traceError, traceInfo } from './TelemetryHelper';
 import { IPowerPagesConfig, IPowerPagesConfigData } from './models/IPowerPagesConfig';
 import { oneDSLoggerWrapper } from '../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
+import { CodeQLAction } from './actions/codeQLAction';
 
 const sortByCreatedOn = <T extends { createdOn?: string | null }>(item1: T, item2: T): number => {
     const date1 = new Date(item1.createdOn || '').valueOf(); //NaN if createdOn is null or undefined
@@ -938,4 +939,121 @@ export const reactivateSite = async (siteTreeItem: SiteTreeItem) => {
     const reactivateSiteUrl = `${getStudioBaseUrl()}/e/${environmentId}/portals/create?reactivateWebsiteId=${websiteId}&siteName=${encodeURIComponent(name)}&siteAddress=${encodeURIComponent(siteAddress)}&siteLanguageId=${languageCode}&isNewDataModel=${isNewDataModel}`;
 
     await vscode.env.openExternal(vscode.Uri.parse(reactivateSiteUrl));
+};
+
+export const runCodeQLScreening = async (siteTreeItem?: SiteTreeItem) => {
+    traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_CALLED, { methodName: runCodeQLScreening.name });
+
+    try {
+        // Check if CodeQL extension is installed
+        const codeQLExtension = vscode.extensions.getExtension(CODEQL_EXTENSION_ID);
+
+        if (!codeQLExtension) {
+            // Prompt user to install the CodeQL extension
+            const install = await vscode.window.showWarningMessage(
+                Constants.Strings.CODEQL_EXTENSION_NOT_INSTALLED,
+                Constants.Strings.INSTALL,
+                Constants.Strings.CANCEL
+            );
+
+            if (install === Constants.Strings.INSTALL) {
+                await vscode.commands.executeCommand('workbench.extensions.search', CODEQL_EXTENSION_ID);
+                traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_EXTENSION_NOT_INSTALLED, { methodName: runCodeQLScreening.name });
+                return;
+            } else {
+                return;
+            }
+        }
+
+        // Get the current site path
+        let sitePath = "";
+        if (siteTreeItem && siteTreeItem.contextValue === Constants.ContextValues.OTHER_SITE) {
+            sitePath = siteTreeItem.siteInfo.folderPath || "";
+        } else {
+            sitePath = CurrentSiteContext.currentSiteFolderPath || "";
+        }
+
+        if (!sitePath) {
+            await vscode.window.showErrorMessage(Constants.Strings.CODEQL_CURRENT_SITE_PATH_NOT_FOUND);
+            return;
+        }
+
+        // Ask user where to create the CodeQL database
+        const databaseLocation = await getCodeQLDatabasePath(sitePath);
+        if (!databaseLocation) {
+            return; // User cancelled
+        }
+
+        traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_EXTENSION_INSTALLED, { methodName: runCodeQLScreening.name });
+
+        // Use the CodeQLAction class to handle the analysis
+        const codeQLAction = new CodeQLAction();
+
+        try {
+            // Show progress notification while creating database
+            await showProgressWithNotification(
+                Constants.Strings.CODEQL_SCREENING_STARTED,
+                async () => {
+                    // Use a custom method that allows specifying the database location
+                    await codeQLAction.executeCodeQLAnalysisWithCustomPath(sitePath, databaseLocation);
+                }
+            );
+
+            traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_DATABASE_CREATED, { methodName: runCodeQLScreening.name });
+        } catch (error) {
+            traceError(
+                Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_FAILED,
+                error as Error,
+                { methodName: runCodeQLScreening.name }
+            );
+            await vscode.window.showErrorMessage(Constants.Strings.CODEQL_SCREENING_FAILED);
+        } finally {
+            //codeQLAction.dispose();
+        }
+
+    } catch (error) {
+        traceError(
+            Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_FAILED,
+            error as Error,
+            { methodName: runCodeQLScreening.name }
+        );
+        await vscode.window.showErrorMessage(Constants.Strings.CODEQL_SCREENING_FAILED);
+    }
+};
+
+const getCodeQLDatabasePath = async (sitePath: string) => {
+    const options = [
+        {
+            label: Constants.Strings.BROWSE,
+            iconPath: new vscode.ThemeIcon("folder")
+        },
+        {
+            label: sitePath,
+            iconPath: undefined,
+            detail: "Use current site folder"
+        }
+    ] as { label: string, iconPath: vscode.ThemeIcon | undefined, detail?: string }[];
+
+    const option = await vscode.window.showQuickPick(options, {
+        canPickMany: false,
+        placeHolder: "Select folder for CodeQL database"
+    });
+
+    if (option?.label === Constants.Strings.BROWSE) {
+        const folderUri = await vscode.window.showOpenDialog({
+            canSelectFolders: true,
+            canSelectFiles: false,
+            openLabel: Constants.Strings.SELECT_FOLDER,
+            title: "Select folder for CodeQL database"
+        });
+
+        if (folderUri && folderUri.length > 0) {
+            return folderUri[0].fsPath;
+        }
+        return null;
+    } else if (option?.label === sitePath) {
+        return sitePath;
+    }
+
+    return null; // User cancelled
 };

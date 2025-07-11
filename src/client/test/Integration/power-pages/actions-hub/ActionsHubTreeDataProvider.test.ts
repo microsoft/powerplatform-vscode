@@ -220,6 +220,18 @@ describe("ActionsHubTreeDataProvider", () => {
             await registerCommandStub.getCall(14).args[1]();
             expect(mockCommandHandler.calledOnce).to.be.true;
         });
+
+        it('should register runCodeQLScreening command', async () => {
+            const mockCommandHandler = sinon.stub(CommandHandlers, 'runCodeQLScreening');
+            mockCommandHandler.resolves();
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+
+            expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening")).to.be.true;
+
+            await registerCommandStub.getCall(15).args[1]();
+            expect(mockCommandHandler.calledOnce).to.be.true;
+        });
     });
 
     describe('getTreeItem', () => {
