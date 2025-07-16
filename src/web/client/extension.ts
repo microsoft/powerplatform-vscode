@@ -106,7 +106,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
                 const orgId = queryParamsMap.get(queryParameters.ORG_ID) as string;
                 await fetchArtemisData(orgId);
                 WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_ORG_GEO, { orgId: orgId, orgGeo: WebExtensionContext.geoName });
-                oneDSLoggerWrapper.instantiate(WebExtensionContext.geoName, WebExtensionContext.geoLongName);
+                oneDSLoggerWrapper.instantiate(WebExtensionContext.geoName, WebExtensionContext.geoLongName, WebExtensionContext.serviceEndpointCategory);
 
                 WebExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(
                     appName,

@@ -14,8 +14,8 @@ export class oneDSLoggerWrapper {
     private static instance: oneDSLoggerWrapper;
     private static oneDSLoggerInstance: OneDSLogger;
 
-    private constructor(geo?: string, geoLongName?: string) {
-        oneDSLoggerWrapper.oneDSLoggerInstance = new OneDSLogger(geo, geoLongName);
+    private constructor(geo?: string, geoLongName?: string, environment?: string) {
+        oneDSLoggerWrapper.oneDSLoggerInstance = new OneDSLogger(geo, geoLongName, environment);
     }
 
 
@@ -23,8 +23,8 @@ export class oneDSLoggerWrapper {
         return this.instance;
     }
 
-    static instantiate(geo?: string, geoLongName?: string) {
-        oneDSLoggerWrapper.instance = new oneDSLoggerWrapper(geo, geoLongName);
+    static instantiate(geo?: string, geoLongName?: string, environment?: string) {
+        oneDSLoggerWrapper.instance = new oneDSLoggerWrapper(geo, geoLongName, environment);
     }
 
     /// Trace info log
