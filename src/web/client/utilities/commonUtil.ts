@@ -181,6 +181,8 @@ export function getSanitizedFileName(fileName: string): string {
 }
 
 export function getDuplicateFileName(fileName: string, entityId: string): string {
+    //Only append first part of entityId to avoid long file names
+    entityId = entityId.split('-')[0];
     return `${fileName}-${entityId}`;
 }
 

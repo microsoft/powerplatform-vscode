@@ -245,6 +245,11 @@ async function createContentFiles(
 
             if (webpageNames.has(fileName)) {
                 // This is a duplicate - append entity ID
+                // add telemetry for duplicate folder name creation
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_DUPLICATE_FOLDER_NAME_CREATED,
+                    { entityName: entityName, fileName: fileName, entityId: entityId }
+                );
                 folderName = getDuplicateFileName(fileName, entityId);
                 console.log(`Created duplicate folder name: ${folderName}`);
             } else {
