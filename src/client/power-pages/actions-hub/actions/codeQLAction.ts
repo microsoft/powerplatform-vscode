@@ -4,10 +4,11 @@
  */
 
 import * as vscode from 'vscode';
-import { exec } from 'child_process';
+import { exec, spawn } from 'child_process';
 import * as path from 'path';
 import * as fs from 'fs';
 import { CODEQL_EXTENSION_ID } from '../../../../common/constants';
+import { Constants } from '../Constants';
 
 export class CodeQLAction {
     private outputChannel: vscode.OutputChannel;
@@ -219,19 +220,83 @@ export class CodeQLAction {
         return new Promise((resolve, reject) => {
             this.outputChannel.appendLine(`Executing: ${command}`);
 
-            exec(command, { maxBuffer: 1024 * 1024 * 10 }, (error, stdout, stderr) => {
-                if (error) {
-                    this.outputChannel.appendLine(`Error: ${stderr}`);
-                    reject(new Error(`Command failed: ${stderr || error.message}`));
-                } else {
-                    this.outputChannel.appendLine(`Output: ${stdout}`);
-                    if (stderr) {
-                        this.outputChannel.appendLine(`Warnings: ${stderr}`);
-                    }
+            // Parse the command and arguments
+            const parts = this.parseCommand(command);
+            const cmd = parts[0];
+            const args = parts.slice(1);
+
+            const process = spawn(cmd, args, {
+                shell: true,
+                stdio: ['pipe', 'pipe', 'pipe']
+            });
+
+            let stdout = '';
+            let stderr = '';
+
+            // Stream stdout in real-time
+            process.stdout?.on('data', (data: Buffer) => {
+                const output = data.toString();
+                stdout += output;
+                // Show real-time output in the output channel
+                this.outputChannel.appendLine(`[STDOUT] ${output.trim()}`);
+            });
+
+            // Stream stderr in real-time
+            process.stderr?.on('data', (data: Buffer) => {
+                const output = data.toString();
+                stderr += output;
+                // Show real-time stderr in the output channel
+                this.outputChannel.appendLine(`[STDERR] ${output.trim()}`);
+            });
+
+            process.on('close', (code: number) => {
+                if (code === 0) {
+                    this.outputChannel.appendLine(`Command completed successfully (exit code: ${code})`);
                     resolve(stdout);
+                } else {
+                    this.outputChannel.appendLine(`Command failed with exit code: ${code}`);
+                    reject(new Error(`Command failed with exit code ${code}: ${stderr || 'Unknown error'}`));
                 }
             });
+
+            process.on('error', (error: Error) => {
+                this.outputChannel.appendLine(`Process error: ${error.message}`);
+                reject(new Error(`Process error: ${error.message}`));
+            });
         });
+    }
+
+    private parseCommand(command: string): string[] {
+        // Simple command parsing that handles quoted arguments
+        const parts: string[] = [];
+        let current = '';
+        let inQuotes = false;
+        let quoteChar = '';
+
+        for (let i = 0; i < command.length; i++) {
+            const char = command[i];
+
+            if ((char === '"' || char === "'") && !inQuotes) {
+                inQuotes = true;
+                quoteChar = char;
+            } else if (char === quoteChar && inQuotes) {
+                inQuotes = false;
+                quoteChar = '';
+            } else if (char === ' ' && !inQuotes) {
+                if (current.trim()) {
+                    parts.push(current.trim());
+                    current = '';
+                }
+            } else {
+                current += char;
+            }
+        }
+
+        if (current.trim()) {
+            parts.push(current.trim());
+        }
+
+        return parts;
     }
 
     private async displayResults(resultsPath: string): Promise<void> {
@@ -265,7 +330,89 @@ export class CodeQLAction {
                 this.outputChannel.appendLine('\nNo analysis results found.');
             }
 
-            // Offer to open the full SARIF file
+            // Try to open with SARIF viewer extension by default
+            await this.openWithSarifViewer(resultsPath);
+
+        } catch (error) {
+            this.outputChannel.appendLine(`Error reading results: ${error}`);
+        }
+    }
+
+    private async openWithSarifViewer(resultsPath: string): Promise<void> {
+        try {
+            const sarifExt = vscode.extensions.getExtension('MS-SarifVSCode.sarif-viewer');
+
+            if (!sarifExt) {
+                this.outputChannel.appendLine('SARIF viewer extension not found.');
+
+                const installExtension = await vscode.window.showInformationMessage(
+                    Constants.Strings.SARIF_VIEWER_NOT_INSTALLED,
+                    Constants.Strings.INSTALL,
+                    Constants.Strings.OPEN_AS_TEXT,
+                    Constants.Strings.CANCEL
+                );
+
+                if (installExtension === Constants.Strings.INSTALL) {
+                    try {
+                        this.outputChannel.appendLine('Installing SARIF viewer extension...');
+                        await vscode.commands.executeCommand('workbench.extensions.installExtension', 'MS-SarifVSCode.sarif-viewer');
+
+                        // Wait a moment for the extension to be available
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+
+                        // Try to get the extension again after installation
+                        const newSarifExt = vscode.extensions.getExtension('MS-SarifVSCode.sarif-viewer');
+                        if (newSarifExt) {
+                            this.outputChannel.appendLine('SARIF viewer extension installed successfully. Activating...');
+                            await newSarifExt.activate();
+
+                            if (newSarifExt.exports && typeof newSarifExt.exports.openLogs === 'function') {
+                                this.outputChannel.appendLine('Opening results with newly installed SARIF viewer...');
+                                await newSarifExt.exports.openLogs([vscode.Uri.file(resultsPath)]);
+                                this.outputChannel.appendLine('Results opened in SARIF viewer successfully.');
+                                return;
+                            }
+                        }
+
+                        this.outputChannel.appendLine('Extension installed but API not available yet. Opening as text file...');
+                        await this.fallbackToTextEditor(resultsPath);
+
+                    } catch (installError) {
+                        this.outputChannel.appendLine(`Failed to install SARIF viewer extension: ${installError}`);
+                        vscode.window.showErrorMessage(Constants.Strings.SARIF_VIEWER_INSTALL_FAILED);
+                        await this.fallbackToTextEditor(resultsPath);
+                    }
+                } else if (installExtension === Constants.Strings.OPEN_AS_TEXT) {
+                    await this.fallbackToTextEditor(resultsPath);
+                } else {
+                    this.outputChannel.appendLine('User cancelled opening results.');
+                }
+                return;
+            }
+
+            if (!sarifExt.isActive) {
+                this.outputChannel.appendLine('Activating SARIF viewer extension...');
+                await sarifExt.activate();
+            }
+
+            if (sarifExt.exports && typeof sarifExt.exports.openLogs === 'function') {
+                this.outputChannel.appendLine('Opening results with SARIF viewer...');
+                await sarifExt.exports.openLogs([vscode.Uri.file(resultsPath)]);
+                this.outputChannel.appendLine('Results opened in SARIF viewer successfully.');
+            } else {
+                this.outputChannel.appendLine('SARIF viewer extension does not expose expected API. Falling back to text editor...');
+                await this.fallbackToTextEditor(resultsPath);
+            }
+
+        } catch (error) {
+            this.outputChannel.appendLine(`Error opening with SARIF viewer: ${error}`);
+            await this.fallbackToTextEditor(resultsPath);
+        }
+    }
+
+    private async fallbackToTextEditor(resultsPath: string): Promise<void> {
+        try {
+            // Offer to open the full SARIF file as text
             const openFile = await vscode.window.showInformationMessage(
                 'CodeQL analysis completed. Would you like to open the full results file?',
                 'Open Results',
@@ -276,9 +423,8 @@ export class CodeQLAction {
                 const document = await vscode.workspace.openTextDocument(resultsPath);
                 await vscode.window.showTextDocument(document);
             }
-
         } catch (error) {
-            this.outputChannel.appendLine(`Error reading results: ${error}`);
+            this.outputChannel.appendLine(`Error opening results file: ${error}`);
         }
     }
 

@@ -55,11 +55,14 @@ export const Constants = {
         INSTALL: vscode.l10n.t("Install"),
         CANCEL: vscode.l10n.t("Cancel"),
         CODEQL_EXTENSION_NOT_INSTALLED: vscode.l10n.t("The CodeQL extension is required to run this command. Do you want to install it now?"),
-        CODEQL_SCREENING_STARTED: vscode.l10n.t("CodeQL screening started. Creating database..."),
+        CODEQL_SCREENING_STARTED: vscode.l10n.t("CodeQL screening started. Creating database and analyzing"),
         CODEQL_DATABASE_CREATED: vscode.l10n.t("CodeQL database created successfully. You can now run queries from the CodeQL extension."),
         CODEQL_SCREENING_FAILED: vscode.l10n.t("CodeQL screening failed. Please try again later."),
         CODEQL_CURRENT_SITE_PATH_NOT_FOUND: vscode.l10n.t("Current site path not found. Please ensure you have a site folder open."),
-        CODEQL_GUIDE_MESSAGE: vscode.l10n.t("CodeQL database created. You can now:\n\n1. Run custom queries if you have any\n2. Use the prebuilt queries from the CodeQL extension\n\nCheck the CodeQL extension panel for available queries.")
+        CODEQL_GUIDE_MESSAGE: vscode.l10n.t("CodeQL database created. You can now:\n\n1. Run custom queries if you have any\n2. Use the prebuilt queries from the CodeQL extension\n\nCheck the CodeQL extension panel for available queries."),
+        SARIF_VIEWER_NOT_INSTALLED: vscode.l10n.t("The SARIF Viewer extension is recommended for viewing CodeQL results. Would you like to install it now?"),
+        SARIF_VIEWER_INSTALL_FAILED: vscode.l10n.t("Failed to install SARIF viewer extension. Opening results as text file."),
+        OPEN_AS_TEXT: vscode.l10n.t("Open as Text")
     },
     EventNames: {
         ACTIONS_HUB_ENABLED: "ActionsHubEnabled",
