@@ -180,6 +180,12 @@ export function getSanitizedFileName(fileName: string): string {
     return fileName.trim().replace(/[`~!@#$%^&*()_|+=?;:'",<>{}[\]\\/]/g, '');
 }
 
+export function getDuplicateFileName(fileName: string, entityId: string): string {
+    //Only append first part of entityId to avoid long file names
+    entityId = entityId.split('-')[0];
+    return `${fileName}-${entityId}`;
+}
+
 // Get the file's extension
 export function getFileExtension(fileName: string): string | undefined {
     return fileName.toString().split('.').pop();
