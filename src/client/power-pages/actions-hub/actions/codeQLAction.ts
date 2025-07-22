@@ -78,7 +78,7 @@ export class CodeQLAction {
             }
 
             this.outputChannel.appendLine('Creating CodeQL database...');
-            await this.runCodeQLCommand(`"${codeqlCliPath}" database create "${dbPath}" --language=javascript --source-root="${sitePath}" --overwrite`);
+            await this.runCodeQLCommand(`"${codeqlCliPath}" database create "${dbPath}" --language=javascript-typescript --source-root="${sitePath}" --overwrite --no-run-unnecessary-builds`);
 
             this.outputChannel.appendLine('Running CodeQL analysis...');
             const resultsPath = path.join(path.dirname(dbPath), 'results.sarif');
