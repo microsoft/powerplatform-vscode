@@ -304,9 +304,12 @@ export class CodeQLAction {
             const resultsContent = fs.readFileSync(resultsPath, 'utf8');
             const results = JSON.parse(resultsContent);
 
+            let hasIssues = false;
+
             if (results.runs && results.runs.length > 0) {
                 const run = results.runs[0];
                 if (run.results && run.results.length > 0) {
+                    hasIssues = true;
                     this.outputChannel.appendLine(`\nFound ${run.results.length} issue(s):`);
 
                     run.results.forEach((result: { message?: { text?: string }; locations?: Array<{ physicalLocation?: { artifactLocation?: { uri?: string }; region?: { startLine?: number } } }> }, index: number) => {
@@ -330,8 +333,13 @@ export class CodeQLAction {
                 this.outputChannel.appendLine('\nNo analysis results found.');
             }
 
-            // Try to open with SARIF viewer extension by default
-            await this.openWithSarifViewer(resultsPath);
+            // Only open SARIF viewer if issues are found
+            if (hasIssues) {
+                await this.openWithSarifViewer(resultsPath);
+            } else {
+                // Show a simple success notification for clean results
+                vscode.window.showInformationMessage('CodeQL analysis completed successfully with no issues found! 🎉');
+            }
 
         } catch (error) {
             this.outputChannel.appendLine(`Error reading results: ${error}`);
