@@ -28,6 +28,9 @@ jobs:
       with:
         lfs: true
 
+    - name: List installed .NET SDKs
+      run: dotnet --list-sdks
+
     - name: Setup Node.js environment
       uses: actions/setup-node@v3
       with:
