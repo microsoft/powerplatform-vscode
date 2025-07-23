@@ -33,7 +33,8 @@ describe('PPAPIService', () => {
         creator: 'Mock User',
         createdOn: '2025-01-01T00:00:00Z',
         siteVisibility: undefined,
-        isCodeSite: false
+        isCodeSite: false,
+        languageCode: "1033"
     };
 
     const mockWebsiteDetailsArray: IWebsiteDetails[] = [mockWebsiteDetails];
@@ -238,7 +239,40 @@ describe('PPAPIService', () => {
             );
 
             // Verify result contains the correct base URL for GCC
-            expect(endpoint).to.include('https://api.powerplatform.us');
+            expect(endpoint).to.include('https://api.gov.powerplatform.microsoft.us');
+        });
+
+        it('should return endpoint for HIGH environment', async () => {
+            // Call the function
+            const endpoint = await PPAPIService.getPPAPIServiceEndpoint(
+                ServiceEndpointCategory.HIGH,
+                mockEnvironmentId
+            );
+
+            // Verify result contains the correct base URL for HIGH
+            expect(endpoint).to.include('https://api.high.powerplatform.microsoft.us');
+        });
+
+        it('should return endpoint for DOD environment', async () => {
+            // Call the function
+            const endpoint = await PPAPIService.getPPAPIServiceEndpoint(
+                ServiceEndpointCategory.DOD,
+                mockEnvironmentId
+            );
+
+            // Verify result contains the correct base URL for DOD
+            expect(endpoint).to.include('https://api.appsplatform.us');
+        });
+
+        it('should return endpoint for MOONCAKE environment', async () => {
+            // Call the function
+            const endpoint = await PPAPIService.getPPAPIServiceEndpoint(
+                ServiceEndpointCategory.MOONCAKE,
+                mockEnvironmentId
+            );
+
+            // Verify result contains the correct base URL for MOONCAKE
+            expect(endpoint).to.include('https://api.powerplatform.partner.microsoftonline.cn');
         });
 
         it('should log telemetry for unsupported region', async () => {
