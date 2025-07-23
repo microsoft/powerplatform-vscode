@@ -115,7 +115,9 @@ export const Constants = {
         CODEQL_ANALYSIS_COMPLETED_OPEN_FILE: vscode.l10n.t("CodeQL analysis completed. Would you like to open the full results file?"),
         CODEQL_OPEN_RESULTS: vscode.l10n.t("Open Results"),
         CODEQL_CLOSE: vscode.l10n.t("Close"),
-        CODEQL_ERROR_OPENING_RESULTS: vscode.l10n.t("Error opening results file: {0}")
+        CODEQL_ERROR_OPENING_RESULTS: vscode.l10n.t("Error opening results file: {0}"),
+        CODEQL_DATABASE_FOLDER_PROMPT: vscode.l10n.t("Select folder for CodeQL database"),
+        CODEQL_USE_CURRENT_SITE_FOLDER: vscode.l10n.t("Use current site folder")
     },
     EventNames: {
         ACTIONS_HUB_ENABLED: "ActionsHubEnabled",

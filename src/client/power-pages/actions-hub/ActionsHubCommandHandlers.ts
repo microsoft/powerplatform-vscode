@@ -1030,13 +1030,13 @@ const getCodeQLDatabasePath = async (sitePath: string) => {
         {
             label: sitePath,
             iconPath: undefined,
-            detail: "Use current site folder"
+            detail: Constants.Strings.CODEQL_USE_CURRENT_SITE_FOLDER
         }
     ] as { label: string, iconPath: vscode.ThemeIcon | undefined, detail?: string }[];
 
     const option = await vscode.window.showQuickPick(options, {
         canPickMany: false,
-        placeHolder: "Select folder for CodeQL database"
+        placeHolder: Constants.Strings.CODEQL_DATABASE_FOLDER_PROMPT
     });
 
     if (option?.label === Constants.Strings.BROWSE) {
@@ -1044,7 +1044,7 @@ const getCodeQLDatabasePath = async (sitePath: string) => {
             canSelectFolders: true,
             canSelectFiles: false,
             openLabel: Constants.Strings.SELECT_FOLDER,
-            title: "Select folder for CodeQL database"
+            title: Constants.Strings.CODEQL_DATABASE_FOLDER_PROMPT
         });
 
         if (folderUri && folderUri.length > 0) {
