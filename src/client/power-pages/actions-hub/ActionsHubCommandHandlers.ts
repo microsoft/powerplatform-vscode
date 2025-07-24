@@ -11,7 +11,7 @@ import { PacTerminal } from '../../lib/PacTerminal';
 import { POWERPAGES_SITE_FOLDER, SUCCESS, UTF8_ENCODING, WEBSITE_YML } from '../../../common/constants';
 import { AuthInfo, OrgListOutput } from '../../pac/PacTypes';
 import { extractAuthInfo } from '../commonUtility';
-import { showProgressWithNotification } from '../../../common/utilities/Utils';
+import { showProgressWithNotification, getSolutionExplorerUrl } from '../../../common/utilities/Utils';
 import PacContext from '../../pac/PacContext';
 import ArtemisContext from '../../ArtemisContext';
 import { ServiceEndpointCategory, WebsiteDataModel } from '../../../common/services/Constants';
@@ -938,4 +938,36 @@ export const reactivateSite = async (siteTreeItem: SiteTreeItem) => {
     const reactivateSiteUrl = `${getStudioBaseUrl()}/e/${environmentId}/portals/create?reactivateWebsiteId=${websiteId}&siteName=${encodeURIComponent(name)}&siteAddress=${encodeURIComponent(siteAddress)}&siteLanguageId=${languageCode}&isNewDataModel=${isNewDataModel}`;
 
     await vscode.env.openExternal(vscode.Uri.parse(reactivateSiteUrl));
+};
+
+export const openSolutionExplorer = async () => {
+    traceInfo(Constants.EventNames.ACTIONS_HUB_OPEN_SOLUTION_EXPLORER_CALLED, { methodName: openSolutionExplorer.name });
+    try {
+        const authInfo = PacContext.AuthInfo;
+        const serviceEndpointStamp = ArtemisContext.ServiceResponse?.stamp;
+
+        if (!authInfo || !authInfo.EnvironmentId) {
+            vscode.window.showErrorMessage(vscode.l10n.t("No environment is currently selected. Please authenticate and select an environment first."));
+            return;
+        }
+
+        if (!serviceEndpointStamp) {
+            vscode.window.showErrorMessage(vscode.l10n.t("Unable to determine environment endpoint. Please try refreshing the environment."));
+            return;
+        }
+
+        const solutionExplorerUrl = getSolutionExplorerUrl(authInfo.EnvironmentId, serviceEndpointStamp);
+
+        if (!solutionExplorerUrl) {
+            vscode.window.showErrorMessage(vscode.l10n.t("Unable to construct Solution Explorer URL. The current environment may not be supported."));
+            return;
+        }
+
+        await vscode.env.openExternal(vscode.Uri.parse(solutionExplorerUrl));
+
+        traceInfo(Constants.EventNames.ACTIONS_HUB_OPEN_SOLUTION_EXPLORER_SUCCESSFUL, { methodName: openSolutionExplorer.name });
+    } catch (error) {
+        traceError(Constants.EventNames.ACTIONS_HUB_OPEN_SOLUTION_EXPLORER_FAILED, error as Error, { methodName: openSolutionExplorer.name });
+        vscode.window.showErrorMessage(vscode.l10n.t("Failed to open Solution Explorer. Please try again."));
+    }
 };

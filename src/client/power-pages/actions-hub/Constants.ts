@@ -109,7 +109,10 @@ export const Constants = {
         ACTIONS_HUB_UPLOAD_CODE_SITE_CALLED: "ActionsHubUploadCodeSiteCalled",
         ACTIONS_HUB_UPLOAD_CODE_SITE_FAILED: "ActionsHubUploadCodeSiteFailed",
         ACTIONS_HUB_UPLOAD_OTHER_CODE_SITE_PAC_TRIGGERED: "ActionsHubUploadOtherCodeSitePacTriggered",
-        POWER_PAGES_CONFIG_PARSE_FAILED: "PowerPagesConfigParseFailed"
+        POWER_PAGES_CONFIG_PARSE_FAILED: "PowerPagesConfigParseFailed",
+        ACTIONS_HUB_OPEN_SOLUTION_EXPLORER_CALLED: "ActionsHubOpenSolutionExplorerCalled",
+        ACTIONS_HUB_OPEN_SOLUTION_EXPLORER_SUCCESSFUL: "ActionsHubOpenSolutionExplorerSuccessful",
+        ACTIONS_HUB_OPEN_SOLUTION_EXPLORER_FAILED: "ActionsHubOpenSolutionExplorerFailed"
     },
     FeatureNames: {
         REFRESH_ENVIRONMENT: "RefreshEnvironment"

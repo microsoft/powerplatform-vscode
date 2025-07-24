@@ -455,3 +455,50 @@ export function getWorkspaceFolders(): WorkspaceFolder[] {
                 (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
             ) || [];
 }
+
+// Command Module - URL Construction utilities for VS Code commands
+
+/**
+ * Gets the Power Apps Studio base URL based on the service endpoint
+ * @param serviceEndpointStamp The service endpoint category
+ * @returns The base URL for Power Apps Studio
+ */
+function getPowerAppsStudioBaseUrl(serviceEndpointStamp: ServiceEndpointCategory): string {
+    switch (serviceEndpointStamp) {
+        case ServiceEndpointCategory.TEST:
+            return "https://make.test.powerapps.com";
+        case ServiceEndpointCategory.PREPROD:
+            return "https://make.preprod.powerapps.com";
+        case ServiceEndpointCategory.PROD:
+            return "https://make.powerapps.com";
+        case ServiceEndpointCategory.DOD:
+            return "https://make.powerapps.appsplatform.us";
+        case ServiceEndpointCategory.GCC:
+            return "https://make.gov.powerapps.us";
+        case ServiceEndpointCategory.HIGH:
+            return "https://make.high.powerapps.us";
+        case ServiceEndpointCategory.MOONCAKE:
+            return "https://make.powerapps.cn";
+        default:
+            return "";
+    }
+}
+
+/**
+ * Constructs the Solution Explorer URL for a given environment
+ * @param environmentId The environment ID
+ * @param serviceEndpointStamp The service endpoint category (TEST, PREPROD, PROD, etc.)
+ * @returns The complete Solution Explorer URL or empty string if construction fails
+ */
+export function getSolutionExplorerUrl(environmentId: string, serviceEndpointStamp?: ServiceEndpointCategory): string {
+    if (!environmentId || !serviceEndpointStamp) {
+        return "";
+    }
+
+    const baseEndpoint = getPowerAppsStudioBaseUrl(serviceEndpointStamp);
+    if (!baseEndpoint) {
+        return "";
+    }
+
+    return `${baseEndpoint}/environments/${environmentId}/solutions`;
+}
