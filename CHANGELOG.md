@@ -1,5 +1,11 @@
 # Change Log - Power Platform Extension
 
+## 2.0.91
+- pac CLI 1.45.3, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- Bug Fixes
+  - Fixed issue where active sites appeared as inactive in Power Pages Actions for Sovereign Clouds.
+  - Fixed duplicate webpage handling bug in VS Code web.
+
 ## 2.0.89
 - pac CLI 1.44.2, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 - Reactivate inactive site support in Power Pages Actions (Desktop)
