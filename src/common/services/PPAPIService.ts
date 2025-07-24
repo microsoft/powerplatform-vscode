@@ -91,12 +91,16 @@ export class PPAPIService {
                 ppApiEndpoint = "https://api.powerplatform.com";
                 break;
             case ServiceEndpointCategory.DOD:
+                ppApiEndpoint = "https://api.appsplatform.us";
+                break;
             case ServiceEndpointCategory.GCC:
+                ppApiEndpoint = "https://api.gov.powerplatform.microsoft.us";
+                break;
             case ServiceEndpointCategory.HIGH:
-                ppApiEndpoint = "https://api.powerplatform.us";
+                ppApiEndpoint = "https://api.high.powerplatform.microsoft.us";
                 break;
             case ServiceEndpointCategory.MOONCAKE:
-                ppApiEndpoint = "https://api.powerplatform.cn";
+                ppApiEndpoint = "https://api.powerplatform.partner.microsoftonline.cn";
                 break;
             default:
                 sendTelemetryEvent({ eventName: VSCODE_EXTENSION_GET_PPAPI_WEBSITES_ENDPOINT_UNSUPPORTED_REGION, data: serviceEndpointStamp });

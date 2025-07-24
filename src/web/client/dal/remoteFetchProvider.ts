@@ -14,6 +14,7 @@ import {
     isWebfileContentLoadNeeded,
     setFileContent,
     isNullOrUndefined,
+    getDuplicateFileName,
 } from "../utilities/commonUtil";
 import { getCustomRequestURL, getMappingEntityContent, getMetadataInfo, getMappingEntityId, getMimeType, getRequestURL } from "../utilities/urlBuilderUtil";
 import { getCommonHeadersForDataverse } from "../../../common/services/AuthenticationProvider";
@@ -40,6 +41,9 @@ export async function fetchDataFromDataverseAndUpdateVFS(
     defaultFileInfo?: IFileInfo,
 ) {
     try {
+        // Clear webpage names tracking for fresh start
+        WebExtensionContext.getWebpageNames().clear();
+
         const entityRequestURLs = getRequestUrlForEntities(defaultFileInfo?.entityId, defaultFileInfo?.entityName);
         const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
             Constants.queryParameters.ORG_URL
@@ -233,10 +237,32 @@ async function createContentFiles(
             throw new Error(ERROR_CONSTANTS.FILE_NAME_EMPTY);
         }
 
+        let folderName = fileName;
+        if (entityName === schemaEntityName.WEBPAGES) {
+            const webpageNames = WebExtensionContext.getWebpageNames();
+
+            console.log(`Processing webpage: ${fileName}, entityId: ${entityId}, already exists: ${webpageNames.has(fileName)}`);
+
+            if (webpageNames.has(fileName)) {
+                // This is a duplicate - append entity ID
+                // add telemetry for duplicate folder name creation
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_DUPLICATE_FOLDER_NAME_CREATED,
+                    { entityName: entityName, fileName: fileName, entityId: entityId, orgId: WebExtensionContext.organizationId, envId: WebExtensionContext.environmentId }
+                );
+                folderName = getDuplicateFileName(fileName, entityId);
+                console.log(`Created duplicate folder name: ${folderName}`);
+            } else {
+                // First occurrence - just track it
+                webpageNames.add(fileName);
+                console.log(`Added to tracking: ${fileName}`);
+            }
+        }
+
         // Create folder paths
         filePathInPortalFS = filePathInPortalFS ?? `${Constants.PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/`;
         if (exportType && exportType === folderExportType.SubFolders) {
-            filePathInPortalFS = `${filePathInPortalFS}${getSanitizedFileName(fileName)}/`;
+            filePathInPortalFS = `${filePathInPortalFS}${getSanitizedFileName(folderName)}/`;
             await portalsFS.createDirectory(
                 vscode.Uri.parse(filePathInPortalFS, true)
             );
