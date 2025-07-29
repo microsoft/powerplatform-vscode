@@ -1308,7 +1308,7 @@
     "@typescript-eslint/parser": "^5.15.0",
     "@vscode/l10n-dev": "^0.0.35",
     "@vscode/test-electron": "^2.3.8",
-    "@vscode/test-web": "^0.0.50",
+    "@vscode/test-web": "^0.0.71",
     "@vscode/vsce": "^2.19.0",
     "assert": "^2.0.0",
     "chai": "^4.3.6",
