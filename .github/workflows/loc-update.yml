@@ -1,0 +1,46 @@
+name: Localization Update
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'loc/**'
+
+jobs:
+  update-localization:
+    name: Update Localization Files
+    runs-on: windows-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Run Translations Import
+        run: npm run translations-import
+
+      - name: Check for Changes
+        id: git-check
+        run: |
+          git add -A
+          git diff --staged --quiet && echo "changes=false" >> $GITHUB_OUTPUT || echo "changes=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and Push Changes
+        if: steps.git-check.outputs.changes == 'true'
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -m "Automated localization update from CI" -a
+          git push
