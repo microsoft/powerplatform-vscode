@@ -28,17 +28,15 @@ jobs:
           node-version: '18'
           cache: 'npm'
 
+      - name: Install Dependencies
+        run: npm ci
+
       - name: Run Translations Import
         run: npm run translations-import
 
-      - name: Check for Changes
-        id: git-check
-        run: |
-          git add -A
-          git diff --staged --quiet && echo "changes=false" >> $GITHUB_OUTPUT || echo "changes=true" >> $GITHUB_OUTPUT
-
+      - name: Add Changes
+        run: git add -A
       - name: Commit and Push Changes
-        if: steps.git-check.outputs.changes == 'true'
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
