@@ -4,7 +4,7 @@
     <body>
       <trans-unit id="++CODE++32e135c21be9286cda2fda96fbe713f9af60f5f933e4e58468f256dd54b95575">
         <source xml:lang="en">A content snippet with the same name already exists. Please enter a different name.</source>
-        <target state="translated">Esiste già un frammento di contenuto con lo stesso nome. Immetti un nome diverso.</target>
+        <target state="translated">Esiste già unasdasdasd frammento di contenuto con lo stesso nome. Immetti un nome diverso.</target>
       </trans-unit>
       <trans-unit id="++CODE++89b1afe5a595fc2b3015febb4d844886c952f32da56ac80a51c7090a8b2772fc">
         <source xml:lang="en">A page template with the same name already exists. Please enter a different name.</source>
