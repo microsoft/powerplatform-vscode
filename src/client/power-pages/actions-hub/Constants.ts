@@ -117,7 +117,8 @@ export const Constants = {
         CODEQL_CLOSE: vscode.l10n.t("Close"),
         CODEQL_ERROR_OPENING_RESULTS: vscode.l10n.t("Error opening results file: {0}"),
         CODEQL_DATABASE_FOLDER_PROMPT: vscode.l10n.t("Select folder for CodeQL database"),
-        CODEQL_USE_CURRENT_SITE_FOLDER: vscode.l10n.t("Use current site folder")
+        CODEQL_USE_CURRENT_SITE_FOLDER: vscode.l10n.t("Use current site folder"),
+        CODEQL_SCREENING_NOT_SUPPORTED: vscode.l10n.t("CodeQL screening is not supported for this site.")
     },
     EventNames: {
         ACTIONS_HUB_ENABLED: "ActionsHubEnabled",
@@ -180,7 +181,9 @@ export const Constants = {
         ACTIONS_HUB_CODEQL_SCREENING_FAILED: "ActionsHubCodeQLScreeningFailed",
         ACTIONS_HUB_CODEQL_SCREENING_EXTENSION_NOT_INSTALLED: "ActionsHubCodeQLScreeningExtensionNotInstalled",
         ACTIONS_HUB_CODEQL_SCREENING_EXTENSION_INSTALLED: "ActionsHubCodeQLScreeningExtensionInstalled",
-        ACTIONS_HUB_CODEQL_SCREENING_DATABASE_CREATED: "ActionsHubCodeQLScreeningDatabaseCreated"
+        ACTIONS_HUB_CODEQL_SCREENING_DATABASE_CREATED: "ActionsHubCodeQLScreeningDatabaseCreated",
+        ACTIONS_HUB_CODEQL_SCREENING_NOT_SUPPORTED: "ActionsHubCodeQLScreeningNotSupported",
+        ACTIONS_HUB_CODEQL_SCREENING_COMPLETED: "ActionsHubCodeQLScreeningCompleted"
     },
     FeatureNames: {
         REFRESH_ENVIRONMENT: "RefreshEnvironment"
