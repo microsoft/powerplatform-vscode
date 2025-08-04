@@ -6,6 +6,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as yaml from 'yaml';
+import * as os from 'os';
 import { Constants } from './Constants';
 import { PacTerminal } from '../../lib/PacTerminal';
 import { POWERPAGES_SITE_FOLDER, SUCCESS, UTF8_ENCODING, WEBSITE_YML, CODEQL_EXTENSION_ID } from '../../../common/constants';
@@ -978,19 +979,14 @@ export const runCodeQLScreening = async (siteTreeItem?: SiteTreeItem) => {
             return;
         }
 
-        // Ask user where to create the CodeQL database
-        const databaseLocation = await getCodeQLDatabasePath(sitePath);
-        if (!databaseLocation) {
-            return; // User cancelled
-        }
+        // Use default database location (site folder)
+        const databaseLocation = getDefaultCodeQLDatabasePath();
 
         traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_EXTENSION_INSTALLED, { methodName: runCodeQLScreening.name });
 
-        // Use the CodeQLAction class to handle the analysis
         const codeQLAction = new CodeQLAction();
 
         try {
-            // Show progress notification while creating database
             await showProgressWithNotification(
                 Constants.Strings.CODEQL_SCREENING_STARTED,
                 async () => {
@@ -1021,39 +1017,9 @@ export const runCodeQLScreening = async (siteTreeItem?: SiteTreeItem) => {
     }
 };
 
-const getCodeQLDatabasePath = async (sitePath: string) => {
-    const options = [
-        {
-            label: Constants.Strings.BROWSE,
-            iconPath: new vscode.ThemeIcon("folder")
-        },
-        {
-            label: sitePath,
-            iconPath: undefined,
-            detail: Constants.Strings.CODEQL_USE_CURRENT_SITE_FOLDER
-        }
-    ] as { label: string, iconPath: vscode.ThemeIcon | undefined, detail?: string }[];
-
-    const option = await vscode.window.showQuickPick(options, {
-        canPickMany: false,
-        placeHolder: Constants.Strings.CODEQL_DATABASE_FOLDER_PROMPT
-    });
-
-    if (option?.label === Constants.Strings.BROWSE) {
-        const folderUri = await vscode.window.showOpenDialog({
-            canSelectFolders: true,
-            canSelectFiles: false,
-            openLabel: Constants.Strings.SELECT_FOLDER,
-            title: Constants.Strings.CODEQL_DATABASE_FOLDER_PROMPT
-        });
-
-        if (folderUri && folderUri.length > 0) {
-            return folderUri[0].fsPath;
-        }
-        return null;
-    } else if (option?.label === sitePath) {
-        return sitePath;
-    }
-
-    return null; // User cancelled
+const getDefaultCodeQLDatabasePath = (): string => {
+    // Use a temporary directory for the CodeQL database
+    const tempDir = os.tmpdir();
+    const dbName = `codeql-database-${Date.now()}`;
+    return path.join(tempDir, dbName);
 };
