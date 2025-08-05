@@ -234,7 +234,7 @@
             <path d="M7.73333 6.48697C7.55556 6.48697 7.43111 6.57586 7.36 6.75363C6.96889 7.85586 6.20444 9.59808 5.06667 11.9803C4.99556 12.1225 4.99556 12.2647 5.06667 12.407C5.13778 12.5136 5.26222 12.5492 5.44 12.5136H8.74667L9.22667 13.1536V13.6336L8.16 16.087C8.12444 16.1581 8.10667 16.247 8.10667 16.3536C8.14222 16.4247 8.19556 16.4959 8.26667 16.567C8.33778 16.6025 8.40889 16.6203 8.48 16.6203C8.58667 16.6203 8.67556 16.5847 8.74667 16.5136L14.8267 10.967L15.3067 10.807H16.64C16.7467 10.807 16.8356 10.7714 16.9067 10.7003C17.0133 10.6292 17.0667 10.5403 17.0667 10.4336V6.91363C17.0667 6.80697 17.0133 6.71808 16.9067 6.64697C16.8356 6.5403 16.7467 6.48697 16.64 6.48697H7.73333Z" fill="none" id="thumbsdown-path"/>
           </svg>
         </div>
-    `; // CodeQL [SM04949] no user input is used
+    `; // CodeQL [SM04949] no user input is used, therefore these need not be sanitized.
 
         feedback.classList.add("feedback-div");
 
@@ -245,8 +245,7 @@
         const gitHubCopilotText = document.createElement("div");
         gitHubCopilotText.classList.add("github-copilot-text");
 
-        gitHubCopilotText.innerHTML = `<span class="new-badge">${copilotStrings.NEW_BADGE}</span>
-        <span class="gitHubCopilotText">${copilotStrings.GITHUB_COPILOT_CHAT}</span>`; // CodeQL [SM03712] no user input is used
+        gitHubCopilotText.innerHTML = `<span class="new-badge">${copilotStrings.NEW_BADGE}</span><span class="gitHubCopilotText">${copilotStrings.GITHUB_COPILOT_CHAT}</span>`; // CodeQL [SM03712] no user input is used, therefore these need not be sanitized.
 
         return gitHubCopilotText;
     }
@@ -279,7 +278,7 @@
                                     ${starIconSvg}
                                 </span>
                                     ${listPrompt}
-                                </a>`; // CodeQL [SM03712] no user input is used
+                                </a>`; // CodeQL [SM03712] no user input is used, therefore these need not be sanitized.
 
         return suggestedPrompt;
     }
@@ -291,7 +290,7 @@
                             <a href="#" class="walkthrough-content" tabindex="0" aria-label="${copilotStrings.LEARN_MORE_MESSAGE}">
                                 ${bookIconSvg}
                                 <span id="walk-text">${copilotStrings.LEARN_MORE_MESSAGE}</span>
-                            </a>`; // CodeQL [SM04949] no user input is used
+                            </a>`; // CodeQL [SM04949] no user input is used, therefore these need not be sanitized.
         return walkthrough;
     }
 
@@ -397,9 +396,7 @@
             userNotLoggedIn: function () {
                 const notLoggedIn = document.createElement("div");
                 notLoggedIn.classList.add("not-loggedIn");
-                notLoggedIn.innerHTML = `<p id="greeting"></p>
-                <p>${copilotStrings.LOGIN_MESSAGE}</p>
-                <button id="loginButton" aria-label="${copilotStrings.LOGIN_BUTTON}">${copilotStrings.LOGIN_BUTTON}</button>`; // CodeQL [SM03712] no user input is used
+                notLoggedIn.innerHTML = `<p id="greeting"></p><p>${copilotStrings.LOGIN_MESSAGE}</p><button id="loginButton" aria-label="${copilotStrings.LOGIN_BUTTON}">${copilotStrings.LOGIN_BUTTON}</button>`; // CodeQL [SM03712] no user input is used, therefore these need not be sanitized.
 
                 messageElement.appendChild(notLoggedIn);
 
@@ -413,7 +410,7 @@
                 }
                 const loggedInDiv = document.createElement("div");
                 loggedInDiv.classList.add("loggedIn");
-                loggedInDiv.innerHTML = `<p id="greeting">${copilotStrings.HI} <strong>${userName}!</strong> ${copilotStrings.WELCOME_MESSAGE}</p>`; // CodeQL [SM03712] no user input is used
+                loggedInDiv.innerHTML = `<p id="greeting">${copilotStrings.HI} <strong>${userName}!</strong> ${copilotStrings.WELCOME_MESSAGE}</p>`; // CodeQL [SM03712] no user input is used, therefore these need not be sanitized.
                 messageElement.appendChild(loggedInDiv);
 
                 // Add GitHub Copilot link
@@ -472,9 +469,7 @@
 
         const notAvailabel = document.createElement("div");
         notAvailabel.classList.add("not-available");
-        notAvailabel.innerHTML = `<p id="notAvailableGreeting"></p>
-    <p>${copilotStrings.COPILOT_SUPPORT_MESSAGE}</p>
-    <p>${copilotStrings.DOCUMENTATION_LINK}<a></p>`; // CodeQL [SM04949] no user input is used
+        notAvailabel.innerHTML = `<p id="notAvailableGreeting"></p><p>${copilotStrings.COPILOT_SUPPORT_MESSAGE}</p><p>${copilotStrings.DOCUMENTATION_LINK}<a></p>`; // CodeQL [SM04949] no user input is used, therefore these need not be sanitized.
 
         messageElement.appendChild(notAvailabel);
     }
