@@ -44,6 +44,7 @@ import { showErrorDialog } from "../../common/utilities/errorHandlerUtil";
 import { EXTENSION_ID } from "../../common/constants";
 import { getECSOrgLocationValue } from "../../common/utilities/Utils";
 import { authenticateUserInVSCode } from "../../common/services/AuthenticationProvider";
+import { activateServerApiAutocomplete } from "../../common/intellisense";
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
     oneDSLoggerWrapper.instantiate(GeoNames.US);
@@ -197,6 +198,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
             }
         )
     );
+
+    // Register Server API autocomplete for JavaScript files only in web context
+    activateServerApiAutocomplete(context, [
+        { languageId: 'javascript', triggerCharacters: ['.'] }
+    ]);
 
     processWorkspaceStateChanges(context);
 

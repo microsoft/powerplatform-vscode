@@ -51,6 +51,7 @@ import { RegisterBasicPanels, RegisterCopilotPanels } from "./lib/PacActivityBar
 import { PacWrapper } from "./pac/PacWrapper";
 import { authenticateUserInVSCode } from "../common/services/AuthenticationProvider";
 import { PROVIDER_ID } from "../common/services/Constants";
+import { activateServerApiAutocomplete } from "../common/intellisense";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -295,6 +296,11 @@ export async function activate(
     if (shouldEnableDebugger()) {
         activateDebugger(context);
     }
+
+    // Register Server API autocomplete for JavaScript files only
+    activateServerApiAutocomplete(context, [
+        { languageId: 'javascript', triggerCharacters: ['.'] }
+    ]);
 
     oneDSLoggerWrapper.getLogger().traceInfo("activated");
 }
