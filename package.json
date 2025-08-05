@@ -481,6 +481,7 @@
       },
       {
         "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening",
+        "category": "Power Pages",
         "title": "%microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title%"
       }
     ],
