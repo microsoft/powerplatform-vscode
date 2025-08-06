@@ -29,7 +29,7 @@ import {
 } from "../utilities/schemaHelperUtil";
 import WebExtensionContext from "../WebExtensionContext";
 import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
-import { EntityMetadataKeyCore, SchemaEntityMetadata, folderExportType, schemaEntityKey, schemaEntityName, schemaKey } from "../schema/constants";
+import { EntityMetadataKeyCore, SchemaEntityMetadata, folderExportType, schemaEntityKey, schemaEntityName, schemaKey, WEBPAGE_FOLDER_CONSTANTS } from "../schema/constants";
 import { getEntityNameForExpandedEntityContent, getRequestUrlForEntities } from "../utilities/folderHelperUtility";
 import { IAttributePath, IFileInfo } from "../common/interfaces";
 import { portal_schema_V2 } from "../schema/portalSchema";
@@ -342,13 +342,12 @@ async function processDataAndCreateFile(
     if (entityName === schemaEntityName.WEBPAGES) {
         const webpageNames = WebExtensionContext.getWebpageNames();
 
-        // For consistency, use a stable identifier for the suffix when rootWebPageId is null
-        const effectiveRootWebPageId = rootWebPageId || 'no-root';
-        const rootWebPageIdKey = `${fileName}${'#'}${effectiveRootWebPageId}`;
+        const effectiveRootWebPageId = rootWebPageId || WEBPAGE_FOLDER_CONSTANTS.NO_ROOT_PLACEHOLDER;
+        const rootWebPageIdKey = `${fileName}${WEBPAGE_FOLDER_CONSTANTS.DELIMITER}${effectiveRootWebPageId}`;
 
         if (!webpageNames.has(rootWebPageIdKey)) {
             // This is a new filename+rootWebPageId combination
-            const existingEntriesForFileName = Array.from(webpageNames).filter(key => key.startsWith(`${fileName}${'#'}`));
+            const existingEntriesForFileName = Array.from(webpageNames).filter(key => key.startsWith(`${fileName}${WEBPAGE_FOLDER_CONSTANTS.DELIMITER}`));
 
             if (existingEntriesForFileName.length > 0) {
                 // This filename already exists with a different root webpage ID
@@ -367,10 +366,10 @@ async function processDataAndCreateFile(
         } else {
             // We've seen this exact filename+rootWebPageId combination before
             // Determine which folder name was used for this specific root webpage ID group
-            const existingEntriesForFileName = Array.from(webpageNames).filter(key => key.startsWith(`${fileName}${'#'}`));
+            const existingEntriesForFileName = Array.from(webpageNames).filter(key => key.startsWith(`${fileName}${WEBPAGE_FOLDER_CONSTANTS.DELIMITER}`));
 
             // Extract and sort root webpage IDs to ensure consistent ordering
-            const rootWebPageIds = existingEntriesForFileName.map(key => key.split('#')[1]).sort();
+            const rootWebPageIds = existingEntriesForFileName.map(key => key.split(WEBPAGE_FOLDER_CONSTANTS.DELIMITER)[1]).sort();
             const currentEntryIndex = rootWebPageIds.indexOf(effectiveRootWebPageId);
 
             if (currentEntryIndex === 0) {
