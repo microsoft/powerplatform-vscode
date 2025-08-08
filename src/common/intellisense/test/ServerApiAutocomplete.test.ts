@@ -13,14 +13,28 @@ import { ServerApiCompletionProvider, ServerApiDefinitions } from '../ServerApiC
 suite('Server API Autocomplete Tests', () => {
 
     suite('ServerApiDefinitions', () => {
-        test('should return all API definitions', () => {
+        test('should return all required API namespace definitions', () => {
             const definitions = ServerApiDefinitions.getDefinitions();
 
-            assert.strictEqual(definitions.length, 3);
+            // Ensure key namespaces exist
             assert.ok(definitions.find(d => d.name === 'Logger'));
             assert.ok(definitions.find(d => d.name === 'Connector'));
             assert.ok(definitions.find(d => d.name === 'Connector.HttpClient'));
             assert.ok(definitions.find(d => d.name === 'Connector.Dataverse'));
+            assert.ok(definitions.find(d => d.name === 'Context'));
+            assert.ok(definitions.find(d => d.name === 'Sitesetting'));
+            assert.ok(definitions.find(d => d.name === 'Website'));
+            assert.ok(definitions.find(d => d.name === 'Website.adx_defaultlanguage'));
+            assert.ok(definitions.find(d => d.name === 'Website.adx_footerwebtemplateid'));
+            assert.ok(definitions.find(d => d.name === 'Website.adx_headerwebtemplateid'));
+            assert.ok(definitions.find(d => d.name === 'Website.adx_defaultbotconsumerid'));
+            // New: User
+            assert.ok(definitions.find(d => d.name === 'User'));
+            assert.ok(definitions.find(d => d.name === 'User.owningbusinessunit'));
+            assert.ok(definitions.find(d => d.name === 'User.owninguser'));
+            assert.ok(definitions.find(d => d.name === 'User.ownerid'));
+            assert.ok(definitions.find(d => d.name === 'User.modifiedby'));
+            assert.ok(definitions.find(d => d.name === 'User.createdby'));
         });
 
         test('should return specific namespace definition', () => {
@@ -86,6 +100,11 @@ suite('Server API Autocomplete Tests', () => {
             // Should include top-level namespace completions
             assert.ok(completionArray.find(c => c.label === 'Logger'));
             assert.ok(completionArray.find(c => c.label === 'Connector'));
+            assert.ok(completionArray.find(c => c.label === 'Context'));
+            assert.ok(completionArray.find(c => c.label === 'Sitesetting'));
+            assert.ok(completionArray.find(c => c.label === 'Website'));
+            // New: User
+            assert.ok(completionArray.find(c => c.label === 'User'));
         });
 
         test('should provide sub-namespace completions for Connector', async () => {
@@ -159,6 +178,101 @@ suite('Server API Autocomplete Tests', () => {
             assert.ok(completionArray.find(c => c.label === 'RetrieveMultipleRecords'));
             assert.ok(completionArray.find(c => c.label === 'UpdateRecord'));
             assert.ok(completionArray.find(c => c.label === 'DeleteRecord'));
+        });
+
+        test('should provide property completions for Context namespace', async () => {
+            const document = await vscode.workspace.openTextDocument({
+                content: 'Server.Context.',
+                language: 'javascript'
+            });
+
+            const position = new vscode.Position(0, 15);
+            const completions = provider.provideCompletionItems(document, position);
+
+            assert.ok(Array.isArray(completions));
+            const completionArray = completions as vscode.CompletionItem[];
+
+            const expectedProps = ['ActivityId','Body','FunctionName','Headers','HttpMethod','QueryParameters','ServerLogicName','Url'];
+            expectedProps.forEach(p => assert.ok(completionArray.find(c => c.label === p), `Missing Context property: ${p}`));
+        });
+
+        test('should provide method completion for Sitesetting namespace', async () => {
+            const document = await vscode.workspace.openTextDocument({
+                content: 'Server.Sitesetting.',
+                language: 'javascript'
+            });
+
+            const position = new vscode.Position(0, 19);
+            const completions = provider.provideCompletionItems(document, position);
+
+            assert.ok(Array.isArray(completions));
+            const completionArray = completions as vscode.CompletionItem[];
+
+            assert.ok(completionArray.find(c => c.label === 'Get'));
+        });
+
+        test('should provide property completions for Website namespace', async () => {
+            const document = await vscode.workspace.openTextDocument({
+                content: 'Server.Website.',
+                language: 'javascript'
+            });
+
+            const position = new vscode.Position(0, 15);
+            const completions = provider.provideCompletionItems(document, position);
+
+            assert.ok(Array.isArray(completions));
+            const completionArray = completions as vscode.CompletionItem[];
+
+            const expectedTopProps = ['statecode','statuscode','adx_websiteid','adx_primarydomainname','adx_name','adx_defaultlanguage','adx_footerwebtemplateid','adx_headerwebtemplateid','adx_defaultbotconsumerid','isCoreEntity'];
+            expectedTopProps.forEach(p => assert.ok(completionArray.find(c => c.label === p), `Missing Website property: ${p}`));
+        });
+
+        test('should provide nested property completions for Website entity references', async () => {
+            const document = await vscode.workspace.openTextDocument({
+                content: 'Server.Website.adx_defaultlanguage.',
+                language: 'javascript'
+            });
+
+            const position = new vscode.Position(0, 33);
+            const completions = provider.provideCompletionItems(document, position);
+
+            assert.ok(Array.isArray(completions));
+            const completionArray = completions as vscode.CompletionItem[];
+
+            ['LogicalName','Id','Name'].forEach(p => assert.ok(completionArray.find(c => c.label === p), `Missing nested property: ${p}`));
+        });
+
+        test('should provide property completions for User namespace', async () => {
+            const document = await vscode.workspace.openTextDocument({
+                content: 'Server.User.',
+                language: 'javascript'
+            });
+
+            const position = new vscode.Position(0, 12);
+            const completions = provider.provideCompletionItems(document, position);
+
+            assert.ok(Array.isArray(completions));
+            const completionArray = completions as vscode.CompletionItem[];
+
+            const expectedProps = [
+                'customertypecode','address2_addresstypecode','merged','adx_identity_securitystamp','territorycode','emailaddress1','haschildrencode','adx_identity_passwordhash','preferredappointmenttimecode','adx_profilemodifiedon','isbackofficecustomer','owningbusinessunit','owninguser','adx_profilealert','lastname','donotpostalmail','marketingonly','donotphone','preferredcontactmethodcode','adx_identity_locallogindisabled','educationcode','ownerid','adx_identity_logonenabled','customersizecode','firstname','yomifullname','adx_identity_lockoutenabled','adx_profileisanonymous','donotemail','address2_shippingmethodcode','statuscode','createdon','donotsendmm','donotfax','leadsourcecode','adx_identity_accessfailedcount','adx_confirmremovepassword','modifiedon','creditonhold','adx_identity_emailaddress1confirmed','msdyn_isminor','adx_identity_username','msdyn_isminorwithparentalconsent','address3_addressid','donotbulkemail','adx_identity_twofactorenabled','modifiedby','followemail','shippingmethodcode','createdby','donotbulkpostalmail','contactid','msdyn_disablewebtracking','adx_identity_mobilephoneconfirmed','participatesinworkflow','statecode','address2_addressid'
+            ];
+            expectedProps.forEach(p => assert.ok(completionArray.find(c => c.label === p), `Missing User property: ${p}`));
+        });
+
+        test('should provide nested property completions for User entity references', async () => {
+            const document = await vscode.workspace.openTextDocument({
+                content: 'Server.User.ownerid.',
+                language: 'javascript'
+            });
+
+            const position = new vscode.Position(0, 22);
+            const completions = provider.provideCompletionItems(document, position);
+
+            assert.ok(Array.isArray(completions));
+            const completionArray = completions as vscode.CompletionItem[];
+
+            ['LogicalName','Id','Name'].forEach(p => assert.ok(completionArray.find(c => c.label === p), `Missing nested property: ${p}`));
         });
 
         test('should not provide completions for non-Server context', async () => {

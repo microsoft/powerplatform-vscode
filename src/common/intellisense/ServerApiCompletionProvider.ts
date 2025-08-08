@@ -190,6 +190,215 @@ export class ServerApiDefinitions {
                     example: "Server.Connector.Dataverse.DeleteRecord('contacts', contactId);"
                 }
             ]
+        },
+        // New: Server.Context namespace with properties
+        {
+            name: "Context",
+            description: "Provides request context information for the current server execution",
+            methods: [],
+            properties: [
+                { name: "ActivityId", description: "Unique activity identifier for the current execution", returnType: "string" },
+                { name: "Body", description: "Request body content", returnType: "string" },
+                { name: "FunctionName", description: "Invoked function name", returnType: "string" },
+                { name: "Headers", description: "HTTP request headers", returnType: "IDictionary<string, string>" },
+                { name: "HttpMethod", description: "HTTP method for the request", returnType: "string" },
+                { name: "QueryParameters", description: "Query string parameters", returnType: "IDictionary<string, string>" },
+                { name: "ServerLogicName", description: "The server logic name being executed", returnType: "string" },
+                { name: "Url", description: "Request URL", returnType: "string" }
+            ]
+        },
+        // New: Server.Sitesetting with Get(name)
+        {
+            name: "Sitesetting",
+            description: "Provides access to site settings",
+            methods: [
+                {
+                    name: "Get",
+                    description: "Gets a site setting value by name",
+                    parameters: [
+                        { name: "name", type: "string", description: "The site setting name" }
+                    ],
+                    returnType: "string",
+                    example: "Server.Sitesetting.Get('Authentication/OpenIdConnect/Authority');"
+                }
+            ]
+        },
+        // New: Server.Website top-level properties and nested entity references
+        {
+            name: "Website",
+            description: "Provides metadata of the current Power Pages website",
+            methods: [],
+            properties: [
+                { name: "statecode", description: "Website state code", returnType: "number" },
+                { name: "statuscode", description: "Website status code", returnType: "number" },
+                { name: "adx_websiteid", description: "Website ID (GUID)", returnType: "string" },
+                { name: "adx_primarydomainname", description: "Primary domain name", returnType: "string" },
+                { name: "adx_name", description: "Website name", returnType: "string" },
+                { name: "adx_defaultlanguage", description: "Default language reference", returnType: "EntityReference" },
+                { name: "adx_footerwebtemplateid", description: "Footer web template reference", returnType: "EntityReference" },
+                { name: "adx_headerwebtemplateid", description: "Header web template reference", returnType: "EntityReference" },
+                { name: "adx_defaultbotconsumerid", description: "Default bot consumer reference", returnType: "EntityReference" },
+                { name: "isCoreEntity", description: "Indicates whether the website is a core entity", returnType: "boolean" }
+            ]
+        },
+        {
+            name: "Website.adx_defaultlanguage",
+            description: "Default language entity reference",
+            methods: [],
+            properties: [
+                { name: "LogicalName", description: "Logical name of the referenced record", returnType: "string" },
+                { name: "Id", description: "ID (GUID) of the referenced record", returnType: "string" },
+                { name: "Name", description: "Name of the referenced record", returnType: "string" }
+            ]
+        },
+        {
+            name: "Website.adx_footerwebtemplateid",
+            description: "Footer web template entity reference",
+            methods: [],
+            properties: [
+                { name: "LogicalName", description: "Logical name of the referenced record", returnType: "string" },
+                { name: "Id", description: "ID (GUID) of the referenced record", returnType: "string" },
+                { name: "Name", description: "Name of the referenced record", returnType: "string" }
+            ]
+        },
+        {
+            name: "Website.adx_headerwebtemplateid",
+            description: "Header web template entity reference",
+            methods: [],
+            properties: [
+                { name: "LogicalName", description: "Logical name of the referenced record", returnType: "string" },
+                { name: "Id", description: "ID (GUID) of the referenced record", returnType: "string" },
+                { name: "Name", description: "Name of the referenced record", returnType: "string" }
+            ]
+        },
+        {
+            name: "Website.adx_defaultbotconsumerid",
+            description: "Default bot consumer entity reference",
+            methods: [],
+            properties: [
+                { name: "LogicalName", description: "Logical name of the referenced record", returnType: "string" },
+                { name: "Id", description: "ID (GUID) of the referenced record", returnType: "string" },
+                { name: "Name", description: "Name of the referenced record", returnType: "string" }
+            ]
+        },
+        // New: Server.User with extensive properties and entity references
+        {
+            name: "User",
+            description: "Provides information about the current user (contact)",
+            methods: [],
+            properties: [
+                { name: "customertypecode", description: "Customer type code", returnType: "number" },
+                { name: "address2_addresstypecode", description: "Address 2 type code", returnType: "number" },
+                { name: "merged", description: "Indicates whether the record is merged", returnType: "boolean" },
+                { name: "adx_identity_securitystamp", description: "Identity security stamp", returnType: "string" },
+                { name: "territorycode", description: "Territory code", returnType: "number" },
+                { name: "emailaddress1", description: "Primary email address", returnType: "string" },
+                { name: "haschildrencode", description: "Has children code", returnType: "number" },
+                { name: "adx_identity_passwordhash", description: "Identity password hash", returnType: "string" },
+                { name: "preferredappointmenttimecode", description: "Preferred appointment time code", returnType: "number" },
+                { name: "adx_profilemodifiedon", description: "Profile last modified on", returnType: "string" },
+                { name: "isbackofficecustomer", description: "Is back office customer", returnType: "boolean" },
+                { name: "owningbusinessunit", description: "Owning business unit reference", returnType: "EntityReference" },
+                { name: "owninguser", description: "Owning user reference", returnType: "EntityReference" },
+                { name: "adx_profilealert", description: "Profile alert text", returnType: "string" },
+                { name: "lastname", description: "Last name", returnType: "string" },
+                { name: "donotpostalmail", description: "Do not send postal mail", returnType: "boolean" },
+                { name: "marketingonly", description: "Marketing only", returnType: "boolean" },
+                { name: "donotphone", description: "Do not phone", returnType: "boolean" },
+                { name: "preferredcontactmethodcode", description: "Preferred contact method code", returnType: "number" },
+                { name: "adx_identity_locallogindisabled", description: "Local login disabled", returnType: "boolean" },
+                { name: "educationcode", description: "Education code", returnType: "number" },
+                { name: "ownerid", description: "Owner reference", returnType: "EntityReference" },
+                { name: "adx_identity_logonenabled", description: "Login enabled", returnType: "boolean" },
+                { name: "customersizecode", description: "Customer size code", returnType: "number" },
+                { name: "firstname", description: "First name", returnType: "string" },
+                { name: "yomifullname", description: "Yomi full name", returnType: "string" },
+                { name: "adx_identity_lockoutenabled", description: "Lockout enabled", returnType: "boolean" },
+                { name: "adx_profileisanonymous", description: "Profile is anonymous", returnType: "boolean" },
+                { name: "donotemail", description: "Do not email", returnType: "boolean" },
+                { name: "address2_shippingmethodcode", description: "Address 2 shipping method code", returnType: "number" },
+                { name: "fullname", description: "Full name", returnType: "string" },
+                { name: "timezoneruleversionnumber", description: "Timezone rule version number", returnType: "number" },
+                { name: "address1_addressid", description: "Address 1 ID", returnType: "string" },
+                { name: "address2_freighttermscode", description: "Address 2 freight terms code", returnType: "number" },
+                { name: "statuscode", description: "Status code", returnType: "number" },
+                { name: "createdon", description: "Created on", returnType: "string" },
+                { name: "donotsendmm", description: "Do not send marketing materials", returnType: "boolean" },
+                { name: "donotfax", description: "Do not fax", returnType: "boolean" },
+                { name: "leadsourcecode", description: "Lead source code", returnType: "number" },
+                { name: "adx_identity_accessfailedcount", description: "Identity access failed count", returnType: "number" },
+                { name: "adx_confirmremovepassword", description: "Confirm remove password", returnType: "boolean" },
+                { name: "modifiedon", description: "Modified on", returnType: "string" },
+                { name: "creditonhold", description: "Credit on hold", returnType: "boolean" },
+                { name: "adx_identity_emailaddress1confirmed", description: "Email address confirmed", returnType: "boolean" },
+                { name: "msdyn_isminor", description: "Is minor", returnType: "boolean" },
+                { name: "adx_identity_username", description: "Identity username", returnType: "string" },
+                { name: "msdyn_isminorwithparentalconsent", description: "Is minor with parental consent", returnType: "boolean" },
+                { name: "address3_addressid", description: "Address 3 ID", returnType: "string" },
+                { name: "donotbulkemail", description: "Do not bulk email", returnType: "boolean" },
+                { name: "adx_identity_twofactorenabled", description: "Two factor enabled", returnType: "boolean" },
+                { name: "modifiedby", description: "Modified by reference", returnType: "EntityReference" },
+                { name: "followemail", description: "Follow email", returnType: "boolean" },
+                { name: "shippingmethodcode", description: "Shipping method code", returnType: "number" },
+                { name: "createdby", description: "Created by reference", returnType: "EntityReference" },
+                { name: "donotbulkpostalmail", description: "Do not bulk postal mail", returnType: "boolean" },
+                { name: "contactid", description: "Contact ID", returnType: "string" },
+                { name: "msdyn_disablewebtracking", description: "Disable web tracking", returnType: "boolean" },
+                { name: "adx_identity_mobilephoneconfirmed", description: "Mobile phone confirmed", returnType: "boolean" },
+                { name: "participatesinworkflow", description: "Participates in workflow", returnType: "boolean" },
+                { name: "statecode", description: "State code", returnType: "number" },
+                { name: "address2_addressid", description: "Address 2 ID", returnType: "string" }
+            ]
+        },
+        {
+            name: "User.owningbusinessunit",
+            description: "Owning business unit entity reference",
+            methods: [],
+            properties: [
+                { name: "LogicalName", description: "Logical name of the referenced record", returnType: "string" },
+                { name: "Id", description: "ID (GUID) of the referenced record", returnType: "string" },
+                { name: "Name", description: "Name of the referenced record", returnType: "string" }
+            ]
+        },
+        {
+            name: "User.owninguser",
+            description: "Owning user entity reference",
+            methods: [],
+            properties: [
+                { name: "LogicalName", description: "Logical name of the referenced record", returnType: "string" },
+                { name: "Id", description: "ID (GUID) of the referenced record", returnType: "string" },
+                { name: "Name", description: "Name of the referenced record", returnType: "string" }
+            ]
+        },
+        {
+            name: "User.ownerid",
+            description: "Owner entity reference",
+            methods: [],
+            properties: [
+                { name: "LogicalName", description: "Logical name of the referenced record", returnType: "string" },
+                { name: "Id", description: "ID (GUID) of the referenced record", returnType: "string" },
+                { name: "Name", description: "Name of the referenced record", returnType: "string" }
+            ]
+        },
+        {
+            name: "User.modifiedby",
+            description: "Modified by entity reference",
+            methods: [],
+            properties: [
+                { name: "LogicalName", description: "Logical name of the referenced record", returnType: "string" },
+                { name: "Id", description: "ID (GUID) of the referenced record", returnType: "string" },
+                { name: "Name", description: "Name of the referenced record", returnType: "string" }
+            ]
+        },
+        {
+            name: "User.createdby",
+            description: "Created by entity reference",
+            methods: [],
+            properties: [
+                { name: "LogicalName", description: "Logical name of the referenced record", returnType: "string" },
+                { name: "Id", description: "ID (GUID) of the referenced record", returnType: "string" },
+                { name: "Name", description: "Name of the referenced record", returnType: "string" }
+            ]
         }
     ];
 
@@ -208,9 +417,6 @@ export class ServerApiDefinitions {
     }
 }
 
-/**
- * Completion provider for Server APIs in Power Pages
- */
 export class ServerApiCompletionProvider implements vscode.CompletionItemProvider {
 
     /**
@@ -271,11 +477,18 @@ export class ServerApiCompletionProvider implements vscode.CompletionItemProvide
             completion.documentation = new vscode.MarkdownString(namespace.description);
             completion.insertText = namespace.name;
 
-            // Add snippet for common patterns
             if (namespace.name === 'Logger') {
                 completion.insertText = new vscode.SnippetString(`${namespace.name}.Log('\${1:message}');`);
             } else if (namespace.name === 'Connector') {
                 completion.insertText = new vscode.SnippetString(`${namespace.name}.\${1|HttpClient,Dataverse|}`);
+            } else if (namespace.name === 'Sitesetting') {
+                completion.insertText = new vscode.SnippetString(`${namespace.name}.Get('\${1:name}')`);
+            } else if (namespace.name === 'Context') {
+                completion.insertText = new vscode.SnippetString(`${namespace.name}.\${1|ActivityId,Body,FunctionName,Headers,HttpMethod,QueryParameters,ServerLogicName,Url|}`);
+            } else if (namespace.name === 'Website') {
+                completion.insertText = new vscode.SnippetString(`${namespace.name}.\${1|statecode,statuscode,adx_websiteid,adx_primarydomainname,adx_name,adx_defaultlanguage,adx_footerwebtemplateid,adx_headerwebtemplateid,adx_defaultbotconsumerid,isCoreEntity|}`);
+            } else if (namespace.name === 'User') {
+                completion.insertText = new vscode.SnippetString(`${namespace.name}.\${1|customertypecode,address2_addresstypecode,merged,adx_identity_securitystamp,territorycode,emailaddress1,haschildrencode,adx_identity_passwordhash,preferredappointmenttimecode,adx_profilemodifiedon,isbackofficecustomer,owningbusinessunit,owninguser,adx_profilealert,lastname,donotpostalmail,marketingonly,donotphone,preferredcontactmethodcode,adx_identity_locallogindisabled,educationcode,ownerid,adx_identity_logonenabled,customersizecode,firstname,yomifullname,adx_identity_lockoutenabled,adx_profileisanonymous,donotemail,address2_shippingmethodcode,fullname,timezoneruleversionnumber,address1_addressid,address2_freighttermscode,statuscode,createdon,donotsendmm,donotfax,leadsourcecode,adx_identity_accessfailedcount,adx_confirmremovepassword,modifiedon,creditonhold,adx_identity_emailaddress1confirmed,msdyn_isminor,adx_identity_username,msdyn_isminorwithparentalconsent,address3_addressid,donotbulkemail,adx_identity_twofactorenabled,modifiedby,followemail,shippingmethodcode,createdby,donotbulkpostalmail,contactid,msdyn_disablewebtracking,adx_identity_mobilephoneconfirmed,participatesinworkflow,statecode,address2_addressid|}`);
             }
 
             return completion;
