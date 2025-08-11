@@ -45,6 +45,9 @@ import { EXTENSION_ID } from "../../common/constants";
 import { getECSOrgLocationValue } from "../../common/utilities/Utils";
 import { authenticateUserInVSCode } from "../../common/services/AuthenticationProvider";
 import { activateServerApiAutocomplete } from "../../common/intellisense";
+import { EnableBLChanges } from "../../common/ecs-features/ecsFeatureGates";
+
+let serverApiAutocompleteInitialized = false;
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
     oneDSLoggerWrapper.instantiate(GeoNames.US);
@@ -149,6 +152,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
                                             },
                                             PowerPagesClientName);
 
+                                        const { enableBLChanges } = EnableBLChanges.getConfig() as { enableBLChanges?: boolean };
+                                        if (!serverApiAutocompleteInitialized && enableBLChanges) {
+                                            activateServerApiAutocomplete(context, [
+                                                { languageId: 'javascript', triggerCharacters: ['.'] }
+                                            ]);
+                                            serverApiAutocompleteInitialized = true;
+                                        }
+
                                         registerCopilot(context);
                                         processWillStartCollaboration(context);
                                     }
@@ -198,11 +209,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
             }
         )
     );
-
-    // Register Server API autocomplete for JavaScript files only in web context
-    activateServerApiAutocomplete(context, [
-        { languageId: 'javascript', triggerCharacters: ['.'] }
-    ]);
 
     processWorkspaceStateChanges(context);
 

@@ -52,6 +52,7 @@ import { PacWrapper } from "./pac/PacWrapper";
 import { authenticateUserInVSCode } from "../common/services/AuthenticationProvider";
 import { PROVIDER_ID } from "../common/services/Constants";
 import { activateServerApiAutocomplete } from "../common/intellisense";
+import { EnableBLChanges } from "../common/ecs-features/ecsFeatureGates";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -59,7 +60,7 @@ let htmlServerRunning = false;
 let yamlServerRunning = false;
 let copilotPanelsRegistered = false;
 let copilotPanelsDisposable: vscode.Disposable[] = [];
-
+let serverApiAutocompleteInitialized = false;
 
 export async function activate(
     context: vscode.ExtensionContext
@@ -230,6 +231,14 @@ export async function activate(
 
                     // Register copilot panels only after ECS initialization is complete
                     registerCopilotPanels(pacWrapper);
+
+                    const { enableBLChanges } = EnableBLChanges.getConfig() as { enableBLChanges?: boolean };
+                    if (!serverApiAutocompleteInitialized && enableBLChanges) {
+                        activateServerApiAutocomplete(_context, [
+                            { languageId: 'javascript', triggerCharacters: ['.'] }
+                        ]);
+                        serverApiAutocompleteInitialized = true;
+                    }
                 }
 
                 oneDSLoggerWrapper.instantiate(geoName, geoLongName, environment);
@@ -298,9 +307,9 @@ export async function activate(
     }
 
     // Register Server API autocomplete for JavaScript files only
-    activateServerApiAutocomplete(context, [
-        { languageId: 'javascript', triggerCharacters: ['.'] }
-    ]);
+    // activateServerApiAutocomplete(context, [
+    //     { languageId: 'javascript', triggerCharacters: ['.'] }
+    // ]);
 
     oneDSLoggerWrapper.getLogger().traceInfo("activated");
 }
@@ -428,7 +437,6 @@ function registerClientToReceiveNotifications(client: LanguageClient) {
         });
     });
 }
-
 
 function isCurrentDocumentEdited(): boolean {
     const workspaceFolderExists =
