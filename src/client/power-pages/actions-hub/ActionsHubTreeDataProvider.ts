@@ -29,8 +29,10 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     private _inactiveSites: IWebsiteDetails[] = [];
     private _otherSites: IOtherSiteInfo[] = [];
     private _loadWebsites = true;
+    private _isCodeQlScanEnabled: boolean;
 
-    private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal) {
+    private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal, isCodeQlScanEnabled: boolean) {
+        this._isCodeQlScanEnabled = isCodeQlScanEnabled;
         this._disposables.push(
             ...this.registerPanel(this._pacTerminal),
 
@@ -85,8 +87,8 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
         return false;
     }
 
-    public static initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal): ActionsHubTreeDataProvider {
-        return new ActionsHubTreeDataProvider(context, pacTerminal);
+    public static initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal, isCodeQlScanEnabled: boolean): ActionsHubTreeDataProvider {
+        return new ActionsHubTreeDataProvider(context, pacTerminal, isCodeQlScanEnabled);
     }
 
     getTreeItem(element: ActionsHubTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
@@ -131,7 +133,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     }
 
     private registerPanel(pacTerminal: PacTerminal): vscode.Disposable[] {
-        return [
+        const commands = [
             vscode.window.registerTreeDataProvider("microsoft.powerplatform.pages.actionsHub", this),
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.refresh", async () => await refreshEnvironment(pacTerminal)),
@@ -165,8 +167,14 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio", openInStudio),
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite", reactivateSite),
-
-            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening", runCodeQLScreening),
         ];
+
+        if (this._isCodeQlScanEnabled) {
+            commands.push(
+                vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening", runCodeQLScreening)
+            );
+        }
+
+        return commands;
     }
 }

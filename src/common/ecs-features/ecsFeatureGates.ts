@@ -79,3 +79,13 @@ export const {
         enableActionsHub: true,
     },
 });
+
+export const {
+    feature: EnableCodeQlScan
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable CodeQl Scan in VSCode Desktop',
+    fallback: {
+        enableCodeQlScan: true,
+    }
+})

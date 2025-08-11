@@ -482,7 +482,8 @@
       {
         "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening",
         "category": "Power Pages",
-        "title": "%microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title%"
+        "title": "%microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title%",
+        "when": "microsoft.powerplatform.pages.codeQlScanEnabled"
       }
     ],
     "configuration": {
@@ -1163,7 +1164,7 @@
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == currentActiveSite",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == currentActiveSite && microsoft.powerplatform.pages.codeQlScanEnabled",
           "group": "siteAction@7"
         }
       ]
