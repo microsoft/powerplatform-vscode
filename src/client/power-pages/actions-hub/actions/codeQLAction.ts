@@ -10,6 +10,10 @@ import * as fs from 'fs';
 import { CODEQL_EXTENSION_ID } from '../../../../common/constants';
 import { Constants } from '../Constants';
 
+interface PowerPagesConfig {
+    codeQlQuery?: string;
+}
+
 export class CodeQLAction {
     private outputChannel: vscode.OutputChannel;
 
@@ -36,7 +40,9 @@ export class CodeQLAction {
 
             this.outputChannel.appendLine(Constants.Strings.CODEQL_RUNNING_ANALYSIS);
             const resultsPath = path.join(path.dirname(dbPath), 'results.sarif');
-            const querySuite = 'codeql/javascript-queries:codeql-suites/javascript-security-and-quality.qls';
+
+            // Get the query suite from config or use default
+            const querySuite = await this.getCodeQLQuerySuite(sitePath);
 
             try {
                 // Use the correct syntax for JavaScript code scanning query suite
@@ -376,9 +382,7 @@ export class CodeQLAction {
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_SARIF_VIEWER_ERROR, errorMessage));
             await this.fallbackToTextEditor(resultsPath);
         }
-    }
-
-    private async fallbackToTextEditor(resultsPath: string): Promise<void> {
+    }    private async fallbackToTextEditor(resultsPath: string): Promise<void> {
         try {
             // Offer to open the full SARIF file as text
             const openFile = await vscode.window.showInformationMessage(
@@ -394,6 +398,68 @@ export class CodeQLAction {
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_ERROR_OPENING_RESULTS, errorMessage));
+        }
+    }
+
+    private async getCodeQLQuerySuite(sitePath: string): Promise<string> {
+        const configPath = path.join(sitePath, 'powerpages.config.json');
+        const defaultQuerySuite = 'codeql/javascript-queries:codeql-suites/javascript-security-and-quality.qls';
+
+        try {
+            if (fs.existsSync(configPath)) {
+                this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_CONFIG_FILE_FOUND, configPath));
+
+                const configContent = fs.readFileSync(configPath, 'utf8');
+                const config: PowerPagesConfig = JSON.parse(configContent);
+
+                if (config.codeQlQuery) {
+                    this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_USING_CUSTOM_QUERY, config.codeQlQuery));
+                    return config.codeQlQuery;
+                } else {
+                    // Add the default query suite to the existing config
+                    config.codeQlQuery = defaultQuerySuite;
+                    await this.updateConfigFile(configPath, config);
+                    this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_ADDED_DEFAULT_QUERY_TO_CONFIG, defaultQuerySuite));
+                    return defaultQuerySuite;
+                }
+            } else {
+                // Create new config file with default query suite
+                const config: PowerPagesConfig = {
+                    codeQlQuery: defaultQuerySuite
+                };
+                await this.createConfigFile(configPath, config);
+                this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_CREATED_CONFIG_FILE, configPath, defaultQuerySuite));
+                return defaultQuerySuite;
+            }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_CONFIG_ERROR, errorMessage));
+            this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_USING_DEFAULT_QUERY, defaultQuerySuite));
+            return defaultQuerySuite;
+        }
+    }
+
+    private async createConfigFile(configPath: string, config: PowerPagesConfig): Promise<void> {
+        try {
+            const configContent = JSON.stringify(config, null, 2);
+            fs.writeFileSync(configPath, configContent, 'utf8');
+            this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_CONFIG_FILE_CREATED_SUCCESSFULLY, configPath));
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_CONFIG_FILE_CREATE_ERROR, errorMessage));
+            throw error;
+        }
+    }
+
+    private async updateConfigFile(configPath: string, config: PowerPagesConfig): Promise<void> {
+        try {
+            const configContent = JSON.stringify(config, null, 2);
+            fs.writeFileSync(configPath, configContent, 'utf8');
+            this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_CONFIG_FILE_UPDATED_SUCCESSFULLY, configPath));
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_CONFIG_FILE_UPDATE_ERROR, errorMessage));
+            throw error;
         }
     }
 

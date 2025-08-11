@@ -118,7 +118,17 @@ export const Constants = {
         CODEQL_ERROR_OPENING_RESULTS: vscode.l10n.t("Error opening results file: {0}"),
         CODEQL_DATABASE_FOLDER_PROMPT: vscode.l10n.t("Select folder for CodeQL database"),
         CODEQL_USE_CURRENT_SITE_FOLDER: vscode.l10n.t("Use current site folder"),
-        CODEQL_SCREENING_NOT_SUPPORTED: vscode.l10n.t("CodeQL screening is not supported for this site.")
+        CODEQL_SCREENING_NOT_SUPPORTED: vscode.l10n.t("CodeQL screening is not supported for this site."),
+        CODEQL_CONFIG_FILE_FOUND: vscode.l10n.t("Found PowerPages config file: {0}"),
+        CODEQL_USING_CUSTOM_QUERY: vscode.l10n.t("Using custom CodeQL query suite: {0}"),
+        CODEQL_ADDED_DEFAULT_QUERY_TO_CONFIG: vscode.l10n.t("Added default query suite to config: {0}"),
+        CODEQL_CREATED_CONFIG_FILE: vscode.l10n.t("Created PowerPages config file at {0} with default query suite: {1}"),
+        CODEQL_CONFIG_ERROR: vscode.l10n.t("Error reading config file: {0}"),
+        CODEQL_USING_DEFAULT_QUERY: vscode.l10n.t("Using default query suite: {0}"),
+        CODEQL_CONFIG_FILE_CREATED_SUCCESSFULLY: vscode.l10n.t("PowerPages config file created successfully: {0}"),
+        CODEQL_CONFIG_FILE_CREATE_ERROR: vscode.l10n.t("Error creating config file: {0}"),
+        CODEQL_CONFIG_FILE_UPDATED_SUCCESSFULLY: vscode.l10n.t("PowerPages config file updated successfully: {0}"),
+        CODEQL_CONFIG_FILE_UPDATE_ERROR: vscode.l10n.t("Error updating config file: {0}")
     },
     EventNames: {
         ACTIONS_HUB_ENABLED: "ActionsHubEnabled",
