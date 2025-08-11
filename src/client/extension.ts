@@ -306,11 +306,6 @@ export async function activate(
         activateDebugger(context);
     }
 
-    // Register Server API autocomplete for JavaScript files only
-    // activateServerApiAutocomplete(context, [
-    //     { languageId: 'javascript', triggerCharacters: ['.'] }
-    // ]);
-
     oneDSLoggerWrapper.getLogger().traceInfo("activated");
 }
 
