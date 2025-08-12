@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import * as vscode from 'vscode';
-import { ServerApiCompletionProvider, ServerApiDefinitions } from '../ServerApiCompletionProvider';
+import { ServerApiCompletionProvider, ServerApiDefinitions } from '../../intellisense';
 
 /**
  * Test suite for Server API autocomplete functionality
@@ -233,7 +233,7 @@ suite('Server API Autocomplete Tests', () => {
                 language: 'javascript'
             });
 
-            const position = new vscode.Position(0, 33);
+            const position = new vscode.Position(0, document.lineAt(0).range.end.character);
             const completions = provider.provideCompletionItems(document, position);
 
             assert.ok(Array.isArray(completions));
