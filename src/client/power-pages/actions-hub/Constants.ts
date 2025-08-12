@@ -16,6 +16,8 @@ export const Constants = {
         OTHER_SITE: "otherSite",
         OTHER_SITES_GROUP: "otherSitesGroup",
         NO_SITES: "noSites",
+        ACCOUNT_MISMATCH: "accountMismatch",
+        LOGIN_PROMPT: "loginPrompt",
     },
     Icons: {
         SITE: new vscode.ThemeIcon('globe'),
@@ -51,7 +53,15 @@ export const Constants = {
         UPLOAD_CODE_SITE_COMPILED_OUTPUT_FOLDER_NOT_FOUND: vscode.l10n.t("Please select the folder that contains your compiled output to upload your site."),
         UPLOAD_CODE_SITE_FAILED: vscode.l10n.t("Upload failed. Please try again later."),
         POWER_PAGES_CONFIG_FILE_NAME: "powerpages.config.json",
-        MISSING_REACTIVATION_URL_INFO: vscode.l10n.t("Missing required site information for reactivation.")
+        MISSING_REACTIVATION_URL_INFO: vscode.l10n.t("Missing required site information for reactivation."),
+        // Account mismatch strings
+        ACCOUNT_MISMATCH_DETECTED: vscode.l10n.t("Account Mismatch Detected"),
+        ACCOUNT_MISMATCH_DESCRIPTION: vscode.l10n.t("VS Code and PAC accounts don't match"),
+        ACCOUNT_MISMATCH_TOOLTIP: vscode.l10n.t("The accounts used for VS Code authentication and PAC CLI authentication are different. Please ensure both accounts are the same for proper functionality."),
+        LOGIN_PROMPT_LABEL: vscode.l10n.t("Click to login with matching account"),
+        LOGIN_PROMPT_TITLE: vscode.l10n.t("Login"),
+        LOGIN_PROMPT_TOOLTIP: vscode.l10n.t("Click to authenticate with a matching account"),
+        AUTHENTICATION_FAILED: vscode.l10n.t("Authentication failed. Please try again.")
     },
     EventNames: {
         ACTIONS_HUB_ENABLED: "ActionsHubEnabled",
@@ -109,7 +119,12 @@ export const Constants = {
         ACTIONS_HUB_UPLOAD_CODE_SITE_CALLED: "ActionsHubUploadCodeSiteCalled",
         ACTIONS_HUB_UPLOAD_CODE_SITE_FAILED: "ActionsHubUploadCodeSiteFailed",
         ACTIONS_HUB_UPLOAD_OTHER_CODE_SITE_PAC_TRIGGERED: "ActionsHubUploadOtherCodeSitePacTriggered",
-        POWER_PAGES_CONFIG_PARSE_FAILED: "PowerPagesConfigParseFailed"
+        POWER_PAGES_CONFIG_PARSE_FAILED: "PowerPagesConfigParseFailed",
+        ACTIONS_HUB_ACCOUNT_MISMATCH_DETECTED: "ActionsHubAccountMismatchDetected",
+        ACTIONS_HUB_LOGIN_TO_MATCH_CALLED: "ActionsHubLoginToMatchCalled",
+        ACTIONS_HUB_LOGIN_TO_MATCH_FAILED: "ActionsHubLoginToMatchFailed",
+        ACTIONS_HUB_ACCOUNT_CHECK_CALLED: "ActionsHubAccountCheckCalled",
+        ACTIONS_HUB_ACCOUNT_CHECK_FAILED: "ActionsHubAccountCheckFailed"
     },
     FeatureNames: {
         REFRESH_ENVIRONMENT: "RefreshEnvironment"

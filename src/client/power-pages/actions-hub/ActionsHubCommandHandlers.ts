@@ -14,11 +14,11 @@ import { extractAuthInfo } from '../commonUtility';
 import { showProgressWithNotification } from '../../../common/utilities/Utils';
 import PacContext from '../../pac/PacContext';
 import ArtemisContext from '../../ArtemisContext';
-import { ServiceEndpointCategory, WebsiteDataModel } from '../../../common/services/Constants';
+import { ServiceEndpointCategory, WebsiteDataModel, PROVIDER_ID } from '../../../common/services/Constants';
 import { SiteTreeItem } from './tree-items/SiteTreeItem';
 import { PreviewSite } from '../preview-site/PreviewSite';
 import { PacWrapper } from '../../pac/PacWrapper';
-import { authenticateUserInVSCode, dataverseAuthentication } from '../../../common/services/AuthenticationProvider';
+import { authenticateUserInVSCode, dataverseAuthentication, serviceScopeMapping } from '../../../common/services/AuthenticationProvider';
 import { createAuthProfileExp } from '../../../common/utilities/PacAuthUtil';
 import { IOtherSiteInfo, IWebsiteDetails, WebsiteYaml } from '../../../common/services/Interfaces';
 import { getActiveWebsites, getAllWebsites } from '../../../common/utilities/WebsiteUtil';
@@ -938,4 +938,26 @@ export const reactivateSite = async (siteTreeItem: SiteTreeItem) => {
     const reactivateSiteUrl = `${getStudioBaseUrl()}/e/${environmentId}/portals/create?reactivateWebsiteId=${websiteId}&siteName=${encodeURIComponent(name)}&siteAddress=${encodeURIComponent(siteAddress)}&siteLanguageId=${languageCode}&isNewDataModel=${isNewDataModel}`;
 
     await vscode.env.openExternal(vscode.Uri.parse(reactivateSiteUrl));
+};
+
+export const loginToMatch = async (serviceEndpointStamp: ServiceEndpointCategory): Promise<void> => {
+    traceInfo(Constants.EventNames.ACTIONS_HUB_LOGIN_TO_MATCH_CALLED, { methodName: loginToMatch.name });
+    try {
+            // Force VS Code authentication flow by clearing existing session and creating a new one
+            // This will ensure the authentication dialog is shown even if user is already authenticated
+            const PPAPI_WEBSITES_ENDPOINT = serviceScopeMapping[serviceEndpointStamp];
+            await vscode.authentication.getSession(PROVIDER_ID, [PPAPI_WEBSITES_ENDPOINT], {
+                clearSessionPreference: true,
+                forceNewSession: true
+            });
+    } catch (error) {
+        traceError(
+            Constants.EventNames.ACTIONS_HUB_LOGIN_TO_MATCH_FAILED,
+            error as Error,
+            { methodName: loginToMatch.name }
+        );
+        await vscode.window.showErrorMessage(
+            Constants.Strings.AUTHENTICATION_FAILED
+        );
+    }
 };
