@@ -46,6 +46,7 @@ import { getECSOrgLocationValue } from "../../common/utilities/Utils";
 import { authenticateUserInVSCode } from "../../common/services/AuthenticationProvider";
 import { activateServerApiAutocomplete } from "../../common/intellisense";
 import { EnableBLChanges } from "../../common/ecs-features/ecsFeatureGates";
+import { setServerApiTelemetryContext } from "../../common/intellisense/ServerApiTelemetryContext";
 
 let serverApiAutocompleteInitialized = false;
 
@@ -154,6 +155,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
                                         const { enableBLChanges } = EnableBLChanges.getConfig() as { enableBLChanges?: boolean };
                                         if (!serverApiAutocompleteInitialized && enableBLChanges) {
+                                            // Set telemetry context for Server API autocomplete events
+                                            setServerApiTelemetryContext({
+                                                tenantId: queryParamsMap.get(queryParameters.TENANT_ID) as string,
+                                                envId: WebExtensionContext.environmentId,
+                                                userId: WebExtensionContext.userId,
+                                                orgId: orgId,
+                                                geo: WebExtensionContext.geoName,
+                                                extType: 'web'
+                                            });
                                             activateServerApiAutocomplete(context, [
                                                 { languageId: 'javascript', triggerCharacters: ['.'] }
                                             ]);

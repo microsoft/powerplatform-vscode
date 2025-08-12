@@ -53,6 +53,7 @@ import { authenticateUserInVSCode } from "../common/services/AuthenticationProvi
 import { PROVIDER_ID } from "../common/services/Constants";
 import { activateServerApiAutocomplete } from "../common/intellisense";
 import { EnableBLChanges } from "../common/ecs-features/ecsFeatureGates";
+import { setServerApiTelemetryContext } from "../common/intellisense/ServerApiTelemetryContext";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -234,6 +235,15 @@ export async function activate(
 
                     const { enableBLChanges } = EnableBLChanges.getConfig() as { enableBLChanges?: boolean };
                     if (!serverApiAutocompleteInitialized && enableBLChanges) {
+                        // Set telemetry context for Server API autocomplete events
+                        setServerApiTelemetryContext({
+                            tenantId: TenantID,
+                            envId: EnvID,
+                            userId: AadObjectId,
+                            orgId: orgID,
+                            geo: geoName,
+                            extType: 'desktop'
+                        });
                         activateServerApiAutocomplete(_context, [
                             { languageId: 'javascript', triggerCharacters: ['.'] }
                         ]);
