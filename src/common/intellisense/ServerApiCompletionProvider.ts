@@ -4,6 +4,9 @@
  */
 
 import * as vscode from "vscode";
+import { oneDSLoggerWrapper } from "../OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import { getServerApiTelemetryContext } from "./ServerApiTelemetryContext";
+import { ServerApiTelemetryEventNames } from "./ServerApiTelemetryEventNames";
 
 /**
  * Interface for Server API method definitions
@@ -437,20 +440,77 @@ export class ServerApiCompletionProvider implements vscode.CompletionItemProvide
 
         const completions: vscode.CompletionItem[] = [];
 
-        // Check what level of completion we need
-        if (textBeforeCursor.endsWith('Server.')) {
-            // Provide top-level namespace completions
-            completions.push(...this.getNamespaceCompletions());
-        } else if (textBeforeCursor.endsWith('Server.Connector.')) {
-            // Provide Connector sub-namespace completions
-            completions.push(...this.getConnectorSubNamespaces());
-        } else {
-            // Check for nested completions
-            const match = textBeforeCursor.match(/Server\.([^.]+(?:\.[^.]+)?)\.?$/);
-            if (match) {
-                const namespaceName = match[1];
-                completions.push(...this.getMethodCompletions(namespaceName));
+        try {
+            const ctx = getServerApiTelemetryContext();
+            oneDSLoggerWrapper.getLogger()?.traceInfo(ServerApiTelemetryEventNames.SERVER_API_AUTOCOMPLETE_TRIGGERED, {
+                languageId: document.languageId,
+                prefix: textBeforeCursor.trim().slice(-50),
+                tenantId: ctx?.tenantId,
+                envId: ctx?.envId,
+                userId: ctx?.userId,
+                orgId: ctx?.orgId,
+                geo: ctx?.geo,
+            });
+
+            // Check what level of completion we need
+            if (textBeforeCursor.endsWith('Server.')) {
+                // Provide top-level namespace completions
+                const items = this.getNamespaceCompletions();
+                completions.push(...items);
+
+                oneDSLoggerWrapper.getLogger()?.traceInfo(ServerApiTelemetryEventNames.SERVER_API_AUTOCOMPLETE_NAMESPACES_SHOWN, {
+                    count: String(items.length),
+                    tenantId: ctx?.tenantId,
+                    envId: ctx?.envId,
+                    userId: ctx?.userId,
+                    orgId: ctx?.orgId,
+                    geo: ctx?.geo,
+                });
+            } else if (textBeforeCursor.endsWith('Server.Connector.')) {
+                // Provide Connector sub-namespace completions
+                const items = this.getConnectorSubNamespaces();
+                completions.push(...items);
+
+                oneDSLoggerWrapper.getLogger()?.traceInfo(ServerApiTelemetryEventNames.SERVER_API_AUTOCOMPLETE_SUB_NAMESPACES_SHOWN, {
+                    parent: 'Connector',
+                    count: String(items.length),
+                    tenantId: ctx?.tenantId,
+                    envId: ctx?.envId,
+                    userId: ctx?.userId,
+                    orgId: ctx?.orgId,
+                    geo: ctx?.geo,
+                });
+            } else {
+                // Check for nested completions
+                const match = textBeforeCursor.match(/Server\.([^.]+(?:\.[^.]+)?)\.?$/);
+                if (match) {
+                    const namespaceName = match[1];
+                    const items = this.getMethodCompletions(namespaceName);
+                    completions.push(...items);
+
+                    oneDSLoggerWrapper.getLogger()?.traceInfo(ServerApiTelemetryEventNames.SERVER_API_AUTOCOMPLETE_ITEMS_SHOWN, {
+                        namespace: namespaceName,
+                        count: String(items.length),
+                        tenantId: ctx?.tenantId,
+                        envId: ctx?.envId,
+                        userId: ctx?.userId,
+                        orgId: ctx?.orgId,
+                        geo: ctx?.geo,
+                    });
+                }
             }
+        } catch (err) {
+            try {
+                const e = err as Error;
+                const ctx = getServerApiTelemetryContext();
+                oneDSLoggerWrapper.getLogger()?.traceError(ServerApiTelemetryEventNames.SERVER_API_AUTOCOMPLETE_ERROR, e.message, e, {
+                    tenantId: ctx?.tenantId,
+                    envId: ctx?.envId,
+                    userId: ctx?.userId,
+                    orgId: ctx?.orgId,
+                    geo: ctx?.geo
+                });
+            } catch { /* no-op */ }
         }
 
         return completions;

@@ -5,12 +5,29 @@
 
 import * as assert from 'assert';
 import * as vscode from 'vscode';
-import { ServerApiCompletionProvider, ServerApiDefinitions } from '../../intellisense';
+import { ServerApiCompletionProvider, ServerApiDefinitions, ServerApiAutocompleteRegistrar } from '../../intellisense';
 
 /**
  * Test suite for Server API autocomplete functionality
  */
 suite('Server API Autocomplete Tests', () => {
+    let mockContext: vscode.ExtensionContext;
+    let disposables: vscode.Disposable[] = [];
+
+    suiteSetup(async () => {
+        // Create a mock extension context
+        mockContext = {
+            subscriptions: []
+        } as unknown as vscode.ExtensionContext;
+
+        // Register the completion provider for the tests
+        disposables = ServerApiAutocompleteRegistrar.registerDefaultLanguages(mockContext);
+    });
+
+    suiteTeardown(() => {
+        // Dispose all registered providers
+        disposables.forEach(d => d.dispose());
+    });
 
     suite('ServerApiDefinitions', () => {
         test('should return all required API namespace definitions', () => {

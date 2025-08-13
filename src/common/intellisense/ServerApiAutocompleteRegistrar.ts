@@ -5,6 +5,9 @@
 
 import * as vscode from "vscode";
 import { ServerApiCompletionProvider } from "./ServerApiCompletionProvider";
+import { oneDSLoggerWrapper } from "../OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import { getServerApiTelemetryContext } from "./ServerApiTelemetryContext";
+import { ServerApiTelemetryEventNames } from "./ServerApiTelemetryEventNames";
 
 /**
  * Configuration for autocomplete language support
@@ -59,6 +62,20 @@ export class ServerApiAutocompleteRegistrar {
             disposables.push(disposable);
             context.subscriptions.push(disposable);
         });
+
+        try {
+            const ctx = getServerApiTelemetryContext();
+            oneDSLoggerWrapper.getLogger().traceInfo(ServerApiTelemetryEventNames.SERVER_API_AUTOCOMPLETE_REGISTERED, {
+                languages: languageConfigs.map(l => l.languageId).join(','),
+                triggerChars: languageConfigs.map(l => (l.triggerCharacters || ['.']).join('')).join(','),
+                provider: "ServerApiCompletionProvider",
+                tenantId: ctx?.tenantId,
+                envId: ctx?.envId,
+                userId: ctx?.userId,
+                orgId: ctx?.orgId,
+                geo: ctx?.geo
+            });
+        } catch { /* no-op */ }
 
         return disposables;
     }
@@ -120,5 +137,20 @@ export function activateServerApiAutocomplete(
     customLanguages?: ILanguageConfig[]
 ): void {
     const languageConfigs = customLanguages || defaultLanguageConfigs;
+
+    try {
+        const ctx = getServerApiTelemetryContext();
+        oneDSLoggerWrapper.getLogger().traceInfo(ServerApiTelemetryEventNames.SERVER_API_AUTOCOMPLETE_ACTIVATE, {
+            languages: languageConfigs.map(l => l.languageId).join(','),
+            provider: "ServerApiCompletionProvider",
+            // context
+            tenantId: ctx?.tenantId,
+            envId: ctx?.envId,
+            userId: ctx?.userId,
+            orgId: ctx?.orgId,
+            geo: ctx?.geo
+        });
+    } catch { /* no-op */ }
+
     ServerApiAutocompleteRegistrar.registerLanguages(context, languageConfigs);
 }
