@@ -7,7 +7,7 @@ import * as vscode from "vscode";
 import { ServerApiCompletionProvider } from "./ServerApiCompletionProvider";
 import { oneDSLoggerWrapper } from "../OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { getServerApiTelemetryContext } from "./ServerApiTelemetryContext";
-import { ServerApiTelemetryEventNames } from "./ServerApiTelemetryEventName";
+import { ServerApiTelemetryEventNames } from "./ServerApiTelemetryEventNames";
 
 /**
  * Configuration for autocomplete language support

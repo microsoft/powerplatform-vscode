@@ -6,7 +6,7 @@
 import * as vscode from "vscode";
 import { oneDSLoggerWrapper } from "../OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { getServerApiTelemetryContext } from "./ServerApiTelemetryContext";
-import { ServerApiTelemetryEventNames } from "./ServerApiTelemetryEventName";
+import { ServerApiTelemetryEventNames } from "./ServerApiTelemetryEventNames";
 
 /**
  * Interface for Server API method definitions
