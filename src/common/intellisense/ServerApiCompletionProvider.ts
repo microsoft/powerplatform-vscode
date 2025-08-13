@@ -442,7 +442,7 @@ export class ServerApiCompletionProvider implements vscode.CompletionItemProvide
 
         try {
             const ctx = getServerApiTelemetryContext();
-            oneDSLoggerWrapper.getLogger().traceInfo(ServerApiTelemetryEventNames.SERVER_API_AUTOCOMPLETE_TRIGGERED, {
+            oneDSLoggerWrapper.getLogger()?.traceInfo(ServerApiTelemetryEventNames.SERVER_API_AUTOCOMPLETE_TRIGGERED, {
                 languageId: document.languageId,
                 prefix: textBeforeCursor.trim().slice(-50),
                 tenantId: ctx?.tenantId,
@@ -459,7 +459,7 @@ export class ServerApiCompletionProvider implements vscode.CompletionItemProvide
                 const items = this.getNamespaceCompletions();
                 completions.push(...items);
 
-                oneDSLoggerWrapper.getLogger().traceInfo(ServerApiTelemetryEventNames.SERVER_API_AUTOCOMPLETE_NAMESPACES_SHOWN, {
+                oneDSLoggerWrapper.getLogger()?.traceInfo(ServerApiTelemetryEventNames.SERVER_API_AUTOCOMPLETE_NAMESPACES_SHOWN, {
                     count: String(items.length),
                     tenantId: ctx?.tenantId,
                     envId: ctx?.envId,
@@ -473,7 +473,7 @@ export class ServerApiCompletionProvider implements vscode.CompletionItemProvide
                 const items = this.getConnectorSubNamespaces();
                 completions.push(...items);
 
-                oneDSLoggerWrapper.getLogger().traceInfo(ServerApiTelemetryEventNames.SERVER_API_AUTOCOMPLETE_SUB_NAMESPACES_SHOWN, {
+                oneDSLoggerWrapper.getLogger()?.traceInfo(ServerApiTelemetryEventNames.SERVER_API_AUTOCOMPLETE_SUB_NAMESPACES_SHOWN, {
                     parent: 'Connector',
                     count: String(items.length),
                     tenantId: ctx?.tenantId,
@@ -491,7 +491,7 @@ export class ServerApiCompletionProvider implements vscode.CompletionItemProvide
                     const items = this.getMethodCompletions(namespaceName);
                     completions.push(...items);
 
-                    oneDSLoggerWrapper.getLogger().traceInfo(ServerApiTelemetryEventNames.SERVER_API_AUTOCOMPLETE_ITEMS_SHOWN, {
+                    oneDSLoggerWrapper.getLogger()?.traceInfo(ServerApiTelemetryEventNames.SERVER_API_AUTOCOMPLETE_ITEMS_SHOWN, {
                         namespace: namespaceName,
                         count: String(items.length),
                         tenantId: ctx?.tenantId,
@@ -507,7 +507,7 @@ export class ServerApiCompletionProvider implements vscode.CompletionItemProvide
             try {
                 const e = err as Error;
                 const ctx = getServerApiTelemetryContext();
-                oneDSLoggerWrapper.getLogger().traceError(ServerApiTelemetryEventNames.SERVER_API_AUTOCOMPLETE_ERROR, e.message, e, {
+                oneDSLoggerWrapper.getLogger()?.traceError(ServerApiTelemetryEventNames.SERVER_API_AUTOCOMPLETE_ERROR, e.message, e, {
                     tenantId: ctx?.tenantId,
                     envId: ctx?.envId,
                     userId: ctx?.userId,
