@@ -81,6 +81,16 @@ export const {
 });
 
 export const {
+    feature: EnableBLChanges
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable BL Changes in VSCode (web & desktop)',
+    fallback: {
+        enableBLChanges: false,
+    },
+})
+
+export const {
     feature: EnableCodeQlScan
 } = getFeatureConfigs({
     teamName: PowerPagesClientName,

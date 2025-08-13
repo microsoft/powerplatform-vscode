@@ -14,6 +14,7 @@ import {
     isWebfileContentLoadNeeded,
     setFileContent,
     isNullOrUndefined,
+    getDuplicateFileName,
 } from "../utilities/commonUtil";
 import { getCustomRequestURL, getMappingEntityContent, getMetadataInfo, getMappingEntityId, getMimeType, getRequestURL } from "../utilities/urlBuilderUtil";
 import { getCommonHeadersForDataverse } from "../../../common/services/AuthenticationProvider";
@@ -28,7 +29,7 @@ import {
 } from "../utilities/schemaHelperUtil";
 import WebExtensionContext from "../WebExtensionContext";
 import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
-import { EntityMetadataKeyCore, SchemaEntityMetadata, folderExportType, schemaEntityKey, schemaEntityName, schemaKey } from "../schema/constants";
+import { EntityMetadataKeyCore, SchemaEntityMetadata, folderExportType, schemaEntityKey, schemaEntityName, schemaKey, WEBPAGE_FOLDER_CONSTANTS } from "../schema/constants";
 import { getEntityNameForExpandedEntityContent, getRequestUrlForEntities } from "../utilities/folderHelperUtility";
 import { IAttributePath, IFileInfo } from "../common/interfaces";
 import { portal_schema_V2 } from "../schema/portalSchema";
@@ -40,6 +41,9 @@ export async function fetchDataFromDataverseAndUpdateVFS(
     defaultFileInfo?: IFileInfo,
 ) {
     try {
+        // Clear webpage names tracking for fresh start
+        WebExtensionContext.getWebpageNames().clear();
+
         const entityRequestURLs = getRequestUrlForEntities(defaultFileInfo?.entityId, defaultFileInfo?.entityName);
         const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
             Constants.queryParameters.ORG_URL
@@ -233,14 +237,10 @@ async function createContentFiles(
             throw new Error(ERROR_CONSTANTS.FILE_NAME_EMPTY);
         }
 
+        const folderName = fileName;
+
         // Create folder paths
         filePathInPortalFS = filePathInPortalFS ?? `${Constants.PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/`;
-        if (exportType && exportType === folderExportType.SubFolders) {
-            filePathInPortalFS = `${filePathInPortalFS}${getSanitizedFileName(fileName)}/`;
-            await portalsFS.createDirectory(
-                vscode.Uri.parse(filePathInPortalFS, true)
-            );
-        }
 
         const languageCodeAttribute = entityDetails?.get(
             schemaEntityKey.LANGUAGE_FIELD
@@ -290,7 +290,9 @@ async function createContentFiles(
             filePathInPortalFS,
             portalsFS,
             defaultFileInfo,
-            rootWebPageIdAttribute)
+            rootWebPageIdAttribute,
+            exportType,
+            folderName)
 
     } catch (error) {
         const errorMsg = (error as Error)?.message;
@@ -318,7 +320,9 @@ async function processDataAndCreateFile(
     filePathInPortalFS: string,
     portalsFS: PortalsFS,
     defaultFileInfo?: IFileInfo,
-    rootWebPageIdAttribute?: string
+    rootWebPageIdAttribute?: string,
+    exportType?: string,
+    originalFolderName?: string
 ) {
     const attributeExtensionMap = attributeExtension as unknown as Map<
         string,
@@ -326,6 +330,64 @@ async function processDataAndCreateFile(
     >;
     let counter = 0;
     let fileUri = "";
+
+    let rootWebPageId = undefined;
+    if (rootWebPageIdAttribute) {
+        const rootWebPageIdPath: IAttributePath = getAttributePath(rootWebPageIdAttribute);
+        rootWebPageId = getAttributeContent(result, rootWebPageIdPath, entityName, entityId);
+    }
+
+    // Handle webpage folder organization by root webpage ID
+    let actualFolderName = originalFolderName || fileName;
+    if (entityName === schemaEntityName.WEBPAGES) {
+        const webpageNames = WebExtensionContext.getWebpageNames();
+
+        const effectiveRootWebPageId = rootWebPageId || WEBPAGE_FOLDER_CONSTANTS.NO_ROOT_PLACEHOLDER;
+        const rootWebPageIdKey = `${fileName}${WEBPAGE_FOLDER_CONSTANTS.DELIMITER}${effectiveRootWebPageId}`;
+
+        if (!webpageNames.has(rootWebPageIdKey)) {
+            // This is a new filename+rootWebPageId combination
+            const existingEntriesForFileName = Array.from(webpageNames).filter(key => key.startsWith(`${fileName}${WEBPAGE_FOLDER_CONSTANTS.DELIMITER}`));
+
+            if (existingEntriesForFileName.length > 0) {
+                // This filename already exists with a different root webpage ID
+                // Create a suffixed folder name for this NEW root webpage ID group
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_DUPLICATE_FOLDER_NAME_CREATED,
+                    { entityName: entityName, fileName: fileName, entityId: entityId, orgId: WebExtensionContext.organizationId, envId: WebExtensionContext.environmentId }
+                );
+                // Use effective rootWebPageId for consistent naming
+                actualFolderName = getDuplicateFileName(fileName, effectiveRootWebPageId);
+            } else {
+                // First occurrence of this filename - use original name
+            }
+
+            webpageNames.add(rootWebPageIdKey);
+        } else {
+            // We've seen this exact filename+rootWebPageId combination before
+            // Determine which folder name was used for this specific root webpage ID group
+            const existingEntriesForFileName = Array.from(webpageNames).filter(key => key.startsWith(`${fileName}${WEBPAGE_FOLDER_CONSTANTS.DELIMITER}`));
+
+            // Extract and sort root webpage IDs to ensure consistent ordering
+            const rootWebPageIds = existingEntriesForFileName.map(key => key.split(WEBPAGE_FOLDER_CONSTANTS.DELIMITER)[1]).sort();
+            const currentEntryIndex = rootWebPageIds.indexOf(effectiveRootWebPageId);
+
+            if (currentEntryIndex === 0) {
+                // This is the first root webpage ID that was encountered for this filename
+                actualFolderName = fileName;
+            } else {
+                // This is a subsequent root webpage ID - use suffixed folder name
+                actualFolderName = getDuplicateFileName(fileName, effectiveRootWebPageId);
+            }
+        }
+    }    // Create folder directory if needed
+    let finalFilePathInPortalFS = filePathInPortalFS;
+    if (exportType && exportType === folderExportType.SubFolders) {
+        finalFilePathInPortalFS = `${filePathInPortalFS}${getSanitizedFileName(actualFolderName)}/`;
+        await portalsFS.createDirectory(
+            vscode.Uri.parse(finalFilePathInPortalFS, true)
+        );
+    }
 
     for (counter; counter < attributeArray.length; counter++) {
         const fileExtension = attributeExtensionMap?.get(
@@ -345,7 +407,7 @@ async function processDataAndCreateFile(
                     expandedContent,
                     portalsFS,
                     dataverseOrgUrl,
-                    filePathInPortalFS);
+                    finalFilePathInPortalFS);
             }
         }
         else {
@@ -358,16 +420,8 @@ async function processDataAndCreateFile(
                 fileNameWithExtension = defaultFileInfo?.fileName;
             }
 
-            // Get rootpage id
-            let rootWebPageId = undefined;
-
-            if (rootWebPageIdAttribute) {
-                const rootWebPageIdPath: IAttributePath = getAttributePath(rootWebPageIdAttribute);
-                rootWebPageId = getAttributeContent(result, rootWebPageIdPath, entityName, entityId);
-            }
-
             if (fileCreationValid) {
-                fileUri = filePathInPortalFS + fileNameWithExtension;
+                fileUri = finalFilePathInPortalFS + fileNameWithExtension;
                 await createFile(
                     attributeArray[counter],
                     fileExtension,
@@ -407,7 +461,7 @@ async function processDataAndCreateFile(
         }
 
         if (sourceAttributeExtension) {
-            fileUri = filePathInPortalFS + GetFileNameWithExtension(entityName, fileName, languageCode, sourceAttributeExtension);
+            fileUri = finalFilePathInPortalFS + GetFileNameWithExtension(entityName, fileName, languageCode, sourceAttributeExtension);
             await WebExtensionContext.updateSingleFileUrisInContext(
                 vscode.Uri.parse(fileUri)
             );

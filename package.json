@@ -25,7 +25,8 @@
     "test-integration": "node node_modules/gulp/bin/gulp.js testInt",
     "test-web-integration": "node node_modules/gulp/bin/gulp.js testWebInt",
     "test-desktop-int": "node node_modules/gulp/bin/gulp.js testDesktopInt",
-    "coverage": "nyc npm run test"
+    "coverage": "nyc npm run test",
+    "test-common-int": "node node_modules/gulp/bin/gulp.js testCommonInt"
   },
   "nyc": {
     "extends": "@istanbuljs/nyc-config-typescript",

@@ -44,6 +44,11 @@ import { showErrorDialog } from "../../common/utilities/errorHandlerUtil";
 import { EXTENSION_ID } from "../../common/constants";
 import { getECSOrgLocationValue } from "../../common/utilities/Utils";
 import { authenticateUserInVSCode } from "../../common/services/AuthenticationProvider";
+import { activateServerApiAutocomplete } from "../../common/intellisense";
+import { EnableBLChanges } from "../../common/ecs-features/ecsFeatureGates";
+import { setServerApiTelemetryContext } from "../../common/intellisense/ServerApiTelemetryContext";
+
+let serverApiAutocompleteInitialized = false;
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
     oneDSLoggerWrapper.instantiate(GeoNames.US);
@@ -147,6 +152,22 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
                                                 Location: queryParamsMap.get(queryParameters.GEO) as string
                                             },
                                             PowerPagesClientName);
+
+                                        const { enableBLChanges } = EnableBLChanges.getConfig() as { enableBLChanges?: boolean };
+                                        if (!serverApiAutocompleteInitialized && enableBLChanges) {
+                                            // Set telemetry context for Server API autocomplete events
+                                            setServerApiTelemetryContext({
+                                                tenantId: queryParamsMap.get(queryParameters.TENANT_ID) as string,
+                                                envId: WebExtensionContext.environmentId,
+                                                userId: WebExtensionContext.userId,
+                                                orgId: orgId,
+                                                geo: WebExtensionContext.geoName,
+                                            });
+                                            activateServerApiAutocomplete(context, [
+                                                { languageId: 'javascript', triggerCharacters: ['.'] }
+                                            ]);
+                                            serverApiAutocompleteInitialized = true;
+                                        }
 
                                         registerCopilot(context);
                                         processWillStartCollaboration(context);

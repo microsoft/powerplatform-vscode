@@ -24,8 +24,10 @@ export const PPAPI_WEBSITES_API_VERSION = '2022-03-01-preview';
 export const PPAPI_WEBSITES_SERVICE_SCOPE_DEFAULT = "https://api.powerplatform.com/.default";
 export const PPAPI_PREPROD_WEBSITES_SERVICE_SCOPE_DEFAULT = "https://api.preprod.powerplatform.com/.default";
 export const PPAPI_TEST_WEBSITES_SERVICE_SCOPE_DEFAULT = "https://api.test.powerplatform.com/.default";
-export const PPAPI_MOONCAKE_WEBSITES_SERVICE_SCOPE_DEFAULT = "https://api.powerplatform.cn/.default";
-export const PPAPI_GCC_HIGH_DOD_WEBSITES_SERVICE_SCOPE_DEFAULT = "https://api.powerplatform.us/.default";
+export const PPAPI_MOONCAKE_WEBSITES_SERVICE_SCOPE_DEFAULT = "https://api.powerplatform.partner.microsoftonline.cn/.default";
+export const PPAPI_GCC_WEBSITES_SERVICE_SCOPE_DEFAULT = "https://api.gov.powerplatform.microsoft.us/.default";
+export const PPAPI_HIGH_WEBSITES_SERVICE_SCOPE_DEFAULT = "https://api.high.powerplatform.microsoft.us/.default";
+export const PPAPI_DOD_WEBSITES_SERVICE_SCOPE_DEFAULT = "https://api.appsplatform.us/.default";
 export const PPAPI_WEBSITES_ENDPOINT = `{rootURL}/powerpages/environments/{environmentId}/websites`;
 
 export enum ServiceEndpointCategory {

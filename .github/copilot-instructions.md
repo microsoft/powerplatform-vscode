@@ -1,66 +1,104 @@
 # Instructions
 
-## Coding guidelines
+## Architecture Overview
 
-These are the coding guidelines which are used in this repository. Always follow these guidelines when generating code..
+This is the **Power Platform VS Code extension** that provides tooling for creating, building, and deploying Power Platform solutions, packages, and portals. It integrates the Power Platform CLI (pac) directly into VS Code.
 
-### Indentation
+### Key Components
 
-We use spaces, not tabs. Indentation level is 4 spaces.
+- **Client (`src/client/`)**: Main VS Code extension logic, UI components, and Power Pages tooling
+- **Server (`src/server/`)**: Language servers for HTML/Liquid and YAML files
+- **Debugger (`src/debugger/`)**: PCF debugging capabilities for Power Platform components
+- **Web (`src/web/`)**: VS Code for Web support
+- **Common (`src/common/`)**: Shared utilities, telemetry, and services
+
+### Critical Architecture Patterns
+
+1. **PAC CLI Integration**: The extension automatically downloads and manages the Power Platform CLI (`src/client/lib/CliAcquisition.ts`, `src/client/pac/PacWrapper.ts`)
+2. **Multi-Target Build**: Uses webpack to build for desktop VS Code, web, and language servers (`webpack.config.js`)
+3. **Telemetry-First**: Comprehensive telemetry using OneDSLogger for both desktop and web (`src/common/OneDSLoggerTelemetry/`)
+4. **Service Architecture**: Core services in `src/common/services/` (ArtemisService, BAPService, PPAPIService)
+
+## Development Workflows
+
+### Build Commands
+- `npm run build` or `gulp`: Full build (uses gulpfile.mjs)
+- `npm run compile-web`: Build web version only
+- `npm run test-desktop-int`: Run desktop integration tests
+- `npm run test-web-integration`: Run web integration tests
+
+### Key Files for Extension Development
+- `src/client/extension.ts`: Main extension entry point
+- `package.json`: Extension manifest with commands and contributions
+- `src/client/lib/PacActivityBarUI.ts`: Activity bar panels and UI registration
+- `src/client/PortalWebView.ts`: Power Pages portal webview management
+- `src/client/pac/PacWrapper.ts`: Wrapper for Power Platform CLI commands
+- `src/client/power-pages/actions-hub/ActionsHubTreeDataProvider.ts`: Power Pages Actions Hub tree data provider
+- 
+
+### PAC CLI Integration Patterns
+```typescript
+// Always use PacWrapper for CLI operations
+const pacWrapper = new PacWrapper(context);
+await pacWrapper.executeCommand(['solution', 'list']);
+```
+
+## Coding Guidelines
+
+### Indentation & Style
+- Use 4 spaces for indentation (no tabs)
+- Arrow functions `=>` over anonymous functions
+- Curly braces on same line, always use braces for loops/conditionals
+- No whitespace in parenthesized constructs: `for (let i = 0; i < 10; i++)`
 
 ### Naming Conventions
+- PascalCase: `type` names, `enum` values
+- camelCase: `function`/`method` names, `property` names, `local variables`
+- UPPER_CASE: constants
+- Use whole words when possible
 
-* Use PascalCase for `type` names
-* Use PascalCase for `enum` values
-* Use camelCase for `function` and `method` names
-* Use camelCase for `property` names and `local variables`
-* Use whole words in names when possible
-* Use UPPER_CASE for constants.
+### Strings & Localization
+- "double quotes" for user-facing strings that need localization
+- 'single quotes' for internal strings
+- All user-visible strings MUST be externalized using `vscode-nls`
 
 ### Comments
+- Use JSDoc style comments for functions, interfaces, enums, and classes
+- Include parameter descriptions and return types
 
-* When there are comments for `functions`, `interfaces`, `enums`, and `classes` use JSDoc style comments
+## Testing Patterns
 
-### Strings
+### Framework Usage
+- **Mocha** test framework with `describe` and `it` blocks
+- **Chai** `expect` assertions (not assert)
+- **Sinon** for stubs and spies
+- Mock dependencies extensively for unit tests
 
-* Use "double quotes" for strings shown to the user that need to be externalized (localized)
-* Use 'single quotes' otherwise
-* All strings visible to the user need to be externalized
+### Test Organization
+- Unit tests: `src/*/test/unit/`
+- Integration tests: `src/*/test/integration/`
+- No `//Arrange`, `//Act`, `//Assert` comments
 
-### Style
-
-* Use arrow functions `=>` over anonymous function expressions
-* Only surround arrow function parameters when necessary. For example, `(x) => x + x` is wrong but the following are correct:
-
-```javascript
-x => x + x
-(x, y) => x + y
-<T>(x: T, y: T) => x === y
+### Running Tests
+```bash
+npm run test              # Unit tests
+npm run test-desktop-int  # Desktop integration tests
+npm run test-web-integration  # Web integration tests
 ```
 
-* Always surround loop and conditional bodies with curly braces
-* Open curly braces always go on the same line as whatever necessitates them
-* Parenthesized constructs should have no surrounding whitespace. A single space follows commas, colons, and semicolons in those constructs. For example:
+## Power Platform Specific Patterns
 
-```javascript
-for (let i = 0, n = str.length; i < 10; i++) {
-    if (x < 10) {
-        foo();
-    }
-}
+### Power Pages Development
+- Portal files use specific extensions: `.copy.html`, `.custom_javascript.js` (see `src/common/constants.ts`)
+- File system callbacks in `src/client/power-pages/fileSystemCallbacks.ts`
+- Bootstrap diff functionality for portal template updates
 
-function f(x: number, y: string): void { }
-```
+### CLI Version Management
+- CLI versions managed in `src/client/lib/CliAcquisition.ts`
+- Global storage for CLI binaries in VS Code's global storage path
+- Cross-platform support (Windows `.exe`, Unix executables)
 
-## Test instructions
-
-Follow below along with [Coding Guidelines](#coding-guidelines) when generating tests.
-
-* Use `expect` from `chai` for writing assertions.
-* Generate mocha style tests with `describe` and `it` blocks.
-* Use `sinon` for creating stubs and spies.
-* Mock dependencies as much as possible when writing tests for a particular function.
-* To run tests inside `client/test/integration` folder, you can ask to run `npm run test-desktop-int` command.
-* To run tests inside `web/test/integration` folder, you can ask to run `npm run test-web-integration` command.
-* Write tests to cover all possible scenarios.
-* Do not write the comments //Arrange, //Act and //Assert before code.
+### Telemetry Implementation
+- Use `oneDSLoggerWrapper` for all telemetry events
+- Events defined in `src/common/OneDSLoggerTelemetry/telemetryConstants.ts`
+- Separate telemetry for desktop vs web experiences
