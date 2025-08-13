@@ -162,7 +162,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
                                                 userId: WebExtensionContext.userId,
                                                 orgId: orgId,
                                                 geo: WebExtensionContext.geoName,
-                                                extType: 'web'
                                             });
                                             activateServerApiAutocomplete(context, [
                                                 { languageId: 'javascript', triggerCharacters: ['.'] }

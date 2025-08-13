@@ -242,7 +242,6 @@ export async function activate(
                             userId: AadObjectId,
                             orgId: orgID,
                             geo: geoName,
-                            extType: 'desktop'
                         });
                         activateServerApiAutocomplete(_context, [
                             { languageId: 'javascript', triggerCharacters: ['.'] }

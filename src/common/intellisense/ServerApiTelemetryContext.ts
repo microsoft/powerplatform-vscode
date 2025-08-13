@@ -9,7 +9,6 @@ export interface IServerApiTelemetryContext {
     userId?: string;
     orgId?: string;
     geo?: string;
-    extType?: 'desktop' | 'web';
 }
 
 let _serverApiTelemetryContext: IServerApiTelemetryContext | undefined;

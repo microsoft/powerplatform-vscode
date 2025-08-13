@@ -5,8 +5,8 @@
 
 import * as vscode from "vscode";
 import { oneDSLoggerWrapper } from "../OneDSLoggerTelemetry/oneDSLoggerWrapper";
-import { ServerApiTelemetryEventNames } from "./ServerApiTelemetryEventNames";
 import { getServerApiTelemetryContext } from "./ServerApiTelemetryContext";
+import { ServerApiTelemetryEventNames } from "./ServerApiTelemetryEventName";
 
 /**
  * Interface for Server API method definitions
@@ -450,7 +450,6 @@ export class ServerApiCompletionProvider implements vscode.CompletionItemProvide
                 userId: ctx?.userId,
                 orgId: ctx?.orgId,
                 geo: ctx?.geo,
-                extType: ctx?.extType
             });
 
             // Check what level of completion we need
@@ -466,7 +465,6 @@ export class ServerApiCompletionProvider implements vscode.CompletionItemProvide
                     userId: ctx?.userId,
                     orgId: ctx?.orgId,
                     geo: ctx?.geo,
-                    extType: ctx?.extType
                 });
             } else if (textBeforeCursor.endsWith('Server.Connector.')) {
                 // Provide Connector sub-namespace completions
@@ -481,7 +479,6 @@ export class ServerApiCompletionProvider implements vscode.CompletionItemProvide
                     userId: ctx?.userId,
                     orgId: ctx?.orgId,
                     geo: ctx?.geo,
-                    extType: ctx?.extType
                 });
             } else {
                 // Check for nested completions
@@ -499,7 +496,6 @@ export class ServerApiCompletionProvider implements vscode.CompletionItemProvide
                         userId: ctx?.userId,
                         orgId: ctx?.orgId,
                         geo: ctx?.geo,
-                        extType: ctx?.extType
                     });
                 }
             }
@@ -512,8 +508,7 @@ export class ServerApiCompletionProvider implements vscode.CompletionItemProvide
                     envId: ctx?.envId,
                     userId: ctx?.userId,
                     orgId: ctx?.orgId,
-                    geo: ctx?.geo,
-                    extType: ctx?.extType
+                    geo: ctx?.geo
                 });
             } catch { /* no-op */ }
         }

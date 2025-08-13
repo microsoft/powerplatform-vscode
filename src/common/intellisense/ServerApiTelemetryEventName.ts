@@ -43,39 +43,4 @@ export enum ServerApiTelemetryEventNames {
      * Fired when an error occurs during Server API autocomplete processing
      */
     SERVER_API_AUTOCOMPLETE_ERROR = "ServerApiAutocompleteError",
-
-    /**
-     * Fired when Server API telemetry context is set with environment/org details
-     */
-    SERVER_API_TELEMETRY_CONTEXT_SET = "ServerApiTelemetryContextSet",
-
-    /**
-     * Fired when Server API feature flag (EnableBLChanges) is checked
-     */
-    SERVER_API_FEATURE_FLAG_CHECK = "ServerApiFeatureFlagCheck",
-
-    /**
-     * Fired when Server API autocomplete is enabled via feature flag
-     */
-    SERVER_API_FEATURE_FLAG_ENABLED = "ServerApiFeatureFlagEnabled",
-
-    /**
-     * Fired when Server API autocomplete is disabled via feature flag
-     */
-    SERVER_API_FEATURE_FLAG_DISABLED = "ServerApiFeatureFlagDisabled",
-
-    /**
-     * Fired when a Server API completion item is selected/accepted by the user
-     */
-    SERVER_API_COMPLETION_ITEM_SELECTED = "ServerApiCompletionItemSelected",
-
-    /**
-     * Fired when Server API definitions are loaded or refreshed
-     */
-    SERVER_API_DEFINITIONS_LOADED = "ServerApiDefinitionsLoaded",
-
-    /**
-     * Fired when there's an issue with Server API telemetry context retrieval
-     */
-    SERVER_API_TELEMETRY_CONTEXT_ERROR = "ServerApiTelemetryContextError"
 }

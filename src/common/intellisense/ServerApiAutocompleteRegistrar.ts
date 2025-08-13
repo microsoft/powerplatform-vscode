@@ -6,8 +6,8 @@
 import * as vscode from "vscode";
 import { ServerApiCompletionProvider } from "./ServerApiCompletionProvider";
 import { oneDSLoggerWrapper } from "../OneDSLoggerTelemetry/oneDSLoggerWrapper";
-import { ServerApiTelemetryEventNames } from "./ServerApiTelemetryEventNames";
 import { getServerApiTelemetryContext } from "./ServerApiTelemetryContext";
+import { ServerApiTelemetryEventNames } from "./ServerApiTelemetryEventName";
 
 /**
  * Configuration for autocomplete language support
@@ -73,8 +73,7 @@ export class ServerApiAutocompleteRegistrar {
                 envId: ctx?.envId,
                 userId: ctx?.userId,
                 orgId: ctx?.orgId,
-                geo: ctx?.geo,
-                extType: ctx?.extType
+                geo: ctx?.geo
             });
         } catch { /* no-op */ }
 
@@ -149,8 +148,7 @@ export function activateServerApiAutocomplete(
             envId: ctx?.envId,
             userId: ctx?.userId,
             orgId: ctx?.orgId,
-            geo: ctx?.geo,
-            extType: ctx?.extType
+            geo: ctx?.geo
         });
     } catch { /* no-op */ }
 
