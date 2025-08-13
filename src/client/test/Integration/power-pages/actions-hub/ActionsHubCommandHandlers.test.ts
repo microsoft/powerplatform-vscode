@@ -29,7 +29,6 @@ import * as WorkspaceInfoFinderUtil from "../../../../../common/utilities/Worksp
 import path from 'path';
 import { SiteVisibility } from '../../../../power-pages/actions-hub/models/SiteVisibility';
 import * as TelemetryHelper from '../../../../power-pages/actions-hub/TelemetryHelper';
-import * as fs from 'fs';
 
 describe('ActionsHubCommandHandlers', () => {
     let sandbox: sinon.SinonSandbox;
@@ -1500,15 +1499,16 @@ describe('ActionsHubCommandHandlers', () => {
 
     describe('runCodeQLScreening', () => {
         let mockShowErrorMessage: sinon.SinonStub;
-        let mockShowInformationMessage: sinon.SinonStub;
+        let mockShowWarningMessage: sinon.SinonStub;
         let mockGetExtension: sinon.SinonStub;
         let mockShowProgressNotification: sinon.SinonStub;
-        let mockSendText: sinon.SinonStub;
         let mockSiteTreeItem: SiteTreeItem;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        let mockHasPowerPagesSiteFolder: sinon.SinonStub;
 
         beforeEach(() => {
             mockShowErrorMessage = sandbox.stub(vscode.window, 'showErrorMessage');
-            mockShowInformationMessage = sandbox.stub(vscode.window, 'showInformationMessage');
+            mockShowWarningMessage = sandbox.stub(vscode.window, 'showWarningMessage');
             mockGetExtension = sandbox.stub(vscode.extensions, 'getExtension');
             mockShowProgressNotification = sandbox.stub(Utils, 'showProgressWithNotification').callsFake(async (title: string, task: (progress: vscode.Progress<{
                 message?: string;
@@ -1516,11 +1516,7 @@ describe('ActionsHubCommandHandlers', () => {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
             }>) => Promise<any>) => await task({} as unknown as vscode.Progress<{ message?: string; increment?: number }>));
 
-            mockSendText = sandbox.stub();
-            sandbox.stub(PacTerminal, 'getTerminal').returns({ sendText: mockSendText } as unknown as vscode.Terminal);
-
-            sandbox.stub(fs, 'existsSync').returns(true);
-            sandbox.stub(fs, 'mkdirSync');
+            mockHasPowerPagesSiteFolder = sandbox.stub(WorkspaceInfoFinderUtil, 'hasPowerPagesSiteFolder').returns(true);
 
             mockSiteTreeItem = new SiteTreeItem({
                 name: "Test Site",
@@ -1539,12 +1535,13 @@ describe('ActionsHubCommandHandlers', () => {
 
         it('should prompt to install CodeQL extension when not installed', async () => {
             mockGetExtension.returns(undefined);
-            mockShowInformationMessage.resolves(Constants.Strings.INSTALL);
+            mockShowWarningMessage.resolves(Constants.Strings.INSTALL);
+            sandbox.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => 'C:\\test\\site\\path');
 
             await runCodeQLScreening(mockSiteTreeItem);
 
             expect(mockGetExtension.calledWith('github.vscode-codeql')).to.be.true;
-            expect(mockShowInformationMessage.calledWith(
+            expect(mockShowWarningMessage.calledWith(
                 Constants.Strings.CODEQL_EXTENSION_NOT_INSTALLED,
                 Constants.Strings.INSTALL,
                 Constants.Strings.CANCEL
@@ -1563,19 +1560,10 @@ describe('ActionsHubCommandHandlers', () => {
         it('should create CodeQL database for current site when extension is installed', async () => {
             mockGetExtension.returns({ id: 'github.vscode-codeql' });
             sandbox.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => 'C:\\test\\site\\path');
-            mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
 
             await runCodeQLScreening(mockSiteTreeItem);
 
             expect(mockShowProgressNotification.calledWith(Constants.Strings.CODEQL_SCREENING_STARTED)).to.be.true;
-            expect(mockSendText.calledOnce).to.be.true;
-            expect(mockSendText.firstCall.args[0]).to.include('codeql database create');
-            expect(mockSendText.firstCall.args[0]).to.include('--language=javascript');
-            expect(mockShowInformationMessage.calledWith(
-                Constants.Strings.CODEQL_GUIDE_MESSAGE,
-                { modal: true },
-                Constants.Strings.COPY_TO_CLIPBOARD
-            )).to.be.true;
         });
 
         it('should handle errors gracefully', async () => {
