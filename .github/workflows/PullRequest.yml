@@ -69,3 +69,9 @@ jobs:
       with:
         run: |
          npm run test-desktop-int
+
+    - name: Run Common integration tests
+      uses: coactions/setup-xvfb@v1
+      with:
+        run: |
+         npm run test-common-int

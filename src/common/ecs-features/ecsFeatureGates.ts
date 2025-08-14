@@ -79,3 +79,13 @@ export const {
         enableActionsHub: true,
     },
 });
+
+export const {
+    feature: EnableBLChanges
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable BL Changes in VSCode (web & desktop)',
+    fallback: {
+        enableBLChanges: false,
+    },
+})
