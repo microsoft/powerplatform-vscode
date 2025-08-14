@@ -96,6 +96,6 @@ export const {
     teamName: PowerPagesClientName,
     description: 'Enable CodeQl Scan in VSCode Desktop',
     fallback: {
-        enableCodeQlScan: true,
+        enableCodeQlScan: false,
     }
 })

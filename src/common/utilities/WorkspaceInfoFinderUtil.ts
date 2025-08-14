@@ -115,8 +115,7 @@ export function hasWebsiteYaml(directoryPath: string): boolean {
  * @returns True if .powerpages-site folder exists, false otherwise
  */
 export function hasPowerPagesSiteFolder(directoryPath: string): boolean {
-    const powerPagesSiteFolderPath = path.join(directoryPath, POWERPAGES_SITE_FOLDER);
-    return fs.existsSync(powerPagesSiteFolderPath);
+    return fs.existsSync(directoryPath);
 }
 
 /**
