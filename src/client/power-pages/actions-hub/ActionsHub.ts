@@ -5,7 +5,7 @@
 
 import * as vscode from "vscode";
 import { ECSFeaturesClient } from "../../../common/ecs-features/ecsFeatureClient";
-import { EnableActionsHub } from "../../../common/ecs-features/ecsFeatureGates";
+import { EnableActionsHub, EnableCodeQlScan } from "../../../common/ecs-features/ecsFeatureGates";
 import { ActionsHubTreeDataProvider } from "./ActionsHubTreeDataProvider";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { PacTerminal } from "../../lib/PacTerminal";
@@ -25,6 +25,16 @@ export class ActionsHub {
         return enableActionsHub;
     }
 
+    static isCodeQlScanEnabled(): boolean {
+        const enableCodeQlScan = ECSFeaturesClient.getConfig(EnableCodeQlScan).enableCodeQlScan;
+
+        if (enableCodeQlScan === undefined) {
+            return false;
+        }
+
+        return enableCodeQlScan;
+    }
+
     static async initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal): Promise<void> {
         if (ActionsHub._isInitialized) {
             return;
@@ -32,6 +42,7 @@ export class ActionsHub {
 
         try {
             const isActionsHubEnabled = ActionsHub.isEnabled();
+            const isCodeQlScanEnabled = ActionsHub.isCodeQlScanEnabled();
 
             oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_ENABLED, {
                 isEnabled: isActionsHubEnabled.toString(),
@@ -39,12 +50,13 @@ export class ActionsHub {
             });
 
             vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", isActionsHubEnabled);
+            vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.codeQlScanEnabled", isCodeQlScanEnabled);
 
             if (!isActionsHubEnabled) {
                 return;
             }
 
-            ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            ActionsHubTreeDataProvider.initialize(context, pacTerminal, isCodeQlScanEnabled);
             ActionsHub._isInitialized = true;
             oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_INITIALIZED, getBaseEventInfo());
         } catch (exception) {
