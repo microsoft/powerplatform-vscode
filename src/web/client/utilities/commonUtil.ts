@@ -192,7 +192,7 @@ export function getFileExtension(fileName: string): string | undefined {
 }
 
 export function getFileExtensionForPreload() {
-    return ['css', 'json', 'txt'];
+    return ['css', 'json', 'txt', 'js'];
 }
 
 export function getImageContent(mimeType: string, fileContent: string) {

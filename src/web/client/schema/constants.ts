@@ -47,6 +47,7 @@ export enum schemaEntityName {
     WEBFILES = "webfiles",
     WEBPAGES = "webpages",
     WEBTEMPLATES = "webtemplates",
+    SERVERLOGICS = "serverlogics",
     CONTENTSNIPPETS = "contentsnippet",
     LISTS = "lists",
     BASICFORMS = "basicforms",
@@ -57,6 +58,7 @@ export enum schemaEntityName {
 export enum MultiFileSupportedEntityName {
     WEBFILES = "webfiles",
     WEBPAGES = "webpages",
+    SERVERLOGICS = "serverlogics",
     WEBTEMPLATES = "webtemplates",
     CONTENTSNIPPETS = "contentsnippet",
     LISTS = "lists",
