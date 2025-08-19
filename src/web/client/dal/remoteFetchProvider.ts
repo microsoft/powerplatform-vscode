@@ -35,6 +35,7 @@ import { IAttributePath, IFileInfo } from "../common/interfaces";
 import { portal_schema_V2 } from "../schema/portalSchema";
 import { ERROR_CONSTANTS } from "../../../common/ErrorConstants";
 import { showErrorDialog } from "../../../common/utilities/errorHandlerUtil";
+import { EnableBLChanges } from "../../../common/ecs-features/ecsFeatureGates";
 
 export async function fetchDataFromDataverseAndUpdateVFS(
     portalFs: PortalsFS,
@@ -48,18 +49,21 @@ export async function fetchDataFromDataverseAndUpdateVFS(
         const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
             Constants.queryParameters.ORG_URL
         ) as string;
+        const { enableBLChanges } = EnableBLChanges.getConfig() as { enableBLChanges?: boolean };
         await Promise.all(entityRequestURLs.map(async (entity) => {
             const startTime = new Date().getTime();
-            await fetchFromDataverseAndCreateFiles(entity.entityName, entity.requestUrl, dataverseOrgUrl, portalFs, defaultFileInfo);
+            if(entity.entityName != schemaEntityName.SERVERLOGICS || enableBLChanges) {
+                await fetchFromDataverseAndCreateFiles(entity.entityName, entity.requestUrl, dataverseOrgUrl, portalFs, defaultFileInfo);
 
-            if (defaultFileInfo === undefined) { // This will be undefined for bulk entity load
-                WebExtensionContext.telemetry.sendInfoTelemetry(
-                    webExtensionTelemetryEventNames.WEB_EXTENSION_FILES_LOAD_SUCCESS,
-                    {
-                        entityName: entity.entityName,
-                        duration: (new Date().getTime() - startTime).toString(),
-                    }
-                );
+                if (defaultFileInfo === undefined) { // This will be undefined for bulk entity load
+                    WebExtensionContext.telemetry.sendInfoTelemetry(
+                        webExtensionTelemetryEventNames.WEB_EXTENSION_FILES_LOAD_SUCCESS,
+                        {
+                            entityName: entity.entityName,
+                            duration: (new Date().getTime() - startTime).toString(),
+                        }
+                    );
+                }
             }
         }));
     } catch (error) {
