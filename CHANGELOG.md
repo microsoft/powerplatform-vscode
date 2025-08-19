@@ -1,6 +1,6 @@
 # Change Log - Power Platform Extension
 
-## 2.0.93
+## 2.0.94
 - pac CLI 1.47.1, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 - Bug Fixes
   - Fixed issue where active sites appeared as inactive in Power Pages Actions for Sovereign Clouds.
