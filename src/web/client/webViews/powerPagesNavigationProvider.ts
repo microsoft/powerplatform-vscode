@@ -193,33 +193,41 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             // Extract environment ID from the URL format if needed
             const environmentId = envId.split("/").pop() || envId;
 
-            // Build VS Code desktop URI
-            const desktopUri = this.buildDesktopUri(websiteId, environmentId);
+            // Build VS Code desktop URI (this is now async to include website URL)
+            this.buildDesktopUri(websiteId, environmentId).then((desktopUri: string | null) => {
+                if (!desktopUri) {
+                    vscode.window.showErrorMessage(vscode.l10n.t("Unable to generate VS Code Desktop URL"));
+                    WebExtensionContext.telemetry.sendErrorTelemetry(
+                        webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_FAILED,
+                        this.openInDesktop.name,
+                        "Unable to generate desktop URI"
+                    );
+                    return;
+                }
 
-            if (!desktopUri) {
-                vscode.window.showErrorMessage(vscode.l10n.t("Unable to generate VS Code Desktop URL"));
+                // Open in VS Code Desktop
+                vscode.env.openExternal(vscode.Uri.parse(desktopUri));
+
+                // Show informational message with fallback options (don't await to avoid blocking)
+                vscode.window.showInformationMessage(
+                    vscode.l10n.t("Opening in VS Code Desktop. If VS Code doesn't open, you may need to install it first."),
+                    vscode.l10n.t("Download VS Code"),
+                    vscode.l10n.t("Get Extension")
+                ).then((showInstructions) => {
+                    if (showInstructions === vscode.l10n.t("Download VS Code")) {
+                        vscode.env.openExternal(vscode.Uri.parse("https://code.visualstudio.com/download"));
+                    } else if (showInstructions === vscode.l10n.t("Get Extension")) {
+                        vscode.env.openExternal(vscode.Uri.parse("https://marketplace.visualstudio.com/items?itemName=microsoft-IsvExpTools.powerplatform-vscode"));
+                    }
+                });
+            }).catch((error: unknown) => {
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                vscode.window.showErrorMessage(vscode.l10n.t("Failed to generate VS Code Desktop URL: {0}", errorMessage));
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_FAILED,
                     this.openInDesktop.name,
-                    "Unable to generate desktop URI"
+                    errorMessage
                 );
-                return;
-            }
-
-            // Open in VS Code Desktop
-            vscode.env.openExternal(vscode.Uri.parse(desktopUri));
-
-            // Show informational message with fallback options (don't await to avoid blocking)
-            vscode.window.showInformationMessage(
-                vscode.l10n.t("Opening in VS Code Desktop. If VS Code doesn't open, you may need to install it first."),
-                vscode.l10n.t("Download VS Code"),
-                vscode.l10n.t("Get Extension")
-            ).then((showInstructions) => {
-                if (showInstructions === vscode.l10n.t("Download VS Code")) {
-                    vscode.env.openExternal(vscode.Uri.parse("https://code.visualstudio.com/download"));
-                } else if (showInstructions === vscode.l10n.t("Get Extension")) {
-                    vscode.env.openExternal(vscode.Uri.parse("https://marketplace.visualstudio.com/items?itemName=microsoft-IsvExpTools.powerplatform-vscode"));
-                }
             });
 
         } catch (error) {
@@ -234,7 +242,7 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
         }
     }
 
-    private buildDesktopUri(websiteId: string, environmentId: string): string | null {
+    private async buildDesktopUri(websiteId: string, environmentId: string): Promise<string | null> {
         try {
             // Get current URL parameters
             const orgUrl = WebExtensionContext.urlParametersMap?.get('orgurl');
@@ -242,7 +250,9 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             const schema = WebExtensionContext.urlParametersMap?.get('schema');
             const tenantId = WebExtensionContext.urlParametersMap?.get('tenantid');
             const portalId = WebExtensionContext.urlParametersMap?.get('websitepreviewid');
-            const siteName = WebExtensionContext.urlParametersMap?.get('sitename') || WebExtensionContext.urlParametersMap?.get('websitename');
+            const siteName = WebExtensionContext.urlParametersMap?.get('websitename');
+            const siteUrl = WebExtensionContext.urlParametersMap?.get('websitepreviewurl');
+
 
             // Validate required parameters for desktop URI
             if (!orgUrl || !schema) {
@@ -268,6 +278,7 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             if (tenantId) params.append('tenantid', tenantId);
             if (portalId) params.append('websitepreviewid', portalId);
             if (siteName) params.append('sitename', siteName);
+            if (siteUrl) params.append('siteurl', siteUrl);
 
             const finalUri = `${baseUri}?${params.toString()}`;
 
@@ -279,6 +290,7 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
                     environmentId: environmentId,
                     desktopUri: finalUri,
                     hasSiteName: siteName ? 'true' : 'false',
+                    hasSiteUrl: params.has('siteurl') ? 'true' : 'false',
                     schema: schema
                 }
             );

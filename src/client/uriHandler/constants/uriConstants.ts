@@ -17,7 +17,8 @@ export const URI_CONSTANTS = {
         ENV_ID: 'envid',
         ORG_URL: 'orgurl',
         SCHEMA: 'schema',
-        SITE_NAME: 'sitename'
+        SITE_NAME: 'sitename',
+        SITE_URL: 'siteurl'
     },
     SCHEMA_VALUES: {
         PORTAL_SCHEMA_V2: 'portalschemav2'

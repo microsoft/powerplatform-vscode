@@ -9,6 +9,7 @@ import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLogge
 import { URI_CONSTANTS, UriPath } from "./constants/uriConstants";
 import { URI_HANDLER_STRINGS } from "./constants/uriStrings";
 import { uriHandlerTelemetryEventNames } from "./telemetry/uriHandlerTelemetryEvents";
+import { UriHandlerUtils } from "./utils/uriHandlerUtils";
 
 export function RegisterUriHandler(pacWrapper: PacWrapper): vscode.Disposable {
     const uriHandler = new UriHandler(pacWrapper);
@@ -101,6 +102,7 @@ class UriHandler implements vscode.UriHandler {
             const orgUrl = urlParams.get(URI_CONSTANTS.PARAMETERS.ORG_URL);
             const schema = urlParams.get(URI_CONSTANTS.PARAMETERS.SCHEMA);
             const siteName = urlParams.get(URI_CONSTANTS.PARAMETERS.SITE_NAME);
+            const siteUrl = urlParams.get(URI_CONSTANTS.PARAMETERS.SITE_URL);
 
             // Populate telemetry data
             telemetryData = {
@@ -109,6 +111,7 @@ class UriHandler implements vscode.UriHandler {
                 orgUrl: orgUrl ? 'provided' : 'missing', // Don't log actual URL for privacy
                 schema: schema || 'none',
                 siteName: siteName ? 'provided' : 'missing',
+                siteUrl: siteUrl ? 'provided' : 'missing', // Don't log actual URL for privacy
                 uriQuery: uri.query || 'empty'
             };
 
@@ -360,7 +363,7 @@ class UriHandler implements vscode.UriHandler {
                 );
 
                 // Show completion dialog
-                await this.handleDownloadCompletion(selectedFolder, telemetryData, startTime);
+                await this.handleDownloadCompletion(selectedFolder, telemetryData, startTime, siteName, siteUrl);
 
             } catch (error) {
                 const errorMessage = error instanceof Error ? error.message : String(error);
@@ -391,8 +394,30 @@ class UriHandler implements vscode.UriHandler {
     private async handleDownloadCompletion(
         selectedFolder: vscode.Uri,
         telemetryData: Record<string, string>,
-        startTime: number
+        startTime: number,
+        siteName: string | null,
+        siteUrl: string | null
     ): Promise<void> {
+        // Try to find the actual downloaded folder using the naming pattern
+        let folderToOpen = selectedFolder;
+        const expectedFolderName = UriHandlerUtils.generateExpectedFolderName(siteName, siteUrl);
+
+        if (expectedFolderName) {
+            const foundFolder = await UriHandlerUtils.findDownloadedFolder(selectedFolder, expectedFolderName);
+            if (foundFolder) {
+                folderToOpen = foundFolder;
+                telemetryData.downloadedFolderFound = 'true';
+                telemetryData.expectedFolderName = expectedFolderName;
+            } else {
+                telemetryData.downloadedFolderFound = 'false';
+                telemetryData.expectedFolderName = expectedFolderName;
+                oneDSLoggerWrapper.getLogger().traceInfo(
+                    uriHandlerTelemetryEventNames.URI_HANDLER_DOWNLOAD_COMPLETED,
+                    { ...telemetryData, message: 'Expected folder not found, using selected folder' }
+                );
+            }
+        }
+
         const openFolder = await vscode.window.showInformationMessage(
             vscode.l10n.t(URI_HANDLER_STRINGS.PROMPTS.DOWNLOAD_COMPLETE),
             vscode.l10n.t(URI_HANDLER_STRINGS.BUTTONS.OPEN_FOLDER),
@@ -401,16 +426,16 @@ class UriHandler implements vscode.UriHandler {
         );
 
         if (openFolder === vscode.l10n.t(URI_HANDLER_STRINGS.BUTTONS.OPEN_FOLDER)) {
-            await vscode.commands.executeCommand('vscode.openFolder', selectedFolder, false);
+            await vscode.commands.executeCommand('vscode.openFolder', folderToOpen, false);
             oneDSLoggerWrapper.getLogger().traceInfo(
                 uriHandlerTelemetryEventNames.URI_HANDLER_FOLDER_OPENED,
-                { ...telemetryData, openType: 'current_workspace' }
+                { ...telemetryData, openType: 'current_workspace', actualFolderOpened: folderToOpen.fsPath }
             );
         } else if (openFolder === vscode.l10n.t(URI_HANDLER_STRINGS.BUTTONS.OPEN_NEW_WORKSPACE)) {
-            await vscode.commands.executeCommand('vscode.openFolder', selectedFolder, true);
+            await vscode.commands.executeCommand('vscode.openFolder', folderToOpen, true);
             oneDSLoggerWrapper.getLogger().traceInfo(
                 uriHandlerTelemetryEventNames.URI_HANDLER_FOLDER_OPENED,
-                { ...telemetryData, openType: 'new_workspace' }
+                { ...telemetryData, openType: 'new_workspace', actualFolderOpened: folderToOpen.fsPath }
             );
         }
 
