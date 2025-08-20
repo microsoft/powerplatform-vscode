@@ -21,12 +21,15 @@ export const URI_HANDLER_STRINGS = {
         DOWNLOAD_CANCELLED_AUTH: "Site download cancelled. Authentication is required to proceed.",
         DOWNLOAD_CANCELLED_ENV: "Site download cancelled. Correct environment connection is required.",
         DOWNLOAD_CANCELLED_FOLDER: "Site download cancelled. No folder selected.",
-        DOWNLOAD_STARTED: "Power Pages site download started using model version {0}. The terminal will show progress."
+        DOWNLOAD_STARTED: "Downloading Power Pages site using model version {0}...",
+        DOWNLOAD_IN_PROGRESS: "Downloading Power Pages site, please wait...",
+        DOWNLOAD_PREPARING: "Preparing to download Power Pages site...",
+        DOWNLOAD_PROCESSING: "Processing download request..."
     },
     PROMPTS: {
         AUTH_REQUIRED: "You need to authenticate with Power Platform to download the site. Would you like to authenticate now?",
         ENV_SWITCH_REQUIRED: "You are currently connected to a different environment. Would you like to switch to the required environment?",
-        DOWNLOAD_COMPLETE: "Power Pages site download should be complete. Would you like to open the downloaded site folder?",
+        DOWNLOAD_COMPLETE: "Power Pages site download completed successfully. Would you like to open the downloaded site folder?",
         FOLDER_SELECT: "Select Folder to Download Power Pages Site"
     },
     BUTTONS: {

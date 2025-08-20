@@ -300,20 +300,8 @@ class UriHandler implements vscode.UriHandler {
                 }
             }
 
-            // Execute the pac pages download command using terminal
+            // Execute the pac pages download command using PacWrapper
             try {
-                // Execute the pac pages download command with the appropriate model version
-                const downloadCommand = `pac pages download --path "${selectedFolder.fsPath}" --websiteId "${websiteId}" --modelVersion ${modelVersion}`;
-
-                const terminal = vscode.window.createTerminal({
-                    name: "Power Pages Download",
-                    cwd: selectedFolder.fsPath,
-                    isTransient: false,
-                });
-
-                terminal.show();
-                terminal.sendText(downloadCommand);
-
                 oneDSLoggerWrapper.getLogger().traceInfo(
                     uriHandlerTelemetryEventNames.URI_HANDLER_DOWNLOAD_STARTED,
                     {
@@ -321,40 +309,58 @@ class UriHandler implements vscode.UriHandler {
                         downloadCommand: 'pac pages download',
                         downloadPath: selectedFolder.fsPath ? 'provided' : 'missing'
                     }
-                );                // Show completion message after a delay
-                setTimeout(async () => {
-                    const openFolder = await vscode.window.showInformationMessage(
-                        vscode.l10n.t(URI_HANDLER_STRINGS.PROMPTS.DOWNLOAD_COMPLETE),
-                        vscode.l10n.t(URI_HANDLER_STRINGS.BUTTONS.OPEN_FOLDER),
-                        vscode.l10n.t(URI_HANDLER_STRINGS.BUTTONS.OPEN_NEW_WORKSPACE),
-                        vscode.l10n.t(URI_HANDLER_STRINGS.BUTTONS.NOT_NOW)
-                    );
+                );
 
-                    if (openFolder === vscode.l10n.t(URI_HANDLER_STRINGS.BUTTONS.OPEN_FOLDER)) {
-                        // Open the folder in current workspace
-                        await vscode.commands.executeCommand('vscode.openFolder', selectedFolder, false);
-                        oneDSLoggerWrapper.getLogger().traceInfo(
-                            uriHandlerTelemetryEventNames.URI_HANDLER_FOLDER_OPENED,
-                            { ...telemetryData, openType: 'current_workspace' }
+                // Show progress notification while downloading
+                await vscode.window.withProgress(
+                    {
+                        location: vscode.ProgressLocation.Notification,
+                        title: vscode.l10n.t(URI_HANDLER_STRINGS.INFO.DOWNLOAD_STARTED, modelVersion.toString()),
+                        cancellable: false
+                    },
+                    async (progress) => {
+                        progress.report({
+                            message: vscode.l10n.t(URI_HANDLER_STRINGS.INFO.DOWNLOAD_PREPARING),
+                            increment: 10
+                        });
+
+                        progress.report({
+                            message: vscode.l10n.t(URI_HANDLER_STRINGS.INFO.DOWNLOAD_PROCESSING),
+                            increment: 20
+                        });
+
+                        // Use PacWrapper's downloadSite method instead of terminal
+                        const downloadResult = await this.pacWrapper.downloadSite(
+                            selectedFolder.fsPath,
+                            websiteId,
+                            modelVersion as 1 | 2
                         );
-                    } else if (openFolder === vscode.l10n.t(URI_HANDLER_STRINGS.BUTTONS.OPEN_NEW_WORKSPACE)) {
-                        // Open the downloaded folder in a new workspace
-                        await vscode.commands.executeCommand('vscode.openFolder', selectedFolder, true);
+
+                        progress.report({
+                            message: vscode.l10n.t(URI_HANDLER_STRINGS.INFO.DOWNLOAD_IN_PROGRESS),
+                            increment: 70
+                        });
+
+                        if (downloadResult.Status !== "Success") {
+                            const errorMessage = downloadResult.Errors?.length > 0
+                                ? downloadResult.Errors.join('; ')
+                                : 'Unknown error occurred during download';
+                            throw new Error(`Download failed: ${errorMessage}`);
+                        }
+
                         oneDSLoggerWrapper.getLogger().traceInfo(
-                            uriHandlerTelemetryEventNames.URI_HANDLER_FOLDER_OPENED,
-                            { ...telemetryData, openType: 'new_workspace' }
+                            uriHandlerTelemetryEventNames.URI_HANDLER_DOWNLOAD_COMPLETED,
+                            {
+                                ...telemetryData,
+                                downloadStatus: downloadResult.Status,
+                                duration: (Date.now() - startTime).toString()
+                            }
                         );
                     }
+                );
 
-                    oneDSLoggerWrapper.getLogger().traceInfo(
-                        uriHandlerTelemetryEventNames.URI_HANDLER_DOWNLOAD_COMPLETED,
-                        {
-                            ...telemetryData,
-                            completionAction: openFolder || 'none',
-                            duration: (Date.now() - startTime).toString()
-                        }
-                    );
-                }, URI_CONSTANTS.TIMEOUTS.COMPLETION_DIALOG);
+                // Show completion dialog
+                await this.handleDownloadCompletion(selectedFolder, telemetryData, startTime);
 
             } catch (error) {
                 const errorMessage = error instanceof Error ? error.message : String(error);
@@ -380,31 +386,42 @@ class UriHandler implements vscode.UriHandler {
     }
 
     /**
-     * Validates if the downloaded folder exists and is accessible
+     * Handles the completion dialog after download finishes
      */
-    private async validateDownloadedFolder(folderPath: string): Promise<boolean> {
-        try {
-            const stat = await vscode.workspace.fs.stat(vscode.Uri.file(folderPath));
-            return stat.type === vscode.FileType.Directory;
-        } catch {
-            return false;
+    private async handleDownloadCompletion(
+        selectedFolder: vscode.Uri,
+        telemetryData: Record<string, string>,
+        startTime: number
+    ): Promise<void> {
+        const openFolder = await vscode.window.showInformationMessage(
+            vscode.l10n.t(URI_HANDLER_STRINGS.PROMPTS.DOWNLOAD_COMPLETE),
+            vscode.l10n.t(URI_HANDLER_STRINGS.BUTTONS.OPEN_FOLDER),
+            vscode.l10n.t(URI_HANDLER_STRINGS.BUTTONS.OPEN_NEW_WORKSPACE),
+            vscode.l10n.t(URI_HANDLER_STRINGS.BUTTONS.NOT_NOW)
+        );
+
+        if (openFolder === vscode.l10n.t(URI_HANDLER_STRINGS.BUTTONS.OPEN_FOLDER)) {
+            await vscode.commands.executeCommand('vscode.openFolder', selectedFolder, false);
+            oneDSLoggerWrapper.getLogger().traceInfo(
+                uriHandlerTelemetryEventNames.URI_HANDLER_FOLDER_OPENED,
+                { ...telemetryData, openType: 'current_workspace' }
+            );
+        } else if (openFolder === vscode.l10n.t(URI_HANDLER_STRINGS.BUTTONS.OPEN_NEW_WORKSPACE)) {
+            await vscode.commands.executeCommand('vscode.openFolder', selectedFolder, true);
+            oneDSLoggerWrapper.getLogger().traceInfo(
+                uriHandlerTelemetryEventNames.URI_HANDLER_FOLDER_OPENED,
+                { ...telemetryData, openType: 'new_workspace' }
+            );
         }
+
+        oneDSLoggerWrapper.getLogger().traceInfo(
+            uriHandlerTelemetryEventNames.URI_HANDLER_DOWNLOAD_COMPLETED,
+            {
+                ...telemetryData,
+                completionAction: openFolder || 'none',
+                duration: (Date.now() - startTime).toString()
+            }
+        );
     }
 
-    /**
-     * Checks if PAC CLI is available and functional
-     */
-    private async validatePacCli(): Promise<{ isAvailable: boolean; error?: string }> {
-        try {
-            const authResult = await this.pacWrapper.activeAuth();
-            return {
-                isAvailable: authResult?.Status === "Success" || authResult?.Status === "AuthRequired"
-            };
-        } catch (error) {
-            return {
-                isAvailable: false,
-                error: error instanceof Error ? error.message : String(error)
-            };
-        }
-    }
 }

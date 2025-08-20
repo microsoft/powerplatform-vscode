@@ -184,6 +184,10 @@ export class PacWrapper {
         return this.executeCommandAndParseResults<PacOutput>(new PacArguments("pages", "pending-changes", "-p", websitePath, "-mv", dataModelVersion.toString()));
     }
 
+    public async downloadSite(downloadPath: string, websiteId: string, dataModelVersion: 1 | 2): Promise<PacOutput> {
+        return this.executeCommandAndParseResults<PacOutput>(new PacArguments("pages", "download", "-p", downloadPath, "-id", websiteId, "-mv", dataModelVersion.toString()));
+    }
+
     public exit(): void {
         this.pacInterop.exit();
     }
