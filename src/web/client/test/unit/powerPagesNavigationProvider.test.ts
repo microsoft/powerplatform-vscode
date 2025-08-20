@@ -14,9 +14,9 @@ describe('PowerPagesNavigationProvider Desktop Integration', () => {
             const websiteId = "test-website-123";
             const envId = "test-env-456";
             const orgUrl = "https://contoso.crm.dynamics.com";
-            
+
             const uri = `vscode://microsoft-IsvExpTools.powerplatform-vscode/open?websiteid=${websiteId}&envid=${envId}&orgurl=${encodeURIComponent(orgUrl)}`;
-            
+
             expect(uri).to.include('websiteid=test-website-123');
             expect(uri).to.include('envid=test-env-456');
             expect(uri).to.include('orgurl=https%3A%2F%2Fcontoso.crm.dynamics.com');
@@ -26,10 +26,10 @@ describe('PowerPagesNavigationProvider Desktop Integration', () => {
             const websiteId = "complex-site";
             const envId = "complex-env";
             const orgUrl = "https://test-org.crm4.dynamics.com/organizations/test%20org";
-            
+
             const encodedOrgUrl = encodeURIComponent(orgUrl);
             const uri = `vscode://microsoft-IsvExpTools.powerplatform-vscode/open?websiteid=${websiteId}&envid=${envId}&orgurl=${encodedOrgUrl}`;
-            
+
             expect(uri).to.include('websiteid=complex-site');
             expect(uri).to.include('envid=complex-env');
             expect(decodeURIComponent(encodedOrgUrl)).to.equal(orgUrl);
@@ -39,11 +39,11 @@ describe('PowerPagesNavigationProvider Desktop Integration', () => {
             const websiteId = "site123";
             const envId = "env456";
             const orgUrl = "https://testorg.crm.dynamics.com/";
-            
+
             const uri = `vscode://microsoft-IsvExpTools.powerplatform-vscode/open?websiteid=${websiteId}&envid=${envId}&orgurl=${encodeURIComponent(orgUrl)}`;
             const parsedUri = vscode.Uri.parse(uri);
             const params = new URLSearchParams(parsedUri.query);
-            
+
             expect(params.get('websiteid')).to.equal(websiteId);
             expect(params.get('envid')).to.equal(envId);
             expect(decodeURIComponent(params.get('orgurl') || '')).to.equal(orgUrl);
@@ -55,7 +55,7 @@ describe('PowerPagesNavigationProvider Desktop Integration', () => {
             const websiteId = '';
             const envId = 'test-env';
             const orgUrl = 'https://test.com';
-            
+
             const isValid = websiteId && envId && orgUrl;
             expect(isValid).to.be.false;
         });
@@ -64,7 +64,7 @@ describe('PowerPagesNavigationProvider Desktop Integration', () => {
             const websiteId = 'test-site';
             const envId = '';
             const orgUrl = 'https://test.com';
-            
+
             const isValid = websiteId && envId && orgUrl;
             expect(isValid).to.be.false;
         });
@@ -73,7 +73,7 @@ describe('PowerPagesNavigationProvider Desktop Integration', () => {
             const websiteId = 'test-site';
             const envId = 'test-env';
             const orgUrl = '';
-            
+
             const isValid = websiteId && envId && orgUrl;
             expect(isValid).to.be.false;
         });
@@ -82,7 +82,7 @@ describe('PowerPagesNavigationProvider Desktop Integration', () => {
             const websiteId = 'test-site';
             const envId = 'test-env';
             const orgUrl = 'https://test.com';
-            
+
             const isValid = websiteId && envId && orgUrl;
             expect(isValid).to.be.true;
         });
@@ -112,25 +112,42 @@ describe('PowerPagesNavigationProvider Desktop Integration', () => {
     });
 
     describe('External Link Generation', () => {
-        it('should generate proper VS Code protocol URI', () => {
+        it('should generate proper VS Code protocol URI with schema', () => {
             const baseUri = 'vscode://microsoft-IsvExpTools.powerplatform-vscode/open';
             const params = new URLSearchParams();
             params.set('websiteid', 'test123');
             params.set('envid', 'env456');
             params.set('orgurl', 'https://test.crm.dynamics.com');
-            
+            params.set('schema', 'PortalSchemaV2');
+
             const fullUri = `${baseUri}?${params.toString()}`;
-            
+
             expect(fullUri).to.include('vscode://microsoft-IsvExpTools.powerplatform-vscode');
             expect(fullUri).to.include('websiteid=test123');
             expect(fullUri).to.include('envid=env456');
+            expect(fullUri).to.include('schema=PortalSchemaV2');
+        });
+
+        it('should generate proper VS Code protocol URI without schema', () => {
+            const baseUri = 'vscode://microsoft-IsvExpTools.powerplatform-vscode/open';
+            const params = new URLSearchParams();
+            params.set('websiteid', 'test123');
+            params.set('envid', 'env456');
+            params.set('orgurl', 'https://test.crm.dynamics.com');
+
+            const fullUri = `${baseUri}?${params.toString()}`;
+
+            expect(fullUri).to.include('vscode://microsoft-IsvExpTools.powerplatform-vscode');
+            expect(fullUri).to.include('websiteid=test123');
+            expect(fullUri).to.include('envid=env456');
+            expect(fullUri).to.not.include('schema=');
         });
 
         it('should handle URI parsing and reconstruction', () => {
             const originalUri = 'vscode://microsoft-IsvExpTools.powerplatform-vscode/open?websiteid=abc&envid=def&orgurl=https%3A%2F%2Ftest.com';
             const parsedUri = vscode.Uri.parse(originalUri);
             const params = new URLSearchParams(parsedUri.query);
-            
+
             expect(parsedUri.scheme).to.equal('vscode');
             expect(parsedUri.authority).to.equal('microsoft-IsvExpTools.powerplatform-vscode');
             expect(parsedUri.path).to.equal('/open');
@@ -145,7 +162,7 @@ describe('PowerPagesNavigationProvider Desktop Integration', () => {
             const websiteId = undefined;
             const envId = undefined;
             const orgUrl = undefined;
-            
+
             const hasAllParams = websiteId && envId && orgUrl;
             expect(hasAllParams).to.be.false;
         });
@@ -154,7 +171,7 @@ describe('PowerPagesNavigationProvider Desktop Integration', () => {
             const websiteId = null;
             const envId = null;
             const orgUrl = null;
-            
+
             const hasAllParams = websiteId && envId && orgUrl;
             expect(hasAllParams).to.be.false;
         });
@@ -162,28 +179,28 @@ describe('PowerPagesNavigationProvider Desktop Integration', () => {
         it('should handle malformed URLs', () => {
             const orgUrl = 'not-a-valid-url';
             let isValidUrl = false;
-            
+
             try {
                 new URL(orgUrl);
                 isValidUrl = true;
             } catch {
                 isValidUrl = false;
             }
-            
+
             expect(isValidUrl).to.be.false;
         });
 
         it('should handle valid URLs', () => {
             const orgUrl = 'https://test.crm.dynamics.com';
             let isValidUrl = false;
-            
+
             try {
                 new URL(orgUrl);
                 isValidUrl = true;
             } catch {
                 isValidUrl = false;
             }
-            
+
             expect(isValidUrl).to.be.true;
         });
     });
@@ -192,7 +209,7 @@ describe('PowerPagesNavigationProvider Desktop Integration', () => {
         it('should have proper telemetry event names', () => {
             const triggerEvent = 'WEB_EXTENSION_OPEN_DESKTOP_TRIGGERED';
             const failureEvent = 'WEB_EXTENSION_OPEN_DESKTOP_FAILED';
-            
+
             expect(triggerEvent).to.equal('WEB_EXTENSION_OPEN_DESKTOP_TRIGGERED');
             expect(failureEvent).to.equal('WEB_EXTENSION_OPEN_DESKTOP_FAILED');
         });
@@ -208,6 +225,75 @@ describe('PowerPagesNavigationProvider Desktop Integration', () => {
 
             expect(telemetryData.websiteId).to.equal('test-site-123');
             expect(telemetryData.environmentId).to.equal('test-env-456');
+            expect(telemetryData.success).to.be.true;
+        });
+    });
+
+    describe('Schema Parameter Handling', () => {
+        it('should handle schema parameter in URI construction', () => {
+            const websiteId = "test-site-123";
+            const envId = "test-env-456";
+            const orgUrl = "https://test.crm.dynamics.com";
+            const schema = "PortalSchemaV2";
+
+            const uri = `vscode://microsoft-IsvExpTools.powerplatform-vscode/open?websiteid=${websiteId}&envid=${envId}&orgurl=${encodeURIComponent(orgUrl)}&schema=${schema}`;
+            const parsedUri = vscode.Uri.parse(uri);
+            const params = new URLSearchParams(parsedUri.query);
+
+            expect(params.get('websiteid')).to.equal(websiteId);
+            expect(params.get('envid')).to.equal(envId);
+            expect(decodeURIComponent(params.get('orgurl') || '')).to.equal(orgUrl);
+            expect(params.get('schema')).to.equal(schema);
+        });
+
+        it('should determine model version based on schema parameter', () => {
+            // Test schema PortalSchemaV2 -> model version 2
+            const schemaV2 = "PortalSchemaV2";
+            const modelVersionV2 = schemaV2.toLowerCase() === 'portalschemav2' ? 2 : 1;
+            expect(modelVersionV2).to.equal(2);
+
+            // Test other schema -> model version 1
+            const schemaV1 = "OtherSchema";
+            const modelVersionV1 = schemaV1.toLowerCase() === 'portalschemav2' ? 2 : 1;
+            expect(modelVersionV1).to.equal(1);
+
+            // Test empty string -> model version 1
+            const schemaEmpty = "";
+            const modelVersionEmpty = schemaEmpty.toLowerCase() === 'portalschemav2' ? 2 : 1;
+            expect(modelVersionEmpty).to.equal(1);
+        });
+
+        it('should handle case-insensitive schema matching', () => {
+            const testCases = [
+                { input: 'PortalSchemaV2', expected: 2 },
+                { input: 'portalschemav2', expected: 2 },
+                { input: 'PORTALSCHEMAV2', expected: 2 },
+                { input: 'PortalSchemav2', expected: 2 },
+                { input: 'OtherSchema', expected: 1 },
+                { input: 'portalschemav1', expected: 1 },
+                { input: '', expected: 1 }
+            ];
+
+            testCases.forEach(testCase => {
+                const modelVersion = testCase.input && testCase.input.toLowerCase() === 'portalschemav2' ? 2 : 1;
+                expect(modelVersion).to.equal(testCase.expected, `Failed for input: "${testCase.input}"`);
+            });
+        });
+
+        it('should build telemetry data with schema information', () => {
+            const telemetryData = {
+                websiteId: 'test-site-123',
+                environmentId: 'test-env-456',
+                orgUrl: 'https://test.crm.dynamics.com',
+                schema: 'PortalSchemaV2',
+                modelVersion: 2,
+                success: true
+            };
+
+            expect(telemetryData.websiteId).to.equal('test-site-123');
+            expect(telemetryData.environmentId).to.equal('test-env-456');
+            expect(telemetryData.schema).to.equal('PortalSchemaV2');
+            expect(telemetryData.modelVersion).to.equal(2);
             expect(telemetryData.success).to.be.true;
         });
     });

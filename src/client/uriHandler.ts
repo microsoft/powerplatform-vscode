@@ -26,7 +26,7 @@ class UriHandler implements vscode.UriHandler {
     // URIs targeting our extension are in the format
     // vscode://<ExtensionName>/<PathArgs>?<QueryArgs>#<FragmentArgs>
     // vscode://microsoft-IsvExpTools.powerplatform-vscode/pcfInit
-    // vscode://microsoft-IsvExpTools.powerplatform-vscode/open?websiteid=xxx&envid=yyy&orgurl=zzz
+    // vscode://microsoft-IsvExpTools.powerplatform-vscode/open?websiteid=xxx&envid=yyy&orgurl=zzz&schema=PortalSchemaV2
     public async handleUri(uri: vscode.Uri): Promise<void> {
         if (uri.path === UriPath.PcfInit) {
             return this.pcfInit();
@@ -72,6 +72,7 @@ class UriHandler implements vscode.UriHandler {
             const websiteId = urlParams.get('websiteid');
             const environmentId = urlParams.get('envid');
             const orgUrl = urlParams.get('orgurl');
+            const schema = urlParams.get('schema');
 
             // Validate required parameters
             if (!websiteId) {
@@ -89,6 +90,10 @@ class UriHandler implements vscode.UriHandler {
                 return;
             }
 
+            // Determine model version based on schema parameter
+            // If schema is "PortalSchemaV2" (case-insensitive), use model version 2, otherwise use 1
+            const modelVersion = schema && schema.toLowerCase() === 'portalschemav2' ? 2 : 1;
+
             // Check if user is authenticated with PAC CLI
             const authInfo = await this.pacWrapper.activeOrg();
 
@@ -102,7 +107,7 @@ class UriHandler implements vscode.UriHandler {
 
                 if (authRequired === vscode.l10n.t("Yes")) {
                     // Trigger authentication
-                    await vscode.commands.executeCommand('microsoft.powerplatform.auth.create');
+                    await this.pacWrapper.authCreateNewAuthProfileForOrg(orgUrl);
 
                     // Check authentication again
                     const newAuthInfo = await this.pacWrapper.activeOrg();
@@ -191,8 +196,8 @@ class UriHandler implements vscode.UriHandler {
                 try {
                     progress.report({ message: vscode.l10n.t("Downloading site files...") });
 
-                    // Execute the pac pages download command
-                    const downloadCommand = `pac pages download --path "${selectedFolder.fsPath}" --websiteId "${websiteId}" --modelVersion 2`;
+                    // Execute the pac pages download command with the appropriate model version
+                    const downloadCommand = `pac pages download --path "${selectedFolder.fsPath}" --websiteId "${websiteId}" --modelVersion ${modelVersion}`;
 
                     const terminal = vscode.window.createTerminal({
                         name: "Power Pages Download",
@@ -202,8 +207,6 @@ class UriHandler implements vscode.UriHandler {
 
                     terminal.show();
                     terminal.sendText(downloadCommand);
-
-                    progress.report({ message: vscode.l10n.t("Download initiated. Check terminal for progress.") });
 
                     // Wait a moment for the command to start
                     await new Promise(resolve => setTimeout(resolve, 2000));

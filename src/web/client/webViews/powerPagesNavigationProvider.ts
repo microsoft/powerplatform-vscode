@@ -245,13 +245,12 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             // Get current URL parameters
             const orgUrl = WebExtensionContext.urlParametersMap?.get('orgurl');
             const region = WebExtensionContext.urlParametersMap?.get('region');
-            const dataSource = WebExtensionContext.urlParametersMap?.get('datasource');
             const schema = WebExtensionContext.urlParametersMap?.get('schema');
             const tenantId = WebExtensionContext.urlParametersMap?.get('tenantid');
             const portalId = WebExtensionContext.urlParametersMap?.get('websitepreviewid');
 
             // Validate required parameters for desktop URI
-            if (!orgUrl || !dataSource || !schema) {
+            if (!orgUrl || !schema) {
                 return null;
             }
 
@@ -263,7 +262,6 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             params.append('websiteid', websiteId);
             params.append('envid', environmentId);
             params.append('orgurl', orgUrl);
-            params.append('datasource', dataSource);
             params.append('schema', schema);
 
             if (region) params.append('region', region);
