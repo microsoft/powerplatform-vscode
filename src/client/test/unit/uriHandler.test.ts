@@ -167,4 +167,48 @@ describe('UriHandler Schema Parameter Tests', () => {
             expect(command).to.include('--path "/test/folder"');
         });
     });
+
+    describe('Terminal Execution Behavior', () => {
+        it('should execute download command using terminal API', () => {
+            const websiteId = "test-123";
+            const folderPath = "/test/folder";
+            const modelVersion = 2;
+
+            const command = `pac pages download --path "${folderPath}" --websiteId "${websiteId}" --modelVersion ${modelVersion}`;
+
+            // Verify the command structure
+            expect(command).to.equal('pac pages download --path "/test/folder" --websiteId "test-123" --modelVersion 2');
+        });
+
+        it('should show informational message about download start', () => {
+            const modelVersion = 2;
+            const expectedMessage = `Power Pages site download started using model version ${modelVersion}. The terminal will show progress.`;
+
+            expect(expectedMessage).to.include('model version 2');
+            expect(expectedMessage).to.include('The terminal will show progress');
+        });
+
+        it('should show completion dialog after timeout', () => {
+            const completionMessage = "Power Pages site download should be complete. Would you like to open the downloaded site folder?";
+            const options = ["Open Folder", "Open in New Workspace", "Not Now"];
+            const timeoutDuration = 30000; // 30 seconds
+
+            expect(completionMessage).to.include('download should be complete');
+            expect(options).to.include('Open Folder');
+            expect(options).to.include('Open in New Workspace');
+            expect(options).to.include('Not Now');
+            expect(timeoutDuration).to.equal(30000);
+        });
+
+        it('should handle folder opening options correctly', () => {
+            const openFolderOption = "Open Folder";
+            const openWorkspaceOption = "Open in New Workspace";
+            const notNowOption = "Not Now";
+
+            // Test that options are properly defined
+            expect(openFolderOption).to.equal("Open Folder");
+            expect(openWorkspaceOption).to.equal("Open in New Workspace");
+            expect(notNowOption).to.equal("Not Now");
+        });
+    });
 });

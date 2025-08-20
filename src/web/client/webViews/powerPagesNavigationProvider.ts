@@ -222,12 +222,6 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
                 }
             });
 
-            WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_TRIGGERED, {
-                websiteId: websiteId,
-                environmentId: environmentId,
-                desktopUri: desktopUri
-            });
-
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
             vscode.window.showErrorMessage(vscode.l10n.t("Failed to open in VS Code Desktop: {0}", errorMessage));
@@ -248,9 +242,15 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             const schema = WebExtensionContext.urlParametersMap?.get('schema');
             const tenantId = WebExtensionContext.urlParametersMap?.get('tenantid');
             const portalId = WebExtensionContext.urlParametersMap?.get('websitepreviewid');
+            const siteName = WebExtensionContext.urlParametersMap?.get('sitename') || WebExtensionContext.urlParametersMap?.get('websitename');
 
             // Validate required parameters for desktop URI
             if (!orgUrl || !schema) {
+                WebExtensionContext.telemetry.sendErrorTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_FAILED,
+                    this.buildDesktopUri.name,
+                    `Missing required parameters: orgUrl=${!!orgUrl}, schema=${!!schema}`
+                );
                 return null;
             }
 
@@ -267,8 +267,23 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             if (region) params.append('region', region);
             if (tenantId) params.append('tenantid', tenantId);
             if (portalId) params.append('websitepreviewid', portalId);
+            if (siteName) params.append('sitename', siteName);
 
-            return `${baseUri}?${params.toString()}`;
+            const finalUri = `${baseUri}?${params.toString()}`;
+
+            // Log telemetry for successful URI generation
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_TRIGGERED,
+                {
+                    websiteId: websiteId,
+                    environmentId: environmentId,
+                    desktopUri: finalUri,
+                    hasSiteName: siteName ? 'true' : 'false',
+                    schema: schema
+                }
+            );
+
+            return finalUri;
 
         } catch (error) {
             WebExtensionContext.telemetry.sendErrorTelemetry(

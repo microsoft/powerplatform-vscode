@@ -5,13 +5,78 @@
 
 import * as vscode from "vscode";
 import { PacWrapper } from "./pac/PacWrapper";
+import { oneDSLoggerWrapper } from "../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import { desktopTelemetryEventNames } from "../common/OneDSLoggerTelemetry/client/desktopExtensionTelemetryEventNames";
+
+// Constants for URI handler
+const URI_CONSTANTS = {
+    EXTENSION_ID: 'microsoft-IsvExpTools.powerplatform-vscode',
+    PATHS: {
+        PCF_INIT: '/pcfInit',
+        OPEN: '/open'
+    },
+    PARAMETERS: {
+        WEBSITE_ID: 'websiteid',
+        ENV_ID: 'envid',
+        ORG_URL: 'orgurl',
+        SCHEMA: 'schema',
+        SITE_NAME: 'sitename'
+    },
+    SCHEMA_VALUES: {
+        PORTAL_SCHEMA_V2: 'portalschemav2'
+    },
+    MODEL_VERSIONS: {
+        VERSION_1: 1,
+        VERSION_2: 2
+    },
+    TIMEOUTS: {
+        COMPLETION_DIALOG: 30000 // 30 seconds
+    }
+} as const;
+
+// Localized string constants
+const STRINGS = {
+    ERRORS: {
+        WEBSITE_ID_REQUIRED: "Website ID is required but not provided",
+        ENVIRONMENT_ID_REQUIRED: "Environment ID is required but not provided",
+        ORG_URL_REQUIRED: "Organization URL is required but not provided",
+        AUTH_FAILED: "Authentication failed. Cannot proceed with site download.",
+        ENV_SWITCH_FAILED: "Failed to switch to the required environment.",
+        DOWNLOAD_FAILED: "Failed to download site: {0}",
+        URI_HANDLER_FAILED: "Failed to handle Power Pages URI: {0}",
+        ENV_SWITCH_ERROR: "Error switching environment: {0}"
+    },
+    INFO: {
+        DOWNLOAD_CANCELLED_AUTH: "Site download cancelled. Authentication is required to proceed.",
+        DOWNLOAD_CANCELLED_ENV: "Site download cancelled. Correct environment connection is required.",
+        DOWNLOAD_CANCELLED_FOLDER: "Site download cancelled. No folder selected.",
+        DOWNLOAD_STARTED: "Power Pages site download started using model version {0}. The terminal will show progress."
+    },
+    PROMPTS: {
+        AUTH_REQUIRED: "You need to authenticate with Power Platform to download the site. Would you like to authenticate now?",
+        ENV_SWITCH_REQUIRED: "You are currently connected to a different environment. Would you like to switch to the required environment?",
+        DOWNLOAD_COMPLETE: "Power Pages site download should be complete. Would you like to open the downloaded site folder?",
+        FOLDER_SELECT: "Select Folder to Download Power Pages Site"
+    },
+    BUTTONS: {
+        YES: "Yes",
+        NO: "No",
+        OPEN_FOLDER: "Open Folder",
+        OPEN_NEW_WORKSPACE: "Open in New Workspace",
+        NOT_NOW: "Not Now"
+    },
+    TITLES: {
+        DOWNLOAD_TITLE: "Download Power Pages Site",
+        PCF_INIT: "Select Folder for new PCF Control"
+    }
+} as const;
 
 export function RegisterUriHandler(pacWrapper: PacWrapper): vscode.Disposable {
     const uriHandler = new UriHandler(pacWrapper);
     return vscode.window.registerUriHandler(uriHandler);
 }
 
-enum UriPath {
+const enum UriPath {
     PcfInit = '/pcfInit',
     Open = '/open',
 }
@@ -64,35 +129,76 @@ class UriHandler implements vscode.UriHandler {
     }
 
     async handleOpenPowerPages(uri: vscode.Uri): Promise<void> {
+        const startTime = Date.now();
+        let telemetryData: Record<string, string> = {};
+
         try {
             // Parse query parameters from the URI
             const urlParams = new URLSearchParams(uri.query);
 
             // Extract required parameters
-            const websiteId = urlParams.get('websiteid');
-            const environmentId = urlParams.get('envid');
-            const orgUrl = urlParams.get('orgurl');
-            const schema = urlParams.get('schema');
+            const websiteId = urlParams.get(URI_CONSTANTS.PARAMETERS.WEBSITE_ID);
+            const environmentId = urlParams.get(URI_CONSTANTS.PARAMETERS.ENV_ID);
+            const orgUrl = urlParams.get(URI_CONSTANTS.PARAMETERS.ORG_URL);
+            const schema = urlParams.get(URI_CONSTANTS.PARAMETERS.SCHEMA);
+            const siteName = urlParams.get(URI_CONSTANTS.PARAMETERS.SITE_NAME);
+
+            // Populate telemetry data
+            telemetryData = {
+                websiteId: websiteId || 'missing',
+                environmentId: environmentId || 'missing',
+                orgUrl: orgUrl ? 'provided' : 'missing', // Don't log actual URL for privacy
+                schema: schema || 'none',
+                siteName: siteName ? 'provided' : 'missing',
+                uriQuery: uri.query || 'empty'
+            };
+
+            oneDSLoggerWrapper.getLogger().traceInfo(
+                desktopTelemetryEventNames.DESKTOP_URI_HANDLER_OPEN_POWER_PAGES_TRIGGERED,
+                telemetryData
+            );
 
             // Validate required parameters
             if (!websiteId) {
-                vscode.window.showErrorMessage(vscode.l10n.t("Website ID is required but not provided"));
+                vscode.window.showErrorMessage(vscode.l10n.t(STRINGS.ERRORS.WEBSITE_ID_REQUIRED));
+                oneDSLoggerWrapper.getLogger().traceError(
+                    desktopTelemetryEventNames.DESKTOP_URI_HANDLER_OPEN_POWER_PAGES_FAILED,
+                    'Missing website ID',
+                    new Error('Website ID parameter is required but not provided'),
+                    { ...telemetryData, error: 'missing_website_id' }
+                );
                 return;
             }
 
             if (!environmentId) {
-                vscode.window.showErrorMessage(vscode.l10n.t("Environment ID is required but not provided"));
+                vscode.window.showErrorMessage(vscode.l10n.t(STRINGS.ERRORS.ENVIRONMENT_ID_REQUIRED));
+                oneDSLoggerWrapper.getLogger().traceError(
+                    desktopTelemetryEventNames.DESKTOP_URI_HANDLER_OPEN_POWER_PAGES_FAILED,
+                    'Missing environment ID',
+                    new Error('Environment ID parameter is required but not provided'),
+                    { ...telemetryData, error: 'missing_environment_id' }
+                );
                 return;
             }
 
             if (!orgUrl) {
-                vscode.window.showErrorMessage(vscode.l10n.t("Organization URL is required but not provided"));
+                vscode.window.showErrorMessage(vscode.l10n.t(STRINGS.ERRORS.ORG_URL_REQUIRED));
+                oneDSLoggerWrapper.getLogger().traceError(
+                    desktopTelemetryEventNames.DESKTOP_URI_HANDLER_OPEN_POWER_PAGES_FAILED,
+                    'Missing organization URL',
+                    new Error('Organization URL parameter is required but not provided'),
+                    { ...telemetryData, error: 'missing_org_url' }
+                );
                 return;
             }
 
             // Determine model version based on schema parameter
             // If schema is "PortalSchemaV2" (case-insensitive), use model version 2, otherwise use 1
-            const modelVersion = schema && schema.toLowerCase() === 'portalschemav2' ? 2 : 1;
+            const modelVersion = schema && schema.toLowerCase() === URI_CONSTANTS.SCHEMA_VALUES.PORTAL_SCHEMA_V2
+                ? URI_CONSTANTS.MODEL_VERSIONS.VERSION_2
+                : URI_CONSTANTS.MODEL_VERSIONS.VERSION_1;
+
+            telemetryData.modelVersion = modelVersion.toString();
 
             // Check if user is authenticated with PAC CLI
             const authInfo = await this.pacWrapper.activeOrg();
@@ -169,66 +275,42 @@ class UriHandler implements vscode.UriHandler {
 
             const selectedFolder = downloadResults[0];
 
-            // Check if the selected folder is empty or ask for confirmation if not
-            const files = await vscode.workspace.fs.readDirectory(selectedFolder);
-            if (files.length > 0) {
-                const overwrite = await vscode.window.showWarningMessage(
-                    vscode.l10n.t("The selected folder is not empty. Contents may be overwritten. Continue?"),
-                    { modal: true },
-                    vscode.l10n.t("Yes"),
-                    vscode.l10n.t("No")
-                );
+            // Execute the pac pages download command using terminal
+            try {
+                // Execute the pac pages download command with the appropriate model version
+                const downloadCommand = `pac pages download --path "${selectedFolder.fsPath}" --websiteId "${websiteId}" --modelVersion ${modelVersion}`;
 
-                if (overwrite !== vscode.l10n.t("Yes")) {
-                    vscode.window.showInformationMessage(vscode.l10n.t("Site download cancelled."));
-                    return;
-                }
-            }
+                const terminal = vscode.window.createTerminal({
+                    name: "Power Pages Download",
+                    cwd: selectedFolder.fsPath,
+                    isTransient: false,
+                });
 
-            // Show progress and download the site
-            await vscode.window.withProgress({
-                location: vscode.ProgressLocation.Notification,
-                title: vscode.l10n.t("Downloading Power Pages Site"),
-                cancellable: false
-            }, async (progress) => {
-                progress.report({ message: vscode.l10n.t("Initializing download...") });
+                terminal.show();
+                terminal.sendText(downloadCommand);
 
-                try {
-                    progress.report({ message: vscode.l10n.t("Downloading site files...") });
-
-                    // Execute the pac pages download command with the appropriate model version
-                    const downloadCommand = `pac pages download --path "${selectedFolder.fsPath}" --websiteId "${websiteId}" --modelVersion ${modelVersion}`;
-
-                    const terminal = vscode.window.createTerminal({
-                        name: "Power Pages Download",
-                        cwd: selectedFolder.fsPath,
-                        isTransient: false,
-                    });
-
-                    terminal.show();
-                    terminal.sendText(downloadCommand);
-
-                    // Wait a moment for the command to start
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-
-                    // Ask if user wants to open the downloaded site in a new workspace
-                    const openWorkspace = await vscode.window.showInformationMessage(
-                        vscode.l10n.t("Site download initiated. Would you like to open the downloaded site in a new workspace when complete?"),
-                        vscode.l10n.t("Yes"),
-                        vscode.l10n.t("No")
+                // Show completion message after a delay
+                setTimeout(async () => {
+                    const openFolder = await vscode.window.showInformationMessage(
+                        vscode.l10n.t("Power Pages site download should be complete. Would you like to open the downloaded site folder?"),
+                        vscode.l10n.t("Open Folder"),
+                        vscode.l10n.t("Open in New Workspace"),
+                        vscode.l10n.t("Not Now")
                     );
 
-                    if (openWorkspace === vscode.l10n.t("Yes")) {
+                    if (openFolder === vscode.l10n.t("Open Folder")) {
+                        // Open the folder in current workspace
+                        await vscode.commands.executeCommand('vscode.openFolder', selectedFolder, false);
+                    } else if (openFolder === vscode.l10n.t("Open in New Workspace")) {
                         // Open the downloaded folder in a new workspace
                         await vscode.commands.executeCommand('vscode.openFolder', selectedFolder, true);
                     }
+                }, 20000); // Wait 20 seconds before showing completion dialog
 
-                } catch (error) {
-                    progress.report({ message: vscode.l10n.t("Download failed") });
-                    const errorMessage = error instanceof Error ? error.message : String(error);
-                    vscode.window.showErrorMessage(vscode.l10n.t("Failed to download site: {0}", errorMessage));
-                }
-            });
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                vscode.window.showErrorMessage(vscode.l10n.t("Failed to download site: {0}", errorMessage));
+            }
 
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);

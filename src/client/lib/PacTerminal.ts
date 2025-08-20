@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as os from 'os'
 import { PacInterop, PacWrapper } from '../pac/PacWrapper';
 import { PacWrapperContext } from '../pac/PacWrapperContext';
-import { RegisterUriHandler } from '../uriHandler';
+import { RegisterUriHandler } from '../uriHandler/uriHandler';
 
 export class PacTerminal implements vscode.Disposable {
     private readonly _context: vscode.ExtensionContext;
