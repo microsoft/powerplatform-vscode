@@ -216,6 +216,8 @@ function compileIntegrationTests() {
         // since "dom" overlaps with "webworker" we need to overwrite the lib property.
         // This is a known ts issue (bot being able to have both webworker and dom): https://github.com/microsoft/TypeScript/issues/20595
         lib: ["es2019", "dom", "dom.iterable", "es2020"],
+        // Skip checking .d.ts files from dependencies that may require newer TS features
+        skipLibCheck: true,
     });
     return gulp.src(["src/**/*.ts"]).pipe(tsProject()).pipe(gulp.dest("out"));
 }
@@ -256,6 +258,17 @@ const testDesktopIntegration = gulp.series(copyTestNugetPackages, compileIntegra
 
 // tests that require vscode-electron (which requires a display or xvfb)
 const testDesktopInt = gulp.series(testDesktopIntegration);
+
+/**
+ * Tests the common integration tests after transpiling the source files to /out
+ */
+const testCommonIntegration = gulp.series(compileIntegrationTests, async () => {
+    const testRunner = require("./out/common/test/runTest");
+    await testRunner.main();
+});
+
+// tests that require vscode-electron (which requires a display or xvfb)
+const testCommonInt = gulp.series(testCommonIntegration);
 
 async function packageVsix() {
     fs.ensureDirSync(packagedir);
@@ -339,7 +352,7 @@ async function snapshot() {
     }
 }
 
-const cliVersion = '1.44.2';
+const cliVersion = '1.47.1';
 
 const recompile = gulp.series(
     clean,
@@ -421,6 +434,7 @@ export {
     testInt,
     testWebInt,
     testDesktopInt,
+    testCommonInt,
     packageVsix as package,
     dist as ci,
     dist,

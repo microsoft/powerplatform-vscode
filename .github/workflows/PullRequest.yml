@@ -28,6 +28,14 @@ jobs:
       with:
         lfs: true
 
+    - name: Setup .NET 9
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: List installed .NET SDKs
+      run: dotnet --list-sdks
+
     - name: Setup Node.js environment
       uses: actions/setup-node@v3
       with:
@@ -61,3 +69,9 @@ jobs:
       with:
         run: |
          npm run test-desktop-int
+
+    - name: Run Common integration tests
+      uses: coactions/setup-xvfb@v1
+      with:
+        run: |
+         npm run test-common-int

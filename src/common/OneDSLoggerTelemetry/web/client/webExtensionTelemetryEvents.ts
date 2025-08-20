@@ -131,4 +131,5 @@ export enum webExtensionTelemetryEventNames {
     WEB_EXTENSION_SOURCE_ATTRIBUTE_INVALID = "WebExtensionSourceAttributeInvalid",
     WEB_EXTENSION_OPEN_DESKTOP_TRIGGERED = "WebExtensionOpenDesktopTriggered",
     WEB_EXTENSION_OPEN_DESKTOP_FAILED = "WebExtensionOpenDesktopFailed",
+    WEB_EXTENSION_DUPLICATE_FOLDER_NAME_CREATED = "WebExtensionDuplicateFolderNameCreated"
 }
