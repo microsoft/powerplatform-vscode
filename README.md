@@ -104,7 +104,7 @@ See details in [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md)
 
 ### Security issues
 
-Please report any security concerns or issues as described in this [SECURITY](SECURITY.md) document.
+Please report any security concerns or issues as described in [SECURITY](SECURITY.md) document.
 
 ## Trademarks
 
