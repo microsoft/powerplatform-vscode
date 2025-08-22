@@ -16,5 +16,10 @@ export enum uriHandlerTelemetryEventNames {
     URI_HANDLER_DOWNLOAD_STARTED = "UriHandlerDownloadStarted",
     URI_HANDLER_DOWNLOAD_COMPLETED = "UriHandlerDownloadCompleted",
     URI_HANDLER_FOLDER_OPENED = "UriHandlerFolderOpened",
-    URI_HANDLER_PCF_INIT_TRIGGERED = "UriHandlerPcfInitTriggered"
+    URI_HANDLER_PCF_INIT_TRIGGERED = "UriHandlerPcfInitTriggered",
+    URI_HANDLER_OPEN_WITH_CODEQL_TRIGGERED = "UriHandlerOpenWithCodeQLTriggered",
+    URI_HANDLER_OPEN_WITH_CODEQL_FAILED = "UriHandlerOpenWithCodeQLFailed",
+    URI_HANDLER_CODEQL_SCREENING_STARTED = "UriHandlerCodeQLScreeningStarted",
+    URI_HANDLER_CODEQL_SCREENING_COMPLETED = "UriHandlerCodeQLScreeningCompleted",
+    URI_HANDLER_CODEQL_SCREENING_FAILED = "UriHandlerCodeQLScreeningFailed"
 }

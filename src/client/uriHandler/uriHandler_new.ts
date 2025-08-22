@@ -10,8 +10,7 @@ import { URI_CONSTANTS, UriPath } from "./constants/uriConstants";
 import { URI_HANDLER_STRINGS } from "./constants/uriStrings";
 import { uriHandlerTelemetryEventNames } from "./telemetry/uriHandlerTelemetryEvents";
 import { createFolderName, findSiteFolder, promptToOpenFolder, validateRequiredParameters } from "./uriHandlerUtils";
-import { CodeQLAction } from "../power-pages/actions-hub/actions/codeQLAction";
-import { getDefaultCodeQLDatabasePath } from "../power-pages/actions-hub/ActionsHubUtils";
+import { runCodeQLScreening } from "../power-pages/actions-hub/ActionsHubCommandHandlers";
 
 export function RegisterUriHandler(pacWrapper: PacWrapper): vscode.Disposable {
     const uriHandler = new UriHandler(pacWrapper);
@@ -137,9 +136,9 @@ class UriHandler implements vscode.UriHandler {
             // Validate required parameters using utility function
             const requiredParams = [URI_CONSTANTS.PARAMETERS.WEBSITE_ID, URI_CONSTANTS.PARAMETERS.ENV_ID, URI_CONSTANTS.PARAMETERS.ORG_URL];
             const paramMap = {
-                [URI_CONSTANTS.PARAMETERS.WEBSITE_ID]: websiteId || undefined,
-                [URI_CONSTANTS.PARAMETERS.ENV_ID]: environmentId || undefined,
-                [URI_CONSTANTS.PARAMETERS.ORG_URL]: orgUrl || undefined
+                [URI_CONSTANTS.PARAMETERS.WEBSITE_ID]: websiteId,
+                [URI_CONSTANTS.PARAMETERS.ENV_ID]: environmentId,
+                [URI_CONSTANTS.PARAMETERS.ORG_URL]: orgUrl
             };
 
             const validationError = validateRequiredParameters(paramMap, requiredParams);
@@ -162,12 +161,8 @@ class UriHandler implements vscode.UriHandler {
             telemetryData.modelVersion = modelVersion.toString();
 
             // Check authentication and environment
-            if (!orgUrl || !environmentId) {
-                return { success: false, telemetryData, startTime };
-            }
-
             const authResult = await this.handleAuthenticationAndEnvironment(
-                orgUrl, environmentId, telemetryData, telemetryEventFailed
+                orgUrl!, environmentId!, telemetryData, telemetryEventFailed
             );
             if (!authResult.success) {
                 return { success: false, telemetryData, startTime };
@@ -191,38 +186,32 @@ class UriHandler implements vscode.UriHandler {
                 return { success: false, telemetryData, startTime };
             }
 
-            const selectedFolder = downloadResults[0];
+            let selectedFolder = downloadResults[0];
 
-            // // Create a subfolder with the site name if provided
-            // if (siteName) {
-            //     const sanitizedSiteName = siteName.replace(/[<>:"/\\|?*]/g, '_').trim();
-            //     if (sanitizedSiteName) {
-            //         selectedFolder = vscode.Uri.joinPath(selectedFolder, sanitizedSiteName);
-            //         telemetryData.sanitizedSiteName = sanitizedSiteName;
+            // Create a subfolder with the site name if provided
+            if (siteName) {
+                const sanitizedSiteName = siteName.replace(/[<>:"/\\|?*]/g, '_').trim();
+                if (sanitizedSiteName) {
+                    selectedFolder = vscode.Uri.joinPath(selectedFolder, sanitizedSiteName);
+                    telemetryData.sanitizedSiteName = sanitizedSiteName;
 
-            //         try {
-            //             await vscode.workspace.fs.createDirectory(selectedFolder);
-            //         } catch (error) {
-            //             // Directory might already exist, continue
-            //         }
-            //     }
-            // }
-
-            // Execute the download
-            if (!websiteId) {
-                return { success: false, telemetryData, startTime };
+                    try {
+                        await vscode.workspace.fs.createDirectory(selectedFolder);
+                    } catch (error) {
+                        // Directory might already exist, continue
+                    }
+                }
             }
 
+            // Execute the download
             await this.performDownload(
-                selectedFolder, websiteId, modelVersion as 1 | 2, telemetryData, startTime, telemetryEventFailed
+                selectedFolder, websiteId!, modelVersion as 1 | 2, telemetryData, startTime, telemetryEventFailed
             );
 
             // Find the actual downloaded folder
             let folderToOpen = selectedFolder;
             if (siteName) {
-                let mainSiteName = siteUrl ? new URL(siteUrl).hostname : undefined;
-                //only take the part before .powerappsportals "site-pdcnx.powerappsportals.com"
-                mainSiteName = mainSiteName?.split('.')[0];
+                const mainSiteName = siteUrl ? new URL(siteUrl).hostname : undefined;
                 const expectedFolderName = createFolderName(siteName, mainSiteName);
 
                 const foundFolder = findSiteFolder(selectedFolder.fsPath, expectedFolderName);
@@ -381,7 +370,7 @@ class UriHandler implements vscode.UriHandler {
         modelVersion: 1 | 2,
         telemetryData: Record<string, string>,
         startTime: number,
-        _: string
+        telemetryEventFailed: string
     ): Promise<void> {
         oneDSLoggerWrapper.getLogger().traceInfo(
             uriHandlerTelemetryEventNames.URI_HANDLER_DOWNLOAD_STARTED,
@@ -533,29 +522,6 @@ class UriHandler implements vscode.UriHandler {
                 { ...telemetryData, folderPath: 'provided' }
             );
 
-            // Check if CodeQL extension is installed
-            const codeQLExtension = vscode.extensions.getExtension('GitHub.vscode-codeql');
-            if (!codeQLExtension) {
-                const errorMessage = "CodeQL extension is not installed. Please install the CodeQL extension to run security screening.";
-                const install = await vscode.window.showWarningMessage(
-                    errorMessage,
-                    "Install",
-                    "Cancel"
-                );
-
-                if (install === "Install") {
-                    await vscode.commands.executeCommand('workbench.extensions.search', 'GitHub.vscode-codeql');
-                }
-
-                oneDSLoggerWrapper.getLogger().traceError(
-                    uriHandlerTelemetryEventNames.URI_HANDLER_CODEQL_SCREENING_FAILED,
-                    'CodeQL extension not installed',
-                    new Error(errorMessage),
-                    { ...telemetryData, error: 'codeql_extension_not_installed' }
-                );
-                throw new Error(errorMessage);
-            }
-
             await vscode.window.withProgress(
                 {
                     location: vscode.ProgressLocation.Notification,
@@ -568,11 +534,8 @@ class UriHandler implements vscode.UriHandler {
                         increment: 10
                     });
 
-                    // Use CodeQL action directly with the folder path
-                    const codeQLAction = new CodeQLAction();
-                    const databaseLocation = getDefaultCodeQLDatabasePath();
-
-                    await codeQLAction.executeCodeQLAnalysisWithCustomPath(folderPath, databaseLocation);
+                    // Use the existing runCodeQLScreening function
+                    await runCodeQLScreening(vscode.Uri.file(folderPath));
 
                     progress.report({
                         message: vscode.l10n.t(URI_HANDLER_STRINGS.INFO.CODEQL_SCREENING_COMPLETED),

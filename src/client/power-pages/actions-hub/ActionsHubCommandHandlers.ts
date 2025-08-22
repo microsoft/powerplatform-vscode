@@ -958,11 +958,11 @@ export const runCodeQLScreening = async (siteTreeItem?: SiteTreeItem) => {
             return;
         }
 
-        if(!hasPowerPagesSiteFolder(sitePath)) {
-            traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_NOT_SUPPORTED, { methodName: runCodeQLScreening.name });
-            await vscode.window.showErrorMessage(Constants.Strings.CODEQL_SCREENING_NOT_SUPPORTED);
-            return;
-        }
+        // if(!hasPowerPagesSiteFolder(sitePath)) {
+        //     traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_NOT_SUPPORTED, { methodName: runCodeQLScreening.name });
+        //     await vscode.window.showErrorMessage(Constants.Strings.CODEQL_SCREENING_NOT_SUPPORTED);
+        //     return;
+        // }
 
         // Check if CodeQL extension is installed
         const codeQLExtension = vscode.extensions.getExtension(CODEQL_EXTENSION_ID);

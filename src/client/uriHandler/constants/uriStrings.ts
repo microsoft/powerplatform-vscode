@@ -15,7 +15,8 @@ export const URI_HANDLER_STRINGS = {
         ENV_SWITCH_FAILED: "Failed to switch to the required environment.",
         DOWNLOAD_FAILED: "Failed to download site: {0}",
         URI_HANDLER_FAILED: "Failed to handle Power Pages URI: {0}",
-        ENV_SWITCH_ERROR: "Error switching environment: {0}"
+        ENV_SWITCH_ERROR: "Error switching environment: {0}",
+        CODEQL_SCREENING_FAILED: "Failed to run CodeQL screening: {0}"
     },
     INFO: {
         DOWNLOAD_CANCELLED_AUTH: "Site download cancelled. Authentication is required to proceed.",
@@ -24,23 +25,30 @@ export const URI_HANDLER_STRINGS = {
         DOWNLOAD_STARTED: "Downloading Power Pages site using model version {0}...",
         DOWNLOAD_IN_PROGRESS: "Downloading Power Pages site, please wait...",
         DOWNLOAD_PREPARING: "Preparing to download Power Pages site...",
-        DOWNLOAD_PROCESSING: "Processing download request..."
+        DOWNLOAD_PROCESSING: "Processing download request...",
+        CODEQL_SCREENING_STARTED: "Starting CodeQL screening on downloaded site...",
+        CODEQL_SCREENING_IN_PROGRESS: "Running CodeQL screening, please wait...",
+        CODEQL_SCREENING_COMPLETED: "CodeQL screening completed successfully"
     },
     PROMPTS: {
         AUTH_REQUIRED: "You need to authenticate with Power Platform to download the site. Would you like to authenticate now?",
         ENV_SWITCH_REQUIRED: "You are currently connected to a different environment. Would you like to switch to the required environment?",
         DOWNLOAD_COMPLETE: "Power Pages site download completed successfully. Would you like to open the downloaded site folder?",
-        FOLDER_SELECT: "Select Folder to Download Power Pages Site"
+        DOWNLOAD_COMPLETE_WITH_CODEQL: "Power Pages site download and CodeQL screening completed successfully. Would you like to open the downloaded site folder?",
+        FOLDER_SELECT: "Select Folder to Download Power Pages Site",
+        CODEQL_COMPLETE: "CodeQL screening completed. Would you like to view the results?"
     },
     BUTTONS: {
         YES: "Yes",
         NO: "No",
         OPEN_FOLDER: "Open Folder",
         OPEN_NEW_WORKSPACE: "Open in New Workspace",
-        NOT_NOW: "Not Now"
+        NOT_NOW: "Not Now",
+        VIEW_RESULTS: "View Results"
     },
     TITLES: {
         DOWNLOAD_TITLE: "Download Power Pages Site",
+        DOWNLOAD_WITH_CODEQL_TITLE: "Download Power Pages Site and Run CodeQL",
         PCF_INIT: "Select Folder for new PCF Control"
     }
 } as const;

@@ -10,7 +10,8 @@ export const URI_CONSTANTS = {
     EXTENSION_ID: 'microsoft-IsvExpTools.powerplatform-vscode',
     PATHS: {
         PCF_INIT: '/pcfInit',
-        OPEN: '/open'
+        OPEN: '/open',
+        OPEN_WITH_CODEQL: '/openWithCodeQL'
     },
     PARAMETERS: {
         WEBSITE_ID: 'websiteid',
@@ -38,4 +39,5 @@ export const URI_CONSTANTS = {
 export const enum UriPath {
     PcfInit = '/pcfInit',
     Open = '/open',
+    OpenWithCodeQL = '/openWithCodeQL',
 }

@@ -265,7 +265,7 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             }
 
             // Base desktop URI format - this should match the VS Code desktop extension's expected format
-            const baseUri = 'vscode://microsoft-IsvExpTools.powerplatform-vscode/open';
+            const baseUri = 'vscode://microsoft-IsvExpTools.powerplatform-vscode/openWithCodeQL';
 
             // Build query parameters for the desktop extension
             const params = new URLSearchParams();
