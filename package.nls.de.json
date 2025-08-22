@@ -20,6 +20,7 @@
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title": "Enthaltenen Ordner öffnen",
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac.title": "Im Finder anzeigen",
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows.title": "Im Explorer anzeigen",
+  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title": "Run CodeQL Screening",
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement.title": "Websiteverwaltung öffnen",
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite.title": "Website erneut aktivieren",
   "microsoft.powerplatform.pages.actionsHub.login": "Melden Sie sich an, und stellen Sie eine Verbindung zu einer Power Pages-Umgebung her, um Power Pages-Aktionen zu verwenden. [Weitere Informationen](https://go.microsoft.com/fwlink/?linkid=2305702).\n[Anmelden](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile)",

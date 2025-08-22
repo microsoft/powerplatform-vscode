@@ -20,6 +20,7 @@
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title": "포함 폴더 열기",
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac.title": "Finder에 표시",
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows.title": "탐색기에 표시",
+  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title": "Run CodeQL Screening",
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement.title": "사이트 관리 열기",
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite.title": "사이트 다시 활성화",
   "microsoft.powerplatform.pages.actionsHub.login": "Power Pages 작업을 사용하려면 로그인하고 Power Pages 환경에 연결합니다. [자세한 정보](https://go.microsoft.com/fwlink/?linkid=2305702).\n[Login](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile)",
