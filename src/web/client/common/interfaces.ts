@@ -4,6 +4,7 @@
  */
 
 import * as vscode from 'vscode';
+import fs from 'fs';
 
 export interface IEntityRequestUrl {
     requestUrl: string;
@@ -37,4 +38,19 @@ export interface ISearchQueryMatch {
 export interface ISearchQueryResults {
     matches: ISearchQueryMatch[];
     limitHit: boolean;
+}
+
+export interface IApiRequestParams {
+    aibEndPoint: string;
+    apiToken: string;
+    data: unknown;
+}
+
+export interface ITestLogParams {
+    testName: string,
+    testStartTime: Date,
+    testEndTime: Date,
+    actualResponse: string,
+    status: string,
+    logStream: fs.WriteStream
 }
