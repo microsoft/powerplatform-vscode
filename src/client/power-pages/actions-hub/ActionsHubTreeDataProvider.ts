@@ -12,7 +12,7 @@ import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLo
 import { EnvironmentGroupTreeItem } from "./tree-items/EnvironmentGroupTreeItem";
 import { IEnvironmentInfo } from "./models/IEnvironmentInfo";
 import { PacTerminal } from "../../lib/PacTerminal";
-import { fetchWebsites, openActiveSitesInStudio, openInactiveSitesInStudio, previewSite, createNewAuthProfile, refreshEnvironment, showEnvironmentDetails, switchEnvironment, revealInOS, openSiteManagement, uploadSite, showSiteDetails, downloadSite, openInStudio, reactivateSite, loginToMatch } from "./ActionsHubCommandHandlers";
+import { fetchWebsites, openActiveSitesInStudio, openInactiveSitesInStudio, previewSite, createNewAuthProfile, refreshEnvironment, showEnvironmentDetails, switchEnvironment, revealInOS, openSiteManagement, uploadSite, showSiteDetails, downloadSite, openInStudio, reactivateSite, runCodeQLScreening, loginToMatch } from "./ActionsHubCommandHandlers";
 import PacContext from "../../pac/PacContext";
 import CurrentSiteContext from "./CurrentSiteContext";
 import { IOtherSiteInfo, IWebsiteDetails } from "../../../common/services/Interfaces";
@@ -32,8 +32,10 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     private _inactiveSites: IWebsiteDetails[] = [];
     private _otherSites: IOtherSiteInfo[] = [];
     private _loadWebsites = true;
+    private _isCodeQlScanEnabled: boolean;
 
-    private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal) {
+    private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal, isCodeQlScanEnabled: boolean) {
+        this._isCodeQlScanEnabled = isCodeQlScanEnabled;
         this._disposables.push(
             ...this.registerPanel(this._pacTerminal),
 
@@ -124,8 +126,45 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
         }
     }
 
-    public static initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal): ActionsHubTreeDataProvider {
-        return new ActionsHubTreeDataProvider(context, pacTerminal);
+    private async checkAccountsMatch(): Promise<boolean> {
+        oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_ACCOUNT_CHECK_CALLED, { methodName: this.checkAccountsMatch.name, ...getBaseEventInfo() });
+
+        try {
+            const authInfo = PacContext.AuthInfo;
+            const session = await vscode.authentication.getSession(PROVIDER_ID, [], { silent: true });
+
+            if (!session || !session.accessToken || !authInfo) {
+                return false;
+            }
+
+            // Get user ID from VS Code session token
+            const vscodeUserId = getOIDFromToken(session.accessToken);
+
+            // Get user ID from PAC auth info
+            const pacUserId = authInfo.EntraIdObjectId;
+
+            // Check if both user IDs exist and match
+            const accountsMatch = vscodeUserId && pacUserId && vscodeUserId === pacUserId;
+
+            if (!accountsMatch) {
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_ACCOUNT_MISMATCH_DETECTED, {
+                    methodName: this.checkAccountsMatch.name,
+                    vscodeUserId: vscodeUserId || 'undefined',
+                    pacUserId: pacUserId || 'undefined',
+                    ...getBaseEventInfo()
+                });
+            }
+
+            return accountsMatch;
+        } catch (error) {
+            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_ACCOUNT_CHECK_FAILED, error as string, error as Error, { methodName: this.checkAccountsMatch, ...getBaseEventInfo() });
+            return false;
+        }
+    }
+
+    public static initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal, isCodeQlScanEnabled: boolean): ActionsHubTreeDataProvider {
+        return new ActionsHubTreeDataProvider(context, pacTerminal, isCodeQlScanEnabled);
+
     }
 
     getTreeItem(element: ActionsHubTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
@@ -176,7 +215,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     }
 
     private registerPanel(pacTerminal: PacTerminal): vscode.Disposable[] {
-        return [
+        const commands = [
             vscode.window.registerTreeDataProvider("microsoft.powerplatform.pages.actionsHub", this),
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.refresh", async () => await refreshEnvironment(pacTerminal)),
@@ -210,11 +249,19 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio", openInStudio),
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite", reactivateSite),
-
+            
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.loginToMatch", () => {
                 const serviceEndpointStamp = ArtemisContext.ServiceResponse?.stamp;
                 return loginToMatch(serviceEndpointStamp);
             }),
         ];
+
+        if (this._isCodeQlScanEnabled) {
+            commands.push(
+                vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening", runCodeQLScreening)
+            );
+        }
+
+        return commands;
     }
 }

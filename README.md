@@ -91,7 +91,7 @@ Listing all Solutions from the current Dataverse Organization...
 
 Please use the issues tracker in the home repo: <https://github.com/microsoft/powerplatform-vscode/issues>
 
-## Contributing
+## Contributing 
 
 This project will welcome contributions in the near future. At this stage, we're not ready for contributions,
 but do welcome your suggestions via this repository's issue tracker.
@@ -104,7 +104,7 @@ See details in [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md)
 
 ### Security issues
 
-Please report any security concerns or issues as described in this [SECURITY](SECURITY.md) document.
+Please report any security concerns or issues as described in [SECURITY](SECURITY.md) document.
 
 ## Trademarks
 

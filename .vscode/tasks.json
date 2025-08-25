@@ -31,6 +31,13 @@
     },
     {
       "type": "npm",
+      "script": "test-common-int",
+      "group": "test",
+      "problemMatcher": [],
+      "label": "Run Integration Tests: Common"
+    },
+    {
+      "type": "npm",
       "script": "test",
       "group": "test",
       "problemMatcher": [],
