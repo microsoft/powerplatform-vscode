@@ -972,7 +972,7 @@ export const runCodeQLScreening = async (siteTreeItem?: SiteTreeItem) => {
             );
 
             if (install === Constants.Strings.INSTALL) {
-                await vscode.commands.executeCommand('workbench.extensions.search', CODEQL_EXTENSION_ID);
+                await vscode.commands.executeCommand('workbench.extensions.installExtension', CODEQL_EXTENSION_ID);
                 traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_EXTENSION_NOT_INSTALLED, { methodName: runCodeQLScreening.name });
                 return;
             } else {
