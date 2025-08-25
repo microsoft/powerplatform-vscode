@@ -24,7 +24,7 @@ import { IOtherSiteInfo, IWebsiteDetails, WebsiteYaml } from '../../../common/se
 import { getActiveWebsites, getAllWebsites } from '../../../common/utilities/WebsiteUtil';
 import CurrentSiteContext from './CurrentSiteContext';
 import path from 'path';
-import { getWebsiteRecordId, hasWebsiteYaml, hasPowerPagesSiteFolder, getWebsiteYamlPath } from '../../../common/utilities/WorkspaceInfoFinderUtil';
+import { getWebsiteRecordId, hasWebsiteYaml, getWebsiteYamlPath } from '../../../common/utilities/WorkspaceInfoFinderUtil';
 import { isEdmEnvironment } from '../../../common/copilot/dataverseMetadata';
 import { IWebsiteInfo } from './models/IWebsiteInfo';
 import moment from 'moment';
@@ -575,10 +575,10 @@ export function findOtherSites(knownSiteIds: Set<string>, fsModule = fs, yamlMod
         for (const dir of directories) {
             let websiteYamlPath = getWebsiteYamlPath(dir);
             let hasWebsiteYamlFile = hasWebsiteYaml(dir);
-            const hasPowerPagesSiteFolderExists = hasPowerPagesSiteFolder(dir);
+            const powerPagesSiteFolderExists = fs.existsSync(dir)
             let workingDir = dir;
 
-            if (hasPowerPagesSiteFolderExists) {
+            if (powerPagesSiteFolderExists) {
                 workingDir = path.join(dir, POWERPAGES_SITE_FOLDER);
                 websiteYamlPath = getWebsiteYamlPath(workingDir);
                 hasWebsiteYamlFile = hasWebsiteYaml(workingDir);
@@ -599,7 +599,7 @@ export function findOtherSites(knownSiteIds: Set<string>, fsModule = fs, yamlMod
                             name: websiteData?.adx_name || path.basename(dir), // Use folder name as fallback
                             websiteId: websiteId,
                             folderPath: dir,
-                            isCodeSite: hasPowerPagesSiteFolderExists
+                            isCodeSite: powerPagesSiteFolderExists
                         });
                     }
                 } catch (error) {
@@ -958,6 +958,8 @@ export const runCodeQLScreening = async (siteTreeItem?: SiteTreeItem) => {
             return;
         }
 
+        const powerPagesSiteFolderExists = fs.existsSync(sitePath);
+
         // Check if CodeQL extension is installed
         const codeQLExtension = vscode.extensions.getExtension(CODEQL_EXTENSION_ID);
 
@@ -990,7 +992,7 @@ export const runCodeQLScreening = async (siteTreeItem?: SiteTreeItem) => {
                 Constants.Strings.CODEQL_SCREENING_STARTED,
                 async () => {
                     // Use a custom method that allows specifying the database location
-                    await codeQLAction.executeCodeQLAnalysisWithCustomPath(sitePath, databaseLocation);
+                    await codeQLAction.executeCodeQLAnalysisWithCustomPath(sitePath, databaseLocation, powerPagesSiteFolderExists);
                 }
             );
 
