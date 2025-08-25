@@ -36,11 +36,11 @@
       </trans-unit>
       <trans-unit id="++CODE++031018d0f4bb3985ac963d91cb607a9eaab8855a00990613c5327a1edb0032f7">
         <source xml:lang="en">Activating CodeQL extension...</source>
-        <target state="new">Activating CodeQL extension...</target>
+        <target state="translated">Активация расширения CodeQL...</target>
       </trans-unit>
       <trans-unit id="++CODE++e8e28535ce31524257fd35ecc72ba709bf789ab572aa517bf1c0af2870520415">
         <source xml:lang="en">Activating SARIF viewer extension...</source>
-        <target state="new">Activating SARIF viewer extension...</target>
+        <target state="translated">Активация расширения средства просмотра SARIF...</target>
       </trans-unit>
       <trans-unit id="++CODE++b82f83283cc4275cf0d58b4f55d1242fe46227ee1da9db4b81b6b08804dcbf01">
         <source xml:lang="en">Active Sites</source>
@@ -60,7 +60,7 @@
       </trans-unit>
       <trans-unit id="++CODE++0e24df55d08fd98cf5664002561cf1ab063231df2ec58e3a4ae50c063ba66828">
         <source xml:lang="en">Added default query suite to config: {0}</source>
-        <target state="new">Added default query suite to config: {0}</target>
+        <target state="translated">Добавлен набор запросов по умолчанию в файл конфигурации: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++e7027d80d4c05ae510621f20062db71d499cbd4f8760e3076a3530220fbf0a18">
         <source xml:lang="en">Adding {0} web file(s). Existing files will be skipped</source>
@@ -69,11 +69,11 @@
       </trans-unit>
       <trans-unit id="++CODE++c910bd41bbf67f9965a2aabaec8d39b749280ffea62e9708c507374b581a331d">
         <source xml:lang="en">Analysis complete! Results saved to: {0}</source>
-        <target state="new">Analysis complete! Results saved to: {0}</target>
+        <target state="translated">Анализ завершен! Результаты сохранены в: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++aeb9fa083d662124530feb2af1c98f6a36463b3f2d01e232517c7fb63f53f753">
         <source xml:lang="en">Analysis completed using query suite: {0}</source>
-        <target state="new">Analysis completed using query suite: {0}</target>
+        <target state="translated">Анализ выполнен с помощью набора запросов: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++3f82badfcbab5f7d6e5a4886a6df032cc28cdf5fe200a85bafd86101efe126c9">
         <source xml:lang="en">Are you sure you want to clear all the Auth Profiles?</source>
@@ -163,7 +163,7 @@ The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).
       </trans-unit>
       <trans-unit id="++CODE++7d9eb7acb13e24625c404401d8e88b2350e32162455885f18276cf802f7701ed">
         <source xml:lang="en">Close</source>
-        <target state="new">Close</target>
+        <target state="translated">Закрыть</target>
       </trans-unit>
       <trans-unit id="++CODE++eef726ad55117038c05eaa478148144884ab56cadc5a46785e8221040ff7a6ec">
         <source xml:lang="en">Cloud Instance: {0}</source>
@@ -191,27 +191,27 @@ The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).
       </trans-unit>
       <trans-unit id="++CODE++876831b143507fffa7cbdec8d0d72b9dc328976180b4206c83331911a27d6740">
         <source xml:lang="en">CodeQL Analysis</source>
-        <target state="new">CodeQL Analysis</target>
+        <target state="translated">Анализ CodeQL</target>
       </trans-unit>
       <trans-unit id="++CODE++67fe2c02a3f3e19ede0f449f4e42c477c8b6a55baee7edb23a1928df18403c07">
         <source xml:lang="en">CodeQL CLI is not installed or not in PATH. Please install the CodeQL extension or add CodeQL CLI to your PATH.</source>
-        <target state="new">CodeQL CLI is not installed or not in PATH. Please install the CodeQL extension or add CodeQL CLI to your PATH.</target>
+        <target state="translated">Интерфейс командной строки CodeQL не установлен или не добавлен в PATH. Установите расширение CodeQL или добавьте интерфейс командной строки CodeQL в ваш PATH.</target>
       </trans-unit>
       <trans-unit id="++CODE++4d957bcbf39044dd870f5e281bc90330855835fe5e2eec59d9cc66b5c6954e19">
         <source xml:lang="en">CodeQL analysis completed successfully with no issues found! 🎉</source>
-        <target state="new">CodeQL analysis completed successfully with no issues found! 🎉</target>
+        <target state="translated">Анализ CodeQL успешно завершен, проблем не найдено! 🎉</target>
       </trans-unit>
       <trans-unit id="++CODE++c3275a1a575e00df769307ad10f3bc42c41d9a990386301c351bd29519010765">
         <source xml:lang="en">CodeQL analysis completed. Would you like to open the full results file?</source>
-        <target state="new">CodeQL analysis completed. Would you like to open the full results file?</target>
+        <target state="translated">Анализ CodeQL завершен. Хотите открыть полный файл результатов?</target>
       </trans-unit>
       <trans-unit id="++CODE++cf2d63639bdb46d783628b663433203e46d6dcf4cfb915adbaad0f13eb9d9905">
         <source xml:lang="en">CodeQL analysis failed: {0}</source>
-        <target state="new">CodeQL analysis failed: {0}</target>
+        <target state="translated">Не удалось провести анализ CodeQL: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++eb7933b3f154963486dca26336ee1f27fea4c21f8c9b5dd0f85f05a2e38d8d5b">
         <source xml:lang="en">CodeQL database created successfully. You can now run queries from the CodeQL extension.</source>
-        <target state="new">CodeQL database created successfully. You can now run queries from the CodeQL extension.</target>
+        <target state="translated">База данных CodeQL успешно создана. Теперь вы можете выполнять запросы из расширения CodeQL.</target>
       </trans-unit>
       <trans-unit id="++CODE++f40beb25214e827493a66e453c0e5309a786d37ce60f3af025794baca7444c8b">
         <source xml:lang="en">CodeQL database created. You can now:
@@ -220,48 +220,48 @@ The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).
 2. Use the prebuilt queries from the CodeQL extension
 
 Check the CodeQL extension panel for available queries.</source>
-        <target state="new">CodeQL database created. You can now:
+        <target state="translated">База данных CodeQL создана. Теперь вы можете:
 
-1. Run custom queries if you have any
-2. Use the prebuilt queries from the CodeQL extension
+1. Запускать пользовательские запросы, если они у вас есть
+2. Использовать готовые запросы из расширения CodeQL
 
-Check the CodeQL extension panel for available queries.</target>
+Проверьте панель расширения CodeQL на наличие доступных запросов.</target>
       </trans-unit>
       <trans-unit id="++CODE++7e89a70d023a672e36926ab684ceed3cc71049d939761459ab670c94b6339e08">
         <source xml:lang="en">CodeQL extension is not installed.</source>
-        <target state="new">CodeQL extension is not installed.</target>
+        <target state="translated">Расширение CodeQL не установлено.</target>
       </trans-unit>
       <trans-unit id="++CODE++e8235f4d23a215a1902de70069f48aee97eae99fac871b0e7044c8dd4c228d65">
         <source xml:lang="en">CodeQL global storage path does not exist: {0}</source>
-        <target state="new">CodeQL global storage path does not exist: {0}</target>
+        <target state="translated">Глобальный путь к хранилищу CodeQL не существует: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++15f726b732553ce0ebcc6cc3d73ed78609b146df85eb6260ae7280bcbb2dbc93">
         <source xml:lang="en">CodeQL screening failed. Please try again later.</source>
-        <target state="new">CodeQL screening failed. Please try again later.</target>
+        <target state="translated">Не удалось выполнить скрининг CodeQL. Повторите попытку позже.</target>
       </trans-unit>
       <trans-unit id="++CODE++ad5918a3406b99c40a41a41891e7bfddd75f66fdf226d6daa654c78d297a0636">
         <source xml:lang="en">CodeQL screening is not supported for this site.</source>
-        <target state="new">CodeQL screening is not supported for this site.</target>
+        <target state="translated">Скрининг CodeQL не поддерживается для этого сайта.</target>
       </trans-unit>
       <trans-unit id="++CODE++9328c89f866668300cb2282dd173089c5e63b5e012d40b6ea73b68d7d345f2a0">
         <source xml:lang="en">CodeQL screening started. Creating database and analyzing</source>
-        <target state="new">CodeQL screening started. Creating database and analyzing</target>
+        <target state="translated">Начат скрининг CodeQL. Создание базы данных и анализ</target>
       </trans-unit>
       <trans-unit id="++CODE++8c7badc0de1c1ad67ea730f2f63caa922024be334866180f5d0e7497b8be1cd1">
         <source xml:lang="en">CodeQL version: {0}</source>
-        <target state="new">CodeQL version: {0}</target>
+        <target state="translated">Версия CodeQL: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++1fb4405a792e9eb077d2bd96517eca8d81fc43bc251d5589e9d959fd07c8f31d">
         <source xml:lang="en">Command completed successfully (exit code: {0})</source>
-        <target state="new">Command completed successfully (exit code: {0})</target>
+        <target state="translated">Команда выполнена успешно (код завершения: {0})</target>
       </trans-unit>
       <trans-unit id="++CODE++ff61c2f710070e267638038dfbd105cfffe4de4d37580f566f4537b304b6ca84">
         <source xml:lang="en">Command failed with exit code {0}: {1}</source>
-        <target state="new">Command failed with exit code {0}: {1}</target>
+        <target state="translated">Сбой команды с кодом завершения {0}: {1}</target>
       </trans-unit>
       <trans-unit id="++CODE++67a58f1682f864bfa789f056e50bab25181dfcddf455fadaad856c826f852d6a">
         <source xml:lang="en">Command failed with exit code: {0}</source>
-        <target state="new">Command failed with exit code: {0}</target>
+        <target state="translated">Сбой команды с кодом завершения: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++eebdd24a77d9ad32222660c07777163bf5f6732df2b172351f3f8d5783e4f529">
         <source xml:lang="en">Confirm</source>
@@ -289,15 +289,15 @@ Check the CodeQL extension panel for available queries.</target>
       </trans-unit>
       <trans-unit id="++CODE++a3e5be021818ca51bfb80179d97c9b7198659378a5bed3d2429d718acd4d0b82">
         <source xml:lang="en">Could not determine user data path.</source>
-        <target state="new">Could not determine user data path.</target>
+        <target state="translated">Не удалось определить путь к данным пользователя.</target>
       </trans-unit>
       <trans-unit id="++CODE++92a450b51c228fc0a45836a3cb66a77276511e8b1a48e237c97f27576695288d">
         <source xml:lang="en">Could not locate CodeQL CLI in global storage.</source>
-        <target state="new">Could not locate CodeQL CLI in global storage.</target>
+        <target state="translated">Не удалось найти интерфейс командной строки CodeQL в глобальном хранилище.</target>
       </trans-unit>
       <trans-unit id="++CODE++47234b3978427950c2a4ef0161f6dc8484b7faf44b21d30616d5d019eebaafd8">
         <source xml:lang="en">Created PowerPages config file at {0} with default query suite: {1}</source>
-        <target state="new">Created PowerPages config file at {0} with default query suite: {1}</target>
+        <target state="translated">Создан файл конфигурации PowerPages в {0} с набором запросов по умолчанию: {1}.</target>
       </trans-unit>
       <trans-unit id="++CODE++a065334fc8846953a2dacf5096572bb814db18ac32fdb3e22cff0d387cdd4393">
         <source xml:lang="en">Created on: {0}</source>
@@ -306,7 +306,7 @@ Check the CodeQL extension panel for available queries.</target>
       </trans-unit>
       <trans-unit id="++CODE++203c445e9f2f638fcddf5e843dbaa43d55bd63740b6db268c2765e3cfa2e1608">
         <source xml:lang="en">Creating CodeQL database...</source>
-        <target state="new">Creating CodeQL database...</target>
+        <target state="translated">Создание базы данных CodeQL...</target>
       </trans-unit>
       <trans-unit id="++CODE++446092146c92f1aa2441a29971d3844b0add13a951c45c491423f506bbe4edab">
         <source xml:lang="en">Creating {0}...</source>
@@ -328,7 +328,7 @@ Check the CodeQL extension panel for available queries.</target>
       </trans-unit>
       <trans-unit id="++CODE++52587c2a224d685113316dc5961aec7749a46dded161bfe07c40b715ca61db29">
         <source xml:lang="en">Current site path not found. Please ensure you have a site folder open.</source>
-        <target state="new">Current site path not found. Please ensure you have a site folder open.</target>
+        <target state="translated">Текущий путь к сайту не найден. Убедитесь, что у вас открыта папка сайта.</target>
       </trans-unit>
       <trans-unit id="++CODE++e159063579c9e875ce444b930e8feb5d4fc1a93af6acb47d7a5cf9d5c5241153">
         <source xml:lang="en">Data model version: {0}</source>
@@ -337,7 +337,7 @@ Check the CodeQL extension panel for available queries.</target>
       </trans-unit>
       <trans-unit id="++CODE++f88d5f387c99b46f054799a5bc6bac06d5b9f5dfd9eaf95627b5f34b137c7cb2">
         <source xml:lang="en">Database location: {0}</source>
-        <target state="new">Database location: {0}</target>
+        <target state="translated">Расположение базы данных: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++5bd78fcb75f98d65ab8f89a8f0b6681c25c13308fa8643c44ab459b7783c06c9">
         <source xml:lang="en">Default Environment: {0}</source>
@@ -398,47 +398,47 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
       </trans-unit>
       <trans-unit id="++CODE++239d14b889f5a193581388efd042b82c5cb36e89f15b4141f740ec40d00ea868">
         <source xml:lang="en">Error accessing CodeQL extension: {0}</source>
-        <target state="new">Error accessing CodeQL extension: {0}</target>
+        <target state="translated">Ошибка при доступе к расширению CodeQL: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++56e43ff4d49e0fea0222cc642310156febd5be11505e801cfccc65c2b7ebd3b6">
         <source xml:lang="en">Error creating config file: {0}</source>
-        <target state="new">Error creating config file: {0}</target>
+        <target state="translated">Ошибка при создании файла конфигурации: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++9c567f60562a1ccaae95f9ec1de45a0785b8a433ef8f2d559ec0bcec6cc3c13d">
         <source xml:lang="en">Error during CodeQL analysis: {0}</source>
-        <target state="new">Error during CodeQL analysis: {0}</target>
+        <target state="translated">Ошибка при анализе CodeQL: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++4c925eac2f74f5a794b648a7e4b7a7c6a209ed6b5000411dee8a5519cd1e026b">
         <source xml:lang="en">Error getting CLI path from extension API: {0}</source>
-        <target state="new">Error getting CLI path from extension API: {0}</target>
+        <target state="translated">Ошибка при получении пути CLI из API расширения: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++fbbcdb76093366eb99ca518a403862ce87722ffe8606083c02ecef6387e987f8">
         <source xml:lang="en">Error opening results file: {0}</source>
-        <target state="new">Error opening results file: {0}</target>
+        <target state="translated">Ошибка при открытии файла результатов: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++b52004d98911ff84ee9141e24f950f1a235941ad2beeb18de199c2e44354bfd1">
         <source xml:lang="en">Error opening with SARIF viewer: {0}</source>
-        <target state="new">Error opening with SARIF viewer: {0}</target>
+        <target state="translated">Ошибка при открытии с помощью средства просмотра SARIF: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++a47e4735bc198999c5a031692984499d88ad2b7a5119e4f96016cee79a4fb27f">
         <source xml:lang="en">Error reading config file: {0}</source>
-        <target state="new">Error reading config file: {0}</target>
+        <target state="translated">Ошибка чтения файла конфигурации: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++ff3a79060f3dbd86d89f487bf242ca47e64f0db6c29bfce0ae9d3d0b5606448d">
         <source xml:lang="en">Error reading results: {0}</source>
-        <target state="new">Error reading results: {0}</target>
+        <target state="translated">Ошибка чтения результатов: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++f59ffa6ae59ffa089eb2907ceac28bf43d85e0bd647c80d66569caed29837d24">
         <source xml:lang="en">Error searching for CodeQL CLI: {0}</source>
-        <target state="new">Error searching for CodeQL CLI: {0}</target>
+        <target state="translated">Ошибка поиска интерфейса командной строки CodeQL: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++e871c663b45be72da181a9de5bccc1b9e415ed8bab4fbc98f87cd9fe6162ded4">
         <source xml:lang="en">Error updating config file: {0}</source>
-        <target state="new">Error updating config file: {0}</target>
+        <target state="translated">Ошибка обновления файла конфигурации: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++8a6c3a849390110981cd9588c269ec59444485aed2239ad772afdb0d427523d8">
         <source xml:lang="en">Executing: {0}</source>
-        <target state="new">Executing: {0}</target>
+        <target state="translated">Выполнение: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++5a2391041cb1f6f5ab0cce07946dbf4222358fbd947768d94ac12ef5329485d3">
         <source xml:lang="en">Explain the following code snippet:</source>
@@ -450,7 +450,7 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
       </trans-unit>
       <trans-unit id="++CODE++173848927e1a6ed7f8c52d958d530c9ce90053649c734a3bc20bfb2053d8ef88">
         <source xml:lang="en">Extension installed but API not available yet. Opening as text file...</source>
-        <target state="new">Extension installed but API not available yet. Opening as text file...</target>
+        <target state="translated">Расширение установлено, но API еще не доступен. Открытие в виде текстового файла...</target>
       </trans-unit>
       <trans-unit id="++CODE++b985f1515c42b4b5b0c11a3d7b3286fc9d66997d476668ab1f93a4a11499fef5">
         <source xml:lang="en">Failed to create a new Power Pages site. Please try again.</source>
@@ -487,11 +487,11 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
       </trans-unit>
       <trans-unit id="++CODE++9696573fbb3df8812e2d0b83aa3d9077681bf992c9f9514fbbb81fcc7787560d">
         <source xml:lang="en">Failed to install SARIF viewer extension. Opening results as text file.</source>
-        <target state="new">Failed to install SARIF viewer extension. Opening results as text file.</target>
+        <target state="translated">Не удалось установить расширение средства просмотра SARIF. Открытие результатов в виде текстового файла.</target>
       </trans-unit>
       <trans-unit id="++CODE++83f3ed1048ce17af62e4baf0dd046ec8571cb8ae602ad853025266a023de8061">
         <source xml:lang="en">Failed to install SARIF viewer extension: {0}</source>
-        <target state="new">Failed to install SARIF viewer extension: {0}</target>
+        <target state="translated">Не удалось установить расширение средства просмотра SARIF: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++a9e36b880dd45b64ae5601865540605296febf9bd855fc46d9c35c2c2ed9a7f2">
         <source xml:lang="en">Feature is not enabled for this geo.</source>
@@ -516,27 +516,27 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
       </trans-unit>
       <trans-unit id="++CODE++12610d51818dd67082559a8f1d9a141559d996fad6fe34aa3dbf70281bea4572">
         <source xml:lang="en">File: {0}</source>
-        <target state="new">File: {0}</target>
+        <target state="translated">Файл: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++4c152c6eaba506f1e585f1fe8424b694874ccf652f4bdebb5e333ed518e9e428">
         <source xml:lang="en">Found CodeQL CLI at: {0}</source>
-        <target state="new">Found CodeQL CLI at: {0}</target>
+        <target state="translated">Найден интерфейс командной строки CodeQL по адресу: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++b3207bdd6cac96d95953611b3858336761212450b6e02c59f048ee17aa654797">
         <source xml:lang="en">Found CodeQL CLI via extension API: {0}</source>
-        <target state="new">Found CodeQL CLI via extension API: {0}</target>
+        <target state="translated">Найден интерфейс командной строки CodeQL через API расширения: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++3c30b323f4457a82892f7ff1b0e8bf7852618289536ba3f3e08c4b0e7b44d514">
         <source xml:lang="en">Found PowerPages config file: {0}</source>
-        <target state="new">Found PowerPages config file: {0}</target>
+        <target state="translated">Найден файл конфигурации PowerPages: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++bb38f4fcf83f9428cc8a10ad72256cf8a9536ea56209c10b1db2cea2506b740e">
         <source xml:lang="en">Found distribution directories: {0}</source>
-        <target state="new">Found distribution directories: {0}</target>
+        <target state="translated">Найденные каталоги дистрибуции: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++84fc80613184b5761895bd6c0ba43882610a232b56d4815581cb6a054e7f231e">
         <source xml:lang="en">Found {0} issue(s):</source>
-        <target state="new">Found {0} issue(s):</target>
+        <target state="translated">Найдено {0} проблем:</target>
       </trans-unit>
       <trans-unit id="++CODE++56281cd1d0090cc4c7c38634a5738f51769927efda74805ba19e30e35868fd4e">
         <source xml:lang="en">Friendly name: {0}</source>
@@ -632,7 +632,7 @@ Return to this chat and @powerpages can help you write and edit your website cod
       </trans-unit>
       <trans-unit id="++CODE++5caff26b08726c8c726419c5f1ec44de8533973c9e3220d3af6b4a29b1c05957">
         <source xml:lang="en">Installing SARIF viewer extension...</source>
-        <target state="new">Installing SARIF viewer extension...</target>
+        <target state="translated">Установка расширения средства просмотра SARIF...</target>
       </trans-unit>
       <trans-unit id="++CODE++f351355077e2d6b421620f76832f108d9b4d84f31c14857d802cd8db01e4d330">
         <source xml:lang="en">Instance url: {0}</source>
@@ -653,7 +653,7 @@ Return to this chat and @powerpages can help you write and edit your website cod
       </trans-unit>
       <trans-unit id="++CODE++47dc2e01d9ad434bd03a870bdfd91281bc31d38da2cdc36c0d46a593b1d6d60c">
         <source xml:lang="en">Line: {0}</source>
-        <target state="new">Line: {0}</target>
+        <target state="translated">Строка: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++9d6322c1f4d9d3f38aed8bfbe0b2bcadf66ad82c008476fa62541fa069138e94">
         <source xml:lang="en">Login</source>
@@ -665,7 +665,7 @@ Return to this chat and @powerpages can help you write and edit your website cod
       </trans-unit>
       <trans-unit id="++CODE++5f7a296554fdb03b163d47a479e9f37458d880e6ddcdd7fd26112464dafaff8d">
         <source xml:lang="en">Looking for CodeQL CLI in: {0}</source>
-        <target state="new">Looking for CodeQL CLI in: {0}</target>
+        <target state="translated">Поиск интерфейса командной строки CodeQL в: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++1be32f89a3d1d98bb7011850e83b5753124d58f684bae063674bfdb106026e6d">
         <source xml:lang="en">Make sure AI-generated content is accurate and appropriate before using. &lt;a href="https://go.microsoft.com/fwlink/?linkid=2240145"&gt;Learn more&lt;/a&gt; | &lt;a href="https://go.microsoft.com/fwlink/?linkid=2189520"&gt;View
@@ -739,7 +739,7 @@ URL-адрес: {1}
       </trans-unit>
       <trans-unit id="++CODE++1b03558147265e7c9bd70e6a4abe031ef65dbca05e01d94953e58b86ec82c859">
         <source xml:lang="en">No analysis results found.</source>
-        <target state="new">No analysis results found.</target>
+        <target state="translated">Результаты анализа не найдены.</target>
       </trans-unit>
       <trans-unit id="++CODE++80266a1ea7e6671d65c98a0624c254f5b9acfacddd05d69524b7f034eeba3268">
         <source xml:lang="en">No environments found</source>
@@ -747,11 +747,11 @@ URL-адрес: {1}
       </trans-unit>
       <trans-unit id="++CODE++e75c23acb3f88e840f326048df92fcfd3350ec3b775a5c51e6ff6754f0f9f7a1">
         <source xml:lang="en">No issues found!</source>
-        <target state="new">No issues found!</target>
+        <target state="translated">Проблем не обнаружено.</target>
       </trans-unit>
       <trans-unit id="++CODE++f4e72a0615b12413932e879ea66a30e28ddf66f78c73807f2302983fa6dffe9f">
         <source xml:lang="en">No message</source>
-        <target state="new">No message</target>
+        <target state="translated">Нет сообщения</target>
       </trans-unit>
       <trans-unit id="++CODE++e0d2b29e6060c3d50691e6961835418fe6a24723c227dacf93250b94e21ed1bb">
         <source xml:lang="en">No page templates found</source>
@@ -788,11 +788,11 @@ URL-адрес: {1}
       </trans-unit>
       <trans-unit id="++CODE++f329c8f717c6c20eb60774d8f9227683661d74ebae48207076be60be8796dd5d">
         <source xml:lang="en">Open Results</source>
-        <target state="new">Open Results</target>
+        <target state="translated">Открыть результаты</target>
       </trans-unit>
       <trans-unit id="++CODE++c923497edb55fd73ded53b2d43ccaf08ed3ed77118d934fd762fb7a5048b16e4">
         <source xml:lang="en">Open as Text</source>
-        <target state="new">Open as Text</target>
+        <target state="translated">Открыть как текст</target>
       </trans-unit>
       <trans-unit id="++CODE++e61655958f06a0bb12435c70d95c738b62fabdff78f26c597c105a8823820fbd">
         <source xml:lang="en">Open in Power Pages studio</source>
@@ -804,11 +804,11 @@ URL-адрес: {1}
       </trans-unit>
       <trans-unit id="++CODE++e7f5bd4de76500f23850b2f87c8d39ef1f346662963521c88985e4486b860f90">
         <source xml:lang="en">Opening results with SARIF viewer...</source>
-        <target state="new">Opening results with SARIF viewer...</target>
+        <target state="translated">Открытие результатов с помощью средства просмотра SARIF...</target>
       </trans-unit>
       <trans-unit id="++CODE++f2dd836a178a30bdcb69c5fd8b5685c12d400d47e10971dd4d93657e6d5b1d0e">
         <source xml:lang="en">Opening results with newly installed SARIF viewer...</source>
-        <target state="new">Opening results with newly installed SARIF viewer...</target>
+        <target state="translated">Открытие результатов с помощью недавно установленного средства просмотра SARIF...</target>
       </trans-unit>
       <trans-unit id="++CODE++e61c4ac3c692e3cfdc02717db82d18b1e9d51242710031f20af35b33d149fa7a">
         <source xml:lang="en">Opening site preview...</source>
@@ -878,11 +878,11 @@ URL-адрес: {1}
       </trans-unit>
       <trans-unit id="++CODE++bf67e1194aabff2106dde73ed7318caf658a4cebe27dbd2d03239a141e16a211">
         <source xml:lang="en">PowerPages config file created successfully: {0}</source>
-        <target state="new">PowerPages config file created successfully: {0}</target>
+        <target state="translated">Файл конфигурации PowerPages успешно создан: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++51b545b10e7c3ffa5c7a61b222ed1039c55ddba4cc130f834338e498cdd0d129">
         <source xml:lang="en">PowerPages config file updated successfully: {0}</source>
-        <target state="new">PowerPages config file updated successfully: {0}</target>
+        <target state="translated">Файл конфигурации PowerPages успешно обновлен: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++777d5f3afd46e18d42c0baad6d9a0c7a6867cdf31ae4d342ad5e695486f05ae7">
         <source xml:lang="en">Preparing pac CLI (v{0})...</source>
@@ -899,11 +899,11 @@ URL-адрес: {1}
       </trans-unit>
       <trans-unit id="++CODE++fa20488e9d7f18238d5f0c72e459c52354657b24877bb4197902daa667bd57c9">
         <source xml:lang="en">Primary query suite {0} failed: {1}</source>
-        <target state="new">Primary query suite {0} failed: {1}</target>
+        <target state="translated">Ошибка основного набора запросов {0}: {1}</target>
       </trans-unit>
       <trans-unit id="++CODE++66c77d8211180ed42d204144272cd0985a1c118696c856b61d2dd63d1f416d86">
         <source xml:lang="en">Process error: {0}</source>
-        <target state="new">Process error: {0}</target>
+        <target state="translated">Ошибка процесса: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++7a6098eb5ff2c2401890216bb502ce6583ff7bddc99e62f8751551eab45ae1b4">
         <source xml:lang="en">Profile Kind: {0}</source>
@@ -916,23 +916,23 @@ URL-адрес: {1}
       </trans-unit>
       <trans-unit id="++CODE++b87504a6b179044cf99d39cf641f47aa5e76c4c5b949413ec33953ec35c10ac4">
         <source xml:lang="en">Results opened in SARIF viewer successfully.</source>
-        <target state="new">Results opened in SARIF viewer successfully.</target>
+        <target state="translated">Результаты успешно открыты в средстве просмотра SARIF.</target>
       </trans-unit>
       <trans-unit id="++CODE++9eb3810da0fd0dbacf4b6f4d7ad58e6e631ab807c0dd404dcb9f03066da8443b">
         <source xml:lang="en">Running CodeQL analysis...</source>
-        <target state="new">Running CodeQL analysis...</target>
+        <target state="translated">Выполнение анализа CodeQL...</target>
       </trans-unit>
       <trans-unit id="++CODE++3a74613b70fb8cc650773d71501f0c370322e9ae7d7739857db61c95a3b1bc80">
         <source xml:lang="en">SARIF viewer extension does not expose expected API. Falling back to text editor...</source>
-        <target state="new">SARIF viewer extension does not expose expected API. Falling back to text editor...</target>
+        <target state="translated">Расширение средства просмотра SARIF не предоставляет ожидаемый API. Вернуться к текстовому редактору...</target>
       </trans-unit>
       <trans-unit id="++CODE++3404d61aa3fdceef4ff6d5c7fe612d467f785bf5e3159771b4cde9b1e83e0f22">
         <source xml:lang="en">SARIF viewer extension installed successfully. Activating...</source>
-        <target state="new">SARIF viewer extension installed successfully. Activating...</target>
+        <target state="translated">Расширение для средства просмотра SARIF успешно установлено. Активация...</target>
       </trans-unit>
       <trans-unit id="++CODE++ceaca7d5816edb7826d84436807510a3a840ee0808fd62a568e2e1541eae6457">
         <source xml:lang="en">SARIF viewer extension not found.</source>
-        <target state="new">SARIF viewer extension not found.</target>
+        <target state="translated">Расширение средства просмотра SARIF не найдено.</target>
       </trans-unit>
       <trans-unit id="++CODE++0134bc37f2fdeb11daa9e760ecee0ef9706989b33f77a38daadb8b7aae685749">
         <source xml:lang="en">Saving your file ...</source>
@@ -957,7 +957,7 @@ URL-адрес: {1}
       </trans-unit>
       <trans-unit id="++CODE++58ea04f09a2cbf67d55e70c45a6da4998e72e8e50f91e63862c0d65d14dfb1f5">
         <source xml:lang="en">Select folder for CodeQL database</source>
-        <target state="new">Select folder for CodeQL database</target>
+        <target state="translated">Выберите папку для базы данных CodeQL</target>
       </trans-unit>
       <trans-unit id="++CODE++259b03b37447930b5127e28e350f988803a3047bbb0c7be4441c7da4f9b517d4">
         <source xml:lang="en">Select the folder that contains your compiled output</source>
@@ -1015,7 +1015,7 @@ URL-адрес: {1}
       </trans-unit>
       <trans-unit id="++CODE++1cb2204ec480119230ac755787106a1550d9329553d146abd56da1947079d577">
         <source xml:lang="en">Starting CodeQL analysis for: {0}</source>
-        <target state="new">Starting CodeQL analysis for: {0}</target>
+        <target state="translated">Запуск анализа CodeQL для: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++155f816c0407310c0dab222493370773e045ee7fe04e6c9a951b07f495531264">
         <source xml:lang="en">Submit</source>
@@ -1032,7 +1032,7 @@ URL-адрес: {1}
       </trans-unit>
       <trans-unit id="++CODE++438c442a839dca3bb4dbecd0421f454f268650517fe631e5900233b73a874bc7">
         <source xml:lang="en">The CodeQL extension is required to run this command. Do you want to install it now?</source>
-        <target state="new">The CodeQL extension is required to run this command. Do you want to install it now?</target>
+        <target state="translated">Для выполнения этой команды требуется расширение CodeQL. Установить?</target>
       </trans-unit>
       <trans-unit id="++CODE++618f7afd7be2f12bf2ebbaba5bc7e951d2ebfb11d4480647f991fbb664caa26e">
         <source xml:lang="en">The Power Pages generator is ready for use in your VS Code extension!</source>
@@ -1040,7 +1040,7 @@ URL-адрес: {1}
       </trans-unit>
       <trans-unit id="++CODE++3ed1f203bd6f7102d8c5dcf88fe4fb5327b54a1e88962adcddbf9a023bcf8875">
         <source xml:lang="en">The SARIF Viewer extension is recommended for viewing CodeQL results. Would you like to install it now?</source>
-        <target state="new">The SARIF Viewer extension is recommended for viewing CodeQL results. Would you like to install it now?</target>
+        <target state="translated">Для просмотра результатов CodeQL рекомендуется использовать расширение средства просмотра SARIF. Хотите установить его сейчас?</target>
       </trans-unit>
       <trans-unit id="++CODE++0bc2e4918b64f82220bde3dae30dc007a45fb59c3677833fb5a0e275a3b6b54b">
         <source xml:lang="en">The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?</source>
@@ -1135,11 +1135,11 @@ URL-адрес: {1}
       </trans-unit>
       <trans-unit id="++CODE++c86daff3d88f7b1f615467872994ef13dcbc1c55e10105d71f398c721650c9c2">
         <source xml:lang="en">Use current site folder</source>
-        <target state="new">Use current site folder</target>
+        <target state="translated">Использование текущей папки сайта</target>
       </trans-unit>
       <trans-unit id="++CODE++7cf98759b12f73d7717ae27ba49a3d27f026be55b4a33236942882c7a8b671bf">
         <source xml:lang="en">User cancelled opening results.</source>
-        <target state="new">User cancelled opening results.</target>
+        <target state="translated">Пользователь отменил открытие результатов.</target>
       </trans-unit>
       <trans-unit id="++CODE++696d5f7b79a75961bc5d99ecbbea7b535acc73160e0b6422daa45b0ae7c04368">
         <source xml:lang="en">User: {0}</source>
@@ -1148,11 +1148,11 @@ URL-адрес: {1}
       </trans-unit>
       <trans-unit id="++CODE++ad53df2afe8706d9b2df0b2ce7db974ca00887c2a4864ce1b78ed0fc60ab8669">
         <source xml:lang="en">Using custom CodeQL query suite: {0}</source>
-        <target state="new">Using custom CodeQL query suite: {0}</target>
+        <target state="translated">Использование пользовательского набора запросов CodeQL: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++ad8cf9b64ea12b5f26438ceb83cd1bb510af7cccaf4c2be1320276486224a0fe">
         <source xml:lang="en">Using default query suite: {0}</source>
-        <target state="new">Using default query suite: {0}</target>
+        <target state="translated">Использование набора запросов по умолчанию: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++d941ee96c6f480390012381f9fc0dfd961f2aa803732860e2505a8453700f458">
         <source xml:lang="en">We encountered an error preparing the files for edit.</source>
@@ -1495,7 +1495,7 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title">
         <source xml:lang="en">Run CodeQL Screening</source>
-        <target state="new">Run CodeQL Screening</target>
+        <target state="translated">Выполнить скрининг CodeQL</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.saveConflict.title">
         <source xml:lang="en">Save conflict</source>

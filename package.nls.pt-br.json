@@ -20,7 +20,7 @@
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title": "Abrir Pasta Que Contém",
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac.title": "Revelar no Localizador",
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows.title": "Revelar no Explorador",
-  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title": "Run CodeQL Screening",
+  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title": "Executar Triagem do CodeQL",
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement.title": "Abrir gerenciamento de sites",
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite.title": "Reativar Site",
   "microsoft.powerplatform.pages.actionsHub.login": "Faça logon e conecte-se a um ambiente do Power Pages para usar as ações do Power Pages. [Saiba mais](https://go.microsoft.com/fwlink/?linkid=2305702).\n[Logon](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile)",

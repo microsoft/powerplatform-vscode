@@ -20,7 +20,7 @@
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title": "打开包含文件夹",
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac.title": "在查找器中显示",
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows.title": "在资源管理器中显示",
-  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title": "Run CodeQL Screening",
+  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title": "运行 CodeQL 筛选",
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement.title": "打开站点管理",
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite.title": "重新激活站点",
   "microsoft.powerplatform.pages.actionsHub.login": "登录并连接到 Power Pages 环境以使用 Power Pages 操作。[了解详细信息](https://go.microsoft.com/fwlink/?linkid=2305702)。\n[登录](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile)",

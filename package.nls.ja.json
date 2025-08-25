@@ -20,7 +20,7 @@
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title": "含まれるフォルダーを開く",
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac.title": "Finder で表示する",
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows.title": "エクスプローラーで表示する",
-  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title": "Run CodeQL Screening",
+  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title": "CodeQL スクリーン処理の実行",
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement.title": "サイトの管理を開く",
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite.title": "サイトを再アクティブ化します",
   "microsoft.powerplatform.pages.actionsHub.login": "Power Pages 環境にログインして接続し、Power Pages アクションを使用します。詳細については、[こちら](https://go.microsoft.com/fwlink/?linkid=2305702)を参照してください。\n[ログイン](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile)",
