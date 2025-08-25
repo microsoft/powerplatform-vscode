@@ -17,6 +17,7 @@ on:
 
 jobs:
   build:
+    if: ${{ github.actor != 'github-actions[bot]' }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
