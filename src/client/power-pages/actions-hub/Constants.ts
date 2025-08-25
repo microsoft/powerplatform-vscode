@@ -16,6 +16,8 @@ export const Constants = {
         OTHER_SITE: "otherSite",
         OTHER_SITES_GROUP: "otherSitesGroup",
         NO_SITES: "noSites",
+        ACCOUNT_MISMATCH: "accountMismatch",
+        LOGIN_PROMPT: "loginPrompt",
     },
     Icons: {
         SITE: new vscode.ThemeIcon('globe'),
@@ -52,6 +54,15 @@ export const Constants = {
         UPLOAD_CODE_SITE_FAILED: vscode.l10n.t("Upload failed. Please try again later."),
         POWER_PAGES_CONFIG_FILE_NAME: "powerpages.config.json",
         MISSING_REACTIVATION_URL_INFO: vscode.l10n.t("Missing required site information for reactivation."),
+        // Account mismatch strings
+        ACCOUNT_MISMATCH_DETECTED: vscode.l10n.t("VS Code - PAC CLI authentication mismatch detected"),
+        ACCOUNT_MISMATCH_DESCRIPTION: vscode.l10n.t("Accounts don't match, data may not load."),
+        ACCOUNT_MISMATCH_TOOLTIP: vscode.l10n.t("The account signed in to VS Code differs from the one authenticated in PAC CLI (Power Platform CLI). This mismatch can cause data not to load or actions to fail because UI commands run through the CLI. To fix it, sign in to VS Code using the same account as your PAC CLI. If needed, you can update your PAC CLI authentication separately via the command line."),
+        LOGIN_PROMPT_LABEL: vscode.l10n.t("Sign in to VS Code with PAC CLI account"),
+        LOGIN_PROMPT_TITLE: vscode.l10n.t("Login"),
+        LOGIN_PROMPT_TOOLTIP: vscode.l10n.t("Click to authenticate with a matching account"),
+        AUTHENTICATION_FAILED: vscode.l10n.t("Authentication failed. Please try again."),
+        // CodeQL
         INSTALL: vscode.l10n.t("Install"),
         CANCEL: vscode.l10n.t("Cancel"),
         CODEQL_EXTENSION_NOT_INSTALLED: vscode.l10n.t("The CodeQL extension is required to run this command. Do you want to install it now?"),
@@ -187,13 +198,23 @@ export const Constants = {
         ACTIONS_HUB_UPLOAD_CODE_SITE_FAILED: "ActionsHubUploadCodeSiteFailed",
         ACTIONS_HUB_UPLOAD_OTHER_CODE_SITE_PAC_TRIGGERED: "ActionsHubUploadOtherCodeSitePacTriggered",
         POWER_PAGES_CONFIG_PARSE_FAILED: "PowerPagesConfigParseFailed",
-        ACTIONS_HUB_CODEQL_SCREENING_CALLED: "ActionsHubCodeQLScreeningCalled",
+         ACTIONS_HUB_CODEQL_SCREENING_CALLED: "ActionsHubCodeQLScreeningCalled",
         ACTIONS_HUB_CODEQL_SCREENING_FAILED: "ActionsHubCodeQLScreeningFailed",
         ACTIONS_HUB_CODEQL_SCREENING_EXTENSION_NOT_INSTALLED: "ActionsHubCodeQLScreeningExtensionNotInstalled",
         ACTIONS_HUB_CODEQL_SCREENING_EXTENSION_INSTALLED: "ActionsHubCodeQLScreeningExtensionInstalled",
         ACTIONS_HUB_CODEQL_SCREENING_DATABASE_CREATED: "ActionsHubCodeQLScreeningDatabaseCreated",
         ACTIONS_HUB_CODEQL_SCREENING_NOT_SUPPORTED: "ActionsHubCodeQLScreeningNotSupported",
-        ACTIONS_HUB_CODEQL_SCREENING_COMPLETED: "ActionsHubCodeQLScreeningCompleted"
+        ACTIONS_HUB_CODEQL_SCREENING_COMPLETED: "ActionsHubCodeQLScreeningCompleted",
+         ACTIONS_HUB_ACCOUNT_MISMATCH_DETECTED: "ActionsHubAccountMismatchDetected",
+        ACTIONS_HUB_LOGIN_TO_MATCH_CALLED: "ActionsHubLoginToMatchCalled",
+        ACTIONS_HUB_LOGIN_TO_MATCH_FAILED: "ActionsHubLoginToMatchFailed",
+        ACTIONS_HUB_LOGIN_TO_MATCH_SUCCEEDED: "ActionsHubLoginToMatchSucceeded",
+        ACTIONS_HUB_LOGIN_TO_MATCH_CANCELLED: "ActionsHubLoginToMatchCancelled",
+        ACTIONS_HUB_ACCOUNT_CHECK_CALLED: "ActionsHubAccountCheckCalled",
+        ACTIONS_HUB_ACCOUNT_CHECK_FAILED: "ActionsHubAccountCheckFailed",
+        ACTIONS_HUB_ACCOUNT_MISMATCH_UI_SHOWN: "ActionsHubAccountMismatchUIShown",
+        ACTIONS_HUB_ACCOUNT_MATCH_RESOLVED: "ActionsHubAccountMatchResolved",
+        ACTIONS_HUB_LOGIN_PROMPT_CLICKED: "ActionsHubLoginPromptClicked"
     },
     FeatureNames: {
         REFRESH_ENVIRONMENT: "RefreshEnvironment"
