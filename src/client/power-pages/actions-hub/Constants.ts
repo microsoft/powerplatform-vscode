@@ -55,10 +55,10 @@ export const Constants = {
         POWER_PAGES_CONFIG_FILE_NAME: "powerpages.config.json",
         MISSING_REACTIVATION_URL_INFO: vscode.l10n.t("Missing required site information for reactivation."),
         // Account mismatch strings
-        ACCOUNT_MISMATCH_DETECTED: vscode.l10n.t("Account Mismatch Detected"),
-        ACCOUNT_MISMATCH_DESCRIPTION: vscode.l10n.t("VS Code and PAC accounts don't match"),
-        ACCOUNT_MISMATCH_TOOLTIP: vscode.l10n.t("The accounts used for VS Code authentication and PAC CLI authentication are different. Please ensure both accounts are the same for proper functionality."),
-        LOGIN_PROMPT_LABEL: vscode.l10n.t("Click to login with matching account"),
+        ACCOUNT_MISMATCH_DETECTED: vscode.l10n.t("VS Code - PAC CLI authentication mismatch detected"),
+        ACCOUNT_MISMATCH_DESCRIPTION: vscode.l10n.t("Accounts don't match, data may not load."),
+        ACCOUNT_MISMATCH_TOOLTIP: vscode.l10n.t("The account signed in to VS Code differs from the one authenticated in PAC CLI (Power Platform CLI). This mismatch can cause data not to load or actions to fail because UI commands run through the CLI. To fix it, sign in to VS Code using the same account as your PAC CLI. If needed, you can update your PAC CLI authentication separately via the command line."),
+        LOGIN_PROMPT_LABEL: vscode.l10n.t("Sign in to VS Code with PAC CLI account"),
         LOGIN_PROMPT_TITLE: vscode.l10n.t("Login"),
         LOGIN_PROMPT_TOOLTIP: vscode.l10n.t("Click to authenticate with a matching account"),
         AUTHENTICATION_FAILED: vscode.l10n.t("Authentication failed. Please try again."),
@@ -208,8 +208,13 @@ export const Constants = {
          ACTIONS_HUB_ACCOUNT_MISMATCH_DETECTED: "ActionsHubAccountMismatchDetected",
         ACTIONS_HUB_LOGIN_TO_MATCH_CALLED: "ActionsHubLoginToMatchCalled",
         ACTIONS_HUB_LOGIN_TO_MATCH_FAILED: "ActionsHubLoginToMatchFailed",
+        ACTIONS_HUB_LOGIN_TO_MATCH_SUCCEEDED: "ActionsHubLoginToMatchSucceeded",
+        ACTIONS_HUB_LOGIN_TO_MATCH_CANCELLED: "ActionsHubLoginToMatchCancelled",
         ACTIONS_HUB_ACCOUNT_CHECK_CALLED: "ActionsHubAccountCheckCalled",
-        ACTIONS_HUB_ACCOUNT_CHECK_FAILED: "ActionsHubAccountCheckFailed"
+        ACTIONS_HUB_ACCOUNT_CHECK_FAILED: "ActionsHubAccountCheckFailed",
+        ACTIONS_HUB_ACCOUNT_MISMATCH_UI_SHOWN: "ActionsHubAccountMismatchUIShown",
+        ACTIONS_HUB_ACCOUNT_MATCH_RESOLVED: "ActionsHubAccountMatchResolved",
+        ACTIONS_HUB_LOGIN_PROMPT_CLICKED: "ActionsHubLoginPromptClicked"
     },
     FeatureNames: {
         REFRESH_ENVIRONMENT: "RefreshEnvironment"

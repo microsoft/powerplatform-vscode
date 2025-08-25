@@ -49,7 +49,13 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
             // Register an event listener for org change error as action hub will not be re-initialized in extension.ts
             orgChangeErrorEvent(() => this.refresh()),
 
-            vscode.authentication.onDidChangeSessions((_) => {
+            vscode.authentication.onDidChangeSessions((event) => {
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_REFRESH, { 
+                    methodName: 'onDidChangeSessions',
+                    eventProvider: event.provider?.id || 'unknown',
+                    triggerReason: 'authentication_session_changed',
+                    ...getBaseEventInfo() 
+                });
                 this._loadWebsites = true;
                 this.refresh();
             })
@@ -98,6 +104,14 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
             const session = await vscode.authentication.getSession(PROVIDER_ID, [], { silent: true });
 
             if (!session || !session.accessToken || !authInfo) {
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_ACCOUNT_CHECK_CALLED, { 
+                    methodName: this.checkAccountsMatch.name,
+                    result: 'missing_session_or_auth',
+                    hasSession: !!session,
+                    hasAccessToken: !!session?.accessToken,
+                    hasAuthInfo: !!authInfo,
+                    ...getBaseEventInfo() 
+                });
                 return false;
             }
 
@@ -115,49 +129,32 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                     methodName: this.checkAccountsMatch.name,
                     vscodeUserId: vscodeUserId || 'undefined',
                     pacUserId: pacUserId || 'undefined',
+                    vscodeUserIdLength: vscodeUserId?.length || 0,
+                    pacUserIdLength: pacUserId?.length || 0,
+                    hasVscodeUserId: !!vscodeUserId,
+                    hasPacUserId: !!pacUserId,
+                    environmentId: authInfo.EnvironmentId,
+                    organizationFriendlyName: authInfo.OrganizationFriendlyName,
                     ...getBaseEventInfo()
                 });
-            }
-
-            return accountsMatch;
-        } catch (error) {
-            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_ACCOUNT_CHECK_FAILED, error as string, error as Error, { methodName: this.checkAccountsMatch, ...getBaseEventInfo() });
-            return false;
-        }
-    }
-
-    private async checkAccountsMatch(): Promise<boolean> {
-        oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_ACCOUNT_CHECK_CALLED, { methodName: this.checkAccountsMatch.name, ...getBaseEventInfo() });
-
-        try {
-            const authInfo = PacContext.AuthInfo;
-            const session = await vscode.authentication.getSession(PROVIDER_ID, [], { silent: true });
-
-            if (!session || !session.accessToken || !authInfo) {
-                return false;
-            }
-
-            // Get user ID from VS Code session token
-            const vscodeUserId = getOIDFromToken(session.accessToken);
-
-            // Get user ID from PAC auth info
-            const pacUserId = authInfo.EntraIdObjectId;
-
-            // Check if both user IDs exist and match
-            const accountsMatch = vscodeUserId && pacUserId && vscodeUserId === pacUserId;
-
-            if (!accountsMatch) {
-                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_ACCOUNT_MISMATCH_DETECTED, {
+            } else {
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_ACCOUNT_MATCH_RESOLVED, {
                     methodName: this.checkAccountsMatch.name,
-                    vscodeUserId: vscodeUserId || 'undefined',
-                    pacUserId: pacUserId || 'undefined',
+                    vscodeUserIdLength: vscodeUserId?.length || 0,
+                    pacUserIdLength: pacUserId?.length || 0,
+                    environmentId: authInfo.EnvironmentId,
+                    organizationFriendlyName: authInfo.OrganizationFriendlyName,
                     ...getBaseEventInfo()
                 });
             }
 
             return accountsMatch;
         } catch (error) {
-            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_ACCOUNT_CHECK_FAILED, error as string, error as Error, { methodName: this.checkAccountsMatch, ...getBaseEventInfo() });
+            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_ACCOUNT_CHECK_FAILED, error as string, error as Error, { 
+                methodName: this.checkAccountsMatch.name,
+                errorType: error instanceof Error ? error.constructor.name : typeof error,
+                ...getBaseEventInfo() 
+            });
             return false;
         }
     }
@@ -184,6 +181,13 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                 // Check if accounts match before loading websites
                 const accountsMatch = await this.checkAccountsMatch();
                 if (!accountsMatch) {
+                    oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_ACCOUNT_MISMATCH_UI_SHOWN, {
+                        methodName: this.getChildren.name,
+                        authInfoAvailable: !!authInfo,
+                        environmentId: authInfo?.EnvironmentId,
+                        organizationFriendlyName: authInfo?.OrganizationFriendlyName,
+                        ...getBaseEventInfo()
+                    });
                     return [new AccountMismatchTreeItem()];
                 }
 
