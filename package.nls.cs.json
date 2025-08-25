@@ -20,6 +20,7 @@
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title": "Otevřít složku",
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac.title": "Zobrazit ve Finderu",
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows.title": "Zobrazit v Průzkumníku",
+  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title": "Run CodeQL Screening",
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement.title": "Otevřít správu webu",
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite.title": "Znovu zaktivovat web",
   "microsoft.powerplatform.pages.actionsHub.login": "Pokud chcete používat akce Power Pages, přihlaste se a připojte se k prostředí Power Pages. [Další informace](https://go.microsoft.com/fwlink/?linkid=2305702).\n[Přihlášení](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile)",

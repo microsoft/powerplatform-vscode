@@ -20,6 +20,7 @@
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title": "Открыть папку",
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac.title": "Показать в Finder",
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows.title": "Показать в проводнике",
+  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title": "Run CodeQL Screening",
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement.title": "Открыть параметры сайта",
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite.title": "Повторная активация сайта",
   "microsoft.powerplatform.pages.actionsHub.login": "Войдите в систему и подключитесь к среде Power Pages, чтобы использовать действия Power Pages. [Подробнее](https://go.microsoft.com/fwlink/?linkid=2305702).\n[Вход](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile)",
