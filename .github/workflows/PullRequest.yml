@@ -13,6 +13,11 @@ on:
     - main
     - 'release/stable'
     - 'features/PowerPagesAgent'
+    paths-ignore:
+      - 'l10n/**'
+      - 'loc/**'
+      - 'package.nls.json'
+      - 'package.nls.*.json'
   workflow_dispatch:
 
 jobs:
