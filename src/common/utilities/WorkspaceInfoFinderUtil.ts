@@ -110,15 +110,6 @@ export function hasWebsiteYaml(directoryPath: string): boolean {
 }
 
 /**
- * Checks if a .powerpages-site folder exists in the specified directory
- * @param directoryPath The directory path to check
- * @returns True if .powerpages-site folder exists, false otherwise
- */
-export function hasPowerPagesSiteFolder(directoryPath: string): boolean {
-    return fs.existsSync(directoryPath);
-}
-
-/**
  * Gets the path to the website.yml file in the specified directory
  * @param directoryPath The directory path
  * @returns The full path to website.yml
