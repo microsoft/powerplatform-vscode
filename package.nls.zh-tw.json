@@ -20,7 +20,7 @@
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title": "開啟包含資料夾",
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac.title": "在 Finder 中顯示",
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows.title": "在檔案總管中顯示",
-  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title": "Run CodeQL Screening",
+  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title": "執行 CodeQL 篩選",
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement.title": "開啟網站管理",
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite.title": "重新啟用網站",
   "microsoft.powerplatform.pages.actionsHub.login": "登入並連線到 Power Pages 環境以使用 Power Pages 動作。[深入了解](https://go.microsoft.com/fwlink/?linkid=2305702)。\n[登入](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile)",

@@ -18,7 +18,7 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 
 [Power Platform CLI Exposed](https://www.youtube.com/playlist?list=PLlrxD0HtieHhEdLHxQOU96ySSZpMCyAxf)
 
-## Requirements
+## Requirements 
 
 - VSCode >= 1.73.0
 - Windows: .NET 4.8
@@ -91,7 +91,7 @@ Listing all Solutions from the current Dataverse Organization...
 
 Please use the issues tracker in the home repo: <https://github.com/microsoft/powerplatform-vscode/issues>
 
-## Contributing 
+## Contributing
 
 This project will welcome contributions in the near future. At this stage, we're not ready for contributions,
 but do welcome your suggestions via this repository's issue tracker.
