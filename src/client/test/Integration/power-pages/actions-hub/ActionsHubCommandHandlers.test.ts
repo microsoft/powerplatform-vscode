@@ -29,6 +29,8 @@ import * as WorkspaceInfoFinderUtil from "../../../../../common/utilities/Worksp
 import path from 'path';
 import { SiteVisibility } from '../../../../power-pages/actions-hub/models/SiteVisibility';
 import * as TelemetryHelper from '../../../../power-pages/actions-hub/TelemetryHelper';
+import { CODEQL_EXTENSION_ID } from '../../../../../common/constants';
+import { CodeQLAction } from '../../../../power-pages/actions-hub/actions/codeQLAction';
 
 describe('ActionsHubCommandHandlers', () => {
     let sandbox: sinon.SinonSandbox;
@@ -1502,21 +1504,27 @@ describe('ActionsHubCommandHandlers', () => {
         let mockShowWarningMessage: sinon.SinonStub;
         let mockGetExtension: sinon.SinonStub;
         let mockShowProgressNotification: sinon.SinonStub;
+        let mockExecuteCommand: sinon.SinonStub;
+        let mockCodeQLAction: sinon.SinonStubbedInstance<CodeQLAction>;
         let mockSiteTreeItem: SiteTreeItem;
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        let mockHasPowerPagesSiteFolder: sinon.SinonStub;
 
         beforeEach(() => {
             mockShowErrorMessage = sandbox.stub(vscode.window, 'showErrorMessage');
             mockShowWarningMessage = sandbox.stub(vscode.window, 'showWarningMessage');
             mockGetExtension = sandbox.stub(vscode.extensions, 'getExtension');
+            mockExecuteCommand = sandbox.stub(vscode.commands, 'executeCommand');
             mockShowProgressNotification = sandbox.stub(Utils, 'showProgressWithNotification').callsFake(async (title: string, task: (progress: vscode.Progress<{
                 message?: string;
                 increment?: number;
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
             }>) => Promise<any>) => await task({} as unknown as vscode.Progress<{ message?: string; increment?: number }>));
 
-            mockHasPowerPagesSiteFolder = sandbox.stub(WorkspaceInfoFinderUtil, 'hasPowerPagesSiteFolder').returns(true);
+            // Mock CodeQLAction constructor and methods
+            mockCodeQLAction = {
+                executeCodeQLAnalysisWithCustomPath: sandbox.stub().resolves(),
+                dispose: sandbox.stub()
+            } as sinon.SinonStubbedInstance<CodeQLAction>;
+            sandbox.stub(CodeQLAction.prototype, 'executeCodeQLAnalysisWithCustomPath').callsFake(mockCodeQLAction.executeCodeQLAnalysisWithCustomPath);
 
             mockSiteTreeItem = new SiteTreeItem({
                 name: "Test Site",
@@ -1540,12 +1548,13 @@ describe('ActionsHubCommandHandlers', () => {
 
             await runCodeQLScreening(mockSiteTreeItem);
 
-            expect(mockGetExtension.calledWith('github.vscode-codeql')).to.be.true;
+            expect(mockGetExtension.calledWith(CODEQL_EXTENSION_ID)).to.be.true;
             expect(mockShowWarningMessage.calledWith(
                 Constants.Strings.CODEQL_EXTENSION_NOT_INSTALLED,
                 Constants.Strings.INSTALL,
                 Constants.Strings.CANCEL
             )).to.be.true;
+            expect(mockExecuteCommand.calledWith('workbench.extensions.installExtension', CODEQL_EXTENSION_ID)).to.be.true;
         });
 
         it('should show error when current site path not found', async () => {
@@ -1564,6 +1573,7 @@ describe('ActionsHubCommandHandlers', () => {
             await runCodeQLScreening(mockSiteTreeItem);
 
             expect(mockShowProgressNotification.calledWith(Constants.Strings.CODEQL_SCREENING_STARTED)).to.be.true;
+            expect(mockCodeQLAction.executeCodeQLAnalysisWithCustomPath.called).to.be.true;
         });
 
         it('should handle errors gracefully', async () => {
