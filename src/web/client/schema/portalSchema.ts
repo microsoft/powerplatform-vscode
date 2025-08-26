@@ -120,7 +120,7 @@ export const portal_schema_V1 = {
                 _exporttype: "SingleFolder",
                 _fetchQueryParameters:
                     "?$filter=adx_serverlogicid eq {entityId} &$select=name",
-                _multiFileFetchQueryParameters: "?$filter=_website_value eq {websiteId} &$select=adx_serverlogicid,name,content&$count=true",
+                _multiFileFetchQueryParameters: "?$filter=_website_value eq {websiteId} &$select=adx_serverlogicid,name,filecontent&$count=true",
                 _attributes: "filecontent",
                 _attributesExtension: new Map([["filecontent", "js"]]),
                 _mappingEntityFetchQuery: new Map([

@@ -623,6 +623,10 @@ async function fetchMappingEntityContent(
 
     const result = await response.json();
     const data = result.value ?? result;
+
+    if(entity === schemaEntityName.SERVERLOGICS) {
+        return data || Constants.NO_CONTENT;
+    }
     if (isPortalVersionV1() && result[Constants.ODATA_COUNT] > 0 && data.length > 0) {
         return data[0];
     }

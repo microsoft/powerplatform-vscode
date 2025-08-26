@@ -92,10 +92,14 @@ async function getSaveParameters(
             useOctetStreamContentType(entityName, attributePath.source)
         );
         if (webFileV2) {
+            let fileName = fileDataMap.get(fileUri.fsPath)?.fileName as string;
+            if (entityName === 'serverlogics' && fileName && !fileName.endsWith('.sl')) {
+                const baseName = fileName.endsWith('.js') ? fileName.slice(0, -3) : fileName;
+                fileName = `${baseName}.sl`;
+            }
             saveCallParameters.requestInit.headers = {
                 ...saveCallParameters.requestInit.headers,
-                "x-ms-file-name": fileDataMap.get(fileUri.fsPath)
-                    ?.fileName as string,
+                "x-ms-file-name": fileName,
             };
         }
 
@@ -157,9 +161,12 @@ async function saveDataToDataverse(
         const entityName = fileDataMap.get(fileUri.fsPath)
             ?.entityName as string;
         const requestSentAtTime = new Date().getTime();
-        const fileExtensionType = fileDataMap.get(
+        let fileExtensionType = fileDataMap.get(
             fileUri.fsPath
         )?.entityFileExtensionType;
+        if(entityName == "serverlogics") {
+            fileExtensionType = 'sl';
+        }
 
         try {
             WebExtensionContext.telemetry.sendAPITelemetry(
