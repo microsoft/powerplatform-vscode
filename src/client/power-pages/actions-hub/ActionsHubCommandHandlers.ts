@@ -1024,12 +1024,6 @@ export const runCodeQLScreening = async (siteTreeItem?: SiteTreeItem) => {
 
 
 export const loginToMatch = async (serviceEndpointStamp: ServiceEndpointCategory): Promise<void> => {
-    traceInfo(Constants.EventNames.ACTIONS_HUB_LOGIN_TO_MATCH_CALLED, { 
-        methodName: loginToMatch.name,
-        serviceEndpointStamp: serviceEndpointStamp || 'undefined',
-        hasStamp: !!serviceEndpointStamp
-    });
-    
     // Also track that user clicked the login prompt
     traceInfo(Constants.EventNames.ACTIONS_HUB_LOGIN_PROMPT_CLICKED, {
         methodName: loginToMatch.name,
@@ -1040,7 +1034,7 @@ export const loginToMatch = async (serviceEndpointStamp: ServiceEndpointCategory
         // Force VS Code authentication flow by clearing existing session and creating a new one
         // This will ensure the authentication dialog is shown even if user is already authenticated
         const PPAPI_WEBSITES_ENDPOINT = serviceScopeMapping[serviceEndpointStamp];
-        
+
         traceInfo(Constants.EventNames.ACTIONS_HUB_LOGIN_TO_MATCH_CALLED, {
             methodName: loginToMatch.name,
             endpoint: PPAPI_WEBSITES_ENDPOINT || 'undefined',
@@ -1071,11 +1065,11 @@ export const loginToMatch = async (serviceEndpointStamp: ServiceEndpointCategory
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         const errorType = error instanceof Error ? error.constructor.name : typeof error;
-        
+
         traceError(
             Constants.EventNames.ACTIONS_HUB_LOGIN_TO_MATCH_FAILED,
             error as Error,
-            { 
+            {
                 methodName: loginToMatch.name,
                 errorType: errorType,
                 errorMessage: errorMessage,
@@ -1083,7 +1077,7 @@ export const loginToMatch = async (serviceEndpointStamp: ServiceEndpointCategory
                 hasStamp: !!serviceEndpointStamp
             }
         );
-        
+
         await vscode.window.showErrorMessage(
             Constants.Strings.AUTHENTICATION_FAILED
         );

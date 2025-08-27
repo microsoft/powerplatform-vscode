@@ -50,11 +50,11 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
             orgChangeErrorEvent(() => this.refresh()),
 
             vscode.authentication.onDidChangeSessions((event) => {
-                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_REFRESH, { 
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_REFRESH, {
                     methodName: 'onDidChangeSessions',
                     eventProvider: event.provider?.id || 'unknown',
                     triggerReason: 'authentication_session_changed',
-                    ...getBaseEventInfo() 
+                    ...getBaseEventInfo()
                 });
                 this._loadWebsites = true;
                 this.refresh();
@@ -97,20 +97,18 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     }
 
     private async checkAccountsMatch(): Promise<boolean> {
-        oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_ACCOUNT_CHECK_CALLED, { methodName: this.checkAccountsMatch.name, ...getBaseEventInfo() });
-
         try {
             const authInfo = PacContext.AuthInfo;
             const session = await vscode.authentication.getSession(PROVIDER_ID, [], { silent: true });
 
             if (!session || !session.accessToken || !authInfo) {
-                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_ACCOUNT_CHECK_CALLED, { 
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_ACCOUNT_CHECK_CALLED, {
                     methodName: this.checkAccountsMatch.name,
                     result: 'missing_session_or_auth',
                     hasSession: !!session,
                     hasAccessToken: !!session?.accessToken,
-                    hasAuthInfo: !!authInfo,
-                    ...getBaseEventInfo() 
+                    hasPacAuthInfo: !!authInfo,
+                    ...getBaseEventInfo()
                 });
                 return false;
             }
@@ -148,12 +146,12 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                 });
             }
 
-            return accountsMatch;
+            return !!accountsMatch;
         } catch (error) {
-            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_ACCOUNT_CHECK_FAILED, error as string, error as Error, { 
+            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_ACCOUNT_CHECK_FAILED, error as string, error as Error, {
                 methodName: this.checkAccountsMatch.name,
                 errorType: error instanceof Error ? error.constructor.name : typeof error,
-                ...getBaseEventInfo() 
+                ...getBaseEventInfo()
             });
             return false;
         }
@@ -253,7 +251,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio", openInStudio),
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite", reactivateSite),
-            
+
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.loginToMatch", () => {
                 const serviceEndpointStamp = ArtemisContext.ServiceResponse?.stamp;
                 return loginToMatch(serviceEndpointStamp);
