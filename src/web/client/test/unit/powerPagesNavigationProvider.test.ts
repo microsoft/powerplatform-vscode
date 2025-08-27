@@ -4,7 +4,6 @@
  */
 
 import { expect } from "chai";
-import * as vscode from "vscode";
 
 // Test the PowerPages navigation provider functionality
 describe('PowerPagesNavigationProvider Desktop Integration', () => {
@@ -41,8 +40,8 @@ describe('PowerPagesNavigationProvider Desktop Integration', () => {
             const orgUrl = "https://testorg.crm.dynamics.com/";
 
             const uri = `vscode://microsoft-IsvExpTools.powerplatform-vscode/open?websiteid=${websiteId}&envid=${envId}&orgurl=${encodeURIComponent(orgUrl)}`;
-            const parsedUri = vscode.Uri.parse(uri);
-            const params = new URLSearchParams(parsedUri.query);
+            const parsedUri = new URL(uri);
+            const params = new URLSearchParams(parsedUri.search);
 
             expect(params.get('websiteid')).to.equal(websiteId);
             expect(params.get('envid')).to.equal(envId);
@@ -56,7 +55,7 @@ describe('PowerPagesNavigationProvider Desktop Integration', () => {
             const envId = 'test-env';
             const orgUrl = 'https://test.com';
 
-            const isValid = websiteId && envId && orgUrl;
+            const isValid = Boolean(websiteId && envId && orgUrl);
             expect(isValid).to.be.false;
         });
 
@@ -65,7 +64,7 @@ describe('PowerPagesNavigationProvider Desktop Integration', () => {
             const envId = '';
             const orgUrl = 'https://test.com';
 
-            const isValid = websiteId && envId && orgUrl;
+            const isValid = Boolean(websiteId && envId && orgUrl);
             expect(isValid).to.be.false;
         });
 
@@ -74,7 +73,7 @@ describe('PowerPagesNavigationProvider Desktop Integration', () => {
             const envId = 'test-env';
             const orgUrl = '';
 
-            const isValid = websiteId && envId && orgUrl;
+            const isValid = Boolean(websiteId && envId && orgUrl);
             expect(isValid).to.be.false;
         });
 
@@ -83,7 +82,7 @@ describe('PowerPagesNavigationProvider Desktop Integration', () => {
             const envId = 'test-env';
             const orgUrl = 'https://test.com';
 
-            const isValid = websiteId && envId && orgUrl;
+            const isValid = Boolean(websiteId && envId && orgUrl);
             expect(isValid).to.be.true;
         });
     });
@@ -92,7 +91,7 @@ describe('PowerPagesNavigationProvider Desktop Integration', () => {
         it('should create proper tree node for desktop option', () => {
             const node = {
                 label: 'Open in VS Code Desktop',
-                iconPath: new vscode.ThemeIcon('desktop'),
+                iconPath: { id: 'desktop' }, // Mock ThemeIcon
                 command: {
                     command: 'powerpages.powerPagesFileExplorer.openInDesktop',
                     title: 'Open in VS Code Desktop'
@@ -106,7 +105,7 @@ describe('PowerPagesNavigationProvider Desktop Integration', () => {
         });
 
         it('should have proper icon path for desktop', () => {
-            const desktopIcon = new vscode.ThemeIcon('desktop');
+            const desktopIcon = { id: 'desktop' }; // Mock ThemeIcon
             expect(desktopIcon.id).to.equal('desktop');
         });
     });
@@ -145,12 +144,12 @@ describe('PowerPagesNavigationProvider Desktop Integration', () => {
 
         it('should handle URI parsing and reconstruction', () => {
             const originalUri = 'vscode://microsoft-IsvExpTools.powerplatform-vscode/open?websiteid=abc&envid=def&orgurl=https%3A%2F%2Ftest.com';
-            const parsedUri = vscode.Uri.parse(originalUri);
-            const params = new URLSearchParams(parsedUri.query);
+            const parsedUri = new URL(originalUri);
+            const params = new URLSearchParams(parsedUri.search);
 
-            expect(parsedUri.scheme).to.equal('vscode');
-            expect(parsedUri.authority).to.equal('microsoft-IsvExpTools.powerplatform-vscode');
-            expect(parsedUri.path).to.equal('/open');
+            expect(parsedUri.protocol).to.equal('vscode:');
+            expect(parsedUri.hostname).to.equal('microsoft-IsvExpTools.powerplatform-vscode');
+            expect(parsedUri.pathname).to.equal('/open');
             expect(params.get('websiteid')).to.equal('abc');
             expect(params.get('envid')).to.equal('def');
             expect(decodeURIComponent(params.get('orgurl') || '')).to.equal('https://test.com');
@@ -163,7 +162,7 @@ describe('PowerPagesNavigationProvider Desktop Integration', () => {
             const envId = undefined;
             const orgUrl = undefined;
 
-            const hasAllParams = websiteId && envId && orgUrl;
+            const hasAllParams = Boolean(websiteId && envId && orgUrl);
             expect(hasAllParams).to.be.false;
         });
 
@@ -172,7 +171,7 @@ describe('PowerPagesNavigationProvider Desktop Integration', () => {
             const envId = null;
             const orgUrl = null;
 
-            const hasAllParams = websiteId && envId && orgUrl;
+            const hasAllParams = Boolean(websiteId && envId && orgUrl);
             expect(hasAllParams).to.be.false;
         });
 
@@ -237,8 +236,8 @@ describe('PowerPagesNavigationProvider Desktop Integration', () => {
             const schema = "PortalSchemaV2";
 
             const uri = `vscode://microsoft-IsvExpTools.powerplatform-vscode/open?websiteid=${websiteId}&envid=${envId}&orgurl=${encodeURIComponent(orgUrl)}&schema=${schema}`;
-            const parsedUri = vscode.Uri.parse(uri);
-            const params = new URLSearchParams(parsedUri.query);
+            const parsedUri = new URL(uri);
+            const params = new URLSearchParams(parsedUri.search);
 
             expect(params.get('websiteid')).to.equal(websiteId);
             expect(params.get('envid')).to.equal(envId);
