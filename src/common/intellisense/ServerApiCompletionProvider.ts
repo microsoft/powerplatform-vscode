@@ -191,6 +191,17 @@ export class ServerApiDefinitions {
                     ],
                     returnType: "void",
                     example: "Server.Connector.Dataverse.DeleteRecord('contacts', contactId);"
+                },
+                {
+                    name: "InvokeCustomApi",
+                    description: "Invokes a custom API endpoint",
+                    parameters: [
+                        { name: "httpMethod", type: "string", description: "The HTTP method to use (e.g., GET, POST)" },
+                        { name: "url", type: "string", description: "The API endpoint URL" },
+                        { name: "payload", type: "string", description: "The JSON payload to send with the request" }
+                    ],
+                    returnType: "void",
+                    example: "Server.Connector.Dataverse.InvokeCustomApi('POST', '/api/data/v9.0/contacts', payload);"
                 }
             ]
         },
