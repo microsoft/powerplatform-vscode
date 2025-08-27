@@ -269,8 +269,17 @@ describe("ActionsHubTreeDataProvider", () => {
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening")).to.be.true;
 
-            await registerCommandStub.getCall(16).args[1]();
-            expect(mockCommandHandler.calledOnce).to.be.true;
+            // Find the CodeQL command in the registered commands
+            const codeQLCall = registerCommandStub.getCalls().find(call =>
+                call.args[0] === "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening"
+            );
+
+            if (codeQLCall) {
+                await codeQLCall.args[1]();
+                expect(mockCommandHandler.calledOnce).to.be.true;
+            } else {
+                throw new Error("CodeQL command was not registered");
+            }
         });
     });
 
