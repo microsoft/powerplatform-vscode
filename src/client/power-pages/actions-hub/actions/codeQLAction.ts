@@ -21,7 +21,7 @@ export class CodeQLAction {
         this.outputChannel = vscode.window.createOutputChannel(Constants.Strings.CODEQL_ANALYSIS_CHANNEL_NAME);
     }
 
-    public async executeCodeQLAnalysisWithCustomPath(sitePath: string, databaseLocation: string): Promise<void> {
+    public async executeCodeQLAnalysisWithCustomPath(sitePath: string, databaseLocation: string, powerPagesSiteFolderExists: boolean): Promise<void> {
         this.outputChannel.show();
         this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_ANALYSIS_STARTING, path.basename(sitePath)));
         this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_DATABASE_LOCATION, databaseLocation));
@@ -41,8 +41,8 @@ export class CodeQLAction {
             this.outputChannel.appendLine(Constants.Strings.CODEQL_RUNNING_ANALYSIS);
             const resultsPath = path.join(path.dirname(dbPath), 'results.sarif');
 
-            // Get the query suite from config or use default
-            const querySuite = await this.getCodeQLQuerySuite(sitePath);
+            // Get the query suite from config or use default - only check config if Power Pages folder exists
+            const querySuite = await this.getCodeQLQuerySuite(sitePath, powerPagesSiteFolderExists);
 
             try {
                 // Use the correct syntax for JavaScript code scanning query suite
@@ -401,9 +401,16 @@ export class CodeQLAction {
         }
     }
 
-    private async getCodeQLQuerySuite(sitePath: string): Promise<string> {
-        const configPath = path.join(sitePath, 'powerpages.config.json');
+    private async getCodeQLQuerySuite(sitePath: string, powerPagesSiteFolderExists: boolean): Promise<string> {
         const defaultQuerySuite = 'codeql/javascript-queries:codeql-suites/javascript-security-and-quality.qls';
+
+        // Only check for config if Power Pages folder exists
+        if (!powerPagesSiteFolderExists) {
+            this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_USING_DEFAULT_QUERY, defaultQuerySuite));
+            return defaultQuerySuite;
+        }
+
+        const configPath = path.join(sitePath, 'powerpages.config.json');
 
         try {
             if (fs.existsSync(configPath)) {
