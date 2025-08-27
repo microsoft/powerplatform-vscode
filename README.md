@@ -18,7 +18,7 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 
 [Power Platform CLI Exposed](https://www.youtube.com/playlist?list=PLlrxD0HtieHhEdLHxQOU96ySSZpMCyAxf)
 
-## Requirements
+## Requirements 
 
 - VSCode >= 1.73.0
 - Windows: .NET 4.8
@@ -104,7 +104,7 @@ See details in [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md)
 
 ### Security issues
 
-Please report any security concerns or issues as described in this [SECURITY](SECURITY.md) document.
+Please report any security concerns or issues as described in [SECURITY](SECURITY.md) document.
 
 ## Trademarks
 

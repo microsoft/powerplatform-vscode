@@ -8,7 +8,7 @@ import * as fs from 'fs';
 import * as yaml from 'yaml';
 import { Constants } from './Constants';
 import { PacTerminal } from '../../lib/PacTerminal';
-import { POWERPAGES_SITE_FOLDER, SUCCESS, UTF8_ENCODING, WEBSITE_YML } from '../../../common/constants';
+import { POWERPAGES_SITE_FOLDER, SUCCESS, UTF8_ENCODING, CODEQL_EXTENSION_ID } from '../../../common/constants';
 import { AuthInfo, OrgListOutput } from '../../pac/PacTypes';
 import { extractAuthInfo } from '../commonUtility';
 import { showProgressWithNotification } from '../../../common/utilities/Utils';
@@ -24,7 +24,7 @@ import { IOtherSiteInfo, IWebsiteDetails, WebsiteYaml } from '../../../common/se
 import { getActiveWebsites, getAllWebsites } from '../../../common/utilities/WebsiteUtil';
 import CurrentSiteContext from './CurrentSiteContext';
 import path from 'path';
-import { getWebsiteRecordId } from '../../../common/utilities/WorkspaceInfoFinderUtil';
+import { getWebsiteRecordId, hasWebsiteYaml, getWebsiteYamlPath } from '../../../common/utilities/WorkspaceInfoFinderUtil';
 import { isEdmEnvironment } from '../../../common/copilot/dataverseMetadata';
 import { IWebsiteInfo } from './models/IWebsiteInfo';
 import moment from 'moment';
@@ -32,6 +32,8 @@ import { SiteVisibility } from './models/SiteVisibility';
 import { getBaseEventInfo, traceError, traceInfo } from './TelemetryHelper';
 import { IPowerPagesConfig, IPowerPagesConfigData } from './models/IPowerPagesConfig';
 import { oneDSLoggerWrapper } from '../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
+import { CodeQLAction } from './actions/codeQLAction';
+import { getDefaultCodeQLDatabasePath } from './ActionsHubUtils';
 
 const sortByCreatedOn = <T extends { createdOn?: string | null }>(item1: T, item2: T): number => {
     const date1 = new Date(item1.createdOn || '').valueOf(); //NaN if createdOn is null or undefined
@@ -571,19 +573,18 @@ export function findOtherSites(knownSiteIds: Set<string>, fsModule = fs, yamlMod
         // Check each directory for website.yml or .powerpages-site folder
         const otherSites: IOtherSiteInfo[] = [];
         for (const dir of directories) {
-            let websiteYamlPath = path.join(dir, WEBSITE_YML);
-            let hasWebsiteYaml = fsModule.existsSync(websiteYamlPath);
-            const powerPagesSiteFolderPath = path.join(dir, POWERPAGES_SITE_FOLDER);
-            const hasPowerPagesSiteFolder = fsModule.existsSync(powerPagesSiteFolderPath);
+            let websiteYamlPath = getWebsiteYamlPath(dir);
+            let hasWebsiteYamlFile = hasWebsiteYaml(dir);
+            const powerPagesSiteFolderExists = fs.existsSync(dir)
             let workingDir = dir;
 
-            if (hasPowerPagesSiteFolder) {
+            if (powerPagesSiteFolderExists) {
                 workingDir = path.join(dir, POWERPAGES_SITE_FOLDER);
-                websiteYamlPath = path.join(workingDir, WEBSITE_YML);
-                hasWebsiteYaml = fsModule.existsSync(websiteYamlPath);
+                websiteYamlPath = getWebsiteYamlPath(workingDir);
+                hasWebsiteYamlFile = hasWebsiteYaml(workingDir);
             }
 
-            if (hasWebsiteYaml) {
+            if (hasWebsiteYamlFile) {
                 try {
                     // Use the utility function to get website record ID
                     const websiteId = getWebsiteRecordId(workingDir);
@@ -598,7 +599,7 @@ export function findOtherSites(knownSiteIds: Set<string>, fsModule = fs, yamlMod
                             name: websiteData?.adx_name || path.basename(dir), // Use folder name as fallback
                             websiteId: websiteId,
                             folderPath: dir,
-                            isCodeSite: hasPowerPagesSiteFolder
+                            isCodeSite: powerPagesSiteFolderExists
                         });
                     }
                 } catch (error) {
@@ -939,3 +940,81 @@ export const reactivateSite = async (siteTreeItem: SiteTreeItem) => {
 
     await vscode.env.openExternal(vscode.Uri.parse(reactivateSiteUrl));
 };
+
+export const runCodeQLScreening = async (siteTreeItem?: SiteTreeItem) => {
+    traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_CALLED, { methodName: runCodeQLScreening.name });
+
+    try {
+        // Get the current site path
+        let sitePath = "";
+        if (siteTreeItem && siteTreeItem.contextValue === Constants.ContextValues.OTHER_SITE) {
+            sitePath = siteTreeItem.siteInfo.folderPath || "";
+        } else {
+            sitePath = CurrentSiteContext.currentSiteFolderPath || "";
+        }
+
+        if (!sitePath) {
+            await vscode.window.showErrorMessage(Constants.Strings.CODEQL_CURRENT_SITE_PATH_NOT_FOUND);
+            return;
+        }
+
+        const powerPagesSiteFolderExists = fs.existsSync(sitePath);
+
+        // Check if CodeQL extension is installed
+        const codeQLExtension = vscode.extensions.getExtension(CODEQL_EXTENSION_ID);
+
+        if (!codeQLExtension) {
+            // Prompt user to install the CodeQL extension
+            const install = await vscode.window.showWarningMessage(
+                Constants.Strings.CODEQL_EXTENSION_NOT_INSTALLED,
+                Constants.Strings.INSTALL,
+                Constants.Strings.CANCEL
+            );
+
+            if (install === Constants.Strings.INSTALL) {
+                await vscode.commands.executeCommand('workbench.extensions.installExtension', CODEQL_EXTENSION_ID);
+                traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_EXTENSION_NOT_INSTALLED, { methodName: runCodeQLScreening.name });
+                return;
+            } else {
+                return;
+            }
+        }
+
+        // Use default database location (site folder)
+        const databaseLocation = getDefaultCodeQLDatabasePath();
+
+        traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_EXTENSION_INSTALLED, { methodName: runCodeQLScreening.name });
+
+        const codeQLAction = new CodeQLAction();
+
+        try {
+            await showProgressWithNotification(
+                Constants.Strings.CODEQL_SCREENING_STARTED,
+                async () => {
+                    // Use a custom method that allows specifying the database location
+                    await codeQLAction.executeCodeQLAnalysisWithCustomPath(sitePath, databaseLocation, powerPagesSiteFolderExists);
+                }
+            );
+
+            traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_COMPLETED, { methodName: runCodeQLScreening.name });
+        } catch (error) {
+            traceError(
+                Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_FAILED,
+                error as Error,
+                { methodName: runCodeQLScreening.name }
+            );
+            await vscode.window.showErrorMessage(Constants.Strings.CODEQL_SCREENING_FAILED);
+        } finally {
+            //codeQLAction.dispose();
+        }
+
+    } catch (error) {
+        traceError(
+            Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_FAILED,
+            error as Error,
+            { methodName: runCodeQLScreening.name }
+        );
+        await vscode.window.showErrorMessage(Constants.Strings.CODEQL_SCREENING_FAILED);
+    }
+};
+
