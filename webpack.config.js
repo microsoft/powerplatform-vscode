@@ -49,7 +49,7 @@ const nodeConfig = {
             ]
         }]
     },
-    plugins:[
+    plugins: [
         new webpack.DefinePlugin({
             __GENERATOR_PACKAGE_VERSION__: JSON.stringify(dependencies["@microsoft/generator-powerpages"] || "1.0.0"), // get the currently used version of powerpages generator with fallback to ^1.0.0
         }),
@@ -83,6 +83,11 @@ const webConfig = {
         extensions: ['.ts', '.js'], // support ts-files and js-files
         alias: {
             // provides alternate implementation for node module and source files
+            // Handle node: prefixed modules
+            "node:events": "events",
+            "node:fs": false,
+            "node:path": "path-browserify",
+            "node:util": "util",
         },
         fallback: {
             // Webpack 5 no longer polyfills Node.js core modules automatically.
@@ -93,8 +98,14 @@ const webConfig = {
             "os": require.resolve("os-browserify"),
             "path": require.resolve("path-browserify"),
             'stream': require.resolve("stream-browserify"),
-            'util': false,
+            'util': require.resolve('util/'),
             buffer: require.resolve('buffer'),
+            'events': require.resolve('events/'),
+            // Handle node: prefixed modules
+            "node:events": require.resolve('events/'),
+            "node:fs": false,
+            "node:path": require.resolve("path-browserify"),
+            "node:util": require.resolve('util/'),
         }
     },
     module: {
@@ -108,7 +119,7 @@ const webConfig = {
     },
     plugins: [
         new webpack.ProvidePlugin({
-            Buffer: [ 'buffer', 'Buffer' ],
+            Buffer: ['buffer', 'Buffer'],
         }),
         new webpack.DefinePlugin({
             IS_DESKTOP: false,
@@ -117,6 +128,11 @@ const webConfig = {
     externals: {
         'vscode': 'commonjs vscode', // ignored because it doesn't exist
         'fs': 'fs',
+        // Handle node: scheme modules by marking them as externals
+        'node:events': 'commonjs events',
+        'node:fs': 'commonjs fs',
+        'node:path': 'commonjs path',
+        'node:util': 'commonjs util',
     },
     performance: {
         hints: false
@@ -146,7 +162,13 @@ const webWorkerConfig = {
     },
     resolve: {
         extensions: [".ts", ".js"], // support ts-files and js-files
-        alias: {},
+        alias: {
+            // Handle node: prefixed modules
+            "node:events": "events",
+            "node:fs": false,
+            "node:path": "path-browserify",
+            "node:util": "util",
+        },
         fallback: {
             path: require.resolve("path-browserify"),
             tty: require.resolve("tty-browserify"),
@@ -155,6 +177,13 @@ const webWorkerConfig = {
             http: require.resolve("stream-http"),
             zlib: require.resolve("browserify-zlib"),
             https: require.resolve("https-browserify"),
+            events: require.resolve('events/'),
+            util: require.resolve('util/'),
+            // Handle node: prefixed modules
+            "node:events": require.resolve('events/'),
+            "node:fs": false,
+            "node:path": require.resolve("path-browserify"),
+            "node:util": require.resolve('util/'),
         },
     },
     module: {
@@ -179,6 +208,11 @@ const webWorkerConfig = {
     },
     externals: {
         vscode: "commonjs vscode", // ignored because it doesn't exist
+        // Handle node: scheme modules by marking them as externals
+        'node:events': 'commonjs events',
+        'node:fs': 'commonjs fs',
+        'node:path': 'commonjs path',
+        'node:util': 'commonjs util',
     },
     performance: {
         hints: false,
