@@ -55,6 +55,22 @@ export class ServerApiDefinitions {
                         { name: "message", type: "string", description: "The message to log" }
                     ],
                     example: "Server.Logger.Log('Application started');"
+                },
+                {
+                    name: "Warn",
+                    description: "Logs a warning message",
+                    parameters: [
+                        { name: "message", type: "string", description: "The warning message to log" }
+                    ],
+                    example: "Server.Logger.Warn('Potential issue detected');"
+                },
+                {
+                    name: "Error",
+                    description: "Logs an error message",
+                    parameters: [
+                        { name: "message", type: "string", description: "The error message to log" }
+                    ],
+                    example: "Server.Logger.Error('An error occurred');"
                 }
             ]
         },
