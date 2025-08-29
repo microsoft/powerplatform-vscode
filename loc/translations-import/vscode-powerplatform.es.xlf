@@ -2,6 +2,14 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="bundle" source-language="en" datatype="plaintext" target-language="es">
     <body>
+      <trans-unit id="++CODE++08833dda22312dacb09f1d185caedf751289ee89a4c75682a09f4a262bf67ac4">
+        <source xml:lang="en"> End of Code Block </source>
+        <target state="translated"> Fin del bloque de código </target>
+      </trans-unit>
+      <trans-unit id="++CODE++29bb69945e50cb632fabf16f3f89a25d813910c19059d8a792f66262a952039d">
+        <source xml:lang="en">@PowerPages is not yet available in your region.</source>
+        <target state="translated">@PowerPages aún no está disponible en su región.</target>
+      </trans-unit>
       <trans-unit id="++CODE++32e135c21be9286cda2fda96fbe713f9af60f5f933e4e58468f256dd54b95575">
         <source xml:lang="en">A content snippet with the same name already exists. Please enter a different name.</source>
         <target state="translated">Ya existe un fragmento de contenido con el mismo nombre. Especifique otro nombre.</target>
@@ -18,9 +26,25 @@
         <source xml:lang="en">A webtemplate with the same name already exists. Please enter a different name.</source>
         <target state="translated">Ya existe una plantilla web con el mismo nombre. Especifique otro nombre.</target>
       </trans-unit>
+      <trans-unit id="++CODE++bcfb3427790816de073090a76469fec945a3c7f5f82bbac338378ea22784c70a">
+        <source xml:lang="en">AI features have been disabled by your organization. Contact your admin for details. [Learn more](https://go.microsoft.com/fwlink/?linkid=2285848)</source>
+        <target state="translated">Su organización ha deshabilitado las características de IA. Póngase en contacto con el administrador para obtener más información. [Más información](https://go.microsoft.com/fwlink/?linkid=2285848)</target>
+      </trans-unit>
       <trans-unit id="++CODE++8d35e64354d3db3df1df4ef8e6068b6b9dd58514fcf980f7071e10ed160db95a">
         <source xml:lang="en">AI-generated content can contain mistakes</source>
         <target state="translated">El contenido generado por IA puede contener errores</target>
+      </trans-unit>
+      <trans-unit id="++CODE++031018d0f4bb3985ac963d91cb607a9eaab8855a00990613c5327a1edb0032f7">
+        <source xml:lang="en">Activating CodeQL extension...</source>
+        <target state="translated">Activando la extensión CodeQL...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e8e28535ce31524257fd35ecc72ba709bf789ab572aa517bf1c0af2870520415">
+        <source xml:lang="en">Activating SARIF viewer extension...</source>
+        <target state="translated">Activando la extensión del visor SARIF...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++b82f83283cc4275cf0d58b4f55d1242fe46227ee1da9db4b81b6b08804dcbf01">
+        <source xml:lang="en">Active Sites</source>
+        <target state="translated">Sitios activos</target>
       </trans-unit>
       <trans-unit id="++CODE++5f9c7a14b3c0c2971e4a8f4471af5071dbd3cf37f96fa09fe1257124c0b7e921">
         <source xml:lang="en">Active auth profile is not found or has expired. Please try again.</source>
@@ -34,10 +58,22 @@
         <source xml:lang="en">Add content snippet name (name should be unique)</source>
         <target state="translated">Agregar el nombre del fragmento de contenido (el nombre debe ser único)</target>
       </trans-unit>
+      <trans-unit id="++CODE++0e24df55d08fd98cf5664002561cf1ab063231df2ec58e3a4ae50c063ba66828">
+        <source xml:lang="en">Added default query suite to config: {0}</source>
+        <target state="translated">Se agregó un conjunto de consultas predeterminado a la configuración: {0}</target>
+      </trans-unit>
       <trans-unit id="++CODE++e7027d80d4c05ae510621f20062db71d499cbd4f8760e3076a3530220fbf0a18">
         <source xml:lang="en">Adding {0} web file(s). Existing files will be skipped</source>
         <note>{0} represents the number of web files</note>
         <target state="translated">Agregando {0} archivos web. Se omitirán los archivos existentes</target>
+      </trans-unit>
+      <trans-unit id="++CODE++c910bd41bbf67f9965a2aabaec8d39b749280ffea62e9708c507374b581a331d">
+        <source xml:lang="en">Analysis complete! Results saved to: {0}</source>
+        <target state="translated">¡Análisis completo! Resultados guardados en: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++aeb9fa083d662124530feb2af1c98f6a36463b3f2d01e232517c7fb63f53f753">
+        <source xml:lang="en">Analysis completed using query suite: {0}</source>
+        <target state="translated">Análisis completado con el conjunto de consultas: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++3f82badfcbab5f7d6e5a4886a6df032cc28cdf5fe200a85bafd86101efe126c9">
         <source xml:lang="en">Are you sure you want to clear all the Auth Profiles?</source>
@@ -48,9 +84,17 @@
         <note>{0} is the user name, {1} is the URL of environment of the auth profile</note>
         <target state="translated">¿Seguro que desea eliminar el perfil de autenticación {0}-{1}?</target>
       </trans-unit>
-      <trans-unit id="++CODE++4190475b52357e7ad3da76828784a5b9f291519e331b0c0e71f5d14e946bbc4b">
-        <source xml:lang="en">Authentication failed. Please try again.</source>
-        <target state="translated">No se pudo autenticar. Vuelva a intentarlo.</target>
+      <trans-unit id="++CODE++e149c8c84127919560017a77982c24d21203ea0835f21dc45f34682f5e65840d">
+        <source xml:lang="en">Arrow icon</source>
+        <target state="translated">Icono de flecha</target>
+      </trans-unit>
+      <trans-unit id="++CODE++1f6087c22e8b59c12a5a95c61f5811ecd795e553b7a0d7f2e337e36dc26fe509">
+        <source xml:lang="en">Authenticating...</source>
+        <target state="translated">Autenticando...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++93c83aa255a01cb4ee50d86e561c78b6c28e3e0f7fd9143dd7817b93b3c5a198">
+        <source xml:lang="en">Authentication failed. Please login and try again.</source>
+        <target state="translated">No se pudo autenticar. Inicie sesión y vuelva a intentarlo.</target>
       </trans-unit>
       <trans-unit id="++CODE++a57666e58a53eea23667fddf0a7c41bdc64abfc5eae94637e88388a6b139b314">
         <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
@@ -59,6 +103,14 @@
       <trans-unit id="++CODE++bf27ec2e917b9f2578f8e6372f8656370d24cffe2c5a7b900d0b3280f8ec69fb">
         <source xml:lang="en">Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.</source>
         <target state="translated">Tenga cuidado al hacer cambios. Cualquier usuario puede ver inmediatamente los cambios que usted realice. Elija Editar el sitio para realizar cambios o cierre la pestaña del editor para cancelar sin hacer cambios.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++6fab20ee9c8b4cb1fa10d787f3cd4eac13d34d27050fd193162a2399f690f59c">
+        <source xml:lang="en">Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?</source>
+        <target state="translated">Tenga cuidado cuando actualice sitios públicos. Los cambios que realice serán visibles para cualquier persona inmediatamente. ¿Desea continuar?</target>
+      </trans-unit>
+      <trans-unit id="++CODE++c58a6bd402efb06c3e7dfd6d68910412fee2dfc1788ae384dc123089ce912285">
+        <source xml:lang="en">Browse...</source>
+        <target state="translated">Examinar...</target>
       </trans-unit>
       <trans-unit id="++CODE++19766ed6ccb2f4a32778eed80d1928d2c87a18d7c275ccb163ec6709d3eb2e27">
         <source xml:lang="en">Cancel</source>
@@ -78,6 +130,10 @@
         <source xml:lang="en">Cannot install pac CLI: {0}</source>
         <note>{0} represents the error message returned from the exception</note>
         <target state="translated">No se puede instalar pac CLI: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++b75d741af5a9c59c95a5c7b7d9f654bb93617232db14c8d2671a5c731828782b">
+        <source xml:lang="en">Changing environment...</source>
+        <target state="translated">Cambiando entorno...</target>
       </trans-unit>
       <trans-unit id="++CODE++9885d66d0771f63c5a4b5d3b8cbe26be8832bc941243f5b18573975750a9986b">
         <source xml:lang="en">Check the URL and verify the parameters are correct</source>
@@ -99,10 +155,113 @@
         <source xml:lang="en">Choose web template</source>
         <target state="translated">Elegir plantilla web</target>
       </trans-unit>
+      <trans-unit id="++CODE++7aaafd1c6d6875eb1cd67e841f87457e929c922a18fef7c1452c1e1a4c036456">
+        <source xml:lang="en">Clearing cache. See [details](https://aka.ms/pages-clear-cache).</source>
+        <note>This is a markdown formatting which must persist across translations.
+The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">Borrando caché. Consulte [detalles](https://aka.ms/pages-clear-cache).</target>
+      </trans-unit>
+      <trans-unit id="++CODE++7d9eb7acb13e24625c404401d8e88b2350e32162455885f18276cf802f7701ed">
+        <source xml:lang="en">Close</source>
+        <target state="translated">Cerrar</target>
+      </trans-unit>
       <trans-unit id="++CODE++eef726ad55117038c05eaa478148144884ab56cadc5a46785e8221040ff7a6ec">
         <source xml:lang="en">Cloud Instance: {0}</source>
         <note>The {0} represents profile's Azure Cloud Instances</note>
         <target state="translated">Instancia en la nube: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e0a2ada39bb1b062967ebf06c78ad62004625c48072b3e62656836c2b775aa3f">
+        <source xml:lang="en">Cluster category: {0}</source>
+        <note>{0} is the Cluster category</note>
+        <target state="translated">Categoría de clúster: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++8f3ffa30307b4f73ca60c319ab62428b539d8410f1d62f67d941ba9957b39d9e">
+        <source xml:lang="en">Cluster environment: {0}</source>
+        <note>{0} is the Cluster environment</note>
+        <target state="translated">Entorno de clúster: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++396ccbc26f4551ea0d94633d40a1a5b105360b9b30cf8897e1fde4c9d064a163">
+        <source xml:lang="en">Cluster geo name: {0}</source>
+        <note>{0} is the cluster geo name</note>
+        <target state="translated">Nombre de geoárea del clúster: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++51e495f295ba55f724b77298746e3284ff9fc8e1e582828a9a3f4051fc577cb0">
+        <source xml:lang="en">Code Block </source>
+        <target state="translated">Bloque de código </target>
+      </trans-unit>
+      <trans-unit id="++CODE++876831b143507fffa7cbdec8d0d72b9dc328976180b4206c83331911a27d6740">
+        <source xml:lang="en">CodeQL Analysis</source>
+        <target state="translated">Análisis de CodeQL</target>
+      </trans-unit>
+      <trans-unit id="++CODE++67fe2c02a3f3e19ede0f449f4e42c477c8b6a55baee7edb23a1928df18403c07">
+        <source xml:lang="en">CodeQL CLI is not installed or not in PATH. Please install the CodeQL extension or add CodeQL CLI to your PATH.</source>
+        <target state="translated">La CLI de CodeQL no está instalada o no está en PATH. Instale la extensión CodeQL o agregue la CLI de CodeQL a su RUTA.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++4d957bcbf39044dd870f5e281bc90330855835fe5e2eec59d9cc66b5c6954e19">
+        <source xml:lang="en">CodeQL analysis completed successfully with no issues found! 🎉</source>
+        <target state="translated">¡El análisis de CodeQL se completó con éxito sin encontrar problemas! 🎉</target>
+      </trans-unit>
+      <trans-unit id="++CODE++c3275a1a575e00df769307ad10f3bc42c41d9a990386301c351bd29519010765">
+        <source xml:lang="en">CodeQL analysis completed. Would you like to open the full results file?</source>
+        <target state="translated">Análisis de CodeQL completado. ¿Desea abrir el archivo de resultados completo?</target>
+      </trans-unit>
+      <trans-unit id="++CODE++cf2d63639bdb46d783628b663433203e46d6dcf4cfb915adbaad0f13eb9d9905">
+        <source xml:lang="en">CodeQL analysis failed: {0}</source>
+        <target state="translated">Error en el análisis de CodeQL: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++eb7933b3f154963486dca26336ee1f27fea4c21f8c9b5dd0f85f05a2e38d8d5b">
+        <source xml:lang="en">CodeQL database created successfully. You can now run queries from the CodeQL extension.</source>
+        <target state="translated">La base de datos CodeQL se creó correctamente. Ahora puede ejecutar consultas desde la extensión CodeQL.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++f40beb25214e827493a66e453c0e5309a786d37ce60f3af025794baca7444c8b">
+        <source xml:lang="en">CodeQL database created. You can now:
+
+1. Run custom queries if you have any
+2. Use the prebuilt queries from the CodeQL extension
+
+Check the CodeQL extension panel for available queries.</source>
+        <target state="translated">Base de datos de CodeQL creada. Ahora puede:
+
+1. Ejecutar consultas personalizadas si tiene alguna
+2. Usar las consultas predefinidas de la extensión CodeQL
+
+Consulte el panel de la extensión CodeQL para ver las consultas disponibles.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++7e89a70d023a672e36926ab684ceed3cc71049d939761459ab670c94b6339e08">
+        <source xml:lang="en">CodeQL extension is not installed.</source>
+        <target state="translated">La extensión CodeQL no está instalada.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e8235f4d23a215a1902de70069f48aee97eae99fac871b0e7044c8dd4c228d65">
+        <source xml:lang="en">CodeQL global storage path does not exist: {0}</source>
+        <target state="translated">La ruta de almacenamiento global de CodeQL no existe: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++15f726b732553ce0ebcc6cc3d73ed78609b146df85eb6260ae7280bcbb2dbc93">
+        <source xml:lang="en">CodeQL screening failed. Please try again later.</source>
+        <target state="translated">Error en la verificación con CodeQL. Inténtelo de nuevo más tarde.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++ad5918a3406b99c40a41a41891e7bfddd75f66fdf226d6daa654c78d297a0636">
+        <source xml:lang="en">CodeQL screening is not supported for this site.</source>
+        <target state="translated">La verificación con CodeQL no es compatible con este sitio.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++9328c89f866668300cb2282dd173089c5e63b5e012d40b6ea73b68d7d345f2a0">
+        <source xml:lang="en">CodeQL screening started. Creating database and analyzing</source>
+        <target state="translated">Comenzó la verificación con CodeQL. Creando base de datos y analizando</target>
+      </trans-unit>
+      <trans-unit id="++CODE++8c7badc0de1c1ad67ea730f2f63caa922024be334866180f5d0e7497b8be1cd1">
+        <source xml:lang="en">CodeQL version: {0}</source>
+        <target state="translated">Versión de CodeQL: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++1fb4405a792e9eb077d2bd96517eca8d81fc43bc251d5589e9d959fd07c8f31d">
+        <source xml:lang="en">Command completed successfully (exit code: {0})</source>
+        <target state="translated">El comando se completó correctamente (código de salida: {0})</target>
+      </trans-unit>
+      <trans-unit id="++CODE++ff61c2f710070e267638038dfbd105cfffe4de4d37580f566f4537b304b6ca84">
+        <source xml:lang="en">Command failed with exit code {0}: {1}</source>
+        <target state="translated">Error en el comando con el código de salida {0}: {1}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++67a58f1682f864bfa789f056e50bab25181dfcddf455fadaad856c826f852d6a">
+        <source xml:lang="en">Command failed with exit code: {0}</source>
+        <target state="translated">Error en el comando con el código de salida: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++eebdd24a77d9ad32222660c07777163bf5f6732df2b172351f3f8d5783e4f529">
         <source xml:lang="en">Confirm</source>
@@ -116,18 +275,69 @@
         <source xml:lang="en">Copied to clipboard!</source>
         <target state="translated">Copiado al portapapeles.</target>
       </trans-unit>
-      <trans-unit id="++CODE++6f6ff1fc17821e030a88681092957c279c6a5b1177f940017a4c5fd99fd1ea7b">
-        <source xml:lang="en">Copilot is not available. Please contact your administrator.</source>
-        <target state="translated">Copilot no está disponible. Póngase en contacto con el administrador.</target>
+      <trans-unit id="++CODE++9b44302f1c5e52f926415b952b83efce47fce76164fa64f1a42d1a1606efa11d">
+        <source xml:lang="en">Copilot Response</source>
+        <target state="translated">Respuesta de Copilot</target>
+      </trans-unit>
+      <trans-unit id="++CODE++b04e6767bf84555605710be1a94e48ddcbcb820353b859da427d189cf25395b4">
+        <source xml:lang="en">Copilot illustration</source>
+        <target state="translated">Ilustración de Copilot</target>
       </trans-unit>
       <trans-unit id="++CODE++b749e205302cc21952a1e9646569ca0af9017cc5f39dd741830551bdd4ae823e">
         <source xml:lang="en">Copy to clipboard</source>
         <target state="translated">Copiar al Portapapeles</target>
       </trans-unit>
+      <trans-unit id="++CODE++a3e5be021818ca51bfb80179d97c9b7198659378a5bed3d2429d718acd4d0b82">
+        <source xml:lang="en">Could not determine user data path.</source>
+        <target state="translated">No se pudo determinar la ruta de datos del usuario.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++92a450b51c228fc0a45836a3cb66a77276511e8b1a48e237c97f27576695288d">
+        <source xml:lang="en">Could not locate CodeQL CLI in global storage.</source>
+        <target state="translated">No se pudo encontrar la CLI de CodeQL en el almacenamiento global.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++47234b3978427950c2a4ef0161f6dc8484b7faf44b21d30616d5d019eebaafd8">
+        <source xml:lang="en">Created PowerPages config file at {0} with default query suite: {1}</source>
+        <target state="translated">Archivo de configuración de PowerPages creado en {0} con el conjunto de consultas predeterminado: {1}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++a065334fc8846953a2dacf5096572bb814db18ac32fdb3e22cff0d387cdd4393">
+        <source xml:lang="en">Created on: {0}</source>
+        <note>{0} is the created date</note>
+        <target state="translated">Fecha de creación: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++203c445e9f2f638fcddf5e843dbaa43d55bd63740b6db268c2765e3cfa2e1608">
+        <source xml:lang="en">Creating CodeQL database...</source>
+        <target state="translated">Creación de una base de datos CodeQL...</target>
+      </trans-unit>
       <trans-unit id="++CODE++446092146c92f1aa2441a29971d3844b0add13a951c45c491423f506bbe4edab">
         <source xml:lang="en">Creating {0}...</source>
         <note>{0} will be replaced by the entity type.</note>
         <target state="translated">Creando {0}...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++ec8fd606d46114985d2f628dc67992093b8abb32489b3cbbfbb86bba96925943">
+        <source xml:lang="en">Creator: {0}</source>
+        <note>{0} is the creator</note>
+        <target state="translated">Creador: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e0d1b68224bf0b31ef16b206c65b5f8f6b89d18161f4a7cdcb8d0ac8d952549a">
+        <source xml:lang="en">Current</source>
+        <target state="translated">Actual</target>
+      </trans-unit>
+      <trans-unit id="++CODE++fc47ac56c8a4446c02d8470168a888d8e0040cfc0bb5ce6173e324dccc72f24c">
+        <source xml:lang="en">Current site path not found.</source>
+        <target state="translated">No se encontró la ruta de acceso del sitio actual.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++52587c2a224d685113316dc5961aec7749a46dded161bfe07c40b715ca61db29">
+        <source xml:lang="en">Current site path not found. Please ensure you have a site folder open.</source>
+        <target state="translated">No se encontró la ruta de acceso del sitio actual. Asegúrese de tener abierta una carpeta del sitio.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e159063579c9e875ce444b930e8feb5d4fc1a93af6acb47d7a5cf9d5c5241153">
+        <source xml:lang="en">Data model version: {0}</source>
+        <note>{0} is the data model version</note>
+        <target state="translated">Versión del modelo de datos: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++f88d5f387c99b46f054799a5bc6bac06d5b9f5dfd9eaf95627b5f34b137c7cb2">
+        <source xml:lang="en">Database location: {0}</source>
+        <target state="translated">Ubicación de la base de datos: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++5bd78fcb75f98d65ab8f89a8f0b6681c25c13308fa8643c44ab459b7783c06c9">
         <source xml:lang="en">Default Environment: {0}</source>
@@ -177,6 +387,59 @@ Tipo: {3}</target>
         <source xml:lang="en">Enter the name of the web template</source>
         <target state="translated">Escriba el nombre de la plantilla web</target>
       </trans-unit>
+      <trans-unit id="++CODE++b6d455a8dab8e66229a985315b5db1e1c065ba6d999dffd2795c03189fb32265">
+        <source xml:lang="en">Environment ID: {0}</source>
+        <note>{0} is the Environment ID</note>
+        <target state="translated">Id. de entorno: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++273ac70fb32a6f135f9998bf3601f83596fccea343ed551d2a405c4958486720">
+        <source xml:lang="en">Environment changed successfully.</source>
+        <target state="translated">Se ha cambiado el entorno correctamente.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++239d14b889f5a193581388efd042b82c5cb36e89f15b4141f740ec40d00ea868">
+        <source xml:lang="en">Error accessing CodeQL extension: {0}</source>
+        <target state="translated">Error al acceder a la extensión CodeQL: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++56e43ff4d49e0fea0222cc642310156febd5be11505e801cfccc65c2b7ebd3b6">
+        <source xml:lang="en">Error creating config file: {0}</source>
+        <target state="translated">Error al crear el archivo de configuración: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++9c567f60562a1ccaae95f9ec1de45a0785b8a433ef8f2d559ec0bcec6cc3c13d">
+        <source xml:lang="en">Error during CodeQL analysis: {0}</source>
+        <target state="translated">Error durante el análisis de CodeQL: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++4c925eac2f74f5a794b648a7e4b7a7c6a209ed6b5000411dee8a5519cd1e026b">
+        <source xml:lang="en">Error getting CLI path from extension API: {0}</source>
+        <target state="translated">Error al obtener la ruta de la CLI desde la API de extensión: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++fbbcdb76093366eb99ca518a403862ce87722ffe8606083c02ecef6387e987f8">
+        <source xml:lang="en">Error opening results file: {0}</source>
+        <target state="translated">Error al abrir el archivo de resultados: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++b52004d98911ff84ee9141e24f950f1a235941ad2beeb18de199c2e44354bfd1">
+        <source xml:lang="en">Error opening with SARIF viewer: {0}</source>
+        <target state="translated">Error al abrir con SARIF Viewer: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++a47e4735bc198999c5a031692984499d88ad2b7a5119e4f96016cee79a4fb27f">
+        <source xml:lang="en">Error reading config file: {0}</source>
+        <target state="translated">Error al leer el archivo de configuración: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++ff3a79060f3dbd86d89f487bf242ca47e64f0db6c29bfce0ae9d3d0b5606448d">
+        <source xml:lang="en">Error reading results: {0}</source>
+        <target state="translated">Error al leer los resultados: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++f59ffa6ae59ffa089eb2907ceac28bf43d85e0bd647c80d66569caed29837d24">
+        <source xml:lang="en">Error searching for CodeQL CLI: {0}</source>
+        <target state="translated">Error al buscar la CLI de CodeQL: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e871c663b45be72da181a9de5bccc1b9e415ed8bab4fbc98f87cd9fe6162ded4">
+        <source xml:lang="en">Error updating config file: {0}</source>
+        <target state="translated">Error al actualizar el archivo de configuración: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++8a6c3a849390110981cd9588c269ec59444485aed2239ad772afdb0d427523d8">
+        <source xml:lang="en">Executing: {0}</source>
+        <target state="translated">Ejecutando: {0}</target>
+      </trans-unit>
       <trans-unit id="++CODE++5a2391041cb1f6f5ab0cce07946dbf4222358fbd947768d94ac12ef5329485d3">
         <source xml:lang="en">Explain the following code snippet:</source>
         <target state="translated">Explique el siguiente fragmento de código:</target>
@@ -184,6 +447,14 @@ Tipo: {3}</target>
       <trans-unit id="++CODE++f9e17ed11037dab93f8820c30db63b2ff2a045b5761f71818b7291afae60f199">
         <source xml:lang="en">Explain the following code {% include 'Page Copy'%}</source>
         <target state="translated">Explicar el siguiente código {% include 'Page Copy'%}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++173848927e1a6ed7f8c52d958d530c9ce90053649c734a3bc20bfb2053d8ef88">
+        <source xml:lang="en">Extension installed but API not available yet. Opening as text file...</source>
+        <target state="translated">Extensión instalada, pero la API aún no está disponible. Abriendo como archivo de texto...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++b985f1515c42b4b5b0c11a3d7b3286fc9d66997d476668ab1f93a4a11499fef5">
+        <source xml:lang="en">Failed to create a new Power Pages site. Please try again.</source>
+        <target state="translated">No se pudo crear un sitio nuevo de Power Pages. Vuelva a intentarlo.</target>
       </trans-unit>
       <trans-unit id="++CODE++2310c6b7e5953cab877859ba1fcfa98e58e1508677df9412010e9b578ea237f4">
         <source xml:lang="en">Failed to create: {0}.</source>
@@ -206,6 +477,22 @@ Tipo: {3}</target>
         <source xml:lang="en">Failed to get file ready for edit: {0}</source>
         <target state="translated">No se pudo preparar el archivo para su edición: {0}</target>
       </trans-unit>
+      <trans-unit id="++CODE++78900eaa5444b623de50e2df5c46a35ee65a934a17bf9a1d619e275f1e6a529c">
+        <source xml:lang="en">Failed to get organization details. Please try again later</source>
+        <target state="translated">No se pudieron obtener los detalles de la organización. Vuelva a intentarlo más tarde</target>
+      </trans-unit>
+      <trans-unit id="++CODE++51e1f5c5757cfd25a390293a7d8e9eb583943b66211fae1cbe25d07bfcb767f1">
+        <source xml:lang="en">Failed to get website endpoint. Please try again later</source>
+        <target state="translated">No se pudo obtener el punto de conexión de sitio web. Vuelva a intentarlo más tarde</target>
+      </trans-unit>
+      <trans-unit id="++CODE++9696573fbb3df8812e2d0b83aa3d9077681bf992c9f9514fbbb81fcc7787560d">
+        <source xml:lang="en">Failed to install SARIF viewer extension. Opening results as text file.</source>
+        <target state="translated">No se pudo instalar la extensión del visor SARIF. Abriendo los resultados como archivo de texto.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++83f3ed1048ce17af62e4baf0dd046ec8571cb8ae602ad853025266a023de8061">
+        <source xml:lang="en">Failed to install SARIF viewer extension: {0}</source>
+        <target state="translated">No se pudo instalar la extensión SARIF Viewer: {0}</target>
+      </trans-unit>
       <trans-unit id="++CODE++a9e36b880dd45b64ae5601865540605296febf9bd855fc46d9c35c2c2ed9a7f2">
         <source xml:lang="en">Feature is not enabled for this geo.</source>
         <target state="translated">La característica no está habilitada para esta geoárea.</target>
@@ -227,13 +514,62 @@ Tipo: {3}</target>
         <source xml:lang="en">File(s) already exist. No new files to add</source>
         <target state="translated">Los archivos ya existen. No hay archivos nuevos que agregar</target>
       </trans-unit>
+      <trans-unit id="++CODE++12610d51818dd67082559a8f1d9a141559d996fad6fe34aa3dbf70281bea4572">
+        <source xml:lang="en">File: {0}</source>
+        <target state="translated">Archivo: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++4c152c6eaba506f1e585f1fe8424b694874ccf652f4bdebb5e333ed518e9e428">
+        <source xml:lang="en">Found CodeQL CLI at: {0}</source>
+        <target state="translated">Se encontró la CLI de CodeQL en: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++b3207bdd6cac96d95953611b3858336761212450b6e02c59f048ee17aa654797">
+        <source xml:lang="en">Found CodeQL CLI via extension API: {0}</source>
+        <target state="translated">Se encontró la CLI de CodeQL a través de la API de extensión: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++3c30b323f4457a82892f7ff1b0e8bf7852618289536ba3f3e08c4b0e7b44d514">
+        <source xml:lang="en">Found PowerPages config file: {0}</source>
+        <target state="translated">Archivo de configuración de PowerPages encontrado: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++bb38f4fcf83f9428cc8a10ad72256cf8a9536ea56209c10b1db2cea2506b740e">
+        <source xml:lang="en">Found distribution directories: {0}</source>
+        <target state="translated">Directorios de distribución encontrados: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++84fc80613184b5761895bd6c0ba43882610a232b56d4815581cb6a054e7f231e">
+        <source xml:lang="en">Found {0} issue(s):</source>
+        <target state="translated">{0} problema(s) encontrado(s):</target>
+      </trans-unit>
+      <trans-unit id="++CODE++56281cd1d0090cc4c7c38634a5738f51769927efda74805ba19e30e35868fd4e">
+        <source xml:lang="en">Friendly name: {0}</source>
+        <note>{0} is the website name</note>
+        <target state="translated">Nombre descriptivo: {0}</target>
+      </trans-unit>
       <trans-unit id="++CODE++7184a5edf42e6fc9ef8f53fc1dd73f10b3f6196a23f6d340c4f434e60c366e45">
         <source xml:lang="en">GETTING STARTED</source>
         <target state="translated">INTRODUCCIÓN</target>
       </trans-unit>
+      <trans-unit id="++CODE++c4c059b39483b39ccf3cb056feaa5e400e252a9c558deecdf8d301c1dac9485b">
+        <source xml:lang="en">Generating a new Power Pages site...</source>
+        <target state="translated">Generando un sitio nuevo de Power Pages...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++46be031ab391443c1736cb8c7032c5b07b159164f48f5b86fe135465e3255571">
+        <source xml:lang="en">Generating webpages...</source>
+        <target state="translated">Generando páginas web...</target>
+      </trans-unit>
       <trans-unit id="++CODE++ee1d3100df4b00eabd74481b92106e42cce956213372a914082f82702f56470d">
         <source xml:lang="en">Get GitHub Copilot to try @powerpages</source>
         <target state="translated">Hacer que GitHub Copilot pruebe @powerpages</target>
+      </trans-unit>
+      <trans-unit id="++CODE++1a1075387e5e1674a11f58f6aadd4e0abc63e1e3d201ae980b12a37e6d5a584b">
+        <source xml:lang="en">Getting organization details...</source>
+        <target state="translated">Obteniendo detalles de la organización...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++6f1bba10af9069a03da80d629b97c40fc4bedaf90a23496a2bdef0c512a92959">
+        <source xml:lang="en">Getting region information...</source>
+        <target state="translated">Obteniendo información de la región...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++0087988cdb71080f2525354e125366c6db7d85a36f199e2f80d14a44b3fd0340">
+        <source xml:lang="en">Getting website endpoint...</source>
+        <target state="translated">Obteniendo punto de conexión de sitio web...</target>
       </trans-unit>
       <trans-unit id="++CODE++b9f4adbdfa2deef1eaa415a914f63329ee06c604b5a1bf34645175b9e28a9712">
         <source xml:lang="en">Here are a few suggestions to get you started</source>
@@ -256,27 +592,52 @@ Tipo: {3}</target>
 
 To create your website, visit the [Power Pages](https://powerpages.microsoft.com/).
 Return to this chat and @powerpages can help you write and edit your website code.</source>
-        <target state="translated">¡Hola! Power Pages le permite crear sitios web seguros y profesionales que puede configurar y publicar rápidamente en navegadores web y dispositivos.
+        <target state="translated">Hola: Power Pages le permite crear sitios web seguros y profesionales que puede configurar y publicar rápidamente en exploradores web y dispositivos.
 
 Para crear su sitio web, visite [Power Pages](https://powerpages.microsoft.com/).
-Regrese a este chat y @powerpages puede ayudarte a escribir y editar el código de su sitio web.</target>
+Vuelve a este chat y @powerpages puede ayudarle a escribir y editar el código de su sitio web.</target>
       </trans-unit>
       <trans-unit id="++CODE++1d9bc50f05b58d430726840f771cd25056be57873eb33a5d6aeedfff2ca7e2db">
-        <source xml:lang="en">Hi! Your Microsoft account doesnâ€™t currently support Copilot. Contact your admin for details.</source>
-        <target state="translated">¡Hola! Su cuenta Microsoft no admite actualmente Copilot. Póngase en contacto con su administrador para obtener más información.</target>
+        <source xml:lang="en">Hi! Your Microsoft account doesn’t currently support Copilot. Contact your admin for details.</source>
+        <target state="translated">Hola: Su cuenta de Microsoft no es compatible actualmente con Copilot. Póngase en contacto con su administrador para obtener más información.</target>
       </trans-unit>
       <trans-unit id="++CODE++08295f3385931e35c850b945e2ae04882452c4bf0dd575f70e95aaa6ed00daa9">
         <source xml:lang="en">In your own words, describe what you need. You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.</source>
         <target state="translated">Describa con sus propias palabras lo que necesita. Puede obtener ayuda con la escritura de código para sitios de Power Pages en los lenguajes HTML, CSS y JS.</target>
       </trans-unit>
+      <trans-unit id="++CODE++3dbd55d3a97fd4cb21b3c56d8413a25157e099b74e2315575af1cce16bde65d5">
+        <source xml:lang="en">Inactive Sites</source>
+        <target state="translated">Sitios inactivos</target>
+      </trans-unit>
+      <trans-unit id="++CODE++a22418694e3938cc42976630bcd24822ed4f671b168708e0641171440ca8f6dd">
+        <source xml:lang="en">Initializing site preview</source>
+        <target state="translated">Inicializando la vista previa del sitio</target>
+      </trans-unit>
+      <trans-unit id="++CODE++15b09c32b0337229ff64c72f2ea9a3f8422fa20975ae494da863fd738554b1de">
+        <source xml:lang="en">Initializing site preview. Please try again after few seconds.</source>
+        <target state="translated">Inicializando la vista previa del sitio. Vuelva a intentarlo después de unos segundos.</target>
+      </trans-unit>
       <trans-unit id="++CODE++e992151b1efc99f93484c7d7f3076b66ab072a8af2383e96104cc597c971339c">
         <source xml:lang="en">Insert code into editor</source>
         <target state="translated">Insertar código en el editor</target>
+      </trans-unit>
+      <trans-unit id="++CODE++569ca49f4aaf7846e952c1d4aeca72febd0b79fa1c4f9db08fd3127551218572">
+        <source xml:lang="en">Install</source>
+        <target state="translated">Instalar</target>
       </trans-unit>
       <trans-unit id="++CODE++25109e9c19daeeed3977b84ace83722ac8a4daafcfe4e3709082fcc5b228e7a8">
         <source xml:lang="en">Installing Power Pages generator(v{0})...</source>
         <note>{0} represents the version number</note>
         <target state="translated">Instalando el generador de Power Pages (v{0})...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++5caff26b08726c8c726419c5f1ec44de8533973c9e3220d3af6b4a29b1c05957">
+        <source xml:lang="en">Installing SARIF viewer extension...</source>
+        <target state="translated">Instalando la extensión del visor SARIF...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++f351355077e2d6b421620f76832f108d9b4d84f31c14857d802cd8db01e4d330">
+        <source xml:lang="en">Instance url: {0}</source>
+        <note>{0} is the Instance Url</note>
+        <target state="translated">Dirección URL de la instancia: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++c59fe0045151cddc10b8384a437337e86eab905877883c18b53e068a3d36121d">
         <source xml:lang="en">Learn more about Copilot</source>
@@ -290,15 +651,27 @@ Regrese a este chat y @powerpages puede ayudarte a escribir y editar el código 
         <source xml:lang="en">Like something? Tell us more.</source>
         <target state="translated">¿Hay algo que le guste? Cuéntenos más.</target>
       </trans-unit>
+      <trans-unit id="++CODE++47dc2e01d9ad434bd03a870bdfd91281bc31d38da2cdc36c0d46a593b1d6d60c">
+        <source xml:lang="en">Line: {0}</source>
+        <target state="translated">Línea: {0}</target>
+      </trans-unit>
       <trans-unit id="++CODE++9d6322c1f4d9d3f38aed8bfbe0b2bcadf66ad82c008476fa62541fa069138e94">
         <source xml:lang="en">Login</source>
         <target state="translated">Inicio de sesión</target>
       </trans-unit>
+      <trans-unit id="++CODE++9ecf75483ab77698700a9c2bc98a0b615500ce13cb9e487795f6c4dd782989cc">
+        <source xml:lang="en">Login to PowerPages</source>
+        <target state="translated">Iniciar sesión en PowerPages</target>
+      </trans-unit>
+      <trans-unit id="++CODE++5f7a296554fdb03b163d47a479e9f37458d880e6ddcdd7fd26112464dafaff8d">
+        <source xml:lang="en">Looking for CodeQL CLI in: {0}</source>
+        <target state="translated">Buscando la CLI de CodeQL en: {0}</target>
+      </trans-unit>
       <trans-unit id="++CODE++1be32f89a3d1d98bb7011850e83b5753124d58f684bae063674bfdb106026e6d">
         <source xml:lang="en">Make sure AI-generated content is accurate and appropriate before using. &lt;a href="https://go.microsoft.com/fwlink/?linkid=2240145"&gt;Learn more&lt;/a&gt; | &lt;a href="https://go.microsoft.com/fwlink/?linkid=2189520"&gt;View
               terms&lt;/a&gt;</source>
-        <target state="translated">Asegúrese de que el contenido generado por IA sea preciso y adecuado antes de usarlo. &lt;a href="https://go.microsoft.com/fwlink/?linkid=2240145"&gt;Más información&lt;/a&gt; | &lt;a href="https://go.microsoft.com/fwlink/?linkid=2189520"&gt;Ver los
-              términos&lt;/a&gt;</target>
+        <target state="translated">Asegúrese de que el contenido generado por IA sea preciso y apropiado antes de usarlo. &lt;a href="https://go.microsoft.com/fwlink/?linkid=2240145"&gt;Más información&lt;/a&gt; | &lt;a href="https://go.microsoft.com/fwlink/?linkid=2189520"&gt;Ver
+              términos y condiciones&lt;/a&gt;</target>
       </trans-unit>
       <trans-unit id="++CODE++74f89e02b8d346f38df55113eee5dcbb0c0f31471876c67a9c13a3ff7caeebf9">
         <source xml:lang="en">Make sure AI-generated content is accurate and appropriate before using. [Learn more](https://go.microsoft.com/fwlink/?linkid=2240145) | [View terms](https://go.microsoft.com/fwlink/?linkid=2189520)</source>
@@ -312,9 +685,13 @@ Regrese a este chat y @powerpages puede ayudarte a escribir y editar el código 
         <source xml:lang="en">Maximum 30 characters allowed</source>
         <target state="translated">Se permite un máximo de 30 caracteres</target>
       </trans-unit>
-      <trans-unit id="++CODE++7fcd8b1c5225f7d9a771a4a02ca3e4795c3c9202cf2b3c3c879c625abb8b43e4">
-        <source xml:lang="en">Microsoft wants your feeback</source>
-        <target state="translated">Microsoft quiere conocer sus comentarios</target>
+      <trans-unit id="++CODE++b1c8258fb401975727a82d9ce473af0a600f076cc7b73dbd16524e815cf4153d">
+        <source xml:lang="en">Microsoft wants your feedback</source>
+        <target state="translated">Microsoft desea recibir sus comentarios</target>
+      </trans-unit>
+      <trans-unit id="++CODE++5813bc61a859f78f4474b9c45e545b7da14fe71acdbb5b7c4cb7010628780513">
+        <source xml:lang="en">Missing required site information for reactivation.</source>
+        <target state="translated">Falta información del sitio necesaria para la reactivación.</target>
       </trans-unit>
       <trans-unit id="++CODE++a253ff09c5a8678e1fd1962b2c329245e139e45f9cc6ced4e5d7ad42c4108fc0">
         <source xml:lang="en">NEW</source>
@@ -360,6 +737,22 @@ Id. de organización: {3}</target>
         <source xml:lang="en">No Website Data Found in Current Directory. Please switch to a directory that contains the PAC downloaded website data to continue.</source>
         <target state="translated">No se encontraron datos del sitio web en el directorio actual. Cambie a un directorio que contenga los datos del sitio web descargado de PAC para continuar.</target>
       </trans-unit>
+      <trans-unit id="++CODE++1b03558147265e7c9bd70e6a4abe031ef65dbca05e01d94953e58b86ec82c859">
+        <source xml:lang="en">No analysis results found.</source>
+        <target state="translated">No se encontraron resultados de análisis.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++80266a1ea7e6671d65c98a0624c254f5b9acfacddd05d69524b7f034eeba3268">
+        <source xml:lang="en">No environments found</source>
+        <target state="translated">No se encontraron entornos</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e75c23acb3f88e840f326048df92fcfd3350ec3b775a5c51e6ff6754f0f9f7a1">
+        <source xml:lang="en">No issues found!</source>
+        <target state="translated">No se han encontrado problemas.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++f4e72a0615b12413932e879ea66a30e28ddf66f78c73807f2302983fa6dffe9f">
+        <source xml:lang="en">No message</source>
+        <target state="translated">Sin mensaje</target>
+      </trans-unit>
       <trans-unit id="++CODE++e0d2b29e6060c3d50691e6961835418fe6a24723c227dacf93250b94e21ed1bb">
         <source xml:lang="en">No page templates found</source>
         <target state="translated">No se encontró ninguna plantilla de página</target>
@@ -367,6 +760,10 @@ Id. de organización: {3}</target>
       <trans-unit id="++CODE++6bf857113b9224708e98b1bacf5b0711a8eefd9c9c3ff1217557ce00d8e00cc7">
         <source xml:lang="en">No parent pages found for adding webfile</source>
         <target state="translated">No se ha encontrado ninguna página primaria para agregar el archivo web</target>
+      </trans-unit>
+      <trans-unit id="++CODE++b8a162cd305ec78bd85f8e1b5a31a3e2c944fd560aa5f0e17e6b76de4c008e6b">
+        <source xml:lang="en">No sites found</source>
+        <target state="translated">No se encontraron sitios</target>
       </trans-unit>
       <trans-unit id="++CODE++abb85d7bb3ea846c90ad6348fd3a1154436cdde8f06db3d86711dd6e23cf1e21">
         <source xml:lang="en">No webpages found</source>
@@ -376,9 +773,26 @@ Id. de organización: {3}</target>
         <source xml:lang="en">No workspace folder found</source>
         <target state="translated">No se ha encontrado ninguna carpeta del área de trabajo</target>
       </trans-unit>
+      <trans-unit id="++CODE++6c0242ffba2aababcb4e45831de1492e8bccae2cb0f3387dfe9c16620f6928ef">
+        <source xml:lang="en">No workspace folder opened. Please open a site folder to preview.</source>
+        <target state="translated">No se ha abierto ninguna carpeta del área de trabajo. Abra una carpeta del sitio para obtener una vista previa.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++b2b461f3eae470e95fdcfd61a3cbe6680e84d0a7221a305f696ce44843badc89">
+        <source xml:lang="en">Object ID: {0}</source>
+        <note>{0} is the Object ID</note>
+        <target state="translated">Id. de objeto: {0}</target>
+      </trans-unit>
       <trans-unit id="++CODE++bda6bda1e902d120a7f4515ceac8546c3112e3cb9351df1d8b9713b8f86e0370">
         <source xml:lang="en">One or more attribute names have been changed or removed. Contact your admin.</source>
         <target state="translated">Se han cambiado o quitado uno o más nombres de atributo. Póngase en contacto con su administrador.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++f329c8f717c6c20eb60774d8f9227683661d74ebae48207076be60be8796dd5d">
+        <source xml:lang="en">Open Results</source>
+        <target state="translated">Abrir resultados</target>
+      </trans-unit>
+      <trans-unit id="++CODE++c923497edb55fd73ded53b2d43ccaf08ed3ed77118d934fd762fb7a5048b16e4">
+        <source xml:lang="en">Open as Text</source>
+        <target state="translated">Abrir como texto</target>
       </trans-unit>
       <trans-unit id="++CODE++e61655958f06a0bb12435c70d95c738b62fabdff78f26c597c105a8823820fbd">
         <source xml:lang="en">Open in Power Pages studio</source>
@@ -388,9 +802,30 @@ Id. de organización: {3}</target>
         <source xml:lang="en">Opening preview site...</source>
         <target state="translated">Abriendo sitio de versión preliminar...</target>
       </trans-unit>
+      <trans-unit id="++CODE++e7f5bd4de76500f23850b2f87c8d39ef1f346662963521c88985e4486b860f90">
+        <source xml:lang="en">Opening results with SARIF viewer...</source>
+        <target state="translated">Abriendo resultados con SARIF Viewer...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++f2dd836a178a30bdcb69c5fd8b5685c12d400d47e10971dd4d93657e6d5b1d0e">
+        <source xml:lang="en">Opening results with newly installed SARIF viewer...</source>
+        <target state="translated">Abriendo resultados con SARIF Viewer recién instalado...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e61c4ac3c692e3cfdc02717db82d18b1e9d51242710031f20af35b33d149fa7a">
+        <source xml:lang="en">Opening site preview...</source>
+        <target state="translated">Abriendo la vista previa del sitio...</target>
+      </trans-unit>
       <trans-unit id="++CODE++5cac0147c19013eb88b1fc8dc0d066b48e9f5cfcdbc9737a29d544d9bd61db55">
         <source xml:lang="en">Operation failed. See output panel for details.</source>
         <target state="translated">No se pudo realizar la operación. Consulte el panel de salida para obtener más información.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++38bb1c8534acb465ac1e4975989a18199aaea7beb273d8ff935ac0a07e443539">
+        <source xml:lang="en">Organization ID: {0}</source>
+        <note>{0} is the Organization ID</note>
+        <target state="translated">Id. de organización: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++b3d5416b4e83d803e6f238f1d31a637450f12c9370113871d15bd48c72435cd2">
+        <source xml:lang="en">Other Sites</source>
+        <target state="translated">Otros sitios</target>
       </trans-unit>
       <trans-unit id="++CODE++d4dc9d620b68b70e7de4aeaa15e1d83dddb457c64a3cadb35cf1b55025ad194f">
         <source xml:lang="en">PAC Telemetry disabled</source>
@@ -424,6 +859,14 @@ Id. de organización: {3}</target>
         <source xml:lang="en">Please enter a name for the webpage.</source>
         <target state="translated">Escriba un nombre para la página web.</target>
       </trans-unit>
+      <trans-unit id="++CODE++6355962eca901310bd24d2142605263344a3f09fb4fc30fc0f9dcf4cd56bf534">
+        <source xml:lang="en">Please login to preview the site.</source>
+        <target state="translated">Inicie sesión para obtener una vista previa del sitio.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++f413d35f48356c6c13c6c9d8947f011221acb3bea7d0ce74eb2f5ed217f26bad">
+        <source xml:lang="en">Please select the folder that contains your compiled output to upload your site.</source>
+        <target state="translated">Seleccione la carpeta que contiene la salida compilada para cargar su sitio.</target>
+      </trans-unit>
       <trans-unit id="++CODE++1bac158cc07a75506df3774db0ad7c188c19ccad4943c4cf03da8b6700ef9ce4">
         <source xml:lang="en">Power Pages Copilot is now connected to the environment: {0} : {1}</source>
         <note>{0} represents the environment name</note>
@@ -432,6 +875,14 @@ Id. de organización: {3}</target>
       <trans-unit id="++CODE++cce89cd3a0f118dafd3173f6444abdcd2b9782153af1b6bfa8f63ef3d4b68268">
         <source xml:lang="en">Power Pages studio URL is not available</source>
         <target state="translated">La dirección URL del estudio de Power Pages no está disponible</target>
+      </trans-unit>
+      <trans-unit id="++CODE++bf67e1194aabff2106dde73ed7318caf658a4cebe27dbd2d03239a141e16a211">
+        <source xml:lang="en">PowerPages config file created successfully: {0}</source>
+        <target state="translated">Archivo de configuración de PowerPages creado correctamente: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++51b545b10e7c3ffa5c7a61b222ed1039c55ddba4cc130f834338e498cdd0d129">
+        <source xml:lang="en">PowerPages config file updated successfully: {0}</source>
+        <target state="translated">El archivo de configuración de PowerPages se actualizó correctamente: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++777d5f3afd46e18d42c0baad6d9a0c7a6867cdf31ae4d342ad5e695486f05ae7">
         <source xml:lang="en">Preparing pac CLI (v{0})...</source>
@@ -442,13 +893,17 @@ Id. de organización: {3}</target>
         <source xml:lang="en">Preview site</source>
         <target state="translated">Sitio de versión preliminar</target>
       </trans-unit>
-      <trans-unit id="++CODE++f190e8061b8cbadd991ff217210525eff0000a8c6ddc2d44baec8388b7bd1a3e">
-        <source xml:lang="en">Preview site URL is not available</source>
-        <target state="translated">La dirección URL del sitio en versión preliminar no está disponible</target>
-      </trans-unit>
       <trans-unit id="++CODE++1cc20af81855b8570858ea1ac0491000d230bcf2ac53c1c1b30243a9b58a2036">
         <source xml:lang="en">Preview site URL is not valid</source>
         <target state="translated">La dirección URL del sitio de versión preliminar no es válida</target>
+      </trans-unit>
+      <trans-unit id="++CODE++fa20488e9d7f18238d5f0c72e459c52354657b24877bb4197902daa667bd57c9">
+        <source xml:lang="en">Primary query suite {0} failed: {1}</source>
+        <target state="translated">Error de {0} del conjunto de consultas principal: {1}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++66c77d8211180ed42d204144272cd0985a1c118696c856b61d2dd63d1f416d86">
+        <source xml:lang="en">Process error: {0}</source>
+        <target state="translated">Error de proceso: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++7a6098eb5ff2c2401890216bb502ce6583ff7bddc99e62f8751551eab45ae1b4">
         <source xml:lang="en">Profile Kind: {0}</source>
@@ -459,9 +914,33 @@ Id. de organización: {3}</target>
         <source xml:lang="en">Response data is empty</source>
         <target state="translated">Los datos de respuesta están vacíos</target>
       </trans-unit>
+      <trans-unit id="++CODE++b87504a6b179044cf99d39cf641f47aa5e76c4c5b949413ec33953ec35c10ac4">
+        <source xml:lang="en">Results opened in SARIF viewer successfully.</source>
+        <target state="translated">Los resultados se abrieron correctamente en SARIF Viewer.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++9eb3810da0fd0dbacf4b6f4d7ad58e6e631ab807c0dd404dcb9f03066da8443b">
+        <source xml:lang="en">Running CodeQL analysis...</source>
+        <target state="translated">Ejecutando análisis de CodeQL...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++3a74613b70fb8cc650773d71501f0c370322e9ae7d7739857db61c95a3b1bc80">
+        <source xml:lang="en">SARIF viewer extension does not expose expected API. Falling back to text editor...</source>
+        <target state="translated">La extensión del visor SARIF no expone la API esperada. Volviendo al editor de texto...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++3404d61aa3fdceef4ff6d5c7fe612d467f785bf5e3159771b4cde9b1e83e0f22">
+        <source xml:lang="en">SARIF viewer extension installed successfully. Activating...</source>
+        <target state="translated">La extensión SARIF Viewer se instaló correctamente. Activando...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++ceaca7d5816edb7826d84436807510a3a840ee0808fd62a568e2e1541eae6457">
+        <source xml:lang="en">SARIF viewer extension not found.</source>
+        <target state="translated">No se encontró la extensión SARIF Viewer.</target>
+      </trans-unit>
       <trans-unit id="++CODE++0134bc37f2fdeb11daa9e760ecee0ef9706989b33f77a38daadb8b7aae685749">
         <source xml:lang="en">Saving your file ...</source>
         <target state="translated">Guardando su archivo...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e597da9c984517f802536a83c825cd4f017898c5f28030fe1f62fb94f5228828">
+        <source xml:lang="en">Select Folder</source>
+        <target state="translated">Seleccionar carpeta</target>
       </trans-unit>
       <trans-unit id="++CODE++6e26632772595a9d2fdf17191f6d7b59983c308d884deed6ba317054f7d30688">
         <source xml:lang="en">Select Folder for new PCF Control</source>
@@ -472,6 +951,22 @@ Id. de organización: {3}</target>
         <source xml:lang="en">Select Type</source>
         <target state="translated">Seleccionar tipo</target>
       </trans-unit>
+      <trans-unit id="++CODE++87468e6a845b82466220c11dd0ca315a4389dc1cb8e0ee102035bb4ce5cb7e39">
+        <source xml:lang="en">Select an environment</source>
+        <target state="translated">Seleccionar un entorno</target>
+      </trans-unit>
+      <trans-unit id="++CODE++58ea04f09a2cbf67d55e70c45a6da4998e72e8e50f91e63862c0d65d14dfb1f5">
+        <source xml:lang="en">Select folder for CodeQL database</source>
+        <target state="translated">Seleccionar carpeta para la base de datos de CodeQL</target>
+      </trans-unit>
+      <trans-unit id="++CODE++259b03b37447930b5127e28e350f988803a3047bbb0c7be4441c7da4f9b517d4">
+        <source xml:lang="en">Select the folder that contains your compiled output</source>
+        <target state="translated">Seleccione la carpeta que contiene la salida compilada</target>
+      </trans-unit>
+      <trans-unit id="++CODE++26297069e403c73e147151f2964757b7e9149762cf3a8e04ffd833907fb979e4">
+        <source xml:lang="en">Select the folder that will contain your project root for your site</source>
+        <target state="translated">Seleccione la carpeta que contendrá la raíz del proyecto para su sitio</target>
+      </trans-unit>
       <trans-unit id="++CODE++4d6f03fa73020c945e651c34d40c5529f3477ac02df254c1764a68d576575e14">
         <source xml:lang="en">Selection is empty.</source>
         <target state="translated">La selección está vacía.</target>
@@ -480,17 +975,47 @@ Id. de organización: {3}</target>
         <source xml:lang="en">Selection is too large. Try making a shorter selection.</source>
         <target state="translated">La selección es demasiado grande. Intente acortar la selección.</target>
       </trans-unit>
+      <trans-unit id="++CODE++142027a259879fdd2b6410360a9cd3798f433c2fc5668bb685dd4ff513072e16">
+        <source xml:lang="en">Session Details</source>
+        <target state="translated">Detalles de la sesión</target>
+      </trans-unit>
+      <trans-unit id="++CODE++08b44927dd7cd913d5c36c74e3ccf55ef966b6c2f067b173fbbe4e3c32f30d15">
+        <source xml:lang="en">Session ID: {0}</source>
+        <note>{0} is the Session ID</note>
+        <target state="translated">Id. de sesión: {0}</target>
+      </trans-unit>
       <trans-unit id="++CODE++899fb203e6c2faac8093e21a2fa8db0d4b13d16ea5492461d8b72dbcee3ecf2a">
         <source xml:lang="en">Show Output Panel</source>
         <target state="translated">Mostrar panel de salida</target>
+      </trans-unit>
+      <trans-unit id="++CODE++524bca0347e50e3801bebf27374124b3babf072729b4da4bcc45ef5c385ee8f4">
+        <source xml:lang="en">Site Details</source>
+        <target state="translated">Detalles del sitio</target>
+      </trans-unit>
+      <trans-unit id="++CODE++a72357d268bce5e1643bfd74563495784179f75ace0d652db8f808f293586b63">
+        <source xml:lang="en">Site management URL not found for the selected site. Please try again after refreshing the environment.</source>
+        <target state="translated">No se encontró la dirección URL de administración del sitio para el sitio seleccionado. Vuelva a intentarlo después de actualizar el entorno.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++f7094162bd4c4b59aa706387714347223e1569c79c5b37eb19ac754a33a0fdd0">
+        <source xml:lang="en">Site runtime preview feature is not enabled.</source>
+        <target state="translated">La característica de vista previa en tiempo de ejecución del sitio no está habilitada.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++a2eb2f1a32eedafa3e666685f09ee073175d309d6137b80edac517b51bffd84d">
+        <source xml:lang="en">Site visibility: {0}</source>
+        <note>{0} is the site visibility</note>
+        <target state="translated">Visibilidad del sitio: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++27dd8c8e67d15783f51c6b71ed60d5350731daa85b418f1e84c2e5828ae2d54e">
         <source xml:lang="en">Some references might be broken. Please check diagnostics for details.</source>
         <target state="translated">Es posible que algunas referencias estén rotas. Consulte los diagnósticos para ver más detalles.</target>
       </trans-unit>
       <trans-unit id="++CODE++189f24adc299ea91ceab21d8100a58d89294ed17395c4e4dbc4733c9b92543df">
-        <source xml:lang="en">Something went wrong. Donâ€™t worry, you can try again.</source>
-        <target state="translated">Se ha producido un error. No se preocupe, puede volver a intentarlo.</target>
+        <source xml:lang="en">Something went wrong. Don’t worry, you can try again.</source>
+        <target state="translated">Se ha producido un error. No se preocupe, puede intentarlo de nuevo.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++1cb2204ec480119230ac755787106a1550d9329553d146abd56da1947079d577">
+        <source xml:lang="en">Starting CodeQL analysis for: {0}</source>
+        <target state="translated">Inicio del análisis de CodeQL para: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++155f816c0407310c0dab222493370773e045ee7fe04e6c9a951b07f495531264">
         <source xml:lang="en">Submit</source>
@@ -500,9 +1025,27 @@ Id. de organización: {3}</target>
         <source xml:lang="en">Tell us more.</source>
         <target state="translated">Cuéntenos más.</target>
       </trans-unit>
+      <trans-unit id="++CODE++d676394d137346db95d191c756b08c5be6fbaef4a6ca2159b8e53736e54f98e1">
+        <source xml:lang="en">Tenant ID: {0}</source>
+        <note>{0} is the Tenant ID</note>
+        <target state="translated">Id. de inquilino: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++438c442a839dca3bb4dbecd0421f454f268650517fe631e5900233b73a874bc7">
+        <source xml:lang="en">The CodeQL extension is required to run this command. Do you want to install it now?</source>
+        <target state="translated">Se requiere la extensión "CodeQL" para ejecutar este comando. ¿Desea instalarla ahora?</target>
+      </trans-unit>
       <trans-unit id="++CODE++618f7afd7be2f12bf2ebbaba5bc7e951d2ebfb11d4480647f991fbb664caa26e">
         <source xml:lang="en">The Power Pages generator is ready for use in your VS Code extension!</source>
         <target state="translated">¡El generador de Power Pages ya se puede usar en su extensión de VS Code!</target>
+      </trans-unit>
+      <trans-unit id="++CODE++3ed1f203bd6f7102d8c5dcf88fe4fb5327b54a1e88962adcddbf9a023bcf8875">
+        <source xml:lang="en">The SARIF Viewer extension is recommended for viewing CodeQL results. Would you like to install it now?</source>
+        <target state="translated">Se recomienda la extensión SARIF Viewer para ver los resultados de CodeQL. ¿Desea instalarla ahora?</target>
+      </trans-unit>
+      <trans-unit id="++CODE++0bc2e4918b64f82220bde3dae30dc007a45fb59c3677833fb5a0e275a3b6b54b">
+        <source xml:lang="en">The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?</source>
+        <note>Do not translate 'Microsoft Edge Tools' </note>
+        <target state="translated">Se requiere la extensión "Microsoft Edge Tools" para ejecutar este comando. ¿Desea instalarla ahora?</target>
       </trans-unit>
       <trans-unit id="++CODE++e4a2396fd7a366292a40abc87b18a2329458c258f4d0e0e593e6189dff19a117">
         <source xml:lang="en">The name you want to give to this authentication profile</source>
@@ -511,6 +1054,10 @@ Id. de organización: {3}</target>
       <trans-unit id="++CODE++5eccedc8c04d2137a9eb74edf18ea469b4b63e7315de4b8fe49c48bb8d0780e9">
         <source xml:lang="en">The pac CLI is ready for use in your VS Code terminal!</source>
         <target state="translated">¡pac CLI ya se puede usar en su terminal de VS Code!</target>
+      </trans-unit>
+      <trans-unit id="++CODE++51d2fcbba3e5fc15afbd85f1d179e58b9c4328b466cd7872ec77dc0c9cb34afe">
+        <source xml:lang="en">The preview shown is for published changes. Please publish any pending changes to see them in the preview.</source>
+        <target state="translated">La vista previa que se muestra corresponde a los cambios publicados. Publique los cambios pendientes para verlos en la vista previa.</target>
       </trans-unit>
       <trans-unit id="++CODE++18f3be2933741b96e56b1e1f70818fcba46ec9c5b3dcd0e28d801eab15791d84">
         <source xml:lang="en">There was a permissions problem with the server</source>
@@ -521,7 +1068,7 @@ Id. de organización: {3}</target>
         <target state="translated">Hubo un problema al abrir el área de trabajo</target>
       </trans-unit>
       <trans-unit id="++CODE++37ea190531b914739bf1ff100b3d44579b6d703de0b79b380094714aa3b3c259">
-        <source xml:lang="en">Thereâ€™s a problem on the back end</source>
+        <source xml:lang="en">There’s a problem on the back end</source>
         <target state="translated">Hay un problema en el back-end</target>
       </trans-unit>
       <trans-unit id="++CODE++75670337a398f9840d2951dbc6746497caec6da9dd506ecff57ef79d59c6280f">
@@ -531,6 +1078,11 @@ Id. de organización: {3}</target>
       <trans-unit id="++CODE++8b1d85ebb8ecdb644b32f92089716c40b0f7dd2df4b43b3bdbaeba904deecfad">
         <source xml:lang="en">Thumbs Up</source>
         <target state="translated">Pulgar hacia arriba</target>
+      </trans-unit>
+      <trans-unit id="++CODE++75d0f748a196d70fe132e890ca21172baae3169ee3f9aa48c27aed5fbe5965bf">
+        <source xml:lang="en">Timestamp: {0}</source>
+        <note>{0} is the timestamp</note>
+        <target state="translated">Marca de tiempo: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++4f8c4d58a87feaaff06fd5f9cb84370ab4a42220bf1e8cbedbca716f8f21c9ee">
         <source xml:lang="en">To know more, see &lt;a href="https://go.microsoft.com/fwlink/?linkid=2206366"&gt;Copilot in Power Pages documentation.</source>
@@ -548,6 +1100,10 @@ Id. de organización: {3}</target>
         <source xml:lang="en">Try and be as specific as possible. Your feedback will be used to improve Copilot. &lt;a href="https://privacy.microsoft.com/en-US/data-privacy-notice"&gt; View privacy details &lt;/a&gt;</source>
         <target state="translated">Trate de ser lo más específico posible. Sus comentarios se utilizarán para mejorar Copilot. &lt;a href="https://privacy.microsoft.com/en-US/data-privacy-notice"&gt; Ver información de privacidad &lt;/a&gt;</target>
       </trans-unit>
+      <trans-unit id="++CODE++34077c1b18e274ca17c858b0521d9ff1edd6a164eccb2a24888fc6ed0eb3df35">
+        <source xml:lang="en">Unable to clear cache</source>
+        <target state="translated">No se puede borrar la caché</target>
+      </trans-unit>
       <trans-unit id="++CODE++bd7b156375b48ce5797a3421150e6f5c3b71d3a30f823e957241589aea6236ca">
         <source xml:lang="en">Unable to complete the request</source>
         <target state="translated">No se puede completar la solicitud</target>
@@ -556,14 +1112,47 @@ Id. de organización: {3}</target>
         <source xml:lang="en">Unable to find that app</source>
         <target state="translated">No se puede encontrar esa aplicación</target>
       </trans-unit>
+      <trans-unit id="++CODE++3747890a3bfddec3123ce9a40cdd15f278d1335b382f80beb52bf18101ab02c2">
+        <source xml:lang="en">Unable to locate website root folder.</source>
+        <target state="translated">No se puede encontrar la carpeta raíz del sitio web.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++b6038584b7b1f565be9c9d3f0ac11be70bd2e69e072ead52884ca7338a14ee67">
+        <source xml:lang="en">Unique name: {0}</source>
+        <note>{0} is the Unique name</note>
+        <target state="translated">Nombre único: {0}</target>
+      </trans-unit>
       <trans-unit id="++CODE++4b8d64fae5d1cbf5f7324782e9b5c430db7c218771e84b0b402a9a4d0ec4bf05">
         <source xml:lang="en">Unmanaged</source>
         <target state="translated">No administrado</target>
+      </trans-unit>
+      <trans-unit id="++CODE++7fce0124a7cb74955461f08e39ceaaed1e2850492f077f4e6defd82ef3ca6b0e">
+        <source xml:lang="en">Upload changes</source>
+        <target state="translated">Cargar cambios</target>
+      </trans-unit>
+      <trans-unit id="++CODE++8a91e7caf57148c6be78b3986477464b36f0282a9e9a09b635b0db4fe6246132">
+        <source xml:lang="en">Upload failed. Please try again later.</source>
+        <target state="translated">Error de carga. Vuelva a intentarlo más tarde.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++c86daff3d88f7b1f615467872994ef13dcbc1c55e10105d71f398c721650c9c2">
+        <source xml:lang="en">Use current site folder</source>
+        <target state="translated">Usar la carpeta del sitio actual</target>
+      </trans-unit>
+      <trans-unit id="++CODE++7cf98759b12f73d7717ae27ba49a3d27f026be55b4a33236942882c7a8b671bf">
+        <source xml:lang="en">User cancelled opening results.</source>
+        <target state="translated">El usuario canceló la apertura de los resultados.</target>
       </trans-unit>
       <trans-unit id="++CODE++696d5f7b79a75961bc5d99ecbbea7b535acc73160e0b6422daa45b0ae7c04368">
         <source xml:lang="en">User: {0}</source>
         <note>The {0} represents auth profile's user name (email address))</note>
         <target state="translated">Usuario: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++ad53df2afe8706d9b2df0b2ce7db974ca00887c2a4864ce1b78ed0fc60ab8669">
+        <source xml:lang="en">Using custom CodeQL query suite: {0}</source>
+        <target state="translated">Uso del conjunto de consultas de CodeQL personalizado: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++ad8cf9b64ea12b5f26438ceb83cd1bb510af7cccaf4c2be1320276486224a0fe">
+        <source xml:lang="en">Using default query suite: {0}</source>
+        <target state="translated">Uso del conjunto de consultas predeterminado: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++d941ee96c6f480390012381f9fc0dfd961f2aa803732860e2505a8453700f458">
         <source xml:lang="en">We encountered an error preparing the files for edit.</source>
@@ -581,13 +1170,27 @@ Id. de organización: {3}</target>
         <source xml:lang="en">Webpage names should contain only letters, numbers, hyphens, or underscores.</source>
         <target state="translated">Los nombres de página web solo deben contener letras, números, guiones o caracteres de subrayado.</target>
       </trans-unit>
+      <trans-unit id="++CODE++d3eaa7bf5377b15781ad4c0f43e4da94b9a2bd485ddbbbe62a2c3d53c5c7fe4a">
+        <source xml:lang="en">Website Id: {0}</source>
+        <note>{0} is the website ID</note>
+        <target state="translated">Id. de sitio web: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++4f5909ac007d8a897ec18ede71cdf8f6b4af3bbe78bae2f13871d50a3cebb3f6">
+        <source xml:lang="en">Website Url: {0}</source>
+        <note>{0} is the website Url</note>
+        <target state="translated">URL del sitio web: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++aa64cfbb63d3382bc0530c6e599467b1cc5c1ef8ff3b573d37ad628f9058b2aa">
+        <source xml:lang="en">Website not found in the environment. Please check the credentials and login with correct account.</source>
+        <target state="translated">No se encontró el sitio web en el entorno. Compruebe las credenciales e inicie sesión con la cuenta correcta.</target>
+      </trans-unit>
       <trans-unit id="++CODE++e4bb03b399c07eeda658d87305435a58818cb5e0c3b76ae054d99564cf14ef6b">
         <source xml:lang="en">What do you need help with?</source>
         <target state="translated">¿Con qué necesita ayuda?</target>
       </trans-unit>
-      <trans-unit id="++CODE++6f65376f47dd6d9867102ea8c57d776161ac941091f2a9d52fdd4c8228575e7b">
-        <source xml:lang="en">Whether itâ€™s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you. </source>
-        <target state="translated">Ya se trate de código HTML, CSS, JS o Liquid, describa lo que necesita y deje que la IA lo cree por usted. </target>
+      <trans-unit id="++CODE++ab06f2880f954cfbc6788988300346315e8372cc05d92ce26ff6635c607e1406">
+        <source xml:lang="en">Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.</source>
+        <target state="translated">Ya sea código HTML, CSS, JS o Liquid, simplemente describa lo que necesita y deje que la IA lo construya por usted.</target>
       </trans-unit>
       <trans-unit id="++CODE++47a853b9f140a6f231de8498ec559d7d882536070b83c1e45c16671fd48a0b65">
         <source xml:lang="en">Working on it...</source>
@@ -605,6 +1208,10 @@ Id. de organización: {3}</target>
         <source xml:lang="en">Write web API code to query active contact records.</source>
         <target state="translated">Escriba código de API web para consultar los registros de contactos activos.</target>
       </trans-unit>
+      <trans-unit id="++CODE++85a39ab345d672ff8ca9b9c6876f3adcacf45ee7c1e2dbd2408fd338bd55e07e">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">Sí</target>
+      </trans-unit>
       <trans-unit id="++CODE++3c65297a1fc0860c6993f5c8beb4341dd13b71d7f3957daba611adf04a6c971b">
         <source xml:lang="en">You are editing a live, public site </source>
         <target state="translated">Está editando un sitio público activo </target>
@@ -612,6 +1219,10 @@ Id. de organización: {3}</target>
       <trans-unit id="++CODE++beb45bfdd4c3f6da9bb3687e4d9275790d086c1dffaec84839fa9ec9ce4e9ee2">
         <source xml:lang="en">You can use this in &lt;a href="#" id="github-copilot-link"&gt;GitHub Copilot with @powerpages&lt;/a&gt; and leverage best of both world.</source>
         <target state="translated">Puede usar esto en &lt;a href="#" id="github-copilot-link"&gt;GitHub Copilot con @powerpages&lt;/a&gt; y aprovechar lo mejor de ambos mundos.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++eeb25aaca6a9e3f6c670334480b8e56e2a362ecfec23f8e63617915b22ddc8a0">
+        <source xml:lang="en">Your preview isn't updated. Please upload your site to see the latest changes.</source>
+        <target state="translated">La vista previa no está actualizada. Cargue su sitio para ver los cambios más recientes.</target>
       </trans-unit>
       <trans-unit id="++CODE++3a928d0a6dd0e0c6b56eb3bf08b20e6361e876fd6b2eeca59f718cbfdc310472">
         <source xml:lang="en">dotnet sdk 6.0 or greater must be installed</source>
@@ -627,6 +1238,10 @@ Id. de organización: {3}</target>
   </file>
   <file original="package" source-language="en" datatype="plaintext" target-language="es">
     <body>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.login.title">
+        <source xml:lang="en">Add New Auth Profile</source>
+        <target state="translated">Agregar nuevo perfil de autenticación</target>
+      </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.title">
         <source xml:lang="en">Advanced capabilities</source>
         <target state="translated">Funcionalidades avanzadas</target>
@@ -641,9 +1256,13 @@ Id. de organización: {3}</target>
 To learn more, visit [Prevent accidental overwrites](command:powerplatform-walkthrough.saveConflict-learn-more).</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.saveConflict-learn-more).', keeping brackets and the text in the parentheses unmodified</note>
-        <target state="translated">Evite sobrescrituras accidentales cuando intente guardar código obsoleto en VS Code para la Web. Puede comparar los cambios en paralelo y decidir si los acepta o los revierte. 
+        <target state="translated">Evite sobrescrituras accidentales al intentar guardar código obsoleto en VS Code para la Web. Puede comparar los cambios en paralelo y decidir aceptar o revertir los cambios. 
  
-Para obtener más información, visite [Evitar sobrescrituras accidentales](command:powerplatform-walkthrough.saveConflict-learn-more).</target>
+Para obtener más información, visite [Evitar sobrescritura accidental](command:powerplatform-walkthrough.saveConflict-learn-more).</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.switchEnvironment.title">
+        <source xml:lang="en">Change Environment</source>
+        <target state="translated">Cambiar entorno</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
         <source xml:lang="en">Clear Auth Profiles</source>
@@ -705,6 +1324,10 @@ Para obtener más información, visite [Evitar sobrescrituras accidentales](comm
         <source xml:lang="en">Documentation</source>
         <target state="translated">Documentación</target>
       </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite.title">
+        <source xml:lang="en">Download Site</source>
+        <target state="translated">Descargar sitio</target>
+      </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.title">
         <source xml:lang="en">Edit Power Pages code</source>
         <target state="translated">Editar código de Power Pages</target>
@@ -732,17 +1355,25 @@ Para obtener más información, visite [Evitar sobrescrituras accidentales](comm
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-documentation).', keeping brackets and the text in the parentheses unmodified
 The eighth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-open-folder)', keeping brackets and the text in the parentheses unmodified</note>
-        <target state="translated">Encontrará sus archivos de página organizados en carpetas bajo el nombre del sitio. Todas sus páginas están organizadas en archivos HTML, CSS y JS dentro de las carpetas de los respectivos componentes del sitio. 
+        <target state="translated">Encuentre los archivos de su página organizados en carpetas bajo el nombre del sitio. Todas sus páginas están organizadas en archivos HTML, CSS y JS dentro de las respectivas carpetas de componentes del sitio. 
  
- Puede encontrar componentes del sitio como formularios, fragmentos de contenido, listas y otros para editar. 
+ Puede encontrar componentes del sitio como formularios, fragmentos de contenido, listas y más para editar. 
  
  Para obtener más información, visite [Estructura de archivos de Power Pages en VS Code](command:powerplatform-walkthrough.fileSystem-documentation). 
  
-[Visite la carpeta del sitio](command:powerplatform-walkthrough.fileSystem-open-folder)</target>
+[Visitar carpeta del sitio](command:powerplatform-walkthrough.fileSystem-open-folder)</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.init.title">
         <source xml:lang="en">Initialize Web Extension</source>
         <target state="translated">Inicializar extensión web</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.login">
+        <source xml:lang="en">Login and connect to a Power Pages environment to use Power Pages actions. [Learn more](https://go.microsoft.com/fwlink/?linkid=2305702).
+[Login](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile)</source>
+        <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The second line should be '[TRANSLATION HERE](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile).', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">Inicie sesión y conéctese a un entorno de Power Pages para usar las acciones de Power Pages. [Más información](https://go.microsoft.com/fwlink/?linkid=2305702).
+[Inicio de sesión](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile)</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.nameAuthProfile.title">
         <source xml:lang="en">Name/Rename Auth Profile</source>
@@ -758,21 +1389,21 @@ The eighth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveNotSupported">
         <source xml:lang="en">No auth profiles found on this computer.
-Interactive Authentication is not availalbe for remote scenarios; auth profiles must be created by the command line.  The `--deviceCode` flow must be used for users with MFA requirements, or whose tenants use ADFS.
+Interactive Authentication is not available for remote scenarios; auth profiles must be created by the command line.  The `--deviceCode` flow must be used for users with MFA requirements, or whose tenants use ADFS.
 [View Auth Profile Help](command:pacCLI.pacAuthHelp)</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should not translate the argument `--deviceCode`
 The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keeping brackets and the text in the parentheses unmodified</note>
-        <target state="translated">No se han encontrado perfiles de autenticación en este equipo.
-La autenticación interactiva no está disponible en escenarios remotos; los perfiles de autenticación deben crearse desde la línea de comandos. Se debe usar el flujo "--deviceCode" para los usuarios que tengan requisitos de MFA o cuyos inquilinos utilicen ADFS.
-[Ver ayuda de los perfiles de autenticación](command:pacCLI.pacAuthHelp)</target>
+        <target state="translated">No se encontraron perfiles de autenticación en este equipo.
+La autenticación interactiva no está disponible para escenarios remotos; los perfiles de autenticación deben crearse mediante la línea de comandos.  El flujo `--deviceCode` debe usarse para usuarios con requisitos de MFA o cuyos inquilinos usan ADFS.
+[Ver ayuda sobre perfiles de autenticación](command:pacCLI.pacAuthHelp)</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveSupported">
         <source xml:lang="en">No auth profiles found on this computer.
 [Add Auth Profile](command:pacCLI.authPanel.newAuthProfile)</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
-        <target state="translated">No se han encontrado perfiles de autenticación en este equipo.
+        <target state="translated">No se encontraron perfiles de autenticación en este equipo.
 [Agregar perfil de autenticación](command:pacCLI.authPanel.newAuthProfile)</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.description">
@@ -781,13 +1412,29 @@ The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthPr
  To learn more, visit [Edit Power Pages code in VS Code](command:powerplatform-walkthrough.overview-learn-more).</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified</note>
-        <target state="translated">Ahora puede editar fácilmente el código del sitio de Power Pages. Acceda al código desde componentes de sitio compatibles como formularios, fragmentos de contenido, listas y otros desde Visual Studio Code.
+        <target state="translated">Ahora edite fácilmente el código de su sitio de Power Pages. Acceda al código desde componentes de sitio compatibles como formularios, fragmentos de contenido, listas y mucho más desde Visual Studio Code.
  
  Para obtener más información, visite [Editar código de Power Pages en VS Code](command:powerplatform-walkthrough.overview-learn-more).</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title">
+        <source xml:lang="en">Open Containing Folder</source>
+        <target state="translated">Abrir carpeta contenedora</target>
       </trans-unit>
       <trans-unit id="pacCLI.openPacLab.title">
         <source xml:lang="en">Open PAC Lab</source>
         <target state="translated">Abrir laboratorio de PAC</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio.title">
+        <source xml:lang="en">Open in Power Pages Studio</source>
+        <target state="translated">Abrir en el estudio de Power Pages</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.openSitesInStudio.title">
+        <source xml:lang="en">Open in Power Pages Studio</source>
+        <target state="translated">Abrir en el estudio de Power Pages</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement.title">
+        <source xml:lang="en">Open site management</source>
+        <target state="translated">Abrir administración del sitio</target>
       </trans-unit>
       <trans-unit id="powerPlatform.experimental.auth.testCloudOverride.description">
         <source xml:lang="en">Overrides `#powerPlatform.auth.cloud#` for test targets. Leave blank for default behavior.</source>
@@ -797,6 +1444,10 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.title">
         <source xml:lang="en">Overview</source>
         <target state="translated">Información general</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.title">
+        <source xml:lang="en">POWER PAGES ACTIONS</source>
+        <target state="translated">ACCIONES DE POWER PAGES</target>
       </trans-unit>
       <trans-unit id="microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title">
         <source xml:lang="en">POWER PAGES ACTIONS</source>
@@ -810,6 +1461,22 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
         <source xml:lang="en">PowerApps Portal -&gt; Show preview</source>
         <target state="translated">Portal de PowerApps -&gt; Mostrar vista previa</target>
       </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.previewSite.title">
+        <source xml:lang="en">Preview</source>
+        <target state="translated">Obtener vista previa</target>
+      </trans-unit>
+      <trans-unit id="powerplatform.pages.previewSite.title">
+        <source xml:lang="en">Preview Site</source>
+        <target state="translated">Obtener una vista previa del sitio</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite.title">
+        <source xml:lang="en">Reactivate Site</source>
+        <target state="translated">Reactivar sitio</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.refresh.title">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">Actualizar</target>
+      </trans-unit>
       <trans-unit id="pacCLI.envAndSolutionsPanel.refresh.title">
         <source xml:lang="en">Refresh</source>
         <target state="translated">Actualizar</target>
@@ -817,6 +1484,18 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       <trans-unit id="pacCLI.authPanel.refresh.title">
         <source xml:lang="en">Refresh</source>
         <target state="translated">Actualizar</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows.title">
+        <source xml:lang="en">Reveal in Explorer</source>
+        <target state="translated">Mostrar en el explorador</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac.title">
+        <source xml:lang="en">Reveal in Finder</source>
+        <target state="translated">Mostrar en Finder</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title">
+        <source xml:lang="en">Run CodeQL Screening</source>
+        <target state="translated">Ejecutar verificación con CodeQL</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.saveConflict.title">
         <source xml:lang="en">Save conflict</source>
@@ -829,6 +1508,10 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       <trans-unit id="pacCLI.envAndSolutionsPanel.selectEnvironment.title">
         <source xml:lang="en">Select Environment</source>
         <target state="translated">Seleccionar entorno</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails.title">
+        <source xml:lang="en">Show Environment Details</source>
+        <target state="translated">Mostrar detalles del entorno</target>
       </trans-unit>
       <trans-unit id="pacCLI.pacAuthHelp.title">
         <source xml:lang="en">Show PAC Authentication Help</source>
@@ -850,6 +1533,18 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
         <source xml:lang="en">Show PAC Solution Help</source>
         <target state="translated">Mostrar ayuda de la solución de PAC</target>
       </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.siteDetails.title">
+        <source xml:lang="en">Site Details</source>
+        <target state="translated">Detalles del sitio</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.configuration.downloadSite.description">
+        <source xml:lang="en">The folder where site will be downloaded when using Power Pages Actions. Leave this empty to ask for a folder every time you download a site.</source>
+        <target state="translated">La carpeta en la que se descargará el sitio cuando se utilicen acciones de Power Pages. Deje este campo en blanco para solicitar una carpeta cada vez que descargue un sitio.</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite.title">
+        <source xml:lang="en">Upload Site</source>
+        <target state="translated">Cargar sitio</target>
+      </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.description">
         <source xml:lang="en">Visual Studio Code for Web enables editing and publishing of web pages on your website.
  
@@ -861,13 +1556,13 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.advancedCapabilities-learn-more) TRANSLATION', keeping brackets and the text in the parentheses unmodified
 The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.advancedCapabilities-start-coding)', keeping brackets and the text in the parentheses unmodified</note>
-        <target state="translated">Visual Studio Code para web permite editar y publicar páginas web en su sitio web.
+        <target state="translated">Visual Studio Code para Web permite editar y publicar páginas web en su sitio.
  
- Si desea utilizar una interfaz de línea de comandos y funcionalidades más avanzadas, instale la Extensión Power Platform para VS Code, que está disponible en VS Code Marketplace para el escritorio. 
+ Para obtener una interfaz de la línea de comandos y funcionalidades más avanzadas, instale la extensión de Power Platform para VS Code, disponible en el Marketplace de VS Code para escritorio. 
  
- [Más información](command:powerplatform-walkthrough.advancedCapabilities-learn-more) sobre la diferencia entre Visual Studio Code para el escritorio y para la web.
+ [Más información](command:powerplatform-walkthrough.advancedCapabilities-learn-more) sobre la diferencia entre Visual Studio Code para escritorio y web.
  
-[Empiece a programar](command:powerplatform-walkthrough.advancedCapabilities-start-coding)</target>
+[Comience a programar](command:powerplatform-walkthrough.advancedCapabilities-start-coding)</target>
       </trans-unit>
       <trans-unit id="powerPlatform.auth.cloud.description">
         <source xml:lang="en">Which Azure Cloud Power Platform Tools should use for authentication.</source>
