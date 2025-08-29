@@ -445,6 +445,10 @@
         "title": "%microsoft.powerplatform.pages.actionsHub.login.title%"
       },
       {
+        "command": "microsoft.powerplatform.pages.actionsHub.loginToMatch",
+        "title": "%microsoft.powerplatform.pages.actionsHub.login.title%"
+      },
+      {
         "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows",
         "title": "%microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows.title%"
       },
@@ -806,6 +810,10 @@
         {
           "command": "microsoft.powerplatform.pages.actionsHub.newAuthProfile",
           "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.loginToMatch",
+          "when": "!virtualWorkspace"
         },
         {
           "command": "pacCLI.envAndSolutionsPanel.copyFriendlyName",

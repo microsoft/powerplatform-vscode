@@ -23,7 +23,7 @@
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title": "运行 CodeQL 筛选",
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement.title": "打开站点管理",
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite.title": "重新激活站点",
-  "microsoft.powerplatform.pages.actionsHub.login": "登录并连接到 Power Pages 环境以使用 Power Pages 操作。[了解详细信息](https://go.microsoft.com/fwlink/?linkid=2305702)。\n[登录](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile)",
+  "microsoft.powerplatform.pages.actionsHub.login": "登录并连接到 Power Pages 环境以使用 Power Pages 操作。[了解详细信息](https://go.microsoft.com/fwlink/?linkid=2305702)。\n[登录](command:microsoft.powerplatform.pages.actionsHub.loginToMatch)",
   "microsoft.powerplatform.pages.actionsHub.login.title": "添加新的身份验证配置文件",
   "microsoft.powerplatform.pages.actionsHub.openSitesInStudio.title": "在 Power Pages 工作室中打开",
   "microsoft.powerplatform.pages.actionsHub.refresh.title": "刷新",
