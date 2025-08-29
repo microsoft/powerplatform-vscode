@@ -19,7 +19,7 @@ import { getPatchRequestUrl, getRequestURL } from "../utilities/urlBuilderUtil";
 import WebExtensionContext from "../WebExtensionContext";
 import { IAttributePath } from "../common/interfaces";
 import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
-import { schemaEntityKey } from "../schema/constants";
+import { MultiFileSupportedEntityName, schemaEntityKey } from "../schema/constants";
 import { getEntityMappingEntityId } from "../utilities/fileAndEntityUtil";
 
 interface ISaveCallParameters {
@@ -93,7 +93,7 @@ async function getSaveParameters(
         );
         if (webFileV2) {
             let fileName = fileDataMap.get(fileUri.fsPath)?.fileName as string;
-            if (entityName === 'serverlogics' && fileName && !fileName.endsWith('.sl')) {
+            if (entityName === MultiFileSupportedEntityName.SERVERLOGICS && fileName && !fileName.endsWith('.sl')) {
                 const baseName = fileName.endsWith('.js') ? fileName.slice(0, -3) : fileName;
                 fileName = `${baseName}.sl`;
             }
@@ -164,7 +164,7 @@ async function saveDataToDataverse(
         let fileExtensionType = fileDataMap.get(
             fileUri.fsPath
         )?.entityFileExtensionType;
-        if(entityName == "serverlogics") {
+        if(entityName == MultiFileSupportedEntityName.SERVERLOGICS ) {
             fileExtensionType = 'sl';
         }
 
