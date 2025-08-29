@@ -43,7 +43,7 @@ import jwt_decode from 'jwt-decode';
 import { showErrorDialog } from "../utilities/errorHandlerUtil";
 import { oneDSLoggerWrapper } from "../OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
-const serviceScopeMapping: { [key in ServiceEndpointCategory]: string } = {
+export const serviceScopeMapping: { [key in ServiceEndpointCategory]: string } = {
     [ServiceEndpointCategory.NONE]: "",
     [ServiceEndpointCategory.PROD]: PPAPI_WEBSITES_SERVICE_SCOPE_DEFAULT,
     [ServiceEndpointCategory.PREPROD]: PPAPI_PREPROD_WEBSITES_SERVICE_SCOPE_DEFAULT,

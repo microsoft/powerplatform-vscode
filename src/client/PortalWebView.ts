@@ -163,7 +163,8 @@ export class PortalWebView {
 
             // update img src value with base url of web-files folder
             // html = html.replace(/<img([^>]*)\ssrc=(['"])(\/[^\2*([^\2\s<]+)\2/gi, "<img$1 src=$2" + BaseURL + "$3$2");
-            const regex = /<img([^>]*)\ssrc=(['"])(\/[^\2*([^\2<]*(png|jpg|jpeg|svg|gif|PNG|JPG|JPEG|SVG|GIF|bmp|BMP))/g;
+            // const regex = /<img([^>]*)\ssrc=(['"])(\/[^\2*([^\2<]*(png|jpg|jpeg|svg|gif|PNG|JPG|JPEG|SVG|GIF|bmp|BMP))/g;
+            const regex = /<img([^>]*)\ssrc=(['"])(\/[^'"<]*\.(png|jpg|jpeg|svg|gif|PNG|JPG|JPEG|SVG|GIF|bmp|BMP))/g;
             const emptySpace = /[ ]/g;
 
             let match;

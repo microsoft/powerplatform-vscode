@@ -57,7 +57,7 @@ describe('CodeQLAction', () => {
             const showErrorStub = sandbox.stub(vscode.window, 'showErrorMessage').resolves();
 
             try {
-                await codeqlAction.executeCodeQLAnalysisWithCustomPath(sitePath, databaseLocation);
+                await codeqlAction.executeCodeQLAnalysisWithCustomPath(sitePath, databaseLocation, true);
                 assert.ok(showErrorStub.called, 'Should show error when CodeQL extension is missing');
             } catch (error) {
                 // Expected error for missing extension
@@ -74,7 +74,7 @@ describe('CodeQLAction', () => {
             sandbox.stub(vscode.window, 'showErrorMessage').resolves();
             const createChannelStub = vscode.window.createOutputChannel as sinon.SinonStub;
 
-            await codeqlAction.executeCodeQLAnalysisWithCustomPath(sitePath, databaseLocation);
+            await codeqlAction.executeCodeQLAnalysisWithCustomPath(sitePath, databaseLocation, true);
 
             assert.ok(createChannelStub.called, 'Should create output channel');
         });
@@ -93,7 +93,7 @@ describe('CodeQLAction', () => {
             sandbox.stub(vscode.window, 'showErrorMessage').resolves();
 
             try {
-                await codeqlAction.executeCodeQLAnalysisWithCustomPath(sitePath, databaseLocation);
+                await codeqlAction.executeCodeQLAnalysisWithCustomPath(sitePath, databaseLocation, true);
                 assert.ok(mockExtension.activate.called, 'Should attempt to activate CodeQL extension');
             } catch (error) {
                 // Handle expected errors during test execution
@@ -114,7 +114,7 @@ describe('CodeQLAction', () => {
             sandbox.stub(vscode.window, 'showErrorMessage').resolves();
 
             // This should complete without throwing an unhandled error
-            await codeqlAction.executeCodeQLAnalysisWithCustomPath(sitePath, databaseLocation);
+            await codeqlAction.executeCodeQLAnalysisWithCustomPath(sitePath, databaseLocation, true);
 
             // Test passes if we reach this point
             assert.ok(true, 'Should handle missing extension gracefully');
@@ -126,7 +126,7 @@ describe('CodeQLAction', () => {
             sandbox.stub(vscode.window, 'showErrorMessage').resolves();
 
             // Should not throw with null/undefined inputs
-            await codeqlAction.executeCodeQLAnalysisWithCustomPath('', '');
+            await codeqlAction.executeCodeQLAnalysisWithCustomPath('', '', true);
 
             assert.ok(true, 'Should handle empty string inputs without throwing');
         });
@@ -153,7 +153,7 @@ describe('CodeQLAction', () => {
             sandbox.stub(vscode.window, 'showErrorMessage').resolves();
 
             // Should handle null return from getExtension
-            await codeqlAction.executeCodeQLAnalysisWithCustomPath(sitePath, databaseLocation);
+            await codeqlAction.executeCodeQLAnalysisWithCustomPath(sitePath, databaseLocation, true);
 
             assert.ok(true, 'Should handle null extension return gracefully');
         });
