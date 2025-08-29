@@ -63,7 +63,8 @@ export function isExtensionNeededInFileName(entity: string) {
         || entity === schemaEntityName.ADVANCEDFORMSTEPS
         || entity === schemaEntityName.BASICFORMS
         || entity === schemaEntityName.WEBPAGES
-        || entity === schemaEntityName.CONTENTSNIPPETS;
+        || entity === schemaEntityName.CONTENTSNIPPETS
+        || entity === schemaEntityName.SERVERLOGICS;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -192,7 +193,7 @@ export function getFileExtension(fileName: string): string | undefined {
 }
 
 export function getFileExtensionForPreload() {
-    return ['css', 'json', 'txt'];
+    return ['css', 'json', 'txt', 'js'];
 }
 
 export function getImageContent(mimeType: string, fileContent: string) {

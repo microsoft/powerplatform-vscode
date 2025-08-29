@@ -109,6 +109,26 @@ export const portal_schema_V1 = {
             },
             {
                 relationships: "",
+                _vscodeentityname: "serverlogics",
+                _dataverseenityname: "adx_serverlogics",
+                _displayname: "Server Logic",
+                _etc: "11398",
+                _primaryidfield: "adx_serverlogicid",
+                _primarynamefield: "name",
+                _disableplugins: "true",
+                _foldername: "server-logics",
+                _exporttype: "SingleFolder",
+                _fetchQueryParameters:
+                    "?$filter=adx_serverlogicid eq {entityId} &$select=name",
+                _multiFileFetchQueryParameters: "?$filter=_website_value eq {websiteId} &$select=adx_serverlogicid,name,filecontent&$count=true",
+                _attributes: "filecontent",
+                _attributesExtension: new Map([["filecontent", "js"]]),
+                _mappingEntityFetchQuery: new Map([
+                    ["filecontent", "({entityId})/filecontent"],
+                ]),
+            },
+            {
+                relationships: "",
                 _vscodeentityname: "contentsnippet",
                 _dataverseenityname: "adx_contentsnippets",
                 _displayname: "Content Snippet",
@@ -315,6 +335,27 @@ export const portal_schema_V2 = {
                     "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 3 &$select=name,content,_powerpagesitelanguageid_value&$count=true",
                 _attributes: "filecontent",
                 _attributesExtension: new Map([["filecontent", "css"]]),
+                _mappingEntityFetchQuery: new Map([
+                    ["filecontent", "({entityId})/filecontent"],
+                ]),
+            },
+            {
+                relationships: "",
+                _vscodeentityname: "serverlogics",
+                _dataverseenityname: "powerpagecomponents",
+                _displayname: "Server Logic",
+                _etc: "10271",
+                _primaryidfield: "powerpagecomponentid",
+                _primarynamefield: "name",
+                _disableplugins: "false",
+                _exporttype: "SingleFolder",
+                _foldername: "server-logics",
+                _fetchQueryParameters:
+                    "?$filter=powerpagecomponentid eq {entityId}&$select=name",
+                _multiFileFetchQueryParameters:
+                    "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 35 &$select=name,content,_powerpagesitelanguageid_value&$count=true",
+                _attributes: "filecontent",
+                _attributesExtension: new Map([["filecontent", "js"]]),
                 _mappingEntityFetchQuery: new Map([
                     ["filecontent", "({entityId})/filecontent"],
                 ]),
