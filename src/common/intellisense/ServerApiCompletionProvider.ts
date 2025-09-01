@@ -55,6 +55,22 @@ export class ServerApiDefinitions {
                         { name: "message", type: "string", description: "The message to log" }
                     ],
                     example: "Server.Logger.Log('Application started');"
+                },
+                {
+                    name: "Warn",
+                    description: "Logs a warning message",
+                    parameters: [
+                        { name: "message", type: "string", description: "The warning message to log" }
+                    ],
+                    example: "Server.Logger.Warn('Potential issue detected');"
+                },
+                {
+                    name: "Error",
+                    description: "Logs an error message",
+                    parameters: [
+                        { name: "message", type: "string", description: "The error message to log" }
+                    ],
+                    example: "Server.Logger.Error('An error occurred');"
                 }
             ]
         },
@@ -191,6 +207,17 @@ export class ServerApiDefinitions {
                     ],
                     returnType: "void",
                     example: "Server.Connector.Dataverse.DeleteRecord('contacts', contactId);"
+                },
+                {
+                    name: "InvokeCustomApi",
+                    description: "Invokes a custom API endpoint",
+                    parameters: [
+                        { name: "httpMethod", type: "string", description: "The HTTP method to use (e.g., GET, POST)" },
+                        { name: "url", type: "string", description: "The API endpoint URL" },
+                        { name: "payload", type: "string", description: "The JSON payload to send with the request" }
+                    ],
+                    returnType: "void",
+                    example: "Server.Connector.Dataverse.InvokeCustomApi('POST', '/api/data/v9.0/contacts', payload);"
                 }
             ]
         },

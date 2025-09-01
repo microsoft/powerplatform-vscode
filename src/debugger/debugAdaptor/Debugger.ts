@@ -212,7 +212,7 @@ export class Debugger implements Disposable, DebugAdapter {
             "Could not start debugging session. Retrying",
             false,
             {
-                retryCount: `${retryCount}` ?? "undefined",
+                retryCount: `${retryCount}`,
             }
         );
 
@@ -227,8 +227,7 @@ export class Debugger implements Disposable, DebugAdapter {
                 true,
                 {
                     retryCount:
-                        `${retryCount}/${this.debuggingRetryCount}` ??
-                        "undefined",
+                        `${retryCount}/${this.debuggingRetryCount}`,
                 }
             );
         }

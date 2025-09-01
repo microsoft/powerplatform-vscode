@@ -35,6 +35,7 @@ import { IAttributePath, IFileInfo } from "../common/interfaces";
 import { portal_schema_V2 } from "../schema/portalSchema";
 import { ERROR_CONSTANTS } from "../../../common/ErrorConstants";
 import { showErrorDialog } from "../../../common/utilities/errorHandlerUtil";
+import { EnableServerLogicChanges } from "../../../common/ecs-features/ecsFeatureGates";
 
 export async function fetchDataFromDataverseAndUpdateVFS(
     portalFs: PortalsFS,
@@ -48,18 +49,21 @@ export async function fetchDataFromDataverseAndUpdateVFS(
         const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
             Constants.queryParameters.ORG_URL
         ) as string;
+        const { enableServerLogicChanges } = EnableServerLogicChanges.getConfig() as { enableServerLogicChanges?: boolean };
         await Promise.all(entityRequestURLs.map(async (entity) => {
             const startTime = new Date().getTime();
-            await fetchFromDataverseAndCreateFiles(entity.entityName, entity.requestUrl, dataverseOrgUrl, portalFs, defaultFileInfo);
+            if(entity.entityName != schemaEntityName.SERVERLOGICS || enableServerLogicChanges) {
+                await fetchFromDataverseAndCreateFiles(entity.entityName, entity.requestUrl, dataverseOrgUrl, portalFs, defaultFileInfo);
 
-            if (defaultFileInfo === undefined) { // This will be undefined for bulk entity load
-                WebExtensionContext.telemetry.sendInfoTelemetry(
-                    webExtensionTelemetryEventNames.WEB_EXTENSION_FILES_LOAD_SUCCESS,
-                    {
-                        entityName: entity.entityName,
-                        duration: (new Date().getTime() - startTime).toString(),
-                    }
-                );
+                if (defaultFileInfo === undefined) { // This will be undefined for bulk entity load
+                    WebExtensionContext.telemetry.sendInfoTelemetry(
+                        webExtensionTelemetryEventNames.WEB_EXTENSION_FILES_LOAD_SUCCESS,
+                        {
+                            entityName: entity.entityName,
+                            duration: (new Date().getTime() - startTime).toString(),
+                        }
+                    );
+                }
             }
         }));
     } catch (error) {
@@ -595,6 +599,10 @@ async function fetchMappingEntityContent(
         headers: getCommonHeadersForDataverse(accessToken),
     });
 
+    if(entity === schemaEntityName.SERVERLOGICS && !response.ok) {
+        return Constants.NO_CONTENT;
+    }
+
     if (!response.ok) {
         WebExtensionContext.telemetry.sendAPIFailureTelemetry(
             requestUrl,
@@ -619,6 +627,10 @@ async function fetchMappingEntityContent(
 
     const result = await response.json();
     const data = result.value ?? result;
+
+    if(entity === schemaEntityName.SERVERLOGICS) {
+        return data || Constants.NO_CONTENT;
+    }
     if (isPortalVersionV1() && result[Constants.ODATA_COUNT] > 0 && data.length > 0) {
         return data[0];
     }

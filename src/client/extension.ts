@@ -52,7 +52,7 @@ import { PacWrapper } from "./pac/PacWrapper";
 import { authenticateUserInVSCode } from "../common/services/AuthenticationProvider";
 import { PROVIDER_ID } from "../common/services/Constants";
 import { activateServerApiAutocomplete } from "../common/intellisense";
-import { EnableBLChanges } from "../common/ecs-features/ecsFeatureGates";
+import { EnableServerLogicChanges } from "../common/ecs-features/ecsFeatureGates";
 import { setServerApiTelemetryContext } from "../common/intellisense/ServerApiTelemetryContext";
 
 let client: LanguageClient;
@@ -233,8 +233,8 @@ export async function activate(
                     // Register copilot panels only after ECS initialization is complete
                     registerCopilotPanels(pacWrapper);
 
-                    const { enableBLChanges } = EnableBLChanges.getConfig() as { enableBLChanges?: boolean };
-                    if (!serverApiAutocompleteInitialized && enableBLChanges) {
+                    const { enableServerLogicChanges } = EnableServerLogicChanges.getConfig() as { enableServerLogicChanges?: boolean };
+                    if (!serverApiAutocompleteInitialized && enableServerLogicChanges) {
                         // Set telemetry context for Server API autocomplete events
                         setServerApiTelemetryContext({
                             tenantId: TenantID,
