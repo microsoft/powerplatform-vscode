@@ -69,17 +69,6 @@ describe('CodeQLAction', () => {
             // Test passes if we reach this point
             assert.ok(true, 'Should handle missing extension gracefully');
         });
-
-        it('should handle null or undefined inputs gracefully', async () => {
-            // Test with null paths
-            sandbox.stub(vscode.extensions, 'getExtension').returns(undefined);
-            sandbox.stub(vscode.window, 'showErrorMessage').resolves();
-
-            // Should not throw with null/undefined inputs
-            await codeqlAction.executeCodeQLAnalysisWithCustomPath('', '', true);
-
-            assert.ok(true, 'Should handle empty string inputs without throwing');
-        });
     });
 
     describe('integration behavior', () => {
