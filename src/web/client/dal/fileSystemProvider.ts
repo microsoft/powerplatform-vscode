@@ -34,7 +34,7 @@ import {
 import { getImageFileContent, getRangeForMultilineMatch, isImageFileSupportedForEdit, isPortalVersionV1, isVersionControlEnabled, updateFileContentInFileDataMap } from "../utilities/commonUtil";
 import { IFileInfo, ISearchQueryMatch, ISearchQueryResults } from "../common/interfaces";
 import { ERROR_CONSTANTS } from "../../../common/ErrorConstants";
-import { EnableBLChanges } from "../../../common/ecs-features/ecsFeatureGates";
+import { EnableServerLogicChanges } from "../../../common/ecs-features/ecsFeatureGates";
 
 export class File implements vscode.FileStat {
     type: vscode.FileType;
@@ -227,14 +227,14 @@ export class PortalsFS implements vscode.FileSystemProvider {
     async createDirectory(uri: vscode.Uri): Promise<void> {
         // Do silent lookup to check for existing entry
         const entry = await this._lookup(uri, true);
-        const { enableBLChanges } = EnableBLChanges.getConfig() as { enableBLChanges?: boolean };
+        const { enableServerLogicChanges } = EnableServerLogicChanges.getConfig() as { enableServerLogicChanges?: boolean };
         if (!entry) {
             const basename = path.posix.basename(uri.path);
             const dirname = uri.with({ path: path.posix.dirname(uri.path) });
             const parent = await this._lookupAsDirectory(dirname, false);
 
-            if (basename === SERVERLOGICS && !enableBLChanges) {
-                return; // Do not create the directory if the business logic is disabled
+            if (basename === SERVERLOGICS && !enableServerLogicChanges) {
+                return; // Do not create the directory if the server logic is disabled
             }
 
             const entry = new Directory(basename);

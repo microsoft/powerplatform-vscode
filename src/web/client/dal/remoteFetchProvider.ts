@@ -35,7 +35,7 @@ import { IAttributePath, IFileInfo } from "../common/interfaces";
 import { portal_schema_V2 } from "../schema/portalSchema";
 import { ERROR_CONSTANTS } from "../../../common/ErrorConstants";
 import { showErrorDialog } from "../../../common/utilities/errorHandlerUtil";
-import { EnableBLChanges } from "../../../common/ecs-features/ecsFeatureGates";
+import { EnableServerLogicChanges } from "../../../common/ecs-features/ecsFeatureGates";
 
 export async function fetchDataFromDataverseAndUpdateVFS(
     portalFs: PortalsFS,
@@ -49,10 +49,10 @@ export async function fetchDataFromDataverseAndUpdateVFS(
         const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
             Constants.queryParameters.ORG_URL
         ) as string;
-        const { enableBLChanges } = EnableBLChanges.getConfig() as { enableBLChanges?: boolean };
+        const { enableServerLogicChanges } = EnableServerLogicChanges.getConfig() as { enableServerLogicChanges?: boolean };
         await Promise.all(entityRequestURLs.map(async (entity) => {
             const startTime = new Date().getTime();
-            if(entity.entityName != schemaEntityName.SERVERLOGICS || enableBLChanges) {
+            if(entity.entityName != schemaEntityName.SERVERLOGICS || enableServerLogicChanges) {
                 await fetchFromDataverseAndCreateFiles(entity.entityName, entity.requestUrl, dataverseOrgUrl, portalFs, defaultFileInfo);
 
                 if (defaultFileInfo === undefined) { // This will be undefined for bulk entity load
@@ -598,6 +598,10 @@ async function fetchMappingEntityContent(
     const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, {
         headers: getCommonHeadersForDataverse(accessToken),
     });
+
+    if(entity === schemaEntityName.SERVERLOGICS && !response.ok) {
+        return Constants.NO_CONTENT;
+    }
 
     if (!response.ok) {
         WebExtensionContext.telemetry.sendAPIFailureTelemetry(
