@@ -476,6 +476,13 @@ export class CodeQLAction {
             if (!sarifExt) {
                 this.outputChannel.appendLine(Constants.Strings.CODEQL_SARIF_VIEWER_NOT_FOUND);
 
+                traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_NOT_FOUND, {
+                    methodName: 'openWithSarifViewer',
+                    resultsPath: resultsPath,
+                    extensionId: 'MS-SarifVSCode.sarif-viewer',
+                    ...getBaseEventInfo()
+                });
+
                 const installExtension = await vscode.window.showInformationMessage(
                     Constants.Strings.SARIF_VIEWER_NOT_INSTALLED,
                     Constants.Strings.INSTALL,
@@ -483,8 +490,23 @@ export class CodeQLAction {
                     Constants.Strings.CANCEL
                 );
 
+                traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_INSTALL_PROMPTED, {
+                    methodName: 'openWithSarifViewer',
+                    resultsPath: resultsPath,
+                    extensionId: 'MS-SarifVSCode.sarif-viewer',
+                    userResponse: installExtension,
+                    ...getBaseEventInfo()
+                });
+
                 if (installExtension === Constants.Strings.INSTALL) {
                     try {
+                        traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_INSTALL_ACCEPTED, {
+                            methodName: 'openWithSarifViewer',
+                            resultsPath: resultsPath,
+                            extensionId: 'MS-SarifVSCode.sarif-viewer',
+                            ...getBaseEventInfo()
+                        });
+
                         this.outputChannel.appendLine(Constants.Strings.CODEQL_INSTALLING_SARIF_VIEWER);
                         await vscode.commands.executeCommand('workbench.extensions.installExtension', 'MS-SarifVSCode.sarif-viewer');
 
@@ -495,28 +517,79 @@ export class CodeQLAction {
                         const newSarifExt = vscode.extensions.getExtension('MS-SarifVSCode.sarif-viewer');
                         if (newSarifExt) {
                             this.outputChannel.appendLine(Constants.Strings.CODEQL_SARIF_VIEWER_INSTALLED);
+
+                            traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_INSTALL_SUCCESS, {
+                                methodName: 'openWithSarifViewer',
+                                resultsPath: resultsPath,
+                                extensionId: 'MS-SarifVSCode.sarif-viewer',
+                                ...getBaseEventInfo()
+                            });
+
                             await newSarifExt.activate();
 
                             if (newSarifExt.exports && typeof newSarifExt.exports.openLogs === 'function') {
                                 this.outputChannel.appendLine(Constants.Strings.CODEQL_OPENING_WITH_NEW_SARIF_VIEWER);
                                 await newSarifExt.exports.openLogs([vscode.Uri.file(resultsPath)]);
                                 this.outputChannel.appendLine(Constants.Strings.CODEQL_SARIF_VIEWER_OPENED);
+
+                                traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_OPENED, {
+                                    methodName: 'openWithSarifViewer',
+                                    resultsPath: resultsPath,
+                                    extensionId: 'MS-SarifVSCode.sarif-viewer',
+                                    openedAfterInstall: true,
+                                    ...getBaseEventInfo()
+                                });
+
                                 return;
                             }
                         }
 
                         this.outputChannel.appendLine(Constants.Strings.CODEQL_SARIF_VIEWER_API_NOT_AVAILABLE);
+
+                        traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_NOT_AVAILABLE, {
+                            methodName: 'openWithSarifViewer',
+                            resultsPath: resultsPath,
+                            extensionId: 'MS-SarifVSCode.sarif-viewer',
+                            reason: 'api_not_available_after_install',
+                            ...getBaseEventInfo()
+                        });
+
                         await this.fallbackToTextEditor(resultsPath);
 
                     } catch (installError) {
                         const errorMessage = installError instanceof Error ? installError.message : String(installError);
                         this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_SARIF_VIEWER_INSTALL_ERROR, errorMessage));
                         vscode.window.showErrorMessage(Constants.Strings.SARIF_VIEWER_INSTALL_FAILED);
+
+                        traceError(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_INSTALL_FAILED, installError as Error, {
+                            methodName: 'openWithSarifViewer',
+                            resultsPath: resultsPath,
+                            extensionId: 'MS-SarifVSCode.sarif-viewer',
+                            errorMessage: errorMessage,
+                            ...getBaseEventInfo()
+                        });
+
                         await this.fallbackToTextEditor(resultsPath);
                     }
                 } else if (installExtension === Constants.Strings.OPEN_AS_TEXT) {
+                    traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_INSTALL_DECLINED, {
+                        methodName: 'openWithSarifViewer',
+                        resultsPath: resultsPath,
+                        extensionId: 'MS-SarifVSCode.sarif-viewer',
+                        userChoice: 'open_as_text',
+                        ...getBaseEventInfo()
+                    });
+
                     await this.fallbackToTextEditor(resultsPath);
                 } else {
+                    traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_INSTALL_DECLINED, {
+                        methodName: 'openWithSarifViewer',
+                        resultsPath: resultsPath,
+                        extensionId: 'MS-SarifVSCode.sarif-viewer',
+                        userChoice: 'cancelled',
+                        ...getBaseEventInfo()
+                    });
+
                     this.outputChannel.appendLine(Constants.Strings.CODEQL_USER_CANCELLED);
                 }
                 return;
@@ -524,25 +597,73 @@ export class CodeQLAction {
 
             if (!sarifExt.isActive) {
                 this.outputChannel.appendLine(Constants.Strings.CODEQL_ACTIVATING_SARIF_VIEWER);
+
+                traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_ACTIVATION_STARTED, {
+                    methodName: 'openWithSarifViewer',
+                    resultsPath: resultsPath,
+                    extensionId: 'MS-SarifVSCode.sarif-viewer',
+                    ...getBaseEventInfo()
+                });
+
                 await sarifExt.activate();
+
+                traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_ACTIVATION_COMPLETED, {
+                    methodName: 'openWithSarifViewer',
+                    resultsPath: resultsPath,
+                    extensionId: 'MS-SarifVSCode.sarif-viewer',
+                    ...getBaseEventInfo()
+                });
             }
 
             if (sarifExt.exports && typeof sarifExt.exports.openLogs === 'function') {
                 this.outputChannel.appendLine(Constants.Strings.CODEQL_OPENING_WITH_SARIF_VIEWER);
                 await sarifExt.exports.openLogs([vscode.Uri.file(resultsPath)]);
                 this.outputChannel.appendLine(Constants.Strings.CODEQL_SARIF_VIEWER_OPENED);
+
+                traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_OPENED, {
+                    methodName: 'openWithSarifViewer',
+                    resultsPath: resultsPath,
+                    extensionId: 'MS-SarifVSCode.sarif-viewer',
+                    openedAfterInstall: false,
+                    ...getBaseEventInfo()
+                });
             } else {
                 this.outputChannel.appendLine(Constants.Strings.CODEQL_SARIF_VIEWER_API_FALLBACK);
+
+                traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_API_ERROR, {
+                    methodName: 'openWithSarifViewer',
+                    resultsPath: resultsPath,
+                    extensionId: 'MS-SarifVSCode.sarif-viewer',
+                    reason: 'api_function_not_available',
+                    exportsAvailable: !!sarifExt.exports,
+                    ...getBaseEventInfo()
+                });
+
                 await this.fallbackToTextEditor(resultsPath);
             }
 
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_SARIF_VIEWER_ERROR, errorMessage));
+
+            traceError(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_API_ERROR, error as Error, {
+                methodName: 'openWithSarifViewer',
+                resultsPath: resultsPath,
+                extensionId: 'MS-SarifVSCode.sarif-viewer',
+                errorMessage: errorMessage,
+                ...getBaseEventInfo()
+            });
+
             await this.fallbackToTextEditor(resultsPath);
         }
     }    private async fallbackToTextEditor(resultsPath: string): Promise<void> {
         try {
+            traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_FALLBACK_TO_TEXT_EDITOR, {
+                methodName: 'fallbackToTextEditor',
+                resultsPath: resultsPath,
+                ...getBaseEventInfo()
+            });
+
             // Offer to open the full SARIF file as text
             const openFile = await vscode.window.showInformationMessage(
                 Constants.Strings.CODEQL_ANALYSIS_COMPLETED_OPEN_FILE,
@@ -553,10 +674,24 @@ export class CodeQLAction {
             if (openFile === Constants.Strings.CODEQL_OPEN_RESULTS) {
                 const document = await vscode.workspace.openTextDocument(resultsPath);
                 await vscode.window.showTextDocument(document);
+
+                traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_RESULTS_PROCESSED, {
+                    methodName: 'fallbackToTextEditor',
+                    resultsPath: resultsPath,
+                    openedInTextEditor: true,
+                    ...getBaseEventInfo()
+                });
             }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_ERROR_OPENING_RESULTS, errorMessage));
+
+            traceError(Constants.EventNames.ACTIONS_HUB_CODEQL_RESULTS_DISPLAY_FAILED, error as Error, {
+                methodName: 'fallbackToTextEditor',
+                resultsPath: resultsPath,
+                errorMessage: errorMessage,
+                ...getBaseEventInfo()
+            });
         }
     }
 
