@@ -45,7 +45,7 @@ import { EXTENSION_ID } from "../../common/constants";
 import { getECSOrgLocationValue } from "../../common/utilities/Utils";
 import { authenticateUserInVSCode } from "../../common/services/AuthenticationProvider";
 import { activateServerApiAutocomplete } from "../../common/intellisense";
-import { EnableBLChanges } from "../../common/ecs-features/ecsFeatureGates";
+import { EnableServerLogicChanges } from "../../common/ecs-features/ecsFeatureGates";
 import { setServerApiTelemetryContext } from "../../common/intellisense/ServerApiTelemetryContext";
 
 let serverApiAutocompleteInitialized = false;
@@ -153,8 +153,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
                                             },
                                             PowerPagesClientName);
 
-                                        const { enableBLChanges } = EnableBLChanges.getConfig() as { enableBLChanges?: boolean };
-                                        if (!serverApiAutocompleteInitialized && enableBLChanges) {
+                                        const { enableServerLogicChanges } = EnableServerLogicChanges.getConfig() as { enableServerLogicChanges?: boolean };
+                                        if (!serverApiAutocompleteInitialized && enableServerLogicChanges) {
                                             // Set telemetry context for Server API autocomplete events
                                             setServerApiTelemetryContext({
                                                 tenantId: queryParamsMap.get(queryParameters.TENANT_ID) as string,
