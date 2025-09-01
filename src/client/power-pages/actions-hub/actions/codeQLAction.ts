@@ -9,6 +9,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { CODEQL_EXTENSION_ID } from '../../../../common/constants';
 import { Constants } from '../Constants';
+import { traceInfo, traceError, getBaseEventInfo } from '../TelemetryHelper';
 
 interface PowerPagesConfig {
     codeQlQuery?: string;
@@ -22,6 +23,18 @@ export class CodeQLAction {
     }
 
     public async executeCodeQLAnalysisWithCustomPath(sitePath: string, databaseLocation: string, powerPagesSiteFolderExists: boolean): Promise<void> {
+        const startTime = Date.now();
+        const siteBaseName = path.basename(sitePath);
+
+        traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_ACTION_STARTED, {
+            methodName: this.executeCodeQLAnalysisWithCustomPath.name,
+            sitePath: sitePath,
+            databaseLocation: databaseLocation,
+            powerPagesSiteFolderExists: powerPagesSiteFolderExists,
+            siteBaseName: siteBaseName,
+            ...getBaseEventInfo()
+        });
+
         this.outputChannel.show();
         this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_ANALYSIS_STARTING, path.basename(sitePath)));
         this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_DATABASE_LOCATION, databaseLocation));
@@ -59,18 +72,59 @@ export class CodeQLAction {
                 await this.displayResults(resultsPath);
             }
 
+            const duration = Date.now() - startTime;
+            traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_ACTION_COMPLETED, {
+                methodName: this.executeCodeQLAnalysisWithCustomPath.name,
+                sitePath: sitePath,
+                databaseLocation: databaseLocation,
+                databasePath: dbPath,
+                resultsPath: resultsPath,
+                querySuite: querySuite,
+                duration: duration,
+                siteBaseName: siteBaseName,
+                powerPagesSiteFolderExists: powerPagesSiteFolderExists,
+                resultsFileExists: fs.existsSync(resultsPath),
+                ...getBaseEventInfo()
+            });
+
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
+            const duration = Date.now() - startTime;
+
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_ANALYSIS_ERROR, errorMessage));
             vscode.window.showErrorMessage(vscode.l10n.t(Constants.Strings.CODEQL_ANALYSIS_FAILED, errorMessage));
+
+            traceError(Constants.EventNames.ACTIONS_HUB_CODEQL_ACTION_FAILED, error as Error, {
+                methodName: this.executeCodeQLAnalysisWithCustomPath.name,
+                sitePath: sitePath,
+                databaseLocation: databaseLocation,
+                duration: duration,
+                siteBaseName: siteBaseName,
+                powerPagesSiteFolderExists: powerPagesSiteFolderExists,
+                errorMessage: errorMessage,
+                ...getBaseEventInfo()
+            });
         }
     }
 
     private async checkCodeQLInstallation(): Promise<string> {
+        traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_CLI_SEARCH_STARTED, {
+            methodName: this.checkCodeQLInstallation.name,
+            ...getBaseEventInfo()
+        });
+
         // First try to get the CodeQL CLI path from the CodeQL extension
         const codeqlCliPath = await this.getCodeQLCliPath();
         if (codeqlCliPath) {
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_CLI_FOUND_AT, codeqlCliPath));
+
+            traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_CLI_FOUND, {
+                methodName: this.checkCodeQLInstallation.name,
+                cliPath: codeqlCliPath,
+                source: 'extension',
+                ...getBaseEventInfo()
+            });
+
             return codeqlCliPath;
         }
 
@@ -78,9 +132,24 @@ export class CodeQLAction {
         return new Promise((resolve, reject) => {
             exec('codeql version', (error, stdout, _) => {
                 if (error) {
+                    traceError(Constants.EventNames.ACTIONS_HUB_CODEQL_CLI_NOT_FOUND, error, {
+                        methodName: this.checkCodeQLInstallation.name,
+                        source: 'PATH',
+                        errorMessage: error.message,
+                        ...getBaseEventInfo()
+                    });
                     reject(new Error(Constants.Strings.CODEQL_CLI_NOT_INSTALLED));
                 } else {
                     this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_VERSION, stdout.trim()));
+
+                    traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_CLI_FOUND, {
+                        methodName: this.checkCodeQLInstallation.name,
+                        cliPath: 'codeql',
+                        source: 'PATH',
+                        version: stdout.trim(),
+                        ...getBaseEventInfo()
+                    });
+
                     resolve('codeql'); // Use the command as-is from PATH
                 }
             });
@@ -179,7 +248,30 @@ export class CodeQLAction {
         }
     }
 
+    private getCommandType(command: string): string {
+        if (command.includes('database create')) {
+            return 'database_create';
+        } else if (command.includes('database analyze')) {
+            return 'database_analyze';
+        } else if (command.includes('version')) {
+            return 'version';
+        }
+        return 'unknown';
+    }
+
     private async runCodeQLCommand(command: string): Promise<string> {
+        const startTime = Date.now();
+        const commandType = this.getCommandType(command);
+
+        traceInfo(commandType === 'database_create' ?
+            Constants.EventNames.ACTIONS_HUB_CODEQL_DATABASE_CREATION_STARTED :
+            Constants.EventNames.ACTIONS_HUB_CODEQL_ANALYSIS_STARTED, {
+            methodName: this.runCodeQLCommand.name,
+            command: command,
+            commandType: commandType,
+            ...getBaseEventInfo()
+        });
+
         return new Promise((resolve, reject) => {
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_EXECUTING_COMMAND, command));
 
@@ -213,17 +305,63 @@ export class CodeQLAction {
             });
 
             process.on('close', (code: number) => {
+                const duration = Date.now() - startTime;
+
                 if (code === 0) {
                     this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_COMMAND_SUCCESS, code.toString()));
+
+                    traceInfo(commandType === 'database_create' ?
+                        Constants.EventNames.ACTIONS_HUB_CODEQL_DATABASE_CREATION_COMPLETED :
+                        Constants.EventNames.ACTIONS_HUB_CODEQL_ANALYSIS_COMPLETED, {
+                        methodName: this.runCodeQLCommand.name,
+                        command: command,
+                        commandType: commandType,
+                        exitCode: code,
+                        duration: duration,
+                        stdoutLength: stdout.length,
+                        stderrLength: stderr.length,
+                        ...getBaseEventInfo()
+                    });
+
                     resolve(stdout);
                 } else {
                     this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_COMMAND_FAILED, code.toString()));
+
+                    traceError(commandType === 'database_create' ?
+                        Constants.EventNames.ACTIONS_HUB_CODEQL_DATABASE_CREATION_FAILED :
+                        Constants.EventNames.ACTIONS_HUB_CODEQL_ANALYSIS_FAILED,
+                        new Error(vscode.l10n.t(Constants.Strings.CODEQL_COMMAND_FAILED_ERROR, code.toString(), stderr || 'Unknown error')), {
+                        methodName: this.runCodeQLCommand.name,
+                        command: command,
+                        commandType: commandType,
+                        exitCode: code,
+                        duration: duration,
+                        stdoutLength: stdout.length,
+                        stderrLength: stderr.length,
+                        stderr: stderr,
+                        ...getBaseEventInfo()
+                    });
+
                     reject(new Error(vscode.l10n.t(Constants.Strings.CODEQL_COMMAND_FAILED_ERROR, code.toString(), stderr || 'Unknown error')));
                 }
             });
 
             process.on('error', (error: Error) => {
+                const duration = Date.now() - startTime;
                 this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_PROCESS_ERROR, error.message));
+
+                traceError(commandType === 'database_create' ?
+                    Constants.EventNames.ACTIONS_HUB_CODEQL_DATABASE_CREATION_FAILED :
+                    Constants.EventNames.ACTIONS_HUB_CODEQL_ANALYSIS_FAILED,
+                    error, {
+                    methodName: this.runCodeQLCommand.name,
+                    command: command,
+                    commandType: commandType,
+                    duration: duration,
+                    errorMessage: error.message,
+                    ...getBaseEventInfo()
+                });
+
                 reject(new Error(vscode.l10n.t(Constants.Strings.CODEQL_PROCESS_ERROR, error.message)));
             });
         });
@@ -268,11 +406,15 @@ export class CodeQLAction {
             const results = JSON.parse(resultsContent);
 
             let hasIssues = false;
+            let issueCount = 0;
+            let runsCount = 0;
 
             if (results.runs && results.runs.length > 0) {
+                runsCount = results.runs.length;
                 const run = results.runs[0];
                 if (run.results && run.results.length > 0) {
                     hasIssues = true;
+                    issueCount = run.results.length;
                     this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_ISSUES_FOUND, run.results.length.toString()));
 
                     run.results.forEach((result: { message?: { text?: string }; locations?: Array<{ physicalLocation?: { artifactLocation?: { uri?: string }; region?: { startLine?: number } } }> }, index: number) => {
@@ -296,6 +438,16 @@ export class CodeQLAction {
                 this.outputChannel.appendLine(Constants.Strings.CODEQL_NO_ANALYSIS_RESULTS);
             }
 
+            traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_RESULTS_PROCESSED, {
+                methodName: this.displayResults.name,
+                resultsPath: resultsPath,
+                hasIssues: hasIssues,
+                issueCount: issueCount,
+                runsCount: runsCount,
+                fileSize: resultsContent.length,
+                ...getBaseEventInfo()
+            });
+
             // Only open SARIF viewer if issues are found
             if (hasIssues) {
                 await this.openWithSarifViewer(resultsPath);
@@ -307,6 +459,13 @@ export class CodeQLAction {
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_ERROR_READING_RESULTS, errorMessage));
+
+            traceError(Constants.EventNames.ACTIONS_HUB_CODEQL_RESULTS_DISPLAY_FAILED, error as Error, {
+                methodName: this.displayResults.name,
+                resultsPath: resultsPath,
+                errorMessage: errorMessage,
+                ...getBaseEventInfo()
+            });
         }
     }
 
@@ -407,6 +566,17 @@ export class CodeQLAction {
         // Only check for config if Power Pages folder exists
         if (!powerPagesSiteFolderExists) {
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_USING_DEFAULT_QUERY, defaultQuerySuite));
+
+            traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_CONFIG_FILE_READ, {
+                methodName: this.getCodeQLQuerySuite.name,
+                sitePath: sitePath,
+                powerPagesSiteFolderExists: powerPagesSiteFolderExists,
+                configFileExists: false,
+                querySuite: defaultQuerySuite,
+                reason: 'power_pages_folder_not_exists',
+                ...getBaseEventInfo()
+            });
+
             return defaultQuerySuite;
         }
 
@@ -451,9 +621,27 @@ export class CodeQLAction {
             const configContent = JSON.stringify(config, null, 2);
             fs.writeFileSync(configPath, configContent, 'utf8');
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_CONFIG_FILE_CREATED_SUCCESSFULLY, configPath));
+
+            traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_CONFIG_FILE_CREATED, {
+                methodName: this.createConfigFile.name,
+                configPath: configPath,
+                configSize: configContent.length,
+                hasCodeQlQuery: !!config.codeQlQuery,
+                querySuite: config.codeQlQuery || 'undefined',
+                ...getBaseEventInfo()
+            });
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_CONFIG_FILE_CREATE_ERROR, errorMessage));
+
+            traceError(Constants.EventNames.ACTIONS_HUB_CODEQL_CONFIG_FILE_ERROR, error as Error, {
+                methodName: this.createConfigFile.name,
+                configPath: configPath,
+                operation: 'create',
+                errorMessage: errorMessage,
+                ...getBaseEventInfo()
+            });
+
             throw error;
         }
     }
@@ -463,9 +651,27 @@ export class CodeQLAction {
             const configContent = JSON.stringify(config, null, 2);
             fs.writeFileSync(configPath, configContent, 'utf8');
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_CONFIG_FILE_UPDATED_SUCCESSFULLY, configPath));
+
+            traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_CONFIG_FILE_UPDATED, {
+                methodName: this.updateConfigFile.name,
+                configPath: configPath,
+                configSize: configContent.length,
+                hasCodeQlQuery: !!config.codeQlQuery,
+                querySuite: config.codeQlQuery || 'undefined',
+                ...getBaseEventInfo()
+            });
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_CONFIG_FILE_UPDATE_ERROR, errorMessage));
+
+            traceError(Constants.EventNames.ACTIONS_HUB_CODEQL_CONFIG_FILE_ERROR, error as Error, {
+                methodName: this.updateConfigFile.name,
+                configPath: configPath,
+                operation: 'update',
+                errorMessage: errorMessage,
+                ...getBaseEventInfo()
+            });
+
             throw error;
         }
     }

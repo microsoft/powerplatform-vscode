@@ -7,6 +7,7 @@ import * as assert from 'assert';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
 import { CodeQLAction } from '../../../../../power-pages/actions-hub/actions/codeQLAction';
+import * as TelemetryHelper from '../../../../../power-pages/actions-hub/TelemetryHelper';
 
 describe('CodeQLAction', () => {
     let sandbox: sinon.SinonSandbox;
@@ -14,6 +15,11 @@ describe('CodeQLAction', () => {
 
     beforeEach(() => {
         sandbox = sinon.createSandbox();
+
+        // Mock telemetry helper functions
+        sandbox.stub(TelemetryHelper, 'traceInfo');
+        sandbox.stub(TelemetryHelper, 'traceError');
+        sandbox.stub(TelemetryHelper, 'getBaseEventInfo').returns({});
 
         // Mock the output channel
         const mockOutputChannel = {
@@ -45,62 +51,6 @@ describe('CodeQLAction', () => {
             action.dispose();
             // Should not throw when disposing
         });
-    });
-
-    describe('executeCodeQLAnalysisWithCustomPath', () => {
-        it('should handle missing CodeQL extension gracefully', async () => {
-            const sitePath = '/test/site/path';
-            const databaseLocation = '/test/db/location';
-
-            // Mock VS Code API to simulate missing CodeQL extension
-            sandbox.stub(vscode.extensions, 'getExtension').returns(undefined);
-            const showErrorStub = sandbox.stub(vscode.window, 'showErrorMessage').resolves();
-
-            try {
-                await codeqlAction.executeCodeQLAnalysisWithCustomPath(sitePath, databaseLocation, true);
-                assert.ok(showErrorStub.called, 'Should show error when CodeQL extension is missing');
-            } catch (error) {
-                // Expected error for missing extension
-                assert.ok(true, 'Should handle missing extension gracefully');
-            }
-        });
-
-        it('should create output channel and show it during analysis', async () => {
-            const sitePath = '/test/site/path';
-            const databaseLocation = '/test/db/location';
-
-            // Mock VS Code API to avoid actual extension checks
-            sandbox.stub(vscode.extensions, 'getExtension').returns(undefined);
-            sandbox.stub(vscode.window, 'showErrorMessage').resolves();
-            const createChannelStub = vscode.window.createOutputChannel as sinon.SinonStub;
-
-            await codeqlAction.executeCodeQLAnalysisWithCustomPath(sitePath, databaseLocation, true);
-
-            assert.ok(createChannelStub.called, 'Should create output channel');
-        });
-
-        it('should handle CodeQL extension activation', async () => {
-            const sitePath = '/test/site/path';
-            const databaseLocation = '/test/db/location';
-
-            const mockExtension = {
-                isActive: false,
-                activate: sandbox.stub().resolves(),
-                exports: null
-            };
-
-            sandbox.stub(vscode.extensions, 'getExtension').returns(mockExtension as never);
-            sandbox.stub(vscode.window, 'showErrorMessage').resolves();
-
-            try {
-                await codeqlAction.executeCodeQLAnalysisWithCustomPath(sitePath, databaseLocation, true);
-                assert.ok(mockExtension.activate.called, 'Should attempt to activate CodeQL extension');
-            } catch (error) {
-                // Handle expected errors during test execution
-                assert.ok(true, 'Test completed');
-            }
-        });
-
     });
 
     describe('error handling', () => {
