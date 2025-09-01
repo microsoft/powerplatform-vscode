@@ -86,7 +86,7 @@ export const {
     teamName: PowerPagesClientName,
     description: 'Enable Server Logic Changes in VSCode (web & desktop)',
     fallback: {
-        enableServerLogicChanges: true,
+        enableServerLogicChanges: false,
     },
 })
 
