@@ -1229,7 +1229,7 @@
         {
           "id": "microsoft.powerplatform.pages.actionsHub",
           "name": "%microsoft.powerplatform.pages.actionsHub.title%",
-          "when": "microsoft.powerplatform.pages.actionsHubEnabled && !isWeb",
+          "when": "microsoft.powerplatform.pages.actionsHubEnabled && !virtualWorkspace",
           "icon": "./src/client/assets/powerPages.svg",
           "contextualTitle": "%microsoft.powerplatform.pages.actionsHub.title%",
           "visibility": "visible"
