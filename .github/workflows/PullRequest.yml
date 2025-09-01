@@ -13,6 +13,11 @@ on:
     - main
     - 'release/stable'
     - 'features/PowerPagesAgent'
+    paths-ignore:
+      - 'l10n/**'
+      - 'loc/**'
+      - 'package.nls.json'
+      - 'package.nls.*.json'
   workflow_dispatch:
 
 jobs:
@@ -39,7 +44,7 @@ jobs:
     - name: Setup Node.js environment
       uses: actions/setup-node@v3
       with:
-        node-version: 18
+        node-version: 20
 
     # - name: Install dependencies
     #   run: npm i -g npm

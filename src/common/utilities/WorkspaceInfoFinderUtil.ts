@@ -98,3 +98,31 @@ export function findPowerPagesSiteFolder(startPath: string): string | null {
     }
     return null;
 }
+
+/**
+ * Checks if a website.yml file exists in the specified directory
+ * @param directoryPath The directory path to check
+ * @returns True if website.yml exists, false otherwise
+ */
+export function hasWebsiteYaml(directoryPath: string): boolean {
+    const websiteYamlPath = path.join(directoryPath, WEBSITE_YML);
+    return fs.existsSync(websiteYamlPath);
+}
+
+/**
+ * Gets the path to the website.yml file in the specified directory
+ * @param directoryPath The directory path
+ * @returns The full path to website.yml
+ */
+export function getWebsiteYamlPath(directoryPath: string): string {
+    return path.join(directoryPath, WEBSITE_YML);
+}
+
+/**
+ * Gets the path to the .powerpages-site folder in the specified directory
+ * @param directoryPath The directory path
+ * @returns The full path to .powerpages-site folder
+ */
+export function getPowerPagesSiteFolderPath(directoryPath: string): string {
+    return path.join(directoryPath, POWERPAGES_SITE_FOLDER);
+}

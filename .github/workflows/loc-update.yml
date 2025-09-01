@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'loc/**'
+      - 'loc/translations-import/**'
 
 jobs:
   update-localization:
