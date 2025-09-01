@@ -322,6 +322,18 @@ export class PowerPagesNode extends vscode.TreeItem {
     }
 
     getIconPath(svgFileName: string) {
+        // Check if this icon has theme-specific versions
+        const iconName = svgFileName.replace('.svg', '');
+        const hasThemeVariants = ['desktop', 'powerPages', 'previewSite'].includes(iconName);
+
+        if (hasThemeVariants) {
+            return {
+                light: vscode.Uri.joinPath(WebExtensionContext.extensionUri, 'src', 'web', 'client', 'assets', `${iconName}-icon`, 'light', svgFileName),
+                dark: vscode.Uri.joinPath(WebExtensionContext.extensionUri, 'src', 'web', 'client', 'assets', `${iconName}-icon`, 'dark', svgFileName)
+            };
+        }
+
+        // Fallback to single icon for both themes
         return {
             light: vscode.Uri.joinPath(WebExtensionContext.extensionUri, 'src', 'web', 'client', 'assets', svgFileName),
             dark: vscode.Uri.joinPath(WebExtensionContext.extensionUri, 'src', 'web', 'client', 'assets', svgFileName)
