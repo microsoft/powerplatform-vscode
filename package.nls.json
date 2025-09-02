@@ -97,6 +97,7 @@
   "microsoft.powerplatform.pages.actionsHub.switchEnvironment.title": "Change Environment",
   "microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails.title": "Show Environment Details",
   "microsoft.powerplatform.pages.actionsHub.openSitesInStudio.title": "Open in Power Pages Studio",
+  "microsoft.powerplatform.pages.actionsHub.compareWithLocal.title": "Compare with Local",
   "microsoft.powerplatform.pages.actionsHub.activeSite.previewSite.title": "Preview",
   "microsoft.powerplatform.pages.actionsHub.login":{
     "message":  "Login and connect to a Power Pages environment to use Power Pages actions. [Learn more](https://go.microsoft.com/fwlink/?linkid=2305702).\n[Login](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile)",

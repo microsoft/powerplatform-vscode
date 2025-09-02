@@ -6,7 +6,7 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, createNewAuthProfile, previewSite, fetchWebsites, revealInOS, uploadSite, createKnownSiteIdsSet, findOtherSites, showSiteDetails, openSiteManagement, downloadSite, openInStudio, runCodeQLScreening, loginToMatch } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
+import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, createNewAuthProfile, previewSite, fetchWebsites, revealInOS, uploadSite, createKnownSiteIdsSet, findOtherSites, showSiteDetails, compareWithLocal, openSiteManagement, downloadSite, openInStudio, runCodeQLScreening, loginToMatch } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
 import { Constants } from '../../../../power-pages/actions-hub/Constants';
 import * as CommonUtils from '../../../../power-pages/commonUtility';
 import { AuthInfo, CloudInstance, EnvironmentType, OrgInfo } from '../../../../pac/PacTypes';
@@ -1267,6 +1267,66 @@ describe('ActionsHubCommandHandlers', () => {
             expect(message).to.include("Site visibility: Public");
             expect(message).to.include("Creator: Test Creator");
             expect(message).to.include("Created on: March 20, 2025");
+        });
+    });
+
+    describe('compareWithLocal', () => {
+        let mockExecuteCommand: sinon.SinonStub;
+        let mockSiteTreeItem: SiteTreeItem;
+
+        beforeEach(() => {
+            mockExecuteCommand = sandbox.stub(vscode.commands, 'executeCommand');
+            mockSiteTreeItem = new SiteTreeItem({
+                name: "Test Site",
+                websiteId: "test-id",
+                dataModelVersion: 1,
+                status: WebsiteStatus.Active,
+                websiteUrl: 'https://test-site.com',
+                isCurrent: false,
+                siteVisibility: SiteVisibility.Public,
+                siteManagementUrl: "https://test-site-management.com",
+                createdOn: "2025-03-20",
+                creator: "Test Creator",
+                isCodeSite: false
+            });
+        });
+
+        it('should execute metadata diff trigger flow command', async () => {
+            await compareWithLocal(mockSiteTreeItem);
+
+            expect(mockExecuteCommand.calledOnce).to.be.true;
+            expect(mockExecuteCommand.firstCall.args[0]).to.equal('microsoft.powerplatform.pages.metadataDiff.triggerFlow');
+        });
+
+        it('should handle errors gracefully', async () => {
+            const error = new Error('Command execution failed');
+            mockExecuteCommand.rejects(error);
+
+            await compareWithLocal(mockSiteTreeItem);
+
+            expect(mockExecuteCommand.calledOnce).to.be.true;
+            expect(traceErrorStub.calledOnce).to.be.true;
+            expect(traceErrorStub.firstCall.args[0]).to.equal(Constants.EventNames.ACTIONS_HUB_COMPARE_WITH_LOCAL_FAILED);
+            expect(traceErrorStub.firstCall.args[1]).to.equal(error);
+            expect(traceErrorStub.firstCall.args[2]).to.deep.equal({
+                methodName: 'compareWithLocal',
+                siteId: 'test-id',
+                dataModelVersion: 1
+            });
+        });
+
+        it('should log telemetry when command is called', async () => {
+            const traceInfoStub = TelemetryHelper.traceInfo as sinon.SinonStub;
+
+            await compareWithLocal(mockSiteTreeItem);
+
+            expect(traceInfoStub.calledOnce).to.be.true;
+            expect(traceInfoStub.firstCall.args[0]).to.equal(Constants.EventNames.ACTIONS_HUB_COMPARE_WITH_LOCAL_CALLED);
+            expect(traceInfoStub.firstCall.args[1]).to.deep.equal({
+                methodName: 'compareWithLocal',
+                siteId: 'test-id',
+                dataModelVersion: 1
+            });
         });
     });
 

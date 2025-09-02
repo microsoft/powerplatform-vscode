@@ -187,6 +187,8 @@ export const Constants = {
         ACTIONS_HUB_SHOW_SITE_DETAILS_CALLED: "ActionsHubShowSiteDetailsCalled",
         ACTIONS_HUB_SHOW_SITE_DETAILS_FAILED: "ActionsHubShowSiteDetailsFailed",
         ACTIONS_HUB_SHOW_SITE_DETAILS_COPY_TO_CLIPBOARD: "ActionsHubShowSiteDetailsCopyToClipboard",
+        ACTIONS_HUB_COMPARE_WITH_LOCAL_CALLED: "ActionsHubCompareWithLocalCalled",
+        ACTIONS_HUB_COMPARE_WITH_LOCAL_FAILED: "ActionsHubCompareWithLocalFailed",
         ACTIONS_HUB_DOWNLOAD_SITE_CALLED: "ActionsHubDownloadSiteCalled",
         ACTIONS_HUB_DOWNLOAD_SITE_FAILED: "ActionsHubDownloadSiteFailed",
         ACTIONS_HUB_DOWNLOAD_SITE_PAC_TRIGGERED: "ActionsHubDownloadSitePacTriggered",

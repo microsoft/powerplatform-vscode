@@ -703,6 +703,34 @@ export const showSiteDetails = async (siteTreeItem: SiteTreeItem) => {
     }
 }
 
+export const compareWithLocal = async (siteTreeItem: SiteTreeItem) => {
+    const siteInfo = siteTreeItem.siteInfo;
+
+    traceInfo(
+        Constants.EventNames.ACTIONS_HUB_COMPARE_WITH_LOCAL_CALLED,
+        {
+            methodName: compareWithLocal.name,
+            siteId: siteInfo.websiteId,
+            dataModelVersion: siteInfo.dataModelVersion
+        }
+    );
+
+    try {
+        // Execute the compare with local command
+        await vscode.commands.executeCommand('microsoft.powerplatform.pages.metadataDiff.triggerFlow');
+    } catch (error) {
+        traceError(
+            Constants.EventNames.ACTIONS_HUB_COMPARE_WITH_LOCAL_FAILED,
+            error as Error,
+            {
+                methodName: compareWithLocal.name,
+                siteId: siteInfo.websiteId,
+                dataModelVersion: siteInfo.dataModelVersion
+            }
+        );
+    }
+}
+
 const getDownloadFolderOptions = () => {
     const options = [
         {

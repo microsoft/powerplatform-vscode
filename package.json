@@ -474,6 +474,10 @@
         "title": "%microsoft.powerplatform.pages.actionsHub.siteDetails.title%"
       },
       {
+        "command": "microsoft.powerplatform.pages.actionsHub.compareWithLocal",
+        "title": "%microsoft.powerplatform.pages.actionsHub.compareWithLocal.title%"
+      },
+      {
         "command": "microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite",
         "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite.title%"
       },
@@ -1015,6 +1019,10 @@
           "when": "never"
         },
         {
+          "command": "microsoft.powerplatform.pages.actionsHub.compareWithLocal",
+          "when": "never"
+        },
+        {
           "command": "microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite",
           "when": "never"
         },
@@ -1227,6 +1235,11 @@
           "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == currentActiveSite && microsoft.powerplatform.pages.codeQlScanEnabled",
           "group": "siteAction@7"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.compareWithLocal",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite)",
+          "group": "siteAction@9"
         }
       ]
     },
