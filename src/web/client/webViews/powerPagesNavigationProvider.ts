@@ -210,9 +210,9 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
 
                 // Show informational message with fallback options (don't await to avoid blocking)
                 vscode.window.showInformationMessage(
-                    vscode.l10n.t("Opening in VS Code Desktop. If VS Code doesn't open, you may need to install it first."),
+                    vscode.l10n.t("Opening in VS Code Desktop. If it doesn't open or shows an error, you may need to install VS Code or update the Power Platform extension."),
                     vscode.l10n.t("Download VS Code"),
-                    vscode.l10n.t("Get Extension")
+                    vscode.l10n.t("Update Extension"),
                 ).then((showInstructions) => {
                     if (showInstructions === vscode.l10n.t("Download VS Code")) {
                         vscode.env.openExternal(vscode.Uri.parse("https://code.visualstudio.com/download"));

@@ -185,6 +185,25 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
                                             serverApiAutocompleteInitialized = true;
                                         }
 
+                                        await portalsFS.readDirectory(WebExtensionContext.rootDirectory, true);
+
+                                        const { enableServerLogicChanges } = ECSFeaturesClient.getConfig(EnableServerLogicChanges);
+
+                                        if (!serverApiAutocompleteInitialized && enableServerLogicChanges) {
+                                            // Set telemetry context for Server API autocomplete events
+                                            setServerApiTelemetryContext({
+                                                tenantId: queryParamsMap.get(queryParameters.TENANT_ID) as string,
+                                                envId: WebExtensionContext.environmentId,
+                                                userId: WebExtensionContext.userId,
+                                                orgId: orgId,
+                                                geo: WebExtensionContext.geoName,
+                                            });
+                                            activateServerApiAutocomplete(context, [
+                                                { languageId: 'javascript', triggerCharacters: ['.'] }
+                                            ]);
+                                            serverApiAutocompleteInitialized = true;
+                                        }
+
                                         registerCopilot(context);
                                         processWillStartCollaboration(context);
                                     }
