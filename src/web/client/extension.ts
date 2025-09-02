@@ -150,40 +150,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
                                                 Location: queryParamsMap.get(queryParameters.GEO) as string
                                             },
                                             PowerPagesClientName);
-                                            
-                                        await portalsFS.readDirectory(WebExtensionContext.rootDirectory, true);
-
-                                        const { enableServerLogicChanges } = EnableServerLogicChanges.getConfig() as { enableServerLogicChanges?: boolean };
-                                        if (!serverApiAutocompleteInitialized && enableServerLogicChanges) {
-                                            // Set telemetry context for Server API autocomplete events
-                                            setServerApiTelemetryContext({
-                                                tenantId: queryParamsMap.get(queryParameters.TENANT_ID) as string,
-                                                envId: WebExtensionContext.environmentId,
-                                                userId: WebExtensionContext.userId,
-                                                orgId: orgId,
-                                                geo: WebExtensionContext.geoName,
-                                            });
-                                            activateServerApiAutocomplete(context, [
-                                                { languageId: 'javascript', triggerCharacters: ['.'] }
-                                            ]);
-                                            serverApiAutocompleteInitialized = true;
-                                        }
-
-                                        const { enableServerLogicChanges } = EnableServerLogicChanges.getConfig() as { enableServerLogicChanges?: boolean };
-                                        if (!serverApiAutocompleteInitialized && enableServerLogicChanges) {
-                                            // Set telemetry context for Server API autocomplete events
-                                            setServerApiTelemetryContext({
-                                                tenantId: queryParamsMap.get(queryParameters.TENANT_ID) as string,
-                                                envId: WebExtensionContext.environmentId,
-                                                userId: WebExtensionContext.userId,
-                                                orgId: orgId,
-                                                geo: WebExtensionContext.geoName,
-                                            });
-                                            activateServerApiAutocomplete(context, [
-                                                { languageId: 'javascript', triggerCharacters: ['.'] }
-                                            ]);
-                                            serverApiAutocompleteInitialized = true;
-                                        }
 
                                         await portalsFS.readDirectory(WebExtensionContext.rootDirectory, true);
 
