@@ -9,6 +9,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { CODEQL_EXTENSION_ID } from '../../../../common/constants';
 import { Constants } from '../Constants';
+import { traceInfo, traceError, getBaseEventInfo } from '../TelemetryHelper';
 
 interface PowerPagesConfig {
     codeQlQuery?: string;
@@ -21,7 +22,19 @@ export class CodeQLAction {
         this.outputChannel = vscode.window.createOutputChannel(Constants.Strings.CODEQL_ANALYSIS_CHANNEL_NAME);
     }
 
-    public async executeCodeQLAnalysisWithCustomPath(sitePath: string, databaseLocation: string, powerPagesSiteFolderExists: boolean): Promise<void> {
+    public async executeCodeQLAnalysisWithCustomPath(sitePath: string, databaseLocation: string, powerPagesSiteFolderExists: boolean): Promise<{ issueCount: number; resultsPath: string }> {
+        const startTime = Date.now();
+        const siteBaseName = path.basename(sitePath);
+
+        traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_ACTION_STARTED, {
+            methodName: this.executeCodeQLAnalysisWithCustomPath.name,
+            sitePath: sitePath,
+            databaseLocation: databaseLocation,
+            powerPagesSiteFolderExists: powerPagesSiteFolderExists,
+            siteBaseName: siteBaseName,
+            ...getBaseEventInfo()
+        });
+
         this.outputChannel.show();
         this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_ANALYSIS_STARTING, path.basename(sitePath)));
         this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_DATABASE_LOCATION, databaseLocation));
@@ -59,18 +72,68 @@ export class CodeQLAction {
                 await this.displayResults(resultsPath);
             }
 
+            const duration = Date.now() - startTime;
+            const finalIssueCount = fs.existsSync(resultsPath) ? this.getIssueCountFromResults(resultsPath) : 0;
+
+            traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_ACTION_COMPLETED, {
+                methodName: this.executeCodeQLAnalysisWithCustomPath.name,
+                sitePath: sitePath,
+                databaseLocation: databaseLocation,
+                databasePath: dbPath,
+                resultsPath: resultsPath,
+                querySuite: querySuite,
+                duration: duration,
+                siteBaseName: siteBaseName,
+                powerPagesSiteFolderExists: powerPagesSiteFolderExists,
+                resultsFileExists: fs.existsSync(resultsPath),
+                issuesFound: finalIssueCount,
+                hasIssues: finalIssueCount > 0,
+                ...getBaseEventInfo()
+            });
+
+            return { issueCount: finalIssueCount, resultsPath: resultsPath };
+
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
+            const duration = Date.now() - startTime;
+
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_ANALYSIS_ERROR, errorMessage));
             vscode.window.showErrorMessage(vscode.l10n.t(Constants.Strings.CODEQL_ANALYSIS_FAILED, errorMessage));
+
+            traceError(Constants.EventNames.ACTIONS_HUB_CODEQL_ACTION_FAILED, error as Error, {
+                methodName: this.executeCodeQLAnalysisWithCustomPath.name,
+                sitePath: sitePath,
+                databaseLocation: databaseLocation,
+                duration: duration,
+                siteBaseName: siteBaseName,
+                powerPagesSiteFolderExists: powerPagesSiteFolderExists,
+                errorMessage: errorMessage,
+                ...getBaseEventInfo()
+            });
+
+            // Return empty results on error
+            return { issueCount: 0, resultsPath: '' };
         }
     }
 
     private async checkCodeQLInstallation(): Promise<string> {
+        traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_CLI_SEARCH_STARTED, {
+            methodName: this.checkCodeQLInstallation.name,
+            ...getBaseEventInfo()
+        });
+
         // First try to get the CodeQL CLI path from the CodeQL extension
         const codeqlCliPath = await this.getCodeQLCliPath();
         if (codeqlCliPath) {
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_CLI_FOUND_AT, codeqlCliPath));
+
+            traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_CLI_FOUND, {
+                methodName: this.checkCodeQLInstallation.name,
+                cliPath: codeqlCliPath,
+                source: 'extension',
+                ...getBaseEventInfo()
+            });
+
             return codeqlCliPath;
         }
 
@@ -78,9 +141,24 @@ export class CodeQLAction {
         return new Promise((resolve, reject) => {
             exec('codeql version', (error, stdout, _) => {
                 if (error) {
+                    traceError(Constants.EventNames.ACTIONS_HUB_CODEQL_CLI_NOT_FOUND, error, {
+                        methodName: this.checkCodeQLInstallation.name,
+                        source: 'PATH',
+                        errorMessage: error.message,
+                        ...getBaseEventInfo()
+                    });
                     reject(new Error(Constants.Strings.CODEQL_CLI_NOT_INSTALLED));
                 } else {
                     this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_VERSION, stdout.trim()));
+
+                    traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_CLI_FOUND, {
+                        methodName: this.checkCodeQLInstallation.name,
+                        cliPath: 'codeql',
+                        source: 'PATH',
+                        version: stdout.trim(),
+                        ...getBaseEventInfo()
+                    });
+
                     resolve('codeql'); // Use the command as-is from PATH
                 }
             });
@@ -179,7 +257,30 @@ export class CodeQLAction {
         }
     }
 
+    private getCommandType(command: string): string {
+        if (command.includes('database create')) {
+            return 'database_create';
+        } else if (command.includes('database analyze')) {
+            return 'database_analyze';
+        } else if (command.includes('version')) {
+            return 'version';
+        }
+        return 'unknown';
+    }
+
     private async runCodeQLCommand(command: string): Promise<string> {
+        const startTime = Date.now();
+        const commandType = this.getCommandType(command);
+
+        traceInfo(commandType === 'database_create' ?
+            Constants.EventNames.ACTIONS_HUB_CODEQL_DATABASE_CREATION_STARTED :
+            Constants.EventNames.ACTIONS_HUB_CODEQL_ANALYSIS_STARTED, {
+            methodName: this.runCodeQLCommand.name,
+            command: command,
+            commandType: commandType,
+            ...getBaseEventInfo()
+        });
+
         return new Promise((resolve, reject) => {
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_EXECUTING_COMMAND, command));
 
@@ -213,17 +314,63 @@ export class CodeQLAction {
             });
 
             process.on('close', (code: number) => {
+                const duration = Date.now() - startTime;
+
                 if (code === 0) {
                     this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_COMMAND_SUCCESS, code.toString()));
+
+                    traceInfo(commandType === 'database_create' ?
+                        Constants.EventNames.ACTIONS_HUB_CODEQL_DATABASE_CREATION_COMPLETED :
+                        Constants.EventNames.ACTIONS_HUB_CODEQL_ANALYSIS_COMPLETED, {
+                        methodName: this.runCodeQLCommand.name,
+                        command: command,
+                        commandType: commandType,
+                        exitCode: code,
+                        duration: duration,
+                        stdoutLength: stdout.length,
+                        stderrLength: stderr.length,
+                        ...getBaseEventInfo()
+                    });
+
                     resolve(stdout);
                 } else {
                     this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_COMMAND_FAILED, code.toString()));
+
+                    traceError(commandType === 'database_create' ?
+                        Constants.EventNames.ACTIONS_HUB_CODEQL_DATABASE_CREATION_FAILED :
+                        Constants.EventNames.ACTIONS_HUB_CODEQL_ANALYSIS_FAILED,
+                        new Error(vscode.l10n.t(Constants.Strings.CODEQL_COMMAND_FAILED_ERROR, code.toString(), stderr || 'Unknown error')), {
+                        methodName: this.runCodeQLCommand.name,
+                        command: command,
+                        commandType: commandType,
+                        exitCode: code,
+                        duration: duration,
+                        stdoutLength: stdout.length,
+                        stderrLength: stderr.length,
+                        stderr: stderr,
+                        ...getBaseEventInfo()
+                    });
+
                     reject(new Error(vscode.l10n.t(Constants.Strings.CODEQL_COMMAND_FAILED_ERROR, code.toString(), stderr || 'Unknown error')));
                 }
             });
 
             process.on('error', (error: Error) => {
+                const duration = Date.now() - startTime;
                 this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_PROCESS_ERROR, error.message));
+
+                traceError(commandType === 'database_create' ?
+                    Constants.EventNames.ACTIONS_HUB_CODEQL_DATABASE_CREATION_FAILED :
+                    Constants.EventNames.ACTIONS_HUB_CODEQL_ANALYSIS_FAILED,
+                    error, {
+                    methodName: this.runCodeQLCommand.name,
+                    command: command,
+                    commandType: commandType,
+                    duration: duration,
+                    errorMessage: error.message,
+                    ...getBaseEventInfo()
+                });
+
                 reject(new Error(vscode.l10n.t(Constants.Strings.CODEQL_PROCESS_ERROR, error.message)));
             });
         });
@@ -268,11 +415,15 @@ export class CodeQLAction {
             const results = JSON.parse(resultsContent);
 
             let hasIssues = false;
+            let issueCount = 0;
+            let runsCount = 0;
 
             if (results.runs && results.runs.length > 0) {
+                runsCount = results.runs.length;
                 const run = results.runs[0];
                 if (run.results && run.results.length > 0) {
                     hasIssues = true;
+                    issueCount = run.results.length;
                     this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_ISSUES_FOUND, run.results.length.toString()));
 
                     run.results.forEach((result: { message?: { text?: string }; locations?: Array<{ physicalLocation?: { artifactLocation?: { uri?: string }; region?: { startLine?: number } } }> }, index: number) => {
@@ -296,17 +447,50 @@ export class CodeQLAction {
                 this.outputChannel.appendLine(Constants.Strings.CODEQL_NO_ANALYSIS_RESULTS);
             }
 
+            traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_RESULTS_PROCESSED, {
+                methodName: this.displayResults.name,
+                resultsPath: resultsPath,
+                hasIssues: hasIssues,
+                issueCount: issueCount,
+                runsCount: runsCount,
+                fileSize: resultsContent.length,
+                analysisResultsAvailable: runsCount > 0,
+                issuesFoundCount: issueCount,
+                resultsFileExists: fs.existsSync(resultsPath),
+                ...getBaseEventInfo()
+            });
+
             // Only open SARIF viewer if issues are found
             if (hasIssues) {
+                traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_OPENING_WITH_ISSUES, {
+                    methodName: this.displayResults.name,
+                    issueCount: issueCount,
+                    runsCount: runsCount,
+                    ...getBaseEventInfo()
+                });
+
                 await this.openWithSarifViewer(resultsPath);
             } else {
                 // Show a simple success notification for clean results
+                traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_ANALYSIS_CLEAN_RESULTS, {
+                    methodName: this.displayResults.name,
+                    runsCount: runsCount,
+                    ...getBaseEventInfo()
+                });
+
                 vscode.window.showInformationMessage(Constants.Strings.CODEQL_ANALYSIS_SUCCESS_NO_ISSUES);
             }
 
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_ERROR_READING_RESULTS, errorMessage));
+
+            traceError(Constants.EventNames.ACTIONS_HUB_CODEQL_RESULTS_DISPLAY_FAILED, error as Error, {
+                methodName: this.displayResults.name,
+                resultsPath: resultsPath,
+                errorMessage: errorMessage,
+                ...getBaseEventInfo()
+            });
         }
     }
 
@@ -317,6 +501,13 @@ export class CodeQLAction {
             if (!sarifExt) {
                 this.outputChannel.appendLine(Constants.Strings.CODEQL_SARIF_VIEWER_NOT_FOUND);
 
+                traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_NOT_FOUND, {
+                    methodName: 'openWithSarifViewer',
+                    resultsPath: resultsPath,
+                    extensionId: 'MS-SarifVSCode.sarif-viewer',
+                    ...getBaseEventInfo()
+                });
+
                 const installExtension = await vscode.window.showInformationMessage(
                     Constants.Strings.SARIF_VIEWER_NOT_INSTALLED,
                     Constants.Strings.INSTALL,
@@ -324,8 +515,23 @@ export class CodeQLAction {
                     Constants.Strings.CANCEL
                 );
 
+                traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_INSTALL_PROMPTED, {
+                    methodName: 'openWithSarifViewer',
+                    resultsPath: resultsPath,
+                    extensionId: 'MS-SarifVSCode.sarif-viewer',
+                    userResponse: installExtension,
+                    ...getBaseEventInfo()
+                });
+
                 if (installExtension === Constants.Strings.INSTALL) {
                     try {
+                        traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_INSTALL_ACCEPTED, {
+                            methodName: 'openWithSarifViewer',
+                            resultsPath: resultsPath,
+                            extensionId: 'MS-SarifVSCode.sarif-viewer',
+                            ...getBaseEventInfo()
+                        });
+
                         this.outputChannel.appendLine(Constants.Strings.CODEQL_INSTALLING_SARIF_VIEWER);
                         await vscode.commands.executeCommand('workbench.extensions.installExtension', 'MS-SarifVSCode.sarif-viewer');
 
@@ -336,28 +542,78 @@ export class CodeQLAction {
                         const newSarifExt = vscode.extensions.getExtension('MS-SarifVSCode.sarif-viewer');
                         if (newSarifExt) {
                             this.outputChannel.appendLine(Constants.Strings.CODEQL_SARIF_VIEWER_INSTALLED);
+
+                            traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_INSTALL_SUCCESS, {
+                                methodName: 'openWithSarifViewer',
+                                resultsPath: resultsPath,
+                                extensionId: 'MS-SarifVSCode.sarif-viewer',
+                                ...getBaseEventInfo()
+                            });
+
                             await newSarifExt.activate();
 
                             if (newSarifExt.exports && typeof newSarifExt.exports.openLogs === 'function') {
                                 this.outputChannel.appendLine(Constants.Strings.CODEQL_OPENING_WITH_NEW_SARIF_VIEWER);
                                 await newSarifExt.exports.openLogs([vscode.Uri.file(resultsPath)]);
                                 this.outputChannel.appendLine(Constants.Strings.CODEQL_SARIF_VIEWER_OPENED);
-                                return;
+
+                traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_OPENED, {
+                    methodName: 'openWithSarifViewer',
+                    resultsPath: resultsPath,
+                    extensionId: 'MS-SarifVSCode.sarif-viewer',
+                    openedAfterInstall: true,
+                    issueCount: this.getIssueCountFromResults(resultsPath),
+                    ...getBaseEventInfo()
+                });                                return;
                             }
                         }
 
                         this.outputChannel.appendLine(Constants.Strings.CODEQL_SARIF_VIEWER_API_NOT_AVAILABLE);
+
+                        traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_NOT_AVAILABLE, {
+                            methodName: 'openWithSarifViewer',
+                            resultsPath: resultsPath,
+                            extensionId: 'MS-SarifVSCode.sarif-viewer',
+                            reason: 'api_not_available_after_install',
+                            ...getBaseEventInfo()
+                        });
+
                         await this.fallbackToTextEditor(resultsPath);
 
                     } catch (installError) {
                         const errorMessage = installError instanceof Error ? installError.message : String(installError);
                         this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_SARIF_VIEWER_INSTALL_ERROR, errorMessage));
                         vscode.window.showErrorMessage(Constants.Strings.SARIF_VIEWER_INSTALL_FAILED);
+
+                        traceError(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_INSTALL_FAILED, installError as Error, {
+                            methodName: 'openWithSarifViewer',
+                            resultsPath: resultsPath,
+                            extensionId: 'MS-SarifVSCode.sarif-viewer',
+                            errorMessage: errorMessage,
+                            ...getBaseEventInfo()
+                        });
+
                         await this.fallbackToTextEditor(resultsPath);
                     }
                 } else if (installExtension === Constants.Strings.OPEN_AS_TEXT) {
+                    traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_INSTALL_DECLINED, {
+                        methodName: 'openWithSarifViewer',
+                        resultsPath: resultsPath,
+                        extensionId: 'MS-SarifVSCode.sarif-viewer',
+                        userChoice: 'open_as_text',
+                        ...getBaseEventInfo()
+                    });
+
                     await this.fallbackToTextEditor(resultsPath);
                 } else {
+                    traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_INSTALL_DECLINED, {
+                        methodName: 'openWithSarifViewer',
+                        resultsPath: resultsPath,
+                        extensionId: 'MS-SarifVSCode.sarif-viewer',
+                        userChoice: 'cancelled',
+                        ...getBaseEventInfo()
+                    });
+
                     this.outputChannel.appendLine(Constants.Strings.CODEQL_USER_CANCELLED);
                 }
                 return;
@@ -365,25 +621,74 @@ export class CodeQLAction {
 
             if (!sarifExt.isActive) {
                 this.outputChannel.appendLine(Constants.Strings.CODEQL_ACTIVATING_SARIF_VIEWER);
+
+                traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_ACTIVATION_STARTED, {
+                    methodName: 'openWithSarifViewer',
+                    resultsPath: resultsPath,
+                    extensionId: 'MS-SarifVSCode.sarif-viewer',
+                    ...getBaseEventInfo()
+                });
+
                 await sarifExt.activate();
+
+                traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_ACTIVATION_COMPLETED, {
+                    methodName: 'openWithSarifViewer',
+                    resultsPath: resultsPath,
+                    extensionId: 'MS-SarifVSCode.sarif-viewer',
+                    ...getBaseEventInfo()
+                });
             }
 
             if (sarifExt.exports && typeof sarifExt.exports.openLogs === 'function') {
                 this.outputChannel.appendLine(Constants.Strings.CODEQL_OPENING_WITH_SARIF_VIEWER);
                 await sarifExt.exports.openLogs([vscode.Uri.file(resultsPath)]);
                 this.outputChannel.appendLine(Constants.Strings.CODEQL_SARIF_VIEWER_OPENED);
+
+                traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_OPENED, {
+                    methodName: 'openWithSarifViewer',
+                    resultsPath: resultsPath,
+                    extensionId: 'MS-SarifVSCode.sarif-viewer',
+                    openedAfterInstall: false,
+                    issueCount: this.getIssueCountFromResults(resultsPath),
+                    ...getBaseEventInfo()
+                });
             } else {
                 this.outputChannel.appendLine(Constants.Strings.CODEQL_SARIF_VIEWER_API_FALLBACK);
+
+                traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_API_ERROR, {
+                    methodName: 'openWithSarifViewer',
+                    resultsPath: resultsPath,
+                    extensionId: 'MS-SarifVSCode.sarif-viewer',
+                    reason: 'api_function_not_available',
+                    exportsAvailable: !!sarifExt.exports,
+                    ...getBaseEventInfo()
+                });
+
                 await this.fallbackToTextEditor(resultsPath);
             }
 
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_SARIF_VIEWER_ERROR, errorMessage));
+
+            traceError(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_API_ERROR, error as Error, {
+                methodName: 'openWithSarifViewer',
+                resultsPath: resultsPath,
+                extensionId: 'MS-SarifVSCode.sarif-viewer',
+                errorMessage: errorMessage,
+                ...getBaseEventInfo()
+            });
+
             await this.fallbackToTextEditor(resultsPath);
         }
     }    private async fallbackToTextEditor(resultsPath: string): Promise<void> {
         try {
+            traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_FALLBACK_TO_TEXT_EDITOR, {
+                methodName: 'fallbackToTextEditor',
+                resultsPath: resultsPath,
+                ...getBaseEventInfo()
+            });
+
             // Offer to open the full SARIF file as text
             const openFile = await vscode.window.showInformationMessage(
                 Constants.Strings.CODEQL_ANALYSIS_COMPLETED_OPEN_FILE,
@@ -394,10 +699,24 @@ export class CodeQLAction {
             if (openFile === Constants.Strings.CODEQL_OPEN_RESULTS) {
                 const document = await vscode.workspace.openTextDocument(resultsPath);
                 await vscode.window.showTextDocument(document);
+
+                traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_RESULTS_PROCESSED, {
+                    methodName: 'fallbackToTextEditor',
+                    resultsPath: resultsPath,
+                    openedInTextEditor: true,
+                    ...getBaseEventInfo()
+                });
             }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_ERROR_OPENING_RESULTS, errorMessage));
+
+            traceError(Constants.EventNames.ACTIONS_HUB_CODEQL_RESULTS_DISPLAY_FAILED, error as Error, {
+                methodName: 'fallbackToTextEditor',
+                resultsPath: resultsPath,
+                errorMessage: errorMessage,
+                ...getBaseEventInfo()
+            });
         }
     }
 
@@ -407,6 +726,17 @@ export class CodeQLAction {
         // Only check for config if Power Pages folder exists
         if (!powerPagesSiteFolderExists) {
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_USING_DEFAULT_QUERY, defaultQuerySuite));
+
+            traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_CONFIG_FILE_READ, {
+                methodName: this.getCodeQLQuerySuite.name,
+                sitePath: sitePath,
+                powerPagesSiteFolderExists: powerPagesSiteFolderExists,
+                configFileExists: false,
+                querySuite: defaultQuerySuite,
+                reason: 'power_pages_folder_not_exists',
+                ...getBaseEventInfo()
+            });
+
             return defaultQuerySuite;
         }
 
@@ -451,9 +781,27 @@ export class CodeQLAction {
             const configContent = JSON.stringify(config, null, 2);
             fs.writeFileSync(configPath, configContent, 'utf8');
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_CONFIG_FILE_CREATED_SUCCESSFULLY, configPath));
+
+            traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_CONFIG_FILE_CREATED, {
+                methodName: this.createConfigFile.name,
+                configPath: configPath,
+                configSize: configContent.length,
+                hasCodeQlQuery: !!config.codeQlQuery,
+                querySuite: config.codeQlQuery || 'undefined',
+                ...getBaseEventInfo()
+            });
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_CONFIG_FILE_CREATE_ERROR, errorMessage));
+
+            traceError(Constants.EventNames.ACTIONS_HUB_CODEQL_CONFIG_FILE_ERROR, error as Error, {
+                methodName: this.createConfigFile.name,
+                configPath: configPath,
+                operation: 'create',
+                errorMessage: errorMessage,
+                ...getBaseEventInfo()
+            });
+
             throw error;
         }
     }
@@ -463,10 +811,51 @@ export class CodeQLAction {
             const configContent = JSON.stringify(config, null, 2);
             fs.writeFileSync(configPath, configContent, 'utf8');
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_CONFIG_FILE_UPDATED_SUCCESSFULLY, configPath));
+
+            traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_CONFIG_FILE_UPDATED, {
+                methodName: this.updateConfigFile.name,
+                configPath: configPath,
+                configSize: configContent.length,
+                hasCodeQlQuery: !!config.codeQlQuery,
+                querySuite: config.codeQlQuery || 'undefined',
+                ...getBaseEventInfo()
+            });
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_CONFIG_FILE_UPDATE_ERROR, errorMessage));
+
+            traceError(Constants.EventNames.ACTIONS_HUB_CODEQL_CONFIG_FILE_ERROR, error as Error, {
+                methodName: this.updateConfigFile.name,
+                configPath: configPath,
+                operation: 'update',
+                errorMessage: errorMessage,
+                ...getBaseEventInfo()
+            });
+
             throw error;
+        }
+    }
+
+    private getIssueCountFromResults(resultsPath: string): number {
+        try {
+            if (!fs.existsSync(resultsPath)) {
+                return 0;
+            }
+
+            const resultsContent = fs.readFileSync(resultsPath, 'utf8');
+            const results = JSON.parse(resultsContent);
+
+            if (results.runs && results.runs.length > 0) {
+                const run = results.runs[0];
+                if (run.results && run.results.length > 0) {
+                    return run.results.length;
+                }
+            }
+
+            return 0;
+        } catch (error) {
+            // If we can't read the results file, return 0
+            return 0;
         }
     }
 
