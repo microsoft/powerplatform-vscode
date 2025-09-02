@@ -62,6 +62,77 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
         }
     });
 
+    vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.triggerFlowWithSite", async (websiteId: string) => {
+        try {
+            // Get the PAC wrapper to access org list
+            const pacWrapper = pacTerminal.getWrapper();
+
+            // Get current org info instead of prompting user
+            const pacActiveOrg = await pacWrapper.activeOrg();
+            if (!pacActiveOrg || pacActiveOrg.Status !== SUCCESS) {
+                vscode.window.showErrorMessage("No active environment found. Please authenticate first.");
+                return;
+            }
+
+            const orgUrl = pacActiveOrg.Results.OrgUrl;
+            if (!orgUrl) {
+                vscode.window.showErrorMessage("Current environment URL not found.");
+                return;
+            }
+
+            const workspaceFolders = vscode.workspace.workspaceFolders;
+            if (!workspaceFolders || workspaceFolders.length === 0) {
+                vscode.window.showErrorMessage("No folders opened in the current workspace.");
+                return;
+            }
+
+            const storagePath = context.storageUri?.fsPath;
+            if (!storagePath) {
+                throw new Error("Storage path is not defined");
+            }
+
+            // Clean out any existing files in storagePath (so we have a "fresh" download)
+            if (fs.existsSync(storagePath)) {
+                fs.rmSync(storagePath, { recursive: true, force: true });
+            }
+            fs.mkdirSync(storagePath, { recursive: true });
+
+            const progressOptions: vscode.ProgressOptions = {
+                location: vscode.ProgressLocation.Notification,
+                title: "Downloading website metadata",
+                cancellable: false
+            };
+
+            let pacPagesDownload;
+            await vscode.window.withProgress(progressOptions, async (progress) => {
+                progress.report({ message: "Looking for this website in the connected environment..." });
+                const pacPagesList = await MetadataDiffDesktop.getPagesList(pacTerminal);
+                if (pacPagesList && pacPagesList.length > 0) {
+                    const websiteRecord = pacPagesList.find((record) => record.id === websiteId);
+                    if (!websiteRecord) {
+                        vscode.window.showErrorMessage("Website not found in the connected environment.");
+                        return;
+                    }
+                    progress.report({ message: `Downloading "${websiteRecord.name}" as ${websiteRecord.modelVersion === "v2" ? "enhanced" : "standard"} data model. Please wait...` });
+                    pacPagesDownload = await pacWrapper.pagesDownload(storagePath, websiteId, websiteRecord.modelVersion == "v1" ? "1" : "2");
+                    vscode.window.showInformationMessage("Download completed.");
+                }
+            });
+
+            if (pacPagesDownload) {
+                const treeDataProvider = MetadataDiffTreeDataProvider.initialize(context);
+                context.subscriptions.push(
+                    vscode.window.registerTreeDataProvider("microsoft.powerplatform.pages.metadataDiff", treeDataProvider)
+                );
+            } else {
+                vscode.window.showErrorMessage("Failed to download metadata.");
+            }
+
+        } catch (error) {
+            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.METADATA_DIFF_REFRESH_FAILED, error as string, error as Error, { methodName: null }, {});
+        }
+    });
+
     vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.triggerFlow", async () => {
         try {
             // Get the PAC wrapper to access org list

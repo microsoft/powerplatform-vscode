@@ -1291,11 +1291,12 @@ describe('ActionsHubCommandHandlers', () => {
             });
         });
 
-        it('should execute metadata diff trigger flow command', async () => {
+        it('should execute metadata diff trigger flow command with site ID', async () => {
             await compareWithLocal(mockSiteTreeItem);
 
             expect(mockExecuteCommand.calledOnce).to.be.true;
-            expect(mockExecuteCommand.firstCall.args[0]).to.equal('microsoft.powerplatform.pages.metadataDiff.triggerFlow');
+            expect(mockExecuteCommand.firstCall.args[0]).to.equal('microsoft.powerplatform.pages.metadataDiff.triggerFlowWithSite');
+            expect(mockExecuteCommand.firstCall.args[1]).to.equal('test-id');
         });
 
         it('should handle errors gracefully', async () => {
