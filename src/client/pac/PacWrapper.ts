@@ -188,8 +188,8 @@ export class PacWrapper {
         return this.executeCommandAndParseResults<PacOutput>(new PacArguments("pages", "download", "-p", downloadPath, "-id", websiteId, "-mv", dataModelVersion.toString()));
     }
 
-    public async pagesDownload(path: string, websiteId: string, modelVersion: string): Promise<string> {
-        return this.pacInterop.executeCommand(new PacArguments("pages", "download", "--path", path, "--webSiteId", websiteId, "--modelVersion", modelVersion));
+    public async pagesDownload(path: string, websiteId: string, modelVersion: string): Promise<PacOutput> {
+        return this.executeCommandAndParseResults<PacOutput>(new PacArguments("pages", "download", "-p", path, "-id", websiteId, "-mv", modelVersion));
     }
 
     public async pagesList(): Promise<PacPagesListOutput> {

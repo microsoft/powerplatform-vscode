@@ -94,12 +94,17 @@ export class MetadataDiffDesktop {
                     }
 
                     // Extract the relevant parts using regex
-                    const match = line.match(/\[\d+\]\s+([a-f0-9-]+)\s+(.*?)\s+(v[12])\s*$/i);
+                    // Example line: ' [2]        8aa65ec4-1578-f011-b4cc-0022480b93b5               Customer Self Service_V1 - customerselfservice-oh1uo         Standard  '
+                    const match = line.match(/\[\d+\]\s+([a-f0-9-]+)\s+(.+?)\s+Standard\s*$/i);
                     if (match) {
+                        // Extract WebsiteId, FriendlyName, and ModelVersion from the line
+                        // Example line: ' [2]        8aa65ec4-1578-f011-b4cc-0022480b93b5               Customer Self Service_V1 - customerselfservice-oh1uo         Standard  '
+                        const modelVersionMatch = line.match(/\s(Standard|Enhanced)\s*$/i);
+                        const modelVersion = modelVersionMatch ? modelVersionMatch[1].trim() : "Standard";
                         pagesList.push({
                             WebsiteId: match[1].trim(),
                             FriendlyName: match[2].trim(),
-                            ModelVersion: match[3].trim()
+                            ModelVersion: modelVersion
                         });
                     }
                 });

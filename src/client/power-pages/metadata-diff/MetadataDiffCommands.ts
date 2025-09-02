@@ -114,7 +114,11 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                         return;
                     }
                     progress.report({ message: `Downloading "${websiteRecord.name}" as ${websiteRecord.modelVersion === "v2" ? "enhanced" : "standard"} data model. Please wait...` });
-                    pacPagesDownload = await pacWrapper.pagesDownload(storagePath, websiteId, websiteRecord.modelVersion == "v1" ? "1" : "2");
+                    pacPagesDownload = await pacWrapper.pagesDownload(
+                        storagePath,
+                        websiteId,
+                        websiteRecord.modelVersion === "v1" || websiteRecord.modelVersion === "Standard" ? "1" : "2"
+                    );
                     vscode.window.showInformationMessage("Download completed.");
                 }
             });
