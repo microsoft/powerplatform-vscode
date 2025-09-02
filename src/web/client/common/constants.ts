@@ -127,6 +127,10 @@ export enum GraphService {
     GRAPH_PROFILE_PICTURE = "profilePicture",
 }
 
+export enum REFERRER {
+    POWER_PAGES_HOME = "PowerPagesHome"
+}
+
 export const MICROSOFT_GRAPH_PROFILE_PICTURE_SERVICE_CALL = "/photo/$value";
 
 // User collaboration constants
@@ -140,3 +144,6 @@ export const WEB_EXTENSION_SEND_EMAIL_NOT_AVAILABLE = "Send email is not availab
 export const WEB_EXTENSION_QUICK_PICK_TITLE = "People on this file"
 export const WEB_EXTENSION_QUICK_PICK_PLACEHOLDER = "Search for people";
 export const WEB_EXTENSION_COLLABORATION_OPTIONS_CONTACT = "Contact";
+
+//Business logic constants
+export const SERVERLOGICS = "server-logics";

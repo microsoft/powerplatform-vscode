@@ -218,3 +218,31 @@ function parseYamlContent(content: string, sessionID: string, dataverseEntity: s
         return {};
     }
 }
+
+
+//make call to https://org955590f3.crm10.dynamics.com/api/data/v9.2/EntityDefinitions(LogicalName='powerpagesite') to check if the response object contains MetadataId
+export async function isEdmEnvironment(orgUrl: string, apiToken: string): Promise<boolean> {
+    try {
+        const dataverseURL = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}api/data/v9.2/EntityDefinitions(LogicalName='powerpagesite')`;
+        const requestInit: RequestInit = {
+            method: "GET",
+            headers: {
+                'Content-Type': "application/json",
+                Authorization: `Bearer ${apiToken}`,
+                "x-ms-user-agent": getUserAgent()
+            },
+        };
+
+        const startTime = performance.now();
+        const jsonResponse = await fetchJsonResponse(dataverseURL, requestInit);
+        const endTime = performance.now();
+        const responseTime = endTime - startTime || 0;
+
+        sendTelemetryEvent({ eventName: isEdmEnvironment.name, durationInMills: responseTime, orgUrl: orgUrl })
+        return jsonResponse.MetadataId !== undefined
+
+    } catch (error) {
+        sendTelemetryEvent({ eventName: isEdmEnvironment.name, error: error as Error, orgUrl: orgUrl})
+        return false;
+    }
+}

@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="bundle" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="++CODE++08833dda22312dacb09f1d185caedf751289ee89a4c75682a09f4a262bf67ac4">
+      <source xml:lang="en"> End of Code Block </source>
+    </trans-unit>
     <trans-unit id="++CODE++29bb69945e50cb632fabf16f3f89a25d813910c19059d8a792f66262a952039d">
       <source xml:lang="en">@PowerPages is not yet available in your region.</source>
     </trans-unit>
@@ -22,6 +25,15 @@
     <trans-unit id="++CODE++8d35e64354d3db3df1df4ef8e6068b6b9dd58514fcf980f7071e10ed160db95a">
       <source xml:lang="en">AI-generated content can contain mistakes</source>
     </trans-unit>
+    <trans-unit id="++CODE++20e183e54ca33b94a25f921f68c75c4ec47212f2d94ee04e6fe4b564b96d2826">
+      <source xml:lang="en">Accounts don't match, data may not load.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++031018d0f4bb3985ac963d91cb607a9eaab8855a00990613c5327a1edb0032f7">
+      <source xml:lang="en">Activating CodeQL extension...</source>
+    </trans-unit>
+    <trans-unit id="++CODE++e8e28535ce31524257fd35ecc72ba709bf789ab572aa517bf1c0af2870520415">
+      <source xml:lang="en">Activating SARIF viewer extension...</source>
+    </trans-unit>
     <trans-unit id="++CODE++b82f83283cc4275cf0d58b4f55d1242fe46227ee1da9db4b81b6b08804dcbf01">
       <source xml:lang="en">Active Sites</source>
     </trans-unit>
@@ -34,9 +46,18 @@
     <trans-unit id="++CODE++b544cb198e99ff113ac41467fc99191f11916287ccdb1ae619dba61dd6bbeff6">
       <source xml:lang="en">Add content snippet name (name should be unique)</source>
     </trans-unit>
+    <trans-unit id="++CODE++0e24df55d08fd98cf5664002561cf1ab063231df2ec58e3a4ae50c063ba66828">
+      <source xml:lang="en">Added default query suite to config: {0}</source>
+    </trans-unit>
     <trans-unit id="++CODE++e7027d80d4c05ae510621f20062db71d499cbd4f8760e3076a3530220fbf0a18">
       <source xml:lang="en">Adding {0} web file(s). Existing files will be skipped</source>
       <note>{0} represents the number of web files</note>
+    </trans-unit>
+    <trans-unit id="++CODE++c910bd41bbf67f9965a2aabaec8d39b749280ffea62e9708c507374b581a331d">
+      <source xml:lang="en">Analysis complete! Results saved to: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++aeb9fa083d662124530feb2af1c98f6a36463b3f2d01e232517c7fb63f53f753">
+      <source xml:lang="en">Analysis completed using query suite: {0}</source>
     </trans-unit>
     <trans-unit id="++CODE++3f82badfcbab5f7d6e5a4886a6df032cc28cdf5fe200a85bafd86101efe126c9">
       <source xml:lang="en">Are you sure you want to clear all the Auth Profiles?</source>
@@ -51,6 +72,12 @@
     <trans-unit id="++CODE++1f6087c22e8b59c12a5a95c61f5811ecd795e553b7a0d7f2e337e36dc26fe509">
       <source xml:lang="en">Authenticating...</source>
     </trans-unit>
+    <trans-unit id="++CODE++469a3c89adc4cb4df3a6f0114cd45795248e4e1dcab2546a685e42982b1a22e6">
+      <source xml:lang="en">Authentication failed. Cannot proceed with site download.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++93c83aa255a01cb4ee50d86e561c78b6c28e3e0f7fd9143dd7817b93b3c5a198">
+      <source xml:lang="en">Authentication failed. Please login and try again.</source>
+    </trans-unit>
     <trans-unit id="++CODE++4190475b52357e7ad3da76828784a5b9f291519e331b0c0e71f5d14e946bbc4b">
       <source xml:lang="en">Authentication failed. Please try again.</source>
     </trans-unit>
@@ -62,6 +89,9 @@
     </trans-unit>
     <trans-unit id="++CODE++6fab20ee9c8b4cb1fa10d787f3cd4eac13d34d27050fd193162a2399f690f59c">
       <source xml:lang="en">Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?</source>
+    </trans-unit>
+    <trans-unit id="++CODE++c58a6bd402efb06c3e7dfd6d68910412fee2dfc1788ae384dc123089ce912285">
+      <source xml:lang="en">Browse...</source>
     </trans-unit>
     <trans-unit id="++CODE++19766ed6ccb2f4a32778eed80d1928d2c87a18d7c275ccb163ec6709d3eb2e27">
       <source xml:lang="en">Cancel</source>
@@ -101,6 +131,12 @@
       <note>This is a markdown formatting which must persist across translations.
 The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).', keeping brackets and the text in the parentheses unmodified</note>
     </trans-unit>
+    <trans-unit id="++CODE++b1ffea87cc95d3bfa308b929bb907b43e7d91be038e706a67142b15c571da334">
+      <source xml:lang="en">Click to authenticate with a matching account</source>
+    </trans-unit>
+    <trans-unit id="++CODE++7d9eb7acb13e24625c404401d8e88b2350e32162455885f18276cf802f7701ed">
+      <source xml:lang="en">Close</source>
+    </trans-unit>
     <trans-unit id="++CODE++eef726ad55117038c05eaa478148144884ab56cadc5a46785e8221040ff7a6ec">
       <source xml:lang="en">Cloud Instance: {0}</source>
       <note>The {0} represents profile's Azure Cloud Instances</note>
@@ -117,6 +153,62 @@ The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).
       <source xml:lang="en">Cluster geo name: {0}</source>
       <note>{0} is the cluster geo name</note>
     </trans-unit>
+    <trans-unit id="++CODE++51e495f295ba55f724b77298746e3284ff9fc8e1e582828a9a3f4051fc577cb0">
+      <source xml:lang="en">Code Block </source>
+    </trans-unit>
+    <trans-unit id="++CODE++876831b143507fffa7cbdec8d0d72b9dc328976180b4206c83331911a27d6740">
+      <source xml:lang="en">CodeQL Analysis</source>
+    </trans-unit>
+    <trans-unit id="++CODE++67fe2c02a3f3e19ede0f449f4e42c477c8b6a55baee7edb23a1928df18403c07">
+      <source xml:lang="en">CodeQL CLI is not installed or not in PATH. Please install the CodeQL extension or add CodeQL CLI to your PATH.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++4d957bcbf39044dd870f5e281bc90330855835fe5e2eec59d9cc66b5c6954e19">
+      <source xml:lang="en">CodeQL analysis completed successfully with no issues found! 🎉</source>
+    </trans-unit>
+    <trans-unit id="++CODE++c3275a1a575e00df769307ad10f3bc42c41d9a990386301c351bd29519010765">
+      <source xml:lang="en">CodeQL analysis completed. Would you like to open the full results file?</source>
+    </trans-unit>
+    <trans-unit id="++CODE++cf2d63639bdb46d783628b663433203e46d6dcf4cfb915adbaad0f13eb9d9905">
+      <source xml:lang="en">CodeQL analysis failed: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++eb7933b3f154963486dca26336ee1f27fea4c21f8c9b5dd0f85f05a2e38d8d5b">
+      <source xml:lang="en">CodeQL database created successfully. You can now run queries from the CodeQL extension.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++f40beb25214e827493a66e453c0e5309a786d37ce60f3af025794baca7444c8b">
+      <source xml:lang="en">CodeQL database created. You can now:
+
+1. Run custom queries if you have any
+2. Use the prebuilt queries from the CodeQL extension
+
+Check the CodeQL extension panel for available queries.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++7e89a70d023a672e36926ab684ceed3cc71049d939761459ab670c94b6339e08">
+      <source xml:lang="en">CodeQL extension is not installed.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++e8235f4d23a215a1902de70069f48aee97eae99fac871b0e7044c8dd4c228d65">
+      <source xml:lang="en">CodeQL global storage path does not exist: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++15f726b732553ce0ebcc6cc3d73ed78609b146df85eb6260ae7280bcbb2dbc93">
+      <source xml:lang="en">CodeQL screening failed. Please try again later.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++ad5918a3406b99c40a41a41891e7bfddd75f66fdf226d6daa654c78d297a0636">
+      <source xml:lang="en">CodeQL screening is not supported for this site.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++9328c89f866668300cb2282dd173089c5e63b5e012d40b6ea73b68d7d345f2a0">
+      <source xml:lang="en">CodeQL screening started. Creating database and analyzing</source>
+    </trans-unit>
+    <trans-unit id="++CODE++8c7badc0de1c1ad67ea730f2f63caa922024be334866180f5d0e7497b8be1cd1">
+      <source xml:lang="en">CodeQL version: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++1fb4405a792e9eb077d2bd96517eca8d81fc43bc251d5589e9d959fd07c8f31d">
+      <source xml:lang="en">Command completed successfully (exit code: {0})</source>
+    </trans-unit>
+    <trans-unit id="++CODE++ff61c2f710070e267638038dfbd105cfffe4de4d37580f566f4537b304b6ca84">
+      <source xml:lang="en">Command failed with exit code {0}: {1}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++67a58f1682f864bfa789f056e50bab25181dfcddf455fadaad856c826f852d6a">
+      <source xml:lang="en">Command failed with exit code: {0}</source>
+    </trans-unit>
     <trans-unit id="++CODE++eebdd24a77d9ad32222660c07777163bf5f6732df2b172351f3f8d5783e4f529">
       <source xml:lang="en">Confirm</source>
     </trans-unit>
@@ -126,18 +218,54 @@ The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).
     <trans-unit id="++CODE++916fa4a51e4d90e09a42289aa7961a6aff3401424f633240c630ac47f58a6d30">
       <source xml:lang="en">Copied to clipboard!</source>
     </trans-unit>
+    <trans-unit id="++CODE++9b44302f1c5e52f926415b952b83efce47fce76164fa64f1a42d1a1606efa11d">
+      <source xml:lang="en">Copilot Response</source>
+    </trans-unit>
     <trans-unit id="++CODE++b04e6767bf84555605710be1a94e48ddcbcb820353b859da427d189cf25395b4">
       <source xml:lang="en">Copilot illustration</source>
     </trans-unit>
     <trans-unit id="++CODE++b749e205302cc21952a1e9646569ca0af9017cc5f39dd741830551bdd4ae823e">
       <source xml:lang="en">Copy to clipboard</source>
     </trans-unit>
+    <trans-unit id="++CODE++a3e5be021818ca51bfb80179d97c9b7198659378a5bed3d2429d718acd4d0b82">
+      <source xml:lang="en">Could not determine user data path.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++92a450b51c228fc0a45836a3cb66a77276511e8b1a48e237c97f27576695288d">
+      <source xml:lang="en">Could not locate CodeQL CLI in global storage.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++47234b3978427950c2a4ef0161f6dc8484b7faf44b21d30616d5d019eebaafd8">
+      <source xml:lang="en">Created PowerPages config file at {0} with default query suite: {1}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++a065334fc8846953a2dacf5096572bb814db18ac32fdb3e22cff0d387cdd4393">
+      <source xml:lang="en">Created on: {0}</source>
+      <note>{0} is the created date</note>
+    </trans-unit>
+    <trans-unit id="++CODE++203c445e9f2f638fcddf5e843dbaa43d55bd63740b6db268c2765e3cfa2e1608">
+      <source xml:lang="en">Creating CodeQL database...</source>
+    </trans-unit>
     <trans-unit id="++CODE++446092146c92f1aa2441a29971d3844b0add13a951c45c491423f506bbe4edab">
       <source xml:lang="en">Creating {0}...</source>
       <note>{0} will be replaced by the entity type.</note>
     </trans-unit>
+    <trans-unit id="++CODE++ec8fd606d46114985d2f628dc67992093b8abb32489b3cbbfbb86bba96925943">
+      <source xml:lang="en">Creator: {0}</source>
+      <note>{0} is the creator</note>
+    </trans-unit>
     <trans-unit id="++CODE++e0d1b68224bf0b31ef16b206c65b5f8f6b89d18161f4a7cdcb8d0ac8d952549a">
       <source xml:lang="en">Current</source>
+    </trans-unit>
+    <trans-unit id="++CODE++fc47ac56c8a4446c02d8470168a888d8e0040cfc0bb5ce6173e324dccc72f24c">
+      <source xml:lang="en">Current site path not found.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++52587c2a224d685113316dc5961aec7749a46dded161bfe07c40b715ca61db29">
+      <source xml:lang="en">Current site path not found. Please ensure you have a site folder open.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++e159063579c9e875ce444b930e8feb5d4fc1a93af6acb47d7a5cf9d5c5241153">
+      <source xml:lang="en">Data model version: {0}</source>
+      <note>{0} is the data model version</note>
+    </trans-unit>
+    <trans-unit id="++CODE++f88d5f387c99b46f054799a5bc6bac06d5b9f5dfd9eaf95627b5f34b137c7cb2">
+      <source xml:lang="en">Database location: {0}</source>
     </trans-unit>
     <trans-unit id="++CODE++5bd78fcb75f98d65ab8f89a8f0b6681c25c13308fa8643c44ab459b7783c06c9">
       <source xml:lang="en">Default Environment: {0}</source>
@@ -160,6 +288,18 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++183c7081100618aebb39219dd011d8d9961649aad278be8fe49c0d1a8874684f">
       <source xml:lang="en">Do not show again</source>
     </trans-unit>
+    <trans-unit id="++CODE++668c177d38e6f62ffe2ca64e3915151cfcd566204fd4e4b499e7fe237ad63fb1">
+      <source xml:lang="en">Download Power Pages Site</source>
+    </trans-unit>
+    <trans-unit id="++CODE++f7bcb5a0e46a8772ca8a648ca7814c6532078d2040286bdcc8993ff7ea9db164">
+      <source xml:lang="en">Download VS Code</source>
+    </trans-unit>
+    <trans-unit id="++CODE++60e02fb26e383f47ea262baa6265c7634e9363869eac536dc91ce1264977ccce">
+      <source xml:lang="en">Downloading Power Pages site using model version {0}...</source>
+    </trans-unit>
+    <trans-unit id="++CODE++9a0318af6b9d6517ef62b7c029a20fda8164d0d717bccbac3c6f926fb6564bd4">
+      <source xml:lang="en">Downloading Power Pages site, please wait...</source>
+    </trans-unit>
     <trans-unit id="++CODE++ac72407b10d30bf47faf11da09b605a85fc649bd3f2e33acb281655cb9021d9d">
       <source xml:lang="en">Edit the site</source>
     </trans-unit>
@@ -175,15 +315,63 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++048d1e764983197603f13e79d28f59bbfa358c0c11e1184c27fc687512589778">
       <source xml:lang="en">Enter the name of the web template</source>
     </trans-unit>
+    <trans-unit id="++CODE++7d63bf943bc02891e817defccba51294daaf55fc6418bc5bac517fd254ed07e2">
+      <source xml:lang="en">Environment ID is not available</source>
+    </trans-unit>
+    <trans-unit id="++CODE++6bba2e23a239b42ce9624ffd5bb2c56f483a7975ecaf2e872a8fe3aa9006b818">
+      <source xml:lang="en">Environment ID is required but not provided</source>
+    </trans-unit>
     <trans-unit id="++CODE++b6d455a8dab8e66229a985315b5db1e1c065ba6d999dffd2795c03189fb32265">
       <source xml:lang="en">Environment ID: {0}</source>
       <note>{0} is the Environment ID</note>
+    </trans-unit>
+    <trans-unit id="++CODE++273ac70fb32a6f135f9998bf3601f83596fccea343ed551d2a405c4958486720">
+      <source xml:lang="en">Environment changed successfully.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++239d14b889f5a193581388efd042b82c5cb36e89f15b4141f740ec40d00ea868">
+      <source xml:lang="en">Error accessing CodeQL extension: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++56e43ff4d49e0fea0222cc642310156febd5be11505e801cfccc65c2b7ebd3b6">
+      <source xml:lang="en">Error creating config file: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++9c567f60562a1ccaae95f9ec1de45a0785b8a433ef8f2d559ec0bcec6cc3c13d">
+      <source xml:lang="en">Error during CodeQL analysis: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++4c925eac2f74f5a794b648a7e4b7a7c6a209ed6b5000411dee8a5519cd1e026b">
+      <source xml:lang="en">Error getting CLI path from extension API: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++fbbcdb76093366eb99ca518a403862ce87722ffe8606083c02ecef6387e987f8">
+      <source xml:lang="en">Error opening results file: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++b52004d98911ff84ee9141e24f950f1a235941ad2beeb18de199c2e44354bfd1">
+      <source xml:lang="en">Error opening with SARIF viewer: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++a47e4735bc198999c5a031692984499d88ad2b7a5119e4f96016cee79a4fb27f">
+      <source xml:lang="en">Error reading config file: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++ff3a79060f3dbd86d89f487bf242ca47e64f0db6c29bfce0ae9d3d0b5606448d">
+      <source xml:lang="en">Error reading results: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++f59ffa6ae59ffa089eb2907ceac28bf43d85e0bd647c80d66569caed29837d24">
+      <source xml:lang="en">Error searching for CodeQL CLI: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++b74986ed2b0cdaef84e06b7f230e13c42308a76ea6445d0cf9b0319d01ea7f74">
+      <source xml:lang="en">Error switching environment: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++e871c663b45be72da181a9de5bccc1b9e415ed8bab4fbc98f87cd9fe6162ded4">
+      <source xml:lang="en">Error updating config file: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++8a6c3a849390110981cd9588c269ec59444485aed2239ad772afdb0d427523d8">
+      <source xml:lang="en">Executing: {0}</source>
     </trans-unit>
     <trans-unit id="++CODE++5a2391041cb1f6f5ab0cce07946dbf4222358fbd947768d94ac12ef5329485d3">
       <source xml:lang="en">Explain the following code snippet:</source>
     </trans-unit>
     <trans-unit id="++CODE++f9e17ed11037dab93f8820c30db63b2ff2a045b5761f71818b7291afae60f199">
       <source xml:lang="en">Explain the following code {% include 'Page Copy'%}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++173848927e1a6ed7f8c52d958d530c9ce90053649c734a3bc20bfb2053d8ef88">
+      <source xml:lang="en">Extension installed but API not available yet. Opening as text file...</source>
     </trans-unit>
     <trans-unit id="++CODE++b985f1515c42b4b5b0c11a3d7b3286fc9d66997d476668ab1f93a4a11499fef5">
       <source xml:lang="en">Failed to create a new Power Pages site. Please try again.</source>
@@ -195,11 +383,17 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++d41633e985dc5f5045a42992788b803ca24b0b8d8f42d8db8f0ff08807d7299a">
       <source xml:lang="en">Failed to disable PAC telemetry.</source>
     </trans-unit>
+    <trans-unit id="++CODE++f14378498d13f7345aec709c662e475e8cd16b8c4bda8ed0009fa62f413726aa">
+      <source xml:lang="en">Failed to download site: {0}</source>
+    </trans-unit>
     <trans-unit id="++CODE++95da24b6bc127a935e2e4323fe85d8f46be20c5e8ca5e10c6a134e5a0c6443a2">
       <source xml:lang="en">Failed to enable PAC telemetry.</source>
     </trans-unit>
     <trans-unit id="++CODE++83d9d98e86aca9239f8a2635a98356d956268fb41a465fbc039b9ac979c61649">
       <source xml:lang="en">Failed to fetch some files.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++f4948aad45ee9baaf762fbd640c551dc397190efdd9fb87468b559502ece927c">
+      <source xml:lang="en">Failed to generate VS Code Desktop URL: {0}</source>
     </trans-unit>
     <trans-unit id="++CODE++862d6197d64601aa13ce30db5ec5b8f819ad00fe21e3b031a3e47fe22ef68fb3">
       <source xml:lang="en">Failed to get file ready for edit: {0}</source>
@@ -209,6 +403,21 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     </trans-unit>
     <trans-unit id="++CODE++51e1f5c5757cfd25a390293a7d8e9eb583943b66211fae1cbe25d07bfcb767f1">
       <source xml:lang="en">Failed to get website endpoint. Please try again later</source>
+    </trans-unit>
+    <trans-unit id="++CODE++fc80bc8b6f74fff75eee85e53e42036bc6069a2fa632337a52789dacf96e9ba9">
+      <source xml:lang="en">Failed to handle Power Pages URI: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++9696573fbb3df8812e2d0b83aa3d9077681bf992c9f9514fbbb81fcc7787560d">
+      <source xml:lang="en">Failed to install SARIF viewer extension. Opening results as text file.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++83f3ed1048ce17af62e4baf0dd046ec8571cb8ae602ad853025266a023de8061">
+      <source xml:lang="en">Failed to install SARIF viewer extension: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++f865b154a9a2097159a09be82db76a9b29afc71df9ad86b9c08253f2e805d23c">
+      <source xml:lang="en">Failed to open in VS Code Desktop: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++1431fc40490dda7265400636e401674fe94e75224aa179af9ce1cded2a155808">
+      <source xml:lang="en">Failed to switch to the required environment.</source>
     </trans-unit>
     <trans-unit id="++CODE++a9e36b880dd45b64ae5601865540605296febf9bd855fc46d9c35c2c2ed9a7f2">
       <source xml:lang="en">Feature is not enabled for this geo.</source>
@@ -226,6 +435,28 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++1b93e507157d91755f08e1abfe8a33d725b637a32ddadf149420b25907d440a0">
       <source xml:lang="en">File(s) already exist. No new files to add</source>
     </trans-unit>
+    <trans-unit id="++CODE++12610d51818dd67082559a8f1d9a141559d996fad6fe34aa3dbf70281bea4572">
+      <source xml:lang="en">File: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++4c152c6eaba506f1e585f1fe8424b694874ccf652f4bdebb5e333ed518e9e428">
+      <source xml:lang="en">Found CodeQL CLI at: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++b3207bdd6cac96d95953611b3858336761212450b6e02c59f048ee17aa654797">
+      <source xml:lang="en">Found CodeQL CLI via extension API: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++3c30b323f4457a82892f7ff1b0e8bf7852618289536ba3f3e08c4b0e7b44d514">
+      <source xml:lang="en">Found PowerPages config file: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++bb38f4fcf83f9428cc8a10ad72256cf8a9536ea56209c10b1db2cea2506b740e">
+      <source xml:lang="en">Found distribution directories: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++84fc80613184b5761895bd6c0ba43882610a232b56d4815581cb6a054e7f231e">
+      <source xml:lang="en">Found {0} issue(s):</source>
+    </trans-unit>
+    <trans-unit id="++CODE++56281cd1d0090cc4c7c38634a5738f51769927efda74805ba19e30e35868fd4e">
+      <source xml:lang="en">Friendly name: {0}</source>
+      <note>{0} is the website name</note>
+    </trans-unit>
     <trans-unit id="++CODE++7184a5edf42e6fc9ef8f53fc1dd73f10b3f6196a23f6d340c4f434e60c366e45">
       <source xml:lang="en">GETTING STARTED</source>
     </trans-unit>
@@ -234,6 +465,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     </trans-unit>
     <trans-unit id="++CODE++46be031ab391443c1736cb8c7032c5b07b159164f48f5b86fe135465e3255571">
       <source xml:lang="en">Generating webpages...</source>
+    </trans-unit>
+    <trans-unit id="++CODE++3f4dec2f1d73d14fdcb63e9a2da87892f19450b714ec81b6db45d1e0bdd25f02">
+      <source xml:lang="en">Get Extension</source>
     </trans-unit>
     <trans-unit id="++CODE++ee1d3100df4b00eabd74481b92106e42cce956213372a914082f82702f56470d">
       <source xml:lang="en">Get GitHub Copilot to try @powerpages</source>
@@ -290,6 +524,9 @@ Return to this chat and @powerpages can help you write and edit your website cod
       <source xml:lang="en">Installing Power Pages generator(v{0})...</source>
       <note>{0} represents the version number</note>
     </trans-unit>
+    <trans-unit id="++CODE++5caff26b08726c8c726419c5f1ec44de8533973c9e3220d3af6b4a29b1c05957">
+      <source xml:lang="en">Installing SARIF viewer extension...</source>
+    </trans-unit>
     <trans-unit id="++CODE++f351355077e2d6b421620f76832f108d9b4d84f31c14857d802cd8db01e4d330">
       <source xml:lang="en">Instance url: {0}</source>
       <note>{0} is the Instance Url</note>
@@ -303,8 +540,17 @@ Return to this chat and @powerpages can help you write and edit your website cod
     <trans-unit id="++CODE++39a6dab1c2d4a37e541c3b2672a019f937698e02ea34d22d502f60fc6dadc0ca">
       <source xml:lang="en">Like something? Tell us more.</source>
     </trans-unit>
+    <trans-unit id="++CODE++47dc2e01d9ad434bd03a870bdfd91281bc31d38da2cdc36c0d46a593b1d6d60c">
+      <source xml:lang="en">Line: {0}</source>
+    </trans-unit>
     <trans-unit id="++CODE++9d6322c1f4d9d3f38aed8bfbe0b2bcadf66ad82c008476fa62541fa069138e94">
       <source xml:lang="en">Login</source>
+    </trans-unit>
+    <trans-unit id="++CODE++9ecf75483ab77698700a9c2bc98a0b615500ce13cb9e487795f6c4dd782989cc">
+      <source xml:lang="en">Login to PowerPages</source>
+    </trans-unit>
+    <trans-unit id="++CODE++5f7a296554fdb03b163d47a479e9f37458d880e6ddcdd7fd26112464dafaff8d">
+      <source xml:lang="en">Looking for CodeQL CLI in: {0}</source>
     </trans-unit>
     <trans-unit id="++CODE++1be32f89a3d1d98bb7011850e83b5753124d58f684bae063674bfdb106026e6d">
       <source xml:lang="en">Make sure AI-generated content is accurate and appropriate before using. &lt;a href=&quot;https://go.microsoft.com/fwlink/?linkid=2240145&quot;&gt;Learn more&lt;/a&gt; | &lt;a href=&quot;https://go.microsoft.com/fwlink/?linkid=2189520&quot;&gt;View
@@ -319,8 +565,11 @@ Return to this chat and @powerpages can help you write and edit your website cod
     <trans-unit id="++CODE++8a194d5287e3da019883144787cd5f282753f5ce892d933be0833b3818c25503">
       <source xml:lang="en">Maximum 30 characters allowed</source>
     </trans-unit>
-    <trans-unit id="++CODE++7fcd8b1c5225f7d9a771a4a02ca3e4795c3c9202cf2b3c3c879c625abb8b43e4">
-      <source xml:lang="en">Microsoft wants your feeback</source>
+    <trans-unit id="++CODE++b1c8258fb401975727a82d9ce473af0a600f076cc7b73dbd16524e815cf4153d">
+      <source xml:lang="en">Microsoft wants your feedback</source>
+    </trans-unit>
+    <trans-unit id="++CODE++5813bc61a859f78f4474b9c45e545b7da14fe71acdbb5b7c4cb7010628780513">
+      <source xml:lang="en">Missing required site information for reactivation.</source>
     </trans-unit>
     <trans-unit id="++CODE++a253ff09c5a8678e1fd1962b2c329245e139e45f9cc6ced4e5d7ad42c4108fc0">
       <source xml:lang="en">NEW</source>
@@ -352,11 +601,23 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++1f21e0f117783158a85e92b5659dc5d9cf3b2daeba2ae3df809322c997f369b4">
       <source xml:lang="en">New Webpage</source>
     </trans-unit>
+    <trans-unit id="++CODE++1ea442a134b2a184bd5d40104401f2a37fbc09ccf3f4bc9da161c6099be3691d">
+      <source xml:lang="en">No</source>
+    </trans-unit>
     <trans-unit id="++CODE++b1061a7adf836619e40617bbbbe42d04a9c167b5756a2b4926c02d88e780a7f9">
       <source xml:lang="en">No Website Data Found in Current Directory. Please switch to a directory that contains the PAC downloaded website data to continue.</source>
     </trans-unit>
+    <trans-unit id="++CODE++1b03558147265e7c9bd70e6a4abe031ef65dbca05e01d94953e58b86ec82c859">
+      <source xml:lang="en">No analysis results found.</source>
+    </trans-unit>
     <trans-unit id="++CODE++80266a1ea7e6671d65c98a0624c254f5b9acfacddd05d69524b7f034eeba3268">
       <source xml:lang="en">No environments found</source>
+    </trans-unit>
+    <trans-unit id="++CODE++e75c23acb3f88e840f326048df92fcfd3350ec3b775a5c51e6ff6754f0f9f7a1">
+      <source xml:lang="en">No issues found!</source>
+    </trans-unit>
+    <trans-unit id="++CODE++f4e72a0615b12413932e879ea66a30e28ddf66f78c73807f2302983fa6dffe9f">
+      <source xml:lang="en">No message</source>
     </trans-unit>
     <trans-unit id="++CODE++e0d2b29e6060c3d50691e6961835418fe6a24723c227dacf93250b94e21ed1bb">
       <source xml:lang="en">No page templates found</source>
@@ -376,6 +637,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++6c0242ffba2aababcb4e45831de1492e8bccae2cb0f3387dfe9c16620f6928ef">
       <source xml:lang="en">No workspace folder opened. Please open a site folder to preview.</source>
     </trans-unit>
+    <trans-unit id="++CODE++ccb4c324f516c63335c648ee08a66b8cc78737d26156f0c84707cd0ee4235492">
+      <source xml:lang="en">Not Now</source>
+    </trans-unit>
     <trans-unit id="++CODE++b2b461f3eae470e95fdcfd61a3cbe6680e84d0a7221a305f696ce44843badc89">
       <source xml:lang="en">Object ID: {0}</source>
       <note>{0} is the Object ID</note>
@@ -383,11 +647,35 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++bda6bda1e902d120a7f4515ceac8546c3112e3cb9351df1d8b9713b8f86e0370">
       <source xml:lang="en">One or more attribute names have been changed or removed. Contact your admin.</source>
     </trans-unit>
+    <trans-unit id="++CODE++68b3f4bff6de90aed6e47e72d8b680901da64dff39ed843e9eeed0464020e971">
+      <source xml:lang="en">Open Folder</source>
+    </trans-unit>
+    <trans-unit id="++CODE++f329c8f717c6c20eb60774d8f9227683661d74ebae48207076be60be8796dd5d">
+      <source xml:lang="en">Open Results</source>
+    </trans-unit>
+    <trans-unit id="++CODE++c923497edb55fd73ded53b2d43ccaf08ed3ed77118d934fd762fb7a5048b16e4">
+      <source xml:lang="en">Open as Text</source>
+    </trans-unit>
+    <trans-unit id="++CODE++e35b67aaf27dab4f013733ada391dda0fb7348af30bcf397692ecf7a83b9cb2f">
+      <source xml:lang="en">Open in New Workspace</source>
+    </trans-unit>
     <trans-unit id="++CODE++e61655958f06a0bb12435c70d95c738b62fabdff78f26c597c105a8823820fbd">
       <source xml:lang="en">Open in Power Pages studio</source>
     </trans-unit>
+    <trans-unit id="++CODE++e473d99cc18c8fbc20a562b15d5c16437343c2dc28d5b176e64890b7b3d350d1">
+      <source xml:lang="en">Open in VS Code Desktop</source>
+    </trans-unit>
+    <trans-unit id="++CODE++87fe691d426d47ee588ac957e12a9936b94fe6d70fd9ef97c92f7af1671ed9a0">
+      <source xml:lang="en">Opening in VS Code Desktop. If it doesn't open or shows an error, you may need to install VS Code or update the Power Platform extension.</source>
+    </trans-unit>
     <trans-unit id="++CODE++dac0ee62a5197a3722a9e7e9e851e80504cced8a13ce8b17842d78e8313578c2">
       <source xml:lang="en">Opening preview site...</source>
+    </trans-unit>
+    <trans-unit id="++CODE++e7f5bd4de76500f23850b2f87c8d39ef1f346662963521c88985e4486b860f90">
+      <source xml:lang="en">Opening results with SARIF viewer...</source>
+    </trans-unit>
+    <trans-unit id="++CODE++f2dd836a178a30bdcb69c5fd8b5685c12d400d47e10971dd4d93657e6d5b1d0e">
+      <source xml:lang="en">Opening results with newly installed SARIF viewer...</source>
     </trans-unit>
     <trans-unit id="++CODE++e61c4ac3c692e3cfdc02717db82d18b1e9d51242710031f20af35b33d149fa7a">
       <source xml:lang="en">Opening site preview...</source>
@@ -398,6 +686,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++38bb1c8534acb465ac1e4975989a18199aaea7beb273d8ff935ac0a07e443539">
       <source xml:lang="en">Organization ID: {0}</source>
       <note>{0} is the Organization ID</note>
+    </trans-unit>
+    <trans-unit id="++CODE++43fda167d567df5f43ec87655e1d27557664874f1f804387174027f5e8e2e602">
+      <source xml:lang="en">Organization URL is required but not provided</source>
     </trans-unit>
     <trans-unit id="++CODE++b3d5416b4e83d803e6f238f1d31a637450f12c9370113871d15bd48c72435cd2">
       <source xml:lang="en">Other Sites</source>
@@ -426,22 +717,49 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++7f6276dc63b573d177b7d6e17f787b108e3c8c7d449324ac13a6d06b1be59d8e">
       <source xml:lang="en">Please enter a name for the webpage.</source>
     </trans-unit>
+    <trans-unit id="++CODE++6355962eca901310bd24d2142605263344a3f09fb4fc30fc0f9dcf4cd56bf534">
+      <source xml:lang="en">Please login to preview the site.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++f413d35f48356c6c13c6c9d8947f011221acb3bea7d0ce74eb2f5ed217f26bad">
+      <source xml:lang="en">Please select the folder that contains your compiled output to upload your site.</source>
+    </trans-unit>
     <trans-unit id="++CODE++1bac158cc07a75506df3774db0ad7c188c19ccad4943c4cf03da8b6700ef9ce4">
       <source xml:lang="en">Power Pages Copilot is now connected to the environment: {0} : {1}</source>
       <note>{0} represents the environment name</note>
     </trans-unit>
+    <trans-unit id="++CODE++04ac907168ac84b45263503d1306565bece49c4ae3e8ef4af310b304f03ab6d4">
+      <source xml:lang="en">Power Pages site download completed successfully. Would you like to open the downloaded site folder?</source>
+    </trans-unit>
     <trans-unit id="++CODE++cce89cd3a0f118dafd3173f6444abdcd2b9782153af1b6bfa8f63ef3d4b68268">
       <source xml:lang="en">Power Pages studio URL is not available</source>
+    </trans-unit>
+    <trans-unit id="++CODE++bf67e1194aabff2106dde73ed7318caf658a4cebe27dbd2d03239a141e16a211">
+      <source xml:lang="en">PowerPages config file created successfully: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++51b545b10e7c3ffa5c7a61b222ed1039c55ddba4cc130f834338e498cdd0d129">
+      <source xml:lang="en">PowerPages config file updated successfully: {0}</source>
     </trans-unit>
     <trans-unit id="++CODE++777d5f3afd46e18d42c0baad6d9a0c7a6867cdf31ae4d342ad5e695486f05ae7">
       <source xml:lang="en">Preparing pac CLI (v{0})...</source>
       <note>{0} represents the version number</note>
+    </trans-unit>
+    <trans-unit id="++CODE++e019497156f9ccd01e4c4fa2cb01c31e293460acdf116949dc29680e64660de5">
+      <source xml:lang="en">Preparing to download Power Pages site...</source>
     </trans-unit>
     <trans-unit id="++CODE++f6412ced721a26ac3e3cb55d3ff713d8403c3dfc2efa0cff07b48478bdd57555">
       <source xml:lang="en">Preview site</source>
     </trans-unit>
     <trans-unit id="++CODE++1cc20af81855b8570858ea1ac0491000d230bcf2ac53c1c1b30243a9b58a2036">
       <source xml:lang="en">Preview site URL is not valid</source>
+    </trans-unit>
+    <trans-unit id="++CODE++fa20488e9d7f18238d5f0c72e459c52354657b24877bb4197902daa667bd57c9">
+      <source xml:lang="en">Primary query suite {0} failed: {1}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++66c77d8211180ed42d204144272cd0985a1c118696c856b61d2dd63d1f416d86">
+      <source xml:lang="en">Process error: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++5e297c22bc5c0423614ebe6e20c7fb26fc01c43d3d5cbcdcce15dab605384e13">
+      <source xml:lang="en">Processing download request...</source>
     </trans-unit>
     <trans-unit id="++CODE++7a6098eb5ff2c2401890216bb502ce6583ff7bddc99e62f8751551eab45ae1b4">
       <source xml:lang="en">Profile Kind: {0}</source>
@@ -450,18 +768,48 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++b62120c5416487f4c793d75aee7fea083971e5ac665a3f35767023f408f482e5">
       <source xml:lang="en">Response data is empty</source>
     </trans-unit>
+    <trans-unit id="++CODE++b87504a6b179044cf99d39cf641f47aa5e76c4c5b949413ec33953ec35c10ac4">
+      <source xml:lang="en">Results opened in SARIF viewer successfully.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++9eb3810da0fd0dbacf4b6f4d7ad58e6e631ab807c0dd404dcb9f03066da8443b">
+      <source xml:lang="en">Running CodeQL analysis...</source>
+    </trans-unit>
+    <trans-unit id="++CODE++3a74613b70fb8cc650773d71501f0c370322e9ae7d7739857db61c95a3b1bc80">
+      <source xml:lang="en">SARIF viewer extension does not expose expected API. Falling back to text editor...</source>
+    </trans-unit>
+    <trans-unit id="++CODE++3404d61aa3fdceef4ff6d5c7fe612d467f785bf5e3159771b4cde9b1e83e0f22">
+      <source xml:lang="en">SARIF viewer extension installed successfully. Activating...</source>
+    </trans-unit>
+    <trans-unit id="++CODE++ceaca7d5816edb7826d84436807510a3a840ee0808fd62a568e2e1541eae6457">
+      <source xml:lang="en">SARIF viewer extension not found.</source>
+    </trans-unit>
     <trans-unit id="++CODE++0134bc37f2fdeb11daa9e760ecee0ef9706989b33f77a38daadb8b7aae685749">
       <source xml:lang="en">Saving your file ...</source>
+    </trans-unit>
+    <trans-unit id="++CODE++e597da9c984517f802536a83c825cd4f017898c5f28030fe1f62fb94f5228828">
+      <source xml:lang="en">Select Folder</source>
     </trans-unit>
     <trans-unit id="++CODE++6e26632772595a9d2fdf17191f6d7b59983c308d884deed6ba317054f7d30688">
       <source xml:lang="en">Select Folder for new PCF Control</source>
       <note>Do not translate 'PCF' as it is a product name.</note>
+    </trans-unit>
+    <trans-unit id="++CODE++e4efd0ebbc891e539d343ce3247c566fbb105ea4f5746251a256995cdeaefcd3">
+      <source xml:lang="en">Select Folder to Download Power Pages Site</source>
     </trans-unit>
     <trans-unit id="++CODE++a40f78f3a7f5c5ab1b101e95cdf044552542712fdcf45a83dfea3f455b6f638a">
       <source xml:lang="en">Select Type</source>
     </trans-unit>
     <trans-unit id="++CODE++87468e6a845b82466220c11dd0ca315a4389dc1cb8e0ee102035bb4ce5cb7e39">
       <source xml:lang="en">Select an environment</source>
+    </trans-unit>
+    <trans-unit id="++CODE++58ea04f09a2cbf67d55e70c45a6da4998e72e8e50f91e63862c0d65d14dfb1f5">
+      <source xml:lang="en">Select folder for CodeQL database</source>
+    </trans-unit>
+    <trans-unit id="++CODE++259b03b37447930b5127e28e350f988803a3047bbb0c7be4441c7da4f9b517d4">
+      <source xml:lang="en">Select the folder that contains your compiled output</source>
+    </trans-unit>
+    <trans-unit id="++CODE++26297069e403c73e147151f2964757b7e9149762cf3a8e04ffd833907fb979e4">
+      <source xml:lang="en">Select the folder that will contain your project root for your site</source>
     </trans-unit>
     <trans-unit id="++CODE++4d6f03fa73020c945e651c34d40c5529f3477ac02df254c1764a68d576575e14">
       <source xml:lang="en">Selection is empty.</source>
@@ -472,8 +820,27 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++142027a259879fdd2b6410360a9cd3798f433c2fc5668bb685dd4ff513072e16">
       <source xml:lang="en">Session Details</source>
     </trans-unit>
+    <trans-unit id="++CODE++08b44927dd7cd913d5c36c74e3ccf55ef966b6c2f067b173fbbe4e3c32f30d15">
+      <source xml:lang="en">Session ID: {0}</source>
+      <note>{0} is the Session ID</note>
+    </trans-unit>
     <trans-unit id="++CODE++899fb203e6c2faac8093e21a2fa8db0d4b13d16ea5492461d8b72dbcee3ecf2a">
       <source xml:lang="en">Show Output Panel</source>
+    </trans-unit>
+    <trans-unit id="++CODE++2f65ba5aa38a9acac3a9a9c0a9aeecd7b32796008dc63432bedbe6ef62982558">
+      <source xml:lang="en">Sign in to VS Code with PAC CLI account</source>
+    </trans-unit>
+    <trans-unit id="++CODE++524bca0347e50e3801bebf27374124b3babf072729b4da4bcc45ef5c385ee8f4">
+      <source xml:lang="en">Site Details</source>
+    </trans-unit>
+    <trans-unit id="++CODE++4fa72d80ab1b04e31f450bacc89bff526a5e52e3d104d153b3b493b108330b3c">
+      <source xml:lang="en">Site download cancelled. Authentication is required to proceed.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++ca57fa2618956b4946832e64d4815e0a68f623ab2d39b25dff228afbcdd8d008">
+      <source xml:lang="en">Site download cancelled. Correct environment connection is required.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++c0917a71517a4a08ef56adaaec8f79404a4d5cc14afc8d141e9aa6181bee8622">
+      <source xml:lang="en">Site download cancelled. No folder selected.</source>
     </trans-unit>
     <trans-unit id="++CODE++a72357d268bce5e1643bfd74563495784179f75ace0d652db8f808f293586b63">
       <source xml:lang="en">Site management URL not found for the selected site. Please try again after refreshing the environment.</source>
@@ -481,11 +848,18 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++f7094162bd4c4b59aa706387714347223e1569c79c5b37eb19ac754a33a0fdd0">
       <source xml:lang="en">Site runtime preview feature is not enabled.</source>
     </trans-unit>
+    <trans-unit id="++CODE++a2eb2f1a32eedafa3e666685f09ee073175d309d6137b80edac517b51bffd84d">
+      <source xml:lang="en">Site visibility: {0}</source>
+      <note>{0} is the site visibility</note>
+    </trans-unit>
     <trans-unit id="++CODE++27dd8c8e67d15783f51c6b71ed60d5350731daa85b418f1e84c2e5828ae2d54e">
       <source xml:lang="en">Some references might be broken. Please check diagnostics for details.</source>
     </trans-unit>
     <trans-unit id="++CODE++189f24adc299ea91ceab21d8100a58d89294ed17395c4e4dbc4733c9b92543df">
       <source xml:lang="en">Something went wrong. Don’t worry, you can try again.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++1cb2204ec480119230ac755787106a1550d9329553d146abd56da1947079d577">
+      <source xml:lang="en">Starting CodeQL analysis for: {0}</source>
     </trans-unit>
     <trans-unit id="++CODE++155f816c0407310c0dab222493370773e045ee7fe04e6c9a951b07f495531264">
       <source xml:lang="en">Submit</source>
@@ -497,8 +871,17 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
       <source xml:lang="en">Tenant ID: {0}</source>
       <note>{0} is the Tenant ID</note>
     </trans-unit>
+    <trans-unit id="++CODE++438c442a839dca3bb4dbecd0421f454f268650517fe631e5900233b73a874bc7">
+      <source xml:lang="en">The CodeQL extension is required to run this command. Do you want to install it now?</source>
+    </trans-unit>
     <trans-unit id="++CODE++618f7afd7be2f12bf2ebbaba5bc7e951d2ebfb11d4480647f991fbb664caa26e">
       <source xml:lang="en">The Power Pages generator is ready for use in your VS Code extension!</source>
+    </trans-unit>
+    <trans-unit id="++CODE++3ed1f203bd6f7102d8c5dcf88fe4fb5327b54a1e88962adcddbf9a023bcf8875">
+      <source xml:lang="en">The SARIF Viewer extension is recommended for viewing CodeQL results. Would you like to install it now?</source>
+    </trans-unit>
+    <trans-unit id="++CODE++98a4cf89a57d927fce50521aaf27e9fd7dc5046e82725348cf6024469a4f2bdf">
+      <source xml:lang="en">The account signed in to VS Code differs from the one authenticated in PAC CLI (Power Platform CLI). This mismatch can cause data not to load or actions to fail because UI commands run through the CLI. To fix it, sign in to VS Code using the same account as your PAC CLI. If needed, you can update your PAC CLI authentication separately via the command line.</source>
     </trans-unit>
     <trans-unit id="++CODE++0bc2e4918b64f82220bde3dae30dc007a45fb59c3677833fb5a0e275a3b6b54b">
       <source xml:lang="en">The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?</source>
@@ -510,8 +893,8 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++5eccedc8c04d2137a9eb74edf18ea469b4b63e7315de4b8fe49c48bb8d0780e9">
       <source xml:lang="en">The pac CLI is ready for use in your VS Code terminal!</source>
     </trans-unit>
-    <trans-unit id="++CODE++db00163e0e6fed2e319e28785c537befb88ded272d245e503d9580322ab2fec8">
-      <source xml:lang="en">The preview shown is for published changes.</source>
+    <trans-unit id="++CODE++51d2fcbba3e5fc15afbd85f1d179e58b9c4328b466cd7872ec77dc0c9cb34afe">
+      <source xml:lang="en">The preview shown is for published changes. Please publish any pending changes to see them in the preview.</source>
     </trans-unit>
     <trans-unit id="++CODE++18f3be2933741b96e56b1e1f70818fcba46ec9c5b3dcd0e28d801eab15791d84">
       <source xml:lang="en">There was a permissions problem with the server</source>
@@ -553,6 +936,12 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++bab36b47fe2dd4f2f7e8eb486f2e3546e27dc047e69f5b24307bc71e5be2a7cf">
       <source xml:lang="en">Unable to find that app</source>
     </trans-unit>
+    <trans-unit id="++CODE++01e5c349da59b88cb8c4552d036f670c1a5d824abf91fe9539d408e89d9c9445">
+      <source xml:lang="en">Unable to generate VS Code Desktop URL</source>
+    </trans-unit>
+    <trans-unit id="++CODE++3747890a3bfddec3123ce9a40cdd15f278d1335b382f80beb52bf18101ab02c2">
+      <source xml:lang="en">Unable to locate website root folder.</source>
+    </trans-unit>
     <trans-unit id="++CODE++b6038584b7b1f565be9c9d3f0ac11be70bd2e69e072ead52884ca7338a14ee67">
       <source xml:lang="en">Unique name: {0}</source>
       <note>{0} is the Unique name</note>
@@ -560,9 +949,33 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++4b8d64fae5d1cbf5f7324782e9b5c430db7c218771e84b0b402a9a4d0ec4bf05">
       <source xml:lang="en">Unmanaged</source>
     </trans-unit>
+    <trans-unit id="++CODE++810c2285d6b0fa110f868e006118426e02a150592009b5f2458e2883d8dcd3c8">
+      <source xml:lang="en">Update Extension</source>
+    </trans-unit>
+    <trans-unit id="++CODE++7fce0124a7cb74955461f08e39ceaaed1e2850492f077f4e6defd82ef3ca6b0e">
+      <source xml:lang="en">Upload changes</source>
+    </trans-unit>
+    <trans-unit id="++CODE++8a91e7caf57148c6be78b3986477464b36f0282a9e9a09b635b0db4fe6246132">
+      <source xml:lang="en">Upload failed. Please try again later.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++c86daff3d88f7b1f615467872994ef13dcbc1c55e10105d71f398c721650c9c2">
+      <source xml:lang="en">Use current site folder</source>
+    </trans-unit>
+    <trans-unit id="++CODE++7cf98759b12f73d7717ae27ba49a3d27f026be55b4a33236942882c7a8b671bf">
+      <source xml:lang="en">User cancelled opening results.</source>
+    </trans-unit>
     <trans-unit id="++CODE++696d5f7b79a75961bc5d99ecbbea7b535acc73160e0b6422daa45b0ae7c04368">
       <source xml:lang="en">User: {0}</source>
       <note>The {0} represents auth profile's user name (email address))</note>
+    </trans-unit>
+    <trans-unit id="++CODE++ad53df2afe8706d9b2df0b2ce7db974ca00887c2a4864ce1b78ed0fc60ab8669">
+      <source xml:lang="en">Using custom CodeQL query suite: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++ad8cf9b64ea12b5f26438ceb83cd1bb510af7cccaf4c2be1320276486224a0fe">
+      <source xml:lang="en">Using default query suite: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++4164b3068322daf412659fb28d24b8b18f2d9fcdb160a63980bafbd16134231b">
+      <source xml:lang="en">VS Code - PAC CLI authentication mismatch detected</source>
     </trans-unit>
     <trans-unit id="++CODE++d941ee96c6f480390012381f9fc0dfd961f2aa803732860e2505a8453700f458">
       <source xml:lang="en">We encountered an error preparing the files for edit.</source>
@@ -575,6 +988,20 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++00dc171124ab430bbbaae51ec39dda1c5e7d045f382f56b1767d9e733292731c">
       <source xml:lang="en">Webpage names should contain only letters, numbers, hyphens, or underscores.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++ccd9f7afcc6454ab02bcba204f559a9c89947c6e39a7c8651e30799d78ca4fd2">
+      <source xml:lang="en">Website ID is not available</source>
+    </trans-unit>
+    <trans-unit id="++CODE++64c2870068032d4e5c46e710ba9422633c8f8228527d59b27f449fdf55216bb6">
+      <source xml:lang="en">Website ID is required but not provided</source>
+    </trans-unit>
+    <trans-unit id="++CODE++d3eaa7bf5377b15781ad4c0f43e4da94b9a2bd485ddbbbe62a2c3d53c5c7fe4a">
+      <source xml:lang="en">Website Id: {0}</source>
+      <note>{0} is the website ID</note>
+    </trans-unit>
+    <trans-unit id="++CODE++4f5909ac007d8a897ec18ede71cdf8f6b4af3bbe78bae2f13871d50a3cebb3f6">
+      <source xml:lang="en">Website Url: {0}</source>
+      <note>{0} is the website Url</note>
     </trans-unit>
     <trans-unit id="++CODE++aa64cfbb63d3382bc0530c6e599467b1cc5c1ef8ff3b573d37ad628f9058b2aa">
       <source xml:lang="en">Website not found in the environment. Please check the credentials and login with correct account.</source>
@@ -600,11 +1027,20 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++85a39ab345d672ff8ca9b9c6876f3adcacf45ee7c1e2dbd2408fd338bd55e07e">
       <source xml:lang="en">Yes</source>
     </trans-unit>
+    <trans-unit id="++CODE++5f1325c0fc2f8e2e8732d6545bcc100f0e7e0d8ea1740b2d519fc83c43ae1fc2">
+      <source xml:lang="en">You are currently connected to a different environment. Would you like to switch to the required environment?</source>
+    </trans-unit>
     <trans-unit id="++CODE++3c65297a1fc0860c6993f5c8beb4341dd13b71d7f3957daba611adf04a6c971b">
       <source xml:lang="en">You are editing a live, public site </source>
     </trans-unit>
     <trans-unit id="++CODE++beb45bfdd4c3f6da9bb3687e4d9275790d086c1dffaec84839fa9ec9ce4e9ee2">
       <source xml:lang="en">You can use this in &lt;a href=&quot;#&quot; id=&quot;github-copilot-link&quot;&gt;GitHub Copilot with @powerpages&lt;/a&gt; and leverage best of both world.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++87eb9aa1f1ac1b6b141aedc4c21a9cb7cf786453c529babe30c8760072bb34d6">
+      <source xml:lang="en">You need to authenticate with Power Platform to download the site. Would you like to authenticate now?</source>
+    </trans-unit>
+    <trans-unit id="++CODE++eeb25aaca6a9e3f6c670334480b8e56e2a362ecfec23f8e63617915b22ddc8a0">
+      <source xml:lang="en">Your preview isn't updated. Please upload your site to see the latest changes.</source>
     </trans-unit>
     <trans-unit id="++CODE++3a928d0a6dd0e0c6b56eb3bf08b20e6361e876fd6b2eeca59f718cbfdc310472">
       <source xml:lang="en">dotnet sdk 6.0 or greater must be installed</source>
@@ -680,6 +1116,9 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
     <trans-unit id="pacCLI.openDocumentation.title">
       <source xml:lang="en">Documentation</source>
     </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite.title">
+      <source xml:lang="en">Download Site</source>
+    </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.title">
       <source xml:lang="en">Edit Power Pages code</source>
     </trans-unit>
@@ -724,7 +1163,7 @@ The second line should be '[TRANSLATION HERE](command:microsoft.powerplatform.pa
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveNotSupported">
       <source xml:lang="en">No auth profiles found on this computer.
-Interactive Authentication is not availalbe for remote scenarios; auth profiles must be created by the command line.  The `--deviceCode` flow must be used for users with MFA requirements, or whose tenants use ADFS.
+Interactive Authentication is not available for remote scenarios; auth profiles must be created by the command line.  The `--deviceCode` flow must be used for users with MFA requirements, or whose tenants use ADFS.
 [View Auth Profile Help](command:pacCLI.pacAuthHelp)</source>
       <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should not translate the argument `--deviceCode`
@@ -748,6 +1187,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="pacCLI.openPacLab.title">
       <source xml:lang="en">Open PAC Lab</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio.title">
+      <source xml:lang="en">Open in Power Pages Studio</source>
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.openSitesInStudio.title">
       <source xml:lang="en">Open in Power Pages Studio</source>
@@ -780,6 +1222,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     <trans-unit id="powerplatform.pages.previewSite.title">
       <source xml:lang="en">Preview Site</source>
     </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite.title">
+      <source xml:lang="en">Reactivate Site</source>
+    </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.refresh.title">
       <source xml:lang="en">Refresh</source>
     </trans-unit>
@@ -794,6 +1239,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac.title">
       <source xml:lang="en">Reveal in Finder</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title">
+      <source xml:lang="en">Run CodeQL Screening</source>
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.saveConflict.title">
       <source xml:lang="en">Save conflict</source>
@@ -821,6 +1269,12 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="pacCLI.pacSolutionHelp.title">
       <source xml:lang="en">Show PAC Solution Help</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.siteDetails.title">
+      <source xml:lang="en">Site Details</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.configuration.downloadSite.description">
+      <source xml:lang="en">The folder where site will be downloaded when using Power Pages Actions. Leave this empty to ask for a folder every time you download a site.</source>
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite.title">
       <source xml:lang="en">Upload Site</source>

@@ -4,8 +4,11 @@
  */
 
 import { getCommonHeaders, powerPlatformAPIAuthentication } from "./AuthenticationProvider";
-import { VSCODE_EXTENSION_SERVICE_STAMP_NOT_FOUND, VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_FAILED, VSCODE_EXTENSION_GET_PPAPI_WEBSITES_ENDPOINT_UNSUPPORTED_REGION,
-VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_ID_COMPLETED, VSCODE_EXTENSION_PPAPI_GET_WEBSITE_DETAILS_FAILED, VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_RECORD_ID_COMPLETED } from "./TelemetryConstants";import { ServiceEndpointCategory, PPAPI_WEBSITES_ENDPOINT, PPAPI_WEBSITES_API_VERSION } from "./Constants";
+import {
+    VSCODE_EXTENSION_SERVICE_STAMP_NOT_FOUND, VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_FAILED, VSCODE_EXTENSION_GET_PPAPI_WEBSITES_ENDPOINT_UNSUPPORTED_REGION,
+    VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_ID_COMPLETED, VSCODE_EXTENSION_PPAPI_GET_WEBSITE_DETAILS_FAILED, VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_RECORD_ID_COMPLETED, VSCODE_EXTENSION_GOVERNANCE_CHECK_SUCCESS, VSCODE_EXTENSION_GOVERNANCE_CHECK_FAILED
+} from "./TelemetryConstants";
+import { ServiceEndpointCategory, PPAPI_WEBSITES_ENDPOINT, PPAPI_WEBSITES_API_VERSION} from "./Constants";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { IWebsiteDetails } from "./Interfaces";
 
@@ -88,12 +91,16 @@ export class PPAPIService {
                 ppApiEndpoint = "https://api.powerplatform.com";
                 break;
             case ServiceEndpointCategory.DOD:
+                ppApiEndpoint = "https://api.appsplatform.us";
+                break;
             case ServiceEndpointCategory.GCC:
+                ppApiEndpoint = "https://api.gov.powerplatform.microsoft.us";
+                break;
             case ServiceEndpointCategory.HIGH:
-                ppApiEndpoint = "https://api.powerplatform.us";
+                ppApiEndpoint = "https://api.high.powerplatform.microsoft.us";
                 break;
             case ServiceEndpointCategory.MOONCAKE:
-                ppApiEndpoint = "https://api.powerplatform.cn";
+                ppApiEndpoint = "https://api.powerplatform.partner.microsoftonline.cn";
                 break;
             default:
                 sendTelemetryEvent({ eventName: VSCODE_EXTENSION_GET_PPAPI_WEBSITES_ENDPOINT_UNSUPPORTED_REGION, data: serviceEndpointStamp });
@@ -104,5 +111,70 @@ export class PPAPIService {
             .replace("{environmentId}", environmentId) +
             (websitePreviewId ? `/${websitePreviewId}` : '') +
             `?api-version=${PPAPI_WEBSITES_API_VERSION}`;
+    }
+
+    static async getGovernanceFlag(
+        serviceEndpointStamp: ServiceEndpointCategory,
+        environmentId: string,
+        sessionId: string,
+        copilotGovernanceSetting: string,
+        websiteId: string | null
+    ): Promise<boolean> {
+        try {
+            let governanceEndpoint: string;
+            const accessToken = await powerPlatformAPIAuthentication(serviceEndpointStamp, true);
+            const ppBaseEndpoint = await PPAPIService.getPPAPIServiceEndpoint(serviceEndpointStamp, environmentId);
+
+            // Build governance endpoint URL based on whether website ID is provided
+            if (websiteId) {
+                // When site context is present.
+                const websiteDetails = await this.getWebsiteDetailsByWebsiteRecordId(serviceEndpointStamp, environmentId, websiteId);
+                governanceEndpoint = `${ppBaseEndpoint.split('?')[0]}/${websiteDetails?.id}/governance/${copilotGovernanceSetting}?api-version=${PPAPI_WEBSITES_API_VERSION}`;
+            } else {
+                // Using copilot without site context.
+                const envEndpoint = ppBaseEndpoint.split('/websites')[0];
+                governanceEndpoint = `${envEndpoint}/governance/${copilotGovernanceSetting}?api-version=${PPAPI_WEBSITES_API_VERSION}`;
+            }
+
+            const response = await fetch(governanceEndpoint, {
+                method: 'GET',
+                headers: getCommonHeaders(accessToken)
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                const allowProDevCopilots = ["all", "include", "exclude", "true"].includes(result.toString().toLowerCase());
+
+                sendTelemetryEvent({
+                    eventName: VSCODE_EXTENSION_GOVERNANCE_CHECK_SUCCESS,
+                    environmentId: environmentId,
+                    websiteId: websiteId || '',
+                    copilotSessionId: sessionId,
+                    copilotGovernanceResponse: result.toString(),
+                });
+
+                return allowProDevCopilots;
+            }
+
+            sendTelemetryEvent({
+                eventName: VSCODE_EXTENSION_GOVERNANCE_CHECK_FAILED,
+                environmentId: environmentId,
+                websiteId: websiteId || '',
+                copilotSessionId: sessionId,
+                errorMsg: `HTTP Error: ${response.status}`
+            });
+
+            return false;
+        } catch (error) {
+            sendTelemetryEvent({
+                eventName: VSCODE_EXTENSION_GOVERNANCE_CHECK_FAILED,
+                environmentId: environmentId,
+                websiteId: websiteId || '',
+                copilotSessionId: sessionId,
+                errorMsg: (error as Error).message
+            });
+
+            return false;
+        }
     }
 }

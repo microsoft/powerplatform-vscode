@@ -7,10 +7,20 @@
   "You are editing a live, public site ": "You are editing a live, public site ",
   "Preview site": "Preview site",
   "Open in Power Pages studio": "Open in Power Pages studio",
+  "Open in VS Code Desktop": "Open in VS Code Desktop",
   "Preview site URL is not valid": "Preview site URL is not valid",
   "Opening preview site...": "Opening preview site...",
   "Power Pages studio URL is not available": "Power Pages studio URL is not available",
-  "Microsoft wants your feeback": "Microsoft wants your feeback",
+  "Website ID is not available": "Website ID is not available",
+  "Environment ID is not available": "Environment ID is not available",
+  "Unable to generate VS Code Desktop URL": "Unable to generate VS Code Desktop URL",
+  "Opening in VS Code Desktop. If it doesn't open or shows an error, you may need to install VS Code or update the Power Platform extension.": "Opening in VS Code Desktop. If it doesn't open or shows an error, you may need to install VS Code or update the Power Platform extension.",
+  "Download VS Code": "Download VS Code",
+  "Update Extension": "Update Extension",
+  "Get Extension": "Get Extension",
+  "Failed to generate VS Code Desktop URL: {0}": "Failed to generate VS Code Desktop URL: {0}",
+  "Failed to open in VS Code Desktop: {0}": "Failed to open in VS Code Desktop: {0}",
+  "Microsoft wants your feedback": "Microsoft wants your feedback",
   "Check the URL and verify the parameters are correct": "Check the URL and verify the parameters are correct",
   "Unable to complete the request": "Unable to complete the request",
   "One or more attribute names have been changed or removed. Contact your admin.": "One or more attribute names have been changed or removed. Contact your admin.",
@@ -57,6 +67,9 @@
   "Working on it...": "Working on it...",
   "You can use this in <a href=\"#\" id=\"github-copilot-link\">GitHub Copilot with @powerpages</a> and leverage best of both world.": "You can use this in <a href=\"#\" id=\"github-copilot-link\">GitHub Copilot with @powerpages</a> and leverage best of both world.",
   "NEW": "NEW",
+  "Copilot Response": "Copilot Response",
+  "Code Block ": "Code Block ",
+  " End of Code Block ": " End of Code Block ",
   "Copied to clipboard!": "Copied to clipboard!",
   "What do you need help with?": "What do you need help with?",
   "Make sure AI-generated content is accurate and appropriate before using. <a href=\"https://go.microsoft.com/fwlink/?linkid=2240145\">Learn more</a> | <a href=\"https://go.microsoft.com/fwlink/?linkid=2189520\">View\n              terms</a>": "Make sure AI-generated content is accurate and appropriate before using. <a href=\"https://go.microsoft.com/fwlink/?linkid=2240145\">Learn more</a> | <a href=\"https://go.microsoft.com/fwlink/?linkid=2189520\">View\n              terms</a>",
@@ -76,7 +89,7 @@
   "Submit": "Submit",
   "Explain the following code {% include 'Page Copy'%}": "Explain the following code {% include 'Page Copy'%}",
   "Hi! @powerpages can help you write, edit, and even summarize your website code.": "Hi! @powerpages can help you write, edit, and even summarize your website code.",
-  "Authentication failed. Please try again.": "Authentication failed. Please try again.",
+  "Authentication failed. Please login and try again.": "Authentication failed. Please login and try again.",
   "AI features have been disabled by your organization. Contact your admin for details. [Learn more](https://go.microsoft.com/fwlink/?linkid=2285848)": "AI features have been disabled by your organization. Contact your admin for details. [Learn more](https://go.microsoft.com/fwlink/?linkid=2285848)",
   "Active auth profile is not found or has expired. Please try again.": "Active auth profile is not found or has expired. Please try again.",
   "Something went wrong. Don’t worry, you can try again.": "Something went wrong. Don’t worry, you can try again.",
@@ -84,9 +97,36 @@
   "Hi! Power Pages lets you build secure, professional websites that you can quickly configure and publish across web browsers and devices.\n\nTo create your website, visit the [Power Pages](https://powerpages.microsoft.com/).\nReturn to this chat and @powerpages can help you write and edit your website code.": "Hi! Power Pages lets you build secure, professional websites that you can quickly configure and publish across web browsers and devices.\n\nTo create your website, visit the [Power Pages](https://powerpages.microsoft.com/).\nReturn to this chat and @powerpages can help you write and edit your website code.",
   "Checking for active auth profile...": "Checking for active auth profile...",
   "@PowerPages is not yet available in your region.": "@PowerPages is not yet available in your region.",
+  "Login to PowerPages": "Login to PowerPages",
   "Generating webpages...": "Generating webpages...",
   "Generating a new Power Pages site...": "Generating a new Power Pages site...",
   "Failed to create a new Power Pages site. Please try again.": "Failed to create a new Power Pages site. Please try again.",
+  "Unable to locate website root folder.": "Unable to locate website root folder.",
+  "Website ID is required but not provided": "Website ID is required but not provided",
+  "Environment ID is required but not provided": "Environment ID is required but not provided",
+  "Organization URL is required but not provided": "Organization URL is required but not provided",
+  "Authentication failed. Cannot proceed with site download.": "Authentication failed. Cannot proceed with site download.",
+  "Failed to switch to the required environment.": "Failed to switch to the required environment.",
+  "Failed to download site: {0}": "Failed to download site: {0}",
+  "Failed to handle Power Pages URI: {0}": "Failed to handle Power Pages URI: {0}",
+  "Error switching environment: {0}": "Error switching environment: {0}",
+  "Site download cancelled. Authentication is required to proceed.": "Site download cancelled. Authentication is required to proceed.",
+  "Site download cancelled. Correct environment connection is required.": "Site download cancelled. Correct environment connection is required.",
+  "Site download cancelled. No folder selected.": "Site download cancelled. No folder selected.",
+  "Downloading Power Pages site using model version {0}...": "Downloading Power Pages site using model version {0}...",
+  "Downloading Power Pages site, please wait...": "Downloading Power Pages site, please wait...",
+  "Preparing to download Power Pages site...": "Preparing to download Power Pages site...",
+  "Processing download request...": "Processing download request...",
+  "You need to authenticate with Power Platform to download the site. Would you like to authenticate now?": "You need to authenticate with Power Platform to download the site. Would you like to authenticate now?",
+  "You are currently connected to a different environment. Would you like to switch to the required environment?": "You are currently connected to a different environment. Would you like to switch to the required environment?",
+  "Power Pages site download completed successfully. Would you like to open the downloaded site folder?": "Power Pages site download completed successfully. Would you like to open the downloaded site folder?",
+  "Select Folder to Download Power Pages Site": "Select Folder to Download Power Pages Site",
+  "Yes": "Yes",
+  "No": "No",
+  "Open Folder": "Open Folder",
+  "Open in New Workspace": "Open in New Workspace",
+  "Not Now": "Not Now",
+  "Download Power Pages Site": "Download Power Pages Site",
   "Select Folder for new PCF Control/Do not translate 'PCF' as it is a product name.": {
     "message": "Select Folder for new PCF Control",
     "comment": [
@@ -109,7 +149,6 @@
     ]
   },
   "Opening site preview...": "Opening site preview...",
-  "The preview shown is for published changes.": "The preview shown is for published changes.",
   "Site runtime preview feature is not enabled.": "Site runtime preview feature is not enabled.",
   "No workspace folder opened. Please open a site folder to preview.": "No workspace folder opened. Please open a site folder to preview.",
   "Initializing site preview. Please try again after few seconds.": "Initializing site preview. Please try again after few seconds.",
@@ -129,6 +168,10 @@
   },
   "Authenticating...": "Authenticating...",
   "Unable to clear cache": "Unable to clear cache",
+  "Your preview isn't updated. Please upload your site to see the latest changes.": "Your preview isn't updated. Please upload your site to see the latest changes.",
+  "Upload changes": "Upload changes",
+  "The preview shown is for published changes. Please publish any pending changes to see them in the preview.": "The preview shown is for published changes. Please publish any pending changes to see them in the preview.",
+  "Please login to preview the site.": "Please login to preview the site.",
   "Enter the name of the web template": "Enter the name of the web template",
   "Please enter a name for the web template.": "Please enter a name for the web template.",
   "A webtemplate with the same name already exists. Please enter a different name.": "A webtemplate with the same name already exists. Please enter a different name.",
@@ -194,11 +237,107 @@
   "Current": "Current",
   "Site management URL not found for the selected site. Please try again after refreshing the environment.": "Site management URL not found for the selected site. Please try again after refreshing the environment.",
   "Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?": "Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?",
-  "Yes": "Yes",
+  "Current site path not found.": "Current site path not found.",
+  "Site Details": "Site Details",
+  "Browse...": "Browse...",
+  "Select the folder that will contain your project root for your site": "Select the folder that will contain your project root for your site",
+  "Select the folder that contains your compiled output": "Select the folder that contains your compiled output",
+  "Select Folder": "Select Folder",
+  "Environment changed successfully.": "Environment changed successfully.",
+  "Please select the folder that contains your compiled output to upload your site.": "Please select the folder that contains your compiled output to upload your site.",
+  "Upload failed. Please try again later.": "Upload failed. Please try again later.",
+  "Missing required site information for reactivation.": "Missing required site information for reactivation.",
+  "VS Code - PAC CLI authentication mismatch detected": "VS Code - PAC CLI authentication mismatch detected",
+  "Accounts don't match, data may not load.": "Accounts don't match, data may not load.",
+  "The account signed in to VS Code differs from the one authenticated in PAC CLI (Power Platform CLI). This mismatch can cause data not to load or actions to fail because UI commands run through the CLI. To fix it, sign in to VS Code using the same account as your PAC CLI. If needed, you can update your PAC CLI authentication separately via the command line.": "The account signed in to VS Code differs from the one authenticated in PAC CLI (Power Platform CLI). This mismatch can cause data not to load or actions to fail because UI commands run through the CLI. To fix it, sign in to VS Code using the same account as your PAC CLI. If needed, you can update your PAC CLI authentication separately via the command line.",
+  "Sign in to VS Code with PAC CLI account": "Sign in to VS Code with PAC CLI account",
+  "Click to authenticate with a matching account": "Click to authenticate with a matching account",
+  "Authentication failed. Please try again.": "Authentication failed. Please try again.",
+  "The CodeQL extension is required to run this command. Do you want to install it now?": "The CodeQL extension is required to run this command. Do you want to install it now?",
+  "CodeQL screening started. Creating database and analyzing": "CodeQL screening started. Creating database and analyzing",
+  "CodeQL database created successfully. You can now run queries from the CodeQL extension.": "CodeQL database created successfully. You can now run queries from the CodeQL extension.",
+  "CodeQL screening failed. Please try again later.": "CodeQL screening failed. Please try again later.",
+  "Current site path not found. Please ensure you have a site folder open.": "Current site path not found. Please ensure you have a site folder open.",
+  "CodeQL database created. You can now:\n\n1. Run custom queries if you have any\n2. Use the prebuilt queries from the CodeQL extension\n\nCheck the CodeQL extension panel for available queries.": "CodeQL database created. You can now:\n\n1. Run custom queries if you have any\n2. Use the prebuilt queries from the CodeQL extension\n\nCheck the CodeQL extension panel for available queries.",
+  "The SARIF Viewer extension is recommended for viewing CodeQL results. Would you like to install it now?": "The SARIF Viewer extension is recommended for viewing CodeQL results. Would you like to install it now?",
+  "Failed to install SARIF viewer extension. Opening results as text file.": "Failed to install SARIF viewer extension. Opening results as text file.",
+  "Open as Text": "Open as Text",
+  "CodeQL Analysis": "CodeQL Analysis",
+  "Starting CodeQL analysis for: {0}": "Starting CodeQL analysis for: {0}",
+  "Database location: {0}": "Database location: {0}",
+  "Creating CodeQL database...": "Creating CodeQL database...",
+  "Running CodeQL analysis...": "Running CodeQL analysis...",
+  "Analysis completed using query suite: {0}": "Analysis completed using query suite: {0}",
+  "Primary query suite {0} failed: {1}": "Primary query suite {0} failed: {1}",
+  "Analysis complete! Results saved to: {0}": "Analysis complete! Results saved to: {0}",
+  "Error during CodeQL analysis: {0}": "Error during CodeQL analysis: {0}",
+  "CodeQL analysis failed: {0}": "CodeQL analysis failed: {0}",
+  "Found CodeQL CLI at: {0}": "Found CodeQL CLI at: {0}",
+  "CodeQL CLI is not installed or not in PATH. Please install the CodeQL extension or add CodeQL CLI to your PATH.": "CodeQL CLI is not installed or not in PATH. Please install the CodeQL extension or add CodeQL CLI to your PATH.",
+  "CodeQL version: {0}": "CodeQL version: {0}",
+  "CodeQL extension is not installed.": "CodeQL extension is not installed.",
+  "Activating CodeQL extension...": "Activating CodeQL extension...",
+  "Could not determine user data path.": "Could not determine user data path.",
+  "Looking for CodeQL CLI in: {0}": "Looking for CodeQL CLI in: {0}",
+  "CodeQL global storage path does not exist: {0}": "CodeQL global storage path does not exist: {0}",
+  "Found CodeQL CLI via extension API: {0}": "Found CodeQL CLI via extension API: {0}",
+  "Error getting CLI path from extension API: {0}": "Error getting CLI path from extension API: {0}",
+  "Could not locate CodeQL CLI in global storage.": "Could not locate CodeQL CLI in global storage.",
+  "Error accessing CodeQL extension: {0}": "Error accessing CodeQL extension: {0}",
+  "Found distribution directories: {0}": "Found distribution directories: {0}",
+  "Error searching for CodeQL CLI: {0}": "Error searching for CodeQL CLI: {0}",
+  "Executing: {0}": "Executing: {0}",
+  "Command completed successfully (exit code: {0})": "Command completed successfully (exit code: {0})",
+  "Command failed with exit code: {0}": "Command failed with exit code: {0}",
+  "Command failed with exit code {0}: {1}": "Command failed with exit code {0}: {1}",
+  "Process error: {0}": "Process error: {0}",
+  "Found {0} issue(s):": "Found {0} issue(s):",
+  "No message": "No message",
+  "File: {0}": "File: {0}",
+  "Line: {0}": "Line: {0}",
+  "No issues found!": "No issues found!",
+  "No analysis results found.": "No analysis results found.",
+  "CodeQL analysis completed successfully with no issues found! 🎉": "CodeQL analysis completed successfully with no issues found! 🎉",
+  "Error reading results: {0}": "Error reading results: {0}",
+  "SARIF viewer extension not found.": "SARIF viewer extension not found.",
+  "Installing SARIF viewer extension...": "Installing SARIF viewer extension...",
+  "SARIF viewer extension installed successfully. Activating...": "SARIF viewer extension installed successfully. Activating...",
+  "Opening results with newly installed SARIF viewer...": "Opening results with newly installed SARIF viewer...",
+  "Results opened in SARIF viewer successfully.": "Results opened in SARIF viewer successfully.",
+  "Extension installed but API not available yet. Opening as text file...": "Extension installed but API not available yet. Opening as text file...",
+  "Failed to install SARIF viewer extension: {0}": "Failed to install SARIF viewer extension: {0}",
+  "User cancelled opening results.": "User cancelled opening results.",
+  "Activating SARIF viewer extension...": "Activating SARIF viewer extension...",
+  "Opening results with SARIF viewer...": "Opening results with SARIF viewer...",
+  "SARIF viewer extension does not expose expected API. Falling back to text editor...": "SARIF viewer extension does not expose expected API. Falling back to text editor...",
+  "Error opening with SARIF viewer: {0}": "Error opening with SARIF viewer: {0}",
+  "CodeQL analysis completed. Would you like to open the full results file?": "CodeQL analysis completed. Would you like to open the full results file?",
+  "Open Results": "Open Results",
+  "Close": "Close",
+  "Error opening results file: {0}": "Error opening results file: {0}",
+  "Select folder for CodeQL database": "Select folder for CodeQL database",
+  "Use current site folder": "Use current site folder",
+  "CodeQL screening is not supported for this site.": "CodeQL screening is not supported for this site.",
+  "Found PowerPages config file: {0}": "Found PowerPages config file: {0}",
+  "Using custom CodeQL query suite: {0}": "Using custom CodeQL query suite: {0}",
+  "Added default query suite to config: {0}": "Added default query suite to config: {0}",
+  "Created PowerPages config file at {0} with default query suite: {1}": "Created PowerPages config file at {0} with default query suite: {1}",
+  "Error reading config file: {0}": "Error reading config file: {0}",
+  "Using default query suite: {0}": "Using default query suite: {0}",
+  "PowerPages config file created successfully: {0}": "PowerPages config file created successfully: {0}",
+  "Error creating config file: {0}": "Error creating config file: {0}",
+  "PowerPages config file updated successfully: {0}": "PowerPages config file updated successfully: {0}",
+  "Error updating config file: {0}": "Error updating config file: {0}",
   "Timestamp: {0}/{0} is the timestamp": {
     "message": "Timestamp: {0}",
     "comment": [
       "{0} is the timestamp"
+    ]
+  },
+  "Session ID: {0}/{0} is the Session ID": {
+    "message": "Session ID: {0}",
+    "comment": [
+      "{0} is the Session ID"
     ]
   },
   "Tenant ID: {0}/{0} is the Tenant ID": {
@@ -253,6 +392,48 @@
     "message": "Cluster geo name: {0}",
     "comment": [
       "{0} is the cluster geo name"
+    ]
+  },
+  "Friendly name: {0}/{0} is the website name": {
+    "message": "Friendly name: {0}",
+    "comment": [
+      "{0} is the website name"
+    ]
+  },
+  "Website Id: {0}/{0} is the website ID": {
+    "message": "Website Id: {0}",
+    "comment": [
+      "{0} is the website ID"
+    ]
+  },
+  "Data model version: {0}/{0} is the data model version": {
+    "message": "Data model version: {0}",
+    "comment": [
+      "{0} is the data model version"
+    ]
+  },
+  "Website Url: {0}/{0} is the website Url": {
+    "message": "Website Url: {0}",
+    "comment": [
+      "{0} is the website Url"
+    ]
+  },
+  "Site visibility: {0}/{0} is the site visibility": {
+    "message": "Site visibility: {0}",
+    "comment": [
+      "{0} is the site visibility"
+    ]
+  },
+  "Creator: {0}/{0} is the creator": {
+    "message": "Creator: {0}",
+    "comment": [
+      "{0} is the creator"
+    ]
+  },
+  "Created on: {0}/{0} is the created date": {
+    "message": "Created on: {0}",
+    "comment": [
+      "{0} is the created date"
     ]
   },
   "PAC Telemetry enabled": "PAC Telemetry enabled",

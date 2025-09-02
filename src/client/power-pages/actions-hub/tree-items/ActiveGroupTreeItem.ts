@@ -39,12 +39,24 @@ export class ActiveGroupTreeItem extends ActionsHubTreeItem {
                 dataModelVersion: site.dataModel == WebsiteDataModel.Standard ? 1 : 2,
                 websiteUrl: site.websiteUrl,
                 status: WebsiteStatus.Active,
-                isCurrent: CurrentSiteContext.currentSiteId === site.websiteRecordId,
-                siteVisibility: site.siteVisibility ?? "",
-                siteManagementUrl: site.siteManagementUrl
+                isCurrent: this.isCurrentSite(site.websiteRecordId),
+                siteVisibility: site.siteVisibility,
+                siteManagementUrl: site.siteManagementUrl,
+                creator: site.creator,
+                createdOn: site.createdOn,
+                languageCode: site.languageCode,
+                isCodeSite: site.isCodeSite
             };
 
             return new SiteTreeItem(siteInfo);
         });
+    }
+
+    private isCurrentSite(siteId: string): boolean {
+        if (!CurrentSiteContext.currentSiteId || !siteId) {
+            return false;
+        }
+
+        return CurrentSiteContext.currentSiteId === siteId;
     }
 }

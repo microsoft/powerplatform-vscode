@@ -43,12 +43,21 @@ import { ArtemisService } from "../../common/services/ArtemisService";
 import { showErrorDialog } from "../../common/utilities/errorHandlerUtil";
 import { EXTENSION_ID } from "../../common/constants";
 import { getECSOrgLocationValue } from "../../common/utilities/Utils";
+import { authenticateUserInVSCode } from "../../common/services/AuthenticationProvider";
+import { activateServerApiAutocomplete } from "../../common/intellisense";
+import { EnableServerLogicChanges } from "../../common/ecs-features/ecsFeatureGates";
+import { setServerApiTelemetryContext } from "../../common/intellisense/ServerApiTelemetryContext";
 
-export function activate(context: vscode.ExtensionContext): void {
+let serverApiAutocompleteInitialized = false;
+
+export async function activate(context: vscode.ExtensionContext): Promise<void> {
     oneDSLoggerWrapper.instantiate(GeoNames.US);
     WebExtensionContext.setVscodeWorkspaceState(context.workspaceState);
 
     WebExtensionContext.telemetry.sendInfoTelemetry("activated");
+
+    await authenticateUserInVSCode(); //Authentication for extension
+
     const portalsFS = new PortalsFS();
     context.subscriptions.push(
         vscode.workspace.registerFileSystemProvider(
@@ -102,7 +111,7 @@ export function activate(context: vscode.ExtensionContext): void {
                 const orgId = queryParamsMap.get(queryParameters.ORG_ID) as string;
                 await fetchArtemisData(orgId);
                 WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_ORG_GEO, { orgId: orgId, orgGeo: WebExtensionContext.geoName });
-                oneDSLoggerWrapper.instantiate(WebExtensionContext.geoName, WebExtensionContext.geoLongName);
+                oneDSLoggerWrapper.instantiate(WebExtensionContext.geoName, WebExtensionContext.geoLongName, WebExtensionContext.serviceEndpointCategory);
 
                 WebExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(
                     appName,
@@ -130,8 +139,6 @@ export function activate(context: vscode.ExtensionContext): void {
                                         title: vscode.l10n.t("Fetching your file ..."),
                                     },
                                     async () => {
-                                        await portalsFS.readDirectory(WebExtensionContext.rootDirectory, true);
-
                                         // Initialize ECS config in webExtensionContext
                                         await ECSFeaturesClient.init(
                                             {
@@ -143,6 +150,25 @@ export function activate(context: vscode.ExtensionContext): void {
                                                 Location: queryParamsMap.get(queryParameters.GEO) as string
                                             },
                                             PowerPagesClientName);
+
+                                        await portalsFS.readDirectory(WebExtensionContext.rootDirectory, true);
+
+                                        const { enableServerLogicChanges } = ECSFeaturesClient.getConfig(EnableServerLogicChanges);
+
+                                        if (!serverApiAutocompleteInitialized && enableServerLogicChanges) {
+                                            // Set telemetry context for Server API autocomplete events
+                                            setServerApiTelemetryContext({
+                                                tenantId: queryParamsMap.get(queryParameters.TENANT_ID) as string,
+                                                envId: WebExtensionContext.environmentId,
+                                                userId: WebExtensionContext.userId,
+                                                orgId: orgId,
+                                                geo: WebExtensionContext.geoName,
+                                            });
+                                            activateServerApiAutocomplete(context, [
+                                                { languageId: 'javascript', triggerCharacters: ['.'] }
+                                            ]);
+                                            serverApiAutocompleteInitialized = true;
+                                        }
 
                                         registerCopilot(context);
                                         processWillStartCollaboration(context);
@@ -248,6 +274,7 @@ export function powerPagesNavigation() {
     vscode.window.registerTreeDataProvider('powerpages.powerPagesFileExplorer', powerPagesNavigationProvider);
     vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.powerPagesRuntimePreview', () => powerPagesNavigationProvider.previewPowerPageSite());
     vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.backToStudio', () => powerPagesNavigationProvider.backToStudio());
+    vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.openInDesktop', () => powerPagesNavigationProvider.openInDesktop());
     WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_POWER_PAGES_WEB_VIEW_REGISTERED);
 }
 
@@ -581,10 +608,15 @@ export function registerCopilot(context: vscode.ExtensionContext) {
             tenantId: WebExtensionContext.urlParametersMap.get(queryParameters.TENANT_ID) as string,
         } as IOrgInfo;
 
+        const websiteId = WebExtensionContext.urlParametersMap.get(
+            queryParameters.WEBSITE_ID
+        ) as string
+
         const copilotPanel = new copilot.PowerPagesCopilot(context.extensionUri,
             context,
             undefined,
-            orgInfo);
+            orgInfo,
+            websiteId);
 
         context.subscriptions.push(vscode.window.registerWebviewViewProvider(copilot.PowerPagesCopilot.viewType, copilotPanel, {
             webviewOptions: {

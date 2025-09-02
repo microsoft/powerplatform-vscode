@@ -247,7 +247,7 @@ a {
 }
 
 a:focus {
-  color: var(--vscode-textLink-foreground);   
+  color: var(--vscode-textLink-foreground);
   outline: 2px solid var(--vscode-textLink-activeForeground);
   outline-offset: 2px;
 }
@@ -353,4 +353,16 @@ hr {
   padding: 1px 5px;
   font-size: 9px;
   /* margin-right: 2px; */
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }

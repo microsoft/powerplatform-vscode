@@ -11,7 +11,6 @@ export const Messages = {
     INSTALL: vscode.l10n.t("Install"),
     EDGE_DEV_TOOLS_NOT_INSTALLED_MESSAGE: vscode.l10n.t({ message: "The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?", comment: ["Do not translate 'Microsoft Edge Tools' "] }),
     OPENING_SITE_PREVIEW: vscode.l10n.t("Opening site preview..."),
-    PREVIEW_SHOWN_FOR_PUBLISHED_CHANGES: vscode.l10n.t("The preview shown is for published changes."),
     SITE_PREVIEW_FEATURE_NOT_ENABLED: vscode.l10n.t("Site runtime preview feature is not enabled."),
     NO_FOLDER_OPENED: vscode.l10n.t("No workspace folder opened. Please open a site folder to preview."),
     INITIALIZING_PREVIEW_TRY_AGAIN: vscode.l10n.t("Initializing site preview. Please try again after few seconds."),
@@ -31,9 +30,15 @@ export const Messages = {
     }),
     AUTHENTICATING: vscode.l10n.t("Authenticating..."),
     UNABLE_TO_CLEAR_CACHE: vscode.l10n.t("Unable to clear cache"),
+    PREVIEW_WARNING: vscode.l10n.t("Your preview isn't updated. Please upload your site to see the latest changes."),
+    UPLOAD_CHANGES: vscode.l10n.t("Upload changes"),
+    PREVIEW_SHOWN_FOR_PUBLISHED_CHANGES: vscode.l10n.t("The preview shown is for published changes. Please publish any pending changes to see them in the preview."),
+    LOGIN_REQUIRED: vscode.l10n.t("Please login to preview the site.")
 };
 
 export const Events = {
     PREVIEW_SITE_INITIALIZED: "PreviewSiteInitialized",
-    PREVIEW_SITE_INITIALIZATION_FAILED: "PreviewSiteInitializationFailed"
+    PREVIEW_SITE_INITIALIZATION_FAILED: "PreviewSiteInitializationFailed",
+    PREVIEW_SITE_UPLOAD_WARNING_FAILED: "PreviewSiteUploadWarningFailed",
+    PREVIEW_SITE_CLOSE_EXISTING_PREVIEW_FAILED: "PreviewSiteCloseExistingPreviewFailed"
 }

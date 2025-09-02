@@ -6,16 +6,21 @@
 import * as vscode from "vscode";
 import { ActionsHubTreeItem } from "./tree-items/ActionsHubTreeItem";
 import { OtherSitesGroupTreeItem } from "./tree-items/OtherSitesGroupTreeItem";
+import { AccountMismatchTreeItem } from "./tree-items/AccountMismatchTreeItem";
 import { Constants } from "./Constants";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { EnvironmentGroupTreeItem } from "./tree-items/EnvironmentGroupTreeItem";
 import { IEnvironmentInfo } from "./models/IEnvironmentInfo";
 import { PacTerminal } from "../../lib/PacTerminal";
-import { fetchWebsites, openActiveSitesInStudio, openInactiveSitesInStudio, previewSite, createNewAuthProfile, refreshEnvironment, showEnvironmentDetails, switchEnvironment, revealInOS, openSiteManagement, uploadSite } from "./ActionsHubCommandHandlers";
+import { fetchWebsites, openActiveSitesInStudio, openInactiveSitesInStudio, previewSite, createNewAuthProfile, refreshEnvironment, showEnvironmentDetails, switchEnvironment, revealInOS, openSiteManagement, uploadSite, showSiteDetails, downloadSite, openInStudio, reactivateSite, runCodeQLScreening, loginToMatch } from "./ActionsHubCommandHandlers";
 import PacContext from "../../pac/PacContext";
 import CurrentSiteContext from "./CurrentSiteContext";
 import { IOtherSiteInfo, IWebsiteDetails } from "../../../common/services/Interfaces";
 import { orgChangeErrorEvent } from "../../OrgChangeNotifier";
+import { getBaseEventInfo } from "./TelemetryHelper";
+import { PROVIDER_ID } from "../../../common/services/Constants";
+import { getOIDFromToken } from "../../../common/services/AuthenticationProvider";
+import ArtemisContext from "../../ArtemisContext";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -27,8 +32,10 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     private _inactiveSites: IWebsiteDetails[] = [];
     private _otherSites: IOtherSiteInfo[] = [];
     private _loadWebsites = true;
+    private _isCodeQlScanEnabled: boolean;
 
-    private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal) {
+    private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal, isCodeQlScanEnabled: boolean) {
+        this._isCodeQlScanEnabled = isCodeQlScanEnabled;
         this._disposables.push(
             ...this.registerPanel(this._pacTerminal),
 
@@ -40,27 +47,119 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
             CurrentSiteContext.onChanged(() => this.refresh()),
 
             // Register an event listener for org change error as action hub will not be re-initialized in extension.ts
-            orgChangeErrorEvent(() => this.refresh())
+            orgChangeErrorEvent(() => this.refresh()),
+
+            vscode.authentication.onDidChangeSessions((event) => {
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_REFRESH, {
+                    methodName: 'onDidChangeSessions',
+                    eventProvider: event.provider?.id || 'unknown',
+                    triggerReason: 'authentication_session_changed',
+                    ...getBaseEventInfo()
+                });
+                this._loadWebsites = true;
+                this.refresh();
+            })
         );
         this._context = context;
     }
 
     private refresh(): void {
         this._onDidChangeTreeData.fire();
+        oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_REFRESH, { ...getBaseEventInfo() });
     }
 
     private async loadWebsites(): Promise<void> {
         if (this._loadWebsites) {
-            const websites = await fetchWebsites();
-            this._activeSites = websites.activeSites;
-            this._inactiveSites = websites.inactiveSites;
-            this._otherSites = websites.otherSites;
-            this._loadWebsites = false;
+            try {
+                vscode.commands.executeCommand('setContext', 'microsoft.powerplatform.pages.actionsHub.loadingWebsites', true);
+                const websites = await fetchWebsites();
+                this._activeSites = websites.activeSites;
+                this._inactiveSites = websites.inactiveSites;
+                this._otherSites = websites.otherSites;
+                this._loadWebsites = false;
+            } catch (error) {
+                oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_LOAD_WEBSITES_FAILED, error as string, error as Error, { methodName: this.loadWebsites, ...getBaseEventInfo() }, {});
+            } finally {
+                vscode.commands.executeCommand('setContext', 'microsoft.powerplatform.pages.actionsHub.loadingWebsites', false);
+            }
         }
     }
 
-    public static initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal): ActionsHubTreeDataProvider {
-        return new ActionsHubTreeDataProvider(context, pacTerminal);
+    private async checkAuthInfo(): Promise<boolean> {
+        const authInfo = PacContext.AuthInfo;
+        const session  = await vscode.authentication.getSession(PROVIDER_ID, [], { silent: true });
+
+        if (session && session.accessToken && authInfo && authInfo.OrganizationFriendlyName) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private async checkAccountsMatch(): Promise<boolean> {
+        try {
+            const authInfo = PacContext.AuthInfo;
+            const session = await vscode.authentication.getSession(PROVIDER_ID, [], { silent: true });
+
+            if (!session || !session.accessToken || !authInfo) {
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_ACCOUNT_CHECK_CALLED, {
+                    methodName: this.checkAccountsMatch.name,
+                    result: 'missing_session_or_auth',
+                    hasSession: !!session,
+                    hasAccessToken: !!session?.accessToken,
+                    hasPacAuthInfo: !!authInfo,
+                    ...getBaseEventInfo()
+                });
+                return false;
+            }
+
+            // Get user ID from VS Code session token
+            const vscodeUserId = getOIDFromToken(session.accessToken);
+
+            // Get user ID from PAC auth info
+            const pacUserId = authInfo.EntraIdObjectId;
+
+            // Check if both user IDs exist and match
+            const accountsMatch = vscodeUserId && pacUserId && vscodeUserId === pacUserId;
+
+            if (!accountsMatch) {
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_ACCOUNT_MISMATCH_DETECTED, {
+                    methodName: this.checkAccountsMatch.name,
+                    vscodeUserId: vscodeUserId || 'undefined',
+                    pacUserId: pacUserId || 'undefined',
+                    vscodeUserIdLength: vscodeUserId?.length || 0,
+                    pacUserIdLength: pacUserId?.length || 0,
+                    hasVscodeUserId: !!vscodeUserId,
+                    hasPacUserId: !!pacUserId,
+                    environmentId: authInfo.EnvironmentId,
+                    organizationFriendlyName: authInfo.OrganizationFriendlyName,
+                    ...getBaseEventInfo()
+                });
+            } else {
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_ACCOUNT_MATCH_RESOLVED, {
+                    methodName: this.checkAccountsMatch.name,
+                    vscodeUserIdLength: vscodeUserId?.length || 0,
+                    pacUserIdLength: pacUserId?.length || 0,
+                    environmentId: authInfo.EnvironmentId,
+                    organizationFriendlyName: authInfo.OrganizationFriendlyName,
+                    ...getBaseEventInfo()
+                });
+            }
+
+            return !!accountsMatch;
+        } catch (error) {
+            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_ACCOUNT_CHECK_FAILED, error as string, error as Error, {
+                methodName: this.checkAccountsMatch.name,
+                errorType: error instanceof Error ? error.constructor.name : typeof error,
+                ...getBaseEventInfo()
+            });
+            return false;
+        }
+    }
+
+    public static initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal, isCodeQlScanEnabled: boolean): ActionsHubTreeDataProvider {
+        return new ActionsHubTreeDataProvider(context, pacTerminal, isCodeQlScanEnabled);
+
     }
 
     getTreeItem(element: ActionsHubTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
@@ -68,7 +167,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     }
 
     async getChildren(element?: ActionsHubTreeItem): Promise<ActionsHubTreeItem[] | null | undefined> {
-        await this.loadWebsites();
+        oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_TREE_GET_CHILDREN_CALLED, { methodName: this.getChildren.name, ...getBaseEventInfo() });
 
         if (element) {
             return element.getChildren();
@@ -76,9 +175,24 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
         try {
             const authInfo = PacContext.AuthInfo;
-            if (authInfo && authInfo.OrganizationFriendlyName) {
+            if (await this.checkAuthInfo() === true ) {
+                // Check if accounts match before loading websites
+                const accountsMatch = await this.checkAccountsMatch();
+                if (!accountsMatch) {
+                    oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_ACCOUNT_MISMATCH_UI_SHOWN, {
+                        methodName: this.getChildren.name,
+                        authInfoAvailable: !!authInfo,
+                        environmentId: authInfo?.EnvironmentId,
+                        organizationFriendlyName: authInfo?.OrganizationFriendlyName,
+                        ...getBaseEventInfo()
+                    });
+                    return [new AccountMismatchTreeItem()];
+                }
+
+                await this.loadWebsites();
                 const currentEnvInfo: IEnvironmentInfo = {
-                    currentEnvironmentName: authInfo.OrganizationFriendlyName
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    currentEnvironmentName: authInfo!.OrganizationFriendlyName //Already checked in checkAuthInfo
                 };
 
                 if(!this._otherSites.length){
@@ -93,7 +207,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                 return [];
             }
         } catch (error) {
-            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_CURRENT_ENV_FETCH_FAILED, error as string, error as Error, { methodName: this.getChildren }, {});
+            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_TREE_GET_CHILDREN_FAILED, error as string, error as Error, { methodName: this.getChildren, ...getBaseEventInfo() });
             return null;
         }
     }
@@ -103,7 +217,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     }
 
     private registerPanel(pacTerminal: PacTerminal): vscode.Disposable[] {
-        return [
+        const commands = [
             vscode.window.registerTreeDataProvider("microsoft.powerplatform.pages.actionsHub", this),
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.refresh", async () => await refreshEnvironment(pacTerminal)),
@@ -128,7 +242,28 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement", openSiteManagement),
 
-            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite", uploadSite)
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite", uploadSite),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.siteDetails", showSiteDetails),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite", downloadSite),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio", openInStudio),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite", reactivateSite),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.loginToMatch", () => {
+                const serviceEndpointStamp = ArtemisContext.ServiceResponse?.stamp;
+                return loginToMatch(serviceEndpointStamp);
+            }),
         ];
+
+        if (this._isCodeQlScanEnabled) {
+            commands.push(
+                vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening", runCodeQLScreening)
+            );
+        }
+
+        return commands;
     }
 }

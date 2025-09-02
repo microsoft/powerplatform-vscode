@@ -47,6 +47,7 @@ export enum schemaEntityName {
     WEBFILES = "webfiles",
     WEBPAGES = "webpages",
     WEBTEMPLATES = "webtemplates",
+    SERVERLOGICS = "serverlogics",
     CONTENTSNIPPETS = "contentsnippet",
     LISTS = "lists",
     BASICFORMS = "basicforms",
@@ -57,6 +58,7 @@ export enum schemaEntityName {
 export enum MultiFileSupportedEntityName {
     WEBFILES = "webfiles",
     WEBPAGES = "webpages",
+    SERVERLOGICS = "serverlogics",
     WEBTEMPLATES = "webtemplates",
     CONTENTSNIPPETS = "contentsnippet",
     LISTS = "lists",
@@ -87,4 +89,14 @@ export enum EntityMetadataKeyCore {
 export enum EntityMetadataKeyAdx {
     ENTITY_LOGICAL_NAME = "adx_entityname",
     FORM_LOGICAL_NAME = "adx_formname",
+}
+
+export const WEBPAGE_FOLDER_CONSTANTS = {
+    DELIMITER: '#',
+    NO_ROOT_PLACEHOLDER: 'no-root',
+    NULL_PLACEHOLDER: 'null',
+} as const;
+
+export function getRootWebPageIdForTelemetry(rootWebPageId: string | undefined | null): string {
+    return rootWebPageId || WEBPAGE_FOLDER_CONSTANTS.NULL_PLACEHOLDER;
 }

@@ -3,6 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import { SiteVisibility } from "./SiteVisibility";
 import { WebsiteStatus } from "./WebsiteStatus";
 
 export interface IWebsiteInfo {
@@ -12,6 +13,11 @@ export interface IWebsiteInfo {
     websiteUrl: string;
     status: WebsiteStatus | undefined;
     isCurrent: boolean;
-    siteVisibility: string;
+    siteVisibility: SiteVisibility | undefined;
     siteManagementUrl: string;
+    folderPath?: string;
+    creator: string;
+    createdOn: string;
+    languageCode?: string;
+    isCodeSite: boolean;
 }

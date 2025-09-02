@@ -72,35 +72,35 @@ describe('PreviewSite', () => {
         const mockWorkspaceFolders = [{ uri: 'test/path', name: 'test', index: 0 }];
 
         beforeEach(() => {
-            PreviewSite['_websiteUrl'] = undefined;
+            PreviewSite['_websiteDetails'] = undefined;
         });
 
         it('should set website URL when getWebSiteUrl returns valid URL', async () => {
             // Arrange
             const expectedUrl = 'https://test-website.com';
             const getWebSiteUrlStub = sandbox.stub();
-            getWebSiteUrlStub.resolves(expectedUrl);
-            PreviewSite['getWebSiteUrl'] = getWebSiteUrlStub;
+            getWebSiteUrlStub.resolves({ url: expectedUrl, dataModel: 'Enhanced'});
+            PreviewSite['getWebsiteDetails'] = getWebSiteUrlStub;
 
             // Act
-            await PreviewSite.loadSiteUrl(mockWorkspaceFolders);
+            await PreviewSite.loadSiteDetails(mockWorkspaceFolders);
 
             // Assert
-            expect(PreviewSite['_websiteUrl']).to.equal(expectedUrl);
+            expect(PreviewSite['_websiteDetails']).to.deep.equal({ url: expectedUrl, dataModel: 'Enhanced' })
             expect(getWebSiteUrlStub.calledOnceWith(mockWorkspaceFolders)).to.be.true;
         });
 
-        it('should set empty string when getWebSiteUrl returns empty string', async () => {
+        it('should set details when getWebSiteUrl returns empty URL string', async () => {
             // Arrange
             const getWebSiteUrlStub = sandbox.stub();
-            getWebSiteUrlStub.resolves('');
-            PreviewSite['getWebSiteUrl'] = getWebSiteUrlStub;
+            getWebSiteUrlStub.resolves({ url: '', dataModel: 'Enhanced'});
+            PreviewSite['getWebsiteDetails'] = getWebSiteUrlStub;
 
             // Act
-            await PreviewSite.loadSiteUrl(mockWorkspaceFolders);
+            await PreviewSite.loadSiteDetails(mockWorkspaceFolders);
 
             // Assert
-            expect(PreviewSite['_websiteUrl']).to.equal('');
+            expect(PreviewSite['_websiteDetails']).to.deep.equal({ url: '', dataModel: 'Enhanced' });
             expect(getWebSiteUrlStub.calledOnceWith(mockWorkspaceFolders)).to.be.true;
         });
     });

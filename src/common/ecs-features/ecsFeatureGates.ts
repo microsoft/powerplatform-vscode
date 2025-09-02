@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { PowerPagesClientName } from './constants';
+import { COPILOT_GOVERNANCE_SETTING_NAME, PowerPagesClientName } from './constants';
 import { getFeatureConfigs } from './ecsFeatureUtil';
 
 export const {
@@ -40,6 +40,17 @@ export const {
 });
 
 export const {
+    feature: EnableProdevCopilotGovernanceCheck
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable Copilot Governance Check for Pro Dev Copilot',
+    fallback: {
+        enableProdevCopilotGovernanceCheck: false,
+        copilotGovernanceSetting: COPILOT_GOVERNANCE_SETTING_NAME
+    },
+});
+
+export const {
     feature: EnablePowerPagesGitHubCopilot
 } = getFeatureConfigs({
     teamName: PowerPagesClientName,
@@ -65,9 +76,29 @@ export const {
     teamName: PowerPagesClientName,
     description: 'Enable Actions Hub Panel in VS Code Desktop',
     fallback: {
-        enableActionsHub: false,
+        enableActionsHub: true,
     },
 });
+
+export const {
+    feature: EnableServerLogicChanges
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable Server Logic Changes in VSCode (web & desktop)',
+    fallback: {
+        enableServerLogicChanges: false,
+    },
+})
+
+export const {
+    feature: EnableCodeQlScan
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable CodeQl Scan in VSCode Desktop',
+    fallback: {
+        enableCodeQlScan: false,
+    }
+})
 
 export const {
     feature: EnableMetadataDiff

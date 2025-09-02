@@ -9,6 +9,7 @@ import { SiteTreeItem } from "../../../../../power-pages/actions-hub/tree-items/
 import { ActionsHubTreeItem } from "../../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
 import { WebsiteStatus } from "../../../../../power-pages/actions-hub/models/WebsiteStatus";
 import { IWebsiteInfo } from "../../../../../power-pages/actions-hub/models/IWebsiteInfo";
+import { SiteVisibility } from "../../../../../power-pages/actions-hub/models/SiteVisibility";
 
 describe('SiteTreeItem', () => {
     let mockSiteInfo: IWebsiteInfo;
@@ -21,8 +22,11 @@ describe('SiteTreeItem', () => {
             status: WebsiteStatus.Active,
             websiteUrl: "https://foo",
             isCurrent: false,
-            siteVisibility: "Private",
+            siteVisibility: SiteVisibility.Public,
             siteManagementUrl: "https://powerpagesmanagement.com",
+            createdOn: "2025-03-20",
+            creator: "Test Creator",
+            isCodeSite: true
         };
     });
 

@@ -63,7 +63,8 @@ export function isExtensionNeededInFileName(entity: string) {
         || entity === schemaEntityName.ADVANCEDFORMSTEPS
         || entity === schemaEntityName.BASICFORMS
         || entity === schemaEntityName.WEBPAGES
-        || entity === schemaEntityName.CONTENTSNIPPETS;
+        || entity === schemaEntityName.CONTENTSNIPPETS
+        || entity === schemaEntityName.SERVERLOGICS;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -180,13 +181,19 @@ export function getSanitizedFileName(fileName: string): string {
     return fileName.trim().replace(/[`~!@#$%^&*()_|+=?;:'",<>{}[\]\\/]/g, '');
 }
 
+export function getDuplicateFileName(fileName: string, entityId: string): string {
+    //Only append first part of entityId to avoid long file names
+    entityId = entityId.split('-')[0];
+    return `${fileName}-${entityId}`;
+}
+
 // Get the file's extension
 export function getFileExtension(fileName: string): string | undefined {
     return fileName.toString().split('.').pop();
 }
 
 export function getFileExtensionForPreload() {
-    return ['css', 'json', 'txt'];
+    return ['css', 'json', 'txt', 'js'];
 }
 
 export function getImageContent(mimeType: string, fileContent: string) {

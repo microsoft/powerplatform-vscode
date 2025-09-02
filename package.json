@@ -25,7 +25,8 @@
     "test-integration": "node node_modules/gulp/bin/gulp.js testInt",
     "test-web-integration": "node node_modules/gulp/bin/gulp.js testWebInt",
     "test-desktop-int": "node node_modules/gulp/bin/gulp.js testDesktopInt",
-    "coverage": "nyc npm run test"
+    "coverage": "nyc npm run test",
+    "test-common-int": "node node_modules/gulp/bin/gulp.js testCommonInt"
   },
   "nyc": {
     "extends": "@istanbuljs/nyc-config-typescript",
@@ -68,10 +69,16 @@
   "browser": "./dist/web/extension.js",
   "categories": [
     "Snippets",
-    "Other"
+    "Other",
+    "Chat",
+    "AI"
   ],
   "keywords": [
-    "Power Platform"
+    "Power Platform",
+    "Power Pages",
+    "Power Apps",
+    "copilot",
+    "chat"
   ],
   "icon": "src/client/assets/icon.png",
   "badges": [
@@ -87,8 +94,6 @@
     }
   ],
   "activationEvents": [
-    "onCommand:pacCLI.openDocumentation",
-    "onCommand:microsoft-powerapps-portals.webExtension.init",
     "onCommand:powerplatform-walkthrough.overview-learn-more",
     "onCommand:powerplatform-walkthrough.fileSystem-documentation",
     "onCommand:powerplatform-walkthrough.fileSystem-open-folder",
@@ -112,13 +117,30 @@
     }
   },
   "contributes": {
+    "jsonValidation": [
+      {
+        "fileMatch": "powerpages.config.json",
+        "url": "https://json.schemastore.org/powerpages.config.json"
+      }
+    ],
     "chatParticipants": [
       {
         "id": "powerpages",
         "name": "powerpages",
         "fullName": "Copilot for Power Pages",
         "description": "Copilot for Power Pages",
-        "isSticky": true
+        "isSticky": true,
+        "disambiguation": [
+          {
+            "category": "powerpages_questions",
+            "description": "This Copilot chat experience assists Power Pages developers to write code by describing their expected code behavior using natural language. They can then refine the generated code and use it when customizing their site.",
+            "examples": [
+              "Write JavaScript code for form field validation to check phone field value is in the valid format.",
+              "Write web API code to query active contact records.",
+              "Write JavaScript code to highlight the row where email field is empty in table list."
+            ]
+          }
+        ]
       }
     ],
     "problemMatchers": [
@@ -159,7 +181,8 @@
       {
         "view": "pacCLI.authPanel",
         "contents": "%pacCLI.authPanel.welcome.whenInteractiveSupported%",
-        "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported"
+        "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported",
+        "enablement": "!microsoft.powerplatform.authPanel.isInitializing"
       },
       {
         "view": "pacCLI.authPanel",
@@ -169,7 +192,8 @@
       {
         "view": "microsoft.powerplatform.pages.actionsHub",
         "contents": "%microsoft.powerplatform.pages.actionsHub.login%",
-        "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported"
+        "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported",
+        "enablement": "microsoft.powerplatform.environment.initialized && !microsoft.powerplatform.pages.actionsHub.loadingWebsites"
       },
       {
         "view": "microsoft.powerplatform.pages.metadataDiff",
@@ -446,6 +470,28 @@
         "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite.title%"
       },
       {
+        "command": "microsoft.powerplatform.pages.actionsHub.siteDetails",
+        "title": "%microsoft.powerplatform.pages.actionsHub.siteDetails.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite",
+        "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio",
+        "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite",
+        "title": "%microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening",
+        "category": "Power Pages",
+        "title": "%microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title%",
+        "when": "microsoft.powerplatform.pages.codeQlScanEnabled"
+      },
+      {
         "command": "microsoft.powerplatform.pages.metadataDiff.triggerFlow",
         "title": "Connect & Download",
         "category": "Power Pages Metadata Diff",
@@ -600,6 +646,11 @@
             "telemetry",
             "usesOnlineServices"
           ]
+        },
+        "powerPlatform.pages.downloadSiteFolder": {
+          "type": "string",
+          "description": "%microsoft.powerplatform.pages.actionsHub.configuration.downloadSite.description%",
+          "default": ""
         }
       }
     },
@@ -958,6 +1009,22 @@
         {
           "command": "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite",
           "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.siteDetails",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite",
+          "when": "never"
         }
       ],
       "view/title": [
@@ -1109,32 +1176,57 @@
         {
           "command": "microsoft.powerplatform.pages.actionsHub.activeSite.preview",
           "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite)",
-          "group": "activeSiteContextMenuGroup@1"
+          "group": "siteAction@1"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == otherSite)",
+          "group": "siteAction@2"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite)",
+          "group": "siteAction@3"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.siteDetails",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite || viewItem == inactiveSite)",
+          "group": "siteAction@4"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == currentActiveSite && isWindows",
-          "group": "activeSiteContextMenuGroup@2"
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == otherSite) && isWindows",
+          "group": "siteAction@5"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == currentActiveSite && isMac",
-          "group": "activeSiteContextMenuGroup@2"
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == otherSite) && isMac",
+          "group": "siteAction@5"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == currentActiveSite && isLinux",
-          "group": "activeSiteContextMenuGroup@2"
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == otherSite) && isLinux",
+          "group": "siteAction@5"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == inactiveSite",
-          "group": "inactiveSiteContextMenuGroup@1"
+          "group": "siteAction@3"
         },
         {
-          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite)",
-          "group": "activeSiteContextMenuGroup@1"
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite)",
+          "group": "siteAction@6"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == inactiveSite",
+          "group": "siteAction@1"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == currentActiveSite && microsoft.powerplatform.pages.codeQlScanEnabled",
+          "group": "siteAction@7"
         }
       ]
     },
@@ -1197,7 +1289,7 @@
         {
           "id": "microsoft.powerplatform.pages.actionsHub",
           "name": "%microsoft.powerplatform.pages.actionsHub.title%",
-          "when": "microsoft.powerplatform.pages.actionsHubEnabled && !isWeb",
+          "when": "microsoft.powerplatform.pages.actionsHubEnabled && !virtualWorkspace",
           "icon": "./src/client/assets/powerPages.svg",
           "contextualTitle": "%microsoft.powerplatform.pages.actionsHub.title%",
           "visibility": "visible"
@@ -1292,8 +1384,8 @@
     "@types/vscode-webview": "^1.57.1",
     "@types/webpack": "^5.28.0",
     "@types/webpack-env": "^1.17.0",
-    "@typescript-eslint/eslint-plugin": "^5.15.0",
-    "@typescript-eslint/parser": "^5.15.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
     "@vscode/l10n-dev": "^0.0.35",
     "@vscode/test-electron": "^2.3.8",
     "@vscode/test-web": "^0.0.50",
@@ -1324,19 +1416,19 @@
     "path-browserify": "^1.0.1",
     "process": "^0.11.10",
     "ps-list": "^7.2.0",
-    "release-it": "^16.2.1",
+    "release-it": "^19.0.3",
     "sinon": "^14.0.0",
     "stream-browserify": "^3.0.0",
     "ts-loader": "^9.2.8",
     "ts-node": "^10.7.0",
-    "typescript": "^4.6.2",
+    "typescript": "^5.9.2",
     "webpack": "^5.94.0",
     "webpack-cli": "^4.7.0",
     "webpack-stream": "^7.0.0",
     "yargs": "^16.2.0"
   },
   "dependencies": {
-    "@fluidframework/azure-client": "^1.2.0",
+    "@fluidframework/azure-client": "^2.31.1",
     "@microsoft/1ds-core-js": "4.0.5",
     "@microsoft/1ds-post-js": "4.0.5",
     "@microsoft/generator-powerpages": "1.21.19",
@@ -1347,14 +1439,14 @@
     "cockatiel": "^3.1.1",
     "command-exists": "^1.2.9",
     "find-process": "^1.4.7",
-    "fluid-framework": "^1.4.0",
+    "fluid-framework": "^2.31.1",
     "glob": "^7.1.7",
     "gpt-tokenizer": "^2.1.1",
     "gulp": "^5.0.0",
     "https-browserify": "^1.0.0",
     "liquidjs": "^10.2.0",
     "n-readlines": "^1.0.1",
-    "puppeteer-core": "^22.12.1",
+    "puppeteer-core": "^22.13.1",
     "recursive-readdir": "^2.2.3",
     "stream-http": "^3.2.0",
     "tty-browserify": "^0.0.1",

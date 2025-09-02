@@ -5,7 +5,7 @@
 
 import { OrgInfo } from "../../client/pac/PacTypes";
 import { Constants } from "../../client/power-pages/actions-hub/Constants";
-import { ADX_WEBSITE_RECORDS_API_PATH, ADX_WEBSITE_RECORDS_FETCH_FAILED, GET_ALL_WEBSITES_FAILED, POWERPAGES_SITE_RECORDS_FETCH_FAILED, POWERPAGES_SITE_RECORDS_API_PATH, APP_MODULES_PATH, APP_MODULES_FETCH_FAILED } from "../constants";
+import { ADX_WEBSITE_RECORDS_API_PATH, ADX_WEBSITE_RECORDS_FETCH_FAILED, GET_ALL_WEBSITES_FAILED, POWERPAGES_SITE_RECORDS_FETCH_FAILED, POWERPAGES_SITE_RECORDS_API_PATH, APP_MODULES_PATH, APP_MODULES_FETCH_FAILED, POWERPAGES_SITE_RECORDS_CONTENT_PARSE_FAILED, POWERPAGES_SITE_SETTINGS_API_PATH, POWERPAGES_SITE_SETTINGS_FETCH_FAILED, CODE_SITE_SETTING_NAME } from "../constants";
 import { oneDSLoggerWrapper } from "../OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { dataverseAuthentication } from "../services/AuthenticationProvider";
 import { ServiceEndpointCategory, WebsiteDataModel } from "../services/Constants";
@@ -17,12 +17,31 @@ type PowerPagesSiteRecords = {
     name: string;
     primarydomainname: string;
     powerpagesiteid: string;
+    createdon: string;
+    owninguser: {
+        fullname: string;
+    };
+    content?: string;
 }
+
+type PowerPagesSiteSettings = {
+    mspp_name: string;
+    mspp_value: string;
+    _mspp_websiteid_value: string;
+    statecode: number;
+    statuscode: number;
+}
+
 
 type AdxWebsiteRecords = {
     adx_name: string;
     adx_primarydomainname: string;
     adx_websiteid: string;
+    createdon: string;
+    owninguser: {
+        fullname: string;
+    };
+    adx_website_language: string;
 }
 
 type AppModule = {
@@ -63,14 +82,21 @@ export async function getAllWebsites(orgDetails: OrgInfo): Promise<IWebsiteDetai
     const websites: IWebsiteDetails[] = [];
     try {
         const dataverseToken = (await dataverseAuthentication(orgDetails.OrgUrl ?? '', true)).accessToken;
-        const [adxWebsiteRecords, powerPagesSiteRecords, appModules] = await Promise.all([
+
+        if (!dataverseToken) {
+            throw new Error("Dataverse token is not available.");
+        }
+
+        const [adxWebsiteRecords, powerPagesSiteRecords, appModules, powerPagesSiteSettings] = await Promise.all([
             getAdxWebsiteRecords(orgDetails.OrgUrl, dataverseToken),
             getPowerPagesSiteRecords(orgDetails.OrgUrl, dataverseToken),
-            getAppModules(orgDetails.OrgUrl)
+            getAppModules(orgDetails.OrgUrl, dataverseToken),
+            getAllPowerPagesSiteSettings(orgDetails.OrgUrl, dataverseToken)
         ]);
 
         const powerPagesManagementAppId = getPowerPagesManagementAppId(appModules);
         const portalManagementAppId = getPortalManagementAppId(appModules);
+        const codeSites = getWebsitesWithCodeSiteEnabled(powerPagesSiteSettings);
 
         adxWebsiteRecords.forEach(adxWebsite => {
             websites.push({
@@ -81,7 +107,12 @@ export async function getAllWebsites(orgDetails: OrgInfo): Promise<IWebsiteDetai
                 dataModel: WebsiteDataModel.Standard,
                 environmentId: orgDetails.EnvironmentId,
                 websiteRecordId: adxWebsite.adx_websiteid,
-                siteManagementUrl: getSiteManagementUrl(orgDetails.OrgUrl, portalManagementAppId, WebsiteDataModel.Standard, adxWebsite.adx_websiteid)
+                siteManagementUrl: getSiteManagementUrl(orgDetails.OrgUrl, portalManagementAppId, WebsiteDataModel.Standard, adxWebsite.adx_websiteid),
+                languageCode: adxWebsite.adx_website_language || '',
+                createdOn: adxWebsite.createdon || '',
+                creator: adxWebsite.owninguser?.fullname || '',
+                siteVisibility: undefined,
+                isCodeSite: false
             });
         });
 
@@ -94,7 +125,12 @@ export async function getAllWebsites(orgDetails: OrgInfo): Promise<IWebsiteDetai
                 dataModel: WebsiteDataModel.Enhanced,
                 environmentId: orgDetails.EnvironmentId,
                 websiteRecordId: powerPagesSite.powerpagesiteid,
-                siteManagementUrl: getSiteManagementUrl(orgDetails.OrgUrl, powerPagesManagementAppId, WebsiteDataModel.Enhanced, powerPagesSite.powerpagesiteid)
+                siteManagementUrl: getSiteManagementUrl(orgDetails.OrgUrl, powerPagesManagementAppId, WebsiteDataModel.Enhanced, powerPagesSite.powerpagesiteid),
+                languageCode: powerPagesSite.website_language ?? "1033",
+                createdOn: powerPagesSite.createdon || '',
+                creator: powerPagesSite.owninguser?.fullname || '',
+                siteVisibility: undefined,
+                isCodeSite: codeSites.has(powerPagesSite.powerpagesiteid)
             });
         });
     }
@@ -131,9 +167,30 @@ async function getPowerPagesSiteRecords(orgUrl: string, token: string) {
         const response = await callApi(dataverseUrl, token);
 
         if (response.ok) {
-            // TODO: perform response format validation
             const data = await response.json() as { value: PowerPagesSiteRecords[] };
-            return data.value;
+
+            // Extract website_language from the content field if it exists
+            return (data?.value ?? []).map(record => {
+                let websiteLanguage = null;
+
+                if (record.content) {
+                    try {
+                        const contentJson = JSON.parse(record.content);
+                        websiteLanguage = contentJson.website_language || null;
+                    } catch (error) {
+                        oneDSLoggerWrapper.getLogger().traceError(
+                            POWERPAGES_SITE_RECORDS_CONTENT_PARSE_FAILED,
+                            `Failed to parse content field for record ${record.powerpagesiteid}`,
+                            error as Error
+                        );
+                    }
+                }
+
+                return {
+                    ...record,
+                    website_language: websiteLanguage
+                };
+            });
         }
 
         if (response.status !== 404) {
@@ -146,9 +203,32 @@ async function getPowerPagesSiteRecords(orgUrl: string, token: string) {
     return [];
 }
 
-async function getAppModules(orgUrl: string) {
+const getWebsitesWithCodeSiteEnabled = (siteSettings: PowerPagesSiteSettings[]): Set<string> =>
+    new Set(siteSettings
+        .filter(setting => setting.mspp_name === CODE_SITE_SETTING_NAME
+            && setting.mspp_value.toLowerCase() === "true"
+            && setting.statecode === 0
+            && setting.statuscode === 1)
+        .map(setting => setting._mspp_websiteid_value));
+
+async function getAllPowerPagesSiteSettings(orgUrl: string, token: string) {
     try {
-        const { accessToken } = await dataverseAuthentication(orgUrl);
+        const dataverseUrl = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}${POWERPAGES_SITE_SETTINGS_API_PATH}`;
+        const response = await callApi(dataverseUrl, token);
+
+        if (response.ok) {
+            const data = await response.json() as { value: PowerPagesSiteSettings[] };
+            return data.value;
+        }
+    } catch (error) {
+        oneDSLoggerWrapper.getLogger().traceError(POWERPAGES_SITE_SETTINGS_FETCH_FAILED, POWERPAGES_SITE_SETTINGS_FETCH_FAILED, error as Error);
+    }
+
+    return [];
+}
+
+async function getAppModules(orgUrl: string, accessToken: string) {
+    try {
         const dataverseUrl = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}${APP_MODULES_PATH}`;
         const response = await callApi(dataverseUrl, accessToken);
 

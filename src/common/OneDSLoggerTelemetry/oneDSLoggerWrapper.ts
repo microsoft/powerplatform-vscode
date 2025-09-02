@@ -12,10 +12,10 @@ import { OneDSLogger } from "./oneDSLogger";
 
 export class oneDSLoggerWrapper {
     private static instance: oneDSLoggerWrapper;
-    private static oneDSLoggerIntance: OneDSLogger;
+    private static oneDSLoggerInstance: OneDSLogger;
 
-    private constructor(geo?: string, geoLongName?: string) {
-        oneDSLoggerWrapper.oneDSLoggerIntance = new OneDSLogger(geo, geoLongName);
+    private constructor(geo?: string, geoLongName?: string, environment?: string) {
+        oneDSLoggerWrapper.oneDSLoggerInstance = new OneDSLogger(geo, geoLongName, environment);
     }
 
 
@@ -23,15 +23,15 @@ export class oneDSLoggerWrapper {
         return this.instance;
     }
 
-    static instantiate(geo?: string, geoLongName?: string) {
-        oneDSLoggerWrapper.instance = new oneDSLoggerWrapper(geo, geoLongName);
+    static instantiate(geo?: string, geoLongName?: string, environment?: string) {
+        oneDSLoggerWrapper.instance = new oneDSLoggerWrapper(geo, geoLongName, environment);
     }
 
     /// Trace info log
     public traceInfo(eventName: string, eventInfo?: object, measurement?: object) {
         try {
             if (!isCustomTelemetryEnabled()) return;
-            oneDSLoggerWrapper.oneDSLoggerIntance.traceInfo(eventName, eventInfo, measurement);
+            oneDSLoggerWrapper.oneDSLoggerInstance.traceInfo(eventName, eventInfo, measurement);
         } catch (exception) {
             console.warn(exception);
         }
@@ -41,7 +41,7 @@ export class oneDSLoggerWrapper {
     public traceWarning(eventName: string, eventInfo?: object, measurement?: object) {
         try {
             if (!isCustomTelemetryEnabled()) return;
-            oneDSLoggerWrapper.oneDSLoggerIntance.traceWarning(eventName, eventInfo, measurement);
+            oneDSLoggerWrapper.oneDSLoggerInstance.traceWarning(eventName, eventInfo, measurement);
         } catch (exception) {
             console.warn(exception);
         }
@@ -51,7 +51,7 @@ export class oneDSLoggerWrapper {
     public traceError(eventName: string, errorMessage: string, exception: Error, eventInfo?: object, measurement?: object) {
         try {
             if (!isCustomTelemetryEnabled()) return;
-            oneDSLoggerWrapper.oneDSLoggerIntance.traceError(eventName, errorMessage, exception, eventInfo, measurement);
+            oneDSLoggerWrapper.oneDSLoggerInstance.traceError(eventName, errorMessage, exception, eventInfo, measurement);
         } catch (exception) {
             console.warn("Caught exception processing the telemetry event: " + exception);
             console.warn(exception);
@@ -62,7 +62,7 @@ export class oneDSLoggerWrapper {
     public featureUsage(featureName: string, eventName: string, customDimensions?: object) {
         try {
             if (!isCustomTelemetryEnabled()) return;
-            oneDSLoggerWrapper.oneDSLoggerIntance.featureUsage(featureName, eventName, customDimensions);
+            oneDSLoggerWrapper.oneDSLoggerInstance.featureUsage(featureName, eventName, customDimensions);
         } catch (exception) {
             console.warn(exception);
         }

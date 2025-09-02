@@ -13,6 +13,7 @@ import { oneDSLoggerWrapper } from "../../../../../common/OneDSLoggerTelemetry/o
 import { ActionsHubTreeDataProvider } from "../../../../power-pages/actions-hub/ActionsHubTreeDataProvider";
 import { PacWrapper } from "../../../../pac/PacWrapper";
 import { Constants } from "../../../../power-pages/actions-hub/Constants";
+import * as TelemetryHelper from "../../../../power-pages/actions-hub/TelemetryHelper";
 
 describe("ActionsHub", () => {
     let getConfigStub: sinon.SinonStub;
@@ -31,6 +32,7 @@ describe("ActionsHub", () => {
         executeCommandStub = sinon.stub(vscode.commands, "executeCommand");
         traceInfoStub = sinon.stub();
         traceErrorStub = sinon.stub();
+        sinon.stub(TelemetryHelper, "getBaseEventInfo").returns({ foo: 'bar' });
         sinon.stub(oneDSLoggerWrapper, "getLogger").returns({
             traceInfo: traceInfoStub,
             traceWarning: sinon.stub(),
@@ -47,7 +49,7 @@ describe("ActionsHub", () => {
         it("should return false if enableActionsHub is undefined", () => {
             getConfigStub.returns({ enableActionsHub: undefined });
             const result = ActionsHub.isEnabled();
-            expect(result).to.be.false;
+            expect(result).to.be.true;
         });
 
         it("should return the actual boolean if enableActionsHub has a value", () => {
@@ -88,7 +90,7 @@ describe("ActionsHub", () => {
 
                 it("should set context to true and return early if isEnabled returns true", async () => {
                     await ActionsHub.initialize(fakeContext, fakePacTerminal);
-                    expect(traceInfoStub.calledWith("EnableActionsHub", { isEnabled: "true" })).to.be.true;
+                    expect(traceInfoStub.calledWith(Constants.EventNames.ACTIONS_HUB_ENABLED, { foo: 'bar', isEnabled: "true" })).to.be.true;
                     expect(executeCommandStub.calledWith("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", true)).to.be.true;
                 });
 
@@ -125,7 +127,10 @@ describe("ActionsHub", () => {
 
                 it("should set context to false and return early if isEnabled returns false", async () => {
                     await ActionsHub.initialize(fakeContext, fakePacTerminal);
-                    expect(traceInfoStub.calledWith("EnableActionsHub", { isEnabled: "false" })).to.be.true;
+
+                    expect(traceInfoStub.calledOnce).to.be.true;
+                    expect(traceInfoStub.firstCall.args[0]).to.equal(Constants.EventNames.ACTIONS_HUB_ENABLED);
+                    expect(traceInfoStub.firstCall.args[1]).to.deep.equal({ foo: 'bar', isEnabled: "false" });
                     expect(executeCommandStub.calledWith("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", false)).to.be.true;
                 });
 

@@ -25,7 +25,9 @@ import { ERROR_CONSTANTS } from "../ErrorConstants";
 import {
     BAP_SERVICE_SCOPE_DEFAULT,
     INTELLIGENCE_SCOPE_DEFAULT,
-    PPAPI_GCC_HIGH_DOD_WEBSITES_SERVICE_SCOPE_DEFAULT,
+    PPAPI_GCC_WEBSITES_SERVICE_SCOPE_DEFAULT,
+    PPAPI_HIGH_WEBSITES_SERVICE_SCOPE_DEFAULT,
+    PPAPI_DOD_WEBSITES_SERVICE_SCOPE_DEFAULT,
     PPAPI_MOONCAKE_WEBSITES_SERVICE_SCOPE_DEFAULT,
     PPAPI_PREPROD_WEBSITES_SERVICE_SCOPE_DEFAULT,
     PPAPI_TEST_WEBSITES_SERVICE_SCOPE_DEFAULT,
@@ -39,16 +41,17 @@ import {
 } from "./Constants";
 import jwt_decode from 'jwt-decode';
 import { showErrorDialog } from "../utilities/errorHandlerUtil";
+import { oneDSLoggerWrapper } from "../OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
-const serviceScopeMapping: { [key in ServiceEndpointCategory]: string } = {
+export const serviceScopeMapping: { [key in ServiceEndpointCategory]: string } = {
     [ServiceEndpointCategory.NONE]: "",
     [ServiceEndpointCategory.PROD]: PPAPI_WEBSITES_SERVICE_SCOPE_DEFAULT,
     [ServiceEndpointCategory.PREPROD]: PPAPI_PREPROD_WEBSITES_SERVICE_SCOPE_DEFAULT,
     [ServiceEndpointCategory.TEST]: PPAPI_TEST_WEBSITES_SERVICE_SCOPE_DEFAULT,
     [ServiceEndpointCategory.MOONCAKE]: PPAPI_MOONCAKE_WEBSITES_SERVICE_SCOPE_DEFAULT,
-    [ServiceEndpointCategory.GCC]: PPAPI_GCC_HIGH_DOD_WEBSITES_SERVICE_SCOPE_DEFAULT,
-    [ServiceEndpointCategory.DOD]: PPAPI_GCC_HIGH_DOD_WEBSITES_SERVICE_SCOPE_DEFAULT,
-    [ServiceEndpointCategory.HIGH]: PPAPI_GCC_HIGH_DOD_WEBSITES_SERVICE_SCOPE_DEFAULT,
+    [ServiceEndpointCategory.GCC]: PPAPI_GCC_WEBSITES_SERVICE_SCOPE_DEFAULT,
+    [ServiceEndpointCategory.HIGH]: PPAPI_HIGH_WEBSITES_SERVICE_SCOPE_DEFAULT,
+    [ServiceEndpointCategory.DOD]: PPAPI_DOD_WEBSITES_SERVICE_SCOPE_DEFAULT
 };
 
 export function getCommonHeadersForDataverse(
@@ -86,14 +89,16 @@ export async function intelligenceAPIAuthentication(sessionID: string, orgId: st
     let user = '';
     let userId = '';
     try {
-        let session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { silent: true });
+        const session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { silent: true });
+
         if (!session) {
-            session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { createIfNone: true });
-            firstTimeAuth = true;
+            return { accessToken, user, userId };
         }
+
         accessToken = session?.accessToken ?? '';
-        user = session.account.label;
+        user = session?.account?.label ?? '';
         userId = getOIDFromToken(accessToken);
+
         if (!accessToken) {
             throw new Error(ERROR_CONSTANTS.NO_ACCESS_TOKEN);
         }
@@ -116,7 +121,7 @@ export async function dataverseAuthentication(
     let accessToken = "";
     let userId = "";
     try {
-        let session = await vscode.authentication.getSession(
+        const session = await vscode.authentication.getSession(
             PROVIDER_ID,
             [
                 `${dataverseOrgURL}${SCOPE_OPTION_DEFAULT}`,
@@ -124,15 +129,9 @@ export async function dataverseAuthentication(
             ],
             { silent: true }
         );
+
         if (!session) {
-            session = await vscode.authentication.getSession(
-                PROVIDER_ID,
-                [
-                    `${dataverseOrgURL}${SCOPE_OPTION_DEFAULT}`,
-                    `${SCOPE_OPTION_OFFLINE_ACCESS}`,
-                ],
-                { createIfNone: true }
-            );
+            return { accessToken, userId };
         }
 
         accessToken = session?.accessToken ?? "";
@@ -259,18 +258,14 @@ export async function bapServiceAuthentication(
 ): Promise<string> {
     let accessToken = "";
     try {
-        let session = await vscode.authentication.getSession(
+        const session = await vscode.authentication.getSession(
             PROVIDER_ID,
             [BAP_SERVICE_SCOPE_DEFAULT],
             { silent: true }
         );
 
         if (!session) {
-            session = await vscode.authentication.getSession(
-                PROVIDER_ID,
-                [BAP_SERVICE_SCOPE_DEFAULT],
-                { createIfNone: true }
-            );
+            return accessToken;
         }
 
         accessToken = session?.accessToken ?? "";
@@ -285,6 +280,9 @@ export async function bapServiceAuthentication(
             });
         }
     } catch (error) {
+        if (error instanceof Error && error.message.includes("User did not consent to login.")) { //Error message when user did not consent to login
+            return '';
+        }
         showErrorDialog(
             vscode.l10n.t(
                 "Authorization Failed. Please run again to authorize it"
@@ -318,18 +316,14 @@ export async function powerPlatformAPIAuthentication(
     let accessToken = "";
     const PPAPI_WEBSITES_ENDPOINT = serviceScopeMapping[serviceEndpointStamp];
     try {
-        let session = await vscode.authentication.getSession(
+        const session = await vscode.authentication.getSession(
             PROVIDER_ID,
             [PPAPI_WEBSITES_ENDPOINT],
             { silent: true }
         );
 
         if (!session) {
-            session = await vscode.authentication.getSession(
-                PROVIDER_ID,
-                [PPAPI_WEBSITES_ENDPOINT],
-                { createIfNone: true }
-            );
+            return accessToken;
         }
 
         accessToken = session?.accessToken ?? "";
@@ -359,4 +353,42 @@ export async function powerPlatformAPIAuthentication(
     }
 
     return accessToken;
+}
+
+/**
+ * Authenticate the user using Microsoft as authentication provider.
+ * @param isSilent - If true, the authentication will be done silently without showing a dialog.
+ * @returns A promise that resolves when the authentication is complete.
+ *
+ */
+export async function authenticateUserInVSCode(isSilent = false): Promise<void> {
+    if (isSilent) {
+        await authenticateUserInternal(false);
+    } else {
+        const isAuthenticated = await authenticateUserInternal(true);
+        if (!isAuthenticated) {
+            await authenticateUserInternal(false);
+        }
+    }
+}
+
+/**
+ * Authenticate the user using the authentication provider.
+ * @param createIfNone - If true, an authentication dialog will be shown to user.
+ * @returns A promise that resolves to true if authentication is successful, false otherwise.
+ */
+async function authenticateUserInternal(createIfNone: boolean): Promise<boolean> {
+    try {
+        const session = await vscode.authentication.getSession(PROVIDER_ID, [], { createIfNone: createIfNone });
+
+        if (session) {
+            const userId = getOIDFromToken(session.accessToken);
+            oneDSLoggerWrapper.getLogger().traceInfo("VSCodeDesktopUserAuthenticationSuccessful", { userId, createIfNone });
+            return true;
+        }
+    } catch (error) {
+        const errorMessage = error as Error;
+        oneDSLoggerWrapper.getLogger().traceError("VSCodeDesktopUserAuthenticationFailed", errorMessage.message, errorMessage, { createIfNone });
+    }
+    return false;
 }

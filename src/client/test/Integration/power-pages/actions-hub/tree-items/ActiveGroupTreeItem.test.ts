@@ -14,6 +14,7 @@ import { IWebsiteDetails } from "../../../../../../common/services/Interfaces";
 import sinon from "sinon";
 import { WebsiteStatus } from "../../../../../power-pages/actions-hub/models/WebsiteStatus";
 import CurrentSiteContext from "../../../../../power-pages/actions-hub/CurrentSiteContext";
+import { SiteVisibility } from "../../../../../power-pages/actions-hub/models/SiteVisibility";
 
 describe('ActiveGroupTreeItem', () => {
     it('should be of type ActionsHubTreeItem', () => {
@@ -59,11 +60,8 @@ describe('ActiveGroupTreeItem', () => {
         });
 
         describe('when active sites is not empty', () => {
-            beforeEach(() => {
-                sinon.stub(CurrentSiteContext, 'currentSiteId').value('1');
-            });
-
             it('should return an array of SiteTreeItem', () => {
+                sinon.stub(CurrentSiteContext, 'currentSiteId').value('1');
                 const activeWebsites: IWebsiteDetails[] = [
                     {
                         websiteRecordId: "1",
@@ -73,8 +71,12 @@ describe('ActiveGroupTreeItem', () => {
                         dataverseOrganizationId: "org1",
                         dataModel: WebsiteDataModel.Standard,
                         environmentId: "env1",
-                        siteVisibility: "public",
-                        siteManagementUrl: "http://site1.com/manage"
+                        siteVisibility: SiteVisibility.Public,
+                        siteManagementUrl: "http://site1.com/manage",
+                        createdOn: "2025-03-20",
+                        creator: "Test Creator",
+                        languageCode: "1033",
+                        isCodeSite: true
                     },
                     {
                         websiteRecordId: "2",
@@ -84,8 +86,12 @@ describe('ActiveGroupTreeItem', () => {
                         dataverseOrganizationId: "org2",
                         dataModel: WebsiteDataModel.Enhanced,
                         environmentId: "env2",
-                        siteVisibility: "private",
-                        siteManagementUrl: "http://site1.com/manage"
+                        siteVisibility: SiteVisibility.Private,
+                        siteManagementUrl: "http://site2.com/manage",
+                        createdOn: "2025-03-20",
+                        creator: "Test Creator",
+                        languageCode: "1033",
+                        isCodeSite: false
                     }
                 ];
 
@@ -100,8 +106,12 @@ describe('ActiveGroupTreeItem', () => {
                     websiteUrl: 'http://site1.com',
                     status: WebsiteStatus.Active,
                     isCurrent: true,
-                    siteVisibility: "public",
-                    siteManagementUrl: "http://site1.com/manage"
+                    siteVisibility: SiteVisibility.Public,
+                    siteManagementUrl: "http://site1.com/manage",
+                    createdOn: "2025-03-20",
+                    creator: "Test Creator",
+                    languageCode: "1033",
+                    isCodeSite: true
                 });
 
                 const site2 = children[1] as SiteTreeItem;
@@ -112,8 +122,93 @@ describe('ActiveGroupTreeItem', () => {
                     websiteUrl: 'http://site2.com',
                     status: WebsiteStatus.Active,
                     isCurrent: false,
-                    siteVisibility: "private",
-                    siteManagementUrl: "http://site1.com/manage"
+                    siteVisibility: SiteVisibility.Private,
+                    siteManagementUrl: "http://site2.com/manage",
+                    createdOn: "2025-03-20",
+                    creator: "Test Creator",
+                    languageCode: "1033",
+                    isCodeSite: false
+                });
+            });
+
+            it('should return an array of SiteTreeItem when site id is empty', () => {
+                sinon.stub(CurrentSiteContext, 'currentSiteId').value('');
+                const activeWebsites: IWebsiteDetails[] = [
+                    {
+                        websiteRecordId: "",
+                        name: "Site 1",
+                        websiteUrl: "http://site1.com",
+                        dataverseInstanceUrl: "http://dataverse1.com",
+                        dataverseOrganizationId: "org1",
+                        dataModel: WebsiteDataModel.Standard,
+                        environmentId: "env1",
+                        siteVisibility: SiteVisibility.Public,
+                        siteManagementUrl: "http://site1.com/manage",
+                        createdOn: "2025-03-20",
+                        creator: "Test Creator",
+                        languageCode: "1033",
+                        isCodeSite: true
+                    }
+                ];
+
+                const treeItem = new ActiveGroupTreeItem(activeWebsites);
+                const children = treeItem.getChildren();
+
+                const site1 = children[0] as SiteTreeItem;
+                expect(site1.siteInfo).to.deep.equal({
+                    name: 'Site 1',
+                    websiteId: '',
+                    dataModelVersion: 1,
+                    websiteUrl: 'http://site1.com',
+                    status: WebsiteStatus.Active,
+                    isCurrent: false,
+                    siteVisibility: "public",
+                    siteManagementUrl: "http://site1.com/manage",
+                    createdOn: "2025-03-20",
+                    creator: "Test Creator",
+                    languageCode: "1033",
+                    isCodeSite: true
+                });
+            });
+
+            it('should return an array of SiteTreeItem when site id is empty', () => {
+                sinon.stub(CurrentSiteContext, 'currentSiteId').value(null);
+                const activeWebsites: IWebsiteDetails[] = [
+                    {
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        websiteRecordId: null!,
+                        name: "Site 1",
+                        websiteUrl: "http://site1.com",
+                        dataverseInstanceUrl: "http://dataverse1.com",
+                        dataverseOrganizationId: "org1",
+                        dataModel: WebsiteDataModel.Standard,
+                        environmentId: "env1",
+                        siteVisibility: SiteVisibility.Public,
+                        siteManagementUrl: "http://site1.com/manage",
+                        createdOn: "2025-03-20",
+                        creator: "Test Creator",
+                        languageCode: "1033",
+                        isCodeSite: true
+                    }
+                ];
+
+                const treeItem = new ActiveGroupTreeItem(activeWebsites);
+                const children = treeItem.getChildren();
+
+                const site1 = children[0] as SiteTreeItem;
+                expect(site1.siteInfo).to.deep.equal({
+                    name: 'Site 1',
+                    websiteId: null,
+                    dataModelVersion: 1,
+                    websiteUrl: 'http://site1.com',
+                    status: WebsiteStatus.Active,
+                    isCurrent: false,
+                    siteVisibility: SiteVisibility.Public,
+                    siteManagementUrl: "http://site1.com/manage",
+                    createdOn: "2025-03-20",
+                    creator: "Test Creator",
+                    languageCode: "1033",
+                    isCodeSite: true
                 });
             });
         });

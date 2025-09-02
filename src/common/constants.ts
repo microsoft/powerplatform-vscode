@@ -41,6 +41,8 @@ export const PORTAL_YEOMAN_GENERATOR_PACKAGE_TARBALL_NAME = "microsoft-generator
 
 export const SUCCESS = "Success";
 
+export const TRUE = "True";
+
 // Define the schema for file extensions
 export const componentTypeSchema: { [key: string]: { [key: string]: string } } = {
     'adx_webpage': {
@@ -93,11 +95,17 @@ export const ADX_WEBPAGE = 'adx_webpage'
 export const HTML_FILE_EXTENSION = '.html';
 export const UTF8_ENCODING = 'utf8';
 export const EDGE_TOOLS_EXTENSION_ID = 'ms-edgedevtools.vscode-edge-devtools';
+export const CODEQL_EXTENSION_ID = 'github.vscode-codeql';
 export const ADX_WEBSITE_RECORDS_API_PATH = 'api/data/v9.2/adx_websites?$select=*&$expand=owninguser($select=systemuserid,fullname)';
 export const POWERPAGES_SITE_RECORDS_API_PATH = 'api/data/v9.2/powerpagesites?$select=*&$expand=owninguser($select=systemuserid,fullname)';
+export const POWERPAGES_SITE_SETTINGS_API_PATH = 'api/data/v9.2/mspp_sitesettings';
 export const APP_MODULES_PATH = 'api/data/v9.2/appmodules';
 export const ADX_WEBSITE_RECORDS_FETCH_FAILED = 'AdxWebsiteRecordsFetchFailed';
 export const POWERPAGES_SITE_RECORDS_FETCH_FAILED = 'PowerPagesSiteRecordsFetchFailed';
+export const POWERPAGES_SITE_RECORDS_CONTENT_PARSE_FAILED = 'PowerPagesSiteRecordsContentParseFailed';
+export const POWERPAGES_SITE_SETTINGS_FETCH_FAILED = 'PowerPagesSiteSettingsFetchFailed';
+export const CODE_SITE_SETTING_NAME = 'CodeSite/Enabled';
 export const APP_MODULES_FETCH_FAILED = 'AppModulesFetchFailed';
 export const GET_ALL_WEBSITES_FAILED = 'GetAllWebsitesFailed';
 export const WEBSITE_YML = 'website.yml';
+export const POWERPAGES_SITE_FOLDER = ".powerpages-site";

@@ -13,6 +13,11 @@ on:
     - main
     - 'release/stable'
     - 'features/PowerPagesAgent'
+    paths-ignore:
+      - 'l10n/**'
+      - 'loc/**'
+      - 'package.nls.json'
+      - 'package.nls.*.json'
   workflow_dispatch:
 
 jobs:
@@ -28,10 +33,18 @@ jobs:
       with:
         lfs: true
 
+    - name: Setup .NET 9
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: List installed .NET SDKs
+      run: dotnet --list-sdks
+
     - name: Setup Node.js environment
       uses: actions/setup-node@v3
       with:
-        node-version: 18
+        node-version: 20
 
     # - name: Install dependencies
     #   run: npm i -g npm
@@ -61,3 +74,9 @@ jobs:
       with:
         run: |
          npm run test-desktop-int
+
+    - name: Run Common integration tests
+      uses: coactions/setup-xvfb@v1
+      with:
+        run: |
+         npm run test-common-int

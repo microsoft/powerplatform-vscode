@@ -33,8 +33,12 @@ export class OtherSitesGroupTreeItem extends ActionsHubTreeItem {
                 status: undefined,
                 isCurrent: false,
                 websiteUrl: "",
-                siteVisibility: "",
-                siteManagementUrl: ""
+                siteVisibility: undefined,
+                siteManagementUrl: "",
+                folderPath : site.folderPath,
+                createdOn: "",
+                creator: "",
+                isCodeSite: site.isCodeSite
             };
             return new SiteTreeItem(siteInfo);
         });

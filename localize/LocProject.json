@@ -1,0 +1,16 @@
+{
+  "Projects": [
+    {
+      "LanguageSet": "VSCode_12_Languages",
+      "_LanguageSet.comment" : "VSCode_12_Languages resolves to cs;de;es;fr;it;ja;ko;pt-BR;ru;tr;zh-CN;zh-TW",
+      "LocItems": [
+        {
+          "SourceFile": "loc\\translations-export\\vscode-powerplatform.xlf",
+          "CopyOption": "UsePlaceholders",
+          "OutputPath": "loc\\translations-import\\{FileName}.{Lang}{Extension}",
+          "_OutputPath.comment": "For instance, for ko (Korean), OutputPath resolves to loc\\translations-import\\vscode-powerplatform.ko.xlf"
+        }
+      ]
+    }
+  ]
+}

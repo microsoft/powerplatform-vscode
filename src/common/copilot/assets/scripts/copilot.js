@@ -70,6 +70,16 @@
 
     vscode.postMessage({ type: "webViewLoaded" });
 
+    function sanitizeMessage(message) {
+        if (typeof message !== "string") return message;
+        return message
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
+
     function parseCodeBlocks(responseText, isUserCode) {
         const resultDiv = document.createElement("div");
         let codeLineCount = 0;
@@ -220,16 +230,16 @@
         if (!isCopilotEnabled) {
             return feedback;
         }
-        feedback.innerHTML = `<p class="feedback-statement">${copilotStrings.AI_CONTENT_MISTAKES_MESSAGE}</p>
+        feedback.innerHTML = `<p class="feedback-statement">${sanitizeMessage(copilotStrings.AI_CONTENT_MISTAKES_MESSAGE)}</p>
           <div class="feedback-icons">
-          <svg class="thumbsup" cursor="pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" tabindex="0" aria-label="${copilotStrings.THUMBS_UP_MESSAGE}" role="img">
-            <title>${copilotStrings.THUMBS_UP_MESSAGE}</title>
+          <svg class="thumbsup" cursor="pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" tabindex="0" aria-label="${sanitizeMessage(copilotStrings.THUMBS_UP_MESSAGE)}" role="img">
+            <title>${sanitizeMessage(copilotStrings.THUMBS_UP_MESSAGE)}</title>
             <path d="M13.5584 5.47363C13.8428 5.50919 14.1095 5.61586 14.3584 5.79363C14.6073 5.97141 14.7673 6.2203 14.8384 6.5403C14.9451 6.82474 14.9273 7.12697 14.7851 7.44697L13.8251 9.63363H16.5984C16.8473 9.59808 17.0784 9.65141 17.2917 9.79363C17.5051 9.9003 17.6651 10.0603 17.7717 10.2736C17.914 10.4514 17.9851 10.6647 17.9851 10.9136C18.0206 11.127 17.9851 11.3403 17.8784 11.5536C16.634 14.1847 15.8695 15.9092 15.5851 16.727C15.4784 16.9759 15.3006 17.1892 15.0517 17.367C14.8384 17.5447 14.5895 17.6336 14.3051 17.6336H5.39839C5.00728 17.5981 4.6695 17.4559 4.38506 17.207C4.13617 16.9225 4.01172 16.5847 4.01172 16.1936V12.6736C4.01172 12.3181 4.13617 12.0159 4.38506 11.767C4.6695 11.4825 5.00728 11.3403 5.39839 11.3403H6.78506L12.5984 5.84697C12.8828 5.63363 13.2028 5.50919 13.5584 5.47363ZM14.3051 16.6203C14.4828 16.6203 14.6073 16.5314 14.6784 16.3536C15.0695 15.2514 15.8517 13.5092 17.0251 11.127C17.0606 10.9847 17.0428 10.8603 16.9717 10.7536C16.9006 10.6114 16.7762 10.5581 16.5984 10.5936H13.3451L12.8117 9.95363V9.47363L13.8784 7.0203C13.914 6.94919 13.914 6.87808 13.8784 6.80697C13.8784 6.7003 13.8428 6.62919 13.7717 6.59363C13.7006 6.52252 13.6117 6.48697 13.5051 6.48697C13.434 6.48697 13.3628 6.52252 13.2917 6.59363L7.21172 12.1403L6.73172 12.3003H5.39839C5.29172 12.3003 5.18506 12.3359 5.07839 12.407C5.00728 12.4781 4.9895 12.567 5.02506 12.6736V16.1936C4.9895 16.3003 5.00728 16.407 5.07839 16.5136C5.18506 16.5847 5.29172 16.6203 5.39839 16.6203H14.3051Z" class = "thumbsup-clicked" />
             <path d="M14.3051 16.6203C14.4828 16.6203 14.6073 16.5314 14.6784 16.3536C15.0695 15.2514 15.8517 13.5092 17.0251 11.127C17.0606 10.9847 17.0428 10.8603 16.9717 10.7536C16.9006 10.6114 16.7762 10.5581 16.5984 10.5936H13.3451L12.8117 9.95363V9.47363L13.8784 7.0203C13.914 6.94919 13.914 6.87808 13.8784 6.80697C13.8784 6.7003 13.8428 6.62919 13.7717 6.59363C13.7006 6.52252 13.6117 6.48697 13.5051 6.48697C13.434 6.48697 13.3628 6.52252 13.2917 6.59363L7.21172 12.1403L6.73172 12.3003H5.39839C5.29172 12.3003 5.18506 12.3359 5.07839 12.407C5.00728 12.4781 4.9895 12.567 5.02506 12.6736V16.1936C4.9895 16.3003 5.00728 16.407 5.07839 16.5136C5.18506 16.5847 5.29172 16.6203 5.39839 16.6203H14.3051Z" fill="none" id="thumbsup-path"/>
           </svg>
 
-          <svg class="thumbsdown" cursor="pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" tabindex="0" aria-label="${copilotStrings.THUMBS_DOWN_MESSAGE}" role="img">
-            <title>${copilotStrings.THUMBS_DOWN_MESSAGE}</title>
+          <svg class="thumbsdown" cursor="pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" tabindex="0" aria-label="${sanitizeMessage(copilotStrings.THUMBS_DOWN_MESSAGE)}" role="img">
+            <title>${sanitizeMessage(copilotStrings.THUMBS_DOWN_MESSAGE)}</title>
             <path d="M8.48 17.6336C8.19556 17.6336 7.92889 17.5447 7.68 17.367C7.43111 17.1536 7.25333 16.9047 7.14667 16.6203C7.07556 16.3003 7.11111 15.9803 7.25333 15.6603L8.21333 13.4736H5.44C5.19111 13.5092 4.96 13.4736 4.74667 13.367C4.53333 13.2603 4.35556 13.1181 4.21333 12.9403C4.10667 12.727 4.03556 12.4959 4 12.247C4 11.9981 4.05333 11.767 4.16 11.5536C5.40444 8.92252 6.16889 7.19808 6.45333 6.3803C6.56 6.13141 6.72 5.93586 6.93333 5.79363C7.18222 5.61586 7.44889 5.50919 7.73333 5.47363H16.64C17.0311 5.50919 17.3511 5.66919 17.6 5.95363C17.8844 6.20252 18.0267 6.52252 18.0267 6.91363V10.4336C18.0267 10.7892 17.8844 11.1092 17.6 11.3936C17.3511 11.6425 17.0311 11.767 16.64 11.767H15.3067L9.44 17.2603C9.15556 17.5092 8.83556 17.6336 8.48 17.6336ZM7.73333 6.48697C7.55556 6.48697 7.43111 6.57586 7.36 6.75363C6.96889 7.85586 6.20444 9.59808 5.06667 11.9803C4.99556 12.1225 4.99556 12.2647 5.06667 12.407C5.13778 12.5136 5.26222 12.5492 5.44 12.5136H8.74667L9.22667 13.1536V13.6336L8.16 16.087C8.12444 16.1581 8.10667 16.247 8.10667 16.3536C8.14222 16.4247 8.19556 16.4959 8.26667 16.567C8.33778 16.6025 8.40889 16.6203 8.48 16.6203C8.58667 16.6203 8.67556 16.5847 8.74667 16.5136L14.8267 10.967L15.3067 10.807H16.64C16.7467 10.807 16.8356 10.7714 16.9067 10.7003C17.0133 10.6292 17.0667 10.5403 17.0667 10.4336V6.91363C17.0667 6.80697 17.0133 6.71808 16.9067 6.64697C16.8356 6.5403 16.7467 6.48697 16.64 6.48697H7.73333Z" class = "thumbsdown-clicked"/>
             <path d="M7.73333 6.48697C7.55556 6.48697 7.43111 6.57586 7.36 6.75363C6.96889 7.85586 6.20444 9.59808 5.06667 11.9803C4.99556 12.1225 4.99556 12.2647 5.06667 12.407C5.13778 12.5136 5.26222 12.5492 5.44 12.5136H8.74667L9.22667 13.1536V13.6336L8.16 16.087C8.12444 16.1581 8.10667 16.247 8.10667 16.3536C8.14222 16.4247 8.19556 16.4959 8.26667 16.567C8.33778 16.6025 8.40889 16.6203 8.48 16.6203C8.58667 16.6203 8.67556 16.5847 8.74667 16.5136L14.8267 10.967L15.3067 10.807H16.64C16.7467 10.807 16.8356 10.7714 16.9067 10.7003C17.0133 10.6292 17.0667 10.5403 17.0667 10.4336V6.91363C17.0667 6.80697 17.0133 6.71808 16.9067 6.64697C16.8356 6.5403 16.7467 6.48697 16.64 6.48697H7.73333Z" fill="none" id="thumbsdown-path"/>
           </svg>
@@ -245,8 +255,7 @@
         const gitHubCopilotText = document.createElement("div");
         gitHubCopilotText.classList.add("github-copilot-text");
 
-        gitHubCopilotText.innerHTML = `<span class="new-badge">${copilotStrings.NEW_BADGE}</span>
-        <span class="gitHubCopilotText">${copilotStrings.GITHUB_COPILOT_CHAT}</span>`
+        gitHubCopilotText.innerHTML = `<span class="new-badge">${copilotStrings.NEW_BADGE}</span><span class="gitHubCopilotText">${copilotStrings.GITHUB_COPILOT_CHAT}</span>`; // CodeQL [SM03712] no user input is used, therefore these need not be sanitized.
 
         return gitHubCopilotText;
     }
@@ -259,26 +268,26 @@
         const webApiPrompt = copilotStrings.WEB_API_PROMPT;
         const listPrompt = copilotStrings.LIST_PROMPT;
 
-        suggestedPrompt.innerHTML = `<p class="suggested-title">${copilotStrings.SUGGESTIONS_MESSAGE}</p>
-                                <a href='#' class="suggested-prompt" tabindex="0" aria-label="${formPrompt}">
+        suggestedPrompt.innerHTML = `<p class="suggested-title">${sanitizeMessage(copilotStrings.SUGGESTIONS_MESSAGE)}</p>
+                                <a href='#' class="suggested-prompt" tabindex="0" aria-label="${sanitizeMessage(formPrompt)}">
                                 <span class="icon-container">
                                     ${starIconSvg}
                                 </span>
-                                    ${formPrompt}
+                                    ${sanitizeMessage(formPrompt)}
                                 </a>
                                 <br>
-                                <a href='#' class="suggested-prompt" tabindex="0" aria-label="${webApiPrompt}">
+                                <a href='#' class="suggested-prompt" tabindex="0" aria-label="${sanitizeMessage(webApiPrompt)}">
                                 <span class="icon-container">
                                     ${starIconSvg}
                                 </span>
-                                    ${webApiPrompt}
+                                    ${sanitizeMessage(webApiPrompt)}
                                 </a>
                                 <br>
-                                <a href='#' class="suggested-prompt" tabindex="0" aria-label="${listPrompt}">
+                                <a href='#' class="suggested-prompt" tabindex="0" aria-label="${sanitizeMessage(listPrompt)}">
                                 <span class="icon-container">
                                     ${starIconSvg}
                                 </span>
-                                    ${listPrompt}
+                                    ${sanitizeMessage(listPrompt)}
                                 </a>`;
 
         return suggestedPrompt;
@@ -287,10 +296,10 @@
     function createWalkthroughDiv() {
         const walkthrough = document.createElement("div");
         walkthrough.classList.add("walkthrough-div");
-        walkthrough.innerHTML = `<h4 class="walkthrough-title">${copilotStrings.GETTING_STARTED_MESSAGE}</h4>
-                            <a href="#" class="walkthrough-content" tabindex="0" aria-label="${copilotStrings.LEARN_MORE_MESSAGE}">
+        walkthrough.innerHTML = `<h4 class="walkthrough-title">${sanitizeMessage(copilotStrings.GETTING_STARTED_MESSAGE)}</h4>
+                            <a href="#" class="walkthrough-content" tabindex="0" aria-label="${sanitizeMessage(copilotStrings.LEARN_MORE_MESSAGE)}">
                                 ${bookIconSvg}
-                                <span id="walk-text">${copilotStrings.LEARN_MORE_MESSAGE}</span>
+                                <span id="walk-text">${sanitizeMessage(copilotStrings.LEARN_MORE_MESSAGE)}</span>
                             </a>`;
         return walkthrough;
     }
@@ -299,13 +308,19 @@
         const messageWrapper = document.createElement("div");
         messageWrapper.classList.add("message-wrapper");
 
+        // Add a visually hidden live region for screen readers
+        const liveRegion = document.createElement("div");
+        liveRegion.setAttribute("aria-live", "polite");
+        liveRegion.setAttribute("role", "status");
+        liveRegion.setAttribute("aria-atomic", "true");
+        liveRegion.classList.add("sr-only"); //corresponding CSS
+        messageWrapper.appendChild(liveRegion);
+
         const messageElement = document.createElement("div");
         const makerElement = createCopilotSection();
         messageElement.appendChild(makerElement);
         messageElement.appendChild(document.createElement("br"));
-
         messageElement.classList.add("message", "api-response");
-
         messageWrapper.appendChild(messageElement);
 
         if (!chatMessages) {
@@ -317,15 +332,15 @@
             updateThinking: function (thinkingMessage) {
                 const thinking = document.createElement("div");
                 thinking.classList.add("thinking");
-                thinking.setAttribute("tabindex", "0"); // Make the element focusable
-                thinking.setAttribute("role", "status"); // Add ARIA role
+                thinking.setAttribute("tabindex", "0");
+                thinking.setAttribute("role", "status");
                 messageElement.appendChild(thinking);
                 chatMessages.scrollTop = chatMessages.scrollHeight - chatMessages.clientHeight;
 
-                //This is necessary because
-// screen readers may not immediately detect content updates if they occur synchronously
+                // Update both visual and screen reader elements
                 setTimeout(() => {
                     thinking.innerText = thinkingMessage;
+                    liveRegion.innerText = thinkingMessage; // Announce to screen readers
                 }, 0);
             },
             updateResponse: function (apiResponse) {
@@ -344,18 +359,27 @@
                 }
 
                 messages.push(message);
-
                 messageIndex++;
 
                 const apiResponseElement = parseCodeBlocks(apiResponse);
-                apiResponseElement.setAttribute("aria-live", "assertive"); // Add aria-live attribute to response
                 messageElement.appendChild(apiResponseElement);
 
+                // Create screen reader friendly version
+                let screenReaderText = copilotStrings.COPILOT_RESPONSE;
+                apiResponse.forEach(item => {
+                    screenReaderText += item.displayText + " ";
+                    if (item.code && !skipCodes.includes(item.code)) {
+                        const codeBlockStart = copilotStrings.CODE_BLOCK;
+                        const codeBlockEnd = copilotStrings.CODE_BLOCK_END;
+                        screenReaderText += codeBlockStart + item.code + codeBlockEnd;
+                    }
+                });
+
+                // Update the live region for screen readers
+                liveRegion.innerText = screenReaderText;
+
                 messageWrapper.dataset.id = message.id;
-
                 messageWrapper.appendChild(document.createElement("hr"));
-
-                // Add feedback session for the API response
                 const feedback = createFeedbackDiv();
                 messageWrapper.appendChild(feedback);
                 chatMessages.scrollTop = chatMessages.scrollHeight - chatMessages.clientHeight;
@@ -363,7 +387,7 @@
         };
     }
 
-        function setWelcomeScreen() {
+    function setWelcomeScreen() {
         const messageWrapper = document.createElement("div");
         messageWrapper.classList.add("message-wrapper");
 
@@ -381,9 +405,7 @@
             userNotLoggedIn: function () {
                 const notLoggedIn = document.createElement("div");
                 notLoggedIn.classList.add("not-loggedIn");
-                notLoggedIn.innerHTML = `<p id="greeting"></p>
-                <p>${copilotStrings.LOGIN_MESSAGE}</p>
-                <button id="loginButton" aria-label="${copilotStrings.LOGIN_BUTTON}">${copilotStrings.LOGIN_BUTTON}</button>`;
+                notLoggedIn.innerHTML = `<p id="greeting"></p><p>${copilotStrings.LOGIN_MESSAGE}</p><button id="loginButton" aria-label="${copilotStrings.LOGIN_BUTTON}">${copilotStrings.LOGIN_BUTTON}</button>`; // CodeQL [SM03712] no user input is used, therefore these need not be sanitized.
 
                 messageElement.appendChild(notLoggedIn);
 
@@ -397,7 +419,7 @@
                 }
                 const loggedInDiv = document.createElement("div");
                 loggedInDiv.classList.add("loggedIn");
-                loggedInDiv.innerHTML = `<p id="greeting">${copilotStrings.HI} <strong>${userName}!</strong> ${copilotStrings.WELCOME_MESSAGE}</p>`;
+                loggedInDiv.innerHTML = `<p id="greeting">${copilotStrings.HI} <strong>${userName}!</strong> ${copilotStrings.WELCOME_MESSAGE}</p>`; // CodeQL [SM03712] no user input is used, therefore these need not be sanitized.
                 messageElement.appendChild(loggedInDiv);
 
                 // Add GitHub Copilot link
@@ -456,9 +478,7 @@
 
         const notAvailabel = document.createElement("div");
         notAvailabel.classList.add("not-available");
-        notAvailabel.innerHTML = `<p id="notAvailableGreeting"></p>
-    <p>${copilotStrings.COPILOT_SUPPORT_MESSAGE}</p>
-    <p>${copilotStrings.DOCUMENTATION_LINK}<a></p>`;
+        notAvailabel.innerHTML = `<p id="notAvailableGreeting"></p><p>${copilotStrings.COPILOT_SUPPORT_MESSAGE}</p><p>${copilotStrings.DOCUMENTATION_LINK}<a></p>`; // CodeQL [SM04949] no user input is used, therefore these need not be sanitized.
 
         messageElement.appendChild(notAvailabel);
     }

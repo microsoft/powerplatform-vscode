@@ -3,6 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import { SiteVisibility } from "../../client/power-pages/actions-hub/models/SiteVisibility";
 import { ServiceEndpointCategory, WebsiteApplicationType, WebsiteDataModel } from "./Constants";
 
 export interface IArtemisServiceEndpointInformation {
@@ -40,17 +41,22 @@ export interface IWebsiteDetails {
     dataModel: WebsiteDataModel;
     environmentId: string;
     id?: string;
-    siteVisibility?: string;
+    siteVisibility: SiteVisibility | undefined;
     tenantId?: string;
     websiteRecordId: string;
     type?: WebsiteApplicationType;
     siteManagementUrl: string;
+    creator: string;
+    createdOn: string;
+    languageCode: string;
+    isCodeSite: boolean;
 }
 
 export interface IOtherSiteInfo {
     name: string;
     websiteId: string;
     folderPath: string;
+    isCodeSite: boolean;
 }
 
 export interface WebsiteYaml {
