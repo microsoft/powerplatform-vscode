@@ -1059,11 +1059,11 @@ export const runCodeQLScreening = async (siteTreeItem?: SiteTreeItem) => {
         const codeQLAction = new CodeQLAction();
 
         try {
-            await showProgressWithNotification(
+            const analysisResults = await showProgressWithNotification(
                 Constants.Strings.CODEQL_SCREENING_STARTED,
                 async () => {
                     // Use a custom method that allows specifying the database location
-                    await codeQLAction.executeCodeQLAnalysisWithCustomPath(sitePath, databaseLocation, powerPagesSiteFolderExists);
+                    return await codeQLAction.executeCodeQLAnalysisWithCustomPath(sitePath, databaseLocation, powerPagesSiteFolderExists);
                 }
             );
 
@@ -1074,6 +1074,8 @@ export const runCodeQLScreening = async (siteTreeItem?: SiteTreeItem) => {
                 databaseLocation: databaseLocation,
                 powerPagesSiteFolderExists: powerPagesSiteFolderExists,
                 duration: duration,
+                issuesFound: analysisResults?.issueCount || 0,
+                hasIssues: (analysisResults?.issueCount || 0) > 0,
                 siteInfo: siteInfo,
                 ...getBaseEventInfo()
             });

@@ -242,6 +242,8 @@ export const Constants = {
         ACTIONS_HUB_CODEQL_SARIF_VIEWER_INSTALL_SUCCESS: "ActionsHubCodeQLSarifViewerInstallSuccess",
         ACTIONS_HUB_CODEQL_SARIF_VIEWER_INSTALL_FAILED: "ActionsHubCodeQLSarifViewerInstallFailed",
         ACTIONS_HUB_CODEQL_SARIF_VIEWER_API_ERROR: "ActionsHubCodeQLSarifViewerApiError",
+        ACTIONS_HUB_CODEQL_SARIF_VIEWER_OPENING_WITH_ISSUES: "ActionsHubCodeQLSarifViewerOpeningWithIssues",
+        ACTIONS_HUB_CODEQL_ANALYSIS_CLEAN_RESULTS: "ActionsHubCodeQLAnalysisCleanResults",
         ACTIONS_HUB_CODEQL_FALLBACK_TO_TEXT_EDITOR: "ActionsHubCodeQLFallbackToTextEditor",
          ACTIONS_HUB_ACCOUNT_MISMATCH_DETECTED: "ActionsHubAccountMismatchDetected",
         ACTIONS_HUB_LOGIN_TO_MATCH_CALLED: "ActionsHubLoginToMatchCalled",
