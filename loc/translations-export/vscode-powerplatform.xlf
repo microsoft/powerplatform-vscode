@@ -665,8 +665,8 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++e473d99cc18c8fbc20a562b15d5c16437343c2dc28d5b176e64890b7b3d350d1">
       <source xml:lang="en">Open in VS Code Desktop</source>
     </trans-unit>
-    <trans-unit id="++CODE++a8d956cd3e2028eab337436f030f302ea11d129d714816ac6771d6a6a191010f">
-      <source xml:lang="en">Opening in VS Code Desktop. If VS Code doesn't open, you may need to install it first.</source>
+    <trans-unit id="++CODE++87fe691d426d47ee588ac957e12a9936b94fe6d70fd9ef97c92f7af1671ed9a0">
+      <source xml:lang="en">Opening in VS Code Desktop. If it doesn't open or shows an error, you may need to install VS Code or update the Power Platform extension.</source>
     </trans-unit>
     <trans-unit id="++CODE++dac0ee62a5197a3722a9e7e9e851e80504cced8a13ce8b17842d78e8313578c2">
       <source xml:lang="en">Opening preview site...</source>
@@ -948,6 +948,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++4b8d64fae5d1cbf5f7324782e9b5c430db7c218771e84b0b402a9a4d0ec4bf05">
       <source xml:lang="en">Unmanaged</source>
+    </trans-unit>
+    <trans-unit id="++CODE++810c2285d6b0fa110f868e006118426e02a150592009b5f2458e2883d8dcd3c8">
+      <source xml:lang="en">Update Extension</source>
     </trans-unit>
     <trans-unit id="++CODE++7fce0124a7cb74955461f08e39ceaaed1e2850492f077f4e6defd82ef3ca6b0e">
       <source xml:lang="en">Upload changes</source>

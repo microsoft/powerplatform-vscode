@@ -36,6 +36,7 @@ import { portal_schema_V2 } from "../schema/portalSchema";
 import { ERROR_CONSTANTS } from "../../../common/ErrorConstants";
 import { showErrorDialog } from "../../../common/utilities/errorHandlerUtil";
 import { EnableServerLogicChanges } from "../../../common/ecs-features/ecsFeatureGates";
+import { ECSFeaturesClient } from "../../../common/ecs-features/ecsFeatureClient";
 
 export async function fetchDataFromDataverseAndUpdateVFS(
     portalFs: PortalsFS,
@@ -49,7 +50,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
         const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
             Constants.queryParameters.ORG_URL
         ) as string;
-        const { enableServerLogicChanges } = EnableServerLogicChanges.getConfig() as { enableServerLogicChanges?: boolean };
+        const { enableServerLogicChanges } = ECSFeaturesClient.getConfig(EnableServerLogicChanges);
         await Promise.all(entityRequestURLs.map(async (entity) => {
             const startTime = new Date().getTime();
             if(entity.entityName != schemaEntityName.SERVERLOGICS || enableServerLogicChanges) {

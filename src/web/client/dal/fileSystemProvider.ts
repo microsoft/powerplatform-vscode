@@ -35,6 +35,7 @@ import { getImageFileContent, getRangeForMultilineMatch, isImageFileSupportedFor
 import { IFileInfo, ISearchQueryMatch, ISearchQueryResults } from "../common/interfaces";
 import { ERROR_CONSTANTS } from "../../../common/ErrorConstants";
 import { EnableServerLogicChanges } from "../../../common/ecs-features/ecsFeatureGates";
+import { ECSFeaturesClient } from "../../../common/ecs-features/ecsFeatureClient";
 
 export class File implements vscode.FileStat {
     type: vscode.FileType;
@@ -227,7 +228,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
     async createDirectory(uri: vscode.Uri): Promise<void> {
         // Do silent lookup to check for existing entry
         const entry = await this._lookup(uri, true);
-        const { enableServerLogicChanges } = EnableServerLogicChanges.getConfig() as { enableServerLogicChanges?: boolean };
+        const { enableServerLogicChanges } = ECSFeaturesClient.getConfig(EnableServerLogicChanges);
         if (!entry) {
             const basename = path.posix.basename(uri.path);
             const dirname = uri.with({ path: path.posix.dirname(uri.path) });

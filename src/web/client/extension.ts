@@ -150,10 +150,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
                                                 Location: queryParamsMap.get(queryParameters.GEO) as string
                                             },
                                             PowerPagesClientName);
-                                            
+
                                         await portalsFS.readDirectory(WebExtensionContext.rootDirectory, true);
 
-                                        const { enableServerLogicChanges } = EnableServerLogicChanges.getConfig() as { enableServerLogicChanges?: boolean };
+                                        const { enableServerLogicChanges } = ECSFeaturesClient.getConfig(EnableServerLogicChanges);
+
                                         if (!serverApiAutocompleteInitialized && enableServerLogicChanges) {
                                             // Set telemetry context for Server API autocomplete events
                                             setServerApiTelemetryContext({
