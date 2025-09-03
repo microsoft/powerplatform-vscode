@@ -22,6 +22,7 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.head_ref }}
+          token: ${{ secrets.LOC_UPDATE_PAT }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -38,6 +39,8 @@ jobs:
       - name: Add Changes
         run: git add -A
       - name: Commit and Push Changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.LOC_UPDATE_PAT }}
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
