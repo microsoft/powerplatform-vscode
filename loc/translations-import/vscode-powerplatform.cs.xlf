@@ -3,7 +3,7 @@
   <file original="bundle" source-language="en" datatype="plaintext" target-language="cs">
     <body>
       <trans-unit id="++CODE++08833dda22312dacb09f1d185caedf751289ee89a4c75682a09f4a262bf67ac4">
-        <source xml:lang="en"> End of Code Block </source>
+        <source xml:lang="en"> End of Code </source>
         <target state="translated"> Konec bloku kódu </target>
       </trans-unit>
       <trans-unit id="++CODE++29bb69945e50cb632fabf16f3f89a25d813910c19059d8a792f66262a952039d">
@@ -1570,4 +1570,5 @@ The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough
       </trans-unit>
     </body>
   </file>
+
 </xliff>
