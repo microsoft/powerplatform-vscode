@@ -34,6 +34,10 @@
         <source xml:lang="en">AI-generated content can contain mistakes</source>
         <target state="translated">AI 生成的内容可能包含错误</target>
       </trans-unit>
+      <trans-unit id="++CODE++20e183e54ca33b94a25f921f68c75c4ec47212f2d94ee04e6fe4b564b96d2826">
+        <source xml:lang="en">Accounts don't match, data may not load.</source>
+        <target state="new">Accounts don't match, data may not load.</target>
+      </trans-unit>
       <trans-unit id="++CODE++031018d0f4bb3985ac963d91cb607a9eaab8855a00990613c5327a1edb0032f7">
         <source xml:lang="en">Activating CodeQL extension...</source>
         <target state="translated">正在激活 CodeQL 扩展...</target>
@@ -92,9 +96,17 @@
         <source xml:lang="en">Authenticating...</source>
         <target state="translated">正在进行身份验证...</target>
       </trans-unit>
+      <trans-unit id="++CODE++469a3c89adc4cb4df3a6f0114cd45795248e4e1dcab2546a685e42982b1a22e6">
+        <source xml:lang="en">Authentication failed. Cannot proceed with site download.</source>
+        <target state="new">Authentication failed. Cannot proceed with site download.</target>
+      </trans-unit>
       <trans-unit id="++CODE++93c83aa255a01cb4ee50d86e561c78b6c28e3e0f7fd9143dd7817b93b3c5a198">
         <source xml:lang="en">Authentication failed. Please login and try again.</source>
         <target state="translated">身份验证失败。请登录并重试。</target>
+      </trans-unit>
+      <trans-unit id="++CODE++4190475b52357e7ad3da76828784a5b9f291519e331b0c0e71f5d14e946bbc4b">
+        <source xml:lang="en">Authentication failed. Please try again.</source>
+        <target state="new">Authentication failed. Please try again.</target>
       </trans-unit>
       <trans-unit id="++CODE++a57666e58a53eea23667fddf0a7c41bdc64abfc5eae94637e88388a6b139b314">
         <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
@@ -160,6 +172,10 @@
         <note>This is a markdown formatting which must persist across translations.
 The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).', keeping brackets and the text in the parentheses unmodified</note>
         <target state="translated">正在清除缓存。请查看[详细信息](https://aka.ms/pages-clear-cache)。</target>
+      </trans-unit>
+      <trans-unit id="++CODE++b1ffea87cc95d3bfa308b929bb907b43e7d91be038e706a67142b15c571da334">
+        <source xml:lang="en">Click to authenticate with a matching account</source>
+        <target state="new">Click to authenticate with a matching account</target>
       </trans-unit>
       <trans-unit id="++CODE++7d9eb7acb13e24625c404401d8e88b2350e32162455885f18276cf802f7701ed">
         <source xml:lang="en">Close</source>
@@ -367,6 +383,22 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
         <source xml:lang="en">Do not show again</source>
         <target state="translated">不再显示</target>
       </trans-unit>
+      <trans-unit id="++CODE++668c177d38e6f62ffe2ca64e3915151cfcd566204fd4e4b499e7fe237ad63fb1">
+        <source xml:lang="en">Download Power Pages Site</source>
+        <target state="new">Download Power Pages Site</target>
+      </trans-unit>
+      <trans-unit id="++CODE++f7bcb5a0e46a8772ca8a648ca7814c6532078d2040286bdcc8993ff7ea9db164">
+        <source xml:lang="en">Download VS Code</source>
+        <target state="new">Download VS Code</target>
+      </trans-unit>
+      <trans-unit id="++CODE++60e02fb26e383f47ea262baa6265c7634e9363869eac536dc91ce1264977ccce">
+        <source xml:lang="en">Downloading Power Pages site using model version {0}...</source>
+        <target state="new">Downloading Power Pages site using model version {0}...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++9a0318af6b9d6517ef62b7c029a20fda8164d0d717bccbac3c6f926fb6564bd4">
+        <source xml:lang="en">Downloading Power Pages site, please wait...</source>
+        <target state="new">Downloading Power Pages site, please wait...</target>
+      </trans-unit>
       <trans-unit id="++CODE++ac72407b10d30bf47faf11da09b605a85fc649bd3f2e33acb281655cb9021d9d">
         <source xml:lang="en">Edit the site</source>
         <target state="translated">编辑站点</target>
@@ -386,6 +418,14 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
       <trans-unit id="++CODE++048d1e764983197603f13e79d28f59bbfa358c0c11e1184c27fc687512589778">
         <source xml:lang="en">Enter the name of the web template</source>
         <target state="translated">输入 Web 模板的名称</target>
+      </trans-unit>
+      <trans-unit id="++CODE++7d63bf943bc02891e817defccba51294daaf55fc6418bc5bac517fd254ed07e2">
+        <source xml:lang="en">Environment ID is not available</source>
+        <target state="new">Environment ID is not available</target>
+      </trans-unit>
+      <trans-unit id="++CODE++6bba2e23a239b42ce9624ffd5bb2c56f483a7975ecaf2e872a8fe3aa9006b818">
+        <source xml:lang="en">Environment ID is required but not provided</source>
+        <target state="new">Environment ID is required but not provided</target>
       </trans-unit>
       <trans-unit id="++CODE++b6d455a8dab8e66229a985315b5db1e1c065ba6d999dffd2795c03189fb32265">
         <source xml:lang="en">Environment ID: {0}</source>
@@ -432,6 +472,10 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
         <source xml:lang="en">Error searching for CodeQL CLI: {0}</source>
         <target state="translated">搜索 CodeQL CLI 时出错: {0}</target>
       </trans-unit>
+      <trans-unit id="++CODE++b74986ed2b0cdaef84e06b7f230e13c42308a76ea6445d0cf9b0319d01ea7f74">
+        <source xml:lang="en">Error switching environment: {0}</source>
+        <target state="new">Error switching environment: {0}</target>
+      </trans-unit>
       <trans-unit id="++CODE++e871c663b45be72da181a9de5bccc1b9e415ed8bab4fbc98f87cd9fe6162ded4">
         <source xml:lang="en">Error updating config file: {0}</source>
         <target state="translated">更新配置文件时出错: {0}</target>
@@ -465,6 +509,10 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
         <source xml:lang="en">Failed to disable PAC telemetry.</source>
         <target state="translated">无法禁用 PAC 遥测。</target>
       </trans-unit>
+      <trans-unit id="++CODE++f14378498d13f7345aec709c662e475e8cd16b8c4bda8ed0009fa62f413726aa">
+        <source xml:lang="en">Failed to download site: {0}</source>
+        <target state="new">Failed to download site: {0}</target>
+      </trans-unit>
       <trans-unit id="++CODE++95da24b6bc127a935e2e4323fe85d8f46be20c5e8ca5e10c6a134e5a0c6443a2">
         <source xml:lang="en">Failed to enable PAC telemetry.</source>
         <target state="translated">无法启用 PAC 遥测。</target>
@@ -472,6 +520,10 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
       <trans-unit id="++CODE++83d9d98e86aca9239f8a2635a98356d956268fb41a465fbc039b9ac979c61649">
         <source xml:lang="en">Failed to fetch some files.</source>
         <target state="translated">无法获取部分文件。</target>
+      </trans-unit>
+      <trans-unit id="++CODE++f4948aad45ee9baaf762fbd640c551dc397190efdd9fb87468b559502ece927c">
+        <source xml:lang="en">Failed to generate VS Code Desktop URL: {0}</source>
+        <target state="new">Failed to generate VS Code Desktop URL: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++862d6197d64601aa13ce30db5ec5b8f819ad00fe21e3b031a3e47fe22ef68fb3">
         <source xml:lang="en">Failed to get file ready for edit: {0}</source>
@@ -485,6 +537,10 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
         <source xml:lang="en">Failed to get website endpoint. Please try again later</source>
         <target state="translated">无法获取网站终结点。请稍后重试</target>
       </trans-unit>
+      <trans-unit id="++CODE++fc80bc8b6f74fff75eee85e53e42036bc6069a2fa632337a52789dacf96e9ba9">
+        <source xml:lang="en">Failed to handle Power Pages URI: {0}</source>
+        <target state="new">Failed to handle Power Pages URI: {0}</target>
+      </trans-unit>
       <trans-unit id="++CODE++9696573fbb3df8812e2d0b83aa3d9077681bf992c9f9514fbbb81fcc7787560d">
         <source xml:lang="en">Failed to install SARIF viewer extension. Opening results as text file.</source>
         <target state="translated">未能安装 SARIF 查看器扩展。正在以文本文件形式打开结果。</target>
@@ -492,6 +548,14 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
       <trans-unit id="++CODE++83f3ed1048ce17af62e4baf0dd046ec8571cb8ae602ad853025266a023de8061">
         <source xml:lang="en">Failed to install SARIF viewer extension: {0}</source>
         <target state="translated">未能安装 SARIF 查看器扩展: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++f865b154a9a2097159a09be82db76a9b29afc71df9ad86b9c08253f2e805d23c">
+        <source xml:lang="en">Failed to open in VS Code Desktop: {0}</source>
+        <target state="new">Failed to open in VS Code Desktop: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++1431fc40490dda7265400636e401674fe94e75224aa179af9ce1cded2a155808">
+        <source xml:lang="en">Failed to switch to the required environment.</source>
+        <target state="new">Failed to switch to the required environment.</target>
       </trans-unit>
       <trans-unit id="++CODE++a9e36b880dd45b64ae5601865540605296febf9bd855fc46d9c35c2c2ed9a7f2">
         <source xml:lang="en">Feature is not enabled for this geo.</source>
@@ -554,6 +618,10 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
       <trans-unit id="++CODE++46be031ab391443c1736cb8c7032c5b07b159164f48f5b86fe135465e3255571">
         <source xml:lang="en">Generating webpages...</source>
         <target state="translated">正在生成网页...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++3f4dec2f1d73d14fdcb63e9a2da87892f19450b714ec81b6db45d1e0bdd25f02">
+        <source xml:lang="en">Get Extension</source>
+        <target state="new">Get Extension</target>
       </trans-unit>
       <trans-unit id="++CODE++ee1d3100df4b00eabd74481b92106e42cce956213372a914082f82702f56470d">
         <source xml:lang="en">Get GitHub Copilot to try @powerpages</source>
@@ -733,6 +801,10 @@ URL: {1}
         <source xml:lang="en">New Webpage</source>
         <target state="translated">新建网页</target>
       </trans-unit>
+      <trans-unit id="++CODE++1ea442a134b2a184bd5d40104401f2a37fbc09ccf3f4bc9da161c6099be3691d">
+        <source xml:lang="en">No</source>
+        <target state="new">No</target>
+      </trans-unit>
       <trans-unit id="++CODE++b1061a7adf836619e40617bbbbe42d04a9c167b5756a2b4926c02d88e780a7f9">
         <source xml:lang="en">No Website Data Found in Current Directory. Please switch to a directory that contains the PAC downloaded website data to continue.</source>
         <target state="translated">在当前目录中找不到网站数据。请切换到包含 PAC 下载的网站数据的目录以继续。</target>
@@ -777,6 +849,10 @@ URL: {1}
         <source xml:lang="en">No workspace folder opened. Please open a site folder to preview.</source>
         <target state="translated">未打开任何工作区文件夹。请打开站点文件夹进行预览。</target>
       </trans-unit>
+      <trans-unit id="++CODE++ccb4c324f516c63335c648ee08a66b8cc78737d26156f0c84707cd0ee4235492">
+        <source xml:lang="en">Not Now</source>
+        <target state="new">Not Now</target>
+      </trans-unit>
       <trans-unit id="++CODE++b2b461f3eae470e95fdcfd61a3cbe6680e84d0a7221a305f696ce44843badc89">
         <source xml:lang="en">Object ID: {0}</source>
         <note>{0} is the Object ID</note>
@@ -786,6 +862,10 @@ URL: {1}
         <source xml:lang="en">One or more attribute names have been changed or removed. Contact your admin.</source>
         <target state="translated">一个或多个属性名称已更改或已删除。请联系您的管理员。</target>
       </trans-unit>
+      <trans-unit id="++CODE++68b3f4bff6de90aed6e47e72d8b680901da64dff39ed843e9eeed0464020e971">
+        <source xml:lang="en">Open Folder</source>
+        <target state="new">Open Folder</target>
+      </trans-unit>
       <trans-unit id="++CODE++f329c8f717c6c20eb60774d8f9227683661d74ebae48207076be60be8796dd5d">
         <source xml:lang="en">Open Results</source>
         <target state="translated">打开结果</target>
@@ -794,9 +874,21 @@ URL: {1}
         <source xml:lang="en">Open as Text</source>
         <target state="translated">以文本形式打开</target>
       </trans-unit>
+      <trans-unit id="++CODE++e35b67aaf27dab4f013733ada391dda0fb7348af30bcf397692ecf7a83b9cb2f">
+        <source xml:lang="en">Open in New Workspace</source>
+        <target state="new">Open in New Workspace</target>
+      </trans-unit>
       <trans-unit id="++CODE++e61655958f06a0bb12435c70d95c738b62fabdff78f26c597c105a8823820fbd">
         <source xml:lang="en">Open in Power Pages studio</source>
         <target state="translated">在 Power Pages 工作室中打开</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e473d99cc18c8fbc20a562b15d5c16437343c2dc28d5b176e64890b7b3d350d1">
+        <source xml:lang="en">Open in VS Code Desktop</source>
+        <target state="new">Open in VS Code Desktop</target>
+      </trans-unit>
+      <trans-unit id="++CODE++a8d956cd3e2028eab337436f030f302ea11d129d714816ac6771d6a6a191010f">
+        <source xml:lang="en">Opening in VS Code Desktop. If VS Code doesn't open, you may need to install it first.</source>
+        <target state="new">Opening in VS Code Desktop. If VS Code doesn't open, you may need to install it first.</target>
       </trans-unit>
       <trans-unit id="++CODE++dac0ee62a5197a3722a9e7e9e851e80504cced8a13ce8b17842d78e8313578c2">
         <source xml:lang="en">Opening preview site...</source>
@@ -822,6 +914,10 @@ URL: {1}
         <source xml:lang="en">Organization ID: {0}</source>
         <note>{0} is the Organization ID</note>
         <target state="translated">组织 ID: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++43fda167d567df5f43ec87655e1d27557664874f1f804387174027f5e8e2e602">
+        <source xml:lang="en">Organization URL is required but not provided</source>
+        <target state="new">Organization URL is required but not provided</target>
       </trans-unit>
       <trans-unit id="++CODE++b3d5416b4e83d803e6f238f1d31a637450f12c9370113871d15bd48c72435cd2">
         <source xml:lang="en">Other Sites</source>
@@ -872,6 +968,10 @@ URL: {1}
         <note>{0} represents the environment name</note>
         <target state="translated">Power Pages Copilot 现已连接到环境: {0} : {1}</target>
       </trans-unit>
+      <trans-unit id="++CODE++04ac907168ac84b45263503d1306565bece49c4ae3e8ef4af310b304f03ab6d4">
+        <source xml:lang="en">Power Pages site download completed successfully. Would you like to open the downloaded site folder?</source>
+        <target state="new">Power Pages site download completed successfully. Would you like to open the downloaded site folder?</target>
+      </trans-unit>
       <trans-unit id="++CODE++cce89cd3a0f118dafd3173f6444abdcd2b9782153af1b6bfa8f63ef3d4b68268">
         <source xml:lang="en">Power Pages studio URL is not available</source>
         <target state="translated">Power Pages 工作室 URL 不可用</target>
@@ -889,6 +989,10 @@ URL: {1}
         <note>{0} represents the version number</note>
         <target state="translated">正在准备 pac CLI (v{0})...</target>
       </trans-unit>
+      <trans-unit id="++CODE++e019497156f9ccd01e4c4fa2cb01c31e293460acdf116949dc29680e64660de5">
+        <source xml:lang="en">Preparing to download Power Pages site...</source>
+        <target state="new">Preparing to download Power Pages site...</target>
+      </trans-unit>
       <trans-unit id="++CODE++f6412ced721a26ac3e3cb55d3ff713d8403c3dfc2efa0cff07b48478bdd57555">
         <source xml:lang="en">Preview site</source>
         <target state="translated">预览版站点</target>
@@ -904,6 +1008,10 @@ URL: {1}
       <trans-unit id="++CODE++66c77d8211180ed42d204144272cd0985a1c118696c856b61d2dd63d1f416d86">
         <source xml:lang="en">Process error: {0}</source>
         <target state="translated">流程错误: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++5e297c22bc5c0423614ebe6e20c7fb26fc01c43d3d5cbcdcce15dab605384e13">
+        <source xml:lang="en">Processing download request...</source>
+        <target state="new">Processing download request...</target>
       </trans-unit>
       <trans-unit id="++CODE++7a6098eb5ff2c2401890216bb502ce6583ff7bddc99e62f8751551eab45ae1b4">
         <source xml:lang="en">Profile Kind: {0}</source>
@@ -947,6 +1055,10 @@ URL: {1}
         <note>Do not translate 'PCF' as it is a product name.</note>
         <target state="translated">为新的 PCF 控件选择文件夹</target>
       </trans-unit>
+      <trans-unit id="++CODE++e4efd0ebbc891e539d343ce3247c566fbb105ea4f5746251a256995cdeaefcd3">
+        <source xml:lang="en">Select Folder to Download Power Pages Site</source>
+        <target state="new">Select Folder to Download Power Pages Site</target>
+      </trans-unit>
       <trans-unit id="++CODE++a40f78f3a7f5c5ab1b101e95cdf044552542712fdcf45a83dfea3f455b6f638a">
         <source xml:lang="en">Select Type</source>
         <target state="translated">选择类型</target>
@@ -988,9 +1100,25 @@ URL: {1}
         <source xml:lang="en">Show Output Panel</source>
         <target state="translated">显示输出面板</target>
       </trans-unit>
+      <trans-unit id="++CODE++2f65ba5aa38a9acac3a9a9c0a9aeecd7b32796008dc63432bedbe6ef62982558">
+        <source xml:lang="en">Sign in to VS Code with PAC CLI account</source>
+        <target state="new">Sign in to VS Code with PAC CLI account</target>
+      </trans-unit>
       <trans-unit id="++CODE++524bca0347e50e3801bebf27374124b3babf072729b4da4bcc45ef5c385ee8f4">
         <source xml:lang="en">Site Details</source>
         <target state="translated">站点详细信息</target>
+      </trans-unit>
+      <trans-unit id="++CODE++4fa72d80ab1b04e31f450bacc89bff526a5e52e3d104d153b3b493b108330b3c">
+        <source xml:lang="en">Site download cancelled. Authentication is required to proceed.</source>
+        <target state="new">Site download cancelled. Authentication is required to proceed.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++ca57fa2618956b4946832e64d4815e0a68f623ab2d39b25dff228afbcdd8d008">
+        <source xml:lang="en">Site download cancelled. Correct environment connection is required.</source>
+        <target state="new">Site download cancelled. Correct environment connection is required.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++c0917a71517a4a08ef56adaaec8f79404a4d5cc14afc8d141e9aa6181bee8622">
+        <source xml:lang="en">Site download cancelled. No folder selected.</source>
+        <target state="new">Site download cancelled. No folder selected.</target>
       </trans-unit>
       <trans-unit id="++CODE++a72357d268bce5e1643bfd74563495784179f75ace0d652db8f808f293586b63">
         <source xml:lang="en">Site management URL not found for the selected site. Please try again after refreshing the environment.</source>
@@ -1041,6 +1169,10 @@ URL: {1}
       <trans-unit id="++CODE++3ed1f203bd6f7102d8c5dcf88fe4fb5327b54a1e88962adcddbf9a023bcf8875">
         <source xml:lang="en">The SARIF Viewer extension is recommended for viewing CodeQL results. Would you like to install it now?</source>
         <target state="translated">建议使用 SARIF 查看器扩展查看 CodeQL 结果。是否要立即安装?</target>
+      </trans-unit>
+      <trans-unit id="++CODE++98a4cf89a57d927fce50521aaf27e9fd7dc5046e82725348cf6024469a4f2bdf">
+        <source xml:lang="en">The account signed in to VS Code differs from the one authenticated in PAC CLI (Power Platform CLI). This mismatch can cause data not to load or actions to fail because UI commands run through the CLI. To fix it, sign in to VS Code using the same account as your PAC CLI. If needed, you can update your PAC CLI authentication separately via the command line.</source>
+        <target state="new">The account signed in to VS Code differs from the one authenticated in PAC CLI (Power Platform CLI). This mismatch can cause data not to load or actions to fail because UI commands run through the CLI. To fix it, sign in to VS Code using the same account as your PAC CLI. If needed, you can update your PAC CLI authentication separately via the command line.</target>
       </trans-unit>
       <trans-unit id="++CODE++0bc2e4918b64f82220bde3dae30dc007a45fb59c3677833fb5a0e275a3b6b54b">
         <source xml:lang="en">The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?</source>
@@ -1112,6 +1244,10 @@ URL: {1}
         <source xml:lang="en">Unable to find that app</source>
         <target state="translated">找不到该应用</target>
       </trans-unit>
+      <trans-unit id="++CODE++01e5c349da59b88cb8c4552d036f670c1a5d824abf91fe9539d408e89d9c9445">
+        <source xml:lang="en">Unable to generate VS Code Desktop URL</source>
+        <target state="new">Unable to generate VS Code Desktop URL</target>
+      </trans-unit>
       <trans-unit id="++CODE++3747890a3bfddec3123ce9a40cdd15f278d1335b382f80beb52bf18101ab02c2">
         <source xml:lang="en">Unable to locate website root folder.</source>
         <target state="translated">找不到网站根文件夹。</target>
@@ -1154,6 +1290,10 @@ URL: {1}
         <source xml:lang="en">Using default query suite: {0}</source>
         <target state="translated">正在使用默认查询套件: {0}</target>
       </trans-unit>
+      <trans-unit id="++CODE++4164b3068322daf412659fb28d24b8b18f2d9fcdb160a63980bafbd16134231b">
+        <source xml:lang="en">VS Code - PAC CLI authentication mismatch detected</source>
+        <target state="new">VS Code - PAC CLI authentication mismatch detected</target>
+      </trans-unit>
       <trans-unit id="++CODE++d941ee96c6f480390012381f9fc0dfd961f2aa803732860e2505a8453700f458">
         <source xml:lang="en">We encountered an error preparing the files for edit.</source>
         <target state="translated">我们在准备编辑文件时遇到错误。</target>
@@ -1169,6 +1309,14 @@ URL: {1}
       <trans-unit id="++CODE++00dc171124ab430bbbaae51ec39dda1c5e7d045f382f56b1767d9e733292731c">
         <source xml:lang="en">Webpage names should contain only letters, numbers, hyphens, or underscores.</source>
         <target state="translated">网页名称应仅包含字母、数字、连字符或下划线。</target>
+      </trans-unit>
+      <trans-unit id="++CODE++ccd9f7afcc6454ab02bcba204f559a9c89947c6e39a7c8651e30799d78ca4fd2">
+        <source xml:lang="en">Website ID is not available</source>
+        <target state="new">Website ID is not available</target>
+      </trans-unit>
+      <trans-unit id="++CODE++64c2870068032d4e5c46e710ba9422633c8f8228527d59b27f449fdf55216bb6">
+        <source xml:lang="en">Website ID is required but not provided</source>
+        <target state="new">Website ID is required but not provided</target>
       </trans-unit>
       <trans-unit id="++CODE++d3eaa7bf5377b15781ad4c0f43e4da94b9a2bd485ddbbbe62a2c3d53c5c7fe4a">
         <source xml:lang="en">Website Id: {0}</source>
@@ -1212,6 +1360,10 @@ URL: {1}
         <source xml:lang="en">Yes</source>
         <target state="translated">是</target>
       </trans-unit>
+      <trans-unit id="++CODE++5f1325c0fc2f8e2e8732d6545bcc100f0e7e0d8ea1740b2d519fc83c43ae1fc2">
+        <source xml:lang="en">You are currently connected to a different environment. Would you like to switch to the required environment?</source>
+        <target state="new">You are currently connected to a different environment. Would you like to switch to the required environment?</target>
+      </trans-unit>
       <trans-unit id="++CODE++3c65297a1fc0860c6993f5c8beb4341dd13b71d7f3957daba611adf04a6c971b">
         <source xml:lang="en">You are editing a live, public site </source>
         <target state="translated">您正在编辑一个公共活动站点</target>
@@ -1219,6 +1371,10 @@ URL: {1}
       <trans-unit id="++CODE++beb45bfdd4c3f6da9bb3687e4d9275790d086c1dffaec84839fa9ec9ce4e9ee2">
         <source xml:lang="en">You can use this in &lt;a href="#" id="github-copilot-link"&gt;GitHub Copilot with @powerpages&lt;/a&gt; and leverage best of both world.</source>
         <target state="translated">您可以在 &lt;a href="#" id="github-copilot-link"&gt;GitHub Copilot 中将此与 @powerpages 一起使用&lt;/a&gt;，充分利用这两种技术。</target>
+      </trans-unit>
+      <trans-unit id="++CODE++87eb9aa1f1ac1b6b141aedc4c21a9cb7cf786453c529babe30c8760072bb34d6">
+        <source xml:lang="en">You need to authenticate with Power Platform to download the site. Would you like to authenticate now?</source>
+        <target state="new">You need to authenticate with Power Platform to download the site. Would you like to authenticate now?</target>
       </trans-unit>
       <trans-unit id="++CODE++eeb25aaca6a9e3f6c670334480b8e56e2a362ecfec23f8e63617915b22ddc8a0">
         <source xml:lang="en">Your preview isn't updated. Please upload your site to see the latest changes.</source>
