@@ -89,143 +89,108 @@ class UriHandler implements vscode.UriHandler {
         const startTime = Date.now();
         let telemetryData: Record<string, string> = {};
 
-        try {
-            // Parse query parameters from the URI
-            const urlParams = new URLSearchParams(uri.query);
-
-            // Extract required parameters
-            const websiteId = urlParams.get(URI_CONSTANTS.PARAMETERS.WEBSITE_ID);
-            const environmentId = urlParams.get(URI_CONSTANTS.PARAMETERS.ENV_ID);
-            const orgUrl = urlParams.get(URI_CONSTANTS.PARAMETERS.ORG_URL);
-            const schema = urlParams.get(URI_CONSTANTS.PARAMETERS.SCHEMA);
-            const siteName = urlParams.get(URI_CONSTANTS.PARAMETERS.SITE_NAME);
-            const siteUrl = urlParams.get(URI_CONSTANTS.PARAMETERS.SITE_URL);
-
-            // Populate telemetry data
-            telemetryData = {
-                websiteId: websiteId || 'missing',
-                environmentId: environmentId || 'missing',
-                orgUrl: orgUrl ? 'provided' : 'missing', // Don't log actual URL for privacy
-                schema: schema || 'none',
-                siteName: siteName ? 'provided' : 'missing',
-                siteUrl: siteUrl ? 'provided' : 'missing', // Don't log actual URL for privacy
-                uriQuery: uri.query || 'empty'
-            };
-
-            oneDSLoggerWrapper.getLogger().traceInfo(
-                uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_TRIGGERED,
-                telemetryData
-            );
-
-            // Validate required parameters
-            if (!websiteId) {
-                vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.WEBSITE_ID_REQUIRED);
-                oneDSLoggerWrapper.getLogger().traceError(
-                    uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
-                    'Missing website ID',
-                    new Error('Website ID parameter is required but not provided'),
-                    { ...telemetryData, error: 'missing_website_id' }
-                );
-                return;
-            }
-
-            if (!environmentId) {
-                vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.ENVIRONMENT_ID_REQUIRED);
-                oneDSLoggerWrapper.getLogger().traceError(
-                    uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
-                    'Missing environment ID',
-                    new Error('Environment ID parameter is required but not provided'),
-                    { ...telemetryData, error: 'missing_environment_id' }
-                );
-                return;
-            }
-
-            if (!orgUrl) {
-                vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.ORG_URL_REQUIRED);
-                oneDSLoggerWrapper.getLogger().traceError(
-                    uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
-                    'Missing organization URL',
-                    new Error('Organization URL parameter is required but not provided'),
-                    { ...telemetryData, error: 'missing_org_url' }
-                );
-                return;
-            }
-
-            // Determine model version based on schema parameter
-            // If schema is "PortalSchemaV2" (case-insensitive), use model version 2, otherwise use 1
-            const modelVersion = schema && schema.toLowerCase() === URI_CONSTANTS.SCHEMA_VALUES.PORTAL_SCHEMA_V2
-                ? URI_CONSTANTS.MODEL_VERSIONS.VERSION_2
-                : URI_CONSTANTS.MODEL_VERSIONS.VERSION_1;
-
-            telemetryData.modelVersion = modelVersion.toString();
-
-            // Check if user is authenticated with PAC CLI
-            let authInfo;
-            try {
-                authInfo = await this.pacWrapper.activeOrg();
-            } catch (error) {
-                vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.AUTH_FAILED);
-                oneDSLoggerWrapper.getLogger().traceError(
-                    uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
-                    'Failed to check authentication status',
-                    error instanceof Error ? error : new Error(String(error)),
-                    { ...telemetryData, error: 'auth_check_failed' }
-                );
-
-                // Reset PAC CLI process for future operations
+        // Show initial progress notification to indicate processing has started
+        await vscode.window.withProgress(
+            {
+                location: vscode.ProgressLocation.Notification,
+                title: "Power Pages",
+                cancellable: false
+            },
+            async (progress) => {
                 try {
-                    await this.pacWrapper.resetPacProcess();
-                } catch {
-                    // Ignore reset errors
-                }
-                return;
-            }
+                    progress.report({
+                        message: "Preparing to open Power Pages site...",
+                        increment: 10
+                    });
 
-            if (!authInfo || authInfo.Status !== "Success") {
-                oneDSLoggerWrapper.getLogger().traceInfo(
-                    uriHandlerTelemetryEventNames.URI_HANDLER_AUTH_REQUIRED,
-                    { ...telemetryData, authStatus: authInfo?.Status || 'none' }
-                );
+                    // Parse query parameters from the URI
+                    const urlParams = new URLSearchParams(uri.query);
 
-                const authRequired = await vscode.window.showWarningMessage(
-                    URI_HANDLER_STRINGS.PROMPTS.AUTH_REQUIRED,
-                    { modal: true },
-                    URI_HANDLER_STRINGS.BUTTONS.YES,
-                    URI_HANDLER_STRINGS.BUTTONS.NO
-                );
+                    // Extract required parameters
+                    const websiteId = urlParams.get(URI_CONSTANTS.PARAMETERS.WEBSITE_ID);
+                    const environmentId = urlParams.get(URI_CONSTANTS.PARAMETERS.ENV_ID);
+                    const orgUrl = urlParams.get(URI_CONSTANTS.PARAMETERS.ORG_URL);
+                    const schema = urlParams.get(URI_CONSTANTS.PARAMETERS.SCHEMA);
+                    const siteName = urlParams.get(URI_CONSTANTS.PARAMETERS.SITE_NAME);
+                    const siteUrl = urlParams.get(URI_CONSTANTS.PARAMETERS.SITE_URL);
 
-                if (authRequired === URI_HANDLER_STRINGS.BUTTONS.YES) {
-                    try {
-                        // Trigger authentication
-                        await this.pacWrapper.authCreateNewAuthProfileForOrg(orgUrl);
+                    // Populate telemetry data
+                    telemetryData = {
+                        websiteId: websiteId || 'missing',
+                        environmentId: environmentId || 'missing',
+                        orgUrl: orgUrl ? 'provided' : 'missing', // Don't log actual URL for privacy
+                        schema: schema || 'none',
+                        siteName: siteName ? 'provided' : 'missing',
+                        siteUrl: siteUrl ? 'provided' : 'missing', // Don't log actual URL for privacy
+                        uriQuery: uri.query || 'empty'
+                    };
 
-                        // Check authentication again
-                        const newAuthInfo = await this.pacWrapper.activeOrg();
-                        if (!newAuthInfo || newAuthInfo.Status !== "Success") {
-                            vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.AUTH_FAILED);
-                            oneDSLoggerWrapper.getLogger().traceError(
-                                uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
-                                'Authentication failed after user initiated auth',
-                                new Error('Authentication failed after user initiated auth'),
-                                { ...telemetryData, error: 'auth_failed' }
-                            );
-                            return;
-                        }
+                    oneDSLoggerWrapper.getLogger().traceInfo(
+                        uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_TRIGGERED,
+                        telemetryData
+                    );
 
-                        oneDSLoggerWrapper.getLogger().traceInfo(
-                            uriHandlerTelemetryEventNames.URI_HANDLER_AUTH_COMPLETED,
-                            { ...telemetryData, newAuthStatus: newAuthInfo.Status }
+                    // Validate required parameters
+                    if (!websiteId) {
+                        vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.WEBSITE_ID_REQUIRED);
+                        oneDSLoggerWrapper.getLogger().traceError(
+                            uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
+                            'Missing website ID',
+                            new Error('Website ID parameter is required but not provided'),
+                            { ...telemetryData, error: 'missing_website_id' }
                         );
-                    } catch (authError) {
+                        return;
+                    }
+
+                    if (!environmentId) {
+                        vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.ENVIRONMENT_ID_REQUIRED);
+                        oneDSLoggerWrapper.getLogger().traceError(
+                            uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
+                            'Missing environment ID',
+                            new Error('Environment ID parameter is required but not provided'),
+                            { ...telemetryData, error: 'missing_environment_id' }
+                        );
+                        return;
+                    }
+
+                    if (!orgUrl) {
+                        vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.ORG_URL_REQUIRED);
+                        oneDSLoggerWrapper.getLogger().traceError(
+                            uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
+                            'Missing organization URL',
+                            new Error('Organization URL parameter is required but not provided'),
+                            { ...telemetryData, error: 'missing_org_url' }
+                        );
+                        return;
+                    }
+
+                    progress.report({
+                        message: "Validating authentication...",
+                        increment: 20
+                    });
+
+                    // Determine model version based on schema parameter
+                    // If schema is "PortalSchemaV2" (case-insensitive), use model version 2, otherwise use 1
+                    const modelVersion = schema && schema.toLowerCase() === URI_CONSTANTS.SCHEMA_VALUES.PORTAL_SCHEMA_V2
+                        ? URI_CONSTANTS.MODEL_VERSIONS.VERSION_2
+                        : URI_CONSTANTS.MODEL_VERSIONS.VERSION_1;
+
+                    telemetryData.modelVersion = modelVersion.toString();
+
+                    // Check if user is authenticated with PAC CLI
+                    let authInfo;
+                    try {
+                        authInfo = await this.pacWrapper.activeOrg();
+                    } catch (error) {
                         vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.AUTH_FAILED);
                         oneDSLoggerWrapper.getLogger().traceError(
                             uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
-                            'Authentication operation failed',
-                            authError instanceof Error ? authError : new Error(String(authError)),
-                            { ...telemetryData, error: 'auth_operation_failed' }
+                            'Failed to check authentication status',
+                            error instanceof Error ? error : new Error(String(error)),
+                            { ...telemetryData, error: 'auth_check_failed' }
                         );
 
-                        // Reset PAC CLI process after auth failure
+                        // Reset PAC CLI process for future operations
                         try {
                             await this.pacWrapper.resetPacProcess();
                         } catch {
@@ -233,85 +198,98 @@ class UriHandler implements vscode.UriHandler {
                         }
                         return;
                     }
-                } else {
-                    vscode.window.showInformationMessage(URI_HANDLER_STRINGS.INFO.DOWNLOAD_CANCELLED_AUTH);
-                    oneDSLoggerWrapper.getLogger().traceInfo(
-                        uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
-                        { ...telemetryData, reason: 'user_cancelled_auth' }
-                    );
-                    return;
-                }
-            }            // Check if the current environment matches the requested one
-            let currentAuthInfo;
-            try {
-                currentAuthInfo = await this.pacWrapper.activeOrg();
-            } catch (error) {
-                vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.ENV_SWITCH_FAILED);
-                oneDSLoggerWrapper.getLogger().traceError(
-                    uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
-                    'Failed to check current environment',
-                    error instanceof Error ? error : new Error(String(error)),
-                    { ...telemetryData, error: 'env_check_failed' }
-                );
 
-                // Reset PAC CLI process for future operations
-                try {
-                    await this.pacWrapper.resetPacProcess();
-                } catch {
-                    // Ignore reset errors
-                }
-                return;
-            }
+                    if (!authInfo || authInfo.Status !== "Success") {
+                        oneDSLoggerWrapper.getLogger().traceInfo(
+                            uriHandlerTelemetryEventNames.URI_HANDLER_AUTH_REQUIRED,
+                            { ...telemetryData, authStatus: authInfo?.Status || 'none' }
+                        );
 
-            if (currentAuthInfo?.Status === "Success" && currentAuthInfo.Results?.EnvironmentId !== environmentId) {
-                oneDSLoggerWrapper.getLogger().traceInfo(
-                    uriHandlerTelemetryEventNames.URI_HANDLER_ENV_SWITCH_REQUIRED,
-                    {
-                        ...telemetryData,
-                        currentEnvId: currentAuthInfo.Results?.EnvironmentId || 'unknown',
-                        requestedEnvId: environmentId
-                    }
-                );
+                        progress.report({
+                            message: "Authentication required...",
+                            increment: 10
+                        });
 
-                const switchEnv = await vscode.window.showWarningMessage(
-                    URI_HANDLER_STRINGS.PROMPTS.ENV_SWITCH_REQUIRED,
-                    { modal: true },
-                    URI_HANDLER_STRINGS.BUTTONS.YES,
-                    URI_HANDLER_STRINGS.BUTTONS.NO
-                );
+                        const authRequired = await vscode.window.showWarningMessage(
+                            URI_HANDLER_STRINGS.PROMPTS.AUTH_REQUIRED,
+                            { modal: true },
+                            URI_HANDLER_STRINGS.BUTTONS.YES,
+                            URI_HANDLER_STRINGS.BUTTONS.NO
+                        );
 
-                if (switchEnv === URI_HANDLER_STRINGS.BUTTONS.YES) {
-                    try {
-                        // Switch to the correct environment
-                        await this.pacWrapper.orgSelect(orgUrl);
+                        if (authRequired === URI_HANDLER_STRINGS.BUTTONS.YES) {
+                            try {
+                                progress.report({
+                                    message: "Authenticating...",
+                                    increment: 10
+                                });
 
-                        // Verify the switch was successful
-                        const verifyAuthInfo = await this.pacWrapper.activeOrg();
-                        if (verifyAuthInfo?.Status !== "Success" || verifyAuthInfo.Results?.EnvironmentId !== environmentId) {
-                            vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.ENV_SWITCH_FAILED);
-                            oneDSLoggerWrapper.getLogger().traceError(
+                                // Trigger authentication
+                                await this.pacWrapper.authCreateNewAuthProfileForOrg(orgUrl);
+
+                                // Check authentication again
+                                const newAuthInfo = await this.pacWrapper.activeOrg();
+                                if (!newAuthInfo || newAuthInfo.Status !== "Success") {
+                                    vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.AUTH_FAILED);
+                                    oneDSLoggerWrapper.getLogger().traceError(
+                                        uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
+                                        'Authentication failed after user initiated auth',
+                                        new Error('Authentication failed after user initiated auth'),
+                                        { ...telemetryData, error: 'auth_failed' }
+                                    );
+                                    return;
+                                }
+
+                                oneDSLoggerWrapper.getLogger().traceInfo(
+                                    uriHandlerTelemetryEventNames.URI_HANDLER_AUTH_COMPLETED,
+                                    { ...telemetryData, newAuthStatus: newAuthInfo.Status }
+                                );
+                            } catch (authError) {
+                                vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.AUTH_FAILED);
+                                oneDSLoggerWrapper.getLogger().traceError(
+                                    uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
+                                    'Authentication operation failed',
+                                    authError instanceof Error ? authError : new Error(String(authError)),
+                                    { ...telemetryData, error: 'auth_operation_failed' }
+                                );
+
+                                // Reset PAC CLI process after auth failure
+                                try {
+                                    await this.pacWrapper.resetPacProcess();
+                                } catch {
+                                    // Ignore reset errors
+                                }
+                                return;
+                            }
+                        } else {
+                            vscode.window.showInformationMessage(URI_HANDLER_STRINGS.INFO.DOWNLOAD_CANCELLED_AUTH);
+                            oneDSLoggerWrapper.getLogger().traceInfo(
                                 uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
-                                'Failed to switch to required environment',
-                                new Error('Failed to switch to required environment'),
-                                { ...telemetryData, error: 'env_switch_failed' }
+                                { ...telemetryData, reason: 'user_cancelled_auth' }
                             );
                             return;
                         }
+                    }
 
-                        oneDSLoggerWrapper.getLogger().traceInfo(
-                            uriHandlerTelemetryEventNames.URI_HANDLER_ENV_SWITCH_COMPLETED,
-                            { ...telemetryData, switchedToEnvId: verifyAuthInfo.Results?.EnvironmentId }
-                        );
+                    progress.report({
+                        message: "Checking environment...",
+                        increment: 10
+                    });
+
+                    // Check if the current environment matches the requested one
+                    let currentAuthInfo;
+                    try {
+                        currentAuthInfo = await this.pacWrapper.activeOrg();
                     } catch (error) {
-                        vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.ENV_SWITCH_ERROR.replace('{0}', error instanceof Error ? error.message : String(error)));
+                        vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.ENV_SWITCH_FAILED);
                         oneDSLoggerWrapper.getLogger().traceError(
                             uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
-                            'Error switching environment',
+                            'Failed to check current environment',
                             error instanceof Error ? error : new Error(String(error)),
-                            { ...telemetryData, error: 'env_switch_error' }
+                            { ...telemetryData, error: 'env_check_failed' }
                         );
 
-                        // Reset PAC CLI process after environment switch failure
+                        // Reset PAC CLI process for future operations
                         try {
                             await this.pacWrapper.resetPacProcess();
                         } catch {
@@ -319,16 +297,101 @@ class UriHandler implements vscode.UriHandler {
                         }
                         return;
                     }
-                } else {
-                    vscode.window.showInformationMessage(URI_HANDLER_STRINGS.INFO.DOWNLOAD_CANCELLED_ENV);
-                    oneDSLoggerWrapper.getLogger().traceInfo(
+
+                    if (currentAuthInfo?.Status === "Success" && currentAuthInfo.Results?.EnvironmentId !== environmentId) {
+                        oneDSLoggerWrapper.getLogger().traceInfo(
+                            uriHandlerTelemetryEventNames.URI_HANDLER_ENV_SWITCH_REQUIRED,
+                            {
+                                ...telemetryData,
+                                currentEnvId: currentAuthInfo.Results?.EnvironmentId || 'unknown',
+                                requestedEnvId: environmentId
+                            }
+                        );
+
+                        const switchEnv = await vscode.window.showWarningMessage(
+                            URI_HANDLER_STRINGS.PROMPTS.ENV_SWITCH_REQUIRED,
+                            { modal: true },
+                            URI_HANDLER_STRINGS.BUTTONS.YES,
+                            URI_HANDLER_STRINGS.BUTTONS.NO
+                        );
+
+                        if (switchEnv === URI_HANDLER_STRINGS.BUTTONS.YES) {
+                            try {
+                                progress.report({
+                                    message: "Switching environment...",
+                                    increment: 10
+                                });
+
+                                // Switch to the correct environment
+                                await this.pacWrapper.orgSelect(orgUrl);
+
+                                // Verify the switch was successful
+                                const verifyAuthInfo = await this.pacWrapper.activeOrg();
+                                if (verifyAuthInfo?.Status !== "Success" || verifyAuthInfo.Results?.EnvironmentId !== environmentId) {
+                                    vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.ENV_SWITCH_FAILED);
+                                    oneDSLoggerWrapper.getLogger().traceError(
+                                        uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
+                                        'Failed to switch to required environment',
+                                        new Error('Failed to switch to required environment'),
+                                        { ...telemetryData, error: 'env_switch_failed' }
+                                    );
+                                    return;
+                                }
+
+                                oneDSLoggerWrapper.getLogger().traceInfo(
+                                    uriHandlerTelemetryEventNames.URI_HANDLER_ENV_SWITCH_COMPLETED,
+                                    { ...telemetryData, switchedToEnvId: verifyAuthInfo.Results?.EnvironmentId }
+                                );
+                            } catch (error) {
+                                vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.ENV_SWITCH_ERROR.replace('{0}', error instanceof Error ? error.message : String(error)));
+                                oneDSLoggerWrapper.getLogger().traceError(
+                                    uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
+                                    'Error switching environment',
+                                    error instanceof Error ? error : new Error(String(error)),
+                                    { ...telemetryData, error: 'env_switch_error' }
+                                );
+
+                                // Reset PAC CLI process after environment switch failure
+                                try {
+                                    await this.pacWrapper.resetPacProcess();
+                                } catch {
+                                    // Ignore reset errors
+                                }
+                                return;
+                            }
+                        } else {
+                            vscode.window.showInformationMessage(URI_HANDLER_STRINGS.INFO.DOWNLOAD_CANCELLED_ENV);
+                            oneDSLoggerWrapper.getLogger().traceInfo(
+                                uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
+                                { ...telemetryData, reason: 'user_cancelled_env_switch' }
+                            );
+                            return;
+                        }
+                    }
+
+                    progress.report({
+                        message: "Ready to select download folder",
+                        increment: 10
+                    });
+
+                    // Brief delay to let user see the final progress message
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
+                } catch (error) {
+                    const errorMessage = error instanceof Error ? error.message : String(error);
+                    vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.URI_HANDLER_FAILED.replace('{0}', errorMessage));
+                    oneDSLoggerWrapper.getLogger().traceError(
                         uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
-                        { ...telemetryData, reason: 'user_cancelled_env_switch' }
+                        'URI handler failed during preparation',
+                        error instanceof Error ? error : new Error(errorMessage),
+                        { ...telemetryData, error: 'uri_handler_preparation_failed', duration: (Date.now() - startTime).toString() }
                     );
                     return;
                 }
             }
+        );
 
+        try {
             // Prompt user to select download folder
             const downloadResults = await vscode.window.showOpenDialog({
                 canSelectFiles: false,
@@ -346,6 +409,16 @@ class UriHandler implements vscode.UriHandler {
                 );
                 return;
             }
+
+            const urlParams = new URLSearchParams(uri.query);
+            const websiteId = urlParams.get(URI_CONSTANTS.PARAMETERS.WEBSITE_ID)!;
+            const schema = urlParams.get(URI_CONSTANTS.PARAMETERS.SCHEMA);
+            const siteName = urlParams.get(URI_CONSTANTS.PARAMETERS.SITE_NAME);
+            const siteUrl = urlParams.get(URI_CONSTANTS.PARAMETERS.SITE_URL);
+
+            const modelVersion = schema && schema.toLowerCase() === URI_CONSTANTS.SCHEMA_VALUES.PORTAL_SCHEMA_V2
+                ? URI_CONSTANTS.MODEL_VERSIONS.VERSION_2
+                : URI_CONSTANTS.MODEL_VERSIONS.VERSION_1;
 
             let selectedFolder = downloadResults[0];
 
