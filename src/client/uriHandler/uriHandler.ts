@@ -179,7 +179,6 @@ class UriHandler implements vscode.UriHandler {
      */
     private validateRequiredParameters(uriParams: UriParameters, telemetryData: Record<string, string>): void {
         if (!uriParams.websiteId) {
-            vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.WEBSITE_ID_REQUIRED);
             oneDSLoggerWrapper.getLogger().traceError(
                 uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
                 'Missing website ID',
@@ -190,7 +189,6 @@ class UriHandler implements vscode.UriHandler {
         }
 
         if (!uriParams.environmentId) {
-            vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.ENVIRONMENT_ID_REQUIRED);
             oneDSLoggerWrapper.getLogger().traceError(
                 uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
                 'Missing environment ID',
@@ -201,7 +199,6 @@ class UriHandler implements vscode.UriHandler {
         }
 
         if (!uriParams.orgUrl) {
-            vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.ORG_URL_REQUIRED);
             oneDSLoggerWrapper.getLogger().traceError(
                 uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
                 'Missing organization URL',
@@ -363,7 +360,6 @@ class UriHandler implements vscode.UriHandler {
                         { ...telemetryData, switchedToEnvId: verifyAuthInfo.Results?.EnvironmentId }
                     );
                 } catch (error) {
-                    vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.ENV_SWITCH_ERROR.replace('{0}', error instanceof Error ? error.message : String(error)));
                     await this.resetPacProcessAndThrow(error, telemetryData, 'Error switching environment', 'env_switch_error');
                 }
             } else {
@@ -467,7 +463,6 @@ class UriHandler implements vscode.UriHandler {
 
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
-            vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.DOWNLOAD_FAILED.replace('{0}', errorMessage));
             oneDSLoggerWrapper.getLogger().traceError(
                 uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
                 'Download failed',
@@ -484,7 +479,6 @@ class UriHandler implements vscode.UriHandler {
      * Reset PAC process and throw error
      */
     private async resetPacProcessAndThrow(error: unknown, telemetryData: Record<string, string>, message: string, errorType: string): Promise<never> {
-        vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.AUTH_FAILED);
         oneDSLoggerWrapper.getLogger().traceError(
             uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
             message,
