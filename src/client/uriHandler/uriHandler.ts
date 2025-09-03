@@ -160,7 +160,26 @@ class UriHandler implements vscode.UriHandler {
             telemetryData.modelVersion = modelVersion.toString();
 
             // Check if user is authenticated with PAC CLI
-            const authInfo = await this.pacWrapper.activeOrg();
+            let authInfo;
+            try {
+                authInfo = await this.pacWrapper.activeOrg();
+            } catch (error) {
+                vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.AUTH_FAILED);
+                oneDSLoggerWrapper.getLogger().traceError(
+                    uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
+                    'Failed to check authentication status',
+                    error instanceof Error ? error : new Error(String(error)),
+                    { ...telemetryData, error: 'auth_check_failed' }
+                );
+
+                // Reset PAC CLI process for future operations
+                try {
+                    await this.pacWrapper.resetPacProcess();
+                } catch {
+                    // Ignore reset errors
+                }
+                return;
+            }
 
             if (!authInfo || authInfo.Status !== "Success") {
                 oneDSLoggerWrapper.getLogger().traceInfo(
@@ -176,26 +195,44 @@ class UriHandler implements vscode.UriHandler {
                 );
 
                 if (authRequired === URI_HANDLER_STRINGS.BUTTONS.YES) {
-                    // Trigger authentication
-                    await this.pacWrapper.authCreateNewAuthProfileForOrg(orgUrl);
+                    try {
+                        // Trigger authentication
+                        await this.pacWrapper.authCreateNewAuthProfileForOrg(orgUrl);
 
-                    // Check authentication again
-                    const newAuthInfo = await this.pacWrapper.activeOrg();
-                    if (!newAuthInfo || newAuthInfo.Status !== "Success") {
+                        // Check authentication again
+                        const newAuthInfo = await this.pacWrapper.activeOrg();
+                        if (!newAuthInfo || newAuthInfo.Status !== "Success") {
+                            vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.AUTH_FAILED);
+                            oneDSLoggerWrapper.getLogger().traceError(
+                                uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
+                                'Authentication failed after user initiated auth',
+                                new Error('Authentication failed after user initiated auth'),
+                                { ...telemetryData, error: 'auth_failed' }
+                            );
+                            return;
+                        }
+
+                        oneDSLoggerWrapper.getLogger().traceInfo(
+                            uriHandlerTelemetryEventNames.URI_HANDLER_AUTH_COMPLETED,
+                            { ...telemetryData, newAuthStatus: newAuthInfo.Status }
+                        );
+                    } catch (authError) {
                         vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.AUTH_FAILED);
                         oneDSLoggerWrapper.getLogger().traceError(
                             uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
-                            'Authentication failed after user initiated auth',
-                            new Error('Authentication failed after user initiated auth'),
-                            { ...telemetryData, error: 'auth_failed' }
+                            'Authentication operation failed',
+                            authError instanceof Error ? authError : new Error(String(authError)),
+                            { ...telemetryData, error: 'auth_operation_failed' }
                         );
+
+                        // Reset PAC CLI process after auth failure
+                        try {
+                            await this.pacWrapper.resetPacProcess();
+                        } catch {
+                            // Ignore reset errors
+                        }
                         return;
                     }
-
-                    oneDSLoggerWrapper.getLogger().traceInfo(
-                        uriHandlerTelemetryEventNames.URI_HANDLER_AUTH_COMPLETED,
-                        { ...telemetryData, newAuthStatus: newAuthInfo.Status }
-                    );
                 } else {
                     vscode.window.showInformationMessage(URI_HANDLER_STRINGS.INFO.DOWNLOAD_CANCELLED_AUTH);
                     oneDSLoggerWrapper.getLogger().traceInfo(
@@ -205,7 +242,27 @@ class UriHandler implements vscode.UriHandler {
                     return;
                 }
             }            // Check if the current environment matches the requested one
-            const currentAuthInfo = await this.pacWrapper.activeOrg();
+            let currentAuthInfo;
+            try {
+                currentAuthInfo = await this.pacWrapper.activeOrg();
+            } catch (error) {
+                vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.ENV_SWITCH_FAILED);
+                oneDSLoggerWrapper.getLogger().traceError(
+                    uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
+                    'Failed to check current environment',
+                    error instanceof Error ? error : new Error(String(error)),
+                    { ...telemetryData, error: 'env_check_failed' }
+                );
+
+                // Reset PAC CLI process for future operations
+                try {
+                    await this.pacWrapper.resetPacProcess();
+                } catch {
+                    // Ignore reset errors
+                }
+                return;
+            }
+
             if (currentAuthInfo?.Status === "Success" && currentAuthInfo.Results?.EnvironmentId !== environmentId) {
                 oneDSLoggerWrapper.getLogger().traceInfo(
                     uriHandlerTelemetryEventNames.URI_HANDLER_ENV_SWITCH_REQUIRED,
@@ -253,6 +310,13 @@ class UriHandler implements vscode.UriHandler {
                             error instanceof Error ? error : new Error(String(error)),
                             { ...telemetryData, error: 'env_switch_error' }
                         );
+
+                        // Reset PAC CLI process after environment switch failure
+                        try {
+                            await this.pacWrapper.resetPacProcess();
+                        } catch {
+                            // Ignore reset errors
+                        }
                         return;
                     }
                 } else {
@@ -371,6 +435,22 @@ class UriHandler implements vscode.UriHandler {
                     error instanceof Error ? error : new Error(errorMessage),
                     { ...telemetryData, error: 'download_failed' }
                 );
+
+                // Reset PAC CLI process to ensure it's in a clean state for next operation
+                try {
+                    await this.pacWrapper.resetPacProcess();
+                    oneDSLoggerWrapper.getLogger().traceInfo(
+                        uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
+                        { ...telemetryData, message: 'PAC process reset after download failure' }
+                    );
+                } catch (resetError) {
+                    oneDSLoggerWrapper.getLogger().traceError(
+                        uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
+                        'Failed to reset PAC process after download failure',
+                        resetError instanceof Error ? resetError : new Error(String(resetError)),
+                        { ...telemetryData, error: 'pac_reset_failed' }
+                    );
+                }
             }
 
         } catch (error) {
