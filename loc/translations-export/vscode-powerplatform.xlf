@@ -1077,6 +1077,15 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
     <trans-unit id="powerpages.copilotPanel.clearConversation.title">
       <source xml:lang="en">Clear Conversation</source>
     </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.compareWithLocal.title">
+      <source xml:lang="en">Compare with Local</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.metadataDiff.login">
+      <source xml:lang="en">Compare your Power Pages website against a Power Pages environment to view any differences. [Learn more](https://go.microsoft.com/fwlink/?linkid=2305702).
+[Get Started](command:microsoft.powerplatform.pages.metadataDiff.triggerFlow)</source>
+      <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The second line should be '[TRANSLATION HERE](command:microsoft.powerplatform.pages.metadataDiff.triggerFlow).', keeping brackets and the text in the parentheses unmodified</note>
+    </trans-unit>
     <trans-unit id="powerpages.copilotPanel.title">
       <source xml:lang="en">Copilot In Power Pages</source>
     </trans-unit>
@@ -1209,6 +1218,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title">
       <source xml:lang="en">POWER PAGES ACTIONS</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.metadataDiff.title">
+      <source xml:lang="en">POWER PAGES METADATA COMPARATOR</source>
     </trans-unit>
     <trans-unit id="power-platform-activitybar.title">
       <source xml:lang="en">Power Platform</source>

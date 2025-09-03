@@ -1238,7 +1238,7 @@
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.compareWithLocal",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite)",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite || viewItem == inactiveSite)",
           "group": "siteAction@9"
         }
       ]
