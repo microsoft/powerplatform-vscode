@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'loc/translations-import/**'
+  workflow_dispatch:  # Add this for manual testing
 
 jobs:
   update-localization:
