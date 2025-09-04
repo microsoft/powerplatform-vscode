@@ -53,7 +53,9 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
         }
         // Set context to show welcome message again
         vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.metadataDiff.hasData", false);
-        this._onDidChangeTreeData.fire();
+    this._onDidChangeTreeData.fire();
+    // Also refresh Actions Hub so the integrated root node updates
+    vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
     }
 
     getTreeItem(element: MetadataDiffTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
@@ -166,10 +168,20 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
 
             const diffFiles = await this.getDiffFiles(workspacePath, storagePath);
             if (diffFiles.size === 0) {
+                // Explicitly clear cache & contexts when no differences
+                this._diffItems = [];
+                vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.metadataDiff.hasData", false);
                 return [];
             }
 
-            return this.buildTreeHierarchy(diffFiles);
+            const items = this.buildTreeHierarchy(diffFiles);
+            // Cache for Actions Hub wrapper which reads the private field directly
+            this._diffItems = items;
+            // Update contexts so welcome content & root node state update
+            vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.metadataDiff.hasData", this._diffItems.length > 0);
+            // Refresh Actions Hub so the Metadata Diff group re-renders with data
+            vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
+            return items;
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(
                 Constants.EventNames.METADATA_DIFF_CURRENT_ENV_FETCH_FAILED,
@@ -295,6 +307,9 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
         }
 
         this._diffItems = Array.from(rootNode.getChildrenMap().values());
-        this._onDidChangeTreeData.fire();
+    this._onDidChangeTreeData.fire();
+    // Mark that we now have data and refresh Actions Hub view
+    vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.metadataDiff.hasData", this._diffItems.length > 0);
+    vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
     }
 }

@@ -21,6 +21,62 @@ import { getBaseEventInfo } from "./TelemetryHelper";
 import { PROVIDER_ID } from "../../../common/services/Constants";
 import { getOIDFromToken } from "../../../common/services/AuthenticationProvider";
 import ArtemisContext from "../../ArtemisContext";
+import { MetadataDiffTreeDataProvider } from "../../../common/power-pages/metadata-diff/MetadataDiffTreeDataProvider";
+import { MetadataDiffTreeItem } from "../../../common/power-pages/metadata-diff/tree-items/MetadataDiffTreeItem";
+
+// Wrapper classes to surface Metadata Diff under Actions Hub
+class MetadataDiffWrapperTreeItem extends ActionsHubTreeItem {
+    constructor(private readonly _item: MetadataDiffTreeItem) {
+        super(
+            _item.label?.toString(),
+            _item.collapsibleState ?? vscode.TreeItemCollapsibleState.None,
+            _item.iconPath || new vscode.ThemeIcon("file"),
+            _item.contextValue || "metadataDiffItem",
+            (typeof _item.description === "string" ? _item.description : "")
+        );
+        // Copy over command & tooltip if present
+        this.command = _item.command;
+        this.tooltip = _item.tooltip;
+    }
+
+    public getChildren(): ActionsHubTreeItem[] {
+        // Map underlying children to wrapper items
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const children: MetadataDiffTreeItem[] = (this._item as any).getChildren ? (this._item as any).getChildren() : [];
+        if (!children || !Array.isArray(children)) {
+            return [];
+        }
+        return children.map(c => new MetadataDiffWrapperTreeItem(c));
+    }
+}
+
+class MetadataDiffGroupTreeItem extends ActionsHubTreeItem {
+    constructor(private readonly _provider: MetadataDiffTreeDataProvider, hasData: boolean) {
+        super(
+            "Metadata Diff",
+            hasData ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.Collapsed,
+            new vscode.ThemeIcon("folder"),
+            "metadataDiffRoot",
+            hasData ? "" : "No data yet"
+        );
+        this.tooltip = "Power Pages Metadata Comparison";
+    }
+
+    public getChildren(): ActionsHubTreeItem[] {
+        // Force provider to populate its cache if empty (async ignored intentionally)
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        // @ts-expect-error Accessing private field for integration wrapper
+        if (this._provider._diffItems?.length === 0) {
+            this._provider.getChildren();
+        }
+        // @ts-expect-error Accessing private field for integration wrapper
+        const items: MetadataDiffTreeItem[] | null | undefined = this._provider._diffItems || [];
+        if (!items || !Array.isArray(items)) {
+            return [];
+        }
+        return items.map(i => new MetadataDiffWrapperTreeItem(i));
+    }
+}
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -33,6 +89,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     private _otherSites: IOtherSiteInfo[] = [];
     private _loadWebsites = true;
     private _isCodeQlScanEnabled: boolean;
+    private static _metadataDiffProvider: MetadataDiffTreeDataProvider | undefined;
 
     private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal, isCodeQlScanEnabled: boolean) {
         this._isCodeQlScanEnabled = isCodeQlScanEnabled;
@@ -162,6 +219,10 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
     }
 
+    public static setMetadataDiffProvider(provider: MetadataDiffTreeDataProvider): void {
+        this._metadataDiffProvider = provider;
+    }
+
     getTreeItem(element: ActionsHubTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
         return element;
     }
@@ -195,13 +256,24 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                     currentEnvironmentName: authInfo!.OrganizationFriendlyName //Already checked in checkAuthInfo
                 };
 
-                if(!this._otherSites.length){
-                    return [new EnvironmentGroupTreeItem(currentEnvInfo, this._context, this._activeSites, this._inactiveSites)];
+                const rootItems: ActionsHubTreeItem[] = [];
+
+                // Inject Metadata Diff root (if enabled & provider exists)
+                const mdProvider = ActionsHubTreeDataProvider._metadataDiffProvider;
+                if (mdProvider) {
+                    // Ensure provider builds diff list before evaluating hasData
+                    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                    mdProvider.getChildren();
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const hasData = (mdProvider as any)._diffItems && (mdProvider as any)._diffItems.length > 0;
+                    rootItems.push(new MetadataDiffGroupTreeItem(mdProvider, hasData));
                 }
-                return [
-                    new EnvironmentGroupTreeItem(currentEnvInfo, this._context, this._activeSites, this._inactiveSites),
-                    new OtherSitesGroupTreeItem(this._otherSites)
-                ];
+
+                rootItems.push(new EnvironmentGroupTreeItem(currentEnvInfo, this._context, this._activeSites, this._inactiveSites));
+                if(this._otherSites.length){
+                    rootItems.push(new OtherSitesGroupTreeItem(this._otherSites));
+                }
+                return rootItems;
             } else {
                 // Login experience scenario
                 return [];

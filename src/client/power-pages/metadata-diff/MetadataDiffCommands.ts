@@ -46,10 +46,9 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
             await vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.metadataDiff.hasData", false);
 
             // Reload tree data provider to show welcome message
-            const treeDataProvider = MetadataDiffTreeDataProvider.initialize(context);
-            context.subscriptions.push(
-                vscode.window.registerTreeDataProvider("microsoft.powerplatform.pages.metadataDiff", treeDataProvider)
-            );
+            // Reinitialize provider and update Actions Hub root
+            MetadataDiffTreeDataProvider.initialize(context);
+            vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
 
             vscode.window.showInformationMessage("Metadata diff view cleared successfully.");
         } catch (error) {
@@ -124,10 +123,8 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
             });
 
             if (pacPagesDownload) {
-                const treeDataProvider = MetadataDiffTreeDataProvider.initialize(context);
-                context.subscriptions.push(
-                    vscode.window.registerTreeDataProvider("microsoft.powerplatform.pages.metadataDiff", treeDataProvider)
-                );
+                MetadataDiffTreeDataProvider.initialize(context);
+                vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
             } else {
                 vscode.window.showErrorMessage("Failed to download metadata.");
             }
@@ -272,10 +269,8 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                 }
             });
             if (pacPagesDownload) {
-                const treeDataProvider = MetadataDiffTreeDataProvider.initialize(context);
-                context.subscriptions.push(
-                    vscode.window.registerTreeDataProvider("microsoft.powerplatform.pages.metadataDiff", treeDataProvider)
-                );
+                MetadataDiffTreeDataProvider.initialize(context);
+                vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
             }
             else{
                 vscode.window.showErrorMessage("Failed to download metadata.");
@@ -398,14 +393,8 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
 
                 // Clean up any existing tree data provider
                 const treeDataProvider = new MetadataDiffTreeDataProvider(context);
-
-                // Update the tree with imported data
-                await treeDataProvider.setDiffFiles(report.files);
-
-                // Register the new tree data provider
-                context.subscriptions.push(
-                    vscode.window.registerTreeDataProvider("microsoft.powerplatform.pages.metadataDiff", treeDataProvider)
-                );
+                await treeDataProvider.setDiffFiles(report.files); // triggers refresh
+                vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
 
                 vscode.window.showInformationMessage("Report imported successfully");
             }

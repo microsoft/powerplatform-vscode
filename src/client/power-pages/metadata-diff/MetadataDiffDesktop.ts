@@ -13,13 +13,14 @@ import { MetadataDiffTreeDataProvider } from "../../../common/power-pages/metada
 import { PacTerminal } from "../../lib/PacTerminal";
 import { PagesList } from "../../pac/PacTypes";
 import { registerMetadataDiffCommands } from "./MetadataDiffCommands";
+import { ActionsHubTreeDataProvider } from "../actions-hub/ActionsHubTreeDataProvider";
 
 export class MetadataDiffDesktop {
     private static _isInitialized = false;
     private static _treeDataProvider: MetadataDiffTreeDataProvider | undefined;
 
     static isEnabled(): boolean {
-        const enableMetadataDiff = ECSFeaturesClient.getConfig(EnableMetadataDiff).enableMetadataDiff
+        const enableMetadataDiff = true; //ECSFeaturesClient.getConfig(EnableMetadataDiff).enableMetadataDiff
 
         if (enableMetadataDiff === undefined) {
             return false;
@@ -67,9 +68,10 @@ export class MetadataDiffDesktop {
 
             const treeDataProvider = MetadataDiffTreeDataProvider.initialize(context);
             MetadataDiffDesktop._treeDataProvider = treeDataProvider;
-            context.subscriptions.push(
-                vscode.window.registerTreeDataProvider("microsoft.powerplatform.pages.metadataDiff", treeDataProvider)
-            );
+            // Integrate into Actions Hub instead of separate view
+            ActionsHubTreeDataProvider.setMetadataDiffProvider(treeDataProvider);
+            // Force refresh of Actions Hub to show new root node
+            vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
 
             MetadataDiffDesktop._isInitialized = true;
             oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_INITIALIZED);
