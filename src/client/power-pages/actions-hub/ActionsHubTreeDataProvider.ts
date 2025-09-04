@@ -258,6 +258,11 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
                 const rootItems: ActionsHubTreeItem[] = [];
 
+                rootItems.push(new EnvironmentGroupTreeItem(currentEnvInfo, this._context, this._activeSites, this._inactiveSites));
+                if(this._otherSites.length){
+                    rootItems.push(new OtherSitesGroupTreeItem(this._otherSites));
+                }
+
                 // Inject Metadata Diff root (if enabled & provider exists)
                 const mdProvider = ActionsHubTreeDataProvider._metadataDiffProvider;
                 if (mdProvider) {
@@ -269,10 +274,6 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                     rootItems.push(new MetadataDiffGroupTreeItem(mdProvider, hasData));
                 }
 
-                rootItems.push(new EnvironmentGroupTreeItem(currentEnvInfo, this._context, this._activeSites, this._inactiveSites));
-                if(this._otherSites.length){
-                    rootItems.push(new OtherSitesGroupTreeItem(this._otherSites));
-                }
                 return rootItems;
             } else {
                 // Login experience scenario
