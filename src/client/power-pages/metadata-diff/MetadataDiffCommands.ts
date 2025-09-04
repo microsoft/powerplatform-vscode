@@ -10,10 +10,11 @@ import { PacTerminal } from "../../lib/PacTerminal";
 import { Constants, SUCCESS } from "../../../common/power-pages/metadata-diff/Constants";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { MetadataDiffTreeDataProvider } from "../../../common/power-pages/metadata-diff/MetadataDiffTreeDataProvider";
-import { createAuthProfileExp } from "../../../common/utilities/PacAuthUtil";
-import { getWebsiteRecordId } from "../../../common/utilities/WorkspaceInfoFinderUtil";
 import { MetadataDiffDesktop } from "./MetadataDiffDesktop";
 import { ActionsHubTreeDataProvider } from "../actions-hub/ActionsHubTreeDataProvider";
+import { createAuthProfileExp } from "../../../common/utilities/PacAuthUtil";
+import { getWebsiteRecordId } from "../../../common/utilities/WorkspaceInfoFinderUtil";
+// Duplicate imports removed
 import { generateDiffReport, getAllDiffFiles, MetadataDiffReport } from "./MetadataDiffUtils";
 
 export async function registerMetadataDiffCommands(context: vscode.ExtensionContext, pacTerminal: PacTerminal): Promise<void> {
@@ -78,10 +79,11 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
 
             const progressOptions: vscode.ProgressOptions = {
                 location: vscode.ProgressLocation.Notification,
-                title: "Re-syncing website metadata",
+                title: vscode.l10n.t("Re-syncing website metadata"),
                 cancellable: false
             };
             let pacPagesDownload;
+            let comparisonBuilt = false;
             await vscode.window.withProgress(progressOptions, async (progress) => {
                 progress.report({ message: "Looking for this website in the connected environment..." });
                 const pacPagesList = await MetadataDiffDesktop.getPagesList(pacTerminal);
@@ -91,27 +93,26 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                         vscode.window.showErrorMessage("Website not found in the connected environment.");
                         return;
                     }
-                    progress.report({ message: `Downloading \"${websiteRecord.name}\" as ${websiteRecord.modelVersion === "v2" ? "enhanced" : "standard"} data model. Please wait...` });
+                    progress.report({ message: vscode.l10n.t('Retrieving "{0}" as {1} data model. Please wait...', websiteRecord.name, websiteRecord.modelVersion === 'v2' ? 'enhanced' : 'standard') });
                     pacPagesDownload = await pacWrapper.pagesDownload(
                         storagePath,
                         websiteId,
                         websiteRecord.modelVersion === "v1" || websiteRecord.modelVersion === "Standard" ? "1" : "2"
                     );
+                    if (pacPagesDownload) {
+                        progress.report({ message: vscode.l10n.t('Comparing metadata of "{0}"...', websiteRecord.name) });
+                        const provider = MetadataDiffTreeDataProvider.initialize(context);
+                        MetadataDiffDesktop.setTreeDataProvider(provider);
+                        ActionsHubTreeDataProvider.setMetadataDiffProvider(provider);
+                        await provider.getChildren();
+                        vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
+                        comparisonBuilt = true;
+                    }
                 }
             });
 
-            if (pacPagesDownload) {
-                // Create a brand-new provider instance bound to latest storage content
-                const treeDataProvider = MetadataDiffTreeDataProvider.initialize(context);
-                // Register with desktop helper & Actions Hub so future resets use this instance
-                MetadataDiffDesktop.setTreeDataProvider(treeDataProvider);
-                ActionsHubTreeDataProvider.setMetadataDiffProvider(treeDataProvider);
-                // Force data population (will also set hasData context + refresh)
-                // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                treeDataProvider.getChildren();
-                // Explicit refresh to redraw UI while async population runs
-                vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
-                vscode.window.showInformationMessage("Re-sync completed.");
+            if (pacPagesDownload && comparisonBuilt) {
+                vscode.window.showInformationMessage(vscode.l10n.t("You can now view the comparison"));
             } else {
                 vscode.window.showErrorMessage("Failed to re-sync metadata.");
             }
@@ -180,11 +181,12 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
 
             const progressOptions: vscode.ProgressOptions = {
                 location: vscode.ProgressLocation.Notification,
-                title: "Downloading website metadata",
+                title: vscode.l10n.t("Downloading website metadata"),
                 cancellable: false
             };
 
             let pacPagesDownload;
+            let comparisonBuilt = false;
             await vscode.window.withProgress(progressOptions, async (progress) => {
                 progress.report({ message: "Looking for this website in the connected environment..." });
                 const pacPagesList = await MetadataDiffDesktop.getPagesList(pacTerminal);
@@ -194,19 +196,26 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                         vscode.window.showErrorMessage("Website not found in the connected environment.");
                         return;
                     }
-                    progress.report({ message: `Downloading "${websiteRecord.name}" as ${websiteRecord.modelVersion === "v2" ? "enhanced" : "standard"} data model. Please wait...` });
+                    progress.report({ message: vscode.l10n.t('Retrieving "{0}" as {1} data model. Please wait...', websiteRecord.name, websiteRecord.modelVersion === 'v2' ? 'enhanced' : 'standard') });
                     pacPagesDownload = await pacWrapper.pagesDownload(
                         storagePath,
                         websiteId,
                         websiteRecord.modelVersion === "v1" || websiteRecord.modelVersion === "Standard" ? "1" : "2"
                     );
-                    vscode.window.showInformationMessage("Download completed.");
+                    if (pacPagesDownload) {
+                        progress.report({ message: vscode.l10n.t('Comparing metadata of "{0}"...', websiteRecord.name) });
+                        const provider = MetadataDiffTreeDataProvider.initialize(context);
+                        MetadataDiffDesktop.setTreeDataProvider(provider);
+                        ActionsHubTreeDataProvider.setMetadataDiffProvider(provider);
+                        await provider.getChildren();
+                        vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
+                        comparisonBuilt = true;
+                    }
                 }
             });
 
-            if (pacPagesDownload) {
-                MetadataDiffTreeDataProvider.initialize(context);
-                vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
+            if (pacPagesDownload && comparisonBuilt) {
+                vscode.window.showInformationMessage(vscode.l10n.t("You can now view the comparison"));
             } else {
                 vscode.window.showErrorMessage("Failed to download metadata.");
             }
@@ -332,10 +341,11 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
             fs.mkdirSync(storagePath, { recursive: true });
             const progressOptions: vscode.ProgressOptions = {
                 location: vscode.ProgressLocation.Notification,
-                title: "Downloading website metadata",
+                title: vscode.l10n.t("Downloading website metadata"),
                 cancellable: false
             };
             let pacPagesDownload;
+            let comparisonBuilt = false;
             await vscode.window.withProgress(progressOptions, async (progress) => {
                 progress.report({ message: "Looking for this website in the connected environment..." });
                 const pacPagesList = await MetadataDiffDesktop.getPagesList(pacTerminal);
@@ -345,14 +355,21 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                         vscode.window.showErrorMessage("Website not found in the connected environment.");
                         return;
                     }
-                    progress.report({ message: `Downloading "${websiteRecord.name}" as ${websiteRecord.modelVersion === "v2" ? "enhanced" : "standard"} data model. Please wait...` });
+                    progress.report({ message: vscode.l10n.t('Retrieving "{0}" as {1} data model. Please wait...', websiteRecord.name, websiteRecord.modelVersion === 'v2' ? 'enhanced' : 'standard') });
                     pacPagesDownload = await pacWrapper.pagesDownload(storagePath, websiteId, websiteRecord.modelVersion == "v1" ? "1" : "2");
-                    vscode.window.showInformationMessage("Download completed.");
+                    if (pacPagesDownload) {
+                        progress.report({ message: vscode.l10n.t('Comparing metadata of "{0}"...', websiteRecord.name) });
+                        const provider = MetadataDiffTreeDataProvider.initialize(context);
+                        MetadataDiffDesktop.setTreeDataProvider(provider);
+                        ActionsHubTreeDataProvider.setMetadataDiffProvider(provider);
+                        await provider.getChildren();
+                        vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
+                        comparisonBuilt = true;
+                    }
                 }
             });
-            if (pacPagesDownload) {
-                MetadataDiffTreeDataProvider.initialize(context);
-                vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
+            if (pacPagesDownload && comparisonBuilt) {
+                vscode.window.showInformationMessage(vscode.l10n.t("You can now view the comparison"));
             }
             else{
                 vscode.window.showErrorMessage("Failed to download metadata.");

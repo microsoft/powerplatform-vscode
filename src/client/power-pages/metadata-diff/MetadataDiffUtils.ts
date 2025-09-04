@@ -91,7 +91,7 @@ h1{margin-top:0;font-size:20px;}
 h2{margin-top:24px;font-size:16px;border-bottom:1px solid #ccc;padding-bottom:4px;}
 .meta{color:#666;font-size:12px;margin-top:-4px;}
 ul.file-list{list-style:none;margin:0;padding:0;}
-li.file-item{margin:6px 0;padding:8px;border:1px solid #dcdcdc;border-radius:4px;background:var(--vscode-editor-background,#fff);} 
+li.file-item{margin:6px 0;padding:8px;border:1px solid #dcdcdc;border-radius:4px;background:var(--vscode-editor-background,#fff);}
 .file-header{display:flex;justify-content:space-between;align-items:center;}
 .file-name{font-weight:600;}
 .change-tag{font-size:11px;padding:2px 6px;border-radius:12px;background:#e0e0e0;color:#333;text-transform:uppercase;letter-spacing:.5px;}

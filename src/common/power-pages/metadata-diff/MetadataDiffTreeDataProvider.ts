@@ -26,6 +26,10 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
     private _onDidChangeTreeData: vscode.EventEmitter<MetadataDiffTreeItem | undefined | void> = new vscode.EventEmitter<MetadataDiffTreeItem | undefined | void>();
     readonly onDidChangeTreeData: vscode.Event<MetadataDiffTreeItem | undefined | void> = this._onDidChangeTreeData.event;
     private _diffItems: MetadataDiffTreeItem[] = [];
+    // Emits when the diff data has been fully populated for the first time
+    private _onDataLoaded: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
+    public readonly onDataLoaded: vscode.Event<void> = this._onDataLoaded.event;
+    private _dataLoadedNotified = false;
 
     constructor(context: vscode.ExtensionContext) {
         this._context = context;
@@ -41,6 +45,7 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
 
     clearItems(): void {
         this._diffItems = [];
+    this._dataLoadedNotified = false; // allow message again after reset
         // Reset any stored data
         const storagePath = this._context.storageUri?.fsPath;
         if (storagePath && fs.existsSync(storagePath)) {
@@ -181,6 +186,10 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
             vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.metadataDiff.hasData", this._diffItems.length > 0);
             // Refresh Actions Hub so the Metadata Diff group re-renders with data
             vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
+            if (!this._dataLoadedNotified && this._diffItems.length > 0) {
+                this._dataLoadedNotified = true;
+                this._onDataLoaded.fire();
+            }
             return items;
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(
@@ -311,5 +320,9 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
     // Mark that we now have data and refresh Actions Hub view
     vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.metadataDiff.hasData", this._diffItems.length > 0);
     vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
+    if (!this._dataLoadedNotified && this._diffItems.length > 0) {
+        this._dataLoadedNotified = true;
+        this._onDataLoaded.fire();
+    }
     }
 }
