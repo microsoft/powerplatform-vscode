@@ -503,7 +503,7 @@
       },
       {
         "command": "microsoft.powerplatform.pages.metadataDiff.generateReport",
-  "title": "Generate Markdown Report",
+        "title": "Generate HTML Report",
         "category": "Power Pages Metadata Diff",
         "icon": "$(markdown)"
       },

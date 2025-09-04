@@ -371,38 +371,34 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                 vscode.window.showErrorMessage("No workspace folder open");
                 return;
             }
-
             const storagePath = context.storageUri?.fsPath;
             if (!storagePath) {
                 vscode.window.showErrorMessage("Storage path not found");
                 return;
             }
 
-            // Generate report content
-            const reportContent = await generateDiffReport(workspaceFolders[0].uri.fsPath, storagePath);
+            // Generate HTML report (was Markdown previously)
+            const htmlReport = await generateDiffReport(workspaceFolders[0].uri.fsPath, storagePath);
 
-            // Create the markdown document
+            // Open source view (HTML) – helpful if user wants to copy/export.
             const doc = await vscode.workspace.openTextDocument({
-                content: reportContent,
-                language: 'markdown'
+                content: htmlReport,
+                language: 'html'
             });
-
-            // Show the document in column One
             await vscode.window.showTextDocument(doc, {
-                preview: false,  // Don't use preview mode to ensure stability
+                preview: false,
                 viewColumn: vscode.ViewColumn.One,
-                preserveFocus: false // Ensure focus is on the document
+                preserveFocus: false
             });
 
-            // Increase delay to ensure document is fully loaded and stable
-            await new Promise(resolve => setTimeout(resolve, 800));
-
-            // Close any existing preview first to avoid conflicts
-            await vscode.commands.executeCommand('markdown.preview.refresh');
-
-            // Show preview in side-by-side mode
-            await vscode.commands.executeCommand('markdown.showPreviewToSide');
-
+            // Create / reveal webview preview side-by-side
+            const panel = vscode.window.createWebviewPanel(
+                'metadataDiffReportPreview',
+                'Power Pages Metadata Diff Report',
+                { viewColumn: vscode.ViewColumn.Two, preserveFocus: true },
+                { enableScripts: true } // no scripts currently, but allow future enhancements
+            );
+            panel.webview.html = htmlReport;
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(
                 Constants.EventNames.METADATA_DIFF_REPORT_FAILED,
