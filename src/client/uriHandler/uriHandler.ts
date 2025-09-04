@@ -395,7 +395,7 @@ class UriHandler implements vscode.UriHandler {
             throw new Error('User cancelled folder selection');
         }
 
-        const selectedFolder = await UriHandlerUtils.prepareDownloadFolder(downloadResults[0], uriParams, telemetryData);
+        const selectedFolder = downloadResults[0];
         await this.executeDownload(selectedFolder, uriParams, telemetryData, startTime);
     }
 

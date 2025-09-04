@@ -148,28 +148,6 @@ export class UriHandlerUtils {
     }
 
     /**
-     * Prepare the download folder (create subfolder if needed)
-     */
-    static async prepareDownloadFolder(selectedFolder: vscode.Uri, uriParams: UriParameters, telemetryData: Record<string, string>): Promise<vscode.Uri> {
-        if (uriParams.siteName) {
-            const sanitizedSiteName = uriParams.siteName.replace(/[<>:"/\\|?*]/g, '_').trim();
-            if (sanitizedSiteName) {
-                const subFolder = vscode.Uri.joinPath(selectedFolder, sanitizedSiteName);
-                telemetryData.sanitizedSiteName = sanitizedSiteName;
-
-                try {
-                    await vscode.workspace.fs.createDirectory(subFolder);
-                    return subFolder;
-                } catch (error) {
-                    // Directory might already exist, use it anyway
-                    return subFolder;
-                }
-            }
-        }
-        return selectedFolder;
-    }
-
-    /**
      * Safely reset PAC process without throwing
      */
     static async resetPacProcessSafely(pacWrapper: PacWrapper, telemetryData: Record<string, string>): Promise<void> {
