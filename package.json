@@ -497,7 +497,7 @@
       },
       {
         "command": "microsoft.powerplatform.pages.metadataDiff.triggerFlow",
-        "title": "Connect & Download",
+  "title": "Compare with Environment",
         "category": "Power Pages Metadata Diff",
         "icon": "$(cloud-download)"
       },
@@ -819,6 +819,10 @@
           "group": "1_powerpages@5"
         },
         {
+          "command": "microsoft.powerplatform.pages.metadataDiff.triggerFlow",
+          "group": "1_powerpages@6"
+        },
+        {
           "command": "microsoft-powerapps-portals.webtemplate",
           "group": "1_powerpages@3"
         },
@@ -1098,7 +1102,7 @@
         },
         {
           "command": "microsoft.powerplatform.pages.metadataDiff.triggerFlow",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffRoot && microsoft.powerplatform.pages.metadataDiffEnabled && microsoft.powerplatform.pages.metadataDiff.connectDownloadEnabled",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffRoot && microsoft.powerplatform.pages.metadataDiffEnabled",
           "group": "metadataDiff@2"
         },
         {
