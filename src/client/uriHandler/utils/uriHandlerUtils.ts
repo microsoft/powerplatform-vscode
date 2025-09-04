@@ -112,8 +112,11 @@ export class UriHandlerUtils {
         const environmentId = urlParams.get(URI_CONSTANTS.PARAMETERS.ENV_ID);
         const orgUrl = urlParams.get(URI_CONSTANTS.PARAMETERS.ORG_URL);
         const schema = urlParams.get(URI_CONSTANTS.PARAMETERS.SCHEMA);
-        const siteName = urlParams.get(URI_CONSTANTS.PARAMETERS.SITE_NAME);
-        const siteUrl = urlParams.get(URI_CONSTANTS.PARAMETERS.SITE_URL);
+
+        const siteName = urlParams.get(URI_CONSTANTS.PARAMETERS.SITE_NAME) ||
+                         urlParams.get(URI_CONSTANTS.PARAMETERS.WEBSITE_NAME);
+        const siteUrl = urlParams.get(URI_CONSTANTS.PARAMETERS.SITE_URL) ||
+                        urlParams.get(URI_CONSTANTS.PARAMETERS.WEBSITE_PREVIEW_URL);
 
         // Determine model version based on schema parameter
         const modelVersion = schema && schema.toLowerCase() === URI_CONSTANTS.SCHEMA_VALUES.PORTAL_SCHEMA_V2
