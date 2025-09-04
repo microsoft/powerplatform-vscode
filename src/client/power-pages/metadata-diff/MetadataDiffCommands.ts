@@ -40,6 +40,80 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
         }
     });
 
+    // Explicit alias command shown in context menu (kept separate for clearer telemetry / labeling)
+    vscode.commands.registerCommand('metadataDiff.openComparison', async (itemOrWorkspace?: unknown, maybeStored?: unknown) => {
+        // Support invocation with either (workspace, stored) or a single tree item
+        let workspaceFile: string | undefined;
+        let storedFile: string | undefined;
+        if (typeof itemOrWorkspace === 'string') {
+            workspaceFile = itemOrWorkspace;
+            storedFile = typeof maybeStored === 'string' ? maybeStored : undefined;
+        } else if (itemOrWorkspace && typeof itemOrWorkspace === 'object') {
+            // Attempt to read wrapper properties
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const obj: any = itemOrWorkspace;
+            workspaceFile = obj.filePath || obj.workspaceFile;
+            storedFile = obj.storedFilePath || obj.storageFile;
+        }
+        if (workspaceFile && storedFile) {
+            await vscode.commands.executeCommand('metadataDiff.openDiff', workspaceFile, storedFile);
+        } else {
+            vscode.window.showWarningMessage('Unable to open comparison for this item.');
+        }
+    });
+
+    // Discard local changes => overwrite workspace file with stored (remote) version
+    vscode.commands.registerCommand('metadataDiff.discardLocalChanges', async (itemOrWorkspace?: unknown, maybeStored?: unknown) => {
+        try {
+            let workspaceFile: string | undefined;
+            let storedFile: string | undefined;
+            if (typeof itemOrWorkspace === 'string') {
+                workspaceFile = itemOrWorkspace;
+                storedFile = typeof maybeStored === 'string' ? maybeStored : undefined;
+            } else if (itemOrWorkspace && typeof itemOrWorkspace === 'object') {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const obj: any = itemOrWorkspace;
+                workspaceFile = obj.filePath || obj.workspaceFile;
+                storedFile = obj.storedFilePath || obj.storageFile;
+            }
+            if (!workspaceFile || !storedFile) {
+                vscode.window.showWarningMessage('Unable to discard changes for this item.');
+                return;
+            }
+            const confirm = await vscode.window.showWarningMessage(
+                vscode.l10n.t('Discard local changes to "{0}"? This will overwrite the local file with the server copy.', path.basename(workspaceFile)),
+                { modal: true },
+                vscode.l10n.t('Discard')
+            );
+            if (confirm !== vscode.l10n.t('Discard')) {
+                return;
+            }
+            const remoteContent = fs.readFileSync(storedFile, 'utf8');
+            fs.writeFileSync(workspaceFile, remoteContent, 'utf8');
+            // Show a diff after discard for confirmation (optional) or simply info message
+            vscode.window.showInformationMessage(vscode.l10n.t('Local changes discarded for "{0}".', path.basename(workspaceFile)));
+            // Re-run diff provider to update statuses (file should now be identical and removed from diff view)
+            const provider = MetadataDiffDesktop['_treeDataProvider'] as MetadataDiffTreeDataProvider | undefined; // best-effort access
+            if (provider) {
+                // Invalidate cached diff items without wiping remote storage directory
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const providerAny: any = provider;
+                if (providerAny._diffItems) {
+                    providerAny._diffItems = [];
+                }
+                await provider.getChildren();
+            }
+            vscode.commands.executeCommand('microsoft.powerplatform.pages.actionsHub.refresh');
+        } catch (error) {
+            oneDSLoggerWrapper.getLogger().traceError(
+                Constants.EventNames.METADATA_DIFF_REPORT_FAILED,
+                error as string,
+                error as Error
+            );
+            vscode.window.showErrorMessage('Failed to discard local changes');
+        }
+    });
+
     vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.resync", async () => {
         try {
             // Only proceed if we already have data (context set by menu 'when' clause)

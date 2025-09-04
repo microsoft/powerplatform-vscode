@@ -39,6 +39,16 @@ class MetadataDiffWrapperTreeItem extends ActionsHubTreeItem {
         this.tooltip = _item.tooltip;
     }
 
+    // Expose underlying file paths for command handlers invoked via context menu
+    public get filePath(): string | undefined {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (this._item as any).filePath;
+    }
+    public get storedFilePath(): string | undefined {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (this._item as any).storedFilePath;
+    }
+
     public getChildren(): ActionsHubTreeItem[] {
         // Map underlying children to wrapper items
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

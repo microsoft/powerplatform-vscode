@@ -32,7 +32,7 @@
     "extends": "@istanbuljs/nyc-config-typescript",
     "all": "true",
     "include": [
-      "**/*.ts"
+  "**/*.ts"
     ],
     "exclude": [
       "**/*.test.ts"
@@ -530,6 +530,18 @@
   "title": "Import Comparison View",
         "category": "Power Pages Metadata Diff",
         "icon": "$(folder-opened)"
+      },
+      {
+        "command": "metadataDiff.openComparison",
+        "title": "Open Comparison",
+        "category": "Power Pages Metadata Diff",
+        "icon": "$(diff)"
+      },
+      {
+        "command": "metadataDiff.discardLocalChanges",
+        "title": "Discard Local Changes",
+        "category": "Power Pages Metadata Diff",
+        "icon": "$(discard)"
       }
     ],
     "configuration": {
@@ -1118,6 +1130,16 @@
           "command": "microsoft.powerplatform.pages.metadataDiff.importReport",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffItem && microsoft.powerplatform.pages.metadataDiffEnabled",
           "group": "metadataDiff@6"
+        },
+        {
+          "command": "metadataDiff.openComparison",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffFileModified && microsoft.powerplatform.pages.metadataDiffEnabled",
+          "group": "metadataDiffFile@1"
+        },
+        {
+          "command": "metadataDiff.discardLocalChanges",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffFileModified && microsoft.powerplatform.pages.metadataDiffEnabled",
+          "group": "metadataDiffFile@2"
         },
         {
           "command": "pacCLI.authPanel.nameAuthProfile",
