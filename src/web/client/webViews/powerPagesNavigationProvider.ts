@@ -10,6 +10,8 @@ import { httpMethod } from '../common/constants';
 import { getBackToStudioURL, getValidWebsitePreviewUrl } from '../utilities/commonUtil';
 import { webExtensionTelemetryEventNames } from '../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents';
 import { PowerPagesNavigationConstants } from './constants/powerPagesNavigationConstants';
+import { EnableOpenInDesktop } from '../../../common/ecs-features/ecsFeatureGates';
+import { ECSFeaturesClient } from '../../../common/ecs-features/ecsFeatureClient';
 
 export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<PowerPagesNode> {
 
@@ -57,16 +59,21 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             },
             PowerPagesNavigationConstants.icons.DESKTOP);
 
+        // Check if open in desktop is enabled via ECS flag
+        const isOpenInDesktopEnabled = ECSFeaturesClient.getConfig(EnableOpenInDesktop).enableOpenInDesktop;
+
         if (label && label === previewPowerPage.label) {
             nodes.push(previewPowerPage);
         } else if (label && label === backToStudio.label) {
             nodes.push(backToStudio);
-        } else if (label && label === openInDesktop.label) {
+        } else if (label && label === openInDesktop.label && isOpenInDesktopEnabled) {
             nodes.push(openInDesktop);
         } else {
             nodes.push(previewPowerPage);
             nodes.push(backToStudio);
-            nodes.push(openInDesktop);
+            if (isOpenInDesktopEnabled) {
+                nodes.push(openInDesktop);
+            }
         }
 
         return nodes;
