@@ -23,6 +23,7 @@ import { getOIDFromToken } from "../../../common/services/AuthenticationProvider
 import ArtemisContext from "../../ArtemisContext";
 import { MetadataDiffTreeDataProvider } from "../../../common/power-pages/metadata-diff/MetadataDiffTreeDataProvider";
 import { MetadataDiffTreeItem } from "../../../common/power-pages/metadata-diff/tree-items/MetadataDiffTreeItem";
+import { Constants as MDiffConstants } from "../../../common/power-pages/metadata-diff/Constants";
 
 // Wrapper classes to surface Metadata Diff under Actions Hub
 class MetadataDiffWrapperTreeItem extends ActionsHubTreeItem {
@@ -316,7 +317,16 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                         envName = authInfo?.OrganizationFriendlyName || vscode.l10n.t("Current Environment");
                         label = vscode.l10n.t("Metadata Diff ({0} (Local <-> {1}))", websiteName, envName);
                     }
-                    rootItems.push(new MetadataDiffGroupTreeItem(mdProvider, hasData, label, websiteName, envName));
+                    const groupItem = new MetadataDiffGroupTreeItem(mdProvider, hasData, label, websiteName, envName);
+                    rootItems.push(groupItem);
+                    try {
+                        oneDSLoggerWrapper.getLogger().traceInfo(MDiffConstants.EventNames.METADATA_DIFF_ROOT_RENDERED, {
+                            hasData,
+                            itemCount: hasData ? (mdProvider as any)._diffItems.length : 0,
+                            websiteName,
+                            environmentName: envName
+                        });
+                    } catch { /* non-blocking */ }
                 }
 
                 return rootItems;

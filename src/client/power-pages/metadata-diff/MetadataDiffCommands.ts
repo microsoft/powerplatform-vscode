@@ -16,11 +16,13 @@ import { createAuthProfileExp } from "../../../common/utilities/PacAuthUtil";
 import { getWebsiteRecordId } from "../../../common/utilities/WorkspaceInfoFinderUtil";
 // Duplicate imports removed
 import { generateDiffReport, getAllDiffFiles, MetadataDiffReport } from "./MetadataDiffUtils";
+import { getMetadataDiffBaseEventInfo } from "./MetadataDiffTelemetry";
 
 export async function registerMetadataDiffCommands(context: vscode.ExtensionContext, pacTerminal: PacTerminal): Promise<void> {
     // Register command for handling file diffs
     vscode.commands.registerCommand('metadataDiff.openDiff', async (workspaceFile?: string, storedFile?: string) => {
         try {
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_OPEN_DIFF_CALLED, { ...getMetadataDiffBaseEventInfo(), hasWorkspace: !!workspaceFile, hasStored: !!storedFile });
             if (!workspaceFile && !storedFile) {
                 return;
             }
@@ -32,9 +34,7 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
             const addedLocally = !!workspaceFile && !storedFile;
             const removedLocally = !!storedFile && !workspaceFile;
 
-            const leftIsEnv = !workspaceFile || removedLocally; // left = environment side
             // Build URIs (use virtual empty doc for missing side)
-            const emptyDocContent = ''; // can be extended if needed
             const makeEmptyUri = (label: string) => vscode.Uri.parse(`untitled:__metadata_diff__/${label}`);
 
             let leftUri: vscode.Uri;
@@ -76,9 +76,10 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
             await vscode.commands.executeCommand('vscode.diff', leftUri, rightUri, title, {
                 preview: true
             });
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_OPEN_DIFF_SUCCEEDED, { ...getMetadataDiffBaseEventInfo(), diffType: addedLocally ? 'onlyLocal' : removedLocally ? 'onlyEnvironment' : 'modified', fileName: titleBase });
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(
-                Constants.EventNames.METADATA_DIFF_REPORT_FAILED,
+                Constants.EventNames.METADATA_DIFF_OPEN_DIFF_FAILED,
                 error as string,
                 error as Error
             );
@@ -102,15 +103,19 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
             storedFile = obj.storedFilePath || obj.storageFile;
         }
         if (workspaceFile || storedFile) {
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_OPEN_COMPARISON_CALLED, { ...getMetadataDiffBaseEventInfo(), hasWorkspace: !!workspaceFile, hasStored: !!storedFile });
             await vscode.commands.executeCommand('metadataDiff.openDiff', workspaceFile, storedFile);
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_OPEN_COMPARISON_SUCCEEDED, { ...getMetadataDiffBaseEventInfo() });
         } else {
             vscode.window.showWarningMessage(vscode.l10n.t('Unable to open comparison for this item.'));
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_OPEN_COMPARISON_FAILED, { ...getMetadataDiffBaseEventInfo(), reason: 'noWorkspaceOrStored' });
         }
     });
 
     // Discard local changes => overwrite workspace file with stored (remote) version
     vscode.commands.registerCommand('metadataDiff.discardLocalChanges', async (itemOrWorkspace?: unknown, maybeStored?: unknown) => {
         try {
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_DISCARD_LOCAL_CALLED, { ...getMetadataDiffBaseEventInfo() });
             let workspaceFile: string | undefined;
             let storedFile: string | undefined;
             if (typeof itemOrWorkspace === 'string') {
@@ -138,6 +143,7 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
             fs.writeFileSync(workspaceFile, remoteContent, 'utf8');
             // Show a diff after discard for confirmation (optional) or simply info message
             vscode.window.showInformationMessage(vscode.l10n.t('Local changes discarded for "{0}".', path.basename(workspaceFile)));
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_DISCARD_LOCAL_SUCCEEDED, { ...getMetadataDiffBaseEventInfo(), fileName: path.basename(workspaceFile) });
             // Re-run diff provider to update statuses (file should now be identical and removed from diff view)
             const provider = MetadataDiffDesktop['_treeDataProvider'] as MetadataDiffTreeDataProvider | undefined; // best-effort access
             if (provider) {
@@ -151,17 +157,14 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
             }
             vscode.commands.executeCommand('microsoft.powerplatform.pages.actionsHub.refresh');
         } catch (error) {
-            oneDSLoggerWrapper.getLogger().traceError(
-                Constants.EventNames.METADATA_DIFF_REPORT_FAILED,
-                error as string,
-                error as Error
-            );
+            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.METADATA_DIFF_DISCARD_LOCAL_FAILED, error as string, error as Error, { ...getMetadataDiffBaseEventInfo() }, {});
             vscode.window.showErrorMessage('Failed to discard local changes');
         }
     });
 
     vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.resync", async () => {
         try {
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_RESYNC_CALLED, { ...getMetadataDiffBaseEventInfo() });
             // Only proceed if we already have data (context set by menu 'when' clause)
             const pacWrapper = pacTerminal.getWrapper();
             const pacActiveOrg = await pacWrapper.activeOrg();
@@ -202,8 +205,7 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                 title: vscode.l10n.t("Re-syncing website metadata"),
                 cancellable: false
             };
-            let pacPagesDownload;
-            let comparisonBuilt = false;
+            let pacPagesDownload; let comparisonBuilt = false; const start = Date.now(); let downloadStart = 0; let downloadEnd = 0; let buildStart = 0; let buildEnd = 0;
             await vscode.window.withProgress(progressOptions, async (progress) => {
                 progress.report({ message: "Looking for this website in the connected environment..." });
                 const pacPagesList = await MetadataDiffDesktop.getPagesList(pacTerminal);
@@ -214,18 +216,22 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                         return;
                     }
                     progress.report({ message: vscode.l10n.t('Retrieving "{0}" as {1} data model. Please wait...', websiteRecord.name, websiteRecord.modelVersion === 'v2' ? 'enhanced' : 'standard') });
+                    downloadStart = Date.now();
                     pacPagesDownload = await pacWrapper.pagesDownload(
                         storagePath,
                         websiteId,
                         websiteRecord.modelVersion === "v1" || websiteRecord.modelVersion === "Standard" ? "1" : "2"
                     );
+                    downloadEnd = Date.now();
                     if (pacPagesDownload) {
                         progress.report({ message: vscode.l10n.t('Comparing metadata of "{0}"...', websiteRecord.name) });
+                        buildStart = Date.now();
                         const provider = MetadataDiffTreeDataProvider.initialize(context);
                         MetadataDiffDesktop.setTreeDataProvider(provider);
                         ActionsHubTreeDataProvider.setMetadataDiffProvider(provider);
                         await provider.getChildren();
                         vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
+                        buildEnd = Date.now();
                         comparisonBuilt = true;
                     }
                 }
@@ -233,11 +239,14 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
 
             if (pacPagesDownload && comparisonBuilt) {
                 vscode.window.showInformationMessage(vscode.l10n.t("You can now view the comparison"));
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_RESYNC_SUCCEEDED, { ...getMetadataDiffBaseEventInfo() });
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_PERF_SUMMARY, { ...getMetadataDiffBaseEventInfo(), scenario: 'resync', totalMs: Date.now()-start, downloadMs: downloadEnd-downloadStart, diffBuildMs: buildEnd-buildStart });
             } else {
                 vscode.window.showErrorMessage("Failed to re-sync metadata.");
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_RESYNC_FAILED, { ...getMetadataDiffBaseEventInfo(), comparisonBuilt });
             }
         } catch (error) {
-            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.METADATA_DIFF_REFRESH_FAILED, error as string, error as Error, { methodName: null }, {});
+            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.METADATA_DIFF_RESYNC_FAILED, error as string, error as Error, { ...getMetadataDiffBaseEventInfo() }, {});
         }
     });
 
@@ -254,6 +263,7 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
             vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
 
             vscode.window.showInformationMessage("Metadata diff view cleared successfully.");
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_CLEAR_SUCCEEDED, { ...getMetadataDiffBaseEventInfo() });
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(
                 Constants.EventNames.METADATA_DIFF_REPORT_FAILED,
@@ -266,6 +276,7 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
 
     vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.triggerFlowWithSite", async (websiteId: string) => {
         try {
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_TRIGGER_FLOW_WITH_SITE_CALLED, { ...getMetadataDiffBaseEventInfo(), websiteId });
             // Get the PAC wrapper to access org list
             const pacWrapper = pacTerminal.getWrapper();
 
@@ -305,8 +316,7 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                 cancellable: false
             };
 
-            let pacPagesDownload;
-            let comparisonBuilt = false;
+            let pacPagesDownload; let comparisonBuilt = false; const start = Date.now(); let downloadStart=0; let downloadEnd=0; let buildStart=0; let buildEnd=0;
             await vscode.window.withProgress(progressOptions, async (progress) => {
                 progress.report({ message: "Looking for this website in the connected environment..." });
                 const pacPagesList = await MetadataDiffDesktop.getPagesList(pacTerminal);
@@ -317,18 +327,22 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                         return;
                     }
                     progress.report({ message: vscode.l10n.t('Retrieving "{0}" as {1} data model. Please wait...', websiteRecord.name, websiteRecord.modelVersion === 'v2' ? 'enhanced' : 'standard') });
+                    downloadStart = Date.now();
                     pacPagesDownload = await pacWrapper.pagesDownload(
                         storagePath,
                         websiteId,
                         websiteRecord.modelVersion === "v1" || websiteRecord.modelVersion === "Standard" ? "1" : "2"
                     );
+                    downloadEnd = Date.now();
                     if (pacPagesDownload) {
                         progress.report({ message: vscode.l10n.t('Comparing metadata of "{0}"...', websiteRecord.name) });
+                        buildStart = Date.now();
                         const provider = MetadataDiffTreeDataProvider.initialize(context);
                         MetadataDiffDesktop.setTreeDataProvider(provider);
                         ActionsHubTreeDataProvider.setMetadataDiffProvider(provider);
                         await provider.getChildren();
                         vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
+                        buildEnd = Date.now();
                         comparisonBuilt = true;
                     }
                 }
@@ -336,17 +350,21 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
 
             if (pacPagesDownload && comparisonBuilt) {
                 vscode.window.showInformationMessage(vscode.l10n.t("You can now view the comparison"));
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_TRIGGER_FLOW_WITH_SITE_SUCCEEDED, { ...getMetadataDiffBaseEventInfo(), websiteId });
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_PERF_SUMMARY, { ...getMetadataDiffBaseEventInfo(), scenario: 'triggerFlowWithSite', websiteId, totalMs: Date.now()-start, downloadMs: downloadEnd-downloadStart, diffBuildMs: buildEnd-buildStart });
             } else {
                 vscode.window.showErrorMessage("Failed to download metadata.");
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_TRIGGER_FLOW_WITH_SITE_FAILED, { ...getMetadataDiffBaseEventInfo(), websiteId, comparisonBuilt });
             }
 
         } catch (error) {
-            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.METADATA_DIFF_REFRESH_FAILED, error as string, error as Error, { methodName: null }, {});
+            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.METADATA_DIFF_TRIGGER_FLOW_WITH_SITE_FAILED, error as string, error as Error, { ...getMetadataDiffBaseEventInfo(), websiteId }, {});
         }
     });
 
     vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.triggerFlow", async () => {
         try {
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_TRIGGER_FLOW_CALLED, { ...getMetadataDiffBaseEventInfo() });
             // Get the PAC wrapper to access org list
             const pacWrapper = pacTerminal.getWrapper();
 
@@ -464,8 +482,7 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                 title: vscode.l10n.t("Downloading website metadata"),
                 cancellable: false
             };
-            let pacPagesDownload;
-            let comparisonBuilt = false;
+        let pacPagesDownload; let comparisonBuilt = false; const start= Date.now(); let downloadStart=0; let downloadEnd=0; let buildStart=0; let buildEnd=0;
             await vscode.window.withProgress(progressOptions, async (progress) => {
                 progress.report({ message: "Looking for this website in the connected environment..." });
                 const pacPagesList = await MetadataDiffDesktop.getPagesList(pacTerminal);
@@ -476,33 +493,41 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                         return;
                     }
                     progress.report({ message: vscode.l10n.t('Retrieving "{0}" as {1} data model. Please wait...', websiteRecord.name, websiteRecord.modelVersion === 'v2' ? 'enhanced' : 'standard') });
-                    pacPagesDownload = await pacWrapper.pagesDownload(storagePath, websiteId, websiteRecord.modelVersion == "v1" ? "1" : "2");
+            downloadStart = Date.now();
+            pacPagesDownload = await pacWrapper.pagesDownload(storagePath, websiteId, websiteRecord.modelVersion == "v1" ? "1" : "2");
+            downloadEnd = Date.now();
                     if (pacPagesDownload) {
                         progress.report({ message: vscode.l10n.t('Comparing metadata of "{0}"...', websiteRecord.name) });
+            buildStart = Date.now();
                         const provider = MetadataDiffTreeDataProvider.initialize(context);
                         MetadataDiffDesktop.setTreeDataProvider(provider);
                         ActionsHubTreeDataProvider.setMetadataDiffProvider(provider);
                         await provider.getChildren();
                         vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
+            buildEnd = Date.now();
                         comparisonBuilt = true;
                     }
                 }
             });
             if (pacPagesDownload && comparisonBuilt) {
-                vscode.window.showInformationMessage(vscode.l10n.t("You can now view the comparison"));
+        vscode.window.showInformationMessage(vscode.l10n.t("You can now view the comparison"));
+        oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_TRIGGER_FLOW_SUCCEEDED, { ...getMetadataDiffBaseEventInfo() });
+        oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_PERF_SUMMARY, { ...getMetadataDiffBaseEventInfo(), scenario: 'triggerFlow', totalMs: Date.now()-start, downloadMs: downloadEnd-downloadStart, diffBuildMs: buildEnd-buildStart });
             }
             else{
-                vscode.window.showErrorMessage("Failed to download metadata.");
+        vscode.window.showErrorMessage("Failed to download metadata.");
+        oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_TRIGGER_FLOW_FAILED, { ...getMetadataDiffBaseEventInfo(), comparisonBuilt });
             }
 
         }
         catch (error) {
-            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.METADATA_DIFF_REFRESH_FAILED, error as string, error as Error, { methodName: null }, {});
+            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.METADATA_DIFF_TRIGGER_FLOW_FAILED, error as string, error as Error, { ...getMetadataDiffBaseEventInfo() }, {});
         }
     });
 
     vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.generateReport", async () => {
         try {
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_REPORT_GENERATE_CALLED, { ...getMetadataDiffBaseEventInfo() });
             const workspaceFolders = vscode.workspace.workspaceFolders;
             if (!workspaceFolders) {
                 vscode.window.showErrorMessage("No workspace folder open");
@@ -536,9 +561,10 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                 { enableScripts: true } // no scripts currently, but allow future enhancements
             );
             panel.webview.html = htmlReport;
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_REPORT_GENERATE_SUCCEEDED, { ...getMetadataDiffBaseEventInfo(), htmlLength: htmlReport.length });
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(
-                Constants.EventNames.METADATA_DIFF_REPORT_FAILED,
+                Constants.EventNames.METADATA_DIFF_REPORT_GENERATE_FAILED,
                 error as string,
                 error as Error
             );
@@ -548,6 +574,7 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
 
     vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.exportReport", async () => {
         try {
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_REPORT_EXPORT_CALLED, { ...getMetadataDiffBaseEventInfo() });
             const workspaceFolders = vscode.workspace.workspaceFolders;
             if (!workspaceFolders) {
                 vscode.window.showErrorMessage("No workspace folder open");
@@ -578,12 +605,14 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
             });
 
             if (saveUri) {
-                fs.writeFileSync(saveUri.fsPath, JSON.stringify(report, null, 2));
+                const json = JSON.stringify(report, null, 2);
+                fs.writeFileSync(saveUri.fsPath, json);
                 vscode.window.showInformationMessage("Report exported successfully");
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_REPORT_EXPORT_SUCCEEDED, { ...getMetadataDiffBaseEventInfo(), fileCount: diffFiles.length, exportSizeBytes: json.length });
             }
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(
-                Constants.EventNames.METADATA_DIFF_REPORT_FAILED,
+                Constants.EventNames.METADATA_DIFF_REPORT_EXPORT_FAILED,
                 error as string,
                 error as Error
             );
@@ -593,6 +622,7 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
 
     vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.importReport", async () => {
         try {
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_REPORT_IMPORT_CALLED, { ...getMetadataDiffBaseEventInfo() });
             const fileUri = await vscode.window.showOpenDialog({
                 canSelectFiles: true,
                 canSelectFolders: false,
@@ -612,10 +642,11 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                 vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
 
                 vscode.window.showInformationMessage("Report imported successfully");
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_REPORT_IMPORT_SUCCEEDED, { ...getMetadataDiffBaseEventInfo(), fileCount: report.files.length });
             }
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(
-                Constants.EventNames.METADATA_DIFF_REPORT_FAILED,
+                Constants.EventNames.METADATA_DIFF_REPORT_IMPORT_FAILED,
                 error as string,
                 error as Error
             );

@@ -9,6 +9,7 @@ import * as path from "path";
 import { MetadataDiffTreeItem } from "./tree-items/MetadataDiffTreeItem";
 import { Constants } from "./Constants";
 import { oneDSLoggerWrapper } from "../../OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import { getMetadataDiffBaseEventInfo } from "../../../client/power-pages/metadata-diff/MetadataDiffTelemetry";
 import { MetadataDiffFileItem } from "./tree-items/MetadataDiffFileItem";
 import { MetadataDiffFolderItem } from "./tree-items/MetadataDiffFolderItem";
 
@@ -33,6 +34,8 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
     private _onDataLoaded: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
     public readonly onDataLoaded: vscode.Event<void> = this._onDataLoaded.event;
     private _dataLoadedNotified = false;
+    // Guard so we only emit file composition event once per build cycle
+    private _emittedFileCounts = false;
 
     constructor(context: vscode.ExtensionContext) {
         this._context = context;
@@ -186,7 +189,7 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
             return this._diffItems;
         }
 
-        oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_GET_CHILDREN_CALLED, { methodName: 'getChildren' });
+    oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_GET_CHILDREN_CALLED, { methodName: 'getChildren', ...getMetadataDiffBaseEventInfo() });
         try {
             const workspaceFolders = vscode.workspace.workspaceFolders;
             if (!workspaceFolders) {
@@ -204,7 +207,8 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
             if (diffFiles.size === 0) {
                 this._diffItems = [];
                 vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.metadataDiff.hasData", false);
-                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_GET_CHILDREN_COMPLETED, { methodName: 'getChildren', result: 'noDifferences' });
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_NO_DIFFERENCES, { methodName: 'getChildren', ...getMetadataDiffBaseEventInfo() });
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_GET_CHILDREN_COMPLETED, { methodName: 'getChildren', result: 'noDifferences', ...getMetadataDiffBaseEventInfo() });
                 return [];
             }
 
@@ -216,14 +220,20 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
                 this._dataLoadedNotified = true;
                 this._onDataLoaded.fire();
             }
-            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_GET_CHILDREN_COMPLETED, { methodName: 'getChildren', result: 'success', itemCount: this._diffItems.length });
+            // Emit file composition metrics once
+            if (!this._emittedFileCounts) {
+                this._emittedFileCounts = true;
+                const counts = this.calculateFileCounts(diffFiles);
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_FILE_COUNTS, { methodName: 'getChildren', ...counts, ...getMetadataDiffBaseEventInfo() });
+            }
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_GET_CHILDREN_COMPLETED, { methodName: 'getChildren', result: 'success', itemCount: this._diffItems.length, ...getMetadataDiffBaseEventInfo() });
             return items;
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(
                 Constants.EventNames.METADATA_DIFF_CURRENT_ENV_FETCH_FAILED,
                 error as string,
                 error as Error,
-                { methodName: 'getChildren' },
+                { methodName: 'getChildren', ...getMetadataDiffBaseEventInfo() },
                 {}
             );
             return null;
@@ -276,7 +286,7 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
      * Injects a pre-computed diff set (e.g., from imported report) replacing current state.
      */
     async setDiffFiles(files: DiffFile[]): Promise<void> {
-        oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_SET_FILES_CALLED, { methodName: 'setDiffFiles', fileCount: files?.length || 0 });
+    oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_SET_FILES_CALLED, { methodName: 'setDiffFiles', fileCount: files?.length || 0, ...getMetadataDiffBaseEventInfo() });
         const rootNode = new MetadataDiffFolderItem('');
         const sortedFiles = files.sort((a, b) => a.relativePath.localeCompare(b.relativePath));
 
@@ -355,16 +365,35 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
                 this._dataLoadedNotified = true;
                 this._onDataLoaded.fire();
             }
-            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_SET_FILES_COMPLETED, { methodName: 'setDiffFiles', itemCount: this._diffItems.length });
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_SET_FILES_COMPLETED, { methodName: 'setDiffFiles', itemCount: this._diffItems.length, ...getMetadataDiffBaseEventInfo() });
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(
                 Constants.EventNames.METADATA_DIFF_SET_FILES_FAILED,
                 error as string,
                 error as Error,
-                { methodName: 'setDiffFiles' },
+                { methodName: 'setDiffFiles', ...getMetadataDiffBaseEventInfo() },
                 {}
             );
             throw error;
         }
+    }
+
+    private calculateFileCounts(diffFiles: Map<string, { workspaceFile?: string; storageFile?: string }>) {
+        let modified = 0; let onlyLocal = 0; let onlyEnvironment = 0;
+        const extensionCounts: Record<string, number> = {};
+        for (const [relative, pair] of diffFiles.entries()) {
+            if (pair.workspaceFile && pair.storageFile) modified++; else if (pair.workspaceFile) onlyLocal++; else if (pair.storageFile) onlyEnvironment++;
+            const ext = (relative.includes('.') ? '.' + relative.split('.').pop() : '');
+            extensionCounts[ext] = (extensionCounts[ext] || 0) + 1;
+        }
+        const total = diffFiles.size;
+        // Limit histogram to top 10 extensions + other
+        const sorted = Object.entries(extensionCounts).sort((a,b) => b[1]-a[1]);
+        const top = sorted.slice(0,10);
+        const otherCount = sorted.slice(10).reduce((acc,cur)=>acc+cur[1],0);
+        const histogram: Record<string, number> = {};
+        for (const [k,v] of top) histogram[k||''] = v;
+        if (otherCount>0) histogram['__other'] = otherCount;
+        return { total, modified, onlyLocal, onlyEnvironment, extensionHistogram: JSON.stringify(histogram) };
     }
 }
