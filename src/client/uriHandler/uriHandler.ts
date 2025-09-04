@@ -404,11 +404,13 @@ class UriHandler implements vscode.UriHandler {
      */
     private async executeDownload(selectedFolder: vscode.Uri, uriParams: UriParameters, telemetryData: Record<string, string>, startTime: number): Promise<void> {
         try {
+            const downloadCommand = `pages download -p "${selectedFolder.fsPath}" -id ${uriParams.websiteId} -mv ${uriParams.modelVersion}`;
+
             oneDSLoggerWrapper.getLogger().traceInfo(
                 uriHandlerTelemetryEventNames.URI_HANDLER_DOWNLOAD_STARTED,
                 {
                     ...telemetryData,
-                    downloadCommand: 'pac pages download',
+                    downloadCommand: downloadCommand,
                     downloadPath: selectedFolder.fsPath ? 'provided' : 'missing'
                 }
             );
@@ -416,30 +418,15 @@ class UriHandler implements vscode.UriHandler {
             await vscode.window.withProgress(
                 {
                     location: vscode.ProgressLocation.Notification,
-                    title: URI_HANDLER_STRINGS.INFO.DOWNLOAD_STARTED.replace('{0}', uriParams.modelVersion.toString()),
+                    title: `Downloading site using: pac ${downloadCommand}`,
                     cancellable: false
                 },
-                async (progress) => {
-                    progress.report({
-                        message: URI_HANDLER_STRINGS.INFO.DOWNLOAD_PREPARING,
-                        increment: 10
-                    });
-
-                    progress.report({
-                        message: URI_HANDLER_STRINGS.INFO.DOWNLOAD_PROCESSING,
-                        increment: 20
-                    });
-
+                async (_) => {
                     const downloadResult = await this.pacWrapper.downloadSite(
                         selectedFolder.fsPath,
                         uriParams.websiteId!,
                         uriParams.modelVersion as 1 | 2
                     );
-
-                    progress.report({
-                        message: URI_HANDLER_STRINGS.INFO.DOWNLOAD_IN_PROGRESS,
-                        increment: 70
-                    });
 
                     if (downloadResult.Status !== "Success") {
                         const errorMessage = downloadResult.Errors?.length > 0
