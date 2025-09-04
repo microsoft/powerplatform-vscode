@@ -38,7 +38,13 @@ export async function generateDiffReport(workspacePath: string, storagePath: str
 
     const sortedFolders = Array.from(folderStructure.keys()).sort();
 
-    const escapeHtml = (value: string | undefined) => (value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    // Escape for both element text and attribute contexts. Adds quotes to address CodeQL finding.
+    const escapeHtml = (value: string | undefined) => (value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
 
     let body = `<h1>Power Pages Metadata Diff Report</h1>`;
     body += `<p class="meta">Generated on: ${escapeHtml(generatedOn)}</p>`;

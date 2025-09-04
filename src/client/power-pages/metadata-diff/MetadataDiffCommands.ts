@@ -17,6 +17,7 @@ import { getWebsiteRecordId } from "../../../common/utilities/WorkspaceInfoFinde
 // Duplicate imports removed
 import { generateDiffReport, getAllDiffFiles, MetadataDiffReport } from "./MetadataDiffUtils";
 import { getMetadataDiffBaseEventInfo } from "./MetadataDiffTelemetry";
+import { buildComparison, ensureActiveOrg, resetDirectory, toModelVersion } from "./MetadataDiffHelpers";
 
 export async function registerMetadataDiffCommands(context: vscode.ExtensionContext, pacTerminal: PacTerminal): Promise<void> {
     // Register command for handling file diffs
@@ -165,85 +166,19 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
     vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.resync", async () => {
         try {
             oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_RESYNC_CALLED, { ...getMetadataDiffBaseEventInfo() });
-            // Only proceed if we already have data (context set by menu 'when' clause)
-            const pacWrapper = pacTerminal.getWrapper();
-            const pacActiveOrg = await pacWrapper.activeOrg();
-            if (!pacActiveOrg || pacActiveOrg.Status !== SUCCESS) {
-                vscode.window.showErrorMessage("No active environment found. Please authenticate first.");
-                return;
-            }
-
-            // Clear existing diff state so UI returns to initial (welcome) state during re-sync
+            if (!(await ensureActiveOrg(pacTerminal))) return;
             MetadataDiffDesktop.resetTreeView();
-
-            const workspaceFolders = vscode.workspace.workspaceFolders;
-            if (!workspaceFolders || workspaceFolders.length === 0) {
-                vscode.window.showErrorMessage("No folders opened in the current workspace.");
-                return;
-            }
-            const currentWorkspaceFolder = workspaceFolders[0].uri.fsPath;
-            const websiteId = getWebsiteRecordId(currentWorkspaceFolder);
-            if (!websiteId) {
-                vscode.window.showErrorMessage("Unable to determine website id from workspace.");
-                return;
-            }
-
-            const storagePath = context.storageUri?.fsPath;
-            if (!storagePath) {
-                vscode.window.showErrorMessage("Storage path not found");
-                return;
-            }
-
-            // Clean existing downloaded metadata
-            if (fs.existsSync(storagePath)) {
-                fs.rmSync(storagePath, { recursive: true, force: true });
-            }
-            fs.mkdirSync(storagePath, { recursive: true });
-
-            const progressOptions: vscode.ProgressOptions = {
-                location: vscode.ProgressLocation.Notification,
-                title: vscode.l10n.t("Re-syncing website metadata"),
-                cancellable: false
-            };
-            let pacPagesDownload; let comparisonBuilt = false; const start = Date.now(); let downloadStart = 0; let downloadEnd = 0; let buildStart = 0; let buildEnd = 0;
-            await vscode.window.withProgress(progressOptions, async (progress) => {
-                progress.report({ message: "Looking for this website in the connected environment..." });
-                const pacPagesList = await MetadataDiffDesktop.getPagesList(pacTerminal);
-                if (pacPagesList && pacPagesList.length > 0) {
-                    const websiteRecord = pacPagesList.find((record) => record.id === websiteId);
-                    if (!websiteRecord) {
-                        vscode.window.showErrorMessage("Website not found in the connected environment.");
-                        return;
-                    }
-                    progress.report({ message: vscode.l10n.t('Retrieving "{0}" as {1} data model. Please wait...', websiteRecord.name, websiteRecord.modelVersion === 'v2' ? 'enhanced' : 'standard') });
-                    downloadStart = Date.now();
-                    pacPagesDownload = await pacWrapper.pagesDownload(
-                        storagePath,
-                        websiteId,
-                        websiteRecord.modelVersion === "v1" || websiteRecord.modelVersion === "Standard" ? "1" : "2"
-                    );
-                    downloadEnd = Date.now();
-                    if (pacPagesDownload) {
-                        progress.report({ message: vscode.l10n.t('Comparing metadata of "{0}"...', websiteRecord.name) });
-                        buildStart = Date.now();
-                        const provider = MetadataDiffTreeDataProvider.initialize(context);
-                        MetadataDiffDesktop.setTreeDataProvider(provider);
-                        ActionsHubTreeDataProvider.setMetadataDiffProvider(provider);
-                        await provider.getChildren();
-                        vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
-                        buildEnd = Date.now();
-                        comparisonBuilt = true;
-                    }
-                }
-            });
-
-            if (pacPagesDownload && comparisonBuilt) {
+            const folders = vscode.workspace.workspaceFolders;
+            if (!folders) return;
+            const websiteId = getWebsiteRecordId(folders[0].uri.fsPath);
+            if (!websiteId) { vscode.window.showErrorMessage(vscode.l10n.t("Unable to determine website id from workspace.")); return; }
+            const result = await buildComparison(context, pacTerminal, websiteId, vscode.l10n.t("Re-syncing website metadata"), "resync");
+            if (result.success) {
                 vscode.window.showInformationMessage(vscode.l10n.t("You can now view the comparison"));
                 oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_RESYNC_SUCCEEDED, { ...getMetadataDiffBaseEventInfo() });
-                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_PERF_SUMMARY, { ...getMetadataDiffBaseEventInfo(), scenario: 'resync', totalMs: Date.now()-start, downloadMs: downloadEnd-downloadStart, diffBuildMs: buildEnd-buildStart });
             } else {
-                vscode.window.showErrorMessage("Failed to re-sync metadata.");
-                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_RESYNC_FAILED, { ...getMetadataDiffBaseEventInfo(), comparisonBuilt });
+                vscode.window.showErrorMessage(vscode.l10n.t("Failed to re-sync metadata."));
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_RESYNC_FAILED, { ...getMetadataDiffBaseEventInfo() });
             }
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.METADATA_DIFF_RESYNC_FAILED, error as string, error as Error, { ...getMetadataDiffBaseEventInfo() }, {});
@@ -277,86 +212,15 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
     vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.triggerFlowWithSite", async (websiteId: string) => {
         try {
             oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_TRIGGER_FLOW_WITH_SITE_CALLED, { ...getMetadataDiffBaseEventInfo(), websiteId });
-            // Get the PAC wrapper to access org list
-            const pacWrapper = pacTerminal.getWrapper();
-
-            // Get current org info instead of prompting user
-            const pacActiveOrg = await pacWrapper.activeOrg();
-            if (!pacActiveOrg || pacActiveOrg.Status !== SUCCESS) {
-                vscode.window.showErrorMessage("No active environment found. Please authenticate first.");
-                return;
-            }
-
-            const orgUrl = pacActiveOrg.Results.OrgUrl;
-            if (!orgUrl) {
-                vscode.window.showErrorMessage("Current environment URL not found.");
-                return;
-            }
-
-            const workspaceFolders = vscode.workspace.workspaceFolders;
-            if (!workspaceFolders || workspaceFolders.length === 0) {
-                vscode.window.showErrorMessage("No folders opened in the current workspace.");
-                return;
-            }
-
-            const storagePath = context.storageUri?.fsPath;
-            if (!storagePath) {
-                throw new Error("Storage path is not defined");
-            }
-
-            // Clean out any existing files in storagePath (so we have a "fresh" download)
-            if (fs.existsSync(storagePath)) {
-                fs.rmSync(storagePath, { recursive: true, force: true });
-            }
-            fs.mkdirSync(storagePath, { recursive: true });
-
-            const progressOptions: vscode.ProgressOptions = {
-                location: vscode.ProgressLocation.Notification,
-                title: vscode.l10n.t("Downloading website metadata"),
-                cancellable: false
-            };
-
-            let pacPagesDownload; let comparisonBuilt = false; const start = Date.now(); let downloadStart=0; let downloadEnd=0; let buildStart=0; let buildEnd=0;
-            await vscode.window.withProgress(progressOptions, async (progress) => {
-                progress.report({ message: "Looking for this website in the connected environment..." });
-                const pacPagesList = await MetadataDiffDesktop.getPagesList(pacTerminal);
-                if (pacPagesList && pacPagesList.length > 0) {
-                    const websiteRecord = pacPagesList.find((record) => record.id === websiteId);
-                    if (!websiteRecord) {
-                        vscode.window.showErrorMessage("Website not found in the connected environment.");
-                        return;
-                    }
-                    progress.report({ message: vscode.l10n.t('Retrieving "{0}" as {1} data model. Please wait...', websiteRecord.name, websiteRecord.modelVersion === 'v2' ? 'enhanced' : 'standard') });
-                    downloadStart = Date.now();
-                    pacPagesDownload = await pacWrapper.pagesDownload(
-                        storagePath,
-                        websiteId,
-                        websiteRecord.modelVersion === "v1" || websiteRecord.modelVersion === "Standard" ? "1" : "2"
-                    );
-                    downloadEnd = Date.now();
-                    if (pacPagesDownload) {
-                        progress.report({ message: vscode.l10n.t('Comparing metadata of "{0}"...', websiteRecord.name) });
-                        buildStart = Date.now();
-                        const provider = MetadataDiffTreeDataProvider.initialize(context);
-                        MetadataDiffDesktop.setTreeDataProvider(provider);
-                        ActionsHubTreeDataProvider.setMetadataDiffProvider(provider);
-                        await provider.getChildren();
-                        vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
-                        buildEnd = Date.now();
-                        comparisonBuilt = true;
-                    }
-                }
-            });
-
-            if (pacPagesDownload && comparisonBuilt) {
+            if (!(await ensureActiveOrg(pacTerminal))) return;
+            const result = await buildComparison(context, pacTerminal, websiteId, vscode.l10n.t("Downloading website metadata"), "triggerFlowWithSite");
+            if (result.success) {
                 vscode.window.showInformationMessage(vscode.l10n.t("You can now view the comparison"));
                 oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_TRIGGER_FLOW_WITH_SITE_SUCCEEDED, { ...getMetadataDiffBaseEventInfo(), websiteId });
-                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_PERF_SUMMARY, { ...getMetadataDiffBaseEventInfo(), scenario: 'triggerFlowWithSite', websiteId, totalMs: Date.now()-start, downloadMs: downloadEnd-downloadStart, diffBuildMs: buildEnd-buildStart });
             } else {
-                vscode.window.showErrorMessage("Failed to download metadata.");
-                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_TRIGGER_FLOW_WITH_SITE_FAILED, { ...getMetadataDiffBaseEventInfo(), websiteId, comparisonBuilt });
+                vscode.window.showErrorMessage(vscode.l10n.t("Failed to download metadata."));
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_TRIGGER_FLOW_WITH_SITE_FAILED, { ...getMetadataDiffBaseEventInfo(), websiteId });
             }
-
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.METADATA_DIFF_TRIGGER_FLOW_WITH_SITE_FAILED, error as string, error as Error, { ...getMetadataDiffBaseEventInfo(), websiteId }, {});
         }
@@ -458,65 +322,17 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                 return;
             }
 
-            const workspaceFolders = vscode.workspace.workspaceFolders;
-            if (!workspaceFolders || workspaceFolders.length === 0) {
-                vscode.window.showErrorMessage("No folders opened in the current workspace.");
-                return;
-            }
-
-            const currentWorkspaceFolder = workspaceFolders[0].uri.fsPath;
-            const websiteId = getWebsiteRecordId(currentWorkspaceFolder);
-            path.join(websiteId, "metadataDiffStorage");
-            const storagePath = context.storageUri?.fsPath;
-            if (!storagePath) {
-                throw new Error("Storage path is not defined");
-            }
-
-            // Clean out any existing files in storagePath (so we have a "fresh" download)
-            if (fs.existsSync(storagePath)) {
-                fs.rmSync(storagePath, { recursive: true, force: true });
-            }
-            fs.mkdirSync(storagePath, { recursive: true });
-            const progressOptions: vscode.ProgressOptions = {
-                location: vscode.ProgressLocation.Notification,
-                title: vscode.l10n.t("Downloading website metadata"),
-                cancellable: false
-            };
-        let pacPagesDownload; let comparisonBuilt = false; const start= Date.now(); let downloadStart=0; let downloadEnd=0; let buildStart=0; let buildEnd=0;
-            await vscode.window.withProgress(progressOptions, async (progress) => {
-                progress.report({ message: "Looking for this website in the connected environment..." });
-                const pacPagesList = await MetadataDiffDesktop.getPagesList(pacTerminal);
-                if (pacPagesList && pacPagesList.length > 0) {
-                    const websiteRecord = pacPagesList.find((record) => record.id === websiteId);
-                    if (!websiteRecord) {
-                        vscode.window.showErrorMessage("Website not found in the connected environment.");
-                        return;
-                    }
-                    progress.report({ message: vscode.l10n.t('Retrieving "{0}" as {1} data model. Please wait...', websiteRecord.name, websiteRecord.modelVersion === 'v2' ? 'enhanced' : 'standard') });
-            downloadStart = Date.now();
-            pacPagesDownload = await pacWrapper.pagesDownload(storagePath, websiteId, websiteRecord.modelVersion == "v1" ? "1" : "2");
-            downloadEnd = Date.now();
-                    if (pacPagesDownload) {
-                        progress.report({ message: vscode.l10n.t('Comparing metadata of "{0}"...', websiteRecord.name) });
-            buildStart = Date.now();
-                        const provider = MetadataDiffTreeDataProvider.initialize(context);
-                        MetadataDiffDesktop.setTreeDataProvider(provider);
-                        ActionsHubTreeDataProvider.setMetadataDiffProvider(provider);
-                        await provider.getChildren();
-                        vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
-            buildEnd = Date.now();
-                        comparisonBuilt = true;
-                    }
-                }
-            });
-            if (pacPagesDownload && comparisonBuilt) {
-        vscode.window.showInformationMessage(vscode.l10n.t("You can now view the comparison"));
-        oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_TRIGGER_FLOW_SUCCEEDED, { ...getMetadataDiffBaseEventInfo() });
-        oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_PERF_SUMMARY, { ...getMetadataDiffBaseEventInfo(), scenario: 'triggerFlow', totalMs: Date.now()-start, downloadMs: downloadEnd-downloadStart, diffBuildMs: buildEnd-buildStart });
-            }
-            else{
-        vscode.window.showErrorMessage("Failed to download metadata.");
-        oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_TRIGGER_FLOW_FAILED, { ...getMetadataDiffBaseEventInfo(), comparisonBuilt });
+            const folders = vscode.workspace.workspaceFolders;
+            if (!folders) { vscode.window.showErrorMessage(vscode.l10n.t("No folders opened in the current workspace.")); return; }
+            const websiteId = getWebsiteRecordId(folders[0].uri.fsPath);
+            if (!websiteId) { vscode.window.showErrorMessage(vscode.l10n.t("Unable to determine website id from workspace.")); return; }
+            const result = await buildComparison(context, pacTerminal, websiteId, vscode.l10n.t("Downloading website metadata"), "triggerFlow");
+            if (result.success) {
+                vscode.window.showInformationMessage(vscode.l10n.t("You can now view the comparison"));
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_TRIGGER_FLOW_SUCCEEDED, { ...getMetadataDiffBaseEventInfo() });
+            } else {
+                vscode.window.showErrorMessage(vscode.l10n.t("Failed to download metadata."));
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_TRIGGER_FLOW_FAILED, { ...getMetadataDiffBaseEventInfo() });
             }
 
         }
