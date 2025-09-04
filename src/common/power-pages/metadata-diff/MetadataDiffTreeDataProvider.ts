@@ -25,6 +25,9 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
     private readonly _context: vscode.ExtensionContext;
     private _onDidChangeTreeData: vscode.EventEmitter<MetadataDiffTreeItem | undefined | void> = new vscode.EventEmitter<MetadataDiffTreeItem | undefined | void>();
     readonly onDidChangeTreeData: vscode.Event<MetadataDiffTreeItem | undefined | void> = this._onDidChangeTreeData.event;
+    // Stored diff tree (root level items) – Actions Hub wrapper accesses this through a private field
+    // Keep name for backward compatibility with wrapper reflection access.
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     private _diffItems: MetadataDiffTreeItem[] = [];
     // Emits when the diff data has been fully populated for the first time
     private _onDataLoaded: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
@@ -43,24 +46,49 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
         this._onDidChangeTreeData.fire();
     }
 
+    /** Public accessor used by tests (avoids reflection) */
+    public get items(): ReadonlyArray<MetadataDiffTreeItem> {
+        return this._diffItems;
+    }
+
+    /**
+     * Clears existing diff items and resets provider state & contexts.
+     * Designed to be resilient – errors are logged via telemetry but not thrown.
+     */
     clearItems(): void {
-        this._diffItems = [];
-    this._dataLoadedNotified = false; // allow message again after reset
-        // Reset any stored data
-        const storagePath = this._context.storageUri?.fsPath;
-        if (storagePath && fs.existsSync(storagePath)) {
-            try {
-                fs.rmSync(storagePath, { recursive: true, force: true });
-                fs.mkdirSync(storagePath, { recursive: true });
-            } catch (error) {
-                console.error('Error cleaning storage path:', error);
+        oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_CLEAR_CALLED, { methodName: 'clearItems' });
+        try {
+            this._diffItems = [];
+            this._dataLoadedNotified = false; // allow message again after reset
+            // Reset any stored diff import artifacts
+            const storagePath = this._context.storageUri?.fsPath;
+            if (storagePath && fs.existsSync(storagePath)) {
+                try {
+                    fs.rmSync(storagePath, { recursive: true, force: true });
+                    fs.mkdirSync(storagePath, { recursive: true });
+                } catch (innerError) {
+                    oneDSLoggerWrapper.getLogger().traceError(
+                        Constants.EventNames.METADATA_DIFF_CLEAR_FAILED,
+                        innerError as string,
+                        innerError as Error,
+                        { methodName: 'clearItems.storageCleanup' },
+                        {}
+                    );
+                }
             }
+            vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.metadataDiff.hasData", false);
+            this._onDidChangeTreeData.fire();
+            // Refresh Actions Hub so the integrated root node updates
+            vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
+        } catch (error) {
+            oneDSLoggerWrapper.getLogger().traceError(
+                Constants.EventNames.METADATA_DIFF_CLEAR_FAILED,
+                error as string,
+                error as Error,
+                { methodName: 'clearItems' },
+                {}
+            );
         }
-        // Set context to show welcome message again
-        vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.metadataDiff.hasData", false);
-    this._onDidChangeTreeData.fire();
-    // Also refresh Actions Hub so the integrated root node updates
-    vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
     }
 
     getTreeItem(element: MetadataDiffTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
@@ -154,49 +182,48 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
             return element.getChildren();
         }
 
-        // If we have imported diff items, return those
         if (this._diffItems && this._diffItems.length > 0) {
             return this._diffItems;
         }
 
+        oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_GET_CHILDREN_CALLED, { methodName: 'getChildren' });
         try {
             const workspaceFolders = vscode.workspace.workspaceFolders;
             if (!workspaceFolders) {
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_GET_CHILDREN_COMPLETED, { methodName: 'getChildren', result: 'noWorkspace' });
                 return [];
             }
 
             const workspacePath = workspaceFolders[0].uri.fsPath;
             const storagePath = this._context.storageUri?.fsPath;
             if (!storagePath) {
-                throw new Error("Storage path is not defined");
+                throw new Error("Metadata Diff storage path is not defined");
             }
 
             const diffFiles = await this.getDiffFiles(workspacePath, storagePath);
             if (diffFiles.size === 0) {
-                // Explicitly clear cache & contexts when no differences
                 this._diffItems = [];
                 vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.metadataDiff.hasData", false);
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_GET_CHILDREN_COMPLETED, { methodName: 'getChildren', result: 'noDifferences' });
                 return [];
             }
 
             const items = this.buildTreeHierarchy(diffFiles);
-            // Cache for Actions Hub wrapper which reads the private field directly
             this._diffItems = items;
-            // Update contexts so welcome content & root node state update
             vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.metadataDiff.hasData", this._diffItems.length > 0);
-            // Refresh Actions Hub so the Metadata Diff group re-renders with data
             vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
             if (!this._dataLoadedNotified && this._diffItems.length > 0) {
                 this._dataLoadedNotified = true;
                 this._onDataLoaded.fire();
             }
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_GET_CHILDREN_COMPLETED, { methodName: 'getChildren', result: 'success', itemCount: this._diffItems.length });
             return items;
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(
                 Constants.EventNames.METADATA_DIFF_CURRENT_ENV_FETCH_FAILED,
                 error as string,
                 error as Error,
-                { methodName: this.getChildren },
+                { methodName: 'getChildren' },
                 {}
             );
             return null;
@@ -240,12 +267,16 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
     }
 
     private getChangeDescription(workspaceFile?: string, storageFile?: string): string {
-        if (!workspaceFile) return 'Only in remote';
-        if (!storageFile) return 'Only in workspace';
-        return 'Modified';
+    if (!workspaceFile) return vscode.l10n.t("Only in Environment");
+    if (!storageFile) return vscode.l10n.t("Only in Local");
+        return vscode.l10n.t("Modified");
     }
 
+    /**
+     * Injects a pre-computed diff set (e.g., from imported report) replacing current state.
+     */
     async setDiffFiles(files: DiffFile[]): Promise<void> {
+        oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_SET_FILES_CALLED, { methodName: 'setDiffFiles', fileCount: files?.length || 0 });
         const rootNode = new MetadataDiffFolderItem('');
         const sortedFiles = files.sort((a, b) => a.relativePath.localeCompare(b.relativePath));
 
@@ -255,7 +286,8 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
             fs.mkdirSync(tempDir, { recursive: true });
         }
 
-        for (const file of sortedFiles) {
+        try {
+            for (const file of sortedFiles) {
             const parts = file.relativePath.split('/');
             let currentNode = rootNode;
 
@@ -312,17 +344,27 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
                 arguments: [workspaceFilePath, storageFilePath]
             };
 
-            currentNode.getChildrenMap().set(fileName, fileNode);
-        }
+                currentNode.getChildrenMap().set(fileName, fileNode);
+            }
 
-        this._diffItems = Array.from(rootNode.getChildrenMap().values());
-    this._onDidChangeTreeData.fire();
-    // Mark that we now have data and refresh Actions Hub view
-    vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.metadataDiff.hasData", this._diffItems.length > 0);
-    vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
-    if (!this._dataLoadedNotified && this._diffItems.length > 0) {
-        this._dataLoadedNotified = true;
-        this._onDataLoaded.fire();
-    }
+            this._diffItems = Array.from(rootNode.getChildrenMap().values());
+            this._onDidChangeTreeData.fire();
+            vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.metadataDiff.hasData", this._diffItems.length > 0);
+            vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
+            if (!this._dataLoadedNotified && this._diffItems.length > 0) {
+                this._dataLoadedNotified = true;
+                this._onDataLoaded.fire();
+            }
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_SET_FILES_COMPLETED, { methodName: 'setDiffFiles', itemCount: this._diffItems.length });
+        } catch (error) {
+            oneDSLoggerWrapper.getLogger().traceError(
+                Constants.EventNames.METADATA_DIFF_SET_FILES_FAILED,
+                error as string,
+                error as Error,
+                { methodName: 'setDiffFiles' },
+                {}
+            );
+            throw error;
+        }
     }
 }

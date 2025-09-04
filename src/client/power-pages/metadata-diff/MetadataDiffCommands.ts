@@ -19,17 +19,63 @@ import { generateDiffReport, getAllDiffFiles, MetadataDiffReport } from "./Metad
 
 export async function registerMetadataDiffCommands(context: vscode.ExtensionContext, pacTerminal: PacTerminal): Promise<void> {
     // Register command for handling file diffs
-    vscode.commands.registerCommand('metadataDiff.openDiff', async (workspaceFile: string, storedFile: string) => {
+    vscode.commands.registerCommand('metadataDiff.openDiff', async (workspaceFile?: string, storedFile?: string) => {
         try {
-            const workspaceUri = vscode.Uri.file(workspaceFile);
-            const storedUri = vscode.Uri.file(storedFile);
-            const fileName = path.basename(workspaceFile);
+            if (!workspaceFile && !storedFile) {
+                return;
+            }
 
-            await vscode.commands.executeCommand('vscode.diff',
-                storedUri,
-                workspaceUri,
-                `${fileName} (Metadata Diff)`
-            );
+            // Determine scenario:
+            // Added locally: workspaceFile only
+            // Removed locally: storedFile only
+            // Modified: both files
+            const addedLocally = !!workspaceFile && !storedFile;
+            const removedLocally = !!storedFile && !workspaceFile;
+
+            const leftIsEnv = !workspaceFile || removedLocally; // left = environment side
+            // Build URIs (use virtual empty doc for missing side)
+            const emptyDocContent = ''; // can be extended if needed
+            const makeEmptyUri = (label: string) => vscode.Uri.parse(`untitled:__metadata_diff__/${label}`);
+
+            let leftUri: vscode.Uri;
+            let rightUri: vscode.Uri;
+            let titleBase: string;
+
+            if (addedLocally) {
+                // Show empty (environment) on left, local on right
+                leftUri = makeEmptyUri('environment');
+                rightUri = vscode.Uri.file(workspaceFile!);
+                titleBase = path.basename(workspaceFile!);
+            } else if (removedLocally) {
+                // Show environment file on left, empty on right
+                leftUri = vscode.Uri.file(storedFile!);
+                rightUri = makeEmptyUri('local');
+                titleBase = path.basename(storedFile!);
+            } else {
+                leftUri = vscode.Uri.file(storedFile!);
+                rightUri = vscode.Uri.file(workspaceFile!);
+                titleBase = path.basename(workspaceFile!);
+            }
+
+            // If an empty side, ensure a document is opened (untitled) so diff API works consistently
+            if (addedLocally) {
+                await vscode.workspace.openTextDocument(leftUri).then(doc => {
+                    if (doc.getText().length === 0) {
+                        // no edit needed, blank
+                    }
+                });
+            } else if (removedLocally) {
+                await vscode.workspace.openTextDocument(rightUri).then(doc => {
+                    if (doc.getText().length === 0) {
+                        // blank
+                    }
+                });
+            }
+
+            const title = `${titleBase} (Local ↔ Environment)`;
+            await vscode.commands.executeCommand('vscode.diff', leftUri, rightUri, title, {
+                preview: true
+            });
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(
                 Constants.EventNames.METADATA_DIFF_REPORT_FAILED,
@@ -55,10 +101,10 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
             workspaceFile = obj.filePath || obj.workspaceFile;
             storedFile = obj.storedFilePath || obj.storageFile;
         }
-        if (workspaceFile && storedFile) {
+        if (workspaceFile || storedFile) {
             await vscode.commands.executeCommand('metadataDiff.openDiff', workspaceFile, storedFile);
         } else {
-            vscode.window.showWarningMessage('Unable to open comparison for this item.');
+            vscode.window.showWarningMessage(vscode.l10n.t('Unable to open comparison for this item.'));
         }
     });
 

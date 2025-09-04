@@ -178,7 +178,7 @@ export async function getAllDiffFiles(workspacePath: string, storagePath: string
         if (!storageFile) {
             diffFiles.push({
                 relativePath: normalized,
-                changes: 'Only in workspace',
+                changes: 'Only in Local',
                 type: path.dirname(normalized) || 'Other',
                 workspaceContent: fs.readFileSync(workspaceFile, 'utf8').replace(/\r\n/g, '\n')
             });
@@ -204,7 +204,7 @@ export async function getAllDiffFiles(workspacePath: string, storagePath: string
         if (!workspaceMap.has(normalized)) {
             diffFiles.push({
                 relativePath: normalized,
-                changes: 'Only in remote',
+                changes: 'Only in Environment',
                 type: path.dirname(normalized) || 'Other',
                 storageContent: fs.readFileSync(storageFile, 'utf8').replace(/\r\n/g, '\n')
             });
