@@ -51,15 +51,18 @@ class MetadataDiffWrapperTreeItem extends ActionsHubTreeItem {
 }
 
 class MetadataDiffGroupTreeItem extends ActionsHubTreeItem {
-    constructor(private readonly _provider: MetadataDiffTreeDataProvider, hasData: boolean) {
+    constructor(private readonly _provider: MetadataDiffTreeDataProvider, hasData: boolean, label: string, websiteName?: string, envName?: string) {
         super(
-            "Metadata Diff",
+            label,
             hasData ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.Collapsed,
-            new vscode.ThemeIcon("folder"),
+            // Use Split Editor icon (codicon split-horizontal) as requested
+            new vscode.ThemeIcon("split-horizontal"),
             "metadataDiffRoot",
-            hasData ? "" : "No data yet"
+            hasData ? "" : vscode.l10n.t("No data yet")
         );
-        this.tooltip = "Power Pages Metadata Comparison";
+        this.tooltip = hasData && websiteName && envName
+            ? vscode.l10n.t("Power Pages metadata comparison: {0} local vs {1}", websiteName, envName)
+            : vscode.l10n.t("Power Pages metadata comparison");
     }
 
     public getChildren(): ActionsHubTreeItem[] {
@@ -271,7 +274,17 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                     mdProvider.getChildren();
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const hasData = (mdProvider as any)._diffItems && (mdProvider as any)._diffItems.length > 0;
-                    rootItems.push(new MetadataDiffGroupTreeItem(mdProvider, hasData));
+
+                    let label = vscode.l10n.t("Metadata Diff");
+                    let websiteName: string | undefined;
+                    let envName: string | undefined;
+                    if (hasData) {
+                        const workspaceFolders = vscode.workspace.workspaceFolders;
+                        websiteName = workspaceFolders && workspaceFolders.length > 0 ? workspaceFolders[0].name : vscode.l10n.t("Local");
+                        envName = authInfo?.OrganizationFriendlyName || vscode.l10n.t("Current Environment");
+                        label = vscode.l10n.t("Metadata Diff ({0} (Local <-> {1}))", websiteName, envName);
+                    }
+                    rootItems.push(new MetadataDiffGroupTreeItem(mdProvider, hasData, label, websiteName, envName));
                 }
 
                 return rootItems;
