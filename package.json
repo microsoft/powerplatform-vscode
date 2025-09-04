@@ -1075,12 +1075,12 @@
         },
         {
           "command": "microsoft.powerplatform.pages.metadataDiff.generateReport",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffRoot && microsoft.powerplatform.pages.metadataDiffEnabled",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffRoot && microsoft.powerplatform.pages.metadataDiffEnabled && microsoft.powerplatform.pages.metadataDiff.hasData",
           "group": "metadataDiff@1"
         },
         {
           "command": "microsoft.powerplatform.pages.metadataDiff.triggerFlow",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffRoot && microsoft.powerplatform.pages.metadataDiffEnabled",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffRoot && microsoft.powerplatform.pages.metadataDiffEnabled && microsoft.powerplatform.pages.metadataDiff.connectDownloadEnabled",
           "group": "metadataDiff@2"
         },
         {

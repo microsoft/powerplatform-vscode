@@ -18,6 +18,9 @@ import { ActionsHubTreeDataProvider } from "../actions-hub/ActionsHubTreeDataPro
 export class MetadataDiffDesktop {
     private static _isInitialized = false;
     private static _treeDataProvider: MetadataDiffTreeDataProvider | undefined;
+    // Flag to enable/disable the "Connect & Download" (triggerFlow) command UI
+    // Toggle this to hide/show the option without modifying package.json again.
+    private static _connectAndDownloadEnabled: boolean = false;
 
     static isEnabled(): boolean {
         const enableMetadataDiff = true; //ECSFeaturesClient.getConfig(EnableMetadataDiff).enableMetadataDiff
@@ -50,6 +53,8 @@ export class MetadataDiffDesktop {
             });
 
             vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.metadataDiffEnabled", isMetadataDiffEnabled);
+            // Set context for connect & download visibility (independent of overall feature enablement)
+            vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.metadataDiff.connectDownloadEnabled", MetadataDiffDesktop._connectAndDownloadEnabled && isMetadataDiffEnabled);
 
             if (!isMetadataDiffEnabled) {
                 return;
