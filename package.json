@@ -503,7 +503,7 @@
       },
       {
         "command": "microsoft.powerplatform.pages.metadataDiff.generateReport",
-        "title": "Generate Report",
+  "title": "Generate Markdown Report",
         "category": "Power Pages Metadata Diff",
         "icon": "$(markdown)"
       },
@@ -515,13 +515,13 @@
       },
       {
         "command": "microsoft.powerplatform.pages.metadataDiff.exportReport",
-        "title": "Export Report",
+  "title": "Export Comparison View",
         "category": "Power Pages Metadata Diff",
         "icon": "$(save-as)"
       },
       {
         "command": "microsoft.powerplatform.pages.metadataDiff.importReport",
-        "title": "Import Report",
+  "title": "Import Comparison View",
         "category": "Power Pages Metadata Diff",
         "icon": "$(folder-opened)"
       }
@@ -1060,32 +1060,7 @@
           "command": "powerpages.copilot.clearConversation",
           "when": "view == powerpages.copilot",
           "group": "navigation"
-        },
-        {
-          "command": "microsoft.powerplatform.pages.metadataDiff.generateReport",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && microsoft.powerplatform.pages.metadataDiffEnabled",
-          "group": "navigation@50"
-        },
-        {
-          "command": "microsoft.powerplatform.pages.metadataDiff.triggerFlow",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && microsoft.powerplatform.pages.metadataDiffEnabled",
-          "group": "navigation@51"
-        },
-        {
-          "command": "microsoft.powerplatform.pages.metadataDiff.clearView",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && microsoft.powerplatform.pages.metadataDiffEnabled",
-          "group": "navigation@52"
-        },
-        {
-          "command": "microsoft.powerplatform.pages.metadataDiff.exportReport",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && microsoft.powerplatform.pages.metadataDiffEnabled && microsoft.powerplatform.pages.metadataDiff.hasData",
-          "group": "navigation@53"
-        },
-        {
-          "command": "microsoft.powerplatform.pages.metadataDiff.importReport",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && microsoft.powerplatform.pages.metadataDiffEnabled",
-          "group": "navigation@54"
-        }
+  }
       ],
       "view/item/context": [
         {
@@ -1097,6 +1072,41 @@
           "command": "pacCLI.authPanel.selectAuthProfile",
           "when": "!virtualWorkspace && view == pacCLI.authPanel",
           "group": "inline"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.metadataDiff.generateReport",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffRoot && microsoft.powerplatform.pages.metadataDiffEnabled",
+          "group": "metadataDiff@1"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.metadataDiff.triggerFlow",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffRoot && microsoft.powerplatform.pages.metadataDiffEnabled",
+          "group": "metadataDiff@2"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.metadataDiff.clearView",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffRoot && microsoft.powerplatform.pages.metadataDiffEnabled",
+          "group": "metadataDiff@3"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.metadataDiff.exportReport",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffRoot && microsoft.powerplatform.pages.metadataDiffEnabled && microsoft.powerplatform.pages.metadataDiff.hasData",
+          "group": "metadataDiff@4"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.metadataDiff.importReport",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffRoot && microsoft.powerplatform.pages.metadataDiffEnabled",
+          "group": "metadataDiff@5"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.metadataDiff.exportReport",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffItem && microsoft.powerplatform.pages.metadataDiffEnabled && microsoft.powerplatform.pages.metadataDiff.hasData",
+          "group": "metadataDiff@4"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.metadataDiff.importReport",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffItem && microsoft.powerplatform.pages.metadataDiffEnabled",
+          "group": "metadataDiff@5"
         },
         {
           "command": "pacCLI.authPanel.nameAuthProfile",
