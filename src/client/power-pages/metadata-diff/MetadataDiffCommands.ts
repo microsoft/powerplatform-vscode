@@ -13,6 +13,7 @@ import { MetadataDiffTreeDataProvider } from "../../../common/power-pages/metada
 import { createAuthProfileExp } from "../../../common/utilities/PacAuthUtil";
 import { getWebsiteRecordId } from "../../../common/utilities/WorkspaceInfoFinderUtil";
 import { MetadataDiffDesktop } from "./MetadataDiffDesktop";
+import { ActionsHubTreeDataProvider } from "../actions-hub/ActionsHubTreeDataProvider";
 import { generateDiffReport, getAllDiffFiles, MetadataDiffReport } from "./MetadataDiffUtils";
 
 export async function registerMetadataDiffCommands(context: vscode.ExtensionContext, pacTerminal: PacTerminal): Promise<void> {
@@ -35,6 +36,87 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                 error as Error
             );
             vscode.window.showErrorMessage("Failed to open diff view");
+        }
+    });
+
+    vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.resync", async () => {
+        try {
+            // Only proceed if we already have data (context set by menu 'when' clause)
+            const pacWrapper = pacTerminal.getWrapper();
+            const pacActiveOrg = await pacWrapper.activeOrg();
+            if (!pacActiveOrg || pacActiveOrg.Status !== SUCCESS) {
+                vscode.window.showErrorMessage("No active environment found. Please authenticate first.");
+                return;
+            }
+
+            // Clear existing diff state so UI returns to initial (welcome) state during re-sync
+            MetadataDiffDesktop.resetTreeView();
+
+            const workspaceFolders = vscode.workspace.workspaceFolders;
+            if (!workspaceFolders || workspaceFolders.length === 0) {
+                vscode.window.showErrorMessage("No folders opened in the current workspace.");
+                return;
+            }
+            const currentWorkspaceFolder = workspaceFolders[0].uri.fsPath;
+            const websiteId = getWebsiteRecordId(currentWorkspaceFolder);
+            if (!websiteId) {
+                vscode.window.showErrorMessage("Unable to determine website id from workspace.");
+                return;
+            }
+
+            const storagePath = context.storageUri?.fsPath;
+            if (!storagePath) {
+                vscode.window.showErrorMessage("Storage path not found");
+                return;
+            }
+
+            // Clean existing downloaded metadata
+            if (fs.existsSync(storagePath)) {
+                fs.rmSync(storagePath, { recursive: true, force: true });
+            }
+            fs.mkdirSync(storagePath, { recursive: true });
+
+            const progressOptions: vscode.ProgressOptions = {
+                location: vscode.ProgressLocation.Notification,
+                title: "Re-syncing website metadata",
+                cancellable: false
+            };
+            let pacPagesDownload;
+            await vscode.window.withProgress(progressOptions, async (progress) => {
+                progress.report({ message: "Looking for this website in the connected environment..." });
+                const pacPagesList = await MetadataDiffDesktop.getPagesList(pacTerminal);
+                if (pacPagesList && pacPagesList.length > 0) {
+                    const websiteRecord = pacPagesList.find((record) => record.id === websiteId);
+                    if (!websiteRecord) {
+                        vscode.window.showErrorMessage("Website not found in the connected environment.");
+                        return;
+                    }
+                    progress.report({ message: `Downloading \"${websiteRecord.name}\" as ${websiteRecord.modelVersion === "v2" ? "enhanced" : "standard"} data model. Please wait...` });
+                    pacPagesDownload = await pacWrapper.pagesDownload(
+                        storagePath,
+                        websiteId,
+                        websiteRecord.modelVersion === "v1" || websiteRecord.modelVersion === "Standard" ? "1" : "2"
+                    );
+                }
+            });
+
+            if (pacPagesDownload) {
+                // Create a brand-new provider instance bound to latest storage content
+                const treeDataProvider = MetadataDiffTreeDataProvider.initialize(context);
+                // Register with desktop helper & Actions Hub so future resets use this instance
+                MetadataDiffDesktop.setTreeDataProvider(treeDataProvider);
+                ActionsHubTreeDataProvider.setMetadataDiffProvider(treeDataProvider);
+                // Force data population (will also set hasData context + refresh)
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                treeDataProvider.getChildren();
+                // Explicit refresh to redraw UI while async population runs
+                vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
+                vscode.window.showInformationMessage("Re-sync completed.");
+            } else {
+                vscode.window.showErrorMessage("Failed to re-sync metadata.");
+            }
+        } catch (error) {
+            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.METADATA_DIFF_REFRESH_FAILED, error as string, error as Error, { methodName: null }, {});
         }
     });
 

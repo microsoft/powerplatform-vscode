@@ -40,6 +40,14 @@ export class MetadataDiffDesktop {
         }
     }
 
+    /**
+     * Allows external commands (e.g. Re-sync) to replace the active provider
+     * so subsequent resets operate on the latest instance.
+     */
+    static setTreeDataProvider(provider: MetadataDiffTreeDataProvider): void {
+        this._treeDataProvider = provider;
+    }
+
     static async initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal): Promise<void> {
         if (MetadataDiffDesktop._isInitialized) {
             return;
