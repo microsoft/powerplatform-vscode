@@ -32,7 +32,7 @@
     "extends": "@istanbuljs/nyc-config-typescript",
     "all": "true",
     "include": [
-      "**/*.ts"
+  "**/*.ts"
     ],
     "exclude": [
       "**/*.test.ts"
@@ -194,6 +194,11 @@
         "contents": "%microsoft.powerplatform.pages.actionsHub.login%",
         "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported",
         "enablement": "microsoft.powerplatform.environment.initialized && !microsoft.powerplatform.pages.actionsHub.loadingWebsites"
+      },
+      {
+        "view": "microsoft.powerplatform.pages.metadataDiff",
+        "contents": "%microsoft.powerplatform.pages.metadataDiff.login%",
+        "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported"
       }
     ],
     "commands": [
@@ -469,6 +474,10 @@
         "title": "%microsoft.powerplatform.pages.actionsHub.siteDetails.title%"
       },
       {
+        "command": "microsoft.powerplatform.pages.actionsHub.compareWithLocal",
+        "title": "%microsoft.powerplatform.pages.actionsHub.compareWithLocal.title%"
+      },
+      {
         "command": "microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite",
         "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite.title%"
       },
@@ -485,6 +494,54 @@
         "category": "Power Pages",
         "title": "%microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title%",
         "when": "microsoft.powerplatform.pages.codeQlScanEnabled"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.metadataDiff.triggerFlow",
+  "title": "Compare with Environment",
+        "category": "Power Pages Metadata Diff",
+        "icon": "$(cloud-download)"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.metadataDiff.generateReport",
+        "title": "Generate HTML Report",
+        "category": "Power Pages Metadata Diff",
+        "icon": "$(markdown)"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.metadataDiff.resync",
+        "title": "Re-sync",
+        "category": "Power Pages Metadata Diff",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.metadataDiff.clearView",
+        "title": "Clear View",
+        "category": "Power Pages Metadata Diff",
+        "icon": "$(clear-all)"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.metadataDiff.exportReport",
+  "title": "Export Comparison View",
+        "category": "Power Pages Metadata Diff",
+        "icon": "$(save-as)"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.metadataDiff.importReport",
+  "title": "Import Comparison View",
+        "category": "Power Pages Metadata Diff",
+        "icon": "$(folder-opened)"
+      },
+      {
+        "command": "metadataDiff.openComparison",
+        "title": "Open Comparison",
+        "category": "Power Pages Metadata Diff",
+        "icon": "$(diff)"
+      },
+      {
+        "command": "metadataDiff.discardLocalChanges",
+        "title": "Discard Local Changes",
+        "category": "Power Pages Metadata Diff",
+        "icon": "$(discard)"
       }
     ],
     "configuration": {
@@ -762,6 +819,10 @@
           "group": "1_powerpages@5"
         },
         {
+          "command": "microsoft.powerplatform.pages.metadataDiff.triggerFlow",
+          "group": "1_powerpages@6"
+        },
+        {
           "command": "microsoft-powerapps-portals.webtemplate",
           "group": "1_powerpages@3"
         },
@@ -980,6 +1041,10 @@
           "when": "never"
         },
         {
+          "command": "microsoft.powerplatform.pages.actionsHub.compareWithLocal",
+          "when": "never"
+        },
+        {
           "command": "microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite",
           "when": "never"
         },
@@ -1017,7 +1082,7 @@
           "command": "powerpages.copilot.clearConversation",
           "when": "view == powerpages.copilot",
           "group": "navigation"
-        }
+  }
       ],
       "view/item/context": [
         {
@@ -1029,6 +1094,56 @@
           "command": "pacCLI.authPanel.selectAuthProfile",
           "when": "!virtualWorkspace && view == pacCLI.authPanel",
           "group": "inline"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.metadataDiff.generateReport",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffRoot && microsoft.powerplatform.pages.metadataDiffEnabled && microsoft.powerplatform.pages.metadataDiff.hasData",
+          "group": "metadataDiff@1"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.metadataDiff.triggerFlow",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffRoot && microsoft.powerplatform.pages.metadataDiffEnabled",
+          "group": "metadataDiff@2"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.metadataDiff.resync",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffRoot && microsoft.powerplatform.pages.metadataDiffEnabled && microsoft.powerplatform.pages.metadataDiff.hasData",
+          "group": "metadataDiff@3"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.metadataDiff.clearView",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffRoot && microsoft.powerplatform.pages.metadataDiffEnabled",
+          "group": "metadataDiff@4"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.metadataDiff.exportReport",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffRoot && microsoft.powerplatform.pages.metadataDiffEnabled && microsoft.powerplatform.pages.metadataDiff.hasData",
+          "group": "metadataDiff@5"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.metadataDiff.importReport",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffRoot && microsoft.powerplatform.pages.metadataDiffEnabled",
+          "group": "metadataDiff@6"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.metadataDiff.exportReport",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffItem && microsoft.powerplatform.pages.metadataDiffEnabled && microsoft.powerplatform.pages.metadataDiff.hasData",
+          "group": "metadataDiff@5"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.metadataDiff.importReport",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffItem && microsoft.powerplatform.pages.metadataDiffEnabled",
+          "group": "metadataDiff@6"
+        },
+        {
+          "command": "metadataDiff.openComparison",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffFileModified && microsoft.powerplatform.pages.metadataDiffEnabled",
+          "group": "metadataDiffFile@1"
+        },
+        {
+          "command": "metadataDiff.discardLocalChanges",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffFileModified && microsoft.powerplatform.pages.metadataDiffEnabled",
+          "group": "metadataDiffFile@2"
         },
         {
           "command": "pacCLI.authPanel.nameAuthProfile",
@@ -1167,6 +1282,11 @@
           "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == currentActiveSite && microsoft.powerplatform.pages.codeQlScanEnabled",
           "group": "siteAction@7"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.compareWithLocal",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite || viewItem == inactiveSite)",
+          "group": "siteAction@9"
         }
       ]
     },

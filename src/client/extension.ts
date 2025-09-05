@@ -54,6 +54,7 @@ import { PROVIDER_ID } from "../common/services/Constants";
 import { activateServerApiAutocomplete } from "../common/intellisense";
 import { EnableServerLogicChanges } from "../common/ecs-features/ecsFeatureGates";
 import { setServerApiTelemetryContext } from "../common/intellisense/ServerApiTelemetryContext";
+import { MetadataDiffDesktop } from "./power-pages/metadata-diff/MetadataDiffDesktop";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -280,6 +281,21 @@ export async function activate(
                 PreviewSite.initialize(context, workspaceFolders, pacTerminal),
                 ActionsHub.initialize(context, pacTerminal)
             ]);
+
+            // Initialize Metadata Diff after ActionsHub so that its root node can attach; gated by ECS
+            try {
+                // Dynamic import to avoid circular reference at top-level during tests
+                const { EnableMetadataDiff } = await import("../common/ecs-features/ecsFeatureGates");
+                const { enableMetadataDiff } = ECSFeaturesClient.getConfig(EnableMetadataDiff);
+                if (enableMetadataDiff) {
+                    await MetadataDiffDesktop.initialize(context, pacTerminal);
+                } else {
+                    vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.metadataDiffEnabled", false);
+                }
+            } catch (e) {
+                // Non-blocking – log minimal telemetry; avoid failing activation
+                oneDSLoggerWrapper.getLogger().traceError("MetadataDiffInitSkipped", (e as Error).message, e as Error);
+            }
 
             vscode.commands.executeCommand('setContext', 'microsoft.powerplatform.environment.initialized', true);
         }),

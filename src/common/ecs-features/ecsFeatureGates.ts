@@ -99,3 +99,13 @@ export const {
         enableCodeQlScan: false,
     }
 })
+
+export const {
+    feature: EnableMetadataDiff
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable Metadata Diff comparison in VS Code',
+    fallback: {
+        enableMetadataDiff: false,
+    },
+});
