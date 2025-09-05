@@ -69,4 +69,5 @@ export interface WebsiteYaml {
     adx_statuscode?: number;
     adx_website_language?: number | string;
     adx_websiteid?: string;
+    name?: string
 }

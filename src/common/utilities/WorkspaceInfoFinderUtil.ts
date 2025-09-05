@@ -59,8 +59,13 @@ export function getWebsiteRecordId(param: { uri: string }[] | string): string {
         if (fs.existsSync(websiteYmlPath)) {
             const fileContent = fs.readFileSync(websiteYmlPath, 'utf8');
             const parsedYaml = parse(fileContent);
-            if (parsedYaml && parsedYaml.adx_websiteid) {
-                return parsedYaml.adx_websiteid;
+            if (parsedYaml) {
+                // Check for adx_websiteid first, then fallback to id (to support new Git ALM format)
+                if (parsedYaml.adx_websiteid) {
+                    return parsedYaml.adx_websiteid;
+                } else if (parsedYaml.id) {
+                    return parsedYaml.id;
+                }
             }
         }
     } catch (exception) {
