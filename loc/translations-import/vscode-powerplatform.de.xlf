@@ -96,9 +96,9 @@
         <source xml:lang="en">Authenticating...</source>
         <target state="translated">Wird authentifiziert ...</target>
       </trans-unit>
-      <trans-unit id="++CODE++469a3c89adc4cb4df3a6f0114cd45795248e4e1dcab2546a685e42982b1a22e6">
-        <source xml:lang="en">Authentication failed. Cannot proceed with site download.</source>
-        <target state="translated">Authentifizierung fehlgeschlagen. Der Download der Website kann nicht fortgesetzt werden.</target>
+      <trans-unit id="++CODE++360ec488e2837c8b2a005dc8637d770d584aec7ec84a1447ec98f765fc564662">
+        <source xml:lang="en">Authentication failed after user initiated auth</source>
+        <target state="new">Authentication failed after user initiated auth</target>
       </trans-unit>
       <trans-unit id="++CODE++93c83aa255a01cb4ee50d86e561c78b6c28e3e0f7fd9143dd7817b93b3c5a198">
         <source xml:lang="en">Authentication failed. Please login and try again.</source>
@@ -107,6 +107,10 @@
       <trans-unit id="++CODE++4190475b52357e7ad3da76828784a5b9f291519e331b0c0e71f5d14e946bbc4b">
         <source xml:lang="en">Authentication failed. Please try again.</source>
         <target state="translated">Authentifizierung fehlgeschlagen. Versuchen Sie es erneut.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++9ec3f488f28c5356cbb78bdef208cd2b8c773bb88098c75f2c14db955430874a">
+        <source xml:lang="en">Authentication required...</source>
+        <target state="new">Authentication required...</target>
       </trans-unit>
       <trans-unit id="++CODE++a57666e58a53eea23667fddf0a7c41bdc64abfc5eae94637e88388a6b139b314">
         <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
@@ -150,6 +154,10 @@
       <trans-unit id="++CODE++9885d66d0771f63c5a4b5d3b8cbe26be8832bc941243f5b18573975750a9986b">
         <source xml:lang="en">Check the URL and verify the parameters are correct</source>
         <target state="translated">Prüfen Sie die URL, und stellen Sie sicher, dass die Parameter korrekt sind</target>
+      </trans-unit>
+      <trans-unit id="++CODE++6632cd07f161cbf30f0b3c569bb72daa960ac2c0c49a90daa7cee3185f636e27">
+        <source xml:lang="en">Checking environment...</source>
+        <target state="new">Checking environment...</target>
       </trans-unit>
       <trans-unit id="++CODE++c724a9256b7af89455e04cc3611e5df1030c25f92652356f205c15f02c2da28e">
         <source xml:lang="en">Checking for active auth profile...</source>
@@ -391,13 +399,9 @@ Typ: {3}</target>
         <source xml:lang="en">Download VS Code</source>
         <target state="translated">VS Code herunterladen</target>
       </trans-unit>
-      <trans-unit id="++CODE++60e02fb26e383f47ea262baa6265c7634e9363869eac536dc91ce1264977ccce">
-        <source xml:lang="en">Downloading Power Pages site using model version {0}...</source>
-        <target state="translated">Power Pages-Website wird mit der Modellversion {0} heruntergeladen...</target>
-      </trans-unit>
-      <trans-unit id="++CODE++9a0318af6b9d6517ef62b7c029a20fda8164d0d717bccbac3c6f926fb6564bd4">
-        <source xml:lang="en">Downloading Power Pages site, please wait...</source>
-        <target state="translated">Power Pages-Website wird heruntergeladen, bitte warten...</target>
+      <trans-unit id="++CODE++7f3601875ec37c14ea70acbdfab60e330eec2f6b65ccad92bee9823a2eb326de">
+        <source xml:lang="en">Download failed: {0}</source>
+        <target state="new">Download failed: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++ac72407b10d30bf47faf11da09b605a85fc649bd3f2e33acb281655cb9021d9d">
         <source xml:lang="en">Edit the site</source>
@@ -423,9 +427,9 @@ Typ: {3}</target>
         <source xml:lang="en">Environment ID is not available</source>
         <target state="translated">Umgebungs-ID ist nicht verfügbar</target>
       </trans-unit>
-      <trans-unit id="++CODE++6bba2e23a239b42ce9624ffd5bb2c56f483a7975ecaf2e872a8fe3aa9006b818">
-        <source xml:lang="en">Environment ID is required but not provided</source>
-        <target state="translated">Umgebungs-ID ist erforderlich, wurde aber nicht angegeben</target>
+      <trans-unit id="++CODE++e7543af0c2e457267ab72756c809d1cbb2f9d2c888d7c712a2022d464b3e6d57">
+        <source xml:lang="en">Environment ID is required</source>
+        <target state="new">Environment ID is required</target>
       </trans-unit>
       <trans-unit id="++CODE++b6d455a8dab8e66229a985315b5db1e1c065ba6d999dffd2795c03189fb32265">
         <source xml:lang="en">Environment ID: {0}</source>
@@ -472,10 +476,6 @@ Typ: {3}</target>
         <source xml:lang="en">Error searching for CodeQL CLI: {0}</source>
         <target state="translated">Fehler beim Suchen nach der CodeQL-CLI: {0}</target>
       </trans-unit>
-      <trans-unit id="++CODE++b74986ed2b0cdaef84e06b7f230e13c42308a76ea6445d0cf9b0319d01ea7f74">
-        <source xml:lang="en">Error switching environment: {0}</source>
-        <target state="translated">Fehler beim Wechseln der Umgebung: {0}</target>
-      </trans-unit>
       <trans-unit id="++CODE++e871c663b45be72da181a9de5bccc1b9e415ed8bab4fbc98f87cd9fe6162ded4">
         <source xml:lang="en">Error updating config file: {0}</source>
         <target state="translated">Fehler beim Aktualisieren der Konfigurationsdatei: {0}</target>
@@ -508,10 +508,6 @@ Typ: {3}</target>
       <trans-unit id="++CODE++d41633e985dc5f5045a42992788b803ca24b0b8d8f42d8db8f0ff08807d7299a">
         <source xml:lang="en">Failed to disable PAC telemetry.</source>
         <target state="translated">PAC-Telemetrie konnte nicht deaktiviert werden.</target>
-      </trans-unit>
-      <trans-unit id="++CODE++f14378498d13f7345aec709c662e475e8cd16b8c4bda8ed0009fa62f413726aa">
-        <source xml:lang="en">Failed to download site: {0}</source>
-        <target state="translated">Fehler beim Herunterladen der Website: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++95da24b6bc127a935e2e4323fe85d8f46be20c5e8ca5e10c6a134e5a0c6443a2">
         <source xml:lang="en">Failed to enable PAC telemetry.</source>
@@ -553,9 +549,9 @@ Typ: {3}</target>
         <source xml:lang="en">Failed to open in VS Code Desktop: {0}</source>
         <target state="translated">Fehler beim Öffnen in VS Code-Desktop: {0}</target>
       </trans-unit>
-      <trans-unit id="++CODE++1431fc40490dda7265400636e401674fe94e75224aa179af9ce1cded2a155808">
-        <source xml:lang="en">Failed to switch to the required environment.</source>
-        <target state="translated">Fehler beim Wechseln zur erforderlichen Umgebung.</target>
+      <trans-unit id="++CODE++3ae8538d5c7a65434c88e17ef8360aa3eb2c80dd577f3daad2d41d58d83353c9">
+        <source xml:lang="en">Failed to switch to required environment</source>
+        <target state="new">Failed to switch to required environment</target>
       </trans-unit>
       <trans-unit id="++CODE++a9e36b880dd45b64ae5601865540605296febf9bd855fc46d9c35c2c2ed9a7f2">
         <source xml:lang="en">Feature is not enabled for this geo.</source>
@@ -618,10 +614,6 @@ Typ: {3}</target>
       <trans-unit id="++CODE++46be031ab391443c1736cb8c7032c5b07b159164f48f5b86fe135465e3255571">
         <source xml:lang="en">Generating webpages...</source>
         <target state="translated">Webseiten werden generiert ...</target>
-      </trans-unit>
-      <trans-unit id="++CODE++3f4dec2f1d73d14fdcb63e9a2da87892f19450b714ec81b6db45d1e0bdd25f02">
-        <source xml:lang="en">Get Extension</source>
-        <target state="translated">Erweiterung abrufen</target>
       </trans-unit>
       <trans-unit id="++CODE++ee1d3100df4b00eabd74481b92106e42cce956213372a914082f82702f56470d">
         <source xml:lang="en">Get GitHub Copilot to try @powerpages</source>
@@ -915,13 +907,17 @@ Organisations-ID: {3}</target>
         <note>{0} is the Organization ID</note>
         <target state="translated">Organisations-ID: {0}</target>
       </trans-unit>
-      <trans-unit id="++CODE++43fda167d567df5f43ec87655e1d27557664874f1f804387174027f5e8e2e602">
-        <source xml:lang="en">Organization URL is required but not provided</source>
-        <target state="translated">Die Organisations-URL ist erforderlich, wurde aber nicht angegeben</target>
+      <trans-unit id="++CODE++77c2c11a03d9aaa14f233c0409b58952a96ed6f781a024630a7af58d1ed70f50">
+        <source xml:lang="en">Organization URL is required</source>
+        <target state="new">Organization URL is required</target>
       </trans-unit>
       <trans-unit id="++CODE++b3d5416b4e83d803e6f238f1d31a637450f12c9370113871d15bd48c72435cd2">
         <source xml:lang="en">Other Sites</source>
         <target state="translated">Andere Websites</target>
+      </trans-unit>
+      <trans-unit id="++CODE++17e4f785a8957503f2cbe34d549c9a4808bcf596614c44414d4a456931982022">
+        <source xml:lang="en">PAC CLI</source>
+        <target state="new">PAC CLI</target>
       </trans-unit>
       <trans-unit id="++CODE++d4dc9d620b68b70e7de4aeaa15e1d83dddb457c64a3cadb35cf1b55025ad194f">
         <source xml:lang="en">PAC Telemetry disabled</source>
@@ -963,6 +959,10 @@ Organisations-ID: {3}</target>
         <source xml:lang="en">Please select the folder that contains your compiled output to upload your site.</source>
         <target state="translated">Wählen Sie den Ordner aus, der Ihre kompilierten Ausgabe enthält, um Ihre Website hochzuladen.</target>
       </trans-unit>
+      <trans-unit id="++CODE++5fbb04557cac7e489e30d8dade7753361709a79b317cfe1e402c30363c43b924">
+        <source xml:lang="en">Power Pages</source>
+        <target state="new">Power Pages</target>
+      </trans-unit>
       <trans-unit id="++CODE++1bac158cc07a75506df3774db0ad7c188c19ccad4943c4cf03da8b6700ef9ce4">
         <source xml:lang="en">Power Pages Copilot is now connected to the environment: {0} : {1}</source>
         <note>{0} represents the environment name</note>
@@ -989,9 +989,9 @@ Organisations-ID: {3}</target>
         <note>{0} represents the version number</note>
         <target state="translated">pac CLI (v{0}) wird vorbereitet...</target>
       </trans-unit>
-      <trans-unit id="++CODE++e019497156f9ccd01e4c4fa2cb01c31e293460acdf116949dc29680e64660de5">
-        <source xml:lang="en">Preparing to download Power Pages site...</source>
-        <target state="translated">Das Herunterladen der Power Pages-Website wird vorbereitet...</target>
+      <trans-unit id="++CODE++a8994ac993c5dbea35b5267f2c2ee800ee8ce17569ba51a699748b406c5170fd">
+        <source xml:lang="en">Preparing to open Power Pages site...</source>
+        <target state="new">Preparing to open Power Pages site...</target>
       </trans-unit>
       <trans-unit id="++CODE++f6412ced721a26ac3e3cb55d3ff713d8403c3dfc2efa0cff07b48478bdd57555">
         <source xml:lang="en">Preview site</source>
@@ -1009,14 +1009,14 @@ Organisations-ID: {3}</target>
         <source xml:lang="en">Process error: {0}</source>
         <target state="translated">Prozessfehler: {0}</target>
       </trans-unit>
-      <trans-unit id="++CODE++5e297c22bc5c0423614ebe6e20c7fb26fc01c43d3d5cbcdcce15dab605384e13">
-        <source xml:lang="en">Processing download request...</source>
-        <target state="translated">Downloadanforderung wird verarbeitet...</target>
-      </trans-unit>
       <trans-unit id="++CODE++7a6098eb5ff2c2401890216bb502ce6583ff7bddc99e62f8751551eab45ae1b4">
         <source xml:lang="en">Profile Kind: {0}</source>
         <note>The {0} represents the profile type (Admin vs Dataverse)</note>
         <target state="translated">Profil-Variante: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++6e31aef31ad6cc82d8d8d41fd45043885761a11b9222b1ec7ce9d78a36dd4451">
+        <source xml:lang="en">Ready to select download folder</source>
+        <target state="new">Ready to select download folder</target>
       </trans-unit>
       <trans-unit id="++CODE++b62120c5416487f4c793d75aee7fea083971e5ac665a3f35767023f408f482e5">
         <source xml:lang="en">Response data is empty</source>
@@ -1149,6 +1149,10 @@ Organisations-ID: {3}</target>
         <source xml:lang="en">Submit</source>
         <target state="translated">Senden</target>
       </trans-unit>
+      <trans-unit id="++CODE++e3a0cecb7c0c51b4a918164be2e4a75795139fbc652adbed3c6a144cf4adc009">
+        <source xml:lang="en">Switching environment...</source>
+        <target state="new">Switching environment...</target>
+      </trans-unit>
       <trans-unit id="++CODE++550b4ee4e0ae69ddf9c18f9d46f59e59da633a2644633d140197d62ded3f2657">
         <source xml:lang="en">Tell us more.</source>
         <target state="translated">Teilen Sie uns mehr mit.</target>
@@ -1277,6 +1281,18 @@ Organisations-ID: {3}</target>
         <source xml:lang="en">Use current site folder</source>
         <target state="translated">Aktuellen Websiteordner verwenden</target>
       </trans-unit>
+      <trans-unit id="++CODE++923414ce1803b583f001d5c698b84f3ab0b5ecafb4953d630eab93ae622330bb">
+        <source xml:lang="en">User cancelled authentication</source>
+        <target state="new">User cancelled authentication</target>
+      </trans-unit>
+      <trans-unit id="++CODE++0b53763063a9819b6dae13d3cd35d034445618c073f88510873b12cd8fa5d66b">
+        <source xml:lang="en">User cancelled environment switch</source>
+        <target state="new">User cancelled environment switch</target>
+      </trans-unit>
+      <trans-unit id="++CODE++76df7bbbf778aafae0e57613b349235aaee0a97e85a4892f3a28b6ccc4e65232">
+        <source xml:lang="en">User cancelled folder selection</source>
+        <target state="new">User cancelled folder selection</target>
+      </trans-unit>
       <trans-unit id="++CODE++7cf98759b12f73d7717ae27ba49a3d27f026be55b4a33236942882c7a8b671bf">
         <source xml:lang="en">User cancelled opening results.</source>
         <target state="translated">Die benutzende Person hat das Öffnen der Ergebnisse abgebrochen.</target>
@@ -1298,6 +1314,10 @@ Organisations-ID: {3}</target>
         <source xml:lang="en">VS Code - PAC CLI authentication mismatch detected</source>
         <target state="translated">VS Code: PAC-CLI-Authentifizierungskonflikt erkannt</target>
       </trans-unit>
+      <trans-unit id="++CODE++527423ed0138373aa91233083f12eceeae92aa1998e6706d7a260524dafbe6c4">
+        <source xml:lang="en">Validating authentication...</source>
+        <target state="new">Validating authentication...</target>
+      </trans-unit>
       <trans-unit id="++CODE++d941ee96c6f480390012381f9fc0dfd961f2aa803732860e2505a8453700f458">
         <source xml:lang="en">We encountered an error preparing the files for edit.</source>
         <target state="translated">Beim Vorbereiten der Dateien für die Bearbeitung ist ein Fehler aufgetreten.</target>
@@ -1318,9 +1338,9 @@ Organisations-ID: {3}</target>
         <source xml:lang="en">Website ID is not available</source>
         <target state="translated">Website-ID ist nicht verfügbar</target>
       </trans-unit>
-      <trans-unit id="++CODE++64c2870068032d4e5c46e710ba9422633c8f8228527d59b27f449fdf55216bb6">
-        <source xml:lang="en">Website ID is required but not provided</source>
-        <target state="translated">Website-ID ist erforderlich, wurde aber nicht angegeben</target>
+      <trans-unit id="++CODE++6a9f7c7cbfe7d5ae5e596c92dc8f1e73e79add5f6c7359c5fd0d61a23a66b668">
+        <source xml:lang="en">Website ID is required</source>
+        <target state="new">Website ID is required</target>
       </trans-unit>
       <trans-unit id="++CODE++d3eaa7bf5377b15781ad4c0f43e4da94b9a2bd485ddbbbe62a2c3d53c5c7fe4a">
         <source xml:lang="en">Website Id: {0}</source>
@@ -1388,6 +1408,10 @@ Organisations-ID: {3}</target>
         <source xml:lang="en">dotnet sdk 6.0 or greater must be installed</source>
         <note>Do not translate 'dotnet' or 'sdk'</note>
         <target state="translated">DotNet SDK 6.0 oder höher muss installiert werden.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++21c9bbf3ca8756722337933b27566345c8aa2794231295a3ede6204329456931">
+        <source xml:lang="en">pac pcf init</source>
+        <target state="new">pac pcf init</target>
       </trans-unit>
       <trans-unit id="++CODE++48c4c42c9b70ac4687a121f91d8cb9a9063a3b51fbc5eeb68e5edc961ee18482">
         <source xml:lang="en">{0} created!</source>
