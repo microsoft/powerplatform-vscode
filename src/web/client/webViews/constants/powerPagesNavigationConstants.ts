@@ -3,6 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import * as vscode from 'vscode';
+
 // PowerPages Navigation Provider Constants
 
 export const PowerPagesNavigationConstants = {
@@ -54,19 +56,19 @@ export const PowerPagesNavigationConstants = {
         FALSE: 'false'
     },
     messages: {
-        PREVIEW_SITE: "Preview site",
-        OPEN_IN_POWER_PAGES_STUDIO: "Open in Power Pages studio",
-        OPEN_IN_VS_CODE_DESKTOP: "Open in VS Code Desktop",
-        PREVIEW_SITE_URL_INVALID: "Preview site URL is not valid",
-        OPENING_PREVIEW_SITE: "Opening preview site...",
-        POWER_PAGES_STUDIO_URL_NOT_AVAILABLE: "Power Pages studio URL is not available",
-        WEBSITE_ID_NOT_AVAILABLE: "Website ID is not available",
-        ENVIRONMENT_ID_NOT_AVAILABLE: "Environment ID is not available",
-        UNABLE_TO_GENERATE_DESKTOP_URL: "Unable to generate VS Code Desktop URL",
-        OPENING_IN_VS_CODE_DESKTOP: "Opening in VS Code Desktop. If it doesn't open or shows an error, you may need to install VS Code or update the Power Platform extension.",
-        DOWNLOAD_VS_CODE: "Download VS Code",
-        UPDATE_EXTENSION: "Update Extension",
-        FAILED_TO_GENERATE_DESKTOP_URL: "Failed to generate VS Code Desktop URL: {0}",
-        FAILED_TO_OPEN_IN_DESKTOP: "Failed to open in VS Code Desktop: {0}"
+        PREVIEW_SITE: vscode.l10n.t("Preview site"),
+        OPEN_IN_POWER_PAGES_STUDIO: vscode.l10n.t("Open in Power Pages studio"),
+        OPEN_IN_VS_CODE_DESKTOP: vscode.l10n.t("Open in VS Code Desktop"),
+        PREVIEW_SITE_URL_INVALID: vscode.l10n.t("Preview site URL is not valid"),
+        OPENING_PREVIEW_SITE: vscode.l10n.t("Opening preview site..."),
+        POWER_PAGES_STUDIO_URL_NOT_AVAILABLE: vscode.l10n.t("Power Pages studio URL is not available"),
+        WEBSITE_ID_NOT_AVAILABLE: vscode.l10n.t("Website ID is not available"),
+        ENVIRONMENT_ID_NOT_AVAILABLE: vscode.l10n.t("Environment ID is not available"),
+        UNABLE_TO_GENERATE_DESKTOP_URL: vscode.l10n.t("Unable to generate VS Code Desktop URL"),
+        OPENING_IN_VS_CODE_DESKTOP: vscode.l10n.t("Opening in VS Code Desktop. If it doesn't open or shows an error, you may need to install VS Code or update the Power Platform extension."),
+        DOWNLOAD_VS_CODE: vscode.l10n.t("Download VS Code"),
+        UPDATE_EXTENSION: vscode.l10n.t("Update Extension"),
+        FAILED_TO_GENERATE_DESKTOP_URL: vscode.l10n.t("Failed to generate VS Code Desktop URL: {0}"),
+        FAILED_TO_OPEN_IN_DESKTOP: vscode.l10n.t("Failed to open in VS Code Desktop: {0}")
     }
 };

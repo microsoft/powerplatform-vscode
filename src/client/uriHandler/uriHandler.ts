@@ -53,13 +53,13 @@ class UriHandler implements vscode.UriHandler {
                 const selectedFolder = openResults[0]; // TODO - Consider checking if folder is empty
 
                 const terminal = vscode.window.createTerminal({
-                    name: "PAC CLI",
+                    name: URI_HANDLER_STRINGS.TITLES.PAC_CLI,
                     cwd: selectedFolder.fsPath,
                     isTransient: true,
                 });
 
                 terminal.show();
-                terminal.sendText("pac pcf init");
+                terminal.sendText(URI_HANDLER_STRINGS.COMMANDS.PAC_PCF_INIT);
 
                 // Open new workspace folder, if destination was not in existing workspace
                 if(vscode.workspace.getWorkspaceFolder(selectedFolder) === undefined) {
@@ -185,7 +185,7 @@ class UriHandler implements vscode.UriHandler {
                 new Error('Website ID parameter is required but not provided'),
                 { ...telemetryData, error: 'missing_website_id' }
             );
-            throw new Error('Website ID is required');
+            throw new Error(URI_HANDLER_STRINGS.ERRORS.WEBSITE_ID_REQUIRED);
         }
 
         if (!uriParams.environmentId) {
@@ -195,7 +195,7 @@ class UriHandler implements vscode.UriHandler {
                 new Error('Environment ID parameter is required but not provided'),
                 { ...telemetryData, error: 'missing_environment_id' }
             );
-            throw new Error('Environment ID is required');
+            throw new Error(URI_HANDLER_STRINGS.ERRORS.ENVIRONMENT_ID_REQUIRED);
         }
 
         if (!uriParams.orgUrl) {
@@ -205,7 +205,7 @@ class UriHandler implements vscode.UriHandler {
                 new Error('Organization URL parameter is required but not provided'),
                 { ...telemetryData, error: 'missing_org_url' }
             );
-            throw new Error('Organization URL is required');
+            throw new Error(URI_HANDLER_STRINGS.ERRORS.ORG_URL_REQUIRED);
         }
     }
 
@@ -216,17 +216,17 @@ class UriHandler implements vscode.UriHandler {
         await vscode.window.withProgress(
             {
                 location: vscode.ProgressLocation.Notification,
-                title: "Power Pages",
+                title: URI_HANDLER_STRINGS.TITLES.POWER_PAGES,
                 cancellable: false
             },
             async (progress) => {
                 progress.report({
-                    message: "Preparing to open Power Pages site...",
+                    message: URI_HANDLER_STRINGS.PROGRESS.PREPARING,
                     increment: 10
                 });
 
                 progress.report({
-                    message: "Validating authentication...",
+                    message: URI_HANDLER_STRINGS.PROGRESS.VALIDATING_AUTH,
                     increment: 20
                 });
 
@@ -234,7 +234,7 @@ class UriHandler implements vscode.UriHandler {
                 await this.ensureAuthentication(uriParams, telemetryData, progress);
 
                 progress.report({
-                    message: "Checking environment...",
+                    message: URI_HANDLER_STRINGS.PROGRESS.CHECKING_ENV,
                     increment: 20
                 });
 
@@ -242,7 +242,7 @@ class UriHandler implements vscode.UriHandler {
                 await this.ensureCorrectEnvironment(uriParams, telemetryData, progress);
 
                 progress.report({
-                    message: "Ready to select download folder",
+                    message: URI_HANDLER_STRINGS.PROGRESS.READY_TO_SELECT,
                     increment: 30
                 });
 
@@ -270,7 +270,7 @@ class UriHandler implements vscode.UriHandler {
             );
 
             progress.report({
-                message: "Authentication required...",
+                message: URI_HANDLER_STRINGS.PROGRESS.AUTH_REQUIRED,
                 increment: 10
             });
 
@@ -284,7 +284,7 @@ class UriHandler implements vscode.UriHandler {
             if (authRequired === URI_HANDLER_STRINGS.BUTTONS.YES) {
                 try {
                     progress.report({
-                        message: "Authenticating...",
+                        message: URI_HANDLER_STRINGS.PROGRESS.AUTHENTICATING,
                         increment: 10
                     });
 
@@ -292,7 +292,7 @@ class UriHandler implements vscode.UriHandler {
 
                     const newAuthInfo = await this.pacWrapper.activeOrg();
                     if (!newAuthInfo || newAuthInfo.Status !== "Success") {
-                        throw new Error('Authentication failed after user initiated auth');
+                        throw new Error(URI_HANDLER_STRINGS.ERRORS.AUTH_FAILED);
                     }
 
                     oneDSLoggerWrapper.getLogger().traceInfo(
@@ -308,7 +308,7 @@ class UriHandler implements vscode.UriHandler {
                     uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
                     { ...telemetryData, reason: 'user_cancelled_auth' }
                 );
-                throw new Error('User cancelled authentication');
+                throw new Error(URI_HANDLER_STRINGS.ERRORS.USER_CANCELLED_AUTH);
             }
         }
     }
@@ -344,7 +344,7 @@ class UriHandler implements vscode.UriHandler {
             if (switchEnv === URI_HANDLER_STRINGS.BUTTONS.YES) {
                 try {
                     progress.report({
-                        message: "Switching environment...",
+                        message: URI_HANDLER_STRINGS.PROGRESS.SWITCHING_ENV,
                         increment: 10
                     });
 
@@ -352,7 +352,7 @@ class UriHandler implements vscode.UriHandler {
 
                     const verifyAuthInfo = await this.pacWrapper.activeOrg();
                     if (verifyAuthInfo?.Status !== "Success" || verifyAuthInfo.Results?.EnvironmentId !== uriParams.environmentId) {
-                        throw new Error('Failed to switch to required environment');
+                        throw new Error(URI_HANDLER_STRINGS.ERRORS.ENV_SWITCH_FAILED);
                     }
 
                     oneDSLoggerWrapper.getLogger().traceInfo(
@@ -368,7 +368,7 @@ class UriHandler implements vscode.UriHandler {
                     uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
                     { ...telemetryData, reason: 'user_cancelled_env_switch' }
                 );
-                throw new Error('User cancelled environment switch');
+                throw new Error(URI_HANDLER_STRINGS.ERRORS.USER_CANCELLED_ENV_SWITCH);
             }
         }
     }
@@ -392,7 +392,7 @@ class UriHandler implements vscode.UriHandler {
                 uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
                 { ...telemetryData, reason: 'user_cancelled_folder_selection' }
             );
-            throw new Error('User cancelled folder selection');
+            throw new Error(URI_HANDLER_STRINGS.ERRORS.USER_CANCELLED_FOLDER_SELECTION);
         }
 
         const selectedFolder = downloadResults[0];
@@ -432,7 +432,7 @@ class UriHandler implements vscode.UriHandler {
                         const errorMessage = downloadResult.Errors?.length > 0
                             ? downloadResult.Errors.join('; ')
                             : 'Unknown error occurred during download';
-                        throw new Error(`Download failed: ${errorMessage}`);
+                        throw new Error(URI_HANDLER_STRINGS.ERRORS.DOWNLOAD_FAILED.replace('{0}', errorMessage));
                     }
 
                     oneDSLoggerWrapper.getLogger().traceInfo(
