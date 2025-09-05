@@ -62,8 +62,22 @@ export async function generateDiffReport(workspacePath: string, storagePath: str
             body += `<h2>Root</h2>`;
         }
         body += `<ul class="file-list" data-folder="${escapeHtml(folderId)}">`;
+        const allowedChangeClasses = new Set(["modified","only-in-local","only-in-environment"]);
         for (const file of files.sort((a, b) => a.relativePath.localeCompare(b.relativePath))) {
-            body += `<li class="file-item ${file.changes.toLowerCase().replace(/\s+/g,'-')}">`;
+            const rawChange = file.changes.toLowerCase().replace(/\s+/g,'-');
+            // Map known values to canonical class names; fallback to 'modified' to avoid arbitrary injection
+            let changeClass = "modified";
+            if (rawChange.includes("only") && rawChange.includes("local")) {
+                changeClass = "only-in-local";
+            } else if (rawChange.includes("only") && (rawChange.includes("environment") || rawChange.includes("remote"))) {
+                changeClass = "only-in-environment";
+            } else if (rawChange === "modified") {
+                changeClass = "modified";
+            }
+            if (!allowedChangeClasses.has(changeClass)) {
+                changeClass = "modified";
+            }
+            body += `<li class="file-item ${changeClass}">`;
             body += `<div class="file-header"><span class="file-name">${escapeHtml(path.basename(file.relativePath))}</span>`;
             body += `<span class="change-tag">${escapeHtml(file.changes)}</span></div>`;
 

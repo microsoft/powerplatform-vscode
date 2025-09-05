@@ -282,6 +282,21 @@ export async function activate(
                 ActionsHub.initialize(context, pacTerminal)
             ]);
 
+            // Initialize Metadata Diff after ActionsHub so that its root node can attach; gated by ECS
+            try {
+                // Dynamic import to avoid circular reference at top-level during tests
+                const { EnableMetadataDiff } = await import("../common/ecs-features/ecsFeatureGates");
+                const { enableMetadataDiff } = ECSFeaturesClient.getConfig(EnableMetadataDiff);
+                if (enableMetadataDiff) {
+                    await MetadataDiffDesktop.initialize(context, pacTerminal);
+                } else {
+                    vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.metadataDiffEnabled", false);
+                }
+            } catch (e) {
+                // Non-blocking – log minimal telemetry; avoid failing activation
+                oneDSLoggerWrapper.getLogger().traceError("MetadataDiffInitSkipped", (e as Error).message, e as Error);
+            }
+
             vscode.commands.executeCommand('setContext', 'microsoft.powerplatform.environment.initialized', true);
         }),
 
@@ -311,8 +326,6 @@ export async function activate(
 
     const workspaceFolderWatcher = vscode.workspace.onDidChangeWorkspaceFolders(handleWorkspaceFolderChange);
     _context.subscriptions.push(workspaceFolderWatcher);
-
-    MetadataDiffDesktop.initialize(context, pacTerminal)
 
     if (shouldEnableDebugger()) {
         activateDebugger(context);
