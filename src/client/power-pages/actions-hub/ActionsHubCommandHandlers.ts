@@ -596,7 +596,7 @@ export function findOtherSites(knownSiteIds: Set<string>, fsModule = fs, yamlMod
                         const websiteData = yamlModule.parse(yamlContent) as WebsiteYaml;
 
                         otherSites.push({
-                            name: websiteData?.adx_name || path.basename(dir), // Use folder name as fallback
+                            name: websiteData?.adx_name || websiteData?.name || path.basename(dir), // Use folder name as fallback
                             websiteId: websiteId,
                             folderPath: dir,
                             isCodeSite: powerPagesSiteFolderExists
