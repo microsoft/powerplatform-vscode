@@ -104,7 +104,7 @@ export class PacInterop implements IPacInterop {
             }
 
             // Force kill if still running
-            if (!this._proc.killed) {
+            if (this._proc && !this._proc.killed) {
                 this._proc.kill();
             }
 
