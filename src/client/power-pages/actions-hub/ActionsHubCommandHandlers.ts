@@ -596,7 +596,7 @@ export function findOtherSites(knownSiteIds: Set<string>, fsModule = fs, yamlMod
                         const websiteData = yamlModule.parse(yamlContent) as WebsiteYaml;
 
                         otherSites.push({
-                            name: websiteData?.adx_name || path.basename(dir), // Use folder name as fallback
+                            name: websiteData?.adx_name || websiteData?.name || path.basename(dir), // Use folder name as fallback
                             websiteId: websiteId,
                             folderPath: dir,
                             isCodeSite: powerPagesSiteFolderExists
@@ -942,7 +942,25 @@ export const reactivateSite = async (siteTreeItem: SiteTreeItem) => {
 };
 
 export const runCodeQLScreening = async (siteTreeItem?: SiteTreeItem) => {
-    traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_CALLED, { methodName: runCodeQLScreening.name });
+    const startTime = Date.now();
+    let siteInfo = null;
+
+    if (siteTreeItem) {
+        siteInfo = {
+            websiteId: siteTreeItem.siteInfo.websiteId,
+            contextValue: siteTreeItem.contextValue,
+            isCodeSite: siteTreeItem.siteInfo.isCodeSite,
+            dataModelVersion: siteTreeItem.siteInfo.dataModelVersion,
+            hasValidPath: !!siteTreeItem.siteInfo.folderPath
+        };
+    }
+
+    traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_STARTED, {
+        methodName: runCodeQLScreening.name,
+        hasSiteTreeItem: !!siteTreeItem,
+        siteInfo: siteInfo,
+        ...getBaseEventInfo()
+    });
 
     try {
         // Get the current site path
@@ -955,15 +973,35 @@ export const runCodeQLScreening = async (siteTreeItem?: SiteTreeItem) => {
 
         if (!sitePath) {
             await vscode.window.showErrorMessage(Constants.Strings.CODEQL_CURRENT_SITE_PATH_NOT_FOUND);
+
+            traceError(Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_FAILED, new Error('Site path not found'), {
+                methodName: runCodeQLScreening.name,
+                reason: 'site_path_not_found',
+                duration: Date.now() - startTime,
+                siteInfo: siteInfo,
+                ...getBaseEventInfo()
+            });
+
             return;
         }
 
-        const powerPagesSiteFolderExists = fs.existsSync(sitePath);
+        // Check if the .powerpages-site folder exists for BYOC sites.
+        const sitePathWithFolder = path.join(sitePath, POWERPAGES_SITE_FOLDER);
+        const powerPagesSiteFolderExists = fs.existsSync(sitePathWithFolder);
 
         // Check if CodeQL extension is installed
         const codeQLExtension = vscode.extensions.getExtension(CODEQL_EXTENSION_ID);
 
         if (!codeQLExtension) {
+                                traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_EXTENSION_INSTALL_PROMPTED, {
+                methodName: runCodeQLScreening.name,
+                extensionId: CODEQL_EXTENSION_ID,
+                sitePath: sitePath,
+                powerPagesSiteFolderExists: powerPagesSiteFolderExists,
+                siteInfo: siteInfo,
+                ...getBaseEventInfo()
+            });
+
             // Prompt user to install the CodeQL extension
             const install = await vscode.window.showWarningMessage(
                 Constants.Strings.CODEQL_EXTENSION_NOT_INSTALLED,
@@ -972,47 +1010,114 @@ export const runCodeQLScreening = async (siteTreeItem?: SiteTreeItem) => {
             );
 
             if (install === Constants.Strings.INSTALL) {
+                                    traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_EXTENSION_INSTALL_ACCEPTED, {
+                    methodName: runCodeQLScreening.name,
+                    userAction: 'install_extension',
+                    extensionId: CODEQL_EXTENSION_ID,
+                    sitePath: sitePath,
+                    powerPagesSiteFolderExists: powerPagesSiteFolderExists,
+                    siteInfo: siteInfo,
+                    ...getBaseEventInfo()
+                });
+
                 await vscode.commands.executeCommand('workbench.extensions.installExtension', CODEQL_EXTENSION_ID);
-                traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_EXTENSION_NOT_INSTALLED, { methodName: runCodeQLScreening.name });
                 return;
             } else {
+                traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_EXTENSION_INSTALL_DECLINED, {
+                    methodName: runCodeQLScreening.name,
+                    userAction: 'cancelled_install',
+                    extensionId: CODEQL_EXTENSION_ID,
+                    duration: Date.now() - startTime,
+                    siteInfo: siteInfo,
+                    ...getBaseEventInfo()
+                });
                 return;
             }
         }
 
+        // Extension is already installed, log this event
+        traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_EXTENSION_FOUND, {
+            methodName: runCodeQLScreening.name,
+            extensionId: CODEQL_EXTENSION_ID,
+            sitePath: sitePath,
+            powerPagesSiteFolderExists: powerPagesSiteFolderExists,
+            siteInfo: siteInfo,
+            ...getBaseEventInfo()
+        });
+
         // Use default database location (site folder)
         const databaseLocation = getDefaultCodeQLDatabasePath();
 
-        traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_EXTENSION_INSTALLED, { methodName: runCodeQLScreening.name });
+        traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_DATABASE_CREATED, {
+            methodName: runCodeQLScreening.name,
+            sitePath: sitePath,
+            databaseLocation: databaseLocation,
+            powerPagesSiteFolderExists: powerPagesSiteFolderExists,
+            extensionAlreadyInstalled: true,
+            siteInfo: siteInfo,
+            ...getBaseEventInfo()
+        });
 
         const codeQLAction = new CodeQLAction();
 
         try {
-            await showProgressWithNotification(
+            const analysisResults = await showProgressWithNotification(
                 Constants.Strings.CODEQL_SCREENING_STARTED,
                 async () => {
                     // Use a custom method that allows specifying the database location
-                    await codeQLAction.executeCodeQLAnalysisWithCustomPath(sitePath, databaseLocation, powerPagesSiteFolderExists);
+                    return await codeQLAction.executeCodeQLAnalysisWithCustomPath(sitePath, databaseLocation, powerPagesSiteFolderExists);
                 }
             );
 
-            traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_COMPLETED, { methodName: runCodeQLScreening.name });
+            const duration = Date.now() - startTime;
+            traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_COMPLETED, {
+                methodName: runCodeQLScreening.name,
+                sitePath: sitePath,
+                databaseLocation: databaseLocation,
+                powerPagesSiteFolderExists: powerPagesSiteFolderExists,
+                duration: duration,
+                issuesFound: analysisResults?.issueCount || 0,
+                hasIssues: (analysisResults?.issueCount || 0) > 0,
+                siteInfo: siteInfo,
+                ...getBaseEventInfo()
+            });
         } catch (error) {
+            const duration = Date.now() - startTime;
+            const errorMessage = error instanceof Error ? error.message : String(error);
+
             traceError(
                 Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_FAILED,
                 error as Error,
-                { methodName: runCodeQLScreening.name }
+                {
+                    methodName: runCodeQLScreening.name,
+                    sitePath: sitePath,
+                    databaseLocation: databaseLocation,
+                    powerPagesSiteFolderExists: powerPagesSiteFolderExists,
+                    duration: duration,
+                    errorMessage: errorMessage,
+                    siteInfo: siteInfo,
+                    ...getBaseEventInfo()
+                }
             );
             await vscode.window.showErrorMessage(Constants.Strings.CODEQL_SCREENING_FAILED);
         } finally {
-            //codeQLAction.dispose();
+            codeQLAction.dispose();
         }
 
     } catch (error) {
+        const duration = Date.now() - startTime;
+        const errorMessage = error instanceof Error ? error.message : String(error);
+
         traceError(
             Constants.EventNames.ACTIONS_HUB_CODEQL_SCREENING_FAILED,
             error as Error,
-            { methodName: runCodeQLScreening.name }
+            {
+                methodName: runCodeQLScreening.name,
+                duration: duration,
+                errorMessage: errorMessage,
+                siteInfo: siteInfo,
+                ...getBaseEventInfo()
+            }
         );
         await vscode.window.showErrorMessage(Constants.Strings.CODEQL_SCREENING_FAILED);
     }

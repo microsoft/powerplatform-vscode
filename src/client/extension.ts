@@ -233,7 +233,7 @@ export async function activate(
                     // Register copilot panels only after ECS initialization is complete
                     registerCopilotPanels(pacWrapper);
 
-                    const { enableServerLogicChanges } = EnableServerLogicChanges.getConfig() as { enableServerLogicChanges?: boolean };
+                    const { enableServerLogicChanges } = ECSFeaturesClient.getConfig(EnableServerLogicChanges);
                     if (!serverApiAutocompleteInitialized && enableServerLogicChanges) {
                         // Set telemetry context for Server API autocomplete events
                         setServerApiTelemetryContext({

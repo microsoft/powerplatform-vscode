@@ -139,8 +139,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
                                         title: vscode.l10n.t("Fetching your file ..."),
                                     },
                                     async () => {
-                                        await portalsFS.readDirectory(WebExtensionContext.rootDirectory, true);
-
                                         // Initialize ECS config in webExtensionContext
                                         await ECSFeaturesClient.init(
                                             {
@@ -153,7 +151,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
                                             },
                                             PowerPagesClientName);
 
-                                        const { enableServerLogicChanges } = EnableServerLogicChanges.getConfig() as { enableServerLogicChanges?: boolean };
+                                        await portalsFS.readDirectory(WebExtensionContext.rootDirectory, true);
+
+                                        const { enableServerLogicChanges } = ECSFeaturesClient.getConfig(EnableServerLogicChanges);
+
                                         if (!serverApiAutocompleteInitialized && enableServerLogicChanges) {
                                             // Set telemetry context for Server API autocomplete events
                                             setServerApiTelemetryContext({

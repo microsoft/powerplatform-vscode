@@ -18,7 +18,9 @@ export const URI_CONSTANTS = {
         ORG_URL: 'orgurl',
         SCHEMA: 'schema',
         SITE_NAME: 'sitename',
-        SITE_URL: 'siteurl'
+        WEBSITE_NAME: 'websitename',
+        SITE_URL: 'siteurl',
+        WEBSITE_PREVIEW_URL: 'websitepreviewurl'
     },
     SCHEMA_VALUES: {
         PORTAL_SCHEMA_V2: 'portalschemav2'
