@@ -860,6 +860,6 @@ export class CodeQLAction {
     }
 
     public dispose(): void {
-        this.outputChannel.dispose();
+
     }
 }
