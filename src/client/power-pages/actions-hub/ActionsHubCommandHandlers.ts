@@ -985,7 +985,7 @@ export const runCodeQLScreening = async (siteTreeItem?: SiteTreeItem) => {
             return;
         }
 
-        // Check if the .powerpages-site folder exists
+        // Check if the .powerpages-site folder exists for BYOC sites.
         const sitePathWithFolder = path.join(sitePath, POWERPAGES_SITE_FOLDER);
         const powerPagesSiteFolderExists = fs.existsSync(sitePathWithFolder);
 
