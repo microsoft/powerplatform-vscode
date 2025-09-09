@@ -7,10 +7,7 @@
   "A webtemplate with the same name already exists. Please enter a different name.": "Веб-шаблон с таким именем уже существует. Введите другое имя.",
   "AI features have been disabled by your organization. Contact your admin for details. [Learn more](https://go.microsoft.com/fwlink/?linkid=2285848)": "Функции ИИ отключены вашей организацией. За дополнительной информацией обратитесь к администратору. [Подробнее](https://go.microsoft.com/fwlink/?linkid=2285848)",
   "AI-generated content can contain mistakes": "Созданный ИИ контент может содержать ошибки",
-<<<<<<< HEAD
-=======
   "Accounts don't match, data may not load.": "Учетные данные не совпадают, данные могут не загрузиться.",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Activating CodeQL extension...": "Активация расширения CodeQL...",
   "Activating SARIF viewer extension...": "Активация расширения средства просмотра SARIF...",
   "Active Sites": "Активные сайты",
@@ -25,13 +22,9 @@
   "Are you sure you want to delete the Auth Profile {0}-{1}?/{0} is the user name, {1} is the URL of environment of the auth profile": "Вы действительно хотите удалить этот профиль проверки подлинности {0}-{1}?",
   "Arrow icon": "Значок со стрелкой",
   "Authenticating...": "Проверка подлинности...",
-<<<<<<< HEAD
-  "Authentication failed. Please login and try again.": "Не удалось выполнить проверку подлинности. Войдите и повторите попытку.",
-=======
   "Authentication failed. Cannot proceed with site download.": "Проверка подлинности не пройдена. Невозможно продолжить скачивание сайта.",
   "Authentication failed. Please login and try again.": "Не удалось выполнить проверку подлинности. Войдите и повторите попытку.",
   "Authentication failed. Please try again.": "Проверка подлинности не пройдена. Попробуйте еще раз.",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Authorization Failed. Please run again to authorize it": "Авторизация не пройдена. Запустите ее еще раз",
   "Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.": "Будьте внимательны при внесении изменений. Кто угодно может сразу увидеть ваши изменения. Выберите \"Изменить сайт\", чтобы внести изменения, или закройте вкладку редактора, чтобы выйти без редактирования.",
   "Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?": "Будьте осторожны при изменении общедоступных сайтов. Внесенные изменения станут сразу видны всем пользователям. Вы действительно хотите продолжить?",
@@ -47,10 +40,7 @@
   "Choose parent page": "Выберите родительную страницу",
   "Choose web template": "Выберите веб-шаблон",
   "Clearing cache. See [details](https://aka.ms/pages-clear-cache)./This is a markdown formatting which must persist across translations.The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).', keeping brackets and the text in the parentheses unmodified": "Очистка кэша. [Подробнее](https://aka.ms/pages-clear-cache).",
-<<<<<<< HEAD
-=======
   "Click to authenticate with a matching account": "Щелкните, чтобы пройти проверку подлинности с помощью соответствующей учетной записи",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Close": "Закрыть",
   "Cloud Instance: {0}/The {0} represents profile's Azure Cloud Instances": "Облачный экземпляр: {0}",
   "Cluster category: {0}/{0} is the Cluster category": "Категория кластера: {0}",
@@ -104,11 +94,8 @@
   "Enter name": "Введите имя",
   "Enter the environment URL": "Введите URL-адрес среды",
   "Enter the name of the web template": "Введите имя веб-шаблона",
-<<<<<<< HEAD
-=======
   "Environment ID is not available": "ИД среды недоступен",
   "Environment ID is required but not provided": "Идентификатор среды обязателен, но не предоставлен",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Environment ID: {0}/{0} is the Environment ID": "ИД среды: {0}",
   "Environment changed successfully.": "Среда успешной изменена.",
   "Error accessing CodeQL extension: {0}": "Ошибка при доступе к расширению CodeQL: {0}",
@@ -120,10 +107,7 @@
   "Error reading config file: {0}": "Ошибка чтения файла конфигурации: {0}",
   "Error reading results: {0}": "Ошибка чтения результатов: {0}",
   "Error searching for CodeQL CLI: {0}": "Ошибка поиска интерфейса командной строки CodeQL: {0}",
-<<<<<<< HEAD
-=======
   "Error switching environment: {0}": "Ошибка переключения среды: {0}",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Error updating config file: {0}": "Ошибка обновления файла конфигурации: {0}",
   "Executing: {0}": "Выполнение: {0}",
   "Explain the following code snippet:": "Объясните следующий фрагмент кода:",
@@ -139,16 +123,11 @@
   "Failed to get file ready for edit: {0}": "Не удалось получить файл для редактирования: {0}",
   "Failed to get organization details. Please try again later": "Не удалось получить параметры организации. Повторите попытку позже",
   "Failed to get website endpoint. Please try again later": "Не удалось получить конечную точку веб-сайта. Повторите попытку позже",
-<<<<<<< HEAD
-  "Failed to install SARIF viewer extension. Opening results as text file.": "Не удалось установить расширение средства просмотра SARIF. Открытие результатов в виде текстового файла.",
-  "Failed to install SARIF viewer extension: {0}": "Не удалось установить расширение средства просмотра SARIF: {0}",
-=======
   "Failed to handle Power Pages URI: {0}": "Не удалось обработать универсальный код ресурса (URI) Power Pages: {0}",
   "Failed to install SARIF viewer extension. Opening results as text file.": "Не удалось установить расширение средства просмотра SARIF. Открытие результатов в виде текстового файла.",
   "Failed to install SARIF viewer extension: {0}": "Не удалось установить расширение средства просмотра SARIF: {0}",
   "Failed to open in VS Code Desktop: {0}": "Не удалось открыть в классическом приложении VS Code: {0}",
   "Failed to switch to the required environment.": "Не удалось переключиться на нужную среду.",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Feature is not enabled for this geo.": "Функция не включена для этого региона.",
   "Feedback": "Отзыв",
   "Fetching your file ...": "Извлечение файла...",
@@ -164,10 +143,7 @@
   "GETTING STARTED": "НАЧАЛО РАБОТЫ",
   "Generating a new Power Pages site...": "Создание нового сайта Power Pages...",
   "Generating webpages...": "Создание веб-страниц...",
-<<<<<<< HEAD
-=======
   "Get Extension": "Получить расширение",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Get GitHub Copilot to try @powerpages": "Получить GitHub Copilot, чтобы попробовать @powerpages",
   "Getting organization details...": "Получение информации об организации...",
   "Getting region information...": "Получение информации о регионе...",
@@ -219,12 +195,6 @@
   "No webpages found": "Веб-страницы не найдены",
   "No workspace folder found": "Не найдена папка рабочей области",
   "No workspace folder opened. Please open a site folder to preview.": "Ни одна папка рабочей области не открыта. Откройте папку сайта для предварительного просмотра.",
-<<<<<<< HEAD
-  "Object ID: {0}/{0} is the Object ID": "ИД объекта: {0}",
-  "One or more attribute names have been changed or removed. Contact your admin.": "Одно или несколько имен атрибутов были изменены или удалены. Обратитесь к администратору.",
-  "Open Results": "Открыть результаты",
-  "Open as Text": "Открыть как текст",
-=======
   "Not Now": "Не сейчас",
   "Object ID: {0}/{0} is the Object ID": "ИД объекта: {0}",
   "One or more attribute names have been changed or removed. Contact your admin.": "Одно или несколько имен атрибутов были изменены или удалены. Обратитесь к администратору.",
@@ -232,7 +202,6 @@
   "Open Results": "Открыть результаты",
   "Open as Text": "Открыть как текст",
   "Open in New Workspace": "Открыть в новой рабочей области",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Open in Power Pages studio": "Открыть в студии Power Pages",
   "Open in VS Code Desktop": "Открыть в классической версии приложения VS Code",
   "Opening in VS Code Desktop. If it doesn't open or shows an error, you may need to install VS Code or update the Power Platform extension.": "Opening in VS Code Desktop. If it doesn't open or shows an error, you may need to install VS Code or update the Power Platform extension.",
@@ -242,10 +211,7 @@
   "Opening site preview...": "Открывается предварительный просмотр сайта...",
   "Operation failed. See output panel for details.": "Не удалось выполнить операцию. Подробную информацию см. на панели вывода.",
   "Organization ID: {0}/{0} is the Organization ID": "ИД организации: {0}",
-<<<<<<< HEAD
-=======
   "Organization URL is required but not provided": "URL-адрес организации обязателен, но не указан",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Other Sites": "Другие сайты",
   "PAC Telemetry disabled": "Телеметрия PAC отключена",
   "PAC Telemetry enabled": "Телеметрия PAC включена",
@@ -268,10 +234,7 @@
   "Preview site URL is not valid": "Недопустимый URL-адрес предварительной версии сайта",
   "Primary query suite {0} failed: {1}": "Ошибка основного набора запросов {0}: {1}",
   "Process error: {0}": "Ошибка процесса: {0}",
-<<<<<<< HEAD
-=======
   "Processing download request...": "Обрабатывается запрос на скачивание...",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Profile Kind: {0}/The {0} represents the profile type (Admin vs Dataverse)": "Вид профиля: {0}",
   "Response data is empty": "Данные ответа пусты",
   "Results opened in SARIF viewer successfully.": "Результаты успешно открыты в средстве просмотра SARIF.",
@@ -293,15 +256,11 @@
   "Session Details": "Сведения о сеансе",
   "Session ID: {0}/{0} is the Session ID": "ИД сеанса: {0}",
   "Show Output Panel": "Показать панель вывода",
-<<<<<<< HEAD
-  "Site Details": "Параметры сайта",
-=======
   "Sign in to VS Code with PAC CLI account": "Войдите в VS Code с помощью учетной записи PAC CLI",
   "Site Details": "Параметры сайта",
   "Site download cancelled. Authentication is required to proceed.": "Скачивание сайта отменено. Для продолжения требуется проверка подлинности.",
   "Site download cancelled. Correct environment connection is required.": "Скачивание сайта отменено. Требуется правильное подключение к среде.",
   "Site download cancelled. No folder selected.": "Скачивание сайта отменено. Ни одна папка не выбрана.",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Site management URL not found for the selected site. Please try again after refreshing the environment.": "URL-адрес управления сайтом не найден для выбранного сайта. Повторите попытку после обновления среды.",
   "Site runtime preview feature is not enabled.": "Функция предварительного просмотра среды выполнения сайта не включена.",
   "Site visibility: {0}/{0} is the site visibility": "Видимость сайта: {0}",
@@ -314,10 +273,7 @@
   "The CodeQL extension is required to run this command. Do you want to install it now?": "Для выполнения этой команды требуется расширение CodeQL. Установить?",
   "The Power Pages generator is ready for use in your VS Code extension!": "Генератор Power Pages готов к использованию в расширении VS Code.",
   "The SARIF Viewer extension is recommended for viewing CodeQL results. Would you like to install it now?": "Для просмотра результатов CodeQL рекомендуется использовать расширение средства просмотра SARIF. Хотите установить его сейчас?",
-<<<<<<< HEAD
-=======
   "The account signed in to VS Code differs from the one authenticated in PAC CLI (Power Platform CLI). This mismatch can cause data not to load or actions to fail because UI commands run through the CLI. To fix it, sign in to VS Code using the same account as your PAC CLI. If needed, you can update your PAC CLI authentication separately via the command line.": "Учетная запись, вошедшая в систему VS Code, отличается от учетной записи, прошедшей проверку подлинности в PAC CLI (Power Platform CLI). Это несоответствие может привести к тому, что данные не будут загружаться или действия завершатся сбоем, так как команды пользовательского интерфейса выполняются через интерфейс командной строки. Чтобы устранить эту проблему, войдите в VS Code, используя ту же учетную запись, что и в PAC CLI. При необходимости можно обновить проверку подлинности PAC CLI отдельно с помощью командной строки.",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?/Do not translate 'Microsoft Edge Tools' ": "Для выполнения этой команды требуется расширение \"Microsoft Edge Tools\". Установить его?",
   "The name you want to give to this authentication profile": "Имя, которое вы хотите дать этому профилю проверки подлинности",
   "The pac CLI is ready for use in your VS Code terminal!": "Компонент pac CLI готов к использованию в терминале VS Code!",
@@ -335,17 +291,11 @@
   "Unable to clear cache": "Не удается очистить кэш",
   "Unable to complete the request": "Не удается завершить запрос",
   "Unable to find that app": "Не удалось найти приложение",
-<<<<<<< HEAD
-  "Unable to locate website root folder.": "Не удалось найти корневую папку веб-сайта.",
-  "Unique name: {0}/{0} is the Unique name": "Уникальное имя: {0}",
-  "Unmanaged": "Неуправляемые",
-=======
   "Unable to generate VS Code Desktop URL": "Не удается сгенерировать URL-адрес классического приложения VS Code",
   "Unable to locate website root folder.": "Не удалось найти корневую папку веб-сайта.",
   "Unique name: {0}/{0} is the Unique name": "Уникальное имя: {0}",
   "Unmanaged": "Неуправляемые",
   "Update Extension": "Update Extension",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Upload changes": "Отправить изменения",
   "Upload failed. Please try again later.": "Сбой отправки. Повторите попытку позже.",
   "Use current site folder": "Использование текущей папки сайта",
@@ -353,19 +303,13 @@
   "User: {0}/The {0} represents auth profile's user name (email address))": "Пользователь: {0}",
   "Using custom CodeQL query suite: {0}": "Использование пользовательского набора запросов CodeQL: {0}",
   "Using default query suite: {0}": "Использование набора запросов по умолчанию: {0}",
-<<<<<<< HEAD
-=======
   "VS Code - PAC CLI authentication mismatch detected": "VS Code — обнаружено несоответствие проверки подлинности PAC CLI",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "We encountered an error preparing the files for edit.": "Произошла ошибка при подготовке файлов к редактированию.",
   "Web files": "Веб-файлы",
   "Webfile(s) added successfully": "Веб-файлы успешно добавлены",
   "Webpage names should contain only letters, numbers, hyphens, or underscores.": "Имена веб-страниц должны содержать только буквы, цифры, дефисы и символы подчеркивания.",
-<<<<<<< HEAD
-=======
   "Website ID is not available": "ID сайта недоступен",
   "Website ID is required but not provided": "Идентификатор веб-сайта обязателен, но не предоставлен",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Website Id: {0}/{0} is the website ID": "ИД веб-сайта: {0}",
   "Website Url: {0}/{0} is the website Url": "URL-адрес веб-сайта: {0}",
   "Website not found in the environment. Please check the credentials and login with correct account.": "Веб-сайт не найден в среде. Проверьте учетные данные и выполните вход с правильной учетной записью.",
@@ -376,15 +320,10 @@
   "Write JavaScript code to highlight the row where email field is empty in table list.": "Напишите код JavaScript, чтобы выделить строку, в которой поле адреса электронной почты пусто в списке таблиц.",
   "Write web API code to query active contact records.": "Напишите код веб-API для запроса активных записей контактов.",
   "Yes": "Да",
-<<<<<<< HEAD
-  "You are editing a live, public site ": "Вы редактируете опубликованный открытый сайт ",
-  "You can use this in <a href=\"#\" id=\"github-copilot-link\">GitHub Copilot with @powerpages</a> and leverage best of both world.": "Вы можете работать в <a href=\"#\" id=\"github-copilot-link\">GitHub Copilot с @powerpages</a> и использовать лучшие возможности обоих решений.",
-=======
   "You are currently connected to a different environment. Would you like to switch to the required environment?": "На данный момент вы подключены к другой среде. Хотите переключиться на нужную среду?",
   "You are editing a live, public site ": "Вы редактируете опубликованный открытый сайт ",
   "You can use this in <a href=\"#\" id=\"github-copilot-link\">GitHub Copilot with @powerpages</a> and leverage best of both world.": "Вы можете работать в <a href=\"#\" id=\"github-copilot-link\">GitHub Copilot с @powerpages</a> и использовать лучшие возможности обоих решений.",
   "You need to authenticate with Power Platform to download the site. Would you like to authenticate now?": "Чтобы скачать сайт, вы должны пройти проверку подлинности в Power Platform. Хотите сделать это сейчас?",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Your preview isn't updated. Please upload your site to see the latest changes.": "Предварительный просмотр не обновлен. Загрузите сайт, чтобы увидеть последние изменения.",
   "dotnet sdk 6.0 or greater must be installed/Do not translate 'dotnet' or 'sdk'": "Необходимо установить версию dotnet sdk 6.0 или более позднюю",
   "{0} created!/{0} will be replaced by the entity type.": "Создано: {0}."

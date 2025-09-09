@@ -7,10 +7,7 @@
   "A webtemplate with the same name already exists. Please enter a different name.": "Já existe um modelo da Web com o mesmo nome. Insira um nome diferente.",
   "AI features have been disabled by your organization. Contact your admin for details. [Learn more](https://go.microsoft.com/fwlink/?linkid=2285848)": "Os recursos de IA foram desabilitados pela sua organização. Contate o administrador para obter detalhes. [Saiba mais](https://go.microsoft.com/fwlink/?linkid=2285848)",
   "AI-generated content can contain mistakes": "O conteúdo gerado por IA pode conter erros",
-<<<<<<< HEAD
-=======
   "Accounts don't match, data may not load.": "As contas não correspondem, os dados podem não ser carregados.",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Activating CodeQL extension...": "Ativando a extensão CodeQL...",
   "Activating SARIF viewer extension...": "Ativando a extensão do visualizador SARIF...",
   "Active Sites": "Sites Ativos",
@@ -25,13 +22,9 @@
   "Are you sure you want to delete the Auth Profile {0}-{1}?/{0} is the user name, {1} is the URL of environment of the auth profile": "Tem certeza de que deseja excluir este Perfil de Autenticação de {0}, {1}?",
   "Arrow icon": "Ícone de seta",
   "Authenticating...": "Autenticando...",
-<<<<<<< HEAD
-  "Authentication failed. Please login and try again.": "Falha na autenticação. Faça logon e tente novamente.",
-=======
   "Authentication failed. Cannot proceed with site download.": "Falha na autenticação. Não é possível continuar com o download do site.",
   "Authentication failed. Please login and try again.": "Falha na autenticação. Faça logon e tente novamente.",
   "Authentication failed. Please try again.": "Falha na autenticação. Tente novamente.",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Authorization Failed. Please run again to authorize it": "Falha na Autorização. Execute novamente para autorizar",
   "Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.": "Tenha cuidado ao fazer alterações. Qualquer pessoa pode ver as alterações que você faz imediatamente. Escolha Editar o site para fazer edições ou feche a guia do editor para cancelar sem editar.",
   "Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?": "Tenha cuidado ao atualizar sites públicos. As alterações feitas ficam visíveis para qualquer pessoa imediatamente. Deseja continuar?",
@@ -47,10 +40,7 @@
   "Choose parent page": "Escolher página principal",
   "Choose web template": "Escolher modelo da Web",
   "Clearing cache. See [details](https://aka.ms/pages-clear-cache)./This is a markdown formatting which must persist across translations.The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).', keeping brackets and the text in the parentheses unmodified": "Limpando cache. Consulte os [detalhes](https://aka.ms/pages-clear-cache).",
-<<<<<<< HEAD
-=======
   "Click to authenticate with a matching account": "Clique para autenticar com uma conta correspondente",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Close": "Fechar",
   "Cloud Instance: {0}/The {0} represents profile's Azure Cloud Instances": "Instância na Nuvem: {0}",
   "Cluster category: {0}/{0} is the Cluster category": "Categoria do cluster: {0}",
@@ -104,11 +94,8 @@
   "Enter name": "Inserir nome",
   "Enter the environment URL": "Inserir a URL do ambiente",
   "Enter the name of the web template": "Inserir o nome do modelo da Web",
-<<<<<<< HEAD
-=======
   "Environment ID is not available": "ID do ambiente não disponível",
   "Environment ID is required but not provided": "A ID do ambiente é obrigatória, mas não foi fornecida",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Environment ID: {0}/{0} is the Environment ID": "ID do Ambiente: {0}",
   "Environment changed successfully.": "Ambiente alterado com êxito.",
   "Error accessing CodeQL extension: {0}": "Erro ao acessar a extensão CodeQL: {0}",
@@ -120,10 +107,7 @@
   "Error reading config file: {0}": "Erro ao ler o arquivo de configuração: {0}",
   "Error reading results: {0}": "Erro ao ler os resultados: {0}",
   "Error searching for CodeQL CLI: {0}": "Erro ao pesquisar a CLI do CodeQL: {0}",
-<<<<<<< HEAD
-=======
   "Error switching environment: {0}": "Erro ao alternar o ambiente: {0}",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Error updating config file: {0}": "Erro ao atualizar o arquivo de configuração: {0}",
   "Executing: {0}": "Executando: {0}",
   "Explain the following code snippet:": "Explique o seguinte trecho de código:",
@@ -139,16 +123,11 @@
   "Failed to get file ready for edit: {0}": "Falha ao preparar o arquivo para edição: {0}",
   "Failed to get organization details. Please try again later": "Falha ao obter detalhes da organização. Tente novamente mais tarde",
   "Failed to get website endpoint. Please try again later": "Falha ao obter ponto de extremidade do site. Tente novamente mais tarde",
-<<<<<<< HEAD
-  "Failed to install SARIF viewer extension. Opening results as text file.": "Falha ao instalar a extensão do visualizador SARIF. Abrindo resultados como arquivo de texto.",
-  "Failed to install SARIF viewer extension: {0}": "Falha ao instalar a extensão do visualizador SARIF: {0}",
-=======
   "Failed to handle Power Pages URI: {0}": "Falha ao manipular a URI do Power Pages: {0}",
   "Failed to install SARIF viewer extension. Opening results as text file.": "Falha ao instalar a extensão do visualizador SARIF. Abrindo resultados como arquivo de texto.",
   "Failed to install SARIF viewer extension: {0}": "Falha ao instalar a extensão do visualizador SARIF: {0}",
   "Failed to open in VS Code Desktop: {0}": "Falha ao abrir no VS Code Desktop: {0}",
   "Failed to switch to the required environment.": "Falha ao alternar para o ambiente necessário.",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Feature is not enabled for this geo.": "O recurso não está habilitado para esta área geográfica.",
   "Feedback": "Comentários",
   "Fetching your file ...": "Buscando seu arquivo...",
@@ -164,10 +143,7 @@
   "GETTING STARTED": "INTRODUÇÃO",
   "Generating a new Power Pages site...": "Gerando um novo site do Power Pages...",
   "Generating webpages...": "Gerando páginas Web...",
-<<<<<<< HEAD
-=======
   "Get Extension": "Obter Extensão",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Get GitHub Copilot to try @powerpages": "Obtenha o GitHub Copilot para experimentar o @powerpages",
   "Getting organization details...": "Obtendo detalhes da organização...",
   "Getting region information...": "Obtendo informações da região...",
@@ -219,12 +195,6 @@
   "No webpages found": "Nenhuma página da Web encontrada",
   "No workspace folder found": "Nenhuma pasta do espaço de trabalho encontrada",
   "No workspace folder opened. Please open a site folder to preview.": "Não foi aberta nenhuma pasta do espaço de trabalho. Abra uma pasta do site para visualizar.",
-<<<<<<< HEAD
-  "Object ID: {0}/{0} is the Object ID": "ID do Objeto: {0}",
-  "One or more attribute names have been changed or removed. Contact your admin.": "Um ou mais nomes de atributos foram alterados ou removidos. Contate o administrador.",
-  "Open Results": "Abrir Resultados",
-  "Open as Text": "Abrir como Texto",
-=======
   "Not Now": "Agora Não",
   "Object ID: {0}/{0} is the Object ID": "ID do Objeto: {0}",
   "One or more attribute names have been changed or removed. Contact your admin.": "Um ou mais nomes de atributos foram alterados ou removidos. Contate o administrador.",
@@ -232,7 +202,6 @@
   "Open Results": "Abrir Resultados",
   "Open as Text": "Abrir como Texto",
   "Open in New Workspace": "Abrir em Novo Espaço de Trabalho",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Open in Power Pages studio": "Abrir no estúdio do Power Pages",
   "Open in VS Code Desktop": "Abrir no VS Code Desktop",
   "Opening in VS Code Desktop. If it doesn't open or shows an error, you may need to install VS Code or update the Power Platform extension.": "Opening in VS Code Desktop. If it doesn't open or shows an error, you may need to install VS Code or update the Power Platform extension.",
@@ -242,10 +211,7 @@
   "Opening site preview...": "Abrindo visualização do site...",
   "Operation failed. See output panel for details.": "Falha na operação. Consulte o painel de saída para obter detalhes.",
   "Organization ID: {0}/{0} is the Organization ID": "ID da Organização: {0}",
-<<<<<<< HEAD
-=======
   "Organization URL is required but not provided": "A URL da organização é obrigatória, mas não foi fornecida",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Other Sites": "Outros Sites",
   "PAC Telemetry disabled": "Telemetria de PAC desabilitada",
   "PAC Telemetry enabled": "Telemetria de PAC habilitada",
@@ -268,10 +234,7 @@
   "Preview site URL is not valid": "A URL do site da versão preliminar não é válida",
   "Primary query suite {0} failed: {1}": "Falha no pacote {0} de consultas primárias: {1}",
   "Process error: {0}": "Erro de processo: {0}",
-<<<<<<< HEAD
-=======
   "Processing download request...": "Processando solicitação de download...",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Profile Kind: {0}/The {0} represents the profile type (Admin vs Dataverse)": "Tipo de Perfil: {0}",
   "Response data is empty": "Os dados da resposta estão vazios",
   "Results opened in SARIF viewer successfully.": "Resultados abertos no visualizador SARIF com sucesso.",
@@ -293,15 +256,11 @@
   "Session Details": "Detalhes da Sessão",
   "Session ID: {0}/{0} is the Session ID": "ID da Sessão: {0}",
   "Show Output Panel": "Mostrar Painel de Saída",
-<<<<<<< HEAD
-  "Site Details": "Detalhes do Site",
-=======
   "Sign in to VS Code with PAC CLI account": "Entre no VS Code com a conta CLI do PAC",
   "Site Details": "Detalhes do Site",
   "Site download cancelled. Authentication is required to proceed.": "Download do site cancelado. A autenticação é obrigatória para continuar.",
   "Site download cancelled. Correct environment connection is required.": "Download do site cancelado. É necessária uma conexão correta com o ambiente.",
   "Site download cancelled. No folder selected.": "Download do site cancelado. Nenhuma pasta selecionada.",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Site management URL not found for the selected site. Please try again after refreshing the environment.": "URL de gerenciamento de sites não encontrada para o site selecionado. Tente novamente depois de atualizar o ambiente.",
   "Site runtime preview feature is not enabled.": "A versão preliminar do recurso do runtime do site não está habilitada.",
   "Site visibility: {0}/{0} is the site visibility": "Visibilidade do site: {0}",
@@ -314,10 +273,7 @@
   "The CodeQL extension is required to run this command. Do you want to install it now?": "A extensão CodeQL é necessária para executar este comando. Deseja instalá-la agora?",
   "The Power Pages generator is ready for use in your VS Code extension!": "O gerador do Power Pages está pronto para uso na sua extensão do VS Code.",
   "The SARIF Viewer extension is recommended for viewing CodeQL results. Would you like to install it now?": "A extensão do Visualizador SARIF é recomendada para exibir os resultados do CodeQL. Gostaria de instalá-la agora?",
-<<<<<<< HEAD
-=======
   "The account signed in to VS Code differs from the one authenticated in PAC CLI (Power Platform CLI). This mismatch can cause data not to load or actions to fail because UI commands run through the CLI. To fix it, sign in to VS Code using the same account as your PAC CLI. If needed, you can update your PAC CLI authentication separately via the command line.": "A conta conectada ao VS Code é diferente da autenticada na CLI do PAC (Power Platform CLI). Essa incompatibilidade pode fazer com que os dados não sejam carregados ou as ações falhem, pois os comandos da interface do usuário são executados pela CLI. Para corrigir isso, entre no VS Code com a mesma conta da sua CLI do PAC. Se necessário, você pode atualizar a autenticação da CLI do PAC separadamente por meio da linha de comando.",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?/Do not translate 'Microsoft Edge Tools' ": "A extensão \"Microsoft Edge Tools\" é necessária para executar este comando. Deseja instalá-la agora?",
   "The name you want to give to this authentication profile": "O nome que você deseja dar a este perfil de autenticação",
   "The pac CLI is ready for use in your VS Code terminal!": "A pac CLI está pronta para uso no seu terminal do VS Code!",
@@ -335,17 +291,11 @@
   "Unable to clear cache": "Não é possível limpar o cache",
   "Unable to complete the request": "Não foi possível concluir a solicitação",
   "Unable to find that app": "Não é possível encontrar esse aplicativo",
-<<<<<<< HEAD
-  "Unable to locate website root folder.": "Não é possível localizar a pasta raiz do site.",
-  "Unique name: {0}/{0} is the Unique name": "Nome exclusivo: {0}",
-  "Unmanaged": "Não gerenciado(a)",
-=======
   "Unable to generate VS Code Desktop URL": "Não é possível gerar a URL do VS Code Desktop",
   "Unable to locate website root folder.": "Não é possível localizar a pasta raiz do site.",
   "Unique name: {0}/{0} is the Unique name": "Nome exclusivo: {0}",
   "Unmanaged": "Não gerenciado(a)",
   "Update Extension": "Update Extension",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Upload changes": "Carregar alterações",
   "Upload failed. Please try again later.": "Falha de upload. Tente novamente mais tarde.",
   "Use current site folder": "Usar a pasta do site atual",
@@ -353,19 +303,13 @@
   "User: {0}/The {0} represents auth profile's user name (email address))": "Usuário: {0}",
   "Using custom CodeQL query suite: {0}": "Usando o pacote de consultas CodeQL personalizado: {0}",
   "Using default query suite: {0}": "Usando o pacote de consultas padrão: {0}",
-<<<<<<< HEAD
-=======
   "VS Code - PAC CLI authentication mismatch detected": "Incompatibilidade de autenticação entre VS Code e a CLI do PAC detectada",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "We encountered an error preparing the files for edit.": "Encontramos um erro ao preparar os arquivos para edição.",
   "Web files": "Arquivos da Web",
   "Webfile(s) added successfully": "Arquivos da Web adicionados com êxito",
   "Webpage names should contain only letters, numbers, hyphens, or underscores.": "Os nomes de página da Web devem conter somente letras, números, hifens ou sublinhados.",
-<<<<<<< HEAD
-=======
   "Website ID is not available": "ID do site não disponível",
   "Website ID is required but not provided": "ID do site é obrigatória, mas não foi fornecida",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Website Id: {0}/{0} is the website ID": "ID do Site: {0}",
   "Website Url: {0}/{0} is the website Url": "URL do Site: {0}",
   "Website not found in the environment. Please check the credentials and login with correct account.": "Site não encontrado no ambiente. Verifique as credenciais e faça logon com a conta correta.",
@@ -376,15 +320,10 @@
   "Write JavaScript code to highlight the row where email field is empty in table list.": "Escreva um código JavaScript para realçar a linha onde o campo de email está vazio na lista de tabelas.",
   "Write web API code to query active contact records.": "Escreva o código da API Web para consultar os registros de contato ativos.",
   "Yes": "Sim",
-<<<<<<< HEAD
-  "You are editing a live, public site ": "Você está editando um site público ativo ",
-  "You can use this in <a href=\"#\" id=\"github-copilot-link\">GitHub Copilot with @powerpages</a> and leverage best of both world.": "Você pode usar isso no <a href=\"#\" id=\"github-copilot-link\">GitHub Copilot com @powerpages</a> e aproveitar o melhor dos dois mundos.",
-=======
   "You are currently connected to a different environment. Would you like to switch to the required environment?": "Você está conectado a um ambiente diferente. Deseja mudar para o ambiente necessário?",
   "You are editing a live, public site ": "Você está editando um site público ativo ",
   "You can use this in <a href=\"#\" id=\"github-copilot-link\">GitHub Copilot with @powerpages</a> and leverage best of both world.": "Você pode usar isso no <a href=\"#\" id=\"github-copilot-link\">GitHub Copilot com @powerpages</a> e aproveitar o melhor dos dois mundos.",
   "You need to authenticate with Power Platform to download the site. Would you like to authenticate now?": "É necessário autenticar-se no Power Platform para baixar o site. Deseja autenticar-se agora?",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Your preview isn't updated. Please upload your site to see the latest changes.": "A sua visualização não está atualizada. Carregue o seu site para ver as alterações mais recentes.",
   "dotnet sdk 6.0 or greater must be installed/Do not translate 'dotnet' or 'sdk'": "O dotnet sdk 6.0 ou superior deve estar instalado",
   "{0} created!/{0} will be replaced by the entity type.": "{0} criado."

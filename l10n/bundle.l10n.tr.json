@@ -7,10 +7,7 @@
   "A webtemplate with the same name already exists. Please enter a different name.": "Aynı ada sahip bir web şablonu zaten var. Lütfen farklı bir ad girin.",
   "AI features have been disabled by your organization. Contact your admin for details. [Learn more](https://go.microsoft.com/fwlink/?linkid=2285848)": "AI özellikleri kuruluşunuz tarafından devre dışı bırakıldı. Ayrıntılar için yöneticinize başvurun. [Daha fazla bilgi edinin](https://go.microsoft.com/fwlink/?linkid=2285848)",
   "AI-generated content can contain mistakes": "AI tarafından oluşturulan içeriklerde hatalar olabilir",
-<<<<<<< HEAD
-=======
   "Accounts don't match, data may not load.": "Hesaplar eşleşmiyor, veriler yüklenmeyebilir.",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Activating CodeQL extension...": "CodeQL uzantısı etkinleştiriliyor...",
   "Activating SARIF viewer extension...": "SARIF görüntüleyici uzantısı etkinleştiriliyor...",
   "Active Sites": "Etkin Siteler",
@@ -25,13 +22,9 @@
   "Are you sure you want to delete the Auth Profile {0}-{1}?/{0} is the user name, {1} is the URL of environment of the auth profile": "{0}-{1} Kimlik Doğrulama Profilini silmek istediğinizden emin misiniz?",
   "Arrow icon": "Ok simgesi",
   "Authenticating...": "Kimlik doğrulanıyor...",
-<<<<<<< HEAD
-  "Authentication failed. Please login and try again.": "Kimlik doğrulanamadı. Lütfen oturum açıp tekrar deneyin.",
-=======
   "Authentication failed. Cannot proceed with site download.": "Kimlik doğrulama işlemi başarısız oldu. Site indirme işlemine devam edilemiyor.",
   "Authentication failed. Please login and try again.": "Kimlik doğrulanamadı. Lütfen oturum açıp tekrar deneyin.",
   "Authentication failed. Please try again.": "Kimlik doğrulama işlemi başarısız oldu. Lütfen yeniden deneyin.",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Authorization Failed. Please run again to authorize it": "Yetkilendirme Başarısız Oldu. Lütfen yetkilendirmek için yeniden çalıştırın.",
   "Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.": "Değişiklik yaparken dikkatli olun. Herkes yaptığınız değişiklikleri anında görebilir. Düzenleme yapmak için Siteyi düzenle'yi seçin veya düzenlemeden iptal etmek için düzenleyici sekmesini kapatın.",
   "Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?": "Herkese açık siteleri güncelleştirirken dikkatli olun. Yaptığınız değişiklikleri herkes hemen görebilir. Devam etmek istiyor musunuz?",
@@ -47,10 +40,7 @@
   "Choose parent page": "Üst sayfayı seçin",
   "Choose web template": "Web şablonu seçin",
   "Clearing cache. See [details](https://aka.ms/pages-clear-cache)./This is a markdown formatting which must persist across translations.The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).', keeping brackets and the text in the parentheses unmodified": "Önbellek temizleniyor. [Ayrıntılara](https://aka.ms/pages-clear-cache) göz atın.",
-<<<<<<< HEAD
-=======
   "Click to authenticate with a matching account": "Eşleşen bir hesapla kimlik doğrulaması yapmak için tıklayın",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Close": "Kapat",
   "Cloud Instance: {0}/The {0} represents profile's Azure Cloud Instances": "Bulut Kurulumu: {0}",
   "Cluster category: {0}/{0} is the Cluster category": "Küme kategorisi: {0}",
@@ -104,11 +94,8 @@
   "Enter name": "Ad girin",
   "Enter the environment URL": "Ortam URL'sini girin",
   "Enter the name of the web template": "Web şablonunun adını girin",
-<<<<<<< HEAD
-=======
   "Environment ID is not available": "Ortam kimliği kullanılamıyor",
   "Environment ID is required but not provided": "Ortam kimliği gerekli ancak sağlanmamış",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Environment ID: {0}/{0} is the Environment ID": "Ortam Kimliği: {0}",
   "Environment changed successfully.": "Ortam başarıyla değiştirildi.",
   "Error accessing CodeQL extension: {0}": "CodeQL uzantısına erişilirken hata oluştu: {0}",
@@ -120,10 +107,7 @@
   "Error reading config file: {0}": "Yapılandırma dosyası okunurken hata oluştu: {0}",
   "Error reading results: {0}": "Sonuçları okuma hatası: {0}",
   "Error searching for CodeQL CLI: {0}": "CodeQL CLI aranırken hata oluştu: {0}",
-<<<<<<< HEAD
-=======
   "Error switching environment: {0}": "Ortam değiştirme hatası: {0}",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Error updating config file: {0}": "Yapılandırma dosyası güncelleştirilirken hata oluştu: {0}",
   "Executing: {0}": "Yürütülüyor: {0}",
   "Explain the following code snippet:": "Şu kod parçacığını açıkla:",
@@ -139,16 +123,11 @@
   "Failed to get file ready for edit: {0}": "Dosya düzenlenmek üzere alınamadı: {0}",
   "Failed to get organization details. Please try again later": "Kuruluş ayrıntıları alınamadı. Lütfen daha sonra yeniden deneyin",
   "Failed to get website endpoint. Please try again later": "Web sitesi uç noktası alınamadı. Lütfen daha sonra yeniden deneyin",
-<<<<<<< HEAD
-  "Failed to install SARIF viewer extension. Opening results as text file.": "SARIF görüntüleyici uzantısı yüklenemedi. Sonuçlar metin dosyası olarak açılıyor.",
-  "Failed to install SARIF viewer extension: {0}": "SARIF görüntüleyici uzantısı yüklenemedi: {0}",
-=======
   "Failed to handle Power Pages URI: {0}": "Power Pages URI'si işlenemedi: {0}",
   "Failed to install SARIF viewer extension. Opening results as text file.": "SARIF görüntüleyici uzantısı yüklenemedi. Sonuçlar metin dosyası olarak açılıyor.",
   "Failed to install SARIF viewer extension: {0}": "SARIF görüntüleyici uzantısı yüklenemedi: {0}",
   "Failed to open in VS Code Desktop: {0}": "VS Code Desktop'ta açılamadı: {0}",
   "Failed to switch to the required environment.": "Gerekli ortama geçilemedi.",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Feature is not enabled for this geo.": "Özellik bu coğrafya için etkin değil.",
   "Feedback": "Geri bildirim",
   "Fetching your file ...": "Dosyanız alınıyor...",
@@ -164,10 +143,7 @@
   "GETTING STARTED": "KULLANMAYA BAŞLAMA",
   "Generating a new Power Pages site...": "Yeni bir Power Pages sitesi oluşturuluyor...",
   "Generating webpages...": "Web sayfaları oluşturuluyor...",
-<<<<<<< HEAD
-=======
   "Get Extension": "Uzantıyı Al",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Get GitHub Copilot to try @powerpages": "@powerpages denemesi yapmak için GitHub Copilot edinin",
   "Getting organization details...": "Kuruluş ayrıntıları alınıyor...",
   "Getting region information...": "Bölge bilgileri alınıyor...",
@@ -219,12 +195,6 @@
   "No webpages found": "Web sayfası bulunamadı",
   "No workspace folder found": "Çalışma alanı klasörü bulunamadı",
   "No workspace folder opened. Please open a site folder to preview.": "Herhangi bir çalışma alanı klasörü açılmadı. Önizlemek için bir site klasörü açın.",
-<<<<<<< HEAD
-  "Object ID: {0}/{0} is the Object ID": "Nesne Kimliği: {0}",
-  "One or more attribute names have been changed or removed. Contact your admin.": "Bir veya daha fazla öznitelik adı değiştirildi veya kaldırıldı. Yöneticinizle iletişime geçin.",
-  "Open Results": "Sonuçları Aç",
-  "Open as Text": "Metin Olarak Aç",
-=======
   "Not Now": "Şimdi Değil",
   "Object ID: {0}/{0} is the Object ID": "Nesne Kimliği: {0}",
   "One or more attribute names have been changed or removed. Contact your admin.": "Bir veya daha fazla öznitelik adı değiştirildi veya kaldırıldı. Yöneticinizle iletişime geçin.",
@@ -232,7 +202,6 @@
   "Open Results": "Sonuçları Aç",
   "Open as Text": "Metin Olarak Aç",
   "Open in New Workspace": "Yeni Çalışma Alanında Aç",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Open in Power Pages studio": "Power Pages studyosunda aç",
   "Open in VS Code Desktop": "VS Code Desktop'ta aç",
   "Opening in VS Code Desktop. If it doesn't open or shows an error, you may need to install VS Code or update the Power Platform extension.": "Opening in VS Code Desktop. If it doesn't open or shows an error, you may need to install VS Code or update the Power Platform extension.",
@@ -242,10 +211,7 @@
   "Opening site preview...": "Site önizlemesi açılıyor...",
   "Operation failed. See output panel for details.": "İşlem başarısız oldu. Ayrıntılar için çıkış paneline bakın.",
   "Organization ID: {0}/{0} is the Organization ID": "Kuruluş Kimliği: {0}",
-<<<<<<< HEAD
-=======
   "Organization URL is required but not provided": "Kuruluş URL'si gerekli ancak sağlanmamış",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Other Sites": "Diğer Siteler",
   "PAC Telemetry disabled": "PAC Telemetrisi devre dışı bırakıldı",
   "PAC Telemetry enabled": "PAC Telemetrisi etkinleştirildi",
@@ -268,10 +234,7 @@
   "Preview site URL is not valid": "Önizleme sitesinin URL'si geçerli değil",
   "Primary query suite {0} failed: {1}": "Birincil sorgu paketi {0} başarısız oldu: {1}",
   "Process error: {0}": "İşlem hatası: {0}",
-<<<<<<< HEAD
-=======
   "Processing download request...": "İndirme isteği işleniyor...",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Profile Kind: {0}/The {0} represents the profile type (Admin vs Dataverse)": "Profil Türü: {0}",
   "Response data is empty": "Yanıt verileri boş",
   "Results opened in SARIF viewer successfully.": "Sonuçlar SARIF görüntüleyicisinde başarıyla açıldı.",
@@ -293,15 +256,11 @@
   "Session Details": "Oturum Ayrıntıları",
   "Session ID: {0}/{0} is the Session ID": "Oturum kimliği: {0}",
   "Show Output Panel": "Çıktı Panelini Göster",
-<<<<<<< HEAD
-  "Site Details": "Site Ayrıntıları",
-=======
   "Sign in to VS Code with PAC CLI account": "PAC CLI hesabıyla VS Code'da oturum açın",
   "Site Details": "Site Ayrıntıları",
   "Site download cancelled. Authentication is required to proceed.": "Site indirme işlemi iptal edildi. Devam etmek için kimlik doğrulama gerekiyor.",
   "Site download cancelled. Correct environment connection is required.": "Site indirme işlemi iptal edildi. Doğru ortam bağlantısı gereklidir.",
   "Site download cancelled. No folder selected.": "Site indirme işlemi iptal edildi. Klasör seçilmedi.",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Site management URL not found for the selected site. Please try again after refreshing the environment.": "Seçili site için site yönetimi URL'si bulunamadı. Lütfen ortamı yeniledikten sonra yeniden deneyin.",
   "Site runtime preview feature is not enabled.": "Site çalışma zamanı önizleme özelliği etkin değil.",
   "Site visibility: {0}/{0} is the site visibility": "Site görünürlüğü: {0}",
@@ -314,10 +273,7 @@
   "The CodeQL extension is required to run this command. Do you want to install it now?": "Bu komutu çalıştırmak için CodeQL uzantısı gereklidir. Bunu şimdi yüklemek istiyor musunuz?",
   "The Power Pages generator is ready for use in your VS Code extension!": "Power Pages oluşturucusu, VS Code uzantınızda kullanıma hazır!",
   "The SARIF Viewer extension is recommended for viewing CodeQL results. Would you like to install it now?": "CodeQL sonuçlarını görüntülemek için SARIF Görüntüleyici uzantısı önerilir. Bunu şimdi yüklemek ister misiniz?",
-<<<<<<< HEAD
-=======
   "The account signed in to VS Code differs from the one authenticated in PAC CLI (Power Platform CLI). This mismatch can cause data not to load or actions to fail because UI commands run through the CLI. To fix it, sign in to VS Code using the same account as your PAC CLI. If needed, you can update your PAC CLI authentication separately via the command line.": "VS Code'da oturum açan hesap, PAC CLI'da (Power Platform CLI) kimliği doğrulanan hesaptan farklı. Bu uyumsuzluk, UI komutları CLI üzerinden çalıştırıldığından verilerin yüklenmemesine veya eylemlerin başarısız olmasına neden olabilir. Düzeltmek için PAC CLI ile aynı hesabı kullanarak VS Code'da oturum açın. Gerekirse, PAC CLI kimlik doğrulamanızı komut satırı aracılığıyla ayrı olarak güncelleyebilirsiniz.",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?/Do not translate 'Microsoft Edge Tools' ": "Bu komutu çalıştırmak için \"Microsoft Edge Tools\" uzantısı gereklidir. Şimdi yüklemek istiyor musunuz?",
   "The name you want to give to this authentication profile": "Bu kimlik doğrulama profiline vermek istediğiniz ad",
   "The pac CLI is ready for use in your VS Code terminal!": "pac CLI, VS Kod terminalinizde kullanıma hazır!",
@@ -335,17 +291,11 @@
   "Unable to clear cache": "Önbellek temizlenemiyor",
   "Unable to complete the request": "İstek tamamlanamadı",
   "Unable to find that app": "Bu uygulama bulunamadı",
-<<<<<<< HEAD
-  "Unable to locate website root folder.": "Web sitesi kök klasörü bulunamıyor.",
-  "Unique name: {0}/{0} is the Unique name": "Benzersiz ad: {0}",
-  "Unmanaged": "Yönetilmeyen",
-=======
   "Unable to generate VS Code Desktop URL": "VS Code Masaüstü URL'si oluşturulamıyor",
   "Unable to locate website root folder.": "Web sitesi kök klasörü bulunamıyor.",
   "Unique name: {0}/{0} is the Unique name": "Benzersiz ad: {0}",
   "Unmanaged": "Yönetilmeyen",
   "Update Extension": "Update Extension",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Upload changes": "Değişiklikleri yükle",
   "Upload failed. Please try again later.": "Yüklenemedi. Lütfen daha sonra yeniden deneyin.",
   "Use current site folder": "Geçerli site klasörünü kullanın",
@@ -353,19 +303,13 @@
   "User: {0}/The {0} represents auth profile's user name (email address))": "Kullanıcı: {0}",
   "Using custom CodeQL query suite: {0}": "Özel CodeQL sorgu paketi kullanılıyor: {0}",
   "Using default query suite: {0}": "Varsayılan sorgu paketi kullanılıyor: {0}",
-<<<<<<< HEAD
-=======
   "VS Code - PAC CLI authentication mismatch detected": "VS Code - PAC CLI kimlik doğrulama uyuşmazlığı algılandı",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "We encountered an error preparing the files for edit.": "Dosyalar düzenleme için hazırlanırken bir hatayla karşılaştık.",
   "Web files": "Web dosyaları",
   "Webfile(s) added successfully": "Web dosyaları başarıyla eklendi",
   "Webpage names should contain only letters, numbers, hyphens, or underscores.": "Web sayfası adları yalnızca harf, sayı, tire veya alt çizgi içermelidir.",
-<<<<<<< HEAD
-=======
   "Website ID is not available": "Web sitesi kimliği kullanılamıyor",
   "Website ID is required but not provided": "Web sitesi kimliği gerekli ancak sağlanmamış",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Website Id: {0}/{0} is the website ID": "Web sitesi kimliği: {0}",
   "Website Url: {0}/{0} is the website Url": "Web sitesi URL'si: {0}",
   "Website not found in the environment. Please check the credentials and login with correct account.": "Web sitesi ortamda bulunamadı. Lütfen kimlik bilgilerini kontrol edin ve doğru hesapla oturum açın.",
@@ -376,15 +320,10 @@
   "Write JavaScript code to highlight the row where email field is empty in table list.": "Tablo listesinde e-posta alanın boş olduğu satırı vurgulamak için JavaScript kodu yazın.",
   "Write web API code to query active contact records.": "Etkin ilgili kişi kayıtlarını sorgulamak için web API'si kodu yazın.",
   "Yes": "Evet",
-<<<<<<< HEAD
-  "You are editing a live, public site ": "Yayında olan, herkese açık bir siteyi düzenliyorsunuz ",
-  "You can use this in <a href=\"#\" id=\"github-copilot-link\">GitHub Copilot with @powerpages</a> and leverage best of both world.": "Bunu <a href=\"#\" id=\"github-copilot-link\">@powerpages ile GitHub Copilot</a>'ta kullanabilir ve her iki dünyanın en iyi yönlerinden yararlanabilirsiniz.",
-=======
   "You are currently connected to a different environment. Would you like to switch to the required environment?": "Şu anda farklı bir ortama bağlısınız. Gerekli ortama geçmek istiyor musunuz?",
   "You are editing a live, public site ": "Yayında olan, herkese açık bir siteyi düzenliyorsunuz ",
   "You can use this in <a href=\"#\" id=\"github-copilot-link\">GitHub Copilot with @powerpages</a> and leverage best of both world.": "Bunu <a href=\"#\" id=\"github-copilot-link\">@powerpages ile GitHub Copilot</a>'ta kullanabilir ve her iki dünyanın en iyi yönlerinden yararlanabilirsiniz.",
   "You need to authenticate with Power Platform to download the site. Would you like to authenticate now?": "Siteyi indirmek için Power Platform ile kimlik doğrulaması yapmanız gerekir. Şimdi kimlik doğrulaması yapmak ister misiniz?",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Your preview isn't updated. Please upload your site to see the latest changes.": "Önizlemeniz güncelleştirilmedi. En son değişiklikleri görmek için lütfen sitenizi yükleyin.",
   "dotnet sdk 6.0 or greater must be installed/Do not translate 'dotnet' or 'sdk'": "dotnet sdk 6.0 veya üstü bir sürüm yüklenmelidir",
   "{0} created!/{0} will be replaced by the entity type.": "{0} oluşturuldu!"

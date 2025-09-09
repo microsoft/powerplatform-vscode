@@ -7,10 +7,7 @@
   "A webtemplate with the same name already exists. Please enter a different name.": "Šablona webu se stejným názvem už existuje. Zadejte jiný název.",
   "AI features have been disabled by your organization. Contact your admin for details. [Learn more](https://go.microsoft.com/fwlink/?linkid=2285848)": "Funkce AI byly vaší organizací zakázány. Podrobnosti vám sdělí správce. [Další informace](https://go.microsoft.com/fwlink/?linkid=2285848)",
   "AI-generated content can contain mistakes": "Obsah vygenerovaný umělou inteligencí může obsahovat chyby.",
-<<<<<<< HEAD
-=======
   "Accounts don't match, data may not load.": "Účty se neshodují, data se nemusí načíst.",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Activating CodeQL extension...": "Aktivuje se rozšíření CodeQL…",
   "Activating SARIF viewer extension...": "Aktivuje se rozšíření prohlížeče SARIF…",
   "Active Sites": "Aktivní weby",
@@ -25,13 +22,9 @@
   "Are you sure you want to delete the Auth Profile {0}-{1}?/{0} is the user name, {1} is the URL of environment of the auth profile": "Určitě chcete odstranit ověřovací profil {0}–{1}?",
   "Arrow icon": "Ikona šipky",
   "Authenticating...": "Ověřování…",
-<<<<<<< HEAD
-  "Authentication failed. Please login and try again.": "Ověření bylo neúspěšné. Přihlaste se a zkuste to znovu.",
-=======
   "Authentication failed. Cannot proceed with site download.": "Ověření selhalo. Nelze pokračovat ve stahování webu.",
   "Authentication failed. Please login and try again.": "Ověření bylo neúspěšné. Přihlaste se a zkuste to znovu.",
   "Authentication failed. Please try again.": "Ověření selhalo. Zkuste to prosím znovu.",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Authorization Failed. Please run again to authorize it": "Autorizace se nezdařila. Opětovným spuštěním proveďte autorizaci.",
   "Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.": "Při provádění změn dávejte pozor. Kdokoli okamžitě uvidí změny, které uděláte. Pokud chcete provést úpravy, zvolte Upravit web. Pokud chcete akci zrušit bez úprav, zavřete kartu editoru.",
   "Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?": "Při aktualizaci veřejných webů buďte opatrní. Změny, které provedete, jsou okamžitě viditelné všem. Chcete pokračovat?",
@@ -47,10 +40,7 @@
   "Choose parent page": "Zvolit nadřazenou stránku",
   "Choose web template": "Zvolit šablonu webu",
   "Clearing cache. See [details](https://aka.ms/pages-clear-cache)./This is a markdown formatting which must persist across translations.The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).', keeping brackets and the text in the parentheses unmodified": "Maže se mezipaměť. Zobrazit [podrobnosti](https://aka.ms/pages-clear-cache)",
-<<<<<<< HEAD
-=======
   "Click to authenticate with a matching account": "Kliknutím provedete ověření pomocí odpovídajícího účtu.",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Close": "Zavřít",
   "Cloud Instance: {0}/The {0} represents profile's Azure Cloud Instances": "Cloudová instance: {0}",
   "Cluster category: {0}/{0} is the Cluster category": "Kategorie clusteru: {0}",
@@ -104,11 +94,8 @@
   "Enter name": "Zadejte název.",
   "Enter the environment URL": "Zadejte ID prostředí.",
   "Enter the name of the web template": "Zadejte název šablony webu.",
-<<<<<<< HEAD
-=======
   "Environment ID is not available": "ID prostředí není k dispozici.",
   "Environment ID is required but not provided": "ID prostředí je povinné, ale nezadalo se.",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Environment ID: {0}/{0} is the Environment ID": "ID prostředí: {0}",
   "Environment changed successfully.": "Prostředí bylo úspěšně změněno.",
   "Error accessing CodeQL extension: {0}": "Chyba při přístupu k rozšíření CodeQL: {0}",
@@ -120,10 +107,7 @@
   "Error reading config file: {0}": "Chyba při čtení konfiguračního souboru: {0}",
   "Error reading results: {0}": "Chyba při čtení výsledků: {0}",
   "Error searching for CodeQL CLI: {0}": "Chyba při hledání CLI CodeQL: {0}",
-<<<<<<< HEAD
-=======
   "Error switching environment: {0}": "Chyba při přepínání prostředí: {0}",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Error updating config file: {0}": "Chyba při aktualizaci konfiguračního souboru: {0}",
   "Executing: {0}": "Spouštění: {0}",
   "Explain the following code snippet:": "Vysvětlit následující fragment kódu:",
@@ -139,16 +123,11 @@
   "Failed to get file ready for edit: {0}": "Soubor se nepodařilo připravit k úpravám: {0}",
   "Failed to get organization details. Please try again later": "Nepodařilo se získat podrobnosti organizace. Zkuste to znovu později.",
   "Failed to get website endpoint. Please try again later": "Nepodařilo se získat koncový bod webu. Zkuste to znovu později.",
-<<<<<<< HEAD
-  "Failed to install SARIF viewer extension. Opening results as text file.": "Nepovedlo se nainstalovat rozšíření prohlížeče SARIF. Otevírání výsledků jako textového souboru",
-  "Failed to install SARIF viewer extension: {0}": "Nepovedlo se nainstalovat rozšíření prohlížeče SARIF: {0}",
-=======
   "Failed to handle Power Pages URI: {0}": "Nepovedlo se zpracovat identifikátor URI Power Pages: {0}",
   "Failed to install SARIF viewer extension. Opening results as text file.": "Nepovedlo se nainstalovat rozšíření prohlížeče SARIF. Otevírání výsledků jako textového souboru",
   "Failed to install SARIF viewer extension: {0}": "Nepovedlo se nainstalovat rozšíření prohlížeče SARIF: {0}",
   "Failed to open in VS Code Desktop: {0}": "Nepodařilo se otevřít ve VS Code pro desktop: {0}",
   "Failed to switch to the required environment.": "Nepovedlo se přepnout do požadovaného prostředí.",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Feature is not enabled for this geo.": "Funkce není v této geografické oblasti povolena.",
   "Feedback": "Názory",
   "Fetching your file ...": "Načítá se soubor...",
@@ -164,10 +143,7 @@
   "GETTING STARTED": "ZAČÍNÁME",
   "Generating a new Power Pages site...": "Generuje se nový web Power Pages…",
   "Generating webpages...": "Generují se webové stránky…",
-<<<<<<< HEAD
-=======
   "Get Extension": "Získat rozšíření",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Get GitHub Copilot to try @powerpages": "Pořiďte si GitHub Copilota a vyzkoušejte @powerpages",
   "Getting organization details...": "Načítají se podrobnosti organizace…",
   "Getting region information...": "Získávají se informace o oblasti…",
@@ -219,12 +195,6 @@
   "No webpages found": "Nebyly nalezeny žádné webové stránky.",
   "No workspace folder found": "Nebyla nalezena žádná složka pracovního prostoru.",
   "No workspace folder opened. Please open a site folder to preview.": "Není otevřena žádná složka pracovního prostoru. Chcete-li zobrazit náhled, otevřete složku webu.",
-<<<<<<< HEAD
-  "Object ID: {0}/{0} is the Object ID": "ID objektu: {0}",
-  "One or more attribute names have been changed or removed. Contact your admin.": "Některé názvy atributů byly změněny nebo odebrány. Obraťte se na správce.",
-  "Open Results": "Otevřít výsledky",
-  "Open as Text": "Otevřít jako text",
-=======
   "Not Now": "Nyní ne",
   "Object ID: {0}/{0} is the Object ID": "ID objektu: {0}",
   "One or more attribute names have been changed or removed. Contact your admin.": "Některé názvy atributů byly změněny nebo odebrány. Obraťte se na správce.",
@@ -232,7 +202,6 @@
   "Open Results": "Otevřít výsledky",
   "Open as Text": "Otevřít jako text",
   "Open in New Workspace": "Otevřít v novém pracovním prostoru",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Open in Power Pages studio": "Otevřít ve studiu Power Pages",
   "Open in VS Code Desktop": "Otevřít ve VS Code pro desktop",
   "Opening in VS Code Desktop. If it doesn't open or shows an error, you may need to install VS Code or update the Power Platform extension.": "Opening in VS Code Desktop. If it doesn't open or shows an error, you may need to install VS Code or update the Power Platform extension.",
@@ -242,10 +211,7 @@
   "Opening site preview...": "Otevírá se náhled webu…",
   "Operation failed. See output panel for details.": "Operace se nezdařila. Podrobnosti najdete na panel výstupu.",
   "Organization ID: {0}/{0} is the Organization ID": "Kód organizace: {0}",
-<<<<<<< HEAD
-=======
   "Organization URL is required but not provided": "Adresa URL organizace je povinná, ale nezadala se.",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Other Sites": "Další weby",
   "PAC Telemetry disabled": "Telemetrie PAC je zakázána.",
   "PAC Telemetry enabled": "Telemetrie PAC je povolena.",
@@ -268,10 +234,7 @@
   "Preview site URL is not valid": "Adresa URL webu verze Preview není platná.",
   "Primary query suite {0} failed: {1}": "Primární sada dotazů {0} selhala: {1}",
   "Process error: {0}": "Chyba procesu: {0}",
-<<<<<<< HEAD
-=======
   "Processing download request...": "Zpracovává se žádost o stažení…",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Profile Kind: {0}/The {0} represents the profile type (Admin vs Dataverse)": "Druh profilu: {0}",
   "Response data is empty": "Data odpovědi jsou prázdná.",
   "Results opened in SARIF viewer successfully.": "Výsledky se úspěšně otevřely v prohlížeči SARIF.",
@@ -293,15 +256,11 @@
   "Session Details": "Podrobnosti o relaci",
   "Session ID: {0}/{0} is the Session ID": "ID relace: {0}",
   "Show Output Panel": "Zobrazit panel výstupu",
-<<<<<<< HEAD
-  "Site Details": "Podrobnosti o webu",
-=======
   "Sign in to VS Code with PAC CLI account": "Přihlaste se k VS Code pomocí účtu CLI PAC.",
   "Site Details": "Podrobnosti o webu",
   "Site download cancelled. Authentication is required to proceed.": "Stahování webu se zrušilo. Abyste mohli pokračovat, vyžaduje se ověření.",
   "Site download cancelled. Correct environment connection is required.": "Stahování webu se zrušilo. Vyžaduje se správné připojení k prostředí.",
   "Site download cancelled. No folder selected.": "Stahování webu se zrušilo. Nevybrala se žádná složka.",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Site management URL not found for the selected site. Please try again after refreshing the environment.": "Pro vybraný web nebyla nalezena adresa URL správy webu. Po aktualizaci prostředí to zkuste znovu.",
   "Site runtime preview feature is not enabled.": "Funkce náhledu webu za běhu není povolena.",
   "Site visibility: {0}/{0} is the site visibility": "Viditelnost webu: {0}",
@@ -314,10 +273,7 @@
   "The CodeQL extension is required to run this command. Do you want to install it now?": "Ke spuštění tohoto příkazu se vyžaduje rozšíření CodeQL. Chcete ho teď nainstalovat?",
   "The Power Pages generator is ready for use in your VS Code extension!": "Generátor Power Pages je připraven k použití v rozšíření editoru VS Code.",
   "The SARIF Viewer extension is recommended for viewing CodeQL results. Would you like to install it now?": "Pro zobrazení výsledků CodeQL se doporučuje rozšíření prohlížeče SARIF. Chcete ho teď nainstalovat?",
-<<<<<<< HEAD
-=======
   "The account signed in to VS Code differs from the one authenticated in PAC CLI (Power Platform CLI). This mismatch can cause data not to load or actions to fail because UI commands run through the CLI. To fix it, sign in to VS Code using the same account as your PAC CLI. If needed, you can update your PAC CLI authentication separately via the command line.": "Účet přihlášený k VS Code se liší od účtu ověřeného v CLI PAC (CLI Power Platform). Tato neshoda může způsobit, že se data nenačtou nebo že akce selžou, protože příkazy uživatelského rozhraní běží přes CLI. Pokud to chcete opravit, přihlaste se k VS Code pomocí stejného účtu, jako je vaše CLI PAC. V případě potřeby můžete ověřování CLI PAC aktualizovat samostatně pomocí příkazového řádku.",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?/Do not translate 'Microsoft Edge Tools' ": "Spuštění tohoto příkazu vyžaduje rozšíření Microsoft Edge Tools. Chcete ho teď nainstalovat?",
   "The name you want to give to this authentication profile": "Název, který chcete dát tomuto ověřovacímu profilu",
   "The pac CLI is ready for use in your VS Code terminal!": "Tento pac CLI je připraven k použití v terminálu editoru VS Code.",
@@ -335,17 +291,11 @@
   "Unable to clear cache": "Nelze vymazat mezipaměť",
   "Unable to complete the request": "Žádost nelze dokončit.",
   "Unable to find that app": "Tuto aplikaci nelze najít.",
-<<<<<<< HEAD
-  "Unable to locate website root folder.": "Kořenovou složku webu nelze najít.",
-  "Unique name: {0}/{0} is the Unique name": "Jedinečné jméno: {0}",
-  "Unmanaged": "Nespravováno",
-=======
   "Unable to generate VS Code Desktop URL": "Nedá se vygenerovat adresa URL VS Code pro desktop.",
   "Unable to locate website root folder.": "Kořenovou složku webu nelze najít.",
   "Unique name: {0}/{0} is the Unique name": "Jedinečné jméno: {0}",
   "Unmanaged": "Nespravováno",
   "Update Extension": "Update Extension",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Upload changes": "Nahrát změny",
   "Upload failed. Please try again later.": "Odeslání dokumentu se nezdařilo. Opakujte akci později.",
   "Use current site folder": "Použít aktuální složku webu",
@@ -353,19 +303,13 @@
   "User: {0}/The {0} represents auth profile's user name (email address))": "Uživatel: {0}",
   "Using custom CodeQL query suite: {0}": "Použití vlastní sady dotazů CodeQL: {0}",
   "Using default query suite: {0}": "Použití výchozí sady dotazů: {0}",
-<<<<<<< HEAD
-=======
   "VS Code - PAC CLI authentication mismatch detected": "VS Code – Zjistila se neshoda ověřování CLI PAC.",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "We encountered an error preparing the files for edit.": "Při přípravě souborů k úpravám došlo k chybě.",
   "Web files": "Webové soubory",
   "Webfile(s) added successfully": "Webové soubory byly úspěšně přidány.",
   "Webpage names should contain only letters, numbers, hyphens, or underscores.": "Názvy webových stránek by měly obsahovat jen písmena, číslice, pomlčky nebo podtržítka.",
-<<<<<<< HEAD
-=======
   "Website ID is not available": "ID webu není k dispozici.",
   "Website ID is required but not provided": "ID webu je povinné, ale nezadalo se.",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Website Id: {0}/{0} is the website ID": "ID webu: {0}",
   "Website Url: {0}/{0} is the website Url": "Adresa URL webu: {0}",
   "Website not found in the environment. Please check the credentials and login with correct account.": "Web nebyl v tomto prostředí nalezen. Zkontrolujte přihlašovací údaje a přihlaste se pomocí správného účtu.",
@@ -376,15 +320,10 @@
   "Write JavaScript code to highlight the row where email field is empty in table list.": "Napsat kód JavaScriptu pro zvýraznění řádku, ve kterém je pole e-mailu v seznamu tabulek prázdné",
   "Write web API code to query active contact records.": "Napsat kód webového rozhraní API pro dotazování aktivních záznamů kontaktů",
   "Yes": "Ano",
-<<<<<<< HEAD
-  "You are editing a live, public site ": "Upravujete živý veřejný web ",
-  "You can use this in <a href=\"#\" id=\"github-copilot-link\">GitHub Copilot with @powerpages</a> and leverage best of both world.": "Tuto možnost můžete použít u <a href=\"#\" id=\"github-copilot-link\">GitHub Copilota s @powerpages</a> a využít to nejlepší z obou světů.",
-=======
   "You are currently connected to a different environment. Would you like to switch to the required environment?": "Momentálně jste připojeni k jinému prostředí. Chcete přepnout na požadovaného prostředí?",
   "You are editing a live, public site ": "Upravujete živý veřejný web ",
   "You can use this in <a href=\"#\" id=\"github-copilot-link\">GitHub Copilot with @powerpages</a> and leverage best of both world.": "Tuto možnost můžete použít u <a href=\"#\" id=\"github-copilot-link\">GitHub Copilota s @powerpages</a> a využít to nejlepší z obou světů.",
   "You need to authenticate with Power Platform to download the site. Would you like to authenticate now?": "Pokud chcete web stáhnout, musíte se ověřit pomocí Power Platform. Chcete se nyní ověřit?",
->>>>>>> d85e5a1a658d0ac54bb86a2d86262ecd99231241
   "Your preview isn't updated. Please upload your site to see the latest changes.": "Náhled není aktualizovaný. Nejnovější změny se zobrazí po nahrání vašeho webu.",
   "dotnet sdk 6.0 or greater must be installed/Do not translate 'dotnet' or 'sdk'": "Musí být nainstalována sada dotnet sdk 6.0 nebo vyšší.",
   "{0} created!/{0} will be replaced by the entity type.": "{0} bylo vytvořeno."
