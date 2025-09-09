@@ -352,7 +352,7 @@ async function snapshot() {
     }
 }
 
-const cliVersion = '1.47.1';
+const cliVersion = '1.48.2';
 
 const recompile = gulp.series(
     clean,

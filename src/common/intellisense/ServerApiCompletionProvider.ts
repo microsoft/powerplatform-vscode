@@ -562,20 +562,13 @@ export class ServerApiCompletionProvider implements vscode.CompletionItemProvide
             const completion = new vscode.CompletionItem(namespace.name, vscode.CompletionItemKind.Module);
             completion.detail = `Server.${namespace.name}`;
             completion.documentation = new vscode.MarkdownString(namespace.description);
+
+            // Just insert the namespace name, allowing users to type '.' to see sub-namespaces
             completion.insertText = namespace.name;
 
-            if (namespace.name === 'Logger') {
-                completion.insertText = new vscode.SnippetString(`${namespace.name}.Log('\${1:message}');`);
-            } else if (namespace.name === 'Connector') {
-                completion.insertText = new vscode.SnippetString(`${namespace.name}.\${1|HttpClient,Dataverse|}`);
-            } else if (namespace.name === 'Sitesetting') {
-                completion.insertText = new vscode.SnippetString(`${namespace.name}.Get('\${1:name}')`);
-            } else if (namespace.name === 'Context') {
-                completion.insertText = new vscode.SnippetString(`${namespace.name}.\${1|ActivityId,Body,FunctionName,Headers,HttpMethod,QueryParameters,ServerLogicName,Url|}`);
-            } else if (namespace.name === 'Website') {
-                completion.insertText = new vscode.SnippetString(`${namespace.name}.\${1|statecode,statuscode,adx_websiteid,adx_primarydomainname,adx_name,adx_defaultlanguage,adx_footerwebtemplateid,adx_headerwebtemplateid,adx_defaultbotconsumerid,isCoreEntity|}`);
-            } else if (namespace.name === 'User') {
-                completion.insertText = new vscode.SnippetString(`${namespace.name}.\${1|customertypecode,address2_addresstypecode,merged,adx_identity_securitystamp,territorycode,emailaddress1,haschildrencode,adx_identity_passwordhash,preferredappointmenttimecode,adx_profilemodifiedon,isbackofficecustomer,owningbusinessunit,owninguser,adx_profilealert,lastname,donotpostalmail,marketingonly,donotphone,preferredcontactmethodcode,adx_identity_locallogindisabled,educationcode,ownerid,adx_identity_logonenabled,customersizecode,firstname,yomifullname,adx_identity_lockoutenabled,adx_profileisanonymous,donotemail,address2_shippingmethodcode,fullname,timezoneruleversionnumber,address1_addressid,address2_freighttermscode,statuscode,createdon,donotsendmm,donotfax,leadsourcecode,adx_identity_accessfailedcount,adx_confirmremovepassword,modifiedon,creditonhold,adx_identity_emailaddress1confirmed,msdyn_isminor,adx_identity_username,msdyn_isminorwithparentalconsent,address3_addressid,donotbulkemail,adx_identity_twofactorenabled,modifiedby,followemail,shippingmethodcode,createdby,donotbulkpostalmail,contactid,msdyn_disablewebtracking,adx_identity_mobilephoneconfirmed,participatesinworkflow,statecode,address2_addressid|}`);
+            // Set commit characters to trigger further completions
+            if (namespace.name === 'Connector') {
+                completion.commitCharacters = ['.'];
             }
 
             return completion;
@@ -595,14 +588,12 @@ export class ServerApiCompletionProvider implements vscode.CompletionItemProvide
             const completion = new vscode.CompletionItem(property.name, vscode.CompletionItemKind.Module);
             completion.detail = `Server.Connector.${property.name}`;
             completion.documentation = new vscode.MarkdownString(property.description);
+
+            // Just insert the sub-namespace name, allowing users to type '.' to see methods
             completion.insertText = property.name;
 
-            // Add snippets for common patterns
-            if (property.name === 'HttpClient') {
-                completion.insertText = new vscode.SnippetString(`${property.name}.\${1|Get,Post,Patch,Put,Delete|}`);
-            } else if (property.name === 'Dataverse') {
-                completion.insertText = new vscode.SnippetString(`${property.name}.\${1|CreateRecord,RetrieveRecord,RetrieveMultipleRecords,UpdateRecord,DeleteRecord|}`);
-            }
+            // Set commit characters to trigger method completions
+            completion.commitCharacters = ['.'];
 
             return completion;
         });

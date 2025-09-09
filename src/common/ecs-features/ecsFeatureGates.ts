@@ -99,3 +99,13 @@ export const {
         enableCodeQlScan: false,
     }
 })
+
+export const {
+    feature: EnableOpenInDesktop
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable Open in Desktop functionality in VSCode Web',
+    fallback: {
+        enableOpenInDesktop: false,
+    }
+});
