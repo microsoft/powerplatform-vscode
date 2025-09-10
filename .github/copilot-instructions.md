@@ -34,7 +34,7 @@ This is the **Power Platform VS Code extension** that provides tooling for creat
 - `src/client/PortalWebView.ts`: Power Pages portal webview management
 - `src/client/pac/PacWrapper.ts`: Wrapper for Power Platform CLI commands
 - `src/client/power-pages/actions-hub/ActionsHubTreeDataProvider.ts`: Power Pages Actions Hub tree data provider
-- 
+-
 
 ### PAC CLI Integration Patterns
 ```typescript
