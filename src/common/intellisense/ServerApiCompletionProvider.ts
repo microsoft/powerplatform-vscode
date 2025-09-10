@@ -377,7 +377,9 @@ export class ServerApiDefinitions {
                 { name: "adx_identity_mobilephoneconfirmed", description: "Mobile phone confirmed", returnType: "boolean" },
                 { name: "participatesinworkflow", description: "Participates in workflow", returnType: "boolean" },
                 { name: "statecode", description: "State code", returnType: "number" },
-                { name: "address2_addressid", description: "Address 2 ID", returnType: "string" }
+                { name: "address2_addressid", description: "Address 2 ID", returnType: "string" },
+                { name: "Roles", description: "User roles", returnType: "string[]"},
+                { name: "Token", description: "Authentication token", returnType: "string" }
             ]
         },
         {
