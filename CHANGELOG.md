@@ -1,5 +1,12 @@
 # Change Log - Power Platform Extension
 
+## 2.0.99
+- pac CLI 1.48.2, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- Bug Fixes
+  - Fixed auth mismatch issue for Power Pages Actions (Desktop)
+  - Enabled Power Pages Actions(Desktop) in GitHub Codespaces.
+  - Added theme support for Power Pages Actions (Web) icons.
+
 ## 2.0.94
 - pac CLI 1.47.1, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 - Bug Fixes
