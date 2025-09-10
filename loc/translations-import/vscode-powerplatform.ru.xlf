@@ -96,17 +96,9 @@
         <source xml:lang="en">Authenticating...</source>
         <target state="translated">Проверка подлинности...</target>
       </trans-unit>
-      <trans-unit id="++CODE++469a3c89adc4cb4df3a6f0114cd45795248e4e1dcab2546a685e42982b1a22e6">
-        <source xml:lang="en">Authentication failed. Cannot proceed with site download.</source>
-        <target state="translated">Проверка подлинности не пройдена. Невозможно продолжить скачивание сайта.</target>
-      </trans-unit>
       <trans-unit id="++CODE++93c83aa255a01cb4ee50d86e561c78b6c28e3e0f7fd9143dd7817b93b3c5a198">
         <source xml:lang="en">Authentication failed. Please login and try again.</source>
         <target state="translated">Не удалось выполнить проверку подлинности. Войдите и повторите попытку.</target>
-      </trans-unit>
-      <trans-unit id="++CODE++4190475b52357e7ad3da76828784a5b9f291519e331b0c0e71f5d14e946bbc4b">
-        <source xml:lang="en">Authentication failed. Please try again.</source>
-        <target state="translated">Проверка подлинности не пройдена. Попробуйте еще раз.</target>
       </trans-unit>
       <trans-unit id="++CODE++a57666e58a53eea23667fddf0a7c41bdc64abfc5eae94637e88388a6b139b314">
         <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
@@ -150,6 +142,10 @@
       <trans-unit id="++CODE++9885d66d0771f63c5a4b5d3b8cbe26be8832bc941243f5b18573975750a9986b">
         <source xml:lang="en">Check the URL and verify the parameters are correct</source>
         <target state="translated">Проверьте URL-адрес и проверьте правильность параметров</target>
+      </trans-unit>
+      <trans-unit id="++CODE++6632cd07f161cbf30f0b3c569bb72daa960ac2c0c49a90daa7cee3185f636e27">
+        <source xml:lang="en">Checking environment...</source>
+        <target state="new">Checking environment...</target>
       </trans-unit>
       <trans-unit id="++CODE++c724a9256b7af89455e04cc3611e5df1030c25f92652356f205c15f02c2da28e">
         <source xml:lang="en">Checking for active auth profile...</source>
@@ -383,22 +379,6 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
         <source xml:lang="en">Do not show again</source>
         <target state="translated">Больше не показывать</target>
       </trans-unit>
-      <trans-unit id="++CODE++668c177d38e6f62ffe2ca64e3915151cfcd566204fd4e4b499e7fe237ad63fb1">
-        <source xml:lang="en">Download Power Pages Site</source>
-        <target state="translated">Скачать сайт Power Pages</target>
-      </trans-unit>
-      <trans-unit id="++CODE++f7bcb5a0e46a8772ca8a648ca7814c6532078d2040286bdcc8993ff7ea9db164">
-        <source xml:lang="en">Download VS Code</source>
-        <target state="translated">Скачать VS Code</target>
-      </trans-unit>
-      <trans-unit id="++CODE++60e02fb26e383f47ea262baa6265c7634e9363869eac536dc91ce1264977ccce">
-        <source xml:lang="en">Downloading Power Pages site using model version {0}...</source>
-        <target state="translated">Выполняется скачивание сайта Power Pages с использованием модели версии {0}...</target>
-      </trans-unit>
-      <trans-unit id="++CODE++9a0318af6b9d6517ef62b7c029a20fda8164d0d717bccbac3c6f926fb6564bd4">
-        <source xml:lang="en">Downloading Power Pages site, please wait...</source>
-        <target state="translated">Скачивается сайт Power Pages. Подождите, пожалуйста...</target>
-      </trans-unit>
       <trans-unit id="++CODE++ac72407b10d30bf47faf11da09b605a85fc649bd3f2e33acb281655cb9021d9d">
         <source xml:lang="en">Edit the site</source>
         <target state="translated">Изменить сайт</target>
@@ -418,14 +398,6 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
       <trans-unit id="++CODE++048d1e764983197603f13e79d28f59bbfa358c0c11e1184c27fc687512589778">
         <source xml:lang="en">Enter the name of the web template</source>
         <target state="translated">Введите имя веб-шаблона</target>
-      </trans-unit>
-      <trans-unit id="++CODE++7d63bf943bc02891e817defccba51294daaf55fc6418bc5bac517fd254ed07e2">
-        <source xml:lang="en">Environment ID is not available</source>
-        <target state="translated">ИД среды недоступен</target>
-      </trans-unit>
-      <trans-unit id="++CODE++6bba2e23a239b42ce9624ffd5bb2c56f483a7975ecaf2e872a8fe3aa9006b818">
-        <source xml:lang="en">Environment ID is required but not provided</source>
-        <target state="translated">Идентификатор среды обязателен, но не предоставлен</target>
       </trans-unit>
       <trans-unit id="++CODE++b6d455a8dab8e66229a985315b5db1e1c065ba6d999dffd2795c03189fb32265">
         <source xml:lang="en">Environment ID: {0}</source>
@@ -548,14 +520,6 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
       <trans-unit id="++CODE++83f3ed1048ce17af62e4baf0dd046ec8571cb8ae602ad853025266a023de8061">
         <source xml:lang="en">Failed to install SARIF viewer extension: {0}</source>
         <target state="translated">Не удалось установить расширение средства просмотра SARIF: {0}</target>
-      </trans-unit>
-      <trans-unit id="++CODE++f865b154a9a2097159a09be82db76a9b29afc71df9ad86b9c08253f2e805d23c">
-        <source xml:lang="en">Failed to open in VS Code Desktop: {0}</source>
-        <target state="translated">Не удалось открыть в классическом приложении VS Code: {0}</target>
-      </trans-unit>
-      <trans-unit id="++CODE++1431fc40490dda7265400636e401674fe94e75224aa179af9ce1cded2a155808">
-        <source xml:lang="en">Failed to switch to the required environment.</source>
-        <target state="translated">Не удалось переключиться на нужную среду.</target>
       </trans-unit>
       <trans-unit id="++CODE++a9e36b880dd45b64ae5601865540605296febf9bd855fc46d9c35c2c2ed9a7f2">
         <source xml:lang="en">Feature is not enabled for this geo.</source>
@@ -915,13 +879,13 @@ URL-адрес: {1}
         <note>{0} is the Organization ID</note>
         <target state="translated">ИД организации: {0}</target>
       </trans-unit>
-      <trans-unit id="++CODE++43fda167d567df5f43ec87655e1d27557664874f1f804387174027f5e8e2e602">
-        <source xml:lang="en">Organization URL is required but not provided</source>
-        <target state="translated">URL-адрес организации обязателен, но не указан</target>
-      </trans-unit>
       <trans-unit id="++CODE++b3d5416b4e83d803e6f238f1d31a637450f12c9370113871d15bd48c72435cd2">
         <source xml:lang="en">Other Sites</source>
         <target state="translated">Другие сайты</target>
+      </trans-unit>
+      <trans-unit id="++CODE++17e4f785a8957503f2cbe34d549c9a4808bcf596614c44414d4a456931982022">
+        <source xml:lang="en">PAC CLI</source>
+        <target state="new">PAC CLI</target>
       </trans-unit>
       <trans-unit id="++CODE++d4dc9d620b68b70e7de4aeaa15e1d83dddb457c64a3cadb35cf1b55025ad194f">
         <source xml:lang="en">PAC Telemetry disabled</source>
@@ -963,6 +927,10 @@ URL-адрес: {1}
         <source xml:lang="en">Please select the folder that contains your compiled output to upload your site.</source>
         <target state="translated">Выберите папку, содержащую скомпилированный вывод для загрузки вашего сайта.</target>
       </trans-unit>
+      <trans-unit id="++CODE++5fbb04557cac7e489e30d8dade7753361709a79b317cfe1e402c30363c43b924">
+        <source xml:lang="en">Power Pages</source>
+        <target state="new">Power Pages</target>
+      </trans-unit>
       <trans-unit id="++CODE++1bac158cc07a75506df3774db0ad7c188c19ccad4943c4cf03da8b6700ef9ce4">
         <source xml:lang="en">Power Pages Copilot is now connected to the environment: {0} : {1}</source>
         <note>{0} represents the environment name</note>
@@ -989,10 +957,6 @@ URL-адрес: {1}
         <note>{0} represents the version number</note>
         <target state="translated">Подготовка pac CLI (версия {0})...</target>
       </trans-unit>
-      <trans-unit id="++CODE++e019497156f9ccd01e4c4fa2cb01c31e293460acdf116949dc29680e64660de5">
-        <source xml:lang="en">Preparing to download Power Pages site...</source>
-        <target state="translated">Выполняется подготовка к скачиванию сайта Power Pages...</target>
-      </trans-unit>
       <trans-unit id="++CODE++f6412ced721a26ac3e3cb55d3ff713d8403c3dfc2efa0cff07b48478bdd57555">
         <source xml:lang="en">Preview site</source>
         <target state="translated">Предварительная версия сайта</target>
@@ -1017,6 +981,10 @@ URL-адрес: {1}
         <source xml:lang="en">Profile Kind: {0}</source>
         <note>The {0} represents the profile type (Admin vs Dataverse)</note>
         <target state="translated">Вид профиля: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++6e31aef31ad6cc82d8d8d41fd45043885761a11b9222b1ec7ce9d78a36dd4451">
+        <source xml:lang="en">Ready to select download folder</source>
+        <target state="new">Ready to select download folder</target>
       </trans-unit>
       <trans-unit id="++CODE++b62120c5416487f4c793d75aee7fea083971e5ac665a3f35767023f408f482e5">
         <source xml:lang="en">Response data is empty</source>
@@ -1149,6 +1117,10 @@ URL-адрес: {1}
         <source xml:lang="en">Submit</source>
         <target state="translated">Отправить</target>
       </trans-unit>
+      <trans-unit id="++CODE++e3a0cecb7c0c51b4a918164be2e4a75795139fbc652adbed3c6a144cf4adc009">
+        <source xml:lang="en">Switching environment...</source>
+        <target state="new">Switching environment...</target>
+      </trans-unit>
       <trans-unit id="++CODE++550b4ee4e0ae69ddf9c18f9d46f59e59da633a2644633d140197d62ded3f2657">
         <source xml:lang="en">Tell us more.</source>
         <target state="translated">Расскажите подробнее.</target>
@@ -1277,6 +1249,18 @@ URL-адрес: {1}
         <source xml:lang="en">Use current site folder</source>
         <target state="translated">Использование текущей папки сайта</target>
       </trans-unit>
+      <trans-unit id="++CODE++923414ce1803b583f001d5c698b84f3ab0b5ecafb4953d630eab93ae622330bb">
+        <source xml:lang="en">User cancelled authentication</source>
+        <target state="new">User cancelled authentication</target>
+      </trans-unit>
+      <trans-unit id="++CODE++0b53763063a9819b6dae13d3cd35d034445618c073f88510873b12cd8fa5d66b">
+        <source xml:lang="en">User cancelled environment switch</source>
+        <target state="new">User cancelled environment switch</target>
+      </trans-unit>
+      <trans-unit id="++CODE++76df7bbbf778aafae0e57613b349235aaee0a97e85a4892f3a28b6ccc4e65232">
+        <source xml:lang="en">User cancelled folder selection</source>
+        <target state="new">User cancelled folder selection</target>
+      </trans-unit>
       <trans-unit id="++CODE++7cf98759b12f73d7717ae27ba49a3d27f026be55b4a33236942882c7a8b671bf">
         <source xml:lang="en">User cancelled opening results.</source>
         <target state="translated">Пользователь отменил открытие результатов.</target>
@@ -1294,10 +1278,6 @@ URL-адрес: {1}
         <source xml:lang="en">Using default query suite: {0}</source>
         <target state="translated">Использование набора запросов по умолчанию: {0}</target>
       </trans-unit>
-      <trans-unit id="++CODE++4164b3068322daf412659fb28d24b8b18f2d9fcdb160a63980bafbd16134231b">
-        <source xml:lang="en">VS Code - PAC CLI authentication mismatch detected</source>
-        <target state="translated">VS Code — обнаружено несоответствие проверки подлинности PAC CLI</target>
-      </trans-unit>
       <trans-unit id="++CODE++d941ee96c6f480390012381f9fc0dfd961f2aa803732860e2505a8453700f458">
         <source xml:lang="en">We encountered an error preparing the files for edit.</source>
         <target state="translated">Произошла ошибка при подготовке файлов к редактированию.</target>
@@ -1313,14 +1293,6 @@ URL-адрес: {1}
       <trans-unit id="++CODE++00dc171124ab430bbbaae51ec39dda1c5e7d045f382f56b1767d9e733292731c">
         <source xml:lang="en">Webpage names should contain only letters, numbers, hyphens, or underscores.</source>
         <target state="translated">Имена веб-страниц должны содержать только буквы, цифры, дефисы и символы подчеркивания.</target>
-      </trans-unit>
-      <trans-unit id="++CODE++ccd9f7afcc6454ab02bcba204f559a9c89947c6e39a7c8651e30799d78ca4fd2">
-        <source xml:lang="en">Website ID is not available</source>
-        <target state="translated">ID сайта недоступен</target>
-      </trans-unit>
-      <trans-unit id="++CODE++64c2870068032d4e5c46e710ba9422633c8f8228527d59b27f449fdf55216bb6">
-        <source xml:lang="en">Website ID is required but not provided</source>
-        <target state="translated">Идентификатор веб-сайта обязателен, но не предоставлен</target>
       </trans-unit>
       <trans-unit id="++CODE++d3eaa7bf5377b15781ad4c0f43e4da94b9a2bd485ddbbbe62a2c3d53c5c7fe4a">
         <source xml:lang="en">Website Id: {0}</source>
@@ -1389,6 +1361,10 @@ URL-адрес: {1}
         <note>Do not translate 'dotnet' or 'sdk'</note>
         <target state="translated">Необходимо установить версию dotnet sdk 6.0 или более позднюю</target>
       </trans-unit>
+      <trans-unit id="++CODE++21c9bbf3ca8756722337933b27566345c8aa2794231295a3ede6204329456931">
+        <source xml:lang="en">pac pcf init</source>
+        <target state="new">pac pcf init</target>
+      </trans-unit>
       <trans-unit id="++CODE++48c4c42c9b70ac4687a121f91d8cb9a9063a3b51fbc5eeb68e5edc961ee18482">
         <source xml:lang="en">{0} created!</source>
         <note>{0} will be replaced by the entity type.</note>
@@ -1411,13 +1387,13 @@ URL-адрес: {1}
         <target state="translated">Профили проверки подлинности</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.saveConflict.description">
-        <source xml:lang="en">Avoid accidental overwrites when you try to save outdated code in VS Code for the Web. You can compare the changes side-by-side and decide to accept or revert the changes. 
- 
+        <source xml:lang="en">Avoid accidental overwrites when you try to save outdated code in VS Code for the Web. You can compare the changes side-by-side and decide to accept or revert the changes.
+
 To learn more, visit [Prevent accidental overwrites](command:powerplatform-walkthrough.saveConflict-learn-more).</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.saveConflict-learn-more).', keeping brackets and the text in the parentheses unmodified</note>
-        <target state="translated">Избегайте случайной перезаписи при попытке сохранить устаревший код в VS Code для Интернета. Вы можете сравнить изменения бок о бок и решить, принять их или отменить. 
- 
+        <target state="translated">Избегайте случайной перезаписи при попытке сохранить устаревший код в VS Code для Интернета. Вы можете сравнить изменения бок о бок и решить, принять их или отменить.
+
 Чтобы узнать больше, посетите сайт [Предотвращение случайной перезаписи](command:powerplatform-walkthrough.saveConflict-learn-more).</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.switchEnvironment.title">
@@ -1505,22 +1481,22 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
         <target state="translated">Проводник</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.description">
-        <source xml:lang="en">Find your page files organized in folders under your site name. All your pages are arranged into HTML, CSS, and JS files within the respective site component folders. 
- 
- You can find site components like forms, content snippets, lists, and more to edit. 
- 
- To learn more, visit [Power Pages file structure in VS Code](command:powerplatform-walkthrough.fileSystem-documentation). 
- 
+        <source xml:lang="en">Find your page files organized in folders under your site name. All your pages are arranged into HTML, CSS, and JS files within the respective site component folders.
+
+ You can find site components like forms, content snippets, lists, and more to edit.
+
+ To learn more, visit [Power Pages file structure in VS Code](command:powerplatform-walkthrough.fileSystem-documentation).
+
 [Visit site folder](command:powerplatform-walkthrough.fileSystem-open-folder)</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-documentation).', keeping brackets and the text in the parentheses unmodified
 The eighth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-open-folder)', keeping brackets and the text in the parentheses unmodified</note>
-        <target state="translated">Найдите файлы страниц, организованные в папках под названием вашего сайта. Все ваши страницы организованы в файлы HTML, CSS и JS в соответствующих папках компонентов сайта. 
- 
- Вы можете найти компоненты сайта, такие как формы, фрагменты содержимого, списки и многое другое для редактирования. 
- 
- Дополнительные сведения см. на сайте [Структура файлов Power Pages в VS Code](command:powerplatform-walkthrough.fileSystem-documentation). 
- 
+        <target state="translated">Найдите файлы страниц, организованные в папках под названием вашего сайта. Все ваши страницы организованы в файлы HTML, CSS и JS в соответствующих папках компонентов сайта.
+
+ Вы можете найти компоненты сайта, такие как формы, фрагменты содержимого, списки и многое другое для редактирования.
+
+ Дополнительные сведения см. на сайте [Структура файлов Power Pages в VS Code](command:powerplatform-walkthrough.fileSystem-documentation).
+
 [Перейти в папку сайта](command:powerplatform-walkthrough.fileSystem-open-folder)</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.init.title">
@@ -1568,12 +1544,12 @@ The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthPr
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.description">
         <source xml:lang="en">Now easily edit code of your Power Pages site. Access code from supported site components like forms, content snippets, lists, and more from within Visual Studio Code.
- 
+
  To learn more, visit [Edit Power Pages code in VS Code](command:powerplatform-walkthrough.overview-learn-more).</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified</note>
         <target state="translated">Теперь вы можете легко редактировать код сайта Power Pages. Получите доступ к коду поддерживаемых компонентов сайта, таких как формы, фрагменты контента, списки и многое другое, из Visual Studio Code.
- 
+
  Чтобы узнать больше, посетите [Редактирование кода Power Pages в VS Code](command:powerplatform-walkthrough.overview-learn-more).</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title">
@@ -1707,21 +1683,21 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.description">
         <source xml:lang="en">Visual Studio Code for Web enables editing and publishing of web pages on your website.
- 
- For a command line interface and more advanced capabilities, install the Power Platform Extension for VS Code, available in the VS Code Marketplace for desktop. 
- 
+
+ For a command line interface and more advanced capabilities, install the Power Platform Extension for VS Code, available in the VS Code Marketplace for desktop.
+
  [Learn More](command:powerplatform-walkthrough.advancedCapabilities-learn-more) about the difference between Visual Studio Code for desktop and web.
- 
+
 [Start coding](command:powerplatform-walkthrough.advancedCapabilities-start-coding)</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.advancedCapabilities-learn-more) TRANSLATION', keeping brackets and the text in the parentheses unmodified
 The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.advancedCapabilities-start-coding)', keeping brackets and the text in the parentheses unmodified</note>
         <target state="translated">Visual Studio Code для Интернета позволяет редактировать и публиковать веб-страницы на вашем сайте.
- 
- Для интерфейса командной строки и более расширенных возможностей установите расширение Power Platform для VS Code, доступное в VS Code Marketplace для настольных компьютеров. 
- 
+
+ Для интерфейса командной строки и более расширенных возможностей установите расширение Power Platform для VS Code, доступное в VS Code Marketplace для настольных компьютеров.
+
  [Подробнее](command:powerplatform-walkthrough.advancedCapabilities-learn-more) о разнице между Visual Studio Code для настольных компьютеров и Интернета.
- 
+
 [Начать кодирование](command:powerplatform-walkthrough.advancedCapabilities-start-coding)</target>
       </trans-unit>
       <trans-unit id="powerPlatform.auth.cloud.description">

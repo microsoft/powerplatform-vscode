@@ -151,6 +151,10 @@
         <source xml:lang="en">Check the URL and verify the parameters are correct</source>
         <target state="translated">URL'yi denetleyin ve parametrelerin doğru olduğunu onaylayın</target>
       </trans-unit>
+      <trans-unit id="++CODE++6632cd07f161cbf30f0b3c569bb72daa960ac2c0c49a90daa7cee3185f636e27">
+        <source xml:lang="en">Checking environment...</source>
+        <target state="new">Checking environment...</target>
+      </trans-unit>
       <trans-unit id="++CODE++c724a9256b7af89455e04cc3611e5df1030c25f92652356f205c15f02c2da28e">
         <source xml:lang="en">Checking for active auth profile...</source>
         <target state="translated">Etkin kimlik doğrulama profili denetleniyor...</target>
@@ -923,6 +927,10 @@ Kuruluş Kimliği: {3}</target>
         <source xml:lang="en">Other Sites</source>
         <target state="translated">Diğer Siteler</target>
       </trans-unit>
+      <trans-unit id="++CODE++17e4f785a8957503f2cbe34d549c9a4808bcf596614c44414d4a456931982022">
+        <source xml:lang="en">PAC CLI</source>
+        <target state="new">PAC CLI</target>
+      </trans-unit>
       <trans-unit id="++CODE++d4dc9d620b68b70e7de4aeaa15e1d83dddb457c64a3cadb35cf1b55025ad194f">
         <source xml:lang="en">PAC Telemetry disabled</source>
         <target state="translated">PAC Telemetrisi devre dışı bırakıldı</target>
@@ -962,6 +970,10 @@ Kuruluş Kimliği: {3}</target>
       <trans-unit id="++CODE++f413d35f48356c6c13c6c9d8947f011221acb3bea7d0ce74eb2f5ed217f26bad">
         <source xml:lang="en">Please select the folder that contains your compiled output to upload your site.</source>
         <target state="translated">Sitenizi yüklemek için derlediğiniz çıktının bulunduğu klasörü seçin.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++5fbb04557cac7e489e30d8dade7753361709a79b317cfe1e402c30363c43b924">
+        <source xml:lang="en">Power Pages</source>
+        <target state="new">Power Pages</target>
       </trans-unit>
       <trans-unit id="++CODE++1bac158cc07a75506df3774db0ad7c188c19ccad4943c4cf03da8b6700ef9ce4">
         <source xml:lang="en">Power Pages Copilot is now connected to the environment: {0} : {1}</source>
@@ -1017,6 +1029,10 @@ Kuruluş Kimliği: {3}</target>
         <source xml:lang="en">Profile Kind: {0}</source>
         <note>The {0} represents the profile type (Admin vs Dataverse)</note>
         <target state="translated">Profil Türü: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++6e31aef31ad6cc82d8d8d41fd45043885761a11b9222b1ec7ce9d78a36dd4451">
+        <source xml:lang="en">Ready to select download folder</source>
+        <target state="new">Ready to select download folder</target>
       </trans-unit>
       <trans-unit id="++CODE++b62120c5416487f4c793d75aee7fea083971e5ac665a3f35767023f408f482e5">
         <source xml:lang="en">Response data is empty</source>
@@ -1149,6 +1165,10 @@ Kuruluş Kimliği: {3}</target>
         <source xml:lang="en">Submit</source>
         <target state="translated">Gönder</target>
       </trans-unit>
+      <trans-unit id="++CODE++e3a0cecb7c0c51b4a918164be2e4a75795139fbc652adbed3c6a144cf4adc009">
+        <source xml:lang="en">Switching environment...</source>
+        <target state="new">Switching environment...</target>
+      </trans-unit>
       <trans-unit id="++CODE++550b4ee4e0ae69ddf9c18f9d46f59e59da633a2644633d140197d62ded3f2657">
         <source xml:lang="en">Tell us more.</source>
         <target state="translated">Lütfen bize biraz daha bilgi verin.</target>
@@ -1277,6 +1297,18 @@ Kuruluş Kimliği: {3}</target>
         <source xml:lang="en">Use current site folder</source>
         <target state="translated">Geçerli site klasörünü kullanın</target>
       </trans-unit>
+      <trans-unit id="++CODE++923414ce1803b583f001d5c698b84f3ab0b5ecafb4953d630eab93ae622330bb">
+        <source xml:lang="en">User cancelled authentication</source>
+        <target state="new">User cancelled authentication</target>
+      </trans-unit>
+      <trans-unit id="++CODE++0b53763063a9819b6dae13d3cd35d034445618c073f88510873b12cd8fa5d66b">
+        <source xml:lang="en">User cancelled environment switch</source>
+        <target state="new">User cancelled environment switch</target>
+      </trans-unit>
+      <trans-unit id="++CODE++76df7bbbf778aafae0e57613b349235aaee0a97e85a4892f3a28b6ccc4e65232">
+        <source xml:lang="en">User cancelled folder selection</source>
+        <target state="new">User cancelled folder selection</target>
+      </trans-unit>
       <trans-unit id="++CODE++7cf98759b12f73d7717ae27ba49a3d27f026be55b4a33236942882c7a8b671bf">
         <source xml:lang="en">User cancelled opening results.</source>
         <target state="translated">Kullanıcı sonuçları açma işlemini iptal etti.</target>
@@ -1388,6 +1420,10 @@ Kuruluş Kimliği: {3}</target>
         <source xml:lang="en">dotnet sdk 6.0 or greater must be installed</source>
         <note>Do not translate 'dotnet' or 'sdk'</note>
         <target state="translated">dotnet sdk 6.0 veya üstü bir sürüm yüklenmelidir</target>
+      </trans-unit>
+      <trans-unit id="++CODE++21c9bbf3ca8756722337933b27566345c8aa2794231295a3ede6204329456931">
+        <source xml:lang="en">pac pcf init</source>
+        <target state="new">pac pcf init</target>
       </trans-unit>
       <trans-unit id="++CODE++48c4c42c9b70ac4687a121f91d8cb9a9063a3b51fbc5eeb68e5edc961ee18482">
         <source xml:lang="en">{0} created!</source>
