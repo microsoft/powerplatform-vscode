@@ -1,6 +1,6 @@
 # Change Log - Power Platform Extension
 
-## 2.0.99
+## 2.1.0
 - pac CLI 1.48.2, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 - Bug Fixes
   - Fixed auth mismatch issue for Power Pages Actions (Desktop)
