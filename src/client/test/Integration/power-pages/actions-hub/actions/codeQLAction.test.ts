@@ -49,7 +49,33 @@ describe('CodeQLAction', () => {
         it('should dispose output channel when dispose is called', () => {
             const action = new CodeQLAction();
             action.dispose();
-            // Should not throw when disposing
+            // No errors should be thrown
+        });
+    });
+
+    describe('escapePath', () => {
+        it('should properly escape paths with spaces', () => {
+            const pathWithSpaces = 'C:\\Program Files\\My App\\file.txt';
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const result = (codeqlAction as any).escapePath(pathWithSpaces);
+
+            assert.strictEqual(result, '"C:\\Program Files\\My App\\file.txt"');
+        });
+
+        it('should not escape simple paths without spaces', () => {
+            const simplePath = '/opt/myapp/file.txt';
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const result = (codeqlAction as any).escapePath(simplePath);
+
+            assert.strictEqual(result, '/opt/myapp/file.txt');
+        });
+
+        it('should handle Unix paths with spaces', () => {
+            const pathWithSpaces = '/opt/my app/file.txt';
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const result = (codeqlAction as any).escapePath(pathWithSpaces);
+
+            assert.strictEqual(result, '"/opt/my app/file.txt"');
         });
     });
 
@@ -96,6 +122,5 @@ describe('CodeQLAction', () => {
 
             assert.ok(true, 'Should handle null extension return gracefully');
         });
-
     });
 });

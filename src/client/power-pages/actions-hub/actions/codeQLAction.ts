@@ -49,7 +49,7 @@ export class CodeQLAction {
             }
 
             this.outputChannel.appendLine(Constants.Strings.CODEQL_CREATING_DATABASE);
-            await this.runCodeQLCommand(`"${codeqlCliPath}" database create "${dbPath}" --language=javascript-typescript --source-root="${sitePath}" --overwrite --no-run-unnecessary-builds`);
+            await this.runCodeQLCommand(`${this.escapePath(codeqlCliPath)} database create ${this.escapePath(dbPath)} --language=javascript-typescript --source-root=${this.escapePath(sitePath)} --overwrite --no-run-unnecessary-builds`);
 
             this.outputChannel.appendLine(Constants.Strings.CODEQL_RUNNING_ANALYSIS);
             const resultsPath = path.join(path.dirname(dbPath), 'results.sarif');
@@ -59,7 +59,7 @@ export class CodeQLAction {
 
             try {
                 // Use the correct syntax for JavaScript code scanning query suite
-                await this.runCodeQLCommand(`"${codeqlCliPath}" database analyze "${dbPath}" ${querySuite} --format=sarif-latest --output="${resultsPath}" --download`);
+                await this.runCodeQLCommand(`${this.escapePath(codeqlCliPath)} database analyze ${this.escapePath(dbPath)} ${querySuite} --format=sarif-latest --output=${this.escapePath(resultsPath)} --download`);
                 this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_ANALYSIS_COMPLETED, querySuite));
             } catch (error) {
                 const errorMessage = error instanceof Error ? error.message : String(error);
@@ -284,21 +284,36 @@ export class CodeQLAction {
         return new Promise((resolve, reject) => {
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_EXECUTING_COMMAND, command));
 
-            // Parse the command and arguments
-            const parts = this.parseCommand(command);
-            const cmd = parts[0];
-            const args = parts.slice(1);
+            // Handle command execution differently by platform:
+            // - Windows: Use cmd.exe with the full command string to handle paths with spaces
+            // - Unix: Split the command and use shell=true for better compatibility
+            const isWindows = process.platform === 'win32';
 
-            const process = spawn(cmd, args, {
-                shell: true,
-                stdio: ['pipe', 'pipe', 'pipe']
+            let cmd: string;
+            let args: string[];
+
+            if (isWindows) {
+                // On Windows, use cmd.exe and pass the entire command as a single argument
+                cmd = 'cmd.exe';
+                args = ['/c', command];
+            } else {
+                // On Unix systems, parse the command normally
+                const parts = this.parseCommand(command);
+                cmd = parts[0];
+                args = parts.slice(1);
+            }
+
+            const spawnedProcess = spawn(cmd, args, {
+                stdio: ['pipe', 'pipe', 'pipe'],
+                shell: !isWindows, // Only use shell on non-Windows platforms
+                windowsHide: isWindows
             });
 
             let stdout = '';
             let stderr = '';
 
             // Stream stdout in real-time
-            process.stdout?.on('data', (data: Buffer) => {
+            spawnedProcess.stdout?.on('data', (data: Buffer) => {
                 const output = data.toString();
                 stdout += output;
                 // Show real-time output in the output channel
@@ -306,14 +321,14 @@ export class CodeQLAction {
             });
 
             // Stream stderr in real-time
-            process.stderr?.on('data', (data: Buffer) => {
+            spawnedProcess.stderr?.on('data', (data: Buffer) => {
                 const output = data.toString();
                 stderr += output;
                 // Show real-time stderr in the output channel
                 this.outputChannel.appendLine(`[STDERR] ${output.trim()}`);
             });
 
-            process.on('close', (code: number) => {
+            spawnedProcess.on('close', (code: number) => {
                 const duration = Date.now() - startTime;
 
                 if (code === 0) {
@@ -355,7 +370,7 @@ export class CodeQLAction {
                 }
             });
 
-            process.on('error', (error: Error) => {
+            spawnedProcess.on('error', (error: Error) => {
                 const duration = Date.now() - startTime;
                 this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_PROCESS_ERROR, error.message));
 
@@ -857,6 +872,15 @@ export class CodeQLAction {
             // If we can't read the results file, return 0
             return 0;
         }
+    }
+
+    private escapePath(filePath: string): string {
+        // Simply wrap paths containing spaces in double quotes
+        // This handles the most common case of folder names with spaces
+        if (filePath.includes(' ')) {
+            return `"${filePath}"`;
+        }
+        return filePath;
     }
 
     public dispose(): void {
