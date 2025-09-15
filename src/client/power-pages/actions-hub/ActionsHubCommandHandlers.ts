@@ -211,6 +211,8 @@ export const createNewAuthProfile = async (pacWrapper: PacWrapper): Promise<void
         // if orgUrl is present then directly authenticate in VS Code
         if (orgUrl) {
             await authenticateUserInVSCode();
+            // Show success message to user
+            vscode.window.showInformationMessage(vscode.l10n.t("Authentication completed successfully."));
             return;
         }
 
@@ -221,26 +223,34 @@ export const createNewAuthProfile = async (pacWrapper: PacWrapper): Promise<void
                 const orgUrl = results[0].ActiveOrganization?.Item2;
                 if (orgUrl) {
                     await authenticateUserInVSCode();
+                    // Show success message to user
+                    vscode.window.showInformationMessage(vscode.l10n.t("Authentication completed successfully."));
                 } else {
+                    const errorMsg = Constants.Strings.ORGANIZATION_URL_MISSING;
                     traceError(
                         createNewAuthProfile.name,
-                        new Error(Constants.Strings.ORGANIZATION_URL_MISSING),
+                        new Error(errorMsg),
                         { methodName: createNewAuthProfile.name }
                     );
+                    await vscode.window.showErrorMessage(vscode.l10n.t("Authentication failed: Organization URL is missing."));
                 }
             } else {
+                const errorMsg = Constants.Strings.EMPTY_RESULTS_ARRAY;
                 traceError(
                     createNewAuthProfile.name,
-                    new Error(Constants.Strings.EMPTY_RESULTS_ARRAY),
+                    new Error(errorMsg),
                     { methodName: createNewAuthProfile.name }
                 );
+                await vscode.window.showErrorMessage(vscode.l10n.t("Authentication failed: No authentication results returned."));
             }
         } else {
+            const errorMsg = Constants.Strings.PAC_AUTH_OUTPUT_FAILURE;
             traceError(
                 createNewAuthProfile.name,
-                new Error(Constants.Strings.PAC_AUTH_OUTPUT_FAILURE),
+                new Error(errorMsg),
                 { methodName: createNewAuthProfile.name }
             );
+            await vscode.window.showErrorMessage(vscode.l10n.t("Authentication failed: Unable to create authentication profile."));
         }
     } catch (error) {
         traceError(
@@ -248,6 +258,9 @@ export const createNewAuthProfile = async (pacWrapper: PacWrapper): Promise<void
             error as Error,
             { methodName: createNewAuthProfile.name }
         );
+        // Show error message to user
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        await vscode.window.showErrorMessage(vscode.l10n.t("Authentication failed: {0}", errorMessage));
     }
 };
 
