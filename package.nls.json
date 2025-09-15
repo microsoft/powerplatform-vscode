@@ -99,10 +99,10 @@
   "microsoft.powerplatform.pages.actionsHub.openSitesInStudio.title": "Open in Power Pages Studio",
   "microsoft.powerplatform.pages.actionsHub.activeSite.previewSite.title": "Preview",
   "microsoft.powerplatform.pages.actionsHub.login":{
-    "message":  "Login and connect to a Power Pages environment to use Power Pages actions. [Learn more](https://go.microsoft.com/fwlink/?linkid=2305702).\n[Login](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile)",
+    "message":  "Login and connect to a Power Pages environment to use Power Pages actions. [Learn more](https://go.microsoft.com/fwlink/?linkid=2305702).\n[Login](command:microsoft.powerplatform.pages.actionsHub.loginToMatch)",
     "comment": [
       "This is a Markdown formatted string, and the formatting must persist across translations.",
-      "The second line should be '[TRANSLATION HERE](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile).', keeping brackets and the text in the parentheses unmodified"
+      "The second line should be '[TRANSLATION HERE](command:microsoft.powerplatform.pages.actionsHub.loginToMatch).', keeping brackets and the text in the parentheses unmodified"
     ]
   },
   "microsoft.powerplatform.pages.actionsHub.login.title": "Add New Auth Profile",
