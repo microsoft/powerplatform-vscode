@@ -98,57 +98,60 @@ export class ServerApiDefinitions {
             description: "Provides HTTP client functionality for external API calls (blocks access to Dataverse)",
             methods: [
                 {
-                    name: "Get",
-                    description: "Performs an HTTP GET request",
+                    name: "GetAsync",
+                    description: "Performs an HTTP GET request asynchronously",
                     parameters: [
                         { name: "url", type: "string", description: "The URL to request" },
-                        { name: "headers", type: "IDictionary<string, string>", description: "Request headers" }
+                        { name: "headers", type: "IDictionary<string, string>", description: "Request headers", optional: true }
                     ],
                     returnType: "HttpResponse",
-                    example: "Server.Connector.HttpClient.Get('https://api.example.com/data', headers);"
+                    example: "Server.Connector.HttpClient.GetAsync('https://api.example.com/data', headers);"
                 },
                 {
-                    name: "Post",
-                    description: "Performs an HTTP POST request",
+                    name: "PostAsync",
+                    description: "Performs an HTTP POST request asynchronously",
                     parameters: [
                         { name: "url", type: "string", description: "The URL to request" },
                         { name: "jsonBody", type: "string", description: "The JSON body to send" },
-                        { name: "headers", type: "IDictionary<string, string>", description: "Request headers" }
+                        { name: "headers", type: "IDictionary<string, string>", description: "Request headers", optional: true },
+                        { name: "contentType", type: "string", description: "Content type header", optional: true }
                     ],
                     returnType: "HttpResponse",
-                    example: "Server.Connector.HttpClient.Post('https://api.example.com/data', jsonBody, headers);"
+                    example: "Server.Connector.HttpClient.PostAsync('https://api.example.com/data', jsonBody, headers, contentType);"
                 },
                 {
-                    name: "Patch",
-                    description: "Performs an HTTP PATCH request",
+                    name: "PatchAsync",
+                    description: "Performs an HTTP PATCH request asynchronously",
                     parameters: [
                         { name: "url", type: "string", description: "The URL to request" },
                         { name: "jsonBody", type: "string", description: "The JSON body to send" },
-                        { name: "headers", type: "IDictionary<string, string>", description: "Request headers" }
+                        { name: "headers", type: "IDictionary<string, string>", description: "Request headers", optional: true },
+                        { name: "contentType", type: "string", description: "Content type header", optional: true }
                     ],
                     returnType: "HttpResponse",
-                    example: "Server.Connector.HttpClient.Patch('https://api.example.com/data/1', jsonBody, headers);"
+                    example: "Server.Connector.HttpClient.PatchAsync('https://api.example.com/data/1', jsonBody, headers, contentType);"
                 },
                 {
-                    name: "Put",
-                    description: "Performs an HTTP PUT request",
+                    name: "PutAsync",
+                    description: "Performs an HTTP PUT request asynchronously",
                     parameters: [
                         { name: "url", type: "string", description: "The URL to request" },
                         { name: "jsonBody", type: "string", description: "The JSON body to send" },
-                        { name: "headers", type: "IDictionary<string, string>", description: "Request headers" }
+                        { name: "headers", type: "IDictionary<string, string>", description: "Request headers", optional: true },
+                        { name: "contentType", type: "string", description: "Content type header", optional: true }
                     ],
                     returnType: "HttpResponse",
-                    example: "Server.Connector.HttpClient.Put('https://api.example.com/data/1', jsonBody, headers);"
+                    example: "Server.Connector.HttpClient.PutAsync('https://api.example.com/data/1', jsonBody, headers, contentType);"
                 },
                 {
-                    name: "Delete",
-                    description: "Performs an HTTP DELETE request",
+                    name: "DeleteAsync",
+                    description: "Performs an HTTP DELETE request asynchronously",
                     parameters: [
                         { name: "url", type: "string", description: "The URL to request" },
-                        { name: "headers", type: "IDictionary<string, string>", description: "Request headers" }
+                        { name: "headers", type: "IDictionary<string, string>", description: "Request headers", optional: true }
                     ],
                     returnType: "HttpResponse",
-                    example: "Server.Connector.HttpClient.Delete('https://api.example.com/data/1', headers);"
+                    example: "Server.Connector.HttpClient.DeleteAsync('https://api.example.com/data/1', headers);"
                 }
             ]
         },
