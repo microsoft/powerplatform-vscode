@@ -373,8 +373,8 @@ async function processDataAndCreateFile(
             // Determine which folder name was used for this specific root webpage ID group
             const existingEntriesForFileName = Array.from(webpageNames).filter(key => key.startsWith(`${fileName}${WEBPAGE_FOLDER_CONSTANTS.DELIMITER}`));
 
-            // Extract and sort root webpage IDs to ensure consistent ordering
-            const rootWebPageIds = existingEntriesForFileName.map(key => key.split(WEBPAGE_FOLDER_CONSTANTS.DELIMITER)[1]).sort();
+            // Extract root webpage IDs preserving insertion order to maintain first folder logic
+            const rootWebPageIds = existingEntriesForFileName.map(key => key.split(WEBPAGE_FOLDER_CONSTANTS.DELIMITER)[1]);
             const currentEntryIndex = rootWebPageIds.indexOf(effectiveRootWebPageId);
 
             if (currentEntryIndex === 0) {
