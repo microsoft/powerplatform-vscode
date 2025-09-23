@@ -35,7 +35,7 @@ import { IAttributePath, IFileInfo } from "../common/interfaces";
 import { portal_schema_V2 } from "../schema/portalSchema";
 import { ERROR_CONSTANTS } from "../../../common/ErrorConstants";
 import { showErrorDialog } from "../../../common/utilities/errorHandlerUtil";
-import { EnableServerLogicChanges } from "../../../common/ecs-features/ecsFeatureGates";
+import { EnableServerLogicChanges, EnableDuplicateFileHandling } from "../../../common/ecs-features/ecsFeatureGates";
 import { ECSFeaturesClient } from "../../../common/ecs-features/ecsFeatureClient";
 
 export async function fetchDataFromDataverseAndUpdateVFS(
@@ -345,44 +345,52 @@ async function processDataAndCreateFile(
     // Handle webpage folder organization by root webpage ID
     let actualFolderName = originalFolderName || fileName;
     if (entityName === schemaEntityName.WEBPAGES) {
-        const webpageNames = WebExtensionContext.getWebpageNames();
+        const { enableDuplicateFileHandling, disallowedDuplicateFileHandlingOrgs } = ECSFeaturesClient.getConfig(EnableDuplicateFileHandling);
 
-        const effectiveRootWebPageId = rootWebPageId || WEBPAGE_FOLDER_CONSTANTS.NO_ROOT_PLACEHOLDER;
-        const rootWebPageIdKey = `${fileName}${WEBPAGE_FOLDER_CONSTANTS.DELIMITER}${effectiveRootWebPageId}`;
+        // Check if feature is enabled and current org is not in the disable list
+        const isOrgDisabled = disallowedDuplicateFileHandlingOrgs &&
+            disallowedDuplicateFileHandlingOrgs.split(',').map(org => org.trim()).includes(WebExtensionContext.organizationId);
 
-        if (!webpageNames.has(rootWebPageIdKey)) {
-            // This is a new filename+rootWebPageId combination
-            const existingEntriesForFileName = Array.from(webpageNames).filter(key => key.startsWith(`${fileName}${WEBPAGE_FOLDER_CONSTANTS.DELIMITER}`));
+        if (enableDuplicateFileHandling && !isOrgDisabled) {
+            const webpageNames = WebExtensionContext.getWebpageNames();
 
-            if (existingEntriesForFileName.length > 0) {
-                // This filename already exists with a different root webpage ID
-                // Create a suffixed folder name for this NEW root webpage ID group
-                WebExtensionContext.telemetry.sendInfoTelemetry(
-                    webExtensionTelemetryEventNames.WEB_EXTENSION_DUPLICATE_FOLDER_NAME_CREATED,
-                    { entityName: entityName, fileName: fileName, entityId: entityId, orgId: WebExtensionContext.organizationId, envId: WebExtensionContext.environmentId }
-                );
-                // Use effective rootWebPageId for consistent naming
-                actualFolderName = getDuplicateFileName(fileName, effectiveRootWebPageId);
+            const effectiveRootWebPageId = rootWebPageId || WEBPAGE_FOLDER_CONSTANTS.NO_ROOT_PLACEHOLDER;
+            const rootWebPageIdKey = `${fileName}${WEBPAGE_FOLDER_CONSTANTS.DELIMITER}${effectiveRootWebPageId}`;
+
+            if (!webpageNames.has(rootWebPageIdKey)) {
+                // This is a new filename+rootWebPageId combination
+                const existingEntriesForFileName = Array.from(webpageNames).filter(key => key.startsWith(`${fileName}${WEBPAGE_FOLDER_CONSTANTS.DELIMITER}`));
+
+                if (existingEntriesForFileName.length > 0) {
+                    // This filename already exists with a different root webpage ID
+                    // Create a suffixed folder name for this NEW root webpage ID group
+                    WebExtensionContext.telemetry.sendInfoTelemetry(
+                        webExtensionTelemetryEventNames.WEB_EXTENSION_DUPLICATE_FOLDER_NAME_CREATED,
+                        { entityName: entityName, fileName: fileName, entityId: entityId, orgId: WebExtensionContext.organizationId, envId: WebExtensionContext.environmentId }
+                    );
+                    // Use effective rootWebPageId for consistent naming
+                    actualFolderName = getDuplicateFileName(fileName, effectiveRootWebPageId);
+                } else {
+                    // First occurrence of this filename - use original name
+                }
+
+                webpageNames.add(rootWebPageIdKey);
             } else {
-                // First occurrence of this filename - use original name
-            }
+                // We've seen this exact filename+rootWebPageId combination before
+                // Determine which folder name was used for this specific root webpage ID group
+                const existingEntriesForFileName = Array.from(webpageNames).filter(key => key.startsWith(`${fileName}${WEBPAGE_FOLDER_CONSTANTS.DELIMITER}`));
 
-            webpageNames.add(rootWebPageIdKey);
-        } else {
-            // We've seen this exact filename+rootWebPageId combination before
-            // Determine which folder name was used for this specific root webpage ID group
-            const existingEntriesForFileName = Array.from(webpageNames).filter(key => key.startsWith(`${fileName}${WEBPAGE_FOLDER_CONSTANTS.DELIMITER}`));
+                // Extract root webpage IDs preserving insertion order to maintain first folder logic
+                const rootWebPageIds = existingEntriesForFileName.map(key => key.split(WEBPAGE_FOLDER_CONSTANTS.DELIMITER)[1]);
+                const currentEntryIndex = rootWebPageIds.indexOf(effectiveRootWebPageId);
 
-            // Extract root webpage IDs preserving insertion order to maintain first folder logic
-            const rootWebPageIds = existingEntriesForFileName.map(key => key.split(WEBPAGE_FOLDER_CONSTANTS.DELIMITER)[1]);
-            const currentEntryIndex = rootWebPageIds.indexOf(effectiveRootWebPageId);
-
-            if (currentEntryIndex === 0) {
-                // This is the first root webpage ID that was encountered for this filename
-                actualFolderName = fileName;
-            } else {
-                // This is a subsequent root webpage ID - use suffixed folder name
-                actualFolderName = getDuplicateFileName(fileName, effectiveRootWebPageId);
+                if (currentEntryIndex === 0) {
+                    // This is the first root webpage ID that was encountered for this filename
+                    actualFolderName = fileName;
+                } else {
+                    // This is a subsequent root webpage ID - use suffixed folder name
+                    actualFolderName = getDuplicateFileName(fileName, effectiveRootWebPageId);
+                }
             }
         }
     }    // Create folder directory if needed
