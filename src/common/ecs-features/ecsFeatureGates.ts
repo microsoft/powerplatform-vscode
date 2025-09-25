@@ -109,3 +109,14 @@ export const {
         enableOpenInDesktop: false,
     }
 });
+
+export const {
+    feature: EnableDuplicateFileHandling
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable duplicate file handling for webpage folders',
+    fallback: {
+        enableDuplicateFileHandling: true,
+        disallowedDuplicateFileHandlingOrgs: "",
+    }
+});
