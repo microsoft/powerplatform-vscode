@@ -1,5 +1,12 @@
 # Change Log - Power Platform Extension
 
+## 2.0.102
+- Rollout of "Open in Desktop" capability in Power Pages Actions (Web)
+- Rollout of CodeQL security analysis support for Power Pages sites (Desktop)
+- Bug Fixes
+  - Fixed authentication button issue for Actions Hub in GitHub Codespaces
+  - Enhanced duplicate webpage handling in VS Code web
+
 ## 2.0.100
 - pac CLI 1.48.2, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 - Bug Fixes
