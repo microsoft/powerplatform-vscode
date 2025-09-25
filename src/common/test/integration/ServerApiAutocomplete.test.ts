@@ -69,11 +69,11 @@ suite('Server API Autocomplete Tests', () => {
             assert.ok(httpClientDef);
             assert.strictEqual(httpClientDef.name, 'Connector.HttpClient');
             assert.ok(httpClientDef.methods);
-            assert.ok(httpClientDef.methods.find(m => m.name === 'Get'));
-            assert.ok(httpClientDef.methods.find(m => m.name === 'Post'));
-            assert.ok(httpClientDef.methods.find(m => m.name === 'Patch'));
-            assert.ok(httpClientDef.methods.find(m => m.name === 'Put'));
-            assert.ok(httpClientDef.methods.find(m => m.name === 'Delete'));
+            assert.ok(httpClientDef.methods.find(m => m.name === 'GetAsync'));
+            assert.ok(httpClientDef.methods.find(m => m.name === 'PostAsync'));
+            assert.ok(httpClientDef.methods.find(m => m.name === 'PatchAsync'));
+            assert.ok(httpClientDef.methods.find(m => m.name === 'PutAsync'));
+            assert.ok(httpClientDef.methods.find(m => m.name === 'DeleteAsync'));
         });
 
         test('should return Dataverse namespace definition', () => {
@@ -170,11 +170,11 @@ suite('Server API Autocomplete Tests', () => {
             const completionArray = completions as vscode.CompletionItem[];
 
             // Should include HttpClient method completions
-            assert.ok(completionArray.find(c => c.label === 'Get'));
-            assert.ok(completionArray.find(c => c.label === 'Post'));
-            assert.ok(completionArray.find(c => c.label === 'Patch'));
-            assert.ok(completionArray.find(c => c.label === 'Put'));
-            assert.ok(completionArray.find(c => c.label === 'Delete'));
+            assert.ok(completionArray.find(c => c.label === 'GetAsync'));
+            assert.ok(completionArray.find(c => c.label === 'PostAsync'));
+            assert.ok(completionArray.find(c => c.label === 'PatchAsync'));
+            assert.ok(completionArray.find(c => c.label === 'PutAsync'));
+            assert.ok(completionArray.find(c => c.label === 'DeleteAsync'));
         });
 
         test('should provide method completions for Dataverse namespace', async () => {
@@ -343,11 +343,11 @@ Server.Logger.Log('Processing request for: ' + requestData);
 // HTTP Client examples - type "Server.Connector.HttpClient." to see autocomplete in .js files
 // Note: This will block access to Dataverse
 const headers = { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
-const response = Server.Connector.HttpClient.Get('https://api.example.com/data', headers);
-const postResult = Server.Connector.HttpClient.Post('https://api.example.com/users', JSON.stringify(userData), headers);
-const patchResult = Server.Connector.HttpClient.Patch('https://api.example.com/users/123', JSON.stringify(updatedData), headers);
-const putResult = Server.Connector.HttpClient.Put('https://api.example.com/users/123', JSON.stringify(updatedData), headers);
-Server.Connector.HttpClient.Delete('https://api.example.com/users/123', headers);
+const response = Server.Connector.HttpClient.GetAsync('https://api.example.com/data', headers);
+const postResult = Server.Connector.HttpClient.PostAsync('https://api.example.com/users', JSON.stringify(userData), headers);
+const patchResult = Server.Connector.HttpClient.PatchAsync('https://api.example.com/users/123', JSON.stringify(updatedData), headers);
+const putResult = Server.Connector.HttpClient.PutAsync('https://api.example.com/users/123', JSON.stringify(updatedData), headers);
+Server.Connector.HttpClient.DeleteAsync('https://api.example.com/users/123', headers);
 `,
 
     dataverse: `
@@ -367,7 +367,7 @@ Server.Connector.Dataverse.DeleteRecord('contacts', contactId);
     connector: `
 // Connector examples - type "Server.Connector." to see sub-namespace options in .js files
 // Choose between HttpClient or Dataverse:
-Server.Connector.HttpClient.Get(url, headers);  // For external API calls
+Server.Connector.HttpClient.GetAsync(url, headers);  // For external API calls
 Server.Connector.Dataverse.RetrieveRecord(entitySetName, id, options);  // For Dataverse operations
 `
 };

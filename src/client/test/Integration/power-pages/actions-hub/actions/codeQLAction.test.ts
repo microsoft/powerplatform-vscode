@@ -49,9 +49,10 @@ describe('CodeQLAction', () => {
         it('should dispose output channel when dispose is called', () => {
             const action = new CodeQLAction();
             action.dispose();
-            // Should not throw when disposing
+            // No errors should be thrown
         });
     });
+
 
     describe('error handling', () => {
         it('should handle exceptions gracefully during analysis', async () => {
@@ -96,6 +97,5 @@ describe('CodeQLAction', () => {
 
             assert.ok(true, 'Should handle null extension return gracefully');
         });
-
     });
 });

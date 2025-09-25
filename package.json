@@ -194,6 +194,12 @@
         "contents": "%microsoft.powerplatform.pages.actionsHub.login%",
         "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported",
         "enablement": "microsoft.powerplatform.environment.initialized && !microsoft.powerplatform.pages.actionsHub.loadingWebsites"
+      },
+      {
+        "view": "microsoft.powerplatform.pages.actionsHub",
+        "contents": "%pacCLI.authPanel.welcome.whenInteractiveNotSupported%",
+        "when": "!virtualWorkspace && !pacCLI.authPanel.interactiveLoginSupported",
+        "enablement": "microsoft.powerplatform.environment.initialized && !microsoft.powerplatform.pages.actionsHub.loadingWebsites"
       }
     ],
     "commands": [
