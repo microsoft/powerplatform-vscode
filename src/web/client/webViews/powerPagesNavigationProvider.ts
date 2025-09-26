@@ -173,9 +173,30 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
     }
 
     openInDesktop(): void {
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_CLICKED,
+            {
+                hasECSFeatureGate: 'true'
+            }
+        );
+
         try {
             const websiteId = WebExtensionContext.urlParametersMap?.get(PowerPagesNavigationConstants.urlParams.WEBSITE_ID);
             const envId = WebExtensionContext.urlParametersMap?.get(PowerPagesNavigationConstants.urlParams.ENV_ID);
+
+            // Check if open in desktop is enabled via ECS flag
+            const isOpenInDesktopEnabled = ECSFeaturesClient.getConfig(EnableOpenInDesktop).enableOpenInDesktop;
+
+            // Track ECS feature flag status
+            if (!isOpenInDesktopEnabled) {
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_FEATURE_DISABLED,
+                    {
+                        reason: 'ecs_feature_flag_disabled'
+                    }
+                );
+                return;
+            }
 
             // Validate required parameters
             if (!websiteId) {
@@ -213,18 +234,54 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
                     return;
                 }
 
+                // Track desktop flow trigger (before attempting to open)
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_TRIGGERED,
+                    {
+                        websiteId: websiteId,
+                        environmentId: environmentId,
+                        desktopUri: desktopUri
+                    }
+                );
+
                 // Open in VS Code Desktop
                 vscode.env.openExternal(vscode.Uri.parse(desktopUri));
+
+                // Track successful URI opening
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_URI_OPENED,
+                    {
+                        websiteId: websiteId,
+                        environmentId: environmentId,
+                        uriGenerated: PowerPagesNavigationConstants.values.TRUE,
+                    }
+                );
 
                 // Show informational message with fallback options (don't await to avoid blocking)
                 vscode.window.showInformationMessage(
                     vscode.l10n.t(PowerPagesNavigationConstants.messages.OPENING_IN_VS_CODE_DESKTOP),
                     vscode.l10n.t(PowerPagesNavigationConstants.messages.DOWNLOAD_VS_CODE),
                     vscode.l10n.t(PowerPagesNavigationConstants.messages.UPDATE_EXTENSION),
-                ).then((showInstructions) => {
-                    if (showInstructions === vscode.l10n.t(PowerPagesNavigationConstants.messages.DOWNLOAD_VS_CODE)) {
+                ).then((selectedOption) => {
+                    if (selectedOption === vscode.l10n.t(PowerPagesNavigationConstants.messages.DOWNLOAD_VS_CODE)) {
+                        WebExtensionContext.telemetry.sendInfoTelemetry(
+                            webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_DIALOG_DOWNLOAD_CLICKED,
+                            {
+                                websiteId: websiteId,
+                                environmentId: environmentId,
+                                action: 'download_vscode_clicked'
+                            }
+                        );
                         vscode.env.openExternal(vscode.Uri.parse(PowerPagesNavigationConstants.urls.VS_CODE_DOWNLOAD));
-                    } else if (showInstructions === vscode.l10n.t(PowerPagesNavigationConstants.messages.UPDATE_EXTENSION)) {
+                    } else if (selectedOption === vscode.l10n.t(PowerPagesNavigationConstants.messages.UPDATE_EXTENSION)) {
+                        WebExtensionContext.telemetry.sendInfoTelemetry(
+                            webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_DIALOG_UPDATE_CLICKED,
+                            {
+                                websiteId: websiteId,
+                                environmentId: environmentId,
+                                action: 'update_extension_clicked'
+                            }
+                        );
                         vscode.env.openExternal(vscode.Uri.parse(PowerPagesNavigationConstants.urls.VS_CODE_MARKETPLACE));
                     }
                 });
@@ -289,19 +346,6 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             if (siteUrl) params.append(PowerPagesNavigationConstants.urlParams.SITE_URL, siteUrl);
 
             const finalUri = `${baseUri}?${params.toString()}`;
-
-            // Log telemetry for successful URI generation
-            WebExtensionContext.telemetry.sendInfoTelemetry(
-                webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_TRIGGERED,
-                {
-                    websiteId: websiteId,
-                    environmentId: environmentId,
-                    desktopUri: finalUri,
-                    hasSiteName: siteName ? PowerPagesNavigationConstants.values.TRUE : PowerPagesNavigationConstants.values.FALSE,
-                    hasSiteUrl: params.has(PowerPagesNavigationConstants.urlParams.SITE_URL) ? PowerPagesNavigationConstants.values.TRUE : PowerPagesNavigationConstants.values.FALSE,
-                    schema: schema
-                }
-            );
 
             return finalUri;
 
