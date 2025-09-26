@@ -23,7 +23,7 @@
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title": "CodeQL スクリーン処理の実行",
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement.title": "サイトの管理を開く",
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite.title": "サイトを再アクティブ化します",
-  "microsoft.powerplatform.pages.actionsHub.login": "Power Pages 環境にログインして接続し、Power Pages アクションを使用します。詳細については、[こちら](https://go.microsoft.com/fwlink/?linkid=2305702)を参照してください。\n[ログイン](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile)",
+  "microsoft.powerplatform.pages.actionsHub.login": "Power Pages 環境にログインして接続し、Power Pages アクションを使用します。詳細については、[こちら](https://go.microsoft.com/fwlink/?linkid=2305702)を参照してください。\n[ログイン](command:microsoft.powerplatform.pages.actionsHub.loginToMatch)",
   "microsoft.powerplatform.pages.actionsHub.login.title": "新しい認証プロファイルを追加する",
   "microsoft.powerplatform.pages.actionsHub.openSitesInStudio.title": "Power Pages スタジオで開く",
   "microsoft.powerplatform.pages.actionsHub.refresh.title": "更新",
