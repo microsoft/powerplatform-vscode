@@ -1,0 +1,96 @@
+name: Auto-Sync to Release/Stable
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+jobs:
+  auto-sync:
+    runs-on: ubuntu-latest
+    if: |
+      github.event.pull_request.merged == true &&
+      contains(github.event.pull_request.labels.*.name, 'release') &&
+      contains(github.event.pull_request.labels.*.name, 'auto-sync')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract version from PR
+        id: extract-version
+        run: |
+          VERSION=$(echo "${{ github.event.pull_request.title }}" | grep -o 'v[0-9]\+\.[0-9]\+\.[0-9]\+' | head -1)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create sync PR to release/stable (accept all from main if conflict)
+        id: sync-pr
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin main
+          git fetch origin release/stable
+
+          # Start from release/stable so we can merge main into it
+          git checkout origin/release/stable -b sync/main-to-stable-${{ steps.extract-version.outputs.version }}
+
+          # Try merging main into release/stable, preferring main's changes
+          git merge origin/main -X theirs || true
+
+          # If any conflicts remain, force resolution with main's version
+          if git ls-files -u | grep .; then
+            git diff --name-only --diff-filter=U | xargs -I{} git checkout --theirs {}
+            git add .
+            git commit -m "Auto-resolved conflicts: accepted all changes from main branch"
+          fi
+
+          git push origin HEAD
+
+          MAIN_COMMIT_MSG=$(git log -1 --format="%h - %s" origin/main)
+
+          # Create PR to release/stable
+          SYNC_PR_URL=$(gh pr create \
+            --title "Sync main to release/stable for ${{ steps.extract-version.outputs.version }}" \
+            --body "🔄 **Automated Sync PR**
+
+            This PR syncs the latest changes from **main** to **release/stable** following the merge of release PR #${{ github.event.pull_request.number }}.
+
+            ## Conflict Resolution
+            > All conflicts (if any) were resolved in favor of **main**.
+
+            **Latest commit:** \`$MAIN_COMMIT_MSG\`
+
+            Please review and merge this PR to complete the release process." \
+            --base release/stable \
+            --head sync/main-to-stable-${{ steps.extract-version.outputs.version }} \
+            --assignee "amitjoshi438")
+
+          echo "sync-pr-url=$SYNC_PR_URL" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment on original PR
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} --body "🔄 **Sync PR Created Successfully!**
+
+          A sync PR has been created: ${{ steps.sync-pr.outputs.sync-pr-url }}
+
+          **Next Step:** Review and merge the sync PR to publish ${{ steps.extract-version.outputs.version }} to release/stable.
+
+          ---
+          *Automated by release workflow*"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create workflow summary
+        run: |
+          echo "## 🔄 Sync PR Created" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Release:** ${{ steps.extract-version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Trigger:** PR #${{ github.event.pull_request.number }} merged" >> $GITHUB_STEP_SUMMARY
+          echo "**Sync PR:** ${{ steps.sync-pr.outputs.sync-pr-url }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Review and merge the sync PR to complete the release process." >> $GITHUB_STEP_SUMMARY
