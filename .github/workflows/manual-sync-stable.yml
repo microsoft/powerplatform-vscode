@@ -19,6 +19,9 @@ on:
 jobs:
   manual-sync:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     if: github.event.inputs.confirm == 'sync'
     steps:
       - name: Checkout repository
