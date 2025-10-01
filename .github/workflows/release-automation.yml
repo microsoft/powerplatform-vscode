@@ -1,0 +1,111 @@
+name: Automated Release Process
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., 2.0.105)'
+        required: true
+        type: string
+
+jobs:
+  create-release-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      pr-number: ${{ steps.create-pr.outputs.pr-number }}
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate release notes
+        id: generate_notes
+        run: |
+          # Get merged PRs since last update (past 30 days as fallback)
+          gh pr list --state merged --base main --json number,title,mergedAt,labels \
+            --jq '.[] | select(.mergedAt > "'$(date -d '30 days ago' -Iseconds)'") | "- " + .title + " [#" + (.number|tostring) + "](https://github.com/microsoft/powerplatform-vscode/pull/" + (.number|tostring) + ")"' \
+            > temp_prs.md
+          
+          # Create changelog entry
+          echo "## ${{ inputs.version }}" > temp_changelog.md
+          echo "- pac CLI update" >> temp_changelog.md
+          
+          # Add PRs if any found
+          if [ -s temp_prs.md ]; then
+            cat temp_prs.md >> temp_changelog.md
+          fi
+          
+          echo "" >> temp_changelog.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update CHANGELOG.md
+        run: |
+          # Create new changelog with new entry at top
+          head -n 2 CHANGELOG.md > new_changelog.md
+          echo "" >> new_changelog.md
+          cat temp_changelog.md >> new_changelog.md
+          tail -n +3 CHANGELOG.md >> new_changelog.md
+          
+          # Replace original
+          mv new_changelog.md CHANGELOG.md
+
+      - name: Create release branch and PR
+        id: create-pr
+        run: |
+          BRANCH_NAME="release/changelog-v${{ inputs.version }}"
+          git checkout -b $BRANCH_NAME
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          git commit -m "Release v${{ inputs.version }}: Update changelog"
+          git push origin $BRANCH_NAME
+
+          # Create PR with special labels for automation
+          PR_URL=$(gh pr create \
+            --title "Release v${{ inputs.version }} - Update Changelog" \
+            --body "Automated release preparation for v${{ inputs.version }}
+
+          ## Changes
+          - Updated CHANGELOG.md with release notes for v${{ inputs.version }}
+          
+          ## Automation
+          ⚡ **When this PR is merged**, the automation will:
+          1. Automatically create a sync PR from main to release/stable
+          2. Post a summary of the sync operation
+          
+          ## Manual Review
+          Please review the changelog entries and make any necessary edits before merging." \
+            --base main \
+            --head $BRANCH_NAME \
+            --assignee "amitjoshi438" \
+            --label "release,auto-sync")
+            
+          # Extract PR number from URL
+          PR_NUMBER=$(echo $PR_URL | sed 's/.*\/pull\///')
+          echo "pr-number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          echo "Created PR #$PR_NUMBER: $PR_URL"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Add PR comment with instructions
+        run: |
+          gh pr comment ${{ steps.create-pr.outputs.pr-number }} --body "🤖 **Automation Summary**
+
+          This release PR was automatically generated with:
+          - ✅ Updated CHANGELOG.md with recent merged PRs
+          - ✅ Added new section for version \`${{ inputs.version }}\`
+          
+          **Next Steps:**
+          1. 👀 Review the changelog entries above
+          2. ✏️ Edit CHANGELOG.md if needed (add/remove/reword entries)
+          3. ✅ Merge when ready
+          4. 🚀 **Automation will create sync PR** after merge"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
