@@ -1,5 +1,39 @@
 # Change Log - Power Platform Extension
 
+
+## 2.0.104
+- pac CLI update
+- Add mermaid code block for memory bank instructions [#1322](https://github.com/microsoft/powerplatform-vscode/pull/1322)
+- Update the Suppression Rule ID [#1321](https://github.com/microsoft/powerplatform-vscode/pull/1321)
+- Address CodeQL Issues [#1319](https://github.com/microsoft/powerplatform-vscode/pull/1319)
+- Add automated workflows for release synchronization and manual syncing [#1317](https://github.com/microsoft/powerplatform-vscode/pull/1317)
+- Add telemetry events for desktop opening actions [#1315](https://github.com/microsoft/powerplatform-vscode/pull/1315)
+- Add comprehensive Memory Bank documentation [#1314](https://github.com/microsoft/powerplatform-vscode/pull/1314)
+- Bump tar-fs from 3.1.0 to 3.1.1 [#1312](https://github.com/microsoft/powerplatform-vscode/pull/1312)
+- Update CHANGELOG.md for version 2.0.102 with new features and bug fixes [#1311](https://github.com/microsoft/powerplatform-vscode/pull/1311)
+- Preserve insertion order and add duplicate file handling feature flag [#1310](https://github.com/microsoft/powerplatform-vscode/pull/1310)
+- Add welcome message for non-interactive login in actions hub [#1308](https://github.com/microsoft/powerplatform-vscode/pull/1308)
+- Refactor CodeQL command execution for paths with spaces [#1306](https://github.com/microsoft/powerplatform-vscode/pull/1306)
+- Bump axios from 1.11.0 to 1.12.1 [#1305](https://github.com/microsoft/powerplatform-vscode/pull/1305)
+- Refactor HTTP method names for new changes. [#1304](https://github.com/microsoft/powerplatform-vscode/pull/1304)
+- Localized file check-in by OneLocBuild Task: Build definition ID 12756: Build ID 2236210 [#1303](https://github.com/microsoft/powerplatform-vscode/pull/1303)
+- Update CHANGELOG for pac CLI version bump to 2.0.100 [#1301](https://github.com/microsoft/powerplatform-vscode/pull/1301)
+- Add user roles and authentication token to Server API definitions [#1300](https://github.com/microsoft/powerplatform-vscode/pull/1300)
+- Update CHANGELOG for pac CLI 1.48.2 release [#1298](https://github.com/microsoft/powerplatform-vscode/pull/1298)
+- Refactor CodeQL screening and clean up dispose method [#1297](https://github.com/microsoft/powerplatform-vscode/pull/1297)
+- Localized file check-in by OneLocBuild Task: Build definition ID 12756: Build ID 2230060 [#1296](https://github.com/microsoft/powerplatform-vscode/pull/1296)
+- Enhance website data retrieval with fallback support and new Git ALM format [#1295](https://github.com/microsoft/powerplatform-vscode/pull/1295)
+- Bump PAC to 1.48.2 [#1293](https://github.com/microsoft/powerplatform-vscode/pull/1293)
+- Localized file check-in by OneLocBuild Task: Build definition ID 12756: Build ID 2227356 [#1292](https://github.com/microsoft/powerplatform-vscode/pull/1292)
+- [Uri Handler] Refactoring Error Handling and Experience [#1291](https://github.com/microsoft/powerplatform-vscode/pull/1291)
+- Remove paths-ignore from PullRequest workflow [#1290](https://github.com/microsoft/powerplatform-vscode/pull/1290)
+- Fix token handling in localization update workflow [#1288](https://github.com/microsoft/powerplatform-vscode/pull/1288)
+- Update localization pipeline node version [#1287](https://github.com/microsoft/powerplatform-vscode/pull/1287)
+- [PowerPages][ActionsHub][Codespaces] Update Actions Hub visibility condition for virtual workspaces [#1286](https://github.com/microsoft/powerplatform-vscode/pull/1286)
+- [PowerPages][BL] Refactor completion item handling for namespaces and properties [#1285](https://github.com/microsoft/powerplatform-vscode/pull/1285)
+- Refactor server logic feature configuration access [#1283](https://github.com/microsoft/powerplatform-vscode/pull/1283)
+- Improve VS Code Desktop opening messages for clarity and extension update prompt [#1281](https://github.com/microsoft/powerplatform-vscode/pull/1281)
+
 ## 2.0.102
 - Rollout of "Open in Desktop" capability in Power Pages Actions (Web)
 - Rollout of CodeQL security analysis support for Power Pages sites (Desktop)
