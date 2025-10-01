@@ -11,15 +11,14 @@ flowchart TD
     PB[projectbrief.md] --> PC[productContext.md]
     PB --> SP[systemPatterns.md]
     PB --> TC[techContext.md]
-
     PC --> AC[activeContext.md]
     SP --> AC
     TC --> AC
-
     AC --> P[progress.md]
 ```
 
 ### Core Files (Required)
+
 1. projectbrief.md
 2. productContext.md
 3. activeContext.md
@@ -28,7 +27,9 @@ flowchart TD
 6. progress.md
 
 ### Additional Context
+
 Create additional files/folders within memory-bank/ when they help organize:
+
 - Complex feature documentation
 - Integration specifications
 - API documentation
@@ -38,14 +39,13 @@ Create additional files/folders within memory-bank/ when they help organize:
 ## Core Workflows
 
 ### Planning Mode
+
 ```mermaid
 flowchart TD
     Start[Start] --> ReadFiles[Read Memory Bank]
     ReadFiles --> CheckFiles{Files Complete?}
-
     CheckFiles -->|No| Plan[Create Plan]
     Plan --> Document[Document in Chat]
-
     CheckFiles -->|Yes| Verify[Verify Context]
     Verify --> Strategy[Develop Strategy]
     Strategy --> Present[Present Approach]
@@ -64,6 +64,7 @@ flowchart TD
 ## Documentation Updates
 
 Memory Bank updates occur when:
+
 1. Discovering new project patterns
 2. After implementing significant changes
 3. When user requests with **update memory bank** (MUST review ALL files)
