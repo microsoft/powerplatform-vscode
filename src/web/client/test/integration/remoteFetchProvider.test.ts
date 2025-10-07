@@ -11,12 +11,13 @@ import { PortalsFS } from "../../dal/fileSystemProvider";
 import WebExtensionContext from "../../WebExtensionContext";
 import * as Constants from "../../common/constants";
 import * as schemaHelperUtil from "../../utilities/schemaHelperUtil";
-import { schemaEntityKey, schemaKey } from "../../schema/constants";
+import { schemaEntityKey } from "../../schema/constants";
 import * as urlBuilderUtil from "../../utilities/urlBuilderUtil";
 import * as commonUtil from "../../utilities/commonUtil";
 import { expect } from "chai";
 import * as authenticationProvider from "../../../../common/services/AuthenticationProvider";
 import { webExtensionTelemetryEventNames } from "../../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
+import { queryParameters } from "../../common/constants";
 
 describe("remoteFetchProvider", () => {
     afterEach(() => {
@@ -28,13 +29,21 @@ describe("remoteFetchProvider", () => {
         const entityName = "webpages";
         const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
         const queryParamsMap = new Map<string, string>([
-            [Constants.queryParameters.ORG_URL, "powerPages.com"],
+            [queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"],
+            [queryParameters.PORTAL_ID, "36429b2e-8b29-4020-8493-bd5e277444d8"],
             [
-                Constants.queryParameters.WEBSITE_ID,
-                "a58f4e1e-5fe2-45ee-a7c1-398073b40181",
+                queryParameters.REFERRER_SESSION_ID,
+                "4269b44f-8085-4001-88fe-3f30f1194c6f",
             ],
-            [Constants.queryParameters.WEBSITE_NAME, "testWebSite"],
-            [schemaKey.SCHEMA_VERSION, "portalschemav2"],
+            [queryParameters.REFERRER, "yes"],
+            [queryParameters.GEO, "US"],
+            [queryParameters.ENV_ID, "c4dc3686-1e6b-e428-b886-16cd0b9f4918"],
+            [queryParameters.ENTITY, "webpage"],
+            [
+                queryParameters.ENTITY_ID,
+                "e5dce21c-f85f-4849-b699-920c0fad5fbf",
+            ],
+            [queryParameters.REFERRER_SOURCE, "test"]
         ]);
 
         const languageIdCodeMap = new Map<string, string>([["1033", "en-US"]]);
@@ -220,13 +229,21 @@ describe("remoteFetchProvider", () => {
         const entityName = "webpages";
         const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
         const queryParamsMap = new Map<string, string>([
-            [Constants.queryParameters.ORG_URL, "powerPages.com"],
+            [queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"],
+            [queryParameters.PORTAL_ID, "36429b2e-8b29-4020-8493-bd5e277444d8"],
             [
-                Constants.queryParameters.WEBSITE_ID,
-                "a58f4e1e-5fe2-45ee-a7c1-398073b40181",
+                queryParameters.REFERRER_SESSION_ID,
+                "4269b44f-8085-4001-88fe-3f30f1194c6f",
             ],
-            [Constants.queryParameters.WEBSITE_NAME, "testWebSite"],
-            [schemaKey.SCHEMA_VERSION, "portalschemav2"],
+            [queryParameters.REFERRER, "yes"],
+            [queryParameters.GEO, "US"],
+            [queryParameters.ENV_ID, "c4dc3686-1e6b-e428-b886-16cd0b9f4918"],
+            [queryParameters.ENTITY, "webpage"],
+            [
+                queryParameters.ENTITY_ID,
+                "e5dce21c-f85f-4849-b699-920c0fad5fbf",
+            ],
+            [queryParameters.REFERRER_SOURCE, "test"]
         ]);
 
         const languageIdCodeMap = new Map<string, string>([["1033", "en-US"]]);
@@ -409,13 +426,21 @@ describe("remoteFetchProvider", () => {
         const entityName = "webpages";
         const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
         const queryParamsMap = new Map<string, string>([
-            [Constants.queryParameters.ORG_URL, "powerPages.com"],
+            [queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"],
+            [queryParameters.PORTAL_ID, "36429b2e-8b29-4020-8493-bd5e277444d8"],
             [
-                Constants.queryParameters.WEBSITE_ID,
-                "a58f4e1e-5fe2-45ee-a7c1-398073b40181",
+                queryParameters.REFERRER_SESSION_ID,
+                "4269b44f-8085-4001-88fe-3f30f1194c6f",
             ],
-            [Constants.queryParameters.WEBSITE_NAME, "testWebSite"],
-            [schemaKey.SCHEMA_VERSION, "portalschemav2"],
+            [queryParameters.REFERRER, "yes"],
+            [queryParameters.GEO, "US"],
+            [queryParameters.ENV_ID, "c4dc3686-1e6b-e428-b886-16cd0b9f4918"],
+            [queryParameters.ENTITY, "webpage"],
+            [
+                queryParameters.ENTITY_ID,
+                "e5dce21c-f85f-4849-b699-920c0fad5fbf",
+            ],
+            [queryParameters.REFERRER_SOURCE, "test"]
         ]);
 
         WebExtensionContext.setWebExtensionContext(
@@ -495,13 +520,21 @@ describe("remoteFetchProvider", () => {
         const entityName = "webpages";
         const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
         const queryParamsMap = new Map<string, string>([
-            [Constants.queryParameters.ORG_URL, "powerPages.com"],
+            [queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"],
+            [queryParameters.PORTAL_ID, "36429b2e-8b29-4020-8493-bd5e277444d8"],
             [
-                Constants.queryParameters.WEBSITE_ID,
-                "a58f4e1e-5fe2-45ee-a7c1-398073b40181",
+                queryParameters.REFERRER_SESSION_ID,
+                "4269b44f-8085-4001-88fe-3f30f1194c6f",
             ],
-            [Constants.queryParameters.WEBSITE_NAME, "testWebSite"],
-            [schemaKey.SCHEMA_VERSION, "portalschemav2"],
+            [queryParameters.REFERRER, "yes"],
+            [queryParameters.GEO, "US"],
+            [queryParameters.ENV_ID, "c4dc3686-1e6b-e428-b886-16cd0b9f4918"],
+            [queryParameters.ENTITY, "webpage"],
+            [
+                queryParameters.ENTITY_ID,
+                "e5dce21c-f85f-4849-b699-920c0fad5fbf",
+            ],
+            [queryParameters.REFERRER_SOURCE, "test"]
         ]);
 
         WebExtensionContext.setWebExtensionContext(
@@ -596,13 +629,21 @@ describe("remoteFetchProvider", () => {
         const entityName = "webpages";
         const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
         const queryParamsMap = new Map<string, string>([
-            [Constants.queryParameters.ORG_URL, "powerPages.com"],
+            [queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"],
+            [queryParameters.PORTAL_ID, "36429b2e-8b29-4020-8493-bd5e277444d8"],
             [
-                Constants.queryParameters.WEBSITE_ID,
-                "a58f4e1e-5fe2-45ee-a7c1-398073b40181",
+                queryParameters.REFERRER_SESSION_ID,
+                "4269b44f-8085-4001-88fe-3f30f1194c6f",
             ],
-            [Constants.queryParameters.WEBSITE_NAME, "testWebSite"],
-            [schemaKey.SCHEMA_VERSION, "portalschemav2"],
+            [queryParameters.REFERRER, "yes"],
+            [queryParameters.GEO, "US"],
+            [queryParameters.ENV_ID, "c4dc3686-1e6b-e428-b886-16cd0b9f4918"],
+            [queryParameters.ENTITY, "webpage"],
+            [
+                queryParameters.ENTITY_ID,
+                "e5dce21c-f85f-4849-b699-920c0fad5fbf",
+            ],
+            [queryParameters.REFERRER_SOURCE, "test"]
         ]);
 
         WebExtensionContext.setWebExtensionContext(
@@ -697,13 +738,21 @@ describe("remoteFetchProvider", () => {
         const entityName = "webpages";
         const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
         const queryParamsMap = new Map<string, string>([
-            [Constants.queryParameters.ORG_URL, "powerPages.com"],
+            [queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"],
+            [queryParameters.PORTAL_ID, "36429b2e-8b29-4020-8493-bd5e277444d8"],
             [
-                Constants.queryParameters.WEBSITE_ID,
-                "a58f4e1e-5fe2-45ee-a7c1-398073b40181",
+                queryParameters.REFERRER_SESSION_ID,
+                "4269b44f-8085-4001-88fe-3f30f1194c6f",
             ],
-            [Constants.queryParameters.WEBSITE_NAME, "testWebSite"],
-            [schemaKey.SCHEMA_VERSION, "portalschemav2"],
+            [queryParameters.REFERRER, "yes"],
+            [queryParameters.GEO, "US"],
+            [queryParameters.ENV_ID, "c4dc3686-1e6b-e428-b886-16cd0b9f4918"],
+            [queryParameters.ENTITY, "webpage"],
+            [
+                queryParameters.ENTITY_ID,
+                "e5dce21c-f85f-4849-b699-920c0fad5fbf",
+            ],
+            [queryParameters.REFERRER_SOURCE, "test"]
         ]);
 
         WebExtensionContext.setWebExtensionContext(
@@ -800,13 +849,21 @@ describe("remoteFetchProvider", () => {
         const entityName = "webpages";
         const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
         const queryParamsMap = new Map<string, string>([
-            [Constants.queryParameters.ORG_URL, "powerPages.com"],
+            [queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"],
+            [queryParameters.PORTAL_ID, "36429b2e-8b29-4020-8493-bd5e277444d8"],
             [
-                Constants.queryParameters.WEBSITE_ID,
-                "a58f4e1e-5fe2-45ee-a7c1-398073b40181",
+                queryParameters.REFERRER_SESSION_ID,
+                "4269b44f-8085-4001-88fe-3f30f1194c6f",
             ],
-            [Constants.queryParameters.WEBSITE_NAME, "testWebSite"],
-            [schemaKey.SCHEMA_VERSION, "portalschemav2"],
+            [queryParameters.REFERRER, "yes"],
+            [queryParameters.GEO, "US"],
+            [queryParameters.ENV_ID, "c4dc3686-1e6b-e428-b886-16cd0b9f4918"],
+            [queryParameters.ENTITY, "webpage"],
+            [
+                queryParameters.ENTITY_ID,
+                "e5dce21c-f85f-4849-b699-920c0fad5fbf",
+            ],
+            [queryParameters.REFERRER_SOURCE, "test"]
         ]);
 
         WebExtensionContext.setWebExtensionContext(
@@ -904,13 +961,21 @@ describe("remoteFetchProvider", () => {
         const entityName = "webpages";
         const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
         const queryParamsMap = new Map<string, string>([
-            [Constants.queryParameters.ORG_URL, "powerPages.com"],
+            [queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"],
+            [queryParameters.PORTAL_ID, "36429b2e-8b29-4020-8493-bd5e277444d8"],
             [
-                Constants.queryParameters.WEBSITE_ID,
-                "a58f4e1e-5fe2-45ee-a7c1-398073b40181",
+                queryParameters.REFERRER_SESSION_ID,
+                "4269b44f-8085-4001-88fe-3f30f1194c6f",
             ],
-            [Constants.queryParameters.WEBSITE_NAME, "testWebSite"],
-            [schemaKey.SCHEMA_VERSION, "portalschemav2"],
+            [queryParameters.REFERRER, "yes"],
+            [queryParameters.GEO, "US"],
+            [queryParameters.ENV_ID, "c4dc3686-1e6b-e428-b886-16cd0b9f4918"],
+            [queryParameters.ENTITY, "webpage"],
+            [
+                queryParameters.ENTITY_ID,
+                "e5dce21c-f85f-4849-b699-920c0fad5fbf",
+            ],
+            [queryParameters.REFERRER_SOURCE, "test"]
         ]);
 
         WebExtensionContext.setWebExtensionContext(
@@ -1008,13 +1073,21 @@ describe("remoteFetchProvider", () => {
         const entityName = "webfiles";
         const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
         const queryParamsMap = new Map<string, string>([
-            [Constants.queryParameters.ORG_URL, "powerPages.com"],
+            [queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"],
+            [queryParameters.PORTAL_ID, "36429b2e-8b29-4020-8493-bd5e277444d8"],
             [
-                Constants.queryParameters.WEBSITE_ID,
-                "a58f4e1e-5fe2-45ee-a7c1-398073b40181",
+                queryParameters.REFERRER_SESSION_ID,
+                "4269b44f-8085-4001-88fe-3f30f1194c6f",
             ],
-            [Constants.queryParameters.WEBSITE_NAME, "testWebSite"],
-            [schemaKey.SCHEMA_VERSION, "portalschemav2"],
+            [queryParameters.REFERRER, "yes"],
+            [queryParameters.GEO, "US"],
+            [queryParameters.ENV_ID, "c4dc3686-1e6b-e428-b886-16cd0b9f4918"],
+            [queryParameters.ENTITY, "webpage"],
+            [
+                queryParameters.ENTITY_ID,
+                "e5dce21c-f85f-4849-b699-920c0fad5fbf",
+            ],
+            [queryParameters.REFERRER_SOURCE, "test"]
         ]);
 
         const languageIdCodeMap = new Map<string, string>([["1033", "en-US"]]);
