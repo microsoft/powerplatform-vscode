@@ -68,7 +68,7 @@ describe("WebExtensionContext", () => {
         );
 
         //Assert
-        expect(WebExtensionContext.currentSchemaVersion).eq("portalschemav1");
+        expect(WebExtensionContext.schema).eq("portalschemav1");
         expect(WebExtensionContext.defaultEntityType).eq(
             entityName.toLowerCase()
         );

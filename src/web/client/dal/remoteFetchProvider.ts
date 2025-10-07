@@ -651,7 +651,7 @@ export async function preprocessData(
     try {
         const schema = WebExtensionContext.schema;
 
-        if (entityType === schemaEntityName.ADVANCEDFORMS &&
+        if (entityType === schemaEntityName.ADVANCEDFORMS && schema &&
             schema.toLowerCase() === portal_schema_V2.entities.dataSourceProperties.schema) {
             entityType = schemaEntityName.ADVANCEDFORMSTEPS;
             const dataverseOrgUrl = WebExtensionContext.orgUrl;

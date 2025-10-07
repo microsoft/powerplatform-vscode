@@ -193,11 +193,11 @@ export function isWebfileContentLoadNeeded(fileName: string, fsPath: string): bo
 }
 
 export function isPortalVersionV1(): boolean {
-    return WebExtensionContext.currentSchemaVersion.toLowerCase() === portalSchemaVersion.V1;
+    return WebExtensionContext.schema?.toLowerCase() === portalSchemaVersion.V1;
 }
 
 export function isPortalVersionV2(): boolean {
-    return WebExtensionContext.currentSchemaVersion.toLowerCase() === portalSchemaVersion.V2;
+    return WebExtensionContext.schema?.toLowerCase() === portalSchemaVersion.V2;
 }
 
 export function getWorkSpaceName(websiteId: string): string {

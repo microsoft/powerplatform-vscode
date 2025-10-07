@@ -68,7 +68,6 @@ export interface IWebExtensionContext {
     dataverseAccessToken: string;
     entityDataMap: EntityDataMap;
     isContextSet: boolean;
-    currentSchemaVersion: string;
     websiteLanguageCode: string;
     geoName: string;
     geoLongName: string;
@@ -99,6 +98,12 @@ export interface IWebExtensionContext {
     getWebpageNames(): Set<string>;
 
     websiteName: string;
+    tenantId: string;
+    websiteId: string;
+    schema: Constants.portalSchemaVersion | undefined;
+    siteVisibility: SiteVisibility | undefined;
+    orgUrl: string;
+    region: string;
 }
 
 class WebExtensionContext implements IWebExtensionContext {
@@ -122,7 +127,6 @@ class WebExtensionContext implements IWebExtensionContext {
     private _entityDataMap: EntityDataMap;
     private _entityForeignKeyDataMap: EntityForeignKeyDataMap;
     private _isContextSet: boolean;
-    private _currentSchemaVersion: string;
     private _websiteLanguageCode: string;
     private _geoName: string;
     private _geoLongName: string;
@@ -147,8 +151,8 @@ class WebExtensionContext implements IWebExtensionContext {
     private _websiteName: string;
     private _tenantId: string;
     private _websiteId: string;
-    private _schema: Constants.portalSchemaVersion;
-    private _siteVisibility: SiteVisibility;
+    private _schema: Constants.portalSchemaVersion | undefined;
+    private _siteVisibility: SiteVisibility | undefined;
     private _orgUrl: string;
     private _region: string;
 
@@ -211,9 +215,6 @@ class WebExtensionContext implements IWebExtensionContext {
     }
     public get isContextSet() {
         return this._isContextSet;
-    }
-    public get currentSchemaVersion() {
-        return this._currentSchemaVersion;
     }
     public get websiteLanguageCode() {
         return this._websiteLanguageCode;
@@ -320,13 +321,13 @@ class WebExtensionContext implements IWebExtensionContext {
     public get schema() {
         return this._schema;
     }
-    public set schema(schema: Constants.portalSchemaVersion) {
+    public set schema(schema: Constants.portalSchemaVersion | undefined) {
         this._schema = schema;
     }
     public get siteVisibility() {
         return this._siteVisibility;
     }
-    public set siteVisibility(visibility: SiteVisibility) {
+    public set siteVisibility(visibility: SiteVisibility | undefined) {
         this._siteVisibility = visibility;
     }
     public get orgUrl() {
@@ -363,7 +364,6 @@ class WebExtensionContext implements IWebExtensionContext {
         this._extensionActivationTime = new Date().getTime();
         this._extensionUri = vscode.Uri.parse("");
         this._isContextSet = false;
-        this._currentSchemaVersion = "";
         this._websiteLanguageCode = "";
         this._geoName = "";
         this._geoLongName = "";
@@ -387,8 +387,8 @@ class WebExtensionContext implements IWebExtensionContext {
         this._websiteName = "";
         this._tenantId = "";
         this._websiteId = "";
-        this._schema = Constants.portalSchemaVersion.V1;
-        this._siteVisibility = SiteVisibility.Public;
+        this._schema = undefined;
+        this._siteVisibility = undefined;
         this._orgUrl = "";
         this._region = "";
     }
@@ -400,7 +400,6 @@ class WebExtensionContext implements IWebExtensionContext {
         extensionUri?: vscode.Uri
     ) {
         // Initialize context from URL params
-        this._currentSchemaVersion = this.schema;
         this._defaultEntityType = (entityName && entityName.toLowerCase()) ?? queryParamsMap.get(Constants.queryParameters.ENTITY) as string ?? "";
         this._defaultEntityId = entityId ?? queryParamsMap.get(Constants.queryParameters.ENTITY_ID) as string ?? "";
         this._urlParametersMap = queryParamsMap;
@@ -408,11 +407,12 @@ class WebExtensionContext implements IWebExtensionContext {
         this._extensionUri = extensionUri as vscode.Uri
 
         // Initialize context from schema values
-        this._schemaEntitiesMap = getEntitiesSchemaMap(this.schema);
-        this._schemaDataSourcePropertiesMap =
-            getDataSourcePropertiesMap(this.schema);
+        if (this.schema) {
+            this._schemaEntitiesMap = getEntitiesSchemaMap(this.schema);
+            this._schemaDataSourcePropertiesMap = getDataSourcePropertiesMap(this.schema);
+        }
         this._entitiesFolderNameMap = getEntitiesFolderNameMap(
-            this.schemaEntitiesMap
+            this._schemaEntitiesMap
         );
         this._isContextSet = true;
 
@@ -441,23 +441,30 @@ class WebExtensionContext implements IWebExtensionContext {
     public async authenticateAndUpdateDataverseProperties() {
         await this.dataverseAuthentication(true);
 
-        const schema = this.schema;
+        if (!this._schema) {
+            this.telemetry.sendErrorTelemetry(
+                webExtensionTelemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING,
+                this.authenticateAndUpdateDataverseProperties.name,
+                "Schema is not defined"
+            );
+            return;
+        }
 
         await this.populateWebsiteIdToLanguageMap(
             this._dataverseAccessToken,
             this._orgUrl,
-            schema
+            this._schema
         );
 
         await this.populateWebsiteLanguageIdToPortalLanguageMap(
             this._dataverseAccessToken,
             this._orgUrl,
-            schema
+            this._schema
         );
         await this.populateLanguageIdToCode(
             this._dataverseAccessToken,
             this._orgUrl,
-            schema
+            this._schema
         );
 
         await this.setWebsiteLanguageCode();
