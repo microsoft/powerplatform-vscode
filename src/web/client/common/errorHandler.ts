@@ -5,20 +5,9 @@
 
 import * as vscode from "vscode";
 import WebExtensionContext from "../WebExtensionContext";
-import { schemaKey } from "../schema/constants";
 import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 import { queryParameters } from "./constants";
 import { showErrorDialog } from "../../../common/utilities/errorHandlerUtil";
-
-export function removeEncodingFromParameters(
-    queryParamsMap: Map<string, string>
-) {
-    //NOTE: From extensibility perspective split attributes and attributes may contain encoded string which must be decoded before use.
-    const schemaFileName = decodeURI(
-        queryParamsMap.get(schemaKey.SCHEMA_VERSION) as string
-    );
-    queryParamsMap.set(schemaKey.SCHEMA_VERSION, schemaFileName);
-}
 
 export function checkMandatoryParameters(
     appName: string,

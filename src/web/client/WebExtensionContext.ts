@@ -22,7 +22,7 @@ import {
     getWebsiteLanguageIdToPortalLanguageIdMap,
 } from "./utilities/schemaHelperUtil";
 import { getCustomRequestURL, getOrCreateSharedWorkspace } from "./utilities/urlBuilderUtil";
-import { SchemaEntityMetadata, schemaKey } from "./schema/constants";
+import { SchemaEntityMetadata } from "./schema/constants";
 import { webExtensionTelemetryEventNames } from "../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 import { EntityDataMap } from "./context/entityDataMap";
 import { FileDataMap } from "./context/fileDataMap";
@@ -399,9 +399,8 @@ class WebExtensionContext implements IWebExtensionContext {
         queryParamsMap: Map<string, string>,
         extensionUri?: vscode.Uri
     ) {
-        const schema = queryParamsMap.get(schemaKey.SCHEMA_VERSION) as string;
         // Initialize context from URL params
-        this._currentSchemaVersion = schema;
+        this._currentSchemaVersion = this.schema;
         this._defaultEntityType = (entityName && entityName.toLowerCase()) ?? queryParamsMap.get(Constants.queryParameters.ENTITY) as string ?? "";
         this._defaultEntityId = entityId ?? queryParamsMap.get(Constants.queryParameters.ENTITY_ID) as string ?? "";
         this._urlParametersMap = queryParamsMap;
@@ -409,9 +408,9 @@ class WebExtensionContext implements IWebExtensionContext {
         this._extensionUri = extensionUri as vscode.Uri
 
         // Initialize context from schema values
-        this._schemaEntitiesMap = getEntitiesSchemaMap(schema);
+        this._schemaEntitiesMap = getEntitiesSchemaMap(this.schema);
         this._schemaDataSourcePropertiesMap =
-            getDataSourcePropertiesMap(schema);
+            getDataSourcePropertiesMap(this.schema);
         this._entitiesFolderNameMap = getEntitiesFolderNameMap(
             this.schemaEntitiesMap
         );
@@ -442,9 +441,7 @@ class WebExtensionContext implements IWebExtensionContext {
     public async authenticateAndUpdateDataverseProperties() {
         await this.dataverseAuthentication(true);
 
-        const schema = this.urlParametersMap
-            .get(schemaKey.SCHEMA_VERSION)
-            ?.toLowerCase() as string;
+        const schema = this.schema;
 
         await this.populateWebsiteIdToLanguageMap(
             this._dataverseAccessToken,
@@ -715,6 +712,11 @@ class WebExtensionContext implements IWebExtensionContext {
                 dataverseOrgUrl,
                 websiteEntityName
             );
+
+
+            console.warn("********************** dataverseOrgUrl: ", dataverseOrgUrl);
+            console.warn("********************** requestUrl: ", requestUrl);
+
             this.telemetry.sendAPITelemetry(
                 requestUrl,
                 websiteEntityName,

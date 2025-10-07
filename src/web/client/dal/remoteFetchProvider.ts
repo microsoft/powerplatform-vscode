@@ -29,7 +29,7 @@ import {
 } from "../utilities/schemaHelperUtil";
 import WebExtensionContext from "../WebExtensionContext";
 import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
-import { EntityMetadataKeyCore, SchemaEntityMetadata, folderExportType, schemaEntityKey, schemaEntityName, schemaKey, WEBPAGE_FOLDER_CONSTANTS } from "../schema/constants";
+import { EntityMetadataKeyCore, SchemaEntityMetadata, folderExportType, schemaEntityKey, schemaEntityName, WEBPAGE_FOLDER_CONSTANTS } from "../schema/constants";
 import { getEntityNameForExpandedEntityContent, getRequestUrlForEntities } from "../utilities/folderHelperUtility";
 import { IAttributePath, IFileInfo } from "../common/interfaces";
 import { portal_schema_V2 } from "../schema/portalSchema";
@@ -649,9 +649,7 @@ export async function preprocessData(
     entityType: string
 ) {
     try {
-        const schema = WebExtensionContext.urlParametersMap
-            .get(schemaKey.SCHEMA_VERSION)
-            ?.toLowerCase() as string;
+        const schema = WebExtensionContext.schema;
 
         if (entityType === schemaEntityName.ADVANCEDFORMS &&
             schema.toLowerCase() === portal_schema_V2.entities.dataSourceProperties.schema) {

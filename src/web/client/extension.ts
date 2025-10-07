@@ -13,10 +13,7 @@ import {
     ARTEMIS_RESPONSE_FAILED,
 } from "./common/constants";
 import { PortalsFS } from "./dal/fileSystemProvider";
-import {
-    checkMandatoryParameters,
-    removeEncodingFromParameters,
-} from "./common/errorHandler";
+import { checkMandatoryParameters } from "./common/errorHandler";
 import { WebExtensionTelemetry } from "./telemetry/webExtensionTelemetry";
 import { getEnvironmentIdFromUrl, isCoPresenceEnabled, updateFileContentInFileDataMap } from "./utilities/commonUtil";
 import { NPSService } from "./services/NPSService";
@@ -102,8 +99,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
                 ) {
                     return;
                 }
-
-                removeEncodingFromParameters(queryParamsMap);
 
                 const orgId = queryParamsMap.get(Constants.queryParameters.ORG_ID) as string;
 
