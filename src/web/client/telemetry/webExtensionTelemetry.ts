@@ -9,7 +9,6 @@ import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTele
 import { IPortalWebExtensionInitQueryParametersTelemetryData, IWebExtensionAPITelemetryData, IWebExtensionExceptionTelemetryData, IWebExtensionInitPathTelemetryData, IWebExtensionPerfTelemetryData } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryInterface";
 import { getEnvironmentIdFromUrl, isNullOrUndefined } from '../utilities/commonUtil';
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
-import WebExtensionContext from "../WebExtensionContext";
 
 export class WebExtensionTelemetry {
 
@@ -33,15 +32,10 @@ export class WebExtensionTelemetry {
         const telemetryData: IPortalWebExtensionInitQueryParametersTelemetryData = {
             eventName: webExtensionTelemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS,
             properties: {
-                orgId: WebExtensionContext.organizationId,
-                tenantId: WebExtensionContext.tenantId,
+                orgId: queryParamsMap.get(queryParameters.ORG_ID),
                 portalId: queryParamsMap.get(queryParameters.PORTAL_ID),
-                websiteId: WebExtensionContext.websiteId,
-                schema: WebExtensionContext.schema,
                 referrerSessionId: queryParamsMap.get(queryParameters.REFERRER_SESSION_ID),
                 referrer: queryParamsMap.get(queryParameters.REFERRER),
-                siteVisibility: WebExtensionContext.siteVisibility,
-                region: WebExtensionContext.region,
                 geo: queryParamsMap.get(queryParameters.GEO),
                 envId: getEnvironmentIdFromUrl(),
                 referrerSource: queryParamsMap.get(queryParameters.REFERRER_SOURCE),

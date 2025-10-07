@@ -68,7 +68,7 @@ describe("WebExtensionContext", () => {
         );
 
         //Assert
-        expect(WebExtensionContext.currentSchemaVersion).eq("1.1");
+        expect(WebExtensionContext.currentSchemaVersion).eq("portalschemav1");
         expect(WebExtensionContext.defaultEntityType).eq(
             entityName.toLowerCase()
         );
@@ -354,7 +354,7 @@ describe("WebExtensionContext", () => {
             "4cdf3b4d873a65135553afdf420a47dbc898ba0c1c0ece2407bbbf2bde02a68b";
 
         const ORG_URL = "PowerPages.com";
-        const SCHEMA_VERSION = "powerPage";
+        const SCHEMA_VERSION = "portalschemav1";
         const entityName = "webPages";
         const entityId = "3355d5ec-b38d-46ca-a150-c00386b0a4be";
         const queryParamsMap = new Map<string, string>([
@@ -433,6 +433,7 @@ describe("WebExtensionContext", () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
+        WebExtensionContext.orgUrl = ORG_URL;
         WebExtensionContext.setWebExtensionContext(
             entityName,
             entityId,
@@ -547,7 +548,7 @@ describe("WebExtensionContext", () => {
             {
                 headers: header,
                 dataverseOrgUrl: ORG_URL,
-                websiteId: undefined
+                websiteId: ''
             }
         );
     });
@@ -618,6 +619,7 @@ describe("WebExtensionContext", () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
+        WebExtensionContext.orgUrl = ORG_URL;
         WebExtensionContext.setWebExtensionContext(
             entityName,
             entityId,
@@ -729,6 +731,7 @@ describe("WebExtensionContext", () => {
         stub(schemaHelperUtil, "getPortalLanguageIdToLcidMap").returns(
             portalLanguageIdCodeMap
         );
+        WebExtensionContext.orgUrl = ORG_URL;
         WebExtensionContext.setWebExtensionContext(
             entityName,
             entityId,
