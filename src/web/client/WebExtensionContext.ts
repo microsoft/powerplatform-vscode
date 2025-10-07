@@ -28,13 +28,14 @@ import { EntityDataMap } from "./context/entityDataMap";
 import { FileDataMap } from "./context/fileDataMap";
 import { IAttributePath, IEntityInfo } from "./common/interfaces";
 import { ConcurrencyHandler } from "./dal/concurrencyHandler";
-import { getEnvironmentIdFromUrl, getMailToPath, getTeamChatURL, isMultifileEnabled } from "./utilities/commonUtil";
+import { getEnvironmentIdFromUrl, getMailToPath, getTeamChatURL } from "./utilities/commonUtil";
 import { IConnectionData, UserDataMap } from "./context/userDataMap";
 import { EntityForeignKeyDataMap } from "./context/entityForeignKeyDataMap";
 import { QuickPickProvider } from "./webViews/QuickPickProvider";
 import { UserCollaborationProvider } from "./webViews/userCollaborationProvider";
 import { GraphClientService } from "./services/graphClientService";
 import { ServiceEndpointCategory } from "../../common/services/Constants";
+import { SiteVisibility } from "../../client/power-pages/actions-hub/models/SiteVisibility";
 
 export interface IWebExtensionContext {
     // From portalSchema properties
@@ -60,9 +61,8 @@ export interface IWebExtensionContext {
     defaultEntityId: string;
     defaultEntityType: string;
     defaultFileUri: vscode.Uri; // This will default to home page or current page in multifile scenario
-    showMultifileInVSCode: boolean;
     extensionActivationTime: number;
-    extensionUri: vscode.Uri
+    extensionUri: vscode.Uri;
 
     // Org specific details
     dataverseAccessToken: string;
@@ -97,6 +97,8 @@ export interface IWebExtensionContext {
     webpageNames: Set<string>;
 
     getWebpageNames(): Set<string>;
+
+    websiteName: string;
 }
 
 class WebExtensionContext implements IWebExtensionContext {
@@ -114,7 +116,6 @@ class WebExtensionContext implements IWebExtensionContext {
     private _defaultEntityId: string;
     private _defaultEntityType: string;
     private _defaultFileUri: vscode.Uri;
-    private _showMultifileInVSCode: boolean;
     private _extensionActivationTime: number;
     private _extensionUri: vscode.Uri;
     private _dataverseAccessToken: string;
@@ -143,6 +144,13 @@ class WebExtensionContext implements IWebExtensionContext {
     private _userCollaborationProvider: UserCollaborationProvider;
     private _graphClientService: GraphClientService;
     private _webpageNames: Set<string>;
+    private _websiteName: string;
+    private _tenantId: string;
+    private _websiteId: string;
+    private _schema: Constants.portalSchemaVersion;
+    private _siteVisibility: SiteVisibility;
+    private _orgUrl: string;
+    private _region: string;
 
     public get schemaDataSourcePropertiesMap() {
         return this._schemaDataSourcePropertiesMap;
@@ -185,9 +193,6 @@ class WebExtensionContext implements IWebExtensionContext {
     }
     public get defaultFileUri() {
         return this._defaultFileUri;
-    }
-    public get showMultifileInVSCode() {
-        return this._showMultifileInVSCode;
     }
     public get extensionActivationTime() {
         return this._extensionActivationTime
@@ -294,6 +299,48 @@ class WebExtensionContext implements IWebExtensionContext {
     public get webpageNames() {
         return this._webpageNames;
     }
+    public get websiteName() {
+        return this._websiteName;
+    }
+    public set websiteName(name: string) {
+        this._websiteName = name;
+    }
+    public get tenantId() {
+        return this._tenantId;
+    }
+    public set tenantId(id: string) {
+        this._tenantId = id;
+    }
+    public get websiteId() {
+        return this._websiteId;
+    }
+    public set websiteId(id: string) {
+        this._websiteId = id;
+    }
+    public get schema() {
+        return this._schema;
+    }
+    public set schema(schema: Constants.portalSchemaVersion) {
+        this._schema = schema;
+    }
+    public get siteVisibility() {
+        return this._siteVisibility;
+    }
+    public set siteVisibility(visibility: SiteVisibility) {
+        this._siteVisibility = visibility;
+    }
+    public get orgUrl() {
+        return this._orgUrl;
+    }
+    public set orgUrl(url: string) {
+        this._orgUrl = url;
+    }
+    public get region() {
+        return this._region;
+    }
+    public set region(region: string) {
+        this._region = region;
+    }
 
     constructor() {
         this._schemaDataSourcePropertiesMap = new Map<string, string>();
@@ -313,7 +360,6 @@ class WebExtensionContext implements IWebExtensionContext {
         this._entityDataMap = new EntityDataMap();
         this._entityForeignKeyDataMap = new EntityForeignKeyDataMap();
         this._defaultFileUri = vscode.Uri.parse(``);
-        this._showMultifileInVSCode = false;
         this._extensionActivationTime = new Date().getTime();
         this._extensionUri = vscode.Uri.parse("");
         this._isContextSet = false;
@@ -338,6 +384,13 @@ class WebExtensionContext implements IWebExtensionContext {
         this._userCollaborationProvider = new UserCollaborationProvider();
         this._graphClientService = new GraphClientService();
         this._webpageNames = new Set<string>();
+        this._websiteName = "";
+        this._tenantId = "";
+        this._websiteId = "";
+        this._schema = Constants.portalSchemaVersion.V1;
+        this._siteVisibility = SiteVisibility.Public;
+        this._orgUrl = "";
+        this._region = "";
     }
 
     public setWebExtensionContext(
@@ -352,24 +405,8 @@ class WebExtensionContext implements IWebExtensionContext {
         this._defaultEntityType = (entityName && entityName.toLowerCase()) ?? queryParamsMap.get(Constants.queryParameters.ENTITY) as string ?? "";
         this._defaultEntityId = entityId ?? queryParamsMap.get(Constants.queryParameters.ENTITY_ID) as string ?? "";
         this._urlParametersMap = queryParamsMap;
-        this._rootDirectory = vscode.Uri.parse(
-            `${Constants.PORTALS_URI_SCHEME}:/${queryParamsMap.get(
-                Constants.queryParameters.WEBSITE_NAME
-            ) as string
-            }/`,
-            true
-        );
-        this._extensionUri = extensionUri as vscode.Uri;
-
-        // Initialize multifile FF here
-        const enableMultifile = queryParamsMap?.get(Constants.queryParameters.ENABLE_MULTIFILE);
-        const isEnableMultifile = (String(enableMultifile).toLowerCase() === 'true');
-        this._showMultifileInVSCode = isMultifileEnabled() && isEnableMultifile;
-
-        this.telemetry.sendInfoTelemetry(
-            webExtensionTelemetryEventNames.WEB_EXTENSION_MULTI_FILE_FEATURE_AVAILABILITY,
-            { showMultifileInVSCode: this._showMultifileInVSCode.toString() }
-        );
+        this._rootDirectory = vscode.Uri.parse(`${Constants.PORTALS_URI_SCHEME}:/${this._websiteName}/`, true);
+        this._extensionUri = extensionUri as vscode.Uri
 
         // Initialize context from schema values
         this._schemaEntitiesMap = getEntitiesSchemaMap(schema);
@@ -405,51 +442,37 @@ class WebExtensionContext implements IWebExtensionContext {
     public async authenticateAndUpdateDataverseProperties() {
         await this.dataverseAuthentication(true);
 
-        const dataverseOrgUrl = this.urlParametersMap.get(
-            Constants.queryParameters.ORG_URL
-        ) as string;
         const schema = this.urlParametersMap
             .get(schemaKey.SCHEMA_VERSION)
             ?.toLowerCase() as string;
 
         await this.populateWebsiteIdToLanguageMap(
             this._dataverseAccessToken,
-            dataverseOrgUrl,
+            this._orgUrl,
             schema
         );
 
         await this.populateWebsiteLanguageIdToPortalLanguageMap(
             this._dataverseAccessToken,
-            dataverseOrgUrl,
+            this._orgUrl,
             schema
         );
         await this.populateLanguageIdToCode(
             this._dataverseAccessToken,
-            dataverseOrgUrl,
+            this._orgUrl,
             schema
         );
 
         await this.setWebsiteLanguageCode();
 
-        // Getting website Id to populate shared workspace for Co-Presence
-        const websiteId = this.urlParametersMap.get(
-            Constants.queryParameters.WEBSITE_ID
-        ) as string;
-
         const headers = getCommonHeadersForDataverse(this._dataverseAccessToken);
 
         // Populate shared workspace for Co-Presence
-        await this.populateSharedWorkspace(headers, dataverseOrgUrl, websiteId);
+        await this.populateSharedWorkspace(headers, this._orgUrl, this._websiteId);
     }
 
     public async dataverseAuthentication(firstTimeAuth = false) {
-        const dataverseOrgUrl = this.urlParametersMap.get(
-            Constants.queryParameters.ORG_URL
-        ) as string;
-        const { accessToken, userId } = await dataverseAuthentication(
-            dataverseOrgUrl,
-            firstTimeAuth
-        );
+        const { accessToken, userId } = await dataverseAuthentication(this._orgUrl, firstTimeAuth);
 
         if (accessToken.length === 0) {
             // re-set all properties to default values
@@ -741,12 +764,7 @@ class WebExtensionContext implements IWebExtensionContext {
     }
 
     private async setWebsiteLanguageCode() {
-        const lcid =
-            this.websiteIdToLanguage.get(
-                this.urlParametersMap.get(
-                    Constants.queryParameters.WEBSITE_ID
-                ) as string
-            ) ?? "";
+        const lcid = this.websiteIdToLanguage.get(this._websiteId) ?? "";
         this.telemetry.sendInfoTelemetry(
             webExtensionTelemetryEventNames.WEB_EXTENSION_EDIT_LCID,
             { lcid: lcid ? lcid.toString() : "" }

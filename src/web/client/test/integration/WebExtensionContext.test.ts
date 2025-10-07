@@ -31,8 +31,7 @@ describe("WebExtensionContext", () => {
             [schemaEntityKey.DATAVERSE_ENTITY_NAME, "DATAVERSE_ENTITY_NAME"],
             [schemaKey.SCHEMA_VERSION, "1.1"],
             [schemaKey.DATA, "schemaKey.DATA"],
-            [schemaKey.DATAVERSE_API_VERSION, "1.0"],
-            [Constants.queryParameters.WEBSITE_NAME, "powerPages"],
+            [schemaKey.DATAVERSE_API_VERSION, "1.0"]
         ]);
 
         const entityMap = new Map<string, string>([["test", "Entity"]]);
@@ -96,8 +95,7 @@ describe("WebExtensionContext", () => {
         const entityName = "webPages";
         const entityId = "3355d5ec-b38d-46ca-a150-c00386b0a4be";
         const queryParamsMap = new Map<string, string>([
-            [schemaKey.SCHEMA_VERSION, "1.1"],
-            [Constants.queryParameters.ORG_URL, "PowerPages.com"],
+            [schemaKey.SCHEMA_VERSION, "1.1"]
         ]);
 
         stub(authenticationProvider, "dataverseAuthentication").resolves({ accessToken: "", userId: "" });

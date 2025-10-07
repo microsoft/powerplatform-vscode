@@ -6,7 +6,7 @@
 import * as vscode from "vscode";
 import { RequestInit } from "node-fetch";
 import { getCommonHeadersForDataverse } from "../../../common/services/AuthenticationProvider";
-import { httpMethod, ODATA_ETAG, queryParameters } from "../common/constants";
+import { httpMethod, ODATA_ETAG } from "../common/constants";
 import { IAttributePath } from "../common/interfaces";
 import { PortalsFS } from "../dal/fileSystemProvider";
 import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
@@ -33,9 +33,7 @@ export class EtagHandlerService {
 
         const entityEtag = getFileEntityEtag(fileFsPath);
 
-        const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
-            queryParameters.ORG_URL
-        ) as string;
+        const dataverseOrgUrl = WebExtensionContext.orgUrl;
 
         const requestUrl = getRequestURL(
             dataverseOrgUrl,
@@ -149,9 +147,7 @@ export class EtagHandlerService {
         const entityId = getFileEntityId(fileFsPath);
         const requestSentAtTime = new Date().getTime();
 
-        const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
-            queryParameters.ORG_URL
-        ) as string;
+        const dataverseOrgUrl = WebExtensionContext.orgUrl;
 
         const requestUrl = getRequestURL(
             dataverseOrgUrl,

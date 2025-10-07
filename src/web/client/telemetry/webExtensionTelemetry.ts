@@ -9,6 +9,7 @@ import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTele
 import { IPortalWebExtensionInitQueryParametersTelemetryData, IWebExtensionAPITelemetryData, IWebExtensionExceptionTelemetryData, IWebExtensionInitPathTelemetryData, IWebExtensionPerfTelemetryData } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryInterface";
 import { getEnvironmentIdFromUrl, isNullOrUndefined } from '../utilities/commonUtil';
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import WebExtensionContext from "../WebExtensionContext";
 
 export class WebExtensionTelemetry {
 
@@ -32,16 +33,15 @@ export class WebExtensionTelemetry {
         const telemetryData: IPortalWebExtensionInitQueryParametersTelemetryData = {
             eventName: webExtensionTelemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS,
             properties: {
-                orgId: queryParamsMap.get(queryParameters.ORG_ID),
-                tenantId: queryParamsMap.get(queryParameters.TENANT_ID),
+                orgId: WebExtensionContext.organizationId,
+                tenantId: WebExtensionContext.tenantId,
                 portalId: queryParamsMap.get(queryParameters.PORTAL_ID),
-                websiteId: queryParamsMap.get(queryParameters.WEBSITE_ID),
-                dataSource: queryParamsMap.get(queryParameters.DATA_SOURCE),
-                schema: queryParamsMap.get(queryParameters.SCHEMA),
+                websiteId: WebExtensionContext.websiteId,
+                schema: WebExtensionContext.schema,
                 referrerSessionId: queryParamsMap.get(queryParameters.REFERRER_SESSION_ID),
                 referrer: queryParamsMap.get(queryParameters.REFERRER),
-                siteVisibility: queryParamsMap.get(queryParameters.SITE_VISIBILITY),
-                region: queryParamsMap.get(queryParameters.REGION),
+                siteVisibility: WebExtensionContext.siteVisibility,
+                region: WebExtensionContext.region,
                 geo: queryParamsMap.get(queryParameters.GEO),
                 envId: getEnvironmentIdFromUrl(),
                 referrerSource: queryParamsMap.get(queryParameters.REFERRER_SOURCE),
