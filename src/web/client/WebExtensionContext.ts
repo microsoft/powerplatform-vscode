@@ -713,10 +713,6 @@ class WebExtensionContext implements IWebExtensionContext {
                 websiteEntityName
             );
 
-
-            console.warn("********************** dataverseOrgUrl: ", dataverseOrgUrl);
-            console.warn("********************** requestUrl: ", requestUrl);
-
             this.telemetry.sendAPITelemetry(
                 requestUrl,
                 websiteEntityName,
