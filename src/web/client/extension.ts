@@ -156,7 +156,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
                                                 UserID: WebExtensionContext.userId,
                                                 TenantID: WebExtensionContext.tenantId,
                                                 Region: WebExtensionContext.region,
-                                                Location: WebExtensionContext.clusterLocation
+                                                Location: WebExtensionContext.urlParametersMap.get(queryParameters.GEO) ?? ""
                                             },
                                             PowerPagesClientName);
 
