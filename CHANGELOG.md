@@ -1,5 +1,8 @@
 # Change Log - Power Platform Extension
 
+## 2.0.104
+- pac CLI 1.49.3, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+
 ## 2.0.102
 - Rollout of "Open in Desktop" capability in Power Pages Actions (Web)
 - Rollout of CodeQL security analysis support for Power Pages sites (Desktop)
