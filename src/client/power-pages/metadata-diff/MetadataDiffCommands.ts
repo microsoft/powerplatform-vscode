@@ -11,13 +11,12 @@ import { Constants, SUCCESS } from "../../../common/power-pages/metadata-diff/Co
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { MetadataDiffTreeDataProvider } from "../../../common/power-pages/metadata-diff/MetadataDiffTreeDataProvider";
 import { MetadataDiffDesktop } from "./MetadataDiffDesktop";
-import { ActionsHubTreeDataProvider } from "../actions-hub/ActionsHubTreeDataProvider";
 import { createAuthProfileExp } from "../../../common/utilities/PacAuthUtil";
 import { getWebsiteRecordId } from "../../../common/utilities/WorkspaceInfoFinderUtil";
 // Duplicate imports removed
 import { generateDiffReport, getAllDiffFiles, MetadataDiffReport } from "./MetadataDiffUtils";
 import { getMetadataDiffBaseEventInfo } from "./MetadataDiffTelemetry";
-import { buildComparison, ensureActiveOrg, resetDirectory, toModelVersion } from "./MetadataDiffHelpers";
+import { buildComparison, ensureActiveOrg } from "./MetadataDiffHelpers";
 
 export async function registerMetadataDiffCommands(context: vscode.ExtensionContext, pacTerminal: PacTerminal): Promise<void> {
     // Register command for handling file diffs
