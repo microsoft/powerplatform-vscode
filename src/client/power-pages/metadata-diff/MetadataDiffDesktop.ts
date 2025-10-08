@@ -20,7 +20,7 @@ export class MetadataDiffDesktop {
     private static _treeDataProvider: MetadataDiffTreeDataProvider | undefined;
 
     static isEnabled(): boolean {
-        const enableMetadataDiff = true; //ECSFeaturesClient.getConfig(EnableMetadataDiff).enableMetadataDiff
+        const enableMetadataDiff = ECSFeaturesClient.getConfig(EnableMetadataDiff).enableMetadataDiff
 
         if (enableMetadataDiff === undefined) {
             return false;
