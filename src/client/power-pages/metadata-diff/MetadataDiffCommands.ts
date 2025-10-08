@@ -19,24 +19,60 @@ import { generateDiffReport, getAllDiffFiles, MetadataDiffReport } from "./Metad
 
 export async function registerMetadataDiffCommands(context: vscode.ExtensionContext, pacTerminal: PacTerminal): Promise<void> {
     // Register command for handling file diffs
-    vscode.commands.registerCommand('metadataDiff.openDiff', async (workspaceFile: string, storedFile: string) => {
+    vscode.commands.registerCommand('metadataDiff.openDiff', async (workspaceFile?: string, storedFile?: string) => {
         try {
-            const workspaceUri = vscode.Uri.file(workspaceFile);
-            const storedUri = vscode.Uri.file(storedFile);
-            const fileName = path.basename(workspaceFile);
+            if (!workspaceFile && !storedFile) {
+                vscode.window.showWarningMessage('No file paths provided for diff.');
+                return;
+            }
 
-            await vscode.commands.executeCommand('vscode.diff',
-                storedUri,
-                workspaceUri,
-                `${fileName} (Metadata Diff)`
-            );
+            // Ensure storage directory for temp placeholders exists
+            const tempRoot = path.join(context.storageUri?.fsPath || '', 'tempDiff');
+            if (!fs.existsSync(tempRoot)) {
+                fs.mkdirSync(tempRoot, { recursive: true });
+            }
+
+            const makeEmptySide = (basename: string, suffix: string) => {
+                const emptyPath = path.join(tempRoot, `${basename}.${suffix}.empty`);
+                if (!fs.existsSync(emptyPath)) {
+                    fs.writeFileSync(emptyPath, '');
+                }
+                return emptyPath;
+            };
+
+            let leftUri: vscode.Uri;   // environment/original
+            let rightUri: vscode.Uri;  // local/modified
+            let title: string;
+
+            if (workspaceFile && storedFile) {
+                // Standard modified diff: stored (Environment) vs workspace (Local)
+                leftUri = vscode.Uri.file(storedFile);
+                rightUri = vscode.Uri.file(workspaceFile);
+                title = `${path.basename(workspaceFile)} (Modified)`;
+            } else if (workspaceFile && !storedFile) {
+                // Added locally: empty (Environment) -> workspace file (Local)
+                const base = path.basename(workspaceFile);
+                const emptyPath = makeEmptySide(base, 'env');
+                leftUri = vscode.Uri.file(emptyPath);
+                rightUri = vscode.Uri.file(workspaceFile);
+                title = `${base} (Only in Local)`;
+            } else {
+                // Only in Environment: stored file content -> empty local
+                const base = path.basename(storedFile!);
+                const emptyPath = makeEmptySide(base, 'local');
+                leftUri = vscode.Uri.file(storedFile!);
+                rightUri = vscode.Uri.file(emptyPath);
+                title = `${base} (Only in Environment)`;
+            }
+
+            await vscode.commands.executeCommand('vscode.diff', leftUri, rightUri, title);
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(
                 Constants.EventNames.METADATA_DIFF_REPORT_FAILED,
                 error as string,
                 error as Error
             );
-            vscode.window.showErrorMessage("Failed to open diff view");
+            vscode.window.showErrorMessage('Failed to open diff view');
         }
     });
 
@@ -55,7 +91,8 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
             workspaceFile = obj.filePath || obj.workspaceFile;
             storedFile = obj.storedFilePath || obj.storageFile;
         }
-        if (workspaceFile && storedFile) {
+        // Allow opening for added / removed as well (one-sided)
+        if (workspaceFile || storedFile) {
             await vscode.commands.executeCommand('metadataDiff.openDiff', workspaceFile, storedFile);
         } else {
             vscode.window.showWarningMessage('Unable to open comparison for this item.');

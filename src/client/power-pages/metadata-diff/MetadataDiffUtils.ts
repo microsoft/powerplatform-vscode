@@ -96,8 +96,8 @@ li.file-item{margin:6px 0;padding:8px;border:1px solid #dcdcdc;border-radius:4px
 .file-name{font-weight:600;}
 .change-tag{font-size:11px;padding:2px 6px;border-radius:12px;background:#e0e0e0;color:#333;text-transform:uppercase;letter-spacing:.5px;}
 li.file-item.modified .change-tag{background:#fff4ce;color:#8a6d00;}
-li.file-item['only-in-workspace'] .change-tag, li.file-item.only-in-workspace .change-tag{background:#dff6dd;color:#0e700e;}
-li.file-item['only-in-remote'] .change-tag, li.file-item.only-in-remote .change-tag{background:#fde7e9;color:#a4262c;}
+li.file-item['only-in-local'] .change-tag, li.file-item.only-in-local .change-tag{background:#dff6dd;color:#0e700e;}
+li.file-item['only-in-environment'] .change-tag, li.file-item.only-in-environment .change-tag{background:#fde7e9;color:#a4262c;}
 details.prop-changes{margin-top:4px;}
 details.prop-changes summary{cursor:pointer;font-weight:600;}
 details.prop-changes ul{margin:4px 0 0 16px;padding:0;}
@@ -178,7 +178,7 @@ export async function getAllDiffFiles(workspacePath: string, storagePath: string
         if (!storageFile) {
             diffFiles.push({
                 relativePath: normalized,
-                changes: 'Only in workspace',
+                changes: 'Only in Local',
                 type: path.dirname(normalized) || 'Other',
                 workspaceContent: fs.readFileSync(workspaceFile, 'utf8').replace(/\r\n/g, '\n')
             });
@@ -204,7 +204,7 @@ export async function getAllDiffFiles(workspacePath: string, storagePath: string
         if (!workspaceMap.has(normalized)) {
             diffFiles.push({
                 relativePath: normalized,
-                changes: 'Only in remote',
+                changes: 'Only in Environment',
                 type: path.dirname(normalized) || 'Other',
                 storageContent: fs.readFileSync(storageFile, 'utf8').replace(/\r\n/g, '\n')
             });

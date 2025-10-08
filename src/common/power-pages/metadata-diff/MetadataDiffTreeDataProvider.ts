@@ -240,8 +240,9 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
     }
 
     private getChangeDescription(workspaceFile?: string, storageFile?: string): string {
-        if (!workspaceFile) return 'Only in remote';
-        if (!storageFile) return 'Only in workspace';
+        // Changed labels to align with updated wording (Local vs Environment)
+        if (!workspaceFile) return 'Only in Environment';
+        if (!storageFile) return 'Only in Local';
         return 'Modified';
     }
 
