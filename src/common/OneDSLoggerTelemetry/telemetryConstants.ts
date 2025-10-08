@@ -70,7 +70,7 @@ export const EndpointUrls = {
 export const InstrumentationKeys = {
     INTERNAL: 'ffdb4c99ca3a4ad5b8e9ffb08bf7da0d-65357ff3-efcd-47fc-b2fd-ad95a52373f4-7402',
     US_AND_EU: '197418c5cb8c4426b201f9db2e87b914-87887378-2790-49b0-9295-51f43b6204b1-7172',
-    GOV: '2f217cb8f40440eeb8b0aa80a2be2f7e-e0ec7b51-d1bb-4d8c-83b1-cc77aaba9009-7472',
+    GOV: '47d84c9b995341e19219d73ab0c6bcd2-e951660d-d17d-4de3-83c3-6a766bd23de8-7007',
     HIGH: '4a07e143372c46aabf3841dc4f0ef795-a753031e-2005-4282-9451-a086fea4234a-6942',
     DOD: 'af47f3d608774379a53fa07cf36362ea-69701588-1aad-43ee-8b52-f71125849774-6656',
     MOONCAKE: 'f9b6e63b5e394453ba8f58f7a7b9aea7-f38fcfa2-eb34-48bc-9ae2-61fba4abbd39-7390'
