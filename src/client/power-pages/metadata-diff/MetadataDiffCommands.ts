@@ -439,7 +439,6 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
 
             const currentWorkspaceFolder = workspaceFolders[0].uri.fsPath;
             const websiteId = getWebsiteRecordId(currentWorkspaceFolder);
-            path.join(websiteId, "metadataDiffStorage");
             const storagePath = context.storageUri?.fsPath;
             if (!storagePath) {
                 throw new Error("Storage path is not defined");
