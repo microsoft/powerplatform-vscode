@@ -9,6 +9,9 @@ import WebExtensionContext from "../WebExtensionContext";
 import { httpMethod } from '../common/constants';
 import { getBackToStudioURL, getValidWebsitePreviewUrl } from '../utilities/commonUtil';
 import { webExtensionTelemetryEventNames } from '../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents';
+import { PowerPagesNavigationConstants } from './constants/powerPagesNavigationConstants';
+import { EnableOpenInDesktop } from '../../../common/ecs-features/ecsFeatureGates';
+import { ECSFeaturesClient } from '../../../common/ecs-features/ecsFeatureClient';
 
 export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<PowerPagesNode> {
 
@@ -34,38 +37,43 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
 
     getNodes(label?: string): PowerPagesNode[] {
         const nodes: PowerPagesNode[] = [];
-        const previewPowerPage = new PowerPagesNode(vscode.l10n.t("Preview site"),
+        const previewPowerPage = new PowerPagesNode(vscode.l10n.t(PowerPagesNavigationConstants.messages.PREVIEW_SITE),
             {
-                command: 'powerpages.powerPagesFileExplorer.powerPagesRuntimePreview',
-                title: vscode.l10n.t("Preview site"),
+                command: PowerPagesNavigationConstants.commands.RUNTIME_PREVIEW,
+                title: vscode.l10n.t(PowerPagesNavigationConstants.messages.PREVIEW_SITE),
                 arguments: []
             },
-            'previewSite.svg');
-        const backToStudio = new PowerPagesNode(vscode.l10n.t("Open in Power Pages studio"),
+            PowerPagesNavigationConstants.icons.PREVIEW_SITE);
+        const backToStudio = new PowerPagesNode(vscode.l10n.t(PowerPagesNavigationConstants.messages.OPEN_IN_POWER_PAGES_STUDIO),
             {
-                command: 'powerpages.powerPagesFileExplorer.backToStudio',
-                title: vscode.l10n.t("Open in Power Pages studio"),
+                command: PowerPagesNavigationConstants.commands.BACK_TO_STUDIO,
+                title: vscode.l10n.t(PowerPagesNavigationConstants.messages.OPEN_IN_POWER_PAGES_STUDIO),
                 arguments: []
             },
-            'powerPages.svg');
-        const openInDesktop = new PowerPagesNode(vscode.l10n.t("Open in VS Code Desktop"),
+            PowerPagesNavigationConstants.icons.POWER_PAGES);
+        const openInDesktop = new PowerPagesNode(vscode.l10n.t(PowerPagesNavigationConstants.messages.OPEN_IN_VS_CODE_DESKTOP),
             {
-                command: 'powerpages.powerPagesFileExplorer.openInDesktop',
-                title: vscode.l10n.t("Open in VS Code Desktop"),
+                command: PowerPagesNavigationConstants.commands.OPEN_IN_DESKTOP,
+                title: vscode.l10n.t(PowerPagesNavigationConstants.messages.OPEN_IN_VS_CODE_DESKTOP),
                 arguments: []
             },
-            'desktop.svg');
+            PowerPagesNavigationConstants.icons.DESKTOP);
+
+        // Check if open in desktop is enabled via ECS flag
+        const isOpenInDesktopEnabled = ECSFeaturesClient.getConfig(EnableOpenInDesktop).enableOpenInDesktop;
 
         if (label && label === previewPowerPage.label) {
             nodes.push(previewPowerPage);
         } else if (label && label === backToStudio.label) {
             nodes.push(backToStudio);
-        } else if (label && label === openInDesktop.label) {
+        } else if (label && label === openInDesktop.label && isOpenInDesktopEnabled) {
             nodes.push(openInDesktop);
         } else {
             nodes.push(previewPowerPage);
             nodes.push(backToStudio);
-            nodes.push(openInDesktop);
+            if (isOpenInDesktopEnabled) {
+                nodes.push(openInDesktop);
+            }
         }
 
         return nodes;
@@ -77,7 +85,7 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
         const { isValid, websiteUrl } = await this.isWebsitePreviewURLValid;
 
         if (!isValid) {
-            vscode.window.showErrorMessage(vscode.l10n.t("Preview site URL is not valid"));
+            vscode.window.showErrorMessage(vscode.l10n.t(PowerPagesNavigationConstants.messages.PREVIEW_SITE_URL_INVALID));
 
             WebExtensionContext.telemetry.sendErrorTelemetry(
                 webExtensionTelemetryEventNames.WEB_EXTENSION_WEBSITE_PREVIEW_URL_INVALID,
@@ -88,7 +96,7 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
         }
 
         // Runtime clear cache call
-        const requestUrl = `${websiteUrl.endsWith('/') ? websiteUrl : websiteUrl.concat('/')}_services/cache/config`;
+        const requestUrl = `${websiteUrl.endsWith('/') ? websiteUrl : websiteUrl.concat('/')}${PowerPagesNavigationConstants.endpoints.CACHE_CONFIG}`;
 
         WebExtensionContext.telemetry.sendAPITelemetry(
             requestUrl,
@@ -103,14 +111,14 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             {
                 location: vscode.ProgressLocation.Notification,
                 cancellable: true,
-                title: vscode.l10n.t("Opening preview site..."),
+                title: vscode.l10n.t(PowerPagesNavigationConstants.messages.OPENING_PREVIEW_SITE),
             },
             async () => {
                 const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, {
                     headers: {
-                        authorization: "Bearer " + WebExtensionContext.dataverseAccessToken,
-                        'Accept': '*/*',
-                        'Content-Type': 'text/plain',
+                        [PowerPagesNavigationConstants.headers.AUTHORIZATION]: PowerPagesNavigationConstants.headers.BEARER_PREFIX + WebExtensionContext.dataverseAccessToken,
+                        [PowerPagesNavigationConstants.headers.ACCEPT]: PowerPagesNavigationConstants.headers.ACCEPT_ALL,
+                        [PowerPagesNavigationConstants.headers.CONTENT_TYPE]: PowerPagesNavigationConstants.headers.TEXT_PLAIN,
                     },
                     method: 'DELETE',
                 });
@@ -148,11 +156,11 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
         const backToStudioUrl = getBackToStudioURL();
 
         if (backToStudioUrl === undefined) {
-            vscode.window.showErrorMessage(vscode.l10n.t("Power Pages studio URL is not available"));
+            vscode.window.showErrorMessage(vscode.l10n.t(PowerPagesNavigationConstants.messages.POWER_PAGES_STUDIO_URL_NOT_AVAILABLE));
 
             WebExtensionContext.telemetry.sendErrorTelemetry(
                 webExtensionTelemetryEventNames.WEB_EXTENSION_BACK_TO_STUDIO_TRIGGERED,
-                vscode.l10n.t("Power Pages studio URL is not available")
+                vscode.l10n.t(PowerPagesNavigationConstants.messages.POWER_PAGES_STUDIO_URL_NOT_AVAILABLE)
             );
             return;
         }
@@ -165,13 +173,34 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
     }
 
     openInDesktop(): void {
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_CLICKED,
+            {
+                hasECSFeatureGate: 'true'
+            }
+        );
+
         try {
-            const websiteId = WebExtensionContext.urlParametersMap?.get('websiteid');
-            const envId = WebExtensionContext.urlParametersMap?.get('envid');
+            const websiteId = WebExtensionContext.urlParametersMap?.get(PowerPagesNavigationConstants.urlParams.WEBSITE_ID);
+            const envId = WebExtensionContext.urlParametersMap?.get(PowerPagesNavigationConstants.urlParams.ENV_ID);
+
+            // Check if open in desktop is enabled via ECS flag
+            const isOpenInDesktopEnabled = ECSFeaturesClient.getConfig(EnableOpenInDesktop).enableOpenInDesktop;
+
+            // Track ECS feature flag status
+            if (!isOpenInDesktopEnabled) {
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_FEATURE_DISABLED,
+                    {
+                        reason: 'ecs_feature_flag_disabled'
+                    }
+                );
+                return;
+            }
 
             // Validate required parameters
             if (!websiteId) {
-                vscode.window.showErrorMessage(vscode.l10n.t("Website ID is not available"));
+                vscode.window.showErrorMessage(vscode.l10n.t(PowerPagesNavigationConstants.messages.WEBSITE_ID_NOT_AVAILABLE));
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_FAILED,
                     this.openInDesktop.name,
@@ -181,7 +210,7 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             }
 
             if (!envId) {
-                vscode.window.showErrorMessage(vscode.l10n.t("Environment ID is not available"));
+                vscode.window.showErrorMessage(vscode.l10n.t(PowerPagesNavigationConstants.messages.ENVIRONMENT_ID_NOT_AVAILABLE));
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_FAILED,
                     this.openInDesktop.name,
@@ -196,7 +225,7 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             // Build VS Code desktop URI (this is now async to include website URL)
             this.buildDesktopUri(websiteId, environmentId).then((desktopUri: string | null) => {
                 if (!desktopUri) {
-                    vscode.window.showErrorMessage(vscode.l10n.t("Unable to generate VS Code Desktop URL"));
+                    vscode.window.showErrorMessage(vscode.l10n.t(PowerPagesNavigationConstants.messages.UNABLE_TO_GENERATE_DESKTOP_URL));
                     WebExtensionContext.telemetry.sendErrorTelemetry(
                         webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_FAILED,
                         this.openInDesktop.name,
@@ -205,24 +234,60 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
                     return;
                 }
 
+                // Track desktop flow trigger (before attempting to open)
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_TRIGGERED,
+                    {
+                        websiteId: websiteId,
+                        environmentId: environmentId,
+                        desktopUri: desktopUri
+                    }
+                );
+
                 // Open in VS Code Desktop
                 vscode.env.openExternal(vscode.Uri.parse(desktopUri));
 
+                // Track successful URI opening
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_URI_OPENED,
+                    {
+                        websiteId: websiteId,
+                        environmentId: environmentId,
+                        uriGenerated: PowerPagesNavigationConstants.values.TRUE,
+                    }
+                );
+
                 // Show informational message with fallback options (don't await to avoid blocking)
                 vscode.window.showInformationMessage(
-                    vscode.l10n.t("Opening in VS Code Desktop. If it doesn't open or shows an error, you may need to install VS Code or update the Power Platform extension."),
-                    vscode.l10n.t("Download VS Code"),
-                    vscode.l10n.t("Update Extension"),
-                ).then((showInstructions) => {
-                    if (showInstructions === vscode.l10n.t("Download VS Code")) {
-                        vscode.env.openExternal(vscode.Uri.parse("https://code.visualstudio.com/download"));
-                    } else if (showInstructions === vscode.l10n.t("Get Extension")) {
-                        vscode.env.openExternal(vscode.Uri.parse("https://marketplace.visualstudio.com/items?itemName=microsoft-IsvExpTools.powerplatform-vscode"));
+                    vscode.l10n.t(PowerPagesNavigationConstants.messages.OPENING_IN_VS_CODE_DESKTOP),
+                    vscode.l10n.t(PowerPagesNavigationConstants.messages.DOWNLOAD_VS_CODE),
+                    vscode.l10n.t(PowerPagesNavigationConstants.messages.UPDATE_EXTENSION),
+                ).then((selectedOption) => {
+                    if (selectedOption === vscode.l10n.t(PowerPagesNavigationConstants.messages.DOWNLOAD_VS_CODE)) {
+                        WebExtensionContext.telemetry.sendInfoTelemetry(
+                            webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_DIALOG_DOWNLOAD_CLICKED,
+                            {
+                                websiteId: websiteId,
+                                environmentId: environmentId,
+                                action: 'download_vscode_clicked'
+                            }
+                        );
+                        vscode.env.openExternal(vscode.Uri.parse(PowerPagesNavigationConstants.urls.VS_CODE_DOWNLOAD));
+                    } else if (selectedOption === vscode.l10n.t(PowerPagesNavigationConstants.messages.UPDATE_EXTENSION)) {
+                        WebExtensionContext.telemetry.sendInfoTelemetry(
+                            webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_DIALOG_UPDATE_CLICKED,
+                            {
+                                websiteId: websiteId,
+                                environmentId: environmentId,
+                                action: 'update_extension_clicked'
+                            }
+                        );
+                        vscode.env.openExternal(vscode.Uri.parse(PowerPagesNavigationConstants.urls.VS_CODE_MARKETPLACE));
                     }
                 });
             }).catch((error: unknown) => {
                 const errorMessage = error instanceof Error ? error.message : String(error);
-                vscode.window.showErrorMessage(vscode.l10n.t("Failed to generate VS Code Desktop URL: {0}", errorMessage));
+                vscode.window.showErrorMessage(vscode.l10n.t(PowerPagesNavigationConstants.messages.FAILED_TO_GENERATE_DESKTOP_URL, errorMessage));
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_FAILED,
                     this.openInDesktop.name,
@@ -232,7 +297,7 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
 
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
-            vscode.window.showErrorMessage(vscode.l10n.t("Failed to open in VS Code Desktop: {0}", errorMessage));
+            vscode.window.showErrorMessage(vscode.l10n.t(PowerPagesNavigationConstants.messages.FAILED_TO_OPEN_IN_DESKTOP, errorMessage));
 
             WebExtensionContext.telemetry.sendErrorTelemetry(
                 webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_FAILED,
@@ -245,13 +310,13 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
     private async buildDesktopUri(websiteId: string, environmentId: string): Promise<string | null> {
         try {
             // Get current URL parameters
-            const orgUrl = WebExtensionContext.urlParametersMap?.get('orgurl');
-            const region = WebExtensionContext.urlParametersMap?.get('region');
-            const schema = WebExtensionContext.urlParametersMap?.get('schema');
-            const tenantId = WebExtensionContext.urlParametersMap?.get('tenantid');
-            const portalId = WebExtensionContext.urlParametersMap?.get('websitepreviewid');
-            const siteName = WebExtensionContext.urlParametersMap?.get('websitename');
-            const siteUrl = WebExtensionContext.urlParametersMap?.get('websitepreviewurl');
+            const orgUrl = WebExtensionContext.urlParametersMap?.get(PowerPagesNavigationConstants.urlParams.ORG_URL);
+            const region = WebExtensionContext.urlParametersMap?.get(PowerPagesNavigationConstants.urlParams.REGION);
+            const schema = WebExtensionContext.urlParametersMap?.get(PowerPagesNavigationConstants.urlParams.SCHEMA);
+            const tenantId = WebExtensionContext.urlParametersMap?.get(PowerPagesNavigationConstants.urlParams.TENANT_ID);
+            const portalId = WebExtensionContext.urlParametersMap?.get(PowerPagesNavigationConstants.urlParams.PORTAL_ID);
+            const siteName = WebExtensionContext.urlParametersMap?.get(PowerPagesNavigationConstants.urlParams.SITE_NAME);
+            const siteUrl = WebExtensionContext.urlParametersMap?.get(PowerPagesNavigationConstants.urlParams.SITE_URL);
 
 
             // Validate required parameters for desktop URI
@@ -265,35 +330,22 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             }
 
             // Base desktop URI format - this should match the VS Code desktop extension's expected format
-            const baseUri = 'vscode://microsoft-IsvExpTools.powerplatform-vscode/open';
+            const baseUri = PowerPagesNavigationConstants.urls.DESKTOP_URI_SCHEME;
 
             // Build query parameters for the desktop extension
             const params = new URLSearchParams();
-            params.append('websiteid', websiteId);
-            params.append('envid', environmentId);
-            params.append('orgurl', orgUrl);
-            params.append('schema', schema);
+            params.append(PowerPagesNavigationConstants.urlParams.WEBSITE_ID, websiteId);
+            params.append(PowerPagesNavigationConstants.urlParams.ENV_ID, environmentId);
+            params.append(PowerPagesNavigationConstants.urlParams.ORG_URL, orgUrl);
+            params.append(PowerPagesNavigationConstants.urlParams.SCHEMA, schema);
 
-            if (region) params.append('region', region);
-            if (tenantId) params.append('tenantid', tenantId);
-            if (portalId) params.append('websitepreviewid', portalId);
-            if (siteName) params.append('sitename', siteName);
-            if (siteUrl) params.append('siteurl', siteUrl);
+            if (region) params.append(PowerPagesNavigationConstants.urlParams.REGION, region);
+            if (tenantId) params.append(PowerPagesNavigationConstants.urlParams.TENANT_ID, tenantId);
+            if (portalId) params.append(PowerPagesNavigationConstants.urlParams.PORTAL_ID, portalId);
+            if (siteName) params.append(PowerPagesNavigationConstants.urlParams.SITE_NAME, siteName);
+            if (siteUrl) params.append(PowerPagesNavigationConstants.urlParams.SITE_URL, siteUrl);
 
             const finalUri = `${baseUri}?${params.toString()}`;
-
-            // Log telemetry for successful URI generation
-            WebExtensionContext.telemetry.sendInfoTelemetry(
-                webExtensionTelemetryEventNames.WEB_EXTENSION_OPEN_DESKTOP_TRIGGERED,
-                {
-                    websiteId: websiteId,
-                    environmentId: environmentId,
-                    desktopUri: finalUri,
-                    hasSiteName: siteName ? 'true' : 'false',
-                    hasSiteUrl: params.has('siteurl') ? 'true' : 'false',
-                    schema: schema
-                }
-            );
 
             return finalUri;
 
@@ -324,19 +376,19 @@ export class PowerPagesNode extends vscode.TreeItem {
     getIconPath(svgFileName: string) {
         // Check if this icon has theme-specific versions
         const iconName = svgFileName.replace('.svg', '');
-        const hasThemeVariants = ['desktop', 'powerPages', 'previewSite'].includes(iconName);
+        const hasThemeVariants = PowerPagesNavigationConstants.icons.THEME_VARIANTS.includes(iconName);
 
         if (hasThemeVariants) {
             return {
-                light: vscode.Uri.joinPath(WebExtensionContext.extensionUri, 'src', 'web', 'client', 'assets', `${iconName}-icon`, 'light', svgFileName),
-                dark: vscode.Uri.joinPath(WebExtensionContext.extensionUri, 'src', 'web', 'client', 'assets', `${iconName}-icon`, 'dark', svgFileName)
+                light: vscode.Uri.joinPath(WebExtensionContext.extensionUri, PowerPagesNavigationConstants.paths.ASSETS, `${iconName}-icon`, PowerPagesNavigationConstants.paths.LIGHT_ICONS, svgFileName),
+                dark: vscode.Uri.joinPath(WebExtensionContext.extensionUri, PowerPagesNavigationConstants.paths.ASSETS, `${iconName}-icon`, PowerPagesNavigationConstants.paths.DARK_ICONS, svgFileName)
             };
         }
 
         // Fallback to single icon for both themes
         return {
-            light: vscode.Uri.joinPath(WebExtensionContext.extensionUri, 'src', 'web', 'client', 'assets', svgFileName),
-            dark: vscode.Uri.joinPath(WebExtensionContext.extensionUri, 'src', 'web', 'client', 'assets', svgFileName)
+            light: vscode.Uri.joinPath(WebExtensionContext.extensionUri, PowerPagesNavigationConstants.paths.ASSETS, svgFileName),
+            dark: vscode.Uri.joinPath(WebExtensionContext.extensionUri, PowerPagesNavigationConstants.paths.ASSETS, svgFileName)
         };
     }
 }

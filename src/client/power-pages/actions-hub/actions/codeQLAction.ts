@@ -284,12 +284,9 @@ export class CodeQLAction {
         return new Promise((resolve, reject) => {
             this.outputChannel.appendLine(vscode.l10n.t(Constants.Strings.CODEQL_EXECUTING_COMMAND, command));
 
-            // Parse the command and arguments
-            const parts = this.parseCommand(command);
-            const cmd = parts[0];
-            const args = parts.slice(1);
-
-            const process = spawn(cmd, args, {
+            // For commands with paths containing spaces, execute the full command string via shell
+            // This avoids argument parsing issues with spawn when paths have spaces
+            const process = spawn(command, [], {
                 shell: true,
                 stdio: ['pipe', 'pipe', 'pipe']
             });
@@ -374,39 +371,6 @@ export class CodeQLAction {
                 reject(new Error(vscode.l10n.t(Constants.Strings.CODEQL_PROCESS_ERROR, error.message)));
             });
         });
-    }
-
-    private parseCommand(command: string): string[] {
-        // Simple command parsing that handles quoted arguments
-        const parts: string[] = [];
-        let current = '';
-        let inQuotes = false;
-        let quoteChar = '';
-
-        for (let i = 0; i < command.length; i++) {
-            const char = command[i];
-
-            if ((char === '"' || char === "'") && !inQuotes) {
-                inQuotes = true;
-                quoteChar = char;
-            } else if (char === quoteChar && inQuotes) {
-                inQuotes = false;
-                quoteChar = '';
-            } else if (char === ' ' && !inQuotes) {
-                if (current.trim()) {
-                    parts.push(current.trim());
-                    current = '';
-                }
-            } else {
-                current += char;
-            }
-        }
-
-        if (current.trim()) {
-            parts.push(current.trim());
-        }
-
-        return parts;
     }
 
     private async displayResults(resultsPath: string): Promise<void> {
@@ -860,6 +824,6 @@ export class CodeQLAction {
     }
 
     public dispose(): void {
-        this.outputChannel.dispose();
+
     }
 }

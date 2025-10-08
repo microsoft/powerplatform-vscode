@@ -596,7 +596,7 @@ export function findOtherSites(knownSiteIds: Set<string>, fsModule = fs, yamlMod
                         const websiteData = yamlModule.parse(yamlContent) as WebsiteYaml;
 
                         otherSites.push({
-                            name: websiteData?.adx_name || path.basename(dir), // Use folder name as fallback
+                            name: websiteData?.adx_name || websiteData?.name || path.basename(dir), // Use folder name as fallback
                             websiteId: websiteId,
                             folderPath: dir,
                             isCodeSite: powerPagesSiteFolderExists
@@ -1013,7 +1013,9 @@ export const runCodeQLScreening = async (siteTreeItem?: SiteTreeItem) => {
             return;
         }
 
-        const powerPagesSiteFolderExists = fs.existsSync(sitePath);
+        // Check if the .powerpages-site folder exists for BYOC sites.
+        const sitePathWithFolder = path.join(sitePath, POWERPAGES_SITE_FOLDER);
+        const powerPagesSiteFolderExists = fs.existsSync(sitePathWithFolder);
 
         // Check if CodeQL extension is installed
         const codeQLExtension = vscode.extensions.getExtension(CODEQL_EXTENSION_ID);

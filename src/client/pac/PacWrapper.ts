@@ -94,7 +94,28 @@ export class PacInterop implements IPacInterop {
     }
 
     public async exit(): Promise<void> {
-        (await this.proc()).stdin.write(JSON.stringify(new PacArguments("exit")));
+        if (this._proc) {
+            try {
+                this._proc.stdin.write(JSON.stringify(new PacArguments("exit")));
+                // Give the process a moment to exit gracefully
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            } catch {
+                // Ignore write errors, process might already be dead
+            }
+
+            // Force kill if still running
+            if (this._proc && !this._proc.killed) {
+                this._proc.kill();
+            }
+
+            // Clear the process reference so a new one will be created on next use
+            this._proc = undefined;
+
+            // Clear any pending queue items
+            this.outputQueue = new BlockingQueue<string>();
+
+            oneDSLoggerWrapper.getLogger().traceInfo('InternalPacProcessReset');
+        }
     }
 }
 
@@ -185,7 +206,27 @@ export class PacWrapper {
     }
 
     public async downloadSite(downloadPath: string, websiteId: string, dataModelVersion: 1 | 2): Promise<PacOutput> {
-        return this.executeCommandAndParseResults<PacOutput>(new PacArguments("pages", "download", "-p", downloadPath, "-id", websiteId, "-mv", dataModelVersion.toString()));
+        try {
+            return await this.executeCommandAndParseResults<PacOutput>(new PacArguments("pages", "download", "-p", downloadPath, "-id", websiteId, "-mv", dataModelVersion.toString()));
+        } catch (error) {
+            // If download fails, reset the PAC CLI process to ensure it's in a clean state
+            oneDSLoggerWrapper.getLogger().traceError(
+                'PacDownloadError',
+                'Download operation failed, resetting PAC CLI process',
+                error instanceof Error ? error : new Error(String(error))
+            );
+            await this.resetPacProcess();
+            throw error;
+        }
+    }
+
+    public async resetPacProcess(): Promise<void> {
+        try {
+            await this.pacInterop.exit();
+        } catch {
+            // Ignore exit errors, process might already be dead
+        }
+        // The next operation will create a new process
     }
 
     public async pagesDownload(path: string, websiteId: string, modelVersion: string): Promise<PacOutput> {

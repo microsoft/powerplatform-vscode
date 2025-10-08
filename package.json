@@ -199,6 +199,12 @@
         "view": "microsoft.powerplatform.pages.metadataDiff",
         "contents": "%microsoft.powerplatform.pages.metadataDiff.login%",
         "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported"
+      },
+      {
+        "view": "microsoft.powerplatform.pages.actionsHub",
+        "contents": "%pacCLI.authPanel.welcome.whenInteractiveNotSupported%",
+        "when": "!virtualWorkspace && !pacCLI.authPanel.interactiveLoginSupported",
+        "enablement": "microsoft.powerplatform.environment.initialized && !microsoft.powerplatform.pages.actionsHub.loadingWebsites"
       }
     ],
     "commands": [

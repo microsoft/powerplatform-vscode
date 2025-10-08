@@ -34,6 +34,10 @@
         <source xml:lang="en">AI-generated content can contain mistakes</source>
         <target state="translated">AI tarafından oluşturulan içeriklerde hatalar olabilir</target>
       </trans-unit>
+      <trans-unit id="++CODE++20e183e54ca33b94a25f921f68c75c4ec47212f2d94ee04e6fe4b564b96d2826">
+        <source xml:lang="en">Accounts don't match, data may not load.</source>
+        <target state="translated">Hesaplar eşleşmiyor, veriler yüklenmeyebilir.</target>
+      </trans-unit>
       <trans-unit id="++CODE++031018d0f4bb3985ac963d91cb607a9eaab8855a00990613c5327a1edb0032f7">
         <source xml:lang="en">Activating CodeQL extension...</source>
         <target state="translated">CodeQL uzantısı etkinleştiriliyor...</target>
@@ -92,9 +96,21 @@
         <source xml:lang="en">Authenticating...</source>
         <target state="translated">Kimlik doğrulanıyor...</target>
       </trans-unit>
+      <trans-unit id="++CODE++360ec488e2837c8b2a005dc8637d770d584aec7ec84a1447ec98f765fc564662">
+        <source xml:lang="en">Authentication failed after user initiated auth</source>
+        <target state="translated">Kullanıcı kimlik doğrulamasını başlattıktan sonra kimlik doğrulaması başarısız oldu</target>
+      </trans-unit>
       <trans-unit id="++CODE++93c83aa255a01cb4ee50d86e561c78b6c28e3e0f7fd9143dd7817b93b3c5a198">
         <source xml:lang="en">Authentication failed. Please login and try again.</source>
         <target state="translated">Kimlik doğrulanamadı. Lütfen oturum açıp tekrar deneyin.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++4190475b52357e7ad3da76828784a5b9f291519e331b0c0e71f5d14e946bbc4b">
+        <source xml:lang="en">Authentication failed. Please try again.</source>
+        <target state="translated">Kimlik doğrulama işlemi başarısız oldu. Lütfen yeniden deneyin.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++9ec3f488f28c5356cbb78bdef208cd2b8c773bb88098c75f2c14db955430874a">
+        <source xml:lang="en">Authentication required...</source>
+        <target state="translated">Kimlik doğrulaması gerekiyor...</target>
       </trans-unit>
       <trans-unit id="++CODE++a57666e58a53eea23667fddf0a7c41bdc64abfc5eae94637e88388a6b139b314">
         <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
@@ -139,6 +155,10 @@
         <source xml:lang="en">Check the URL and verify the parameters are correct</source>
         <target state="translated">URL'yi denetleyin ve parametrelerin doğru olduğunu onaylayın</target>
       </trans-unit>
+      <trans-unit id="++CODE++6632cd07f161cbf30f0b3c569bb72daa960ac2c0c49a90daa7cee3185f636e27">
+        <source xml:lang="en">Checking environment...</source>
+        <target state="translated">Ortam denetleniyor...</target>
+      </trans-unit>
       <trans-unit id="++CODE++c724a9256b7af89455e04cc3611e5df1030c25f92652356f205c15f02c2da28e">
         <source xml:lang="en">Checking for active auth profile...</source>
         <target state="translated">Etkin kimlik doğrulama profili denetleniyor...</target>
@@ -160,6 +180,10 @@
         <note>This is a markdown formatting which must persist across translations.
 The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).', keeping brackets and the text in the parentheses unmodified</note>
         <target state="translated">Önbellek temizleniyor. [Ayrıntılara](https://aka.ms/pages-clear-cache) göz atın.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++b1ffea87cc95d3bfa308b929bb907b43e7d91be038e706a67142b15c571da334">
+        <source xml:lang="en">Click to authenticate with a matching account</source>
+        <target state="translated">Eşleşen bir hesapla kimlik doğrulaması yapmak için tıklayın</target>
       </trans-unit>
       <trans-unit id="++CODE++7d9eb7acb13e24625c404401d8e88b2350e32162455885f18276cf802f7701ed">
         <source xml:lang="en">Close</source>
@@ -367,6 +391,18 @@ Tür: {3}</target>
         <source xml:lang="en">Do not show again</source>
         <target state="translated">Bir daha gösterme</target>
       </trans-unit>
+      <trans-unit id="++CODE++668c177d38e6f62ffe2ca64e3915151cfcd566204fd4e4b499e7fe237ad63fb1">
+        <source xml:lang="en">Download Power Pages Site</source>
+        <target state="translated">Power Pages Sitesini İndir</target>
+      </trans-unit>
+      <trans-unit id="++CODE++f7bcb5a0e46a8772ca8a648ca7814c6532078d2040286bdcc8993ff7ea9db164">
+        <source xml:lang="en">Download VS Code</source>
+        <target state="translated">VS Code'u indirin</target>
+      </trans-unit>
+      <trans-unit id="++CODE++7f3601875ec37c14ea70acbdfab60e330eec2f6b65ccad92bee9823a2eb326de">
+        <source xml:lang="en">Download failed: {0}</source>
+        <target state="translated">İndirme başarısız: {0}</target>
+      </trans-unit>
       <trans-unit id="++CODE++ac72407b10d30bf47faf11da09b605a85fc649bd3f2e33acb281655cb9021d9d">
         <source xml:lang="en">Edit the site</source>
         <target state="translated">Siteyi düzenle</target>
@@ -386,6 +422,14 @@ Tür: {3}</target>
       <trans-unit id="++CODE++048d1e764983197603f13e79d28f59bbfa358c0c11e1184c27fc687512589778">
         <source xml:lang="en">Enter the name of the web template</source>
         <target state="translated">Web şablonunun adını girin</target>
+      </trans-unit>
+      <trans-unit id="++CODE++7d63bf943bc02891e817defccba51294daaf55fc6418bc5bac517fd254ed07e2">
+        <source xml:lang="en">Environment ID is not available</source>
+        <target state="translated">Ortam kimliği kullanılamıyor</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e7543af0c2e457267ab72756c809d1cbb2f9d2c888d7c712a2022d464b3e6d57">
+        <source xml:lang="en">Environment ID is required</source>
+        <target state="translated">Ortam kodu gereklidir</target>
       </trans-unit>
       <trans-unit id="++CODE++b6d455a8dab8e66229a985315b5db1e1c065ba6d999dffd2795c03189fb32265">
         <source xml:lang="en">Environment ID: {0}</source>
@@ -473,6 +517,10 @@ Tür: {3}</target>
         <source xml:lang="en">Failed to fetch some files.</source>
         <target state="translated">Bazı dosyalar alınamadı.</target>
       </trans-unit>
+      <trans-unit id="++CODE++f4948aad45ee9baaf762fbd640c551dc397190efdd9fb87468b559502ece927c">
+        <source xml:lang="en">Failed to generate VS Code Desktop URL: {0}</source>
+        <target state="translated">VS Code Masaüstü URL'si oluşturulamıyor: {0}</target>
+      </trans-unit>
       <trans-unit id="++CODE++862d6197d64601aa13ce30db5ec5b8f819ad00fe21e3b031a3e47fe22ef68fb3">
         <source xml:lang="en">Failed to get file ready for edit: {0}</source>
         <target state="translated">Dosya düzenlenmek üzere alınamadı: {0}</target>
@@ -485,6 +533,10 @@ Tür: {3}</target>
         <source xml:lang="en">Failed to get website endpoint. Please try again later</source>
         <target state="translated">Web sitesi uç noktası alınamadı. Lütfen daha sonra yeniden deneyin</target>
       </trans-unit>
+      <trans-unit id="++CODE++fc80bc8b6f74fff75eee85e53e42036bc6069a2fa632337a52789dacf96e9ba9">
+        <source xml:lang="en">Failed to handle Power Pages URI: {0}</source>
+        <target state="translated">Power Pages URI'si işlenemedi: {0}</target>
+      </trans-unit>
       <trans-unit id="++CODE++9696573fbb3df8812e2d0b83aa3d9077681bf992c9f9514fbbb81fcc7787560d">
         <source xml:lang="en">Failed to install SARIF viewer extension. Opening results as text file.</source>
         <target state="translated">SARIF görüntüleyici uzantısı yüklenemedi. Sonuçlar metin dosyası olarak açılıyor.</target>
@@ -492,6 +544,14 @@ Tür: {3}</target>
       <trans-unit id="++CODE++83f3ed1048ce17af62e4baf0dd046ec8571cb8ae602ad853025266a023de8061">
         <source xml:lang="en">Failed to install SARIF viewer extension: {0}</source>
         <target state="translated">SARIF görüntüleyici uzantısı yüklenemedi: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++f865b154a9a2097159a09be82db76a9b29afc71df9ad86b9c08253f2e805d23c">
+        <source xml:lang="en">Failed to open in VS Code Desktop: {0}</source>
+        <target state="translated">VS Code Desktop'ta açılamadı: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++3ae8538d5c7a65434c88e17ef8360aa3eb2c80dd577f3daad2d41d58d83353c9">
+        <source xml:lang="en">Failed to switch to required environment</source>
+        <target state="translated">Gerekli ortama geçilemedi</target>
       </trans-unit>
       <trans-unit id="++CODE++a9e36b880dd45b64ae5601865540605296febf9bd855fc46d9c35c2c2ed9a7f2">
         <source xml:lang="en">Feature is not enabled for this geo.</source>
@@ -733,6 +793,10 @@ Kuruluş Kimliği: {3}</target>
         <source xml:lang="en">New Webpage</source>
         <target state="translated">Yeni Web Sayfası</target>
       </trans-unit>
+      <trans-unit id="++CODE++1ea442a134b2a184bd5d40104401f2a37fbc09ccf3f4bc9da161c6099be3691d">
+        <source xml:lang="en">No</source>
+        <target state="translated">Hayır</target>
+      </trans-unit>
       <trans-unit id="++CODE++b1061a7adf836619e40617bbbbe42d04a9c167b5756a2b4926c02d88e780a7f9">
         <source xml:lang="en">No Website Data Found in Current Directory. Please switch to a directory that contains the PAC downloaded website data to continue.</source>
         <target state="translated">Geçerli Dizinde Web Sitesi Verileri Bulunamadı. Devam etmek için lütfen PAC tarafından indirilen web sitesi verilerini içeren bir dizine geçin.</target>
@@ -777,6 +841,10 @@ Kuruluş Kimliği: {3}</target>
         <source xml:lang="en">No workspace folder opened. Please open a site folder to preview.</source>
         <target state="translated">Herhangi bir çalışma alanı klasörü açılmadı. Önizlemek için bir site klasörü açın.</target>
       </trans-unit>
+      <trans-unit id="++CODE++ccb4c324f516c63335c648ee08a66b8cc78737d26156f0c84707cd0ee4235492">
+        <source xml:lang="en">Not Now</source>
+        <target state="translated">Şimdi Değil</target>
+      </trans-unit>
       <trans-unit id="++CODE++b2b461f3eae470e95fdcfd61a3cbe6680e84d0a7221a305f696ce44843badc89">
         <source xml:lang="en">Object ID: {0}</source>
         <note>{0} is the Object ID</note>
@@ -786,6 +854,10 @@ Kuruluş Kimliği: {3}</target>
         <source xml:lang="en">One or more attribute names have been changed or removed. Contact your admin.</source>
         <target state="translated">Bir veya daha fazla öznitelik adı değiştirildi veya kaldırıldı. Yöneticinizle iletişime geçin.</target>
       </trans-unit>
+      <trans-unit id="++CODE++68b3f4bff6de90aed6e47e72d8b680901da64dff39ed843e9eeed0464020e971">
+        <source xml:lang="en">Open Folder</source>
+        <target state="translated">Klasörü Aç</target>
+      </trans-unit>
       <trans-unit id="++CODE++f329c8f717c6c20eb60774d8f9227683661d74ebae48207076be60be8796dd5d">
         <source xml:lang="en">Open Results</source>
         <target state="translated">Sonuçları Aç</target>
@@ -794,9 +866,21 @@ Kuruluş Kimliği: {3}</target>
         <source xml:lang="en">Open as Text</source>
         <target state="translated">Metin Olarak Aç</target>
       </trans-unit>
+      <trans-unit id="++CODE++e35b67aaf27dab4f013733ada391dda0fb7348af30bcf397692ecf7a83b9cb2f">
+        <source xml:lang="en">Open in New Workspace</source>
+        <target state="translated">Yeni Çalışma Alanında Aç</target>
+      </trans-unit>
       <trans-unit id="++CODE++e61655958f06a0bb12435c70d95c738b62fabdff78f26c597c105a8823820fbd">
         <source xml:lang="en">Open in Power Pages studio</source>
         <target state="translated">Power Pages studyosunda aç</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e473d99cc18c8fbc20a562b15d5c16437343c2dc28d5b176e64890b7b3d350d1">
+        <source xml:lang="en">Open in VS Code Desktop</source>
+        <target state="translated">VS Code Desktop'ta aç</target>
+      </trans-unit>
+      <trans-unit id="++CODE++87fe691d426d47ee588ac957e12a9936b94fe6d70fd9ef97c92f7af1671ed9a0">
+        <source xml:lang="en">Opening in VS Code Desktop. If it doesn't open or shows an error, you may need to install VS Code or update the Power Platform extension.</source>
+        <target state="translated">VS Code Desktop’ta açılıyor. Açılmazsa veya bir hata gösterirse, VS Code’u yüklemeniz veya Power Platform uzantısını güncelleştirmeniz gerekebilir.</target>
       </trans-unit>
       <trans-unit id="++CODE++dac0ee62a5197a3722a9e7e9e851e80504cced8a13ce8b17842d78e8313578c2">
         <source xml:lang="en">Opening preview site...</source>
@@ -823,9 +907,17 @@ Kuruluş Kimliği: {3}</target>
         <note>{0} is the Organization ID</note>
         <target state="translated">Kuruluş Kimliği: {0}</target>
       </trans-unit>
+      <trans-unit id="++CODE++77c2c11a03d9aaa14f233c0409b58952a96ed6f781a024630a7af58d1ed70f50">
+        <source xml:lang="en">Organization URL is required</source>
+        <target state="translated">Kuruluş URL’si gereklidir</target>
+      </trans-unit>
       <trans-unit id="++CODE++b3d5416b4e83d803e6f238f1d31a637450f12c9370113871d15bd48c72435cd2">
         <source xml:lang="en">Other Sites</source>
         <target state="translated">Diğer Siteler</target>
+      </trans-unit>
+      <trans-unit id="++CODE++17e4f785a8957503f2cbe34d549c9a4808bcf596614c44414d4a456931982022">
+        <source xml:lang="en">PAC CLI</source>
+        <target state="translated">PAC CLI</target>
       </trans-unit>
       <trans-unit id="++CODE++d4dc9d620b68b70e7de4aeaa15e1d83dddb457c64a3cadb35cf1b55025ad194f">
         <source xml:lang="en">PAC Telemetry disabled</source>
@@ -867,10 +959,18 @@ Kuruluş Kimliği: {3}</target>
         <source xml:lang="en">Please select the folder that contains your compiled output to upload your site.</source>
         <target state="translated">Sitenizi yüklemek için derlediğiniz çıktının bulunduğu klasörü seçin.</target>
       </trans-unit>
+      <trans-unit id="++CODE++5fbb04557cac7e489e30d8dade7753361709a79b317cfe1e402c30363c43b924">
+        <source xml:lang="en">Power Pages</source>
+        <target state="translated">Power Pages</target>
+      </trans-unit>
       <trans-unit id="++CODE++1bac158cc07a75506df3774db0ad7c188c19ccad4943c4cf03da8b6700ef9ce4">
         <source xml:lang="en">Power Pages Copilot is now connected to the environment: {0} : {1}</source>
         <note>{0} represents the environment name</note>
         <target state="translated">Power Pages Copilot artık şu ortama bağlıdır: {0}: {1}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++04ac907168ac84b45263503d1306565bece49c4ae3e8ef4af310b304f03ab6d4">
+        <source xml:lang="en">Power Pages site download completed successfully. Would you like to open the downloaded site folder?</source>
+        <target state="translated">Power Pages site indirme işlemi başarıyla tamamlandı. İndirilen site klasörünü açmak ister misiniz?</target>
       </trans-unit>
       <trans-unit id="++CODE++cce89cd3a0f118dafd3173f6444abdcd2b9782153af1b6bfa8f63ef3d4b68268">
         <source xml:lang="en">Power Pages studio URL is not available</source>
@@ -888,6 +988,10 @@ Kuruluş Kimliği: {3}</target>
         <source xml:lang="en">Preparing pac CLI (v{0})...</source>
         <note>{0} represents the version number</note>
         <target state="translated">pac CLI (v{0}) hazırlanıyor...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++a8994ac993c5dbea35b5267f2c2ee800ee8ce17569ba51a699748b406c5170fd">
+        <source xml:lang="en">Preparing to open Power Pages site...</source>
+        <target state="translated">Power Pages sitesini açmaya hazırlanıyor...</target>
       </trans-unit>
       <trans-unit id="++CODE++f6412ced721a26ac3e3cb55d3ff713d8403c3dfc2efa0cff07b48478bdd57555">
         <source xml:lang="en">Preview site</source>
@@ -909,6 +1013,10 @@ Kuruluş Kimliği: {3}</target>
         <source xml:lang="en">Profile Kind: {0}</source>
         <note>The {0} represents the profile type (Admin vs Dataverse)</note>
         <target state="translated">Profil Türü: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++6e31aef31ad6cc82d8d8d41fd45043885761a11b9222b1ec7ce9d78a36dd4451">
+        <source xml:lang="en">Ready to select download folder</source>
+        <target state="translated">İndirme klasörünü seçilmeye hazır</target>
       </trans-unit>
       <trans-unit id="++CODE++b62120c5416487f4c793d75aee7fea083971e5ac665a3f35767023f408f482e5">
         <source xml:lang="en">Response data is empty</source>
@@ -946,6 +1054,10 @@ Kuruluş Kimliği: {3}</target>
         <source xml:lang="en">Select Folder for new PCF Control</source>
         <note>Do not translate 'PCF' as it is a product name.</note>
         <target state="translated">Yeni PCF Denetimi için Klasör Seçin</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e4efd0ebbc891e539d343ce3247c566fbb105ea4f5746251a256995cdeaefcd3">
+        <source xml:lang="en">Select Folder to Download Power Pages Site</source>
+        <target state="translated">Power Pages Sitesini İndirmek İçin Klasör Seçin</target>
       </trans-unit>
       <trans-unit id="++CODE++a40f78f3a7f5c5ab1b101e95cdf044552542712fdcf45a83dfea3f455b6f638a">
         <source xml:lang="en">Select Type</source>
@@ -988,9 +1100,25 @@ Kuruluş Kimliği: {3}</target>
         <source xml:lang="en">Show Output Panel</source>
         <target state="translated">Çıktı Panelini Göster</target>
       </trans-unit>
+      <trans-unit id="++CODE++2f65ba5aa38a9acac3a9a9c0a9aeecd7b32796008dc63432bedbe6ef62982558">
+        <source xml:lang="en">Sign in to VS Code with PAC CLI account</source>
+        <target state="translated">PAC CLI hesabıyla VS Code'da oturum açın</target>
+      </trans-unit>
       <trans-unit id="++CODE++524bca0347e50e3801bebf27374124b3babf072729b4da4bcc45ef5c385ee8f4">
         <source xml:lang="en">Site Details</source>
         <target state="translated">Site Ayrıntıları</target>
+      </trans-unit>
+      <trans-unit id="++CODE++4fa72d80ab1b04e31f450bacc89bff526a5e52e3d104d153b3b493b108330b3c">
+        <source xml:lang="en">Site download cancelled. Authentication is required to proceed.</source>
+        <target state="translated">Site indirme işlemi iptal edildi. Devam etmek için kimlik doğrulama gerekiyor.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++ca57fa2618956b4946832e64d4815e0a68f623ab2d39b25dff228afbcdd8d008">
+        <source xml:lang="en">Site download cancelled. Correct environment connection is required.</source>
+        <target state="translated">Site indirme işlemi iptal edildi. Doğru ortam bağlantısı gereklidir.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++c0917a71517a4a08ef56adaaec8f79404a4d5cc14afc8d141e9aa6181bee8622">
+        <source xml:lang="en">Site download cancelled. No folder selected.</source>
+        <target state="translated">Site indirme işlemi iptal edildi. Klasör seçilmedi.</target>
       </trans-unit>
       <trans-unit id="++CODE++a72357d268bce5e1643bfd74563495784179f75ace0d652db8f808f293586b63">
         <source xml:lang="en">Site management URL not found for the selected site. Please try again after refreshing the environment.</source>
@@ -1021,6 +1149,10 @@ Kuruluş Kimliği: {3}</target>
         <source xml:lang="en">Submit</source>
         <target state="translated">Gönder</target>
       </trans-unit>
+      <trans-unit id="++CODE++e3a0cecb7c0c51b4a918164be2e4a75795139fbc652adbed3c6a144cf4adc009">
+        <source xml:lang="en">Switching environment...</source>
+        <target state="translated">Ortam değiştiriliyor...</target>
+      </trans-unit>
       <trans-unit id="++CODE++550b4ee4e0ae69ddf9c18f9d46f59e59da633a2644633d140197d62ded3f2657">
         <source xml:lang="en">Tell us more.</source>
         <target state="translated">Lütfen bize biraz daha bilgi verin.</target>
@@ -1041,6 +1173,10 @@ Kuruluş Kimliği: {3}</target>
       <trans-unit id="++CODE++3ed1f203bd6f7102d8c5dcf88fe4fb5327b54a1e88962adcddbf9a023bcf8875">
         <source xml:lang="en">The SARIF Viewer extension is recommended for viewing CodeQL results. Would you like to install it now?</source>
         <target state="translated">CodeQL sonuçlarını görüntülemek için SARIF Görüntüleyici uzantısı önerilir. Bunu şimdi yüklemek ister misiniz?</target>
+      </trans-unit>
+      <trans-unit id="++CODE++98a4cf89a57d927fce50521aaf27e9fd7dc5046e82725348cf6024469a4f2bdf">
+        <source xml:lang="en">The account signed in to VS Code differs from the one authenticated in PAC CLI (Power Platform CLI). This mismatch can cause data not to load or actions to fail because UI commands run through the CLI. To fix it, sign in to VS Code using the same account as your PAC CLI. If needed, you can update your PAC CLI authentication separately via the command line.</source>
+        <target state="translated">VS Code'da oturum açan hesap, PAC CLI'da (Power Platform CLI) kimliği doğrulanan hesaptan farklı. Bu uyumsuzluk, UI komutları CLI üzerinden çalıştırıldığından verilerin yüklenmemesine veya eylemlerin başarısız olmasına neden olabilir. Düzeltmek için PAC CLI ile aynı hesabı kullanarak VS Code'da oturum açın. Gerekirse, PAC CLI kimlik doğrulamanızı komut satırı aracılığıyla ayrı olarak güncelleyebilirsiniz.</target>
       </trans-unit>
       <trans-unit id="++CODE++0bc2e4918b64f82220bde3dae30dc007a45fb59c3677833fb5a0e275a3b6b54b">
         <source xml:lang="en">The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?</source>
@@ -1112,6 +1248,10 @@ Kuruluş Kimliği: {3}</target>
         <source xml:lang="en">Unable to find that app</source>
         <target state="translated">Bu uygulama bulunamadı</target>
       </trans-unit>
+      <trans-unit id="++CODE++01e5c349da59b88cb8c4552d036f670c1a5d824abf91fe9539d408e89d9c9445">
+        <source xml:lang="en">Unable to generate VS Code Desktop URL</source>
+        <target state="translated">VS Code Masaüstü URL'si oluşturulamıyor</target>
+      </trans-unit>
       <trans-unit id="++CODE++3747890a3bfddec3123ce9a40cdd15f278d1335b382f80beb52bf18101ab02c2">
         <source xml:lang="en">Unable to locate website root folder.</source>
         <target state="translated">Web sitesi kök klasörü bulunamıyor.</target>
@@ -1125,6 +1265,10 @@ Kuruluş Kimliği: {3}</target>
         <source xml:lang="en">Unmanaged</source>
         <target state="translated">Yönetilmeyen</target>
       </trans-unit>
+      <trans-unit id="++CODE++810c2285d6b0fa110f868e006118426e02a150592009b5f2458e2883d8dcd3c8">
+        <source xml:lang="en">Update Extension</source>
+        <target state="translated">Uzantıyı Güncelleştir</target>
+      </trans-unit>
       <trans-unit id="++CODE++7fce0124a7cb74955461f08e39ceaaed1e2850492f077f4e6defd82ef3ca6b0e">
         <source xml:lang="en">Upload changes</source>
         <target state="translated">Değişiklikleri yükle</target>
@@ -1136,6 +1280,18 @@ Kuruluş Kimliği: {3}</target>
       <trans-unit id="++CODE++c86daff3d88f7b1f615467872994ef13dcbc1c55e10105d71f398c721650c9c2">
         <source xml:lang="en">Use current site folder</source>
         <target state="translated">Geçerli site klasörünü kullanın</target>
+      </trans-unit>
+      <trans-unit id="++CODE++923414ce1803b583f001d5c698b84f3ab0b5ecafb4953d630eab93ae622330bb">
+        <source xml:lang="en">User cancelled authentication</source>
+        <target state="translated">Kullanıcı kimlik doğrulamasını iptal etti</target>
+      </trans-unit>
+      <trans-unit id="++CODE++0b53763063a9819b6dae13d3cd35d034445618c073f88510873b12cd8fa5d66b">
+        <source xml:lang="en">User cancelled environment switch</source>
+        <target state="translated">Kullanıcı ortam geçişini iptal etti</target>
+      </trans-unit>
+      <trans-unit id="++CODE++76df7bbbf778aafae0e57613b349235aaee0a97e85a4892f3a28b6ccc4e65232">
+        <source xml:lang="en">User cancelled folder selection</source>
+        <target state="translated">Kullanıcı klasör seçimini iptal etti</target>
       </trans-unit>
       <trans-unit id="++CODE++7cf98759b12f73d7717ae27ba49a3d27f026be55b4a33236942882c7a8b671bf">
         <source xml:lang="en">User cancelled opening results.</source>
@@ -1154,6 +1310,14 @@ Kuruluş Kimliği: {3}</target>
         <source xml:lang="en">Using default query suite: {0}</source>
         <target state="translated">Varsayılan sorgu paketi kullanılıyor: {0}</target>
       </trans-unit>
+      <trans-unit id="++CODE++4164b3068322daf412659fb28d24b8b18f2d9fcdb160a63980bafbd16134231b">
+        <source xml:lang="en">VS Code - PAC CLI authentication mismatch detected</source>
+        <target state="translated">VS Code - PAC CLI kimlik doğrulama uyuşmazlığı algılandı</target>
+      </trans-unit>
+      <trans-unit id="++CODE++527423ed0138373aa91233083f12eceeae92aa1998e6706d7a260524dafbe6c4">
+        <source xml:lang="en">Validating authentication...</source>
+        <target state="translated">Kimlik doğrulaması doğrulanıyor...</target>
+      </trans-unit>
       <trans-unit id="++CODE++d941ee96c6f480390012381f9fc0dfd961f2aa803732860e2505a8453700f458">
         <source xml:lang="en">We encountered an error preparing the files for edit.</source>
         <target state="translated">Dosyalar düzenleme için hazırlanırken bir hatayla karşılaştık.</target>
@@ -1169,6 +1333,14 @@ Kuruluş Kimliği: {3}</target>
       <trans-unit id="++CODE++00dc171124ab430bbbaae51ec39dda1c5e7d045f382f56b1767d9e733292731c">
         <source xml:lang="en">Webpage names should contain only letters, numbers, hyphens, or underscores.</source>
         <target state="translated">Web sayfası adları yalnızca harf, sayı, tire veya alt çizgi içermelidir.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++ccd9f7afcc6454ab02bcba204f559a9c89947c6e39a7c8651e30799d78ca4fd2">
+        <source xml:lang="en">Website ID is not available</source>
+        <target state="translated">Web sitesi kimliği kullanılamıyor</target>
+      </trans-unit>
+      <trans-unit id="++CODE++6a9f7c7cbfe7d5ae5e596c92dc8f1e73e79add5f6c7359c5fd0d61a23a66b668">
+        <source xml:lang="en">Website ID is required</source>
+        <target state="translated">Web sitesi kimliği gereklidir</target>
       </trans-unit>
       <trans-unit id="++CODE++d3eaa7bf5377b15781ad4c0f43e4da94b9a2bd485ddbbbe62a2c3d53c5c7fe4a">
         <source xml:lang="en">Website Id: {0}</source>
@@ -1212,6 +1384,10 @@ Kuruluş Kimliği: {3}</target>
         <source xml:lang="en">Yes</source>
         <target state="translated">Evet</target>
       </trans-unit>
+      <trans-unit id="++CODE++5f1325c0fc2f8e2e8732d6545bcc100f0e7e0d8ea1740b2d519fc83c43ae1fc2">
+        <source xml:lang="en">You are currently connected to a different environment. Would you like to switch to the required environment?</source>
+        <target state="translated">Şu anda farklı bir ortama bağlısınız. Gerekli ortama geçmek istiyor musunuz?</target>
+      </trans-unit>
       <trans-unit id="++CODE++3c65297a1fc0860c6993f5c8beb4341dd13b71d7f3957daba611adf04a6c971b">
         <source xml:lang="en">You are editing a live, public site </source>
         <target state="translated">Yayında olan, herkese açık bir siteyi düzenliyorsunuz </target>
@@ -1219,6 +1395,10 @@ Kuruluş Kimliği: {3}</target>
       <trans-unit id="++CODE++beb45bfdd4c3f6da9bb3687e4d9275790d086c1dffaec84839fa9ec9ce4e9ee2">
         <source xml:lang="en">You can use this in &lt;a href="#" id="github-copilot-link"&gt;GitHub Copilot with @powerpages&lt;/a&gt; and leverage best of both world.</source>
         <target state="translated">Bunu &lt;a href="#" id="github-copilot-link"&gt;@powerpages ile GitHub Copilot&lt;/a&gt;'ta kullanabilir ve her iki dünyanın en iyi yönlerinden yararlanabilirsiniz.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++87eb9aa1f1ac1b6b141aedc4c21a9cb7cf786453c529babe30c8760072bb34d6">
+        <source xml:lang="en">You need to authenticate with Power Platform to download the site. Would you like to authenticate now?</source>
+        <target state="translated">Siteyi indirmek için Power Platform ile kimlik doğrulaması yapmanız gerekir. Şimdi kimlik doğrulaması yapmak ister misiniz?</target>
       </trans-unit>
       <trans-unit id="++CODE++eeb25aaca6a9e3f6c670334480b8e56e2a362ecfec23f8e63617915b22ddc8a0">
         <source xml:lang="en">Your preview isn't updated. Please upload your site to see the latest changes.</source>
@@ -1228,6 +1408,10 @@ Kuruluş Kimliği: {3}</target>
         <source xml:lang="en">dotnet sdk 6.0 or greater must be installed</source>
         <note>Do not translate 'dotnet' or 'sdk'</note>
         <target state="translated">dotnet sdk 6.0 veya üstü bir sürüm yüklenmelidir</target>
+      </trans-unit>
+      <trans-unit id="++CODE++21c9bbf3ca8756722337933b27566345c8aa2794231295a3ede6204329456931">
+        <source xml:lang="en">pac pcf init</source>
+        <target state="translated">pac pcf başlatma</target>
       </trans-unit>
       <trans-unit id="++CODE++48c4c42c9b70ac4687a121f91d8cb9a9063a3b51fbc5eeb68e5edc961ee18482">
         <source xml:lang="en">{0} created!</source>

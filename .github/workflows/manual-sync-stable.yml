@@ -1,0 +1,79 @@
+name: Manual Sync to Release/Stable
+
+on:
+  workflow_dispatch:
+    inputs:
+      sync_type:
+        description: 'Sync method'
+        required: true
+        type: choice
+        options:
+        - create-pr
+        - direct-push
+        default: 'create-pr'
+      confirm:
+        description: 'Type "sync" to confirm manual sync to release/stable'
+        required: true
+        type: string
+
+jobs:
+  manual-sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    if: github.event.inputs.confirm == 'sync'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Manual sync via PR
+        if: github.event.inputs.sync_type == 'create-pr'
+        run: |
+          git config user.name "github-actions[bot] (manual)"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git fetch origin main
+          git fetch origin release/stable
+          
+          # Create manual sync branch
+          SYNC_BRANCH="manual-sync/main-to-stable-$(date +%Y%m%d-%H%M%S)"
+          git checkout -b $SYNC_BRANCH origin/main
+          git push origin $SYNC_BRANCH
+          
+          # Create PR
+          gh pr create \
+            --title "Manual Sync: main to release/stable" \
+            --body "🔄 **Manual Sync PR**
+            
+            This is a manually triggered sync from main to release/stable.
+            
+            **Triggered by:** @${{ github.actor }}
+            **Timestamp:** $(date)
+            
+            Please review the changes before merging." \
+            --base release/stable \
+            --head $SYNC_BRANCH \
+            --assignee "${{ github.actor }}"
+
+      - name: Manual sync via direct push
+        if: github.event.inputs.sync_type == 'direct-push'
+        run: |
+          git config user.name "github-actions[bot] (manual)"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git fetch origin main
+          git fetch origin release/stable
+          git checkout release/stable
+          
+          if git merge-base --is-ancestor release/stable origin/main; then
+            git merge origin/main --ff-only
+            git push origin release/stable
+            echo "✅ Manual sync completed successfully"
+          else
+            echo "❌ Cannot fast-forward merge. Branch has diverged."
+            exit 1
+          fi

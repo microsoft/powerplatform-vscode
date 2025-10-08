@@ -129,7 +129,12 @@ export enum webExtensionTelemetryEventNames {
     WEB_EXTENSION_SEARCH_TEXT = "WebExtensionSearchText",
     WEB_EXTENSION_SEARCH_FILE = "WebExtensionSearchFile",
     WEB_EXTENSION_SOURCE_ATTRIBUTE_INVALID = "WebExtensionSourceAttributeInvalid",
+    WEB_EXTENSION_OPEN_DESKTOP_CLICKED = "WebExtensionOpenDesktopClicked",
+    WEB_EXTENSION_OPEN_DESKTOP_FEATURE_DISABLED = "WebExtensionOpenDesktopFeatureDisabled",
     WEB_EXTENSION_OPEN_DESKTOP_TRIGGERED = "WebExtensionOpenDesktopTriggered",
     WEB_EXTENSION_OPEN_DESKTOP_FAILED = "WebExtensionOpenDesktopFailed",
+    WEB_EXTENSION_OPEN_DESKTOP_URI_OPENED = "WebExtensionOpenDesktopUriOpened",
+    WEB_EXTENSION_OPEN_DESKTOP_DIALOG_DOWNLOAD_CLICKED = "WebExtensionOpenDesktopDialogDownloadClicked",
+    WEB_EXTENSION_OPEN_DESKTOP_DIALOG_UPDATE_CLICKED = "WebExtensionOpenDesktopDialogUpdateClicked",
     WEB_EXTENSION_DUPLICATE_FOLDER_NAME_CREATED = "WebExtensionDuplicateFolderNameCreated"
 }

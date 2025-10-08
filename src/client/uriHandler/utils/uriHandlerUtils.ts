@@ -6,6 +6,19 @@
 import * as vscode from "vscode";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { uriHandlerTelemetryEventNames } from "../telemetry/uriHandlerTelemetryEvents";
+import { URI_CONSTANTS } from "../constants/uriConstants";
+import { URI_HANDLER_STRINGS } from "../constants/uriStrings";
+import { PacWrapper } from "../../pac/PacWrapper";
+
+export interface UriParameters {
+    websiteId: string | null;
+    environmentId: string | null;
+    orgUrl: string | null;
+    schema: string | null;
+    siteName: string | null;
+    siteUrl: string | null;
+    modelVersion: number;
+}
 
 /**
  * Utility functions for URI handler operations
@@ -87,5 +100,88 @@ export class UriHandlerUtils {
         } catch {
             return false;
         }
+    }
+
+    /**
+     * Parse URI parameters into a structured object
+     */
+    static parseUriParameters(uri: vscode.Uri): UriParameters {
+        const urlParams = new URLSearchParams(uri.query);
+
+        const websiteId = urlParams.get(URI_CONSTANTS.PARAMETERS.WEBSITE_ID);
+        const environmentId = urlParams.get(URI_CONSTANTS.PARAMETERS.ENV_ID);
+        const orgUrl = urlParams.get(URI_CONSTANTS.PARAMETERS.ORG_URL);
+        const schema = urlParams.get(URI_CONSTANTS.PARAMETERS.SCHEMA);
+
+        const siteName = urlParams.get(URI_CONSTANTS.PARAMETERS.SITE_NAME) ||
+                         urlParams.get(URI_CONSTANTS.PARAMETERS.WEBSITE_NAME);
+        const siteUrl = urlParams.get(URI_CONSTANTS.PARAMETERS.SITE_URL) ||
+                        urlParams.get(URI_CONSTANTS.PARAMETERS.WEBSITE_PREVIEW_URL);
+
+        // Determine model version based on schema parameter
+        const modelVersion = schema && schema.toLowerCase() === URI_CONSTANTS.SCHEMA_VALUES.PORTAL_SCHEMA_V2
+            ? URI_CONSTANTS.MODEL_VERSIONS.VERSION_2
+            : URI_CONSTANTS.MODEL_VERSIONS.VERSION_1;
+
+        return {
+            websiteId,
+            environmentId,
+            orgUrl,
+            schema,
+            siteName,
+            siteUrl,
+            modelVersion
+        };
+    }
+
+    /**
+     * Build telemetry data from URI parameters
+     */
+    static buildTelemetryData(uriParams: UriParameters, uri: vscode.Uri): Record<string, string> {
+        return {
+            websiteId: uriParams.websiteId || 'missing',
+            environmentId: uriParams.environmentId || 'missing',
+            orgUrl: uriParams.orgUrl ? 'provided' : 'missing', // Don't log actual URL for privacy
+            schema: uriParams.schema || 'none',
+            siteName: uriParams.siteName ? 'provided' : 'missing',
+            siteUrl: uriParams.siteUrl ? 'provided' : 'missing', // Don't log actual URL for privacy
+            uriQuery: uri.query || 'empty',
+            modelVersion: uriParams.modelVersion.toString()
+        };
+    }
+
+    /**
+     * Safely reset PAC process without throwing
+     */
+    static async resetPacProcessSafely(pacWrapper: PacWrapper, telemetryData: Record<string, string>): Promise<void> {
+        try {
+            await pacWrapper.resetPacProcess();
+            oneDSLoggerWrapper.getLogger().traceInfo(
+                uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
+                { ...telemetryData, message: 'PAC process reset after failure' }
+            );
+        } catch (resetError) {
+            oneDSLoggerWrapper.getLogger().traceError(
+                uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
+                'Failed to reset PAC process after failure',
+                resetError instanceof Error ? resetError : new Error(String(resetError)),
+                { ...telemetryData, error: 'pac_reset_failed' }
+            );
+        }
+    }
+
+    /**
+     * Handle errors with consistent logging and user feedback
+     */
+    static handleError(error: unknown, telemetryData: Record<string, string>, startTime: number, defaultMessage: string): void {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+
+        vscode.window.showErrorMessage(URI_HANDLER_STRINGS.ERRORS.URI_HANDLER_FAILED.replace('{0}', errorMessage));
+        oneDSLoggerWrapper.getLogger().traceError(
+            uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
+            defaultMessage,
+            error instanceof Error ? error : new Error(errorMessage),
+            { ...telemetryData, error: 'uri_handler_failed', duration: (Date.now() - startTime).toString() }
+        );
     }
 }
