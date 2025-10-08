@@ -422,6 +422,12 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++aac77df347205252b074d45aff7891debdba0ff1466cc0c351416d1662bb71ab">
       <source xml:lang="en">Feedback</source>
     </trans-unit>
+    <trans-unit id="++CODE++6625a35e6dacf5200897a3c37d9d601d529b759031fa6c2684a9e7491afaf82c">
+      <source xml:lang="en">Fetching environment information ...</source>
+    </trans-unit>
+    <trans-unit id="++CODE++558c0e8512ccb47e170851ab1dc541283c7e53179581db1e69ece6c9b5fb8719">
+      <source xml:lang="en">Fetching website details ...</source>
+    </trans-unit>
     <trans-unit id="++CODE++2a8ddde521f14ecd4a8717f2bcf9a2b021fa38a578518066d2ae32271aa95237">
       <source xml:lang="en">Fetching your file ...</source>
     </trans-unit>
@@ -935,6 +941,12 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++bd7b156375b48ce5797a3421150e6f5c3b71d3a30f823e957241589aea6236ca">
       <source xml:lang="en">Unable to complete the request</source>
+    </trans-unit>
+    <trans-unit id="++CODE++825428f802dce30a8443dd17ada4d08aff818700cba857285da17a926c96c8b9">
+      <source xml:lang="en">Unable to fetch environment information</source>
+    </trans-unit>
+    <trans-unit id="++CODE++9083a7e873ce09c78f134fb812ce04c4fcb02ace2682c620211eca599cfa78c3">
+      <source xml:lang="en">Unable to fetch website details</source>
     </trans-unit>
     <trans-unit id="++CODE++bab36b47fe2dd4f2f7e8eb486f2e3546e27dc047e69f5b24307bc71e5be2a7cf">
       <source xml:lang="en">Unable to find that app</source>

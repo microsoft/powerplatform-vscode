@@ -25,9 +25,7 @@ export class NPSWebView {
         try {
             const nonce = getNonce();
             const mainJs = this.extensionResourceUrl("media", "main.js");
-            const tid = WebExtensionContext.urlParametersMap?.get(
-                queryParameters.TENANT_ID
-            );
+            const tid = WebExtensionContext.tenantId;
             const envId = getEnvironmentIdFromUrl();
             const geo = WebExtensionContext.urlParametersMap?.get(
                 queryParameters.GEO
