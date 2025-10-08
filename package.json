@@ -32,7 +32,7 @@
     "extends": "@istanbuljs/nyc-config-typescript",
     "all": "true",
     "include": [
-  "**/*.ts"
+      "**/*.ts"
     ],
     "exclude": [
       "**/*.test.ts"
@@ -503,7 +503,7 @@
       },
       {
         "command": "microsoft.powerplatform.pages.metadataDiff.triggerFlow",
-  "title": "Compare with Environment",
+        "title": "Compare with Environment",
         "category": "Power Pages Metadata Diff",
         "icon": "$(cloud-download)"
       },
@@ -527,13 +527,13 @@
       },
       {
         "command": "microsoft.powerplatform.pages.metadataDiff.exportReport",
-  "title": "Export Comparison View",
+        "title": "Export Comparison View",
         "category": "Power Pages Metadata Diff",
         "icon": "$(save-as)"
       },
       {
         "command": "microsoft.powerplatform.pages.metadataDiff.importReport",
-  "title": "Import Comparison View",
+        "title": "Import Comparison View",
         "category": "Power Pages Metadata Diff",
         "icon": "$(folder-opened)"
       },
@@ -1088,7 +1088,7 @@
           "command": "powerpages.copilot.clearConversation",
           "when": "view == powerpages.copilot",
           "group": "navigation"
-  }
+        }
       ],
       "view/item/context": [
         {
