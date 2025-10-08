@@ -548,7 +548,7 @@ describe("WebExtensionContext", () => {
             {
                 headers: header,
                 dataverseOrgUrl: ORG_URL,
-                websiteId: ''
+                websiteId: '36429b2e-8b29-4020-8493-bd5e277444d8'
             }
         );
     });

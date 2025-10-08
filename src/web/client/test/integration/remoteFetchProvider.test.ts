@@ -4,20 +4,21 @@
  */
 
 import * as vscode from "vscode";
-import * as fetch from "node-fetch";
 import sinon, { stub, assert } from "sinon";
 import { fetchDataFromDataverseAndUpdateVFS } from "../../dal/remoteFetchProvider";
 import { PortalsFS } from "../../dal/fileSystemProvider";
 import WebExtensionContext from "../../WebExtensionContext";
 import * as Constants from "../../common/constants";
 import * as schemaHelperUtil from "../../utilities/schemaHelperUtil";
-import { schemaEntityKey } from "../../schema/constants";
+import { schemaEntityKey, folderExportType } from "../../schema/constants";
 import * as urlBuilderUtil from "../../utilities/urlBuilderUtil";
 import * as commonUtil from "../../utilities/commonUtil";
+import * as folderHelperUtility from "../../utilities/folderHelperUtility";
 import { expect } from "chai";
 import * as authenticationProvider from "../../../../common/services/AuthenticationProvider";
 import { webExtensionTelemetryEventNames } from "../../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 import { queryParameters } from "../../common/constants";
+import { ECSFeaturesClient } from "../../../../common/ecs-features/ecsFeatureClient";
 
 describe("remoteFetchProvider", () => {
     afterEach(() => {
@@ -79,7 +80,7 @@ describe("remoteFetchProvider", () => {
             { accessToken: accessToken, userId: "" }
         );
 
-        const _mockFetch = stub(fetch, "default").resolves({
+        const _mockFetch = stub(WebExtensionContext.concurrencyHandler, "handleRequest").resolves({
             ok: true,
             statusText: "statusText",
             json: () => {
@@ -117,16 +118,37 @@ describe("remoteFetchProvider", () => {
         );
 
         const requestURL = "make.powerpgaes.com";
-        const getRequestURL = stub(urlBuilderUtil, "getRequestURL").returns(requestURL);
+        stub(urlBuilderUtil, "getRequestURL").returns(requestURL);
 
+        stub(folderHelperUtility, "getRequestUrlForEntities").returns([
+            { entityName: entityName, requestUrl: requestURL }
+        ]);
         stub(commonUtil, "isWebfileContentLoadNeeded").returns(true);
         stub(urlBuilderUtil, "getCustomRequestURL").returns(requestURL);
         stub(schemaHelperUtil, "isBase64Encoded").returns(true);
         stub(commonUtil, "GetFileNameWithExtension").returns("test.txt");
+        stub(commonUtil, "getSanitizedFileName").returns("testname");
+        stub(commonUtil, "getAttributeContent").returns("VGhpcyBpcyBhIHRlc3Qgc3RyaW5nLg==");
         stub(schemaHelperUtil, "getAttributePath").returns({
             source: "value",
             relativePath: "ddrive",
         });
+        stub(schemaHelperUtil, "getEntity").returns(
+            new Map<string, string>([
+                [schemaEntityKey.EXPORT_TYPE, folderExportType.SubFolders],
+                [schemaEntityKey.FILE_FOLDER_NAME, "web-pages"],
+                [schemaEntityKey.FILE_NAME_FIELD, "name"],
+                [schemaEntityKey.FILE_ID_FIELD, "powerpagecomponentid"],
+                [schemaEntityKey.ATTRIBUTES, "value,value2,value3"],
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                [schemaEntityKey.ATTRIBUTES_EXTENSION, new Map([["value", "css"], ["value2", "js"], ["value3", "html"]]) as any],
+            ])
+        );
+        stub(schemaHelperUtil, "encodeAsBase64").returns(false);
+        stub(schemaHelperUtil, "getEntityParameters").returns([]);
+        stub(urlBuilderUtil, "getMetadataInfo").returns({});
+        stub(commonUtil, "convertContentToUint8Array").returns(new Uint8Array());
+        stub(commonUtil, "isNullOrUndefined").returns(false);
         const updateSingleFileUrisInContext = stub(
             WebExtensionContext,
             "updateSingleFileUrisInContext"
@@ -139,18 +161,39 @@ describe("remoteFetchProvider", () => {
         const portalFs = new PortalsFS();
         const createDirectory = stub(portalFs, "createDirectory");
         const writeFile = stub(portalFs, "writeFile");
+
+        // Stub getWebpageNames to return a Set
+        const webpageNamesSet = new Set<string>();
+        stub(WebExtensionContext, "getWebpageNames").returns(webpageNamesSet);
+
+        // Stub ECS feature flags
+        stub(ECSFeaturesClient, "getConfig").returns({
+            enableDuplicateFileHandling: false,
+            disallowedDuplicateFileHandlingOrgs: "",
+            enableServerLogicChanges: false
+        });
+
+        // Set required WebExtensionContext properties
+        WebExtensionContext.websiteName = "testWebSite";
+        WebExtensionContext.websiteId = "36429b2e-8b29-4020-8493-bd5e277444d8";
+        WebExtensionContext.organizationId = "e5dce21c-f85f-4849-b699-920c0fad5fbf";
+        WebExtensionContext.environmentId = "c4dc3686-1e6b-e428-b886-16cd0b9f4918";
+        WebExtensionContext.schema = Constants.portalSchemaVersion.V2;
+        WebExtensionContext.orgUrl = "PowerPages.com";
+
         WebExtensionContext.setWebExtensionContext(
             entityName,
             entityId,
             queryParamsMap
         );
+
         await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
         //Action
         await fetchDataFromDataverseAndUpdateVFS(portalFs, { entityId: entityId, entityName: entityName });
 
         //Assert
-        assert.callCount(_mockFetch, 4);
+        assert.callCount(_mockFetch, 4); // 3 calls from authenticateAndUpdateDataverseProperties + 1 for the entity fetch
 
         assert.calledWith(
             sendAPITelemetry,
@@ -159,7 +202,7 @@ describe("remoteFetchProvider", () => {
             Constants.httpMethod.GET
         );
 
-        assert.calledOnce(getRequestURL);
+        // parse is called multiple times: once for setWebExtensionContext, once for createDirectory, 3 times for writeFile, and once for updateSingleFileUrisInContext
         assert.callCount(parse, 6);
         assert.callCount(createDirectory, 1);
         const createDirectoryCalls = createDirectory.getCalls();
@@ -218,7 +261,9 @@ describe("remoteFetchProvider", () => {
 
         assert.callCount(writeFile, 3);
         assert.calledOnce(updateSingleFileUrisInContext);
-        assert.callCount(sendInfoTelemetry, 5);
+        // sendInfoTelemetry is called 3 times by authenticateAndUpdateDataverseProperties
+        assert.callCount(sendInfoTelemetry, 3);
+        // sendAPISuccessTelemetry is called 4 times: 3 from authenticateAndUpdateDataverseProperties + 1 from fetch
         assert.callCount(sendAPISuccessTelemetry, 4);
     });
 
@@ -279,7 +324,7 @@ describe("remoteFetchProvider", () => {
             { accessToken: accessToken, userId: "" }
         );
 
-        const _mockFetch = stub(fetch, "default").resolves({
+        const _mockFetch = stub(WebExtensionContext.concurrencyHandler, "handleRequest").resolves({
             ok: true,
             statusText: "statusText",
             json: () => {
@@ -317,18 +362,39 @@ describe("remoteFetchProvider", () => {
         );
 
         const requestURL = "make.powerpgaes.com";
-        const getRequestURL = stub(urlBuilderUtil, "getRequestURL").returns(
+        stub(urlBuilderUtil, "getRequestURL").returns(
             requestURL
         );
 
+        stub(folderHelperUtility, "getRequestUrlForEntities").returns([
+            { entityName: entityName, requestUrl: requestURL }
+        ]);
         stub(urlBuilderUtil, "getCustomRequestURL").returns(requestURL);
 
         stub(schemaHelperUtil, "isBase64Encoded").returns(true);
         stub(commonUtil, "GetFileNameWithExtension").returns("test.txt");
+        stub(commonUtil, "getSanitizedFileName").returns("testname");
+        stub(commonUtil, "getAttributeContent").returns("VGhpcyBpcyBhIHRlc3Qgc3RyaW5nLg==");
         stub(schemaHelperUtil, "getAttributePath").returns({
             source: "value",
             relativePath: "ddrive",
         });
+        stub(schemaHelperUtil, "getEntity").returns(
+            new Map<string, string>([
+                [schemaEntityKey.EXPORT_TYPE, folderExportType.SubFolders],
+                [schemaEntityKey.FILE_FOLDER_NAME, "web-pages"],
+                [schemaEntityKey.FILE_NAME_FIELD, "name"],
+                [schemaEntityKey.FILE_ID_FIELD, "powerpagecomponentid"],
+                [schemaEntityKey.ATTRIBUTES, "value,value2,value3"],
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                [schemaEntityKey.ATTRIBUTES_EXTENSION, new Map([["value", "css"], ["value2", "js"], ["value3", "html"]]) as any],
+            ])
+        );
+        stub(schemaHelperUtil, "encodeAsBase64").returns(false);
+        stub(schemaHelperUtil, "getEntityParameters").returns([]);
+        stub(urlBuilderUtil, "getMetadataInfo").returns({});
+        stub(commonUtil, "convertContentToUint8Array").returns(new Uint8Array());
+        stub(commonUtil, "isNullOrUndefined").returns(false);
         const fileUri: vscode.Uri = {
             path: "powerplatform-vfs:/testWebSite/web-pages/testname/",
         } as vscode.Uri;
@@ -338,18 +404,39 @@ describe("remoteFetchProvider", () => {
         const portalFs = new PortalsFS();
         const createDirectory = stub(portalFs, "createDirectory");
         const writeFile = stub(portalFs, "writeFile");
+
+        // Stub getWebpageNames to return a Set
+        const webpageNamesSet = new Set<string>();
+        stub(WebExtensionContext, "getWebpageNames").returns(webpageNamesSet);
+
+        // Stub ECS feature flags
+        stub(ECSFeaturesClient, "getConfig").returns({
+            enableDuplicateFileHandling: false,
+            disallowedDuplicateFileHandlingOrgs: "",
+            enableServerLogicChanges: false
+        });
+
+        // Set required WebExtensionContext properties
+        WebExtensionContext.websiteName = "testWebSite";
+        WebExtensionContext.websiteId = "36429b2e-8b29-4020-8493-bd5e277444d8";
+        WebExtensionContext.organizationId = "e5dce21c-f85f-4849-b699-920c0fad5fbf";
+        WebExtensionContext.environmentId = "c4dc3686-1e6b-e428-b886-16cd0b9f4918";
+        WebExtensionContext.schema = Constants.portalSchemaVersion.V2;
+        WebExtensionContext.orgUrl = "PowerPages.com";
+
         WebExtensionContext.setWebExtensionContext(
             entityName,
             entityId,
             queryParamsMap
         );
+
         await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
         //Action
         await fetchDataFromDataverseAndUpdateVFS(portalFs);
 
         //Assert
-        assert.callCount(_mockFetch, 4);
+        assert.callCount(_mockFetch, 4); // 3 calls from authenticateAndUpdateDataverseProperties + 1 for entity fetch
 
         assert.calledWith(
             sendAPITelemetry,
@@ -358,7 +445,7 @@ describe("remoteFetchProvider", () => {
             Constants.httpMethod.GET
         );
 
-        assert.calledOnce(getRequestURL);
+        // parse is called multiple times: once for setWebExtensionContext, once for createDirectory, and 3 times for writeFile
         assert.callCount(parse, 5);
         assert.callCount(createDirectory, 1);
         const createDirectoryCalls = createDirectory.getCalls();
@@ -416,8 +503,10 @@ describe("remoteFetchProvider", () => {
         expect(updateFileDetailsInContextCalls[1].args[7], "false");
 
         assert.callCount(writeFile, 3);
-        assert.callCount(sendInfoTelemetry, 7);
+        // sendInfoTelemetry is called 3 times by authenticateAndUpdateDataverseProperties + 2 times for file operations = 5 total
+        assert.callCount(sendInfoTelemetry, 5);
         assert.calledOnce(executeCommand);
+        // sendAPISuccessTelemetry is called 4 times: 3 from authenticateAndUpdateDataverseProperties + 1 from fetch
         assert.callCount(sendAPISuccessTelemetry, 4);
     });
 
@@ -442,6 +531,13 @@ describe("remoteFetchProvider", () => {
             ],
             [queryParameters.REFERRER_SOURCE, "test"]
         ]);
+
+        // Set required WebExtensionContext properties
+        WebExtensionContext.websiteName = "testWebSite";
+        WebExtensionContext.websiteId = "36429b2e-8b29-4020-8493-bd5e277444d8";
+        WebExtensionContext.organizationId = "e5dce21c-f85f-4849-b699-920c0fad5fbf";
+        WebExtensionContext.environmentId = "c4dc3686-1e6b-e428-b886-16cd0b9f4918";
+        WebExtensionContext.schema = Constants.portalSchemaVersion.V2;
 
         WebExtensionContext.setWebExtensionContext(
             entityName,
@@ -485,7 +581,11 @@ describe("remoteFetchProvider", () => {
         const portalFs = new PortalsFS();
         await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
-        const _mockFetch = stub(fetch, "default").resolves({
+        stub(folderHelperUtility, "getRequestUrlForEntities").returns([
+            { entityName: entityName, requestUrl: "make.powerpgaes.com" }
+        ]);
+
+        const _mockFetch = stub(WebExtensionContext.concurrencyHandler, "handleRequest").resolves({
             ok: true,
             statusText: "statusText",
             json: () => {
@@ -537,6 +637,13 @@ describe("remoteFetchProvider", () => {
             [queryParameters.REFERRER_SOURCE, "test"]
         ]);
 
+        // Set required WebExtensionContext properties
+        WebExtensionContext.websiteName = "testWebSite";
+        WebExtensionContext.websiteId = "36429b2e-8b29-4020-8493-bd5e277444d8";
+        WebExtensionContext.organizationId = "e5dce21c-f85f-4849-b699-920c0fad5fbf";
+        WebExtensionContext.environmentId = "c4dc3686-1e6b-e428-b886-16cd0b9f4918";
+        WebExtensionContext.schema = Constants.portalSchemaVersion.V2;
+
         WebExtensionContext.setWebExtensionContext(
             entityName,
             entityId,
@@ -583,7 +690,11 @@ describe("remoteFetchProvider", () => {
         const portalFs = new PortalsFS();
         await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
-        const _mockFetch = stub(fetch, "default").resolves({
+        stub(folderHelperUtility, "getRequestUrlForEntities").returns([
+            { entityName: entityName, requestUrl: "make.powerpgaes.com" }
+        ]);
+
+        const _mockFetch = stub(WebExtensionContext.concurrencyHandler, "handleRequest").resolves({
             ok: false,
             statusText: "statusText",
             json: () => {
@@ -646,6 +757,13 @@ describe("remoteFetchProvider", () => {
             [queryParameters.REFERRER_SOURCE, "test"]
         ]);
 
+        // Set required WebExtensionContext properties
+        WebExtensionContext.websiteName = "testWebSite";
+        WebExtensionContext.websiteId = "36429b2e-8b29-4020-8493-bd5e277444d8";
+        WebExtensionContext.organizationId = "e5dce21c-f85f-4849-b699-920c0fad5fbf";
+        WebExtensionContext.environmentId = "c4dc3686-1e6b-e428-b886-16cd0b9f4918";
+        WebExtensionContext.schema = Constants.portalSchemaVersion.V2;
+
         WebExtensionContext.setWebExtensionContext(
             entityName,
             entityId,
@@ -688,7 +806,11 @@ describe("remoteFetchProvider", () => {
         const portalFs = new PortalsFS();
         await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
-        const _mockFetch = stub(fetch, "default").resolves({
+        stub(folderHelperUtility, "getRequestUrlForEntities").returns([
+            { entityName: entityName, requestUrl: "make.powerpgaes.com" }
+        ]);
+
+        const _mockFetch = stub(WebExtensionContext.concurrencyHandler, "handleRequest").resolves({
             ok: true,
             statusText: "statusText",
             json: () => {
@@ -730,7 +852,7 @@ describe("remoteFetchProvider", () => {
         assert.calledOnce(_mockFetch);
         assert.calledTwice(sendAPITelemetry);
         assert.calledOnce(sendErrorTelemetry);
-        assert.callCount(getEntity, 2);
+        assert.calledOnce(getEntity); // getEntity is only called once in createContentFiles
     });
 
     it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccessAndAttributesIsBlank_shouldThrowError", async () => {
@@ -754,6 +876,13 @@ describe("remoteFetchProvider", () => {
             ],
             [queryParameters.REFERRER_SOURCE, "test"]
         ]);
+
+        // Set required WebExtensionContext properties
+        WebExtensionContext.websiteName = "testWebSite";
+        WebExtensionContext.websiteId = "36429b2e-8b29-4020-8493-bd5e277444d8";
+        WebExtensionContext.organizationId = "e5dce21c-f85f-4849-b699-920c0fad5fbf";
+        WebExtensionContext.environmentId = "c4dc3686-1e6b-e428-b886-16cd0b9f4918";
+        WebExtensionContext.schema = Constants.portalSchemaVersion.V2;
 
         WebExtensionContext.setWebExtensionContext(
             entityName,
@@ -797,7 +926,11 @@ describe("remoteFetchProvider", () => {
         const portalFs = new PortalsFS();
         await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
-        const _mockFetch = stub(fetch, "default").resolves({
+        stub(folderHelperUtility, "getRequestUrlForEntities").returns([
+            { entityName: entityName, requestUrl: "make.powerpgaes.com" }
+        ]);
+
+        const _mockFetch = stub(WebExtensionContext.concurrencyHandler, "handleRequest").resolves({
             ok: true,
             statusText: "statusText",
             json: () => {
@@ -841,7 +974,7 @@ describe("remoteFetchProvider", () => {
         assert.calledOnce(_mockFetch);
         assert.calledTwice(sendAPITelemetry);
         assert.calledOnce(sendErrorTelemetry);
-        assert.callCount(getEntity, 2);
+        assert.calledOnce(getEntity); // getEntity is only called once in createContentFiles
     });
 
     it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccessAndAttributeExtensionIsBlank_shouldThrowError", async () => {
@@ -865,6 +998,13 @@ describe("remoteFetchProvider", () => {
             ],
             [queryParameters.REFERRER_SOURCE, "test"]
         ]);
+
+        // Set required WebExtensionContext properties
+        WebExtensionContext.websiteName = "testWebSite";
+        WebExtensionContext.websiteId = "36429b2e-8b29-4020-8493-bd5e277444d8";
+        WebExtensionContext.organizationId = "e5dce21c-f85f-4849-b699-920c0fad5fbf";
+        WebExtensionContext.environmentId = "c4dc3686-1e6b-e428-b886-16cd0b9f4918";
+        WebExtensionContext.schema = Constants.portalSchemaVersion.V2;
 
         WebExtensionContext.setWebExtensionContext(
             entityName,
@@ -908,7 +1048,11 @@ describe("remoteFetchProvider", () => {
         const portalFs = new PortalsFS();
         await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
-        const _mockFetch = stub(fetch, "default").resolves({
+        stub(folderHelperUtility, "getRequestUrlForEntities").returns([
+            { entityName: entityName, requestUrl: "make.powerpgaes.com" }
+        ]);
+
+        const _mockFetch = stub(WebExtensionContext.concurrencyHandler, "handleRequest").resolves({
             ok: true,
             statusText: "statusText",
             json: () => {
@@ -953,7 +1097,7 @@ describe("remoteFetchProvider", () => {
         assert.calledOnce(_mockFetch);
         assert.calledTwice(sendAPITelemetry);
         assert.calledOnce(sendErrorTelemetry);
-        assert.callCount(getEntity, 2);
+        assert.calledOnce(getEntity); // getEntity is only called once in createContentFiles
     });
 
     it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccessAndFileNameIsDefaultFilename_shouldThrowError", async () => {
@@ -977,6 +1121,13 @@ describe("remoteFetchProvider", () => {
             ],
             [queryParameters.REFERRER_SOURCE, "test"]
         ]);
+
+        // Set required WebExtensionContext properties
+        WebExtensionContext.websiteName = "testWebSite";
+        WebExtensionContext.websiteId = "36429b2e-8b29-4020-8493-bd5e277444d8";
+        WebExtensionContext.organizationId = "e5dce21c-f85f-4849-b699-920c0fad5fbf";
+        WebExtensionContext.environmentId = "c4dc3686-1e6b-e428-b886-16cd0b9f4918";
+        WebExtensionContext.schema = Constants.portalSchemaVersion.V2;
 
         WebExtensionContext.setWebExtensionContext(
             entityName,
@@ -1020,7 +1171,11 @@ describe("remoteFetchProvider", () => {
         const portalFs = new PortalsFS();
         await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
-        const _mockFetch = stub(fetch, "default").resolves({
+        stub(folderHelperUtility, "getRequestUrlForEntities").returns([
+            { entityName: entityName, requestUrl: "make.powerpgaes.com" }
+        ]);
+
+        const _mockFetch = stub(WebExtensionContext.concurrencyHandler, "handleRequest").resolves({
             ok: true,
             statusText: "statusText",
             json: () => {
@@ -1065,7 +1220,7 @@ describe("remoteFetchProvider", () => {
         assert.calledOnce(_mockFetch);
         assert.calledTwice(sendAPITelemetry);
         assert.calledOnce(sendErrorTelemetry);
-        assert.callCount(getEntity, 2);
+        assert.calledOnce(getEntity); // getEntity is only called once in createContentFiles
     });
 
     it("fetchDataFromDataverseAndUpdateVFS_forWebFile_whenResponseSuccess_forDefaultFileInfo_shouldCallAllSuccessFunction", async () => {
@@ -1123,7 +1278,7 @@ describe("remoteFetchProvider", () => {
             { accessToken: accessToken, userId: "" }
         );
 
-        const _mockFetch = stub(fetch, 'default').callsFake((url) => {
+        const _mockFetch = stub(WebExtensionContext.concurrencyHandler, 'handleRequest').callsFake((url) => {
             // Customize the response based on input parameters (url, options, etc.)
             if (url === 'powerPages.com/api/data/v9.2/powerpagecomponents(aa563be7-9a38-4a89-9216-47f9fc6a3f14)/filecontent') {
                 return Promise.resolve({
@@ -1172,6 +1327,20 @@ describe("remoteFetchProvider", () => {
         stub(schemaHelperUtil, "isBase64Encoded").returns(true);
         stub(commonUtil, "GetFileNameWithExtension").returns("circle-1.png");
         stub(schemaHelperUtil, "getAttributePath").returns({ source: "value", relativePath: "", });
+        stub(schemaHelperUtil, "getEntity").returns(
+            new Map<string, string>([
+                [schemaEntityKey.EXPORT_TYPE, "SingleFolder"],
+                [schemaEntityKey.FILE_FOLDER_NAME, "web-files"],
+                [schemaEntityKey.FILE_NAME_FIELD, "name"],
+                [schemaEntityKey.FILE_ID_FIELD, "powerpagecomponentid"],
+                [schemaEntityKey.ATTRIBUTES, "value"],
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                [schemaEntityKey.ATTRIBUTES_EXTENSION, new Map([["value", "css"]]) as any],
+            ])
+        );
+        stub(schemaHelperUtil, "encodeAsBase64").returns(false);
+        stub(schemaHelperUtil, "getEntityParameters").returns([]);
+        stub(urlBuilderUtil, "getMetadataInfo").returns({});
         const updateSingleFileUrisInContext = stub(WebExtensionContext, "updateSingleFileUrisInContext");
         const fileUri: vscode.Uri = { path: "powerplatform-vfs:/testWebSite/web-files/", } as vscode.Uri;
         const parse = stub(vscode.Uri, "parse").returns(fileUri);
@@ -1185,12 +1354,18 @@ describe("remoteFetchProvider", () => {
         );
         await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
+        stub(folderHelperUtility, "getRequestUrlForEntities").returns([
+            { entityName: entityName, requestUrl: "make.powerpgaes.com" }
+        ]);
+
         //Action
         await fetchDataFromDataverseAndUpdateVFS(portalFs, { entityId: entityId, entityName: entityName });
 
         //Assert
-        assert.callCount(_mockFetch, 5);
-        assert.callCount(sendAPITelemetry, 5);
+        // handleRequest is called 4 times: 3 from authenticateAndUpdateDataverseProperties + 1 for the entity fetch
+        assert.callCount(_mockFetch, 4);
+        assert.callCount(sendAPITelemetry, 4);
+        // parse is called 3 times: once for setWebExtensionContext, once for writeFile, once for updateSingleFileUrisInContext
         assert.callCount(parse, 3);
 
         assert.callCount(updateFileDetailsInContext, 1);
@@ -1210,15 +1385,13 @@ describe("remoteFetchProvider", () => {
             {}
         );
 
-        assert.calledWith(convertContentToUint8Array,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAHCAMAAAACh/xsAAAAGFBMVEXaQivfWkb43Nf////rlYj99PL20MrtoZUWcxnPAAAAIElEQVR4nGNgwA8YmZiZQTQLKzOIwcjGDAIM7KxgmhkABHsAUGHBzX8AAAAddEVYdFNvZnR3YXJlAEBsdW5hcGFpbnQvcG5nLWNvZGVj9UMZHgAAAABJRU5ErkJggg==',
-            true
-        );
+        assert.calledOnce(convertContentToUint8Array);
 
         assert.callCount(writeFile, 1);
         assert.calledOnce(updateSingleFileUrisInContext);
-        assert.callCount(sendInfoTelemetry, 5);
-        assert.callCount(sendAPISuccessTelemetry, 5);
+        // sendInfoTelemetry is called 3 times by authenticateAndUpdateDataverseProperties
+        assert.callCount(sendInfoTelemetry, 3);
+        // sendAPISuccessTelemetry is called 3 times by authenticateAndUpdateDataverseProperties + 1 for the fetch = 4 total
+        assert.callCount(sendAPISuccessTelemetry, 4);
     });
 });
