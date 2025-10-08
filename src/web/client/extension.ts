@@ -694,6 +694,10 @@ async function fetchArtemisData(orgId: string): Promise<boolean> {
                     fetchArtemisData.name,
                     ARTEMIS_RESPONSE_FAILED
                 );
+                showErrorDialog(
+                    vscode.l10n.t("There was a problem opening the workspace"),
+                    vscode.l10n.t("Unable to fetch environment information")
+                );
                 isSuccess = false;
                 return;
             }
