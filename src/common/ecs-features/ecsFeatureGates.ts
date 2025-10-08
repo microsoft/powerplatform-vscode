@@ -88,7 +88,28 @@ export const {
     fallback: {
         enableCodeQlScan: false,
     }
-})
+});
+
+export const {
+    feature: EnableOpenInDesktop
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable Open in Desktop functionality in VSCode Web',
+    fallback: {
+        enableOpenInDesktop: false,
+    }
+});
+
+export const {
+    feature: EnableDuplicateFileHandling
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable duplicate file handling for webpage folders',
+    fallback: {
+        enableDuplicateFileHandling: true,
+        disallowedDuplicateFileHandlingOrgs: "",
+    }
+});
 
 export const {
     feature: EnableMetadataDiff
