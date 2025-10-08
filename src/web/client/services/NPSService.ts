@@ -5,7 +5,7 @@
 
 import jwt_decode from 'jwt-decode';
 import { npsAuthentication } from "../../../common/services/AuthenticationProvider";
-import { httpMethod, queryParameters } from '../common/constants';
+import { httpMethod } from '../common/constants';
 import { RequestInit } from 'node-fetch'
 import WebExtensionContext from '../WebExtensionContext';
 import { webExtensionTelemetryEventNames } from '../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents';
@@ -22,7 +22,7 @@ export class NPSService {
     }
 
     public static getNpsSurveyEndpoint(): string {
-        const region = WebExtensionContext.urlParametersMap?.get(queryParameters.REGION)?.toLowerCase();
+        const region = WebExtensionContext.region.toLowerCase();
         const dataBoundary = getCurrentDataBoundary();
         let npsSurveyEndpoint = '';
         switch (region) {
