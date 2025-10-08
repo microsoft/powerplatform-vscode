@@ -723,7 +723,7 @@ async function initializeWebsiteDetails(queryParamsMap: Map<string, string>) {
         },
         async () => {
             const portalId = queryParamsMap.get(queryParameters.PORTAL_ID) as string;
-            const envId = queryParamsMap.get(queryParameters.ENV_ID) as string;
+            const envId = queryParamsMap.get(queryParameters.ENV_ID)?.split("/")?.pop() as string;
             const websiteDetails = await PPAPIService.getWebsiteDetailsById(WebExtensionContext.serviceEndpointCategory, envId, portalId);
 
             if (!websiteDetails) {
