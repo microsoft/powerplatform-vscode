@@ -104,8 +104,8 @@ export class MetadataDiffDesktop {
                     }
 
                     // Extract the relevant parts using regex
-                    // Example line: ' [4]        e26a79b8-4c5d-f011-bec2-000d3a358057               Test V1_Studio - site-vbdyt                                  Enhanced  '
-                    const match = line.match(/\[\d+\]\s+([a-f0-9-]+)\s+(.+?)\s+(Standard|Enhanced)\s*$/i);
+                    // Example line: ' [1]        4b47eaeb-5f5d-f011-bec1-000d3a5b8fd6               test_portal                                                  Standard             No                        '
+                    const match = line.match(/\s*\[\d+\]\s+([a-f0-9-]+)\s+(.+?)\s+(Standard|Enhanced)(?:\s{2,}.*)?$/i);
                     if (match) {
                         // Extract WebsiteId, FriendlyName, and ModelVersion from the line
                         // Example line: ' [2]        8aa65ec4-1578-f011-b4cc-0022480b93b5               Customer Self Service_V1 - customerselfservice-oh1uo         Standard  '
