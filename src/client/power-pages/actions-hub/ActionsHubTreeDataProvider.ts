@@ -12,7 +12,7 @@ import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLo
 import { EnvironmentGroupTreeItem } from "./tree-items/EnvironmentGroupTreeItem";
 import { IEnvironmentInfo } from "./models/IEnvironmentInfo";
 import { PacTerminal } from "../../lib/PacTerminal";
-import { fetchWebsites, openActiveSitesInStudio, openInactiveSitesInStudio, previewSite, createNewAuthProfile, refreshEnvironment, showEnvironmentDetails, switchEnvironment, revealInOS, openSiteManagement, uploadSite, showSiteDetails, downloadSite, openInStudio, reactivateSite, runCodeQLScreening, loginToMatch } from "./ActionsHubCommandHandlers";
+import { fetchWebsites, openActiveSitesInStudio, openInactiveSitesInStudio, previewSite, createNewAuthProfile, refreshEnvironment, showEnvironmentDetails, switchEnvironment, revealInOS, openSiteManagement, uploadSite, showSiteDetails, compareWithLocal, downloadSite, openInStudio, reactivateSite, runCodeQLScreening, loginToMatch } from "./ActionsHubCommandHandlers";
 import PacContext from "../../pac/PacContext";
 import CurrentSiteContext from "./CurrentSiteContext";
 import { IOtherSiteInfo, IWebsiteDetails } from "../../../common/services/Interfaces";
@@ -21,6 +21,75 @@ import { getBaseEventInfo } from "./TelemetryHelper";
 import { PROVIDER_ID } from "../../../common/services/Constants";
 import { getOIDFromToken } from "../../../common/services/AuthenticationProvider";
 import ArtemisContext from "../../ArtemisContext";
+import { MetadataDiffTreeDataProvider } from "../../../common/power-pages/metadata-diff/MetadataDiffTreeDataProvider";
+import { MetadataDiffTreeItem } from "../../../common/power-pages/metadata-diff/tree-items/MetadataDiffTreeItem";
+
+// Wrapper classes to surface Metadata Diff under Actions Hub
+class MetadataDiffWrapperTreeItem extends ActionsHubTreeItem {
+    constructor(private readonly _item: MetadataDiffTreeItem) {
+        super(
+            _item.label?.toString(),
+            _item.collapsibleState ?? vscode.TreeItemCollapsibleState.None,
+            _item.iconPath || new vscode.ThemeIcon("file"),
+            _item.contextValue || "metadataDiffItem",
+            (typeof _item.description === "string" ? _item.description : "")
+        );
+        // Copy over command & tooltip if present
+        this.command = _item.command;
+        this.tooltip = _item.tooltip;
+    }
+
+    // Expose underlying file paths for command handlers invoked via context menu
+    public get filePath(): string | undefined {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (this._item as any).filePath;
+    }
+    public get storedFilePath(): string | undefined {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (this._item as any).storedFilePath;
+    }
+
+    public getChildren(): ActionsHubTreeItem[] {
+        // Map underlying children to wrapper items
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const children: MetadataDiffTreeItem[] = (this._item as any).getChildren ? (this._item as any).getChildren() : [];
+        if (!children || !Array.isArray(children)) {
+            return [];
+        }
+        return children.map(c => new MetadataDiffWrapperTreeItem(c));
+    }
+}
+
+class MetadataDiffGroupTreeItem extends ActionsHubTreeItem {
+    constructor(private readonly _provider: MetadataDiffTreeDataProvider, hasData: boolean, label: string, websiteName?: string, envName?: string) {
+        super(
+            label,
+            hasData ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.Collapsed,
+            // Use Split Editor icon (codicon split-horizontal) as requested
+            new vscode.ThemeIcon("split-horizontal"),
+            "metadataDiffRoot",
+            hasData ? "" : vscode.l10n.t("No data yet")
+        );
+        this.tooltip = hasData && websiteName && envName
+            ? vscode.l10n.t("Power Pages metadata comparison: {0} local vs {1}", websiteName, envName)
+            : vscode.l10n.t("Power Pages metadata comparison");
+    }
+
+    public getChildren(): ActionsHubTreeItem[] {
+        // Force provider to populate its cache if empty (async ignored intentionally)
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        // @ts-expect-error Accessing private field for integration wrapper
+        if (this._provider._diffItems?.length === 0) {
+            this._provider.getChildren();
+        }
+        // @ts-expect-error Accessing private field for integration wrapper
+        const items: MetadataDiffTreeItem[] | null | undefined = this._provider._diffItems || [];
+        if (!items || !Array.isArray(items)) {
+            return [];
+        }
+        return items.map(i => new MetadataDiffWrapperTreeItem(i));
+    }
+}
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -33,13 +102,36 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     private _otherSites: IOtherSiteInfo[] = [];
     private _loadWebsites = true;
     private _isCodeQlScanEnabled: boolean;
+    private static _metadataDiffProvider: MetadataDiffTreeDataProvider | undefined;
+    // Track last known environment to detect environment switches and reset dependent views (like Metadata Diff)
+    private _lastEnvironmentId: string | undefined;
 
     private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal, isCodeQlScanEnabled: boolean) {
         this._isCodeQlScanEnabled = isCodeQlScanEnabled;
+        this._lastEnvironmentId = PacContext.AuthInfo?.EnvironmentId;
+
         this._disposables.push(
             ...this.registerPanel(this._pacTerminal),
 
             PacContext.onChanged(() => {
+                const currentEnvId = PacContext.AuthInfo?.EnvironmentId;
+                const envChanged = currentEnvId !== this._lastEnvironmentId;
+                if (envChanged) {
+                    // Clear Metadata Diff data when environment switches so user doesn't see stale comparison
+                    if (ActionsHubTreeDataProvider._metadataDiffProvider) {
+                        try {
+                            ActionsHubTreeDataProvider._metadataDiffProvider.clearItems();
+                            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_REFRESH, {
+                                methodName: 'environmentChangedMetadataDiffReset',
+                                previousEnvironmentId: this._lastEnvironmentId || 'undefined',
+                                newEnvironmentId: currentEnvId || 'undefined'
+                            });
+                        } catch (e) {
+                            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_REFRESH, e as string, e as Error, { methodName: 'environmentChangedMetadataDiffReset' }, {});
+                        }
+                    }
+                    this._lastEnvironmentId = currentEnvId;
+                }
                 this._loadWebsites = true;
                 this.refresh();
             }),
@@ -162,6 +254,10 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
     }
 
+    public static setMetadataDiffProvider(provider: MetadataDiffTreeDataProvider): void {
+        this._metadataDiffProvider = provider;
+    }
+
     getTreeItem(element: ActionsHubTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
         return element;
     }
@@ -195,13 +291,35 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                     currentEnvironmentName: authInfo!.OrganizationFriendlyName //Already checked in checkAuthInfo
                 };
 
-                if(!this._otherSites.length){
-                    return [new EnvironmentGroupTreeItem(currentEnvInfo, this._context, this._activeSites, this._inactiveSites)];
+                const rootItems: ActionsHubTreeItem[] = [];
+
+                rootItems.push(new EnvironmentGroupTreeItem(currentEnvInfo, this._context, this._activeSites, this._inactiveSites));
+                if(this._otherSites.length){
+                    rootItems.push(new OtherSitesGroupTreeItem(this._otherSites));
                 }
-                return [
-                    new EnvironmentGroupTreeItem(currentEnvInfo, this._context, this._activeSites, this._inactiveSites),
-                    new OtherSitesGroupTreeItem(this._otherSites)
-                ];
+
+                // Inject Metadata Diff root (if enabled & provider exists)
+                const mdProvider = ActionsHubTreeDataProvider._metadataDiffProvider;
+                if (mdProvider) {
+                    // Ensure provider builds diff list before evaluating hasData
+                    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                    mdProvider.getChildren();
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const hasData = (mdProvider as any)._diffItems && (mdProvider as any)._diffItems.length > 0;
+
+                    let label = vscode.l10n.t("Metadata Diff");
+                    let websiteName: string | undefined;
+                    let envName: string | undefined;
+                    if (hasData) {
+                        const workspaceFolders = vscode.workspace.workspaceFolders;
+                        websiteName = workspaceFolders && workspaceFolders.length > 0 ? workspaceFolders[0].name : vscode.l10n.t("Local");
+                        envName = authInfo?.OrganizationFriendlyName || vscode.l10n.t("Current Environment");
+                        label = vscode.l10n.t("Metadata Diff ({0} (Local <-> {1}))", websiteName, envName);
+                    }
+                    rootItems.push(new MetadataDiffGroupTreeItem(mdProvider, hasData, label, websiteName, envName));
+                }
+
+                return rootItems;
             } else {
                 // Login experience scenario
                 return [];
@@ -245,6 +363,8 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite", uploadSite),
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.siteDetails", showSiteDetails),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.compareWithLocal", compareWithLocal),
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite", downloadSite),
 
