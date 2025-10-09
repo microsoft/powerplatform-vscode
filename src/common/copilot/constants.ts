@@ -50,12 +50,16 @@ export const DataverseEntityNameMap = new Map<string, string>([
     ['webtemplate', 'adx_webtemplate'],
     ['basicform', 'adx_entityform'],
     ['advancedformstep', 'adx_entityform'],
+    ['serverlogics', 'server-logics'],
 ]);
 
 export const EntityFieldMap = new Map<string, string>([
     ['custom_javascript', 'adx_customjavascript'],
     ['source', 'adx_source'],
-    ['copy', 'adx_copy']
+    ['copy', 'adx_copy'],
+    ['customjs', 'adx_customjavascript'],
+    ['customcss', 'adx_customcss'],
+    ['custom_css', 'adx_customcss'],
 ]);
 
 export const FieldTypeMap = new Map<string, string>([
