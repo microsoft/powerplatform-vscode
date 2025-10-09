@@ -14,15 +14,14 @@ import { MetadataDiffDesktop } from "./MetadataDiffDesktop";
 import { ActionsHubTreeDataProvider } from "../actions-hub/ActionsHubTreeDataProvider";
 import { createAuthProfileExp } from "../../../common/utilities/PacAuthUtil";
 import { getWebsiteRecordId } from "../../../common/utilities/WorkspaceInfoFinderUtil";
-// Duplicate imports removed
 import { generateDiffReport, getAllDiffFiles, MetadataDiffReport } from "./MetadataDiffUtils";
 
 export async function registerMetadataDiffCommands(context: vscode.ExtensionContext, pacTerminal: PacTerminal): Promise<void> {
     // Register command for handling file diffs
-    vscode.commands.registerCommand('metadataDiff.openDiff', async (workspaceFile?: string, storedFile?: string) => {
+    vscode.commands.registerCommand('microsoft.powerplatform.pages.metadataDiff.openDiff', async (workspaceFile?: string, storedFile?: string) => {
         try {
             if (!workspaceFile && !storedFile) {
-                vscode.window.showWarningMessage('No file paths provided for diff.');
+                vscode.window.showWarningMessage(vscode.l10n.t('No file paths provided for diff comparison.'));
                 return;
             }
 
@@ -72,12 +71,12 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                 error as string,
                 error as Error
             );
-            vscode.window.showErrorMessage('Failed to open diff view');
+            vscode.window.showErrorMessage(vscode.l10n.t('Failed to open diff view'));
         }
     });
 
     // Explicit alias command shown in context menu (kept separate for clearer telemetry / labeling)
-    vscode.commands.registerCommand('metadataDiff.openComparison', async (itemOrWorkspace?: unknown, maybeStored?: unknown) => {
+    vscode.commands.registerCommand('microsoft.powerplatform.pages.metadataDiff.openComparison', async (itemOrWorkspace?: unknown, maybeStored?: unknown) => {
         // Support invocation with either (workspace, stored) or a single tree item
         let workspaceFile: string | undefined;
         let storedFile: string | undefined;
@@ -93,14 +92,14 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
         }
         // Allow opening for added / removed as well (one-sided)
         if (workspaceFile || storedFile) {
-            await vscode.commands.executeCommand('metadataDiff.openDiff', workspaceFile, storedFile);
+            await vscode.commands.executeCommand('microsoft.powerplatform.pages.metadataDiff.openDiff', workspaceFile, storedFile);
         } else {
-            vscode.window.showWarningMessage('Unable to open comparison for this item.');
+            vscode.window.showWarningMessage(vscode.l10n.t('Unable to open comparison for this item.'));
         }
     });
 
     // Discard local changes => overwrite workspace file with stored (remote) version
-    vscode.commands.registerCommand('metadataDiff.discardLocalChanges', async (itemOrWorkspace?: unknown, maybeStored?: unknown) => {
+    vscode.commands.registerCommand('microsoft.powerplatform.pages.metadataDiff.discardLocalChanges', async (itemOrWorkspace?: unknown, maybeStored?: unknown) => {
         try {
             let workspaceFile: string | undefined;
             let storedFile: string | undefined;
@@ -114,7 +113,7 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                 storedFile = obj.storedFilePath || obj.storageFile;
             }
             if (!workspaceFile || !storedFile) {
-                vscode.window.showWarningMessage('Unable to discard changes for this item.');
+                vscode.window.showWarningMessage(vscode.l10n.t('Unable to discard changes for this item.'));
                 return;
             }
             const confirm = await vscode.window.showWarningMessage(
@@ -147,7 +146,7 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                 error as string,
                 error as Error
             );
-            vscode.window.showErrorMessage('Failed to discard local changes');
+            vscode.window.showErrorMessage(vscode.l10n.t('Failed to discard local changes'));
         }
     });
 
@@ -157,7 +156,7 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
             const pacWrapper = pacTerminal.getWrapper();
             const pacActiveOrg = await pacWrapper.activeOrg();
             if (!pacActiveOrg || pacActiveOrg.Status !== SUCCESS) {
-                vscode.window.showErrorMessage("No active environment found. Please authenticate first.");
+                vscode.window.showErrorMessage(vscode.l10n.t('No active environment found. Please authenticate first.'));
                 return;
             }
 
@@ -166,19 +165,19 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
 
             const workspaceFolders = vscode.workspace.workspaceFolders;
             if (!workspaceFolders || workspaceFolders.length === 0) {
-                vscode.window.showErrorMessage("No folders opened in the current workspace.");
+                vscode.window.showErrorMessage(vscode.l10n.t('No folders opened in the current workspace.'));
                 return;
             }
             const currentWorkspaceFolder = workspaceFolders[0].uri.fsPath;
             const websiteId = getWebsiteRecordId(currentWorkspaceFolder);
             if (!websiteId) {
-                vscode.window.showErrorMessage("Unable to determine website id from workspace.");
+                vscode.window.showErrorMessage(vscode.l10n.t('Unable to determine website id from workspace.'));
                 return;
             }
 
             const storagePath = context.storageUri?.fsPath;
             if (!storagePath) {
-                vscode.window.showErrorMessage("Storage path not found");
+                vscode.window.showErrorMessage(vscode.l10n.t('Storage path not found.'));
                 return;
             }
 
@@ -196,12 +195,12 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
             let pacPagesDownload;
             let comparisonBuilt = false;
             await vscode.window.withProgress(progressOptions, async (progress) => {
-                progress.report({ message: "Looking for this website in the connected environment..." });
+                progress.report({ message: vscode.l10n.t('Looking for this website in the connected environment...') });
                 const pacPagesList = await MetadataDiffDesktop.getPagesList(pacTerminal);
                 if (pacPagesList && pacPagesList.length > 0) {
                     const websiteRecord = pacPagesList.find((record) => record.id === websiteId);
                     if (!websiteRecord) {
-                        vscode.window.showErrorMessage("Website not found in the connected environment.");
+                        vscode.window.showErrorMessage(vscode.l10n.t('Website not found in the connected environment.'));
                         return;
                     }
                     progress.report({ message: vscode.l10n.t('Retrieving "{0}" as {1} data model. Please wait...', websiteRecord.name, websiteRecord.modelVersion === 'v2' ? 'enhanced' : 'standard') });
@@ -223,9 +222,9 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
             });
 
             if (pacPagesDownload && comparisonBuilt) {
-                vscode.window.showInformationMessage(vscode.l10n.t("You can now view the comparison"));
+                vscode.window.showInformationMessage(vscode.l10n.t('You can now view the diff comparison.'));
             } else {
-                vscode.window.showErrorMessage("Failed to re-sync metadata.");
+                vscode.window.showErrorMessage(vscode.l10n.t('Failed to re-sync metadata.'));
             }
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.METADATA_DIFF_REFRESH_FAILED, error as string, error as Error, { methodName: null }, {});
@@ -244,14 +243,14 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
             MetadataDiffTreeDataProvider.initialize(context);
             vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
 
-            vscode.window.showInformationMessage("Metadata diff view cleared successfully.");
+            vscode.window.showInformationMessage(vscode.l10n.t('Metadata diff view cleared successfully.'));
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(
                 Constants.EventNames.METADATA_DIFF_REPORT_FAILED,
                 error as string,
                 error as Error
             );
-            vscode.window.showErrorMessage("Failed to clear metadata diff view");
+            vscode.window.showErrorMessage(vscode.l10n.t('Failed to clear metadata diff view'));
         }
     });
 
@@ -263,25 +262,25 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
             // Get current org info instead of prompting user
             const pacActiveOrg = await pacWrapper.activeOrg();
             if (!pacActiveOrg || pacActiveOrg.Status !== SUCCESS) {
-                vscode.window.showErrorMessage("No active environment found. Please authenticate first.");
+                vscode.window.showErrorMessage(vscode.l10n.t('No active environment found. Please authenticate first.'));
                 return;
             }
 
             const orgUrl = pacActiveOrg.Results.OrgUrl;
             if (!orgUrl) {
-                vscode.window.showErrorMessage("Current environment URL not found.");
+                vscode.window.showErrorMessage(vscode.l10n.t('Current environment URL not found.'));
                 return;
             }
 
             const workspaceFolders = vscode.workspace.workspaceFolders;
             if (!workspaceFolders || workspaceFolders.length === 0) {
-                vscode.window.showErrorMessage("No folders opened in the current workspace.");
+                vscode.window.showErrorMessage(vscode.l10n.t('No folders opened in the current workspace.'));
                 return;
             }
 
             const storagePath = context.storageUri?.fsPath;
             if (!storagePath) {
-                throw new Error("Storage path is not defined");
+                throw new Error(vscode.l10n.t('Storage path is not defined.'));
             }
 
             // Clean out any existing files in storagePath (so we have a "fresh" download)
@@ -299,12 +298,12 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
             let pacPagesDownload;
             let comparisonBuilt = false;
             await vscode.window.withProgress(progressOptions, async (progress) => {
-                progress.report({ message: "Looking for this website in the connected environment..." });
+                progress.report({ message: vscode.l10n.t('Looking for this website in the connected environment...') });
                 const pacPagesList = await MetadataDiffDesktop.getPagesList(pacTerminal);
                 if (pacPagesList && pacPagesList.length > 0) {
                     const websiteRecord = pacPagesList.find((record) => record.id === websiteId);
                     if (!websiteRecord) {
-                        vscode.window.showErrorMessage("Website not found in the connected environment.");
+                        vscode.window.showErrorMessage(vscode.l10n.t('Website not found in the connected environment.'));
                         return;
                     }
                     progress.report({ message: vscode.l10n.t('Retrieving "{0}" as {1} data model. Please wait...', websiteRecord.name, websiteRecord.modelVersion === 'v2' ? 'enhanced' : 'standard') });
@@ -326,9 +325,9 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
             });
 
             if (pacPagesDownload && comparisonBuilt) {
-                vscode.window.showInformationMessage(vscode.l10n.t("You can now view the comparison"));
+                vscode.window.showInformationMessage(vscode.l10n.t('You can now view the comparison'));
             } else {
-                vscode.window.showErrorMessage("Failed to download metadata.");
+                vscode.window.showErrorMessage(vscode.l10n.t('Failed to download metadata.'));
             }
 
         } catch (error) {
@@ -358,14 +357,14 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
 
                 // Add option to enter URL manually
                 items.push({
-                    label: "$(plus) Enter organization URL manually",
+                    label: `$(plus) ${vscode.l10n.t('Enter organization URL manually.')}`,
                     description: "",
-                    detail: "Enter a custom organization URL"
+                    detail: vscode.l10n.t('Enter a custom organization URL.')
                 });
 
                 // Show QuickPick to select environment
                 const selected = await vscode.window.showQuickPick(items, {
-                    placeHolder: "Select an environment or enter URL manually",
+                    placeHolder: vscode.l10n.t('Select an environment or enter an URL manually.'),
                     ignoreFocusOut: true
                 });
 
@@ -376,11 +375,11 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                     } else {
                         // If manual entry option was selected
                         orgUrl = await vscode.window.showInputBox({
-                            prompt: "Enter the organization URL",
-                            placeHolder: "https://your-org.crm.dynamics.com",
+                            prompt: vscode.l10n.t('Enter the organization URL'),
+                            placeHolder: 'https://your-org.crm.dynamics.com',
                             validateInput: (input) => {
                                 const urlPattern = /^https:\/\/[a-zA-Z0-9.-]+\d*\.crm\.dynamics\.com\/?$/;
-                                return urlPattern.test(input) ? null : "Please enter a valid URL in the format: https://your-org.crm.dynamics.com";
+                                return urlPattern.test(input) ? null : vscode.l10n.t('Please enter a valid URL in the format: https://your-org.crm.dynamics.com');
                             }
                         });
                     }
@@ -388,52 +387,48 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
             } else {
                 // Fallback to manual entry if no orgs are found
                 orgUrl = await vscode.window.showInputBox({
-                    prompt: "Enter the organization URL",
-                    placeHolder: "https://your-org.crm.dynamics.com"
+                    prompt: vscode.l10n.t('Enter the organization URL'),
+                    placeHolder: 'https://your-org.crm.dynamics.com'
                 });
             }
 
             if (!orgUrl) {
-                vscode.window.showErrorMessage("Organization URL is required to trigger the metadata diff flow.");
+                vscode.window.showErrorMessage(vscode.l10n.t('Organization URL is required to trigger the metadata diff flow.'));
                 return;
             }
 
             const urlPattern = /^https:\/\/[a-zA-Z0-9.-]+\d*\.crm\.dynamics\.com\/?$/;
             if (!urlPattern.test(orgUrl)) {
-                vscode.window.showErrorMessage("Invalid organization URL. Please enter a valid URL in the format: https://your-org.crm.dynamics.com", { modal: true });
+                vscode.window.showErrorMessage(vscode.l10n.t('Invalid organization URL. Please enter a valid URL in the format: https://your-org.crm.dynamics.com'), { modal: true });
                 return;
             }
 
             const pacActiveOrg = await pacWrapper.activeOrg();
-            if(pacActiveOrg){
+            if (pacActiveOrg) {
                 if (pacActiveOrg.Status === SUCCESS) {
-                    if(pacActiveOrg.Results.OrgUrl == orgUrl){
-                        vscode.window.showInformationMessage("Already connected to the specified environment.");
-                    }
-                    else{
+                    if (pacActiveOrg.Results.OrgUrl === orgUrl) {
+                        vscode.window.showInformationMessage(vscode.l10n.t('Already connected to the specified environment.'));
+                    } else {
                         const pacOrgSelect = await pacWrapper.orgSelect(orgUrl);
-                        if(pacOrgSelect && pacOrgSelect.Status === SUCCESS){
-                            vscode.window.showInformationMessage("Environment switched successfully.");
-                        }
-                        else{
-                            vscode.window.showErrorMessage("Failed to switch the environment.");
+                        if (pacOrgSelect && pacOrgSelect.Status === SUCCESS) {
+                            vscode.window.showInformationMessage(vscode.l10n.t('Environment switched successfully.'));
+                        } else {
+                            vscode.window.showErrorMessage(vscode.l10n.t('Failed to switch the environment.'));
                             return;
                         }
                     }
-                }
-                else{
+                } else {
                     await createAuthProfileExp(pacWrapper, orgUrl);
-                    vscode.window.showInformationMessage("Auth profile created successfully.");
+                    vscode.window.showInformationMessage(vscode.l10n.t('Auth profile created successfully.'));
                 }
-            }
-            else {
-                vscode.window.showErrorMessage("Failed to fetch the current environment details.");
+            } else {
+                vscode.window.showErrorMessage(vscode.l10n.t('Failed to fetch the current environment details.'));
                 return;
             }
 
             const workspaceFolders = vscode.workspace.workspaceFolders;
             if (!workspaceFolders || workspaceFolders.length === 0) {
-                vscode.window.showErrorMessage("No folders opened in the current workspace.");
+                vscode.window.showErrorMessage(vscode.l10n.t('No folders opened in the current workspace.'));
                 return;
             }
 
@@ -441,7 +436,7 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
             const websiteId = getWebsiteRecordId(currentWorkspaceFolder);
             const storagePath = context.storageUri?.fsPath;
             if (!storagePath) {
-                throw new Error("Storage path is not defined");
+                throw new Error(vscode.l10n.t('Storage path is not defined'));
             }
 
             // Clean out any existing files in storagePath (so we have a "fresh" download)
@@ -457,16 +452,20 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
             let pacPagesDownload;
             let comparisonBuilt = false;
             await vscode.window.withProgress(progressOptions, async (progress) => {
-                progress.report({ message: "Looking for this website in the connected environment..." });
+                progress.report({ message: vscode.l10n.t('Looking for this website in the connected environment...') });
                 const pacPagesList = await MetadataDiffDesktop.getPagesList(pacTerminal);
                 if (pacPagesList && pacPagesList.length > 0) {
                     const websiteRecord = pacPagesList.find((record) => record.id === websiteId);
                     if (!websiteRecord) {
-                        vscode.window.showErrorMessage("Website not found in the connected environment.");
+                        vscode.window.showErrorMessage(vscode.l10n.t('Website not found in the connected environment.'));
                         return;
                     }
                     progress.report({ message: vscode.l10n.t('Retrieving "{0}" as {1} data model. Please wait...', websiteRecord.name, websiteRecord.modelVersion === 'v2' ? 'enhanced' : 'standard') });
-                    pacPagesDownload = await pacWrapper.pagesDownload(storagePath, websiteId, websiteRecord.modelVersion == "v1" ? "1" : "2");
+                    pacPagesDownload = await pacWrapper.pagesDownload(
+                        storagePath,
+                        websiteId,
+                        (websiteRecord.modelVersion === "v1" || websiteRecord.modelVersion === "Standard") ? "1" : "2"
+                    );
                     if (pacPagesDownload) {
                         progress.report({ message: vscode.l10n.t('Comparing metadata of "{0}"...', websiteRecord.name) });
                         const provider = MetadataDiffTreeDataProvider.initialize(context);
@@ -479,10 +478,10 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                 }
             });
             if (pacPagesDownload && comparisonBuilt) {
-                vscode.window.showInformationMessage(vscode.l10n.t("You can now view the comparison"));
+                vscode.window.showInformationMessage(vscode.l10n.t('You can now view the diff comparison.'));
             }
             else{
-                vscode.window.showErrorMessage("Failed to download metadata.");
+                vscode.window.showErrorMessage(vscode.l10n.t('Failed to download metadata.'));
             }
 
         }
@@ -495,12 +494,12 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
         try {
             const workspaceFolders = vscode.workspace.workspaceFolders;
             if (!workspaceFolders) {
-                vscode.window.showErrorMessage("No workspace folder open");
+                vscode.window.showErrorMessage(vscode.l10n.t('No workspace folder open.'));
                 return;
             }
             const storagePath = context.storageUri?.fsPath;
             if (!storagePath) {
-                vscode.window.showErrorMessage("Storage path not found");
+                vscode.window.showErrorMessage(vscode.l10n.t('Storage path not found.'));
                 return;
             }
 
@@ -532,7 +531,7 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                 error as string,
                 error as Error
             );
-            vscode.window.showErrorMessage("Failed to generate metadata diff report");
+            vscode.window.showErrorMessage(vscode.l10n.t('Failed to generate metadata diff report.'));
         }
     });
 
@@ -540,13 +539,13 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
         try {
             const workspaceFolders = vscode.workspace.workspaceFolders;
             if (!workspaceFolders) {
-                vscode.window.showErrorMessage("No workspace folder open");
+                vscode.window.showErrorMessage(vscode.l10n.t('No workspace folder open.'));
                 return;
             }
 
             const storagePath = context.storageUri?.fsPath;
             if (!storagePath) {
-                vscode.window.showErrorMessage("Storage path not found");
+                vscode.window.showErrorMessage(vscode.l10n.t('Storage path not found.'));
                 return;
             }
 
@@ -569,7 +568,7 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
 
             if (saveUri) {
                 fs.writeFileSync(saveUri.fsPath, JSON.stringify(report, null, 2));
-                vscode.window.showInformationMessage("Report exported successfully");
+                vscode.window.showInformationMessage(vscode.l10n.t('Report exported successfully.'));
             }
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(
@@ -577,7 +576,7 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                 error as string,
                 error as Error
             );
-            vscode.window.showErrorMessage("Failed to export metadata diff report");
+            vscode.window.showErrorMessage(vscode.l10n.t('Failed to export metadata diff report.'));
         }
     });
 
@@ -601,7 +600,7 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                 await treeDataProvider.setDiffFiles(report.files); // triggers refresh
                 vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
 
-                vscode.window.showInformationMessage("Report imported successfully");
+                vscode.window.showInformationMessage(vscode.l10n.t('Report imported successfully.'));
             }
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(
@@ -609,7 +608,7 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                 error as string,
                 error as Error
             );
-            vscode.window.showErrorMessage("Failed to import metadata diff report");
+            vscode.window.showErrorMessage(vscode.l10n.t('Failed to import metadata diff report.'));
         }
     });
 }

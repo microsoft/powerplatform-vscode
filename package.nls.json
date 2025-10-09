@@ -125,5 +125,14 @@
       "This is a Markdown formatted string, and the formatting must persist across translations.",
       "The second line should be '[TRANSLATION HERE](command:microsoft.powerplatform.pages.metadataDiff.triggerFlow).', keeping brackets and the text in the parentheses unmodified"
     ]
-  }
+  },
+  "microsoft.powerplatform.pages.metadataDiff.triggerFlow.title": "Compare with Environment",
+  "microsoft.powerplatform.pages.metadataDiff.generateReport.title": "Generate HTML Report",
+  "microsoft.powerplatform.pages.metadataDiff.resync.title": "Re-sync",
+  "microsoft.powerplatform.pages.metadataDiff.clearView.title": "Clear View",
+  "microsoft.powerplatform.pages.metadataDiff.exportReport.title": "Export Comparison View",
+  "microsoft.powerplatform.pages.metadataDiff.importReport.title": "Import Comparison View",
+  "microsoft.powerplatform.pages.metadataDiff.openComparison.title": "Open Comparison",
+  "microsoft.powerplatform.pages.metadataDiff.discardLocalChanges.title": "Discard Local Changes",
+  "microsoft.powerplatform.pages.metadataDiff.noDataYet": "No data to show."
 }

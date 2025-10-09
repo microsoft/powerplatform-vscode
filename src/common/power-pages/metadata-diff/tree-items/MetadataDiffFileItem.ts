@@ -34,9 +34,9 @@ export class MetadataDiffFileItem extends MetadataDiffTreeItem {
         this.iconPath = new vscode.ThemeIcon("file");
 
         if (hasDiff && (workspaceFile || storageFile)) {
-            this.command = {
-                command: 'metadataDiff.openDiff',
-                title: 'Show Diff',
+                this.command = {
+                    command: 'microsoft.powerplatform.pages.metadataDiff.openDiff',
+                    title: vscode.l10n.t('Show Diff'),
                 arguments: [workspaceFile, storageFile]
             };
         }

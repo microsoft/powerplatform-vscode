@@ -232,6 +232,12 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
                 true
             );
             fileNode.description = this.getChangeDescription(workspaceFile, storageFile);
+            fileNode.iconPath = new vscode.ThemeIcon("file");
+            fileNode.command = {
+                command: 'microsoft.powerplatform.pages.metadataDiff.openDiff',
+                title: vscode.l10n.t('Show Diff'),
+                arguments: [workspaceFile, storageFile]
+            };
             currentNode.getChildrenMap().set(fileName, fileNode);
         }
 
@@ -308,8 +314,8 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
             fileNode.description = file.changes;
             fileNode.iconPath = new vscode.ThemeIcon("file");
             fileNode.command = {
-                command: 'metadataDiff.openDiff',
-                title: 'Show Diff',
+                command: 'microsoft.powerplatform.pages.metadataDiff.openDiff',
+                title: vscode.l10n.t('Show Diff'),
                 arguments: [workspaceFilePath, storageFilePath]
             };
 

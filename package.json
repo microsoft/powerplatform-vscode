@@ -503,49 +503,49 @@
       },
       {
         "command": "microsoft.powerplatform.pages.metadataDiff.triggerFlow",
-        "title": "Compare with Environment",
+        "title": "%microsoft.powerplatform.pages.metadataDiff.triggerFlow.title%",
         "category": "Power Pages Metadata Diff",
         "icon": "$(cloud-download)"
       },
       {
         "command": "microsoft.powerplatform.pages.metadataDiff.generateReport",
-        "title": "Generate HTML Report",
+        "title": "%microsoft.powerplatform.pages.metadataDiff.generateReport.title%",
         "category": "Power Pages Metadata Diff",
         "icon": "$(markdown)"
       },
       {
         "command": "microsoft.powerplatform.pages.metadataDiff.resync",
-        "title": "Re-sync",
+        "title": "%microsoft.powerplatform.pages.metadataDiff.resync.title%",
         "category": "Power Pages Metadata Diff",
         "icon": "$(refresh)"
       },
       {
         "command": "microsoft.powerplatform.pages.metadataDiff.clearView",
-        "title": "Clear View",
+        "title": "%microsoft.powerplatform.pages.metadataDiff.clearView.title%",
         "category": "Power Pages Metadata Diff",
         "icon": "$(clear-all)"
       },
       {
         "command": "microsoft.powerplatform.pages.metadataDiff.exportReport",
-        "title": "Export Comparison View",
+        "title": "%microsoft.powerplatform.pages.metadataDiff.exportReport.title%",
         "category": "Power Pages Metadata Diff",
         "icon": "$(save-as)"
       },
       {
         "command": "microsoft.powerplatform.pages.metadataDiff.importReport",
-        "title": "Import Comparison View",
+        "title": "%microsoft.powerplatform.pages.metadataDiff.importReport.title%",
         "category": "Power Pages Metadata Diff",
         "icon": "$(folder-opened)"
       },
       {
-        "command": "metadataDiff.openComparison",
-        "title": "Open Comparison",
+        "command": "microsoft.powerplatform.pages.metadataDiff.openComparison",
+        "title": "%microsoft.powerplatform.pages.metadataDiff.openComparison.title%",
         "category": "Power Pages Metadata Diff",
         "icon": "$(diff)"
       },
       {
-        "command": "metadataDiff.discardLocalChanges",
-        "title": "Discard Local Changes",
+        "command": "microsoft.powerplatform.pages.metadataDiff.discardLocalChanges",
+        "title": "%microsoft.powerplatform.pages.metadataDiff.discardLocalChanges.title%",
         "category": "Power Pages Metadata Diff",
         "icon": "$(discard)"
       }
@@ -1142,12 +1142,12 @@
           "group": "metadataDiff@6"
         },
         {
-          "command": "metadataDiff.openComparison",
+          "command": "microsoft.powerplatform.pages.metadataDiff.openComparison",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffFileModified && microsoft.powerplatform.pages.metadataDiffEnabled",
           "group": "metadataDiffFile@1"
         },
         {
-          "command": "metadataDiff.discardLocalChanges",
+          "command": "microsoft.powerplatform.pages.metadataDiff.discardLocalChanges",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffFileModified && microsoft.powerplatform.pages.metadataDiffEnabled",
           "group": "metadataDiffFile@2"
         },

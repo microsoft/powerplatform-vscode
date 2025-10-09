@@ -38,12 +38,17 @@ export async function generateDiffReport(workspacePath: string, storagePath: str
 
     const sortedFolders = Array.from(folderStructure.keys()).sort();
 
+    // SECURITY: escape for HTML element & attribute context (defense-in-depth)
+    // Added escaping for single quotes and backticks to avoid breaking out of attributes
+    // even if future refactors switch to single-quoted attributes or template-delimited injections.
     const escapeHtml = (value: string | undefined) =>
         (value || '')
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/`/g, '&#96;');
 
     let body = `<h1>Power Pages Metadata Diff Report</h1>`;
     body += `<p class="meta">Generated on: ${escapeHtml(generatedOn)}</p>`;
