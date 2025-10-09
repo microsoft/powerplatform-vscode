@@ -1,4 +1,5 @@
 ---
+applyTo: "**"
 description: Directory Structure Overview
 ---
 Provide a brief overview of the directory structure for the Power Platform VS Code extension. This will help in understanding where to find specific components and how the project is organized.
