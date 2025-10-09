@@ -40,7 +40,7 @@ The web extension extends Visual Studio Code for Power Platform scenarios. All s
 2. Navigate to the project root directory:
 
    ```sh
-   cd c:\repos\powerplatform-vscode
+   cd /path/to/powerplatform-vscode
    ```
 
 3. Install dependencies:
@@ -88,8 +88,8 @@ This will compile the extension and output the necessary files.
 
 ## Testing
 
-- **Unit tests**: Located in `src/web/test/unit/`
-- **Integration tests**: Located in `src/web/test/integration/`
+- **Unit tests**: Located in `src/web/client/test/unit/`
+- **Integration tests**: Located in `src/web/client/test/integration/`
 - **Frameworks**: Mocha (describe/it), Chai (expect), Sinon (stubs/spies)
 - **Running tests**:
 
@@ -106,9 +106,10 @@ This will compile the extension and output the necessary files.
 ## Contributing
 
 1. Fork the repository and create a new branch for your feature or bugfix.
-2. Make your changes in `src/web/client/`.
+2. Make your changes in `src/web/client/` and, if needed, in `src/common/` for shared utilities and services which can be used across web and desktop.
 3. Follow coding and testing guidelines above.
 4. Submit a pull request with a clear description of your changes.
+5. The main difference between web and desktop extension is that desktop extension runs in a Node.js environment, while the web extension runs in a browser-like environment. This affects how certain APIs and modules can be used.
 
 ## Troubleshooting
 
