@@ -136,9 +136,12 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
 
     private async getWebsitePath(storagePath: string): Promise<string | undefined> {
         try {
-            const folders = fs.readdirSync(storagePath).filter(f =>
-                fs.statSync(path.join(storagePath, f)).isDirectory()
-            );
+            const folders = fs.readdirSync(storagePath).filter(f => {
+                if (f.startsWith('.')) {
+                    return false;
+                }
+                return fs.statSync(path.join(storagePath, f)).isDirectory();
+            });
 
             if (folders.length > 0) {
                 return path.join(storagePath, folders[0]);
