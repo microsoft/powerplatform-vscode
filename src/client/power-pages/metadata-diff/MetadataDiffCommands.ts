@@ -205,10 +205,10 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                         return;
                     }
                     progress.report({ message: vscode.l10n.t('Retrieving "{0}" as {1} data model. Please wait...', websiteRecord.name, websiteRecord.modelVersion === 'v2' ? 'enhanced' : 'standard') });
-                    pacPagesDownload = await pacWrapper.pagesDownload(
+                    pacPagesDownload = await pacWrapper.downloadSite(
                         storagePath,
                         websiteId,
-                        websiteRecord.modelVersion === "v1" || websiteRecord.modelVersion === "Standard" ? "1" : "2"
+                        websiteRecord.modelVersion === "v1" || websiteRecord.modelVersion === "Standard" ? 1 : 2
                     );
                     if (pacPagesDownload) {
                         progress.report({ message: vscode.l10n.t('Comparing metadata of "{0}"...', websiteRecord.name) });
@@ -308,10 +308,10 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                         return;
                     }
                     progress.report({ message: vscode.l10n.t('Retrieving "{0}" as {1} data model. Please wait...', websiteRecord.name, websiteRecord.modelVersion === 'v2' ? 'enhanced' : 'standard') });
-                    pacPagesDownload = await pacWrapper.pagesDownload(
+                    pacPagesDownload = await pacWrapper.downloadSite(
                         storagePath,
                         websiteId,
-                        websiteRecord.modelVersion === "v1" || websiteRecord.modelVersion === "Standard" ? "1" : "2"
+                        websiteRecord.modelVersion === "v1" || websiteRecord.modelVersion === "Standard" ? 1 : 2
                     );
                     if (pacPagesDownload) {
                         progress.report({ message: vscode.l10n.t('Comparing metadata of "{0}"...', websiteRecord.name) });
@@ -466,7 +466,7 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                         return;
                     }
                     progress.report({ message: vscode.l10n.t('Retrieving "{0}" as {1} data model. Please wait...', websiteRecord.name, websiteRecord.modelVersion === 'v2' ? 'enhanced' : 'standard') });
-                    pacPagesDownload = await pacWrapper.pagesDownload(storagePath, websiteId, websiteRecord.modelVersion == "v1" ? "1" : "2");
+                    pacPagesDownload = await pacWrapper.downloadSite(storagePath, websiteId, websiteRecord.modelVersion == "v1" ? 1 : 2);
                     if (pacPagesDownload) {
                         progress.report({ message: vscode.l10n.t('Comparing metadata of "{0}"...', websiteRecord.name) });
                         const provider = MetadataDiffTreeDataProvider.initialize(context);

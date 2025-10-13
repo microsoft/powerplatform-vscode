@@ -229,10 +229,6 @@ export class PacWrapper {
         // The next operation will create a new process
     }
 
-    public async pagesDownload(path: string, websiteId: string, modelVersion: string): Promise<PacOutput> {
-        return this.executeCommandAndParseResults<PacOutput>(new PacArguments("pages", "download", "-p", path, "-id", websiteId, "-mv", modelVersion));
-    }
-
     public async pagesList(): Promise<PacPagesListOutput> {
         return this.executeCommandAndParseResults<PacPagesListOutput>(new PacArguments("pages", "list", "--verbose"));
     }
