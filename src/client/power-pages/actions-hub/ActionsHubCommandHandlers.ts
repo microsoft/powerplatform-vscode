@@ -716,8 +716,9 @@ export const compareWithLocal = async (siteTreeItem: SiteTreeItem) => {
     );
 
     try {
-        // Execute the compare with local command with specific website ID
-        await vscode.commands.executeCommand('microsoft.powerplatform.pages.metadataDiff.triggerFlowWithSite', siteInfo.websiteId);
+        await vscode.commands.executeCommand(
+            'microsoft.powerplatform.pages.metadataDiff.triggerFlowWithSite',
+            siteInfo.websiteId);
     } catch (error) {
         traceError(
             Constants.EventNames.ACTIONS_HUB_COMPARE_WITH_LOCAL_FAILED,

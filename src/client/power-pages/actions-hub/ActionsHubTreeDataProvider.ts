@@ -12,7 +12,7 @@ import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLo
 import { EnvironmentGroupTreeItem } from "./tree-items/EnvironmentGroupTreeItem";
 import { IEnvironmentInfo } from "./models/IEnvironmentInfo";
 import { PacTerminal } from "../../lib/PacTerminal";
-import { fetchWebsites, openActiveSitesInStudio, openInactiveSitesInStudio, previewSite, createNewAuthProfile, refreshEnvironment, showEnvironmentDetails, switchEnvironment, revealInOS, openSiteManagement, uploadSite, showSiteDetails, compareWithLocal, downloadSite, openInStudio, reactivateSite, runCodeQLScreening, loginToMatch } from "./ActionsHubCommandHandlers";
+import { fetchWebsites, openActiveSitesInStudio, openInactiveSitesInStudio, previewSite, createNewAuthProfile, refreshEnvironment, showEnvironmentDetails, switchEnvironment, revealInOS, openSiteManagement, uploadSite, showSiteDetails, downloadSite, openInStudio, reactivateSite, runCodeQLScreening, loginToMatch, compareWithLocal } from "./ActionsHubCommandHandlers";
 import PacContext from "../../pac/PacContext";
 import CurrentSiteContext from "./CurrentSiteContext";
 import { IOtherSiteInfo, IWebsiteDetails } from "../../../common/services/Interfaces";
@@ -24,7 +24,6 @@ import ArtemisContext from "../../ArtemisContext";
 import { MetadataDiffTreeDataProvider } from "../../../common/power-pages/metadata-diff/MetadataDiffTreeDataProvider";
 import { MetadataDiffTreeItem } from "../../../common/power-pages/metadata-diff/tree-items/MetadataDiffTreeItem";
 
-// Wrapper classes to surface Metadata Diff under Actions Hub
 class MetadataDiffWrapperTreeItem extends ActionsHubTreeItem {
     constructor(private readonly _item: MetadataDiffTreeItem) {
         super(
@@ -34,12 +33,10 @@ class MetadataDiffWrapperTreeItem extends ActionsHubTreeItem {
             _item.contextValue || "metadataDiffItem",
             (typeof _item.description === "string" ? _item.description : "")
         );
-        // Copy over command & tooltip if present
         this.command = _item.command;
         this.tooltip = _item.tooltip;
     }
 
-    // Expose underlying file paths for command handlers invoked via context menu
     public get filePath(): string | undefined {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return (this._item as any).filePath;
@@ -50,7 +47,6 @@ class MetadataDiffWrapperTreeItem extends ActionsHubTreeItem {
     }
 
     public getChildren(): ActionsHubTreeItem[] {
-        // Map underlying children to wrapper items
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const children: MetadataDiffTreeItem[] = (this._item as any).getChildren ? (this._item as any).getChildren() : [];
         if (!children || !Array.isArray(children)) {
@@ -65,7 +61,6 @@ class MetadataDiffGroupTreeItem extends ActionsHubTreeItem {
         super(
             label,
             hasData ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.Collapsed,
-            // Use Split Editor icon (codicon split-horizontal) as requested
             new vscode.ThemeIcon("split-horizontal"),
             "metadataDiffRoot",
             hasData ? "" : vscode.l10n.t("No data yet")
@@ -76,7 +71,6 @@ class MetadataDiffGroupTreeItem extends ActionsHubTreeItem {
     }
 
     public getChildren(): ActionsHubTreeItem[] {
-        // Force provider to populate its cache if empty (async ignored intentionally)
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         // @ts-expect-error Accessing private field for integration wrapper
         if (this._provider._diffItems?.length === 0) {
@@ -103,7 +97,6 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     private _loadWebsites = true;
     private _isCodeQlScanEnabled: boolean;
     private static _metadataDiffProvider: MetadataDiffTreeDataProvider | undefined;
-    // Track last known environment to detect environment switches and reset dependent views (like Metadata Diff)
     private _lastEnvironmentId: string | undefined;
 
     private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal, isCodeQlScanEnabled: boolean) {
@@ -117,7 +110,6 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                 const currentEnvId = PacContext.AuthInfo?.EnvironmentId;
                 const envChanged = currentEnvId !== this._lastEnvironmentId;
                 if (envChanged) {
-                    // Clear Metadata Diff data when environment switches so user doesn't see stale comparison
                     if (ActionsHubTreeDataProvider._metadataDiffProvider) {
                         try {
                             ActionsHubTreeDataProvider._metadataDiffProvider.clearItems();
