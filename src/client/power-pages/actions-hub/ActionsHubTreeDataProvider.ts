@@ -22,68 +22,7 @@ import { PROVIDER_ID } from "../../../common/services/Constants";
 import { getOIDFromToken } from "../../../common/services/AuthenticationProvider";
 import ArtemisContext from "../../ArtemisContext";
 import { MetadataDiffTreeDataProvider } from "../../../common/power-pages/metadata-diff/MetadataDiffTreeDataProvider";
-import { MetadataDiffTreeItem } from "../../../common/power-pages/metadata-diff/tree-items/MetadataDiffTreeItem";
-
-class MetadataDiffWrapperTreeItem extends ActionsHubTreeItem {
-    constructor(private readonly _item: MetadataDiffTreeItem) {
-        super(
-            _item.label?.toString(),
-            _item.collapsibleState ?? vscode.TreeItemCollapsibleState.None,
-            _item.iconPath || new vscode.ThemeIcon("file"),
-            _item.contextValue || "metadataDiffItem",
-            (typeof _item.description === "string" ? _item.description : "")
-        );
-        this.command = _item.command;
-        this.tooltip = _item.tooltip;
-    }
-
-    public get filePath(): string | undefined {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return (this._item as any).filePath;
-    }
-    public get storedFilePath(): string | undefined {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return (this._item as any).storedFilePath;
-    }
-
-    public getChildren(): ActionsHubTreeItem[] {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const children: MetadataDiffTreeItem[] = (this._item as any).getChildren ? (this._item as any).getChildren() : [];
-        if (!children || !Array.isArray(children)) {
-            return [];
-        }
-        return children.map(c => new MetadataDiffWrapperTreeItem(c));
-    }
-}
-
-class MetadataDiffGroupTreeItem extends ActionsHubTreeItem {
-    constructor(private readonly _provider: MetadataDiffTreeDataProvider, hasData: boolean, label: string, websiteName?: string, envName?: string) {
-        super(
-            label,
-            hasData ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.Collapsed,
-            new vscode.ThemeIcon("split-horizontal"),
-            "metadataDiffRoot",
-            hasData ? "" : vscode.l10n.t("No data yet")
-        );
-        this.tooltip = hasData && websiteName && envName
-            ? vscode.l10n.t("Power Pages metadata comparison: {0} local vs {1}", websiteName, envName)
-            : vscode.l10n.t("Power Pages metadata comparison");
-    }
-
-    public getChildren(): ActionsHubTreeItem[] {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        // @ts-expect-error Accessing private field for integration wrapper
-        if (this._provider._diffItems?.length === 0) {
-            this._provider.getChildren();
-        }
-        // @ts-expect-error Accessing private field for integration wrapper
-        const items: MetadataDiffTreeItem[] | null | undefined = this._provider._diffItems || [];
-        if (!items || !Array.isArray(items)) {
-            return [];
-        }
-        return items.map(i => new MetadataDiffWrapperTreeItem(i));
-    }
-}
+import { MetadataDiffGroupTreeItem } from "./tree-items/MetadataDiffGroupTreeItem";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
