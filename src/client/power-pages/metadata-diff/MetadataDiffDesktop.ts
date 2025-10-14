@@ -104,13 +104,14 @@ export class MetadataDiffDesktop {
                     }
 
                     // Extract the relevant parts using regex
-                    // Example line: ' [1]        4b47eaeb-5f5d-f011-bec1-000d3a5b8fd6               test_portal                                                  Standard             No                        '
+                    // Example lines:
+                    // ' [1]        4b47eaeb-5f5d-f011-bec1-000d3a5b8fd6               test_portal                                                  Standard             No                        '
+                    // ' [7]        e26a79b8-4c5d-f011-bec2-000d3a358057               Test V1_Studio - site-vbdyt                                  Enhanced             No                        '
                     const match = line.match(/\s*\[\d+\]\s+([a-f0-9-]+)\s+(.+?)\s+(Standard|Enhanced)(?:\s{2,}.*)?$/i);
                     if (match) {
                         // Extract WebsiteId, FriendlyName, and ModelVersion from the line
-                        // Example line: ' [2]        8aa65ec4-1578-f011-b4cc-0022480b93b5               Customer Self Service_V1 - customerselfservice-oh1uo         Standard  '
-                        const modelVersionMatch = line.match(/\s(Standard|Enhanced)\s*$/i);
-                        const modelVersion = modelVersionMatch ? modelVersionMatch[1].trim() : "Standard";
+                        // Example line: ' [2]        8aa65ec4-1578-f011-b4cc-0022480b93b5               Customer Self Service_V1 - customerselfservice-oh1uo         Standard             No                        '
+                        const modelVersion = match[3].trim().toLowerCase() === "enhanced" ? "2" : "1";
                         pagesList.push({
                             WebsiteId: match[1].trim(),
                             FriendlyName: match[2].trim(),
