@@ -218,14 +218,14 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const hasData = (mdProvider as any)._diffItems && (mdProvider as any)._diffItems.length > 0;
 
-                    let label = vscode.l10n.t("Metadata Diff");
+                    let label = Constants.Strings.METADATA_DIFF;
                     let websiteName: string | undefined;
                     let envName: string | undefined;
                     if (hasData) {
                         const workspaceFolders = vscode.workspace.workspaceFolders;
-                        websiteName = workspaceFolders && workspaceFolders.length > 0 ? workspaceFolders[0].name : vscode.l10n.t("Local");
-                        envName = authInfo?.OrganizationFriendlyName || vscode.l10n.t("Current Environment");
-                        label = vscode.l10n.t("Metadata Diff ({0} (Local <-> {1}))", websiteName, envName);
+                        websiteName = workspaceFolders && workspaceFolders.length > 0 ? workspaceFolders[0].name : Constants.Strings.LOCAL;
+                        envName = authInfo?.OrganizationFriendlyName || Constants.Strings.CURRENT_ENVIRONMENT;
+                        label = vscode.l10n.t(Constants.Strings.METADATA_DIFF_FORMAT, websiteName, envName);
                     }
                     rootItems.push(new MetadataDiffGroupTreeItem(mdProvider, hasData, label, websiteName, envName));
                 }
