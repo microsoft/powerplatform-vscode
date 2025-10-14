@@ -36,33 +36,13 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     private _loadWebsites = true;
     private _isCodeQlScanEnabled: boolean;
     private static _metadataDiffProvider: MetadataDiffTreeDataProvider | undefined;
-    private _lastEnvironmentId: string | undefined;
 
     private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal, isCodeQlScanEnabled: boolean) {
         this._isCodeQlScanEnabled = isCodeQlScanEnabled;
-        this._lastEnvironmentId = PacContext.AuthInfo?.EnvironmentId;
-
         this._disposables.push(
             ...this.registerPanel(this._pacTerminal),
 
             PacContext.onChanged(() => {
-                const currentEnvId = PacContext.AuthInfo?.EnvironmentId;
-                const envChanged = currentEnvId !== this._lastEnvironmentId;
-                if (envChanged) {
-                    if (ActionsHubTreeDataProvider._metadataDiffProvider) {
-                        try {
-                            ActionsHubTreeDataProvider._metadataDiffProvider.clearItems();
-                            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_REFRESH, {
-                                methodName: 'environmentChangedMetadataDiffReset',
-                                previousEnvironmentId: this._lastEnvironmentId || 'undefined',
-                                newEnvironmentId: currentEnvId || 'undefined'
-                            });
-                        } catch (e) {
-                            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_REFRESH, e as string, e as Error, { methodName: 'environmentChangedMetadataDiffReset' }, {});
-                        }
-                    }
-                    this._lastEnvironmentId = currentEnvId;
-                }
                 this._loadWebsites = true;
                 this.refresh();
             }),
