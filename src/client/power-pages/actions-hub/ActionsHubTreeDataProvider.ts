@@ -212,9 +212,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                 // Inject Metadata Diff root (if enabled & provider exists)
                 const mdProvider = ActionsHubTreeDataProvider._metadataDiffProvider;
                 if (mdProvider) {
-                    // Ensure provider builds diff list before evaluating hasData
-                    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                    mdProvider.getChildren();
+                    void mdProvider.getChildren();
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const hasData = (mdProvider as any)._diffItems && (mdProvider as any)._diffItems.length > 0;
 
