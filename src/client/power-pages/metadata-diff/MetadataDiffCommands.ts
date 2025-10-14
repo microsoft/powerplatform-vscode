@@ -17,15 +17,13 @@ import { getWebsiteRecordId } from "../../../common/utilities/WorkspaceInfoFinde
 import { generateDiffReport, getAllDiffFiles, MetadataDiffReport } from "./MetadataDiffUtils";
 
 export async function registerMetadataDiffCommands(context: vscode.ExtensionContext, pacTerminal: PacTerminal): Promise<void> {
-    // Register command for handling file diffs
     vscode.commands.registerCommand('microsoft.powerplatform.pages.metadataDiff.openDiff', async (workspaceFile?: string, storedFile?: string) => {
         try {
             if (!workspaceFile && !storedFile) {
-                vscode.window.showWarningMessage('No file paths provided for diff.');
+                vscode.window.showWarningMessage(vscode.l10n.t("No file paths provided for diff."));
                 return;
             }
 
-            // Ensure storage directory for temp placeholders exists
             const tempRoot = path.join(context.storageUri?.fsPath || '', 'tempDiff');
             if (!fs.existsSync(tempRoot)) {
                 fs.mkdirSync(tempRoot, { recursive: true });
@@ -39,15 +37,14 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                 return emptyPath;
             };
 
-            let leftUri: vscode.Uri;   // environment/original
-            let rightUri: vscode.Uri;  // local/modified
+            let leftUri: vscode.Uri;
+            let rightUri: vscode.Uri;
             let title: string;
 
             if (workspaceFile && storedFile) {
-                // Standard modified diff: stored (Environment) vs workspace (Local)
                 leftUri = vscode.Uri.file(storedFile);
                 rightUri = vscode.Uri.file(workspaceFile);
-                title = `${path.basename(workspaceFile)} (Modified)`;
+                title = vscode.l10n.t('{0} (Modified)', path.basename(workspaceFile));
             } else if (workspaceFile && !storedFile) {
                 // Added locally: empty (Environment) -> workspace file (Local)
                 const base = path.basename(workspaceFile);
@@ -94,7 +91,7 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
         if (workspaceFile || storedFile) {
             await vscode.commands.executeCommand('microsoft.powerplatform.pages.metadataDiff.openDiff', workspaceFile, storedFile);
         } else {
-            vscode.window.showWarningMessage('Unable to open comparison for this item.');
+            vscode.window.showWarningMessage(vscode.l10n.t("Unable to open comparison for this item."));
         }
     });
 
@@ -113,7 +110,7 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                 storedFile = obj.storedFilePath || obj.storageFile;
             }
             if (!workspaceFile || !storedFile) {
-                vscode.window.showWarningMessage('Unable to discard changes for this item.');
+                vscode.window.showWarningMessage(vscode.l10n.t("Unable to discard changes for this item."));
                 return;
             }
             const confirm = await vscode.window.showWarningMessage(
