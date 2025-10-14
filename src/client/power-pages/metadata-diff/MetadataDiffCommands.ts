@@ -14,12 +14,11 @@ import { MetadataDiffDesktop } from "./MetadataDiffDesktop";
 import { ActionsHubTreeDataProvider } from "../actions-hub/ActionsHubTreeDataProvider";
 import { createAuthProfileExp } from "../../../common/utilities/PacAuthUtil";
 import { getWebsiteRecordId } from "../../../common/utilities/WorkspaceInfoFinderUtil";
-// Duplicate imports removed
 import { generateDiffReport, getAllDiffFiles, MetadataDiffReport } from "./MetadataDiffUtils";
 
 export async function registerMetadataDiffCommands(context: vscode.ExtensionContext, pacTerminal: PacTerminal): Promise<void> {
     // Register command for handling file diffs
-    vscode.commands.registerCommand('metadataDiff.openDiff', async (workspaceFile?: string, storedFile?: string) => {
+    vscode.commands.registerCommand('microsoft.powerplatform.pages.metadataDiff.openDiff', async (workspaceFile?: string, storedFile?: string) => {
         try {
             if (!workspaceFile && !storedFile) {
                 vscode.window.showWarningMessage('No file paths provided for diff.');
@@ -77,7 +76,7 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
     });
 
     // Explicit alias command shown in context menu (kept separate for clearer telemetry / labeling)
-    vscode.commands.registerCommand('metadataDiff.openComparison', async (itemOrWorkspace?: unknown, maybeStored?: unknown) => {
+    vscode.commands.registerCommand('microsoft.powerplatform.pages.metadataDiff.openComparison', async (itemOrWorkspace?: unknown, maybeStored?: unknown) => {
         // Support invocation with either (workspace, stored) or a single tree item
         let workspaceFile: string | undefined;
         let storedFile: string | undefined;
@@ -93,14 +92,14 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
         }
         // Allow opening for added / removed as well (one-sided)
         if (workspaceFile || storedFile) {
-            await vscode.commands.executeCommand('metadataDiff.openDiff', workspaceFile, storedFile);
+            await vscode.commands.executeCommand('microsoft.powerplatform.pages.metadataDiff.openDiff', workspaceFile, storedFile);
         } else {
             vscode.window.showWarningMessage('Unable to open comparison for this item.');
         }
     });
 
     // Discard local changes => overwrite workspace file with stored (remote) version
-    vscode.commands.registerCommand('metadataDiff.discardLocalChanges', async (itemOrWorkspace?: unknown, maybeStored?: unknown) => {
+    vscode.commands.registerCommand('microsoft.powerplatform.pages.metadataDiff.discardLocalChanges', async (itemOrWorkspace?: unknown, maybeStored?: unknown) => {
         try {
             let workspaceFile: string | undefined;
             let storedFile: string | undefined;
