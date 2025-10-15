@@ -15,9 +15,14 @@ import { ActionsHubTreeDataProvider } from "../actions-hub/ActionsHubTreeDataPro
 import { createAuthProfileExp } from "../../../common/utilities/PacAuthUtil";
 import { getWebsiteRecordId } from "../../../common/utilities/WorkspaceInfoFinderUtil";
 import { generateDiffReport, getAllDiffFiles, MetadataDiffReport } from "./MetadataDiffUtils";
+import { getBaseEventInfo } from "../actions-hub/TelemetryHelper";
 
 export async function registerMetadataDiffCommands(context: vscode.ExtensionContext, pacTerminal: PacTerminal): Promise<void> {
     vscode.commands.registerCommand('microsoft.powerplatform.pages.metadataDiff.openDiff', async (workspaceFile?: string, storedFile?: string) => {
+        oneDSLoggerWrapper.getLogger().traceInfo(
+            Constants.EventNames.METADATA_DIFF_COMMAND_EXECUTED,
+            { command: 'openDiff', hasWorkspaceFile: !!workspaceFile, hasStoredFile: !!storedFile, ...getBaseEventInfo() }
+        );
         try {
             if (!workspaceFile && !storedFile) {
                 vscode.window.showWarningMessage(vscode.l10n.t("No file paths provided for diff."));
@@ -71,6 +76,10 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
     });
 
     vscode.commands.registerCommand('microsoft.powerplatform.pages.metadataDiff.openComparison', async (itemOrWorkspace?: unknown, maybeStored?: unknown) => {
+        oneDSLoggerWrapper.getLogger().traceInfo(
+            Constants.EventNames.METADATA_DIFF_COMMAND_EXECUTED,
+            { command: 'openComparison', argType: typeof itemOrWorkspace, ...getBaseEventInfo() }
+        );
         let workspaceFile: string | undefined;
         let storedFile: string | undefined;
         if (typeof itemOrWorkspace === 'string') {
@@ -92,6 +101,10 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
 
     // Discard local changes => overwrite workspace file with stored (remote) version
     vscode.commands.registerCommand('microsoft.powerplatform.pages.metadataDiff.discardLocalChanges', async (itemOrWorkspace?: unknown, maybeStored?: unknown) => {
+        oneDSLoggerWrapper.getLogger().traceInfo(
+            Constants.EventNames.METADATA_DIFF_COMMAND_EXECUTED,
+            { command: 'discardLocalChanges', ...getBaseEventInfo() }
+        );
         try {
             let workspaceFile: string | undefined;
             let storedFile: string | undefined;
@@ -143,6 +156,10 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
     });
 
     vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.resync", async () => {
+        oneDSLoggerWrapper.getLogger().traceInfo(
+            Constants.EventNames.METADATA_DIFF_COMMAND_EXECUTED,
+            { command: 'resync', ...getBaseEventInfo() }
+        );
         try {
             // Only proceed if we already have data (context set by menu 'when' clause)
             const pacWrapper = pacTerminal.getWrapper();
@@ -224,6 +241,10 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
     });
 
     vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.clearView", async () => {
+        oneDSLoggerWrapper.getLogger().traceInfo(
+            Constants.EventNames.METADATA_DIFF_COMMAND_EXECUTED,
+            { command: 'clearView', ...getBaseEventInfo() }
+        );
         try {
             MetadataDiffDesktop.resetTreeView();
 
@@ -247,6 +268,10 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
     });
 
     vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.triggerFlowWithSite", async (websiteId: string) => {
+        oneDSLoggerWrapper.getLogger().traceInfo(
+            Constants.EventNames.METADATA_DIFF_COMMAND_EXECUTED,
+            { command: 'triggerFlowWithSite', hasWebsiteId: !!websiteId, ...getBaseEventInfo() }
+        );
         try {
             // Get the PAC wrapper to access org list
             const pacWrapper = pacTerminal.getWrapper();
@@ -328,6 +353,10 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
     });
 
     vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.triggerFlow", async () => {
+        oneDSLoggerWrapper.getLogger().traceInfo(
+            Constants.EventNames.METADATA_DIFF_COMMAND_EXECUTED,
+            { command: 'triggerFlow', ...getBaseEventInfo() }
+        );
         try {
             // Get the PAC wrapper to access org list
             const pacWrapper = pacTerminal.getWrapper();
@@ -483,6 +512,10 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
     });
 
     vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.generateReport", async () => {
+        oneDSLoggerWrapper.getLogger().traceInfo(
+            Constants.EventNames.METADATA_DIFF_COMMAND_EXECUTED,
+            { command: 'generateReport', ...getBaseEventInfo() }
+        );
         try {
             const workspaceFolders = vscode.workspace.workspaceFolders;
             if (!workspaceFolders) {
@@ -528,6 +561,10 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
     });
 
     vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.exportReport", async () => {
+        oneDSLoggerWrapper.getLogger().traceInfo(
+            Constants.EventNames.METADATA_DIFF_COMMAND_EXECUTED,
+            { command: 'exportReport', ...getBaseEventInfo() }
+        );
         try {
             const workspaceFolders = vscode.workspace.workspaceFolders;
             if (!workspaceFolders) {
@@ -573,6 +610,10 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
     });
 
     vscode.commands.registerCommand("microsoft.powerplatform.pages.metadataDiff.importReport", async () => {
+        oneDSLoggerWrapper.getLogger().traceInfo(
+            Constants.EventNames.METADATA_DIFF_COMMAND_EXECUTED,
+            { command: 'importReport', ...getBaseEventInfo() }
+        );
         try {
             const fileUri = await vscode.window.showOpenDialog({
                 canSelectFiles: true,
