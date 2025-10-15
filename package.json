@@ -538,16 +538,34 @@
         "icon": "$(folder-opened)"
       },
       {
-        "command": "metadataDiff.openComparison",
+        "command": "microsoft.powerplatform.pages.metadataDiff.openComparison",
         "title": "Open Comparison",
         "category": "Power Pages Metadata Diff",
         "icon": "$(diff)"
       },
       {
-        "command": "metadataDiff.discardLocalChanges",
+        "command": "microsoft.powerplatform.pages.metadataDiff.discardLocalChanges",
         "title": "Discard Local Changes",
         "category": "Power Pages Metadata Diff",
         "icon": "$(discard)"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.metadataDiff.discardLocalChanges.modified",
+        "title": "Revert to Environment Version",
+        "category": "Power Pages Metadata Diff",
+        "icon": "$(discard)"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.metadataDiff.discardLocalChanges.deleteLocal",
+        "title": "Delete Local File",
+        "category": "Power Pages Metadata Diff",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.metadataDiff.discardLocalChanges.materialize",
+        "title": "Add Local Copy",
+        "category": "Power Pages Metadata Diff",
+        "icon": "$(cloud-download)"
       }
     ],
     "configuration": {
@@ -1142,13 +1160,23 @@
           "group": "metadataDiff@6"
         },
         {
-          "command": "metadataDiff.openComparison",
+          "command": "microsoft.powerplatform.pages.metadataDiff.openComparison",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffFileModified && microsoft.powerplatform.pages.metadataDiffEnabled",
           "group": "metadataDiffFile@1"
         },
         {
-          "command": "metadataDiff.discardLocalChanges",
+          "command": "microsoft.powerplatform.pages.metadataDiff.discardLocalChanges.modified",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffFileModified && microsoft.powerplatform.pages.metadataDiffEnabled",
+          "group": "metadataDiffFile@2"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.metadataDiff.discardLocalChanges.deleteLocal",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffFileOnlyLocal && microsoft.powerplatform.pages.metadataDiffEnabled",
+          "group": "metadataDiffFile@2"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.metadataDiff.discardLocalChanges.materialize",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffFileOnlyRemote && microsoft.powerplatform.pages.metadataDiffEnabled",
           "group": "metadataDiffFile@2"
         },
         {

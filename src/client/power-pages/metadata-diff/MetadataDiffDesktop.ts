@@ -12,7 +12,6 @@ import { Constants } from "../../../common/power-pages/metadata-diff/Constants";
 import { getBaseEventInfo } from "../actions-hub/TelemetryHelper";
 import { MetadataDiffTreeDataProvider } from "../../../common/power-pages/metadata-diff/MetadataDiffTreeDataProvider";
 import { PacTerminal } from "../../lib/PacTerminal";
-import { PagesList } from "../../pac/PacTypes";
 import { registerMetadataDiffCommands } from "./MetadataDiffCommands";
 import { ActionsHubTreeDataProvider } from "../actions-hub/ActionsHubTreeDataProvider";
 
@@ -89,38 +88,5 @@ export class MetadataDiffDesktop {
         }
     }
 
-    static async getPagesList(pacTerminal: PacTerminal): Promise<{ name: string, id: string, modelVersion: string }[]> {
-        const pacWrapper = pacTerminal.getWrapper();
-        const pagesListOutput = await pacWrapper.pagesList();
-        if (pagesListOutput && pagesListOutput.Status === "Success" && pagesListOutput.Information) {
-            const pagesList: PagesList[] = [];
-            if (Array.isArray(pagesListOutput.Information)) {
-                pagesListOutput.Information.forEach(line => {
-                    if (!line.trim() || !line.includes('[')) {
-                        return;
-                    }
-
-                    const regex = /\s*\[\d+\]\s+([a-f0-9-]+)\s+(.+?)\s+(Standard|Enhanced)(?:\s{2,}.*)?$/i;
-                    const match = line.match(regex);
-                    if (match) {
-                        const modelVersion = match[3].trim().toLowerCase() === "enhanced" ? "2" : "1";
-                        pagesList.push({
-                            WebsiteId: match[1].trim(),
-                            FriendlyName: match[2].trim(),
-                            ModelVersion: modelVersion
-                        });
-                    }
-                });
-            }
-            return pagesList.map((site) => {
-                return {
-                    name: site.FriendlyName,
-                    id: site.WebsiteId,
-                    modelVersion: site.ModelVersion
-                }
-            });
-        }
-
-        return [];
-    }
+    // getPagesList removed: model version & site metadata now sourced from Actions Hub website cache (fetchWebsites)
 }

@@ -7,7 +7,7 @@ import * as vscode from "vscode";
 import { MetadataDiffTreeItem } from "./MetadataDiffTreeItem";
 
 export class MetadataDiffFileItem extends MetadataDiffTreeItem {
-    constructor(label: string, workspaceFile?: string, storageFile?: string, hasDiff = true) {
+    constructor(label: string, workspaceFile?: string, storageFile?: string, hasDiff = true, relativePath?: string) {
         // Derive a more specific context value so that modified items can have dedicated menu actions
         let contextValue = "metadataDiffFileItem"; // default
         if (workspaceFile && storageFile) {
@@ -30,12 +30,14 @@ export class MetadataDiffFileItem extends MetadataDiffTreeItem {
     this.storageFile = storageFile;
     (this as unknown as { filePath?: string }).filePath = workspaceFile;
     (this as unknown as { storedFilePath?: string }).storedFilePath = storageFile;
+    // Keep relative path even if a side is missing so commands (discard/import) can resolve target
+    (this as unknown as { relativePath?: string }).relativePath = relativePath;
         this.hasDiff = hasDiff;
         this.iconPath = new vscode.ThemeIcon("file");
 
         if (hasDiff && (workspaceFile || storageFile)) {
             this.command = {
-                command: 'metadataDiff.openDiff',
+                command: 'microsoft.powerplatform.pages.metadataDiff.openDiff',
                 title: 'Show Diff',
                 arguments: [workspaceFile, storageFile]
             };
@@ -45,4 +47,6 @@ export class MetadataDiffFileItem extends MetadataDiffTreeItem {
     public readonly workspaceFile?: string;
     public readonly storageFile?: string;
     public readonly hasDiff: boolean;
+    // relative path within the website/site root
+    public readonly relativePath?: string;
 }

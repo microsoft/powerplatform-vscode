@@ -12,6 +12,13 @@ import { oneDSLoggerWrapper } from "../../OneDSLoggerTelemetry/oneDSLoggerWrappe
 import { MetadataDiffFileItem } from "./tree-items/MetadataDiffFileItem";
 import { MetadataDiffFolderItem } from "./tree-items/MetadataDiffFolderItem";
 
+// Internal utility directories created under storage that should not be
+// mistaken for the downloaded website folder when recomputing diffs.
+const IGNORE_STORAGE_DIRS = new Set([
+    'tempDiff',          // created for one‑sided / placeholder diff views
+    'imported_diff'      // created when importing a saved report
+]);
+
 interface DiffFile {
     relativePath: string;
     changes: string;
@@ -41,6 +48,40 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
 
     private refresh(): void {
         this._onDidChangeTreeData.fire();
+    }
+
+    /**
+     * Recompute the diff tree without clearing the downloaded site storage.
+     * Used after in-place edits (e.g. discard local changes) so that we don't
+     * wipe the remote snapshot but still update the UI & contexts.
+     */
+    public async recomputeDiff(): Promise<void> {
+        try {
+            const workspaceFolders = vscode.workspace.workspaceFolders;
+            if (!workspaceFolders || workspaceFolders.length === 0) { return; }
+            const workspacePath = workspaceFolders[0].uri.fsPath;
+            const storagePath = this._context.storageUri?.fsPath;
+            if (!storagePath) { return; }
+
+            const diffFiles = await this.getDiffFiles(workspacePath, storagePath);
+            const items = this.buildTreeHierarchy(diffFiles);
+            this._diffItems = items;
+            vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.metadataDiff.hasData", this._diffItems.length > 0);
+            this.refresh();
+            vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
+            if (!this._dataLoadedNotified && this._diffItems.length > 0) {
+                this._dataLoadedNotified = true;
+                this._onDataLoaded.fire();
+            }
+        } catch (error) {
+            oneDSLoggerWrapper.getLogger().traceError(
+                Constants.EventNames.METADATA_DIFF_CURRENT_ENV_FETCH_FAILED,
+                error as string,
+                error as Error,
+                { methodName: this.recomputeDiff },
+                {}
+            );
+        }
     }
 
     clearItems(): void {
@@ -136,16 +177,34 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
 
     private async getWebsitePath(storagePath: string): Promise<string | undefined> {
         try {
-            const folders = fs.readdirSync(storagePath).filter(f => {
-                if (f.startsWith('.')) {
-                    return false;
-                }
-                return fs.statSync(path.join(storagePath, f)).isDirectory();
-            });
+            const folders = fs.readdirSync(storagePath)
+                .filter(f => {
+                    if (f.startsWith('.')) { return false; }
+                    if (IGNORE_STORAGE_DIRS.has(f)) { return false; }
+                    const full = path.join(storagePath, f);
+                    return fs.statSync(full).isDirectory();
+                });
 
-            if (folders.length > 0) {
-                return path.join(storagePath, folders[0]);
+            if (folders.length === 0) {
+                return undefined;
             }
+
+            // If multiple candidate folders exist (e.g. multiple downloads),
+            // pick the most recently modified directory instead of relying on
+            // filesystem enumeration order, which is not guaranteed.
+            let chosen = folders[0];
+            if (folders.length > 1) {
+                let latestMTime = -1;
+                for (const f of folders) {
+                    const stat = fs.statSync(path.join(storagePath, f));
+                    const mtime = stat.mtimeMs;
+                    if (mtime > latestMTime) {
+                        latestMTime = mtime;
+                        chosen = f;
+                    }
+                }
+            }
+            return path.join(storagePath, chosen);
         } catch (error) {
             console.error('Error finding website path:', error);
         }
@@ -232,7 +291,8 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
                 fileName,
                 workspaceFile,
                 storageFile,
-                true
+                true,
+                relativePath
             );
             fileNode.description = this.getChangeDescription(workspaceFile, storageFile);
             currentNode.getChildrenMap().set(fileName, fileNode);
@@ -306,12 +366,13 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
                 fileName,
                 workspaceFilePath,
                 storageFilePath,
-                true
+                true,
+                file.relativePath
             );
             fileNode.description = file.changes;
             fileNode.iconPath = new vscode.ThemeIcon("file");
             fileNode.command = {
-                command: 'metadataDiff.openDiff',
+                command: 'microsoft.powerplatform.pages.metadataDiff.openDiff',
                 title: 'Show Diff',
                 arguments: [workspaceFilePath, storageFilePath]
             };

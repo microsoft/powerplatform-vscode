@@ -25,7 +25,7 @@ export class MetadataDiffTreeItem extends vscode.TreeItem {
 
         if (filePath && storedFilePath) {
             this.command = {
-                command: "metadataDiff.openDiff",
+                command: "microsoft.powerplatform.pages.metadataDiff.openDiff",
                 title: "Open Diff",
                 arguments: [filePath, storedFilePath] // Pass file paths to the command
             };
