@@ -9,6 +9,7 @@ import { ECSFeaturesClient } from "../../../common/ecs-features/ecsFeatureClient
 import { EnableMetadataDiff } from "../../../common/ecs-features/ecsFeatureGates";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { Constants } from "../../../common/power-pages/metadata-diff/Constants";
+import { getBaseEventInfo } from "../actions-hub/TelemetryHelper";
 import { MetadataDiffTreeDataProvider } from "../../../common/power-pages/metadata-diff/MetadataDiffTreeDataProvider";
 import { PacTerminal } from "../../lib/PacTerminal";
 import { PagesList } from "../../pac/PacTypes";
@@ -53,8 +54,9 @@ export class MetadataDiffDesktop {
         try {
             const isMetadataDiffEnabled = MetadataDiffDesktop.isEnabled();
 
-            oneDSLoggerWrapper.getLogger().traceInfo("EnableMetadataDiff", {
-                isEnabled: isMetadataDiffEnabled.toString()
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_ENABLED, {
+                isEnabled: isMetadataDiffEnabled.toString(),
+                ...getBaseEventInfo()
             });
 
             vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.metadataDiffEnabled", isMetadataDiffEnabled);
@@ -79,11 +81,11 @@ export class MetadataDiffDesktop {
             ActionsHubTreeDataProvider.setMetadataDiffProvider(treeDataProvider);
             vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
             MetadataDiffDesktop._isInitialized = true;
-            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_INITIALIZED);
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.METADATA_DIFF_INITIALIZED, getBaseEventInfo());
 
         } catch (exception) {
             const exceptionError = exception as Error;
-            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.METADATA_DIFF_INITIALIZATION_FAILED, exceptionError.message, exceptionError);
+            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.METADATA_DIFF_INITIALIZATION_FAILED, exceptionError.message, exceptionError, getBaseEventInfo());
         }
     }
 

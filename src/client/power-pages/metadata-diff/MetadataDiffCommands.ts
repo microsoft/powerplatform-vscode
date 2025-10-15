@@ -46,19 +46,17 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                 rightUri = vscode.Uri.file(workspaceFile);
                 title = vscode.l10n.t('{0} (Modified)', path.basename(workspaceFile));
             } else if (workspaceFile && !storedFile) {
-                // Added locally: empty (Environment) -> workspace file (Local)
                 const base = path.basename(workspaceFile);
                 const emptyPath = makeEmptySide(base, 'env');
                 leftUri = vscode.Uri.file(emptyPath);
                 rightUri = vscode.Uri.file(workspaceFile);
-                title = `${base} (Only in Local)`;
+                title = vscode.l10n.t('{0} (Only in Local)', base);
             } else {
-                // Only in Environment: stored file content -> empty local
                 const base = path.basename(storedFile!);
                 const emptyPath = makeEmptySide(base, 'local');
                 leftUri = vscode.Uri.file(storedFile!);
                 rightUri = vscode.Uri.file(emptyPath);
-                title = `${base} (Only in Environment)`;
+                title = vscode.l10n.t('{0} (Only in Environment)', base);
             }
 
             await vscode.commands.executeCommand('vscode.diff', leftUri, rightUri, title);
@@ -72,16 +70,13 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
         }
     });
 
-    // Explicit alias command shown in context menu (kept separate for clearer telemetry / labeling)
     vscode.commands.registerCommand('microsoft.powerplatform.pages.metadataDiff.openComparison', async (itemOrWorkspace?: unknown, maybeStored?: unknown) => {
-        // Support invocation with either (workspace, stored) or a single tree item
         let workspaceFile: string | undefined;
         let storedFile: string | undefined;
         if (typeof itemOrWorkspace === 'string') {
             workspaceFile = itemOrWorkspace;
             storedFile = typeof maybeStored === 'string' ? maybeStored : undefined;
         } else if (itemOrWorkspace && typeof itemOrWorkspace === 'object') {
-            // Attempt to read wrapper properties
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const obj: any = itemOrWorkspace;
             workspaceFile = obj.filePath || obj.workspaceFile;
