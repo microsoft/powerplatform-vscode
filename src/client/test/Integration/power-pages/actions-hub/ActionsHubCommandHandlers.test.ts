@@ -544,15 +544,19 @@ describe('ActionsHubCommandHandlers', () => {
         let mockCreateAuthProfileExp: sinon.SinonStub;
         let mockAuthenticationInVsCode: sinon.SinonStub;
         let orgInfoStub: sinon.SinonStub;
+        let mockShowInformationMessage: sinon.SinonStub;
+        let mockShowErrorMessage: sinon.SinonStub;
 
         beforeEach(() => {
             mockPacWrapper = sandbox.createStubInstance(PacWrapper);
             mockCreateAuthProfileExp = sandbox.stub(PacAuthUtil, 'createAuthProfileExp');
             mockAuthenticationInVsCode = sandbox.stub(authProvider, 'authenticateUserInVSCode');
             orgInfoStub = sandbox.stub(PacContext, 'OrgInfo').value({ OrgId: 'testOrgId', OrgUrl: '' });
+            mockShowInformationMessage = sandbox.stub(vscode.window, 'showInformationMessage');
+            mockShowErrorMessage = sandbox.stub(vscode.window, 'showErrorMessage');
         });
 
-        it('should only authenticate in VS Code when PAC auth output is successful', async () => {
+        it('should only authenticate in VS Code when PAC auth output is successful and show success message', async () => {
             const mockResults = [{ ActiveOrganization: [null, null] }];
             mockCreateAuthProfileExp.resolves({ Status: 'Success', Results: mockResults });
             orgInfoStub.value({ OrgId: 'testOrgId', OrgUrl: 'https://test-org-url' });
@@ -561,9 +565,10 @@ describe('ActionsHubCommandHandlers', () => {
 
             expect(mockCreateAuthProfileExp.calledOnce).to.be.false;
             expect(mockAuthenticationInVsCode.calledOnce).to.be.true;
+            expect(mockShowInformationMessage.calledOnce).to.be.true;
         });
 
-        it('should handle missing organization URL', async () => {
+        it('should handle missing organization URL and show error message', async () => {
             const mockResults = [{ ActiveOrganization: [null, null] }];
             mockCreateAuthProfileExp.resolves({ Status: 'Success', Results: mockResults });
 
@@ -573,9 +578,10 @@ describe('ActionsHubCommandHandlers', () => {
             expect(mockAuthenticationInVsCode.called).to.be.false;
             expect(traceErrorStub.calledOnce).to.be.true;
             expect(traceErrorStub.firstCall.args[0]).to.equal('createNewAuthProfile');
+            expect(mockShowErrorMessage.calledOnce).to.be.true;
         });
 
-        it('should handle empty results array', async () => {
+        it('should handle empty results array and show error message', async () => {
             mockCreateAuthProfileExp.resolves({ Status: 'Success', Results: [] });
 
             await createNewAuthProfile(mockPacWrapper);
@@ -584,9 +590,10 @@ describe('ActionsHubCommandHandlers', () => {
             expect(mockAuthenticationInVsCode.called).to.be.false;
             expect(traceErrorStub.calledOnce).to.be.true;
             expect(traceErrorStub.firstCall.args[0]).to.equal('createNewAuthProfile');
+            expect(mockShowErrorMessage.calledOnce).to.be.true;
         });
 
-        it('should handle PAC auth output failure', async () => {
+        it('should handle PAC auth output failure and show error message', async () => {
             mockCreateAuthProfileExp.resolves({ Status: 'Failed', Results: null });
 
             await createNewAuthProfile(mockPacWrapper);
@@ -595,9 +602,10 @@ describe('ActionsHubCommandHandlers', () => {
             expect(mockAuthenticationInVsCode.called).to.be.false;
             expect(traceErrorStub.calledOnce).to.be.true;
             expect(traceErrorStub.firstCall.args[0]).to.equal('createNewAuthProfile');
+            expect(mockShowErrorMessage.calledOnce).to.be.true;
         });
 
-        it('should handle errors during auth profile creation', async () => {
+        it('should handle errors during auth profile creation and show error message', async () => {
             const error = new Error('Test error');
             mockCreateAuthProfileExp.rejects(error);
 
@@ -607,6 +615,18 @@ describe('ActionsHubCommandHandlers', () => {
             expect(mockAuthenticationInVsCode.called).to.be.false;
             expect(traceErrorStub.calledOnce).to.be.true;
             expect(traceErrorStub.firstCall.args[0]).to.equal('ActionsHubCreateAuthProfileFailed');
+            expect(mockShowErrorMessage.calledOnce).to.be.true;
+        });
+
+        it('should authenticate and show success message when orgUrl exists and auth profile has organization', async () => {
+            const mockResults = [{ ActiveOrganization: { Item2: 'https://test-org.com' } }];
+            mockCreateAuthProfileExp.resolves({ Status: 'Success', Results: mockResults });
+
+            await createNewAuthProfile(mockPacWrapper);
+
+            expect(mockCreateAuthProfileExp.calledOnce).to.be.true;
+            expect(mockAuthenticationInVsCode.calledOnce).to.be.true;
+            expect(mockShowInformationMessage.calledOnce).to.be.true;
         });
     });
 
