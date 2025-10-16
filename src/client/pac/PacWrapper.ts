@@ -9,7 +9,7 @@ import * as readline from "readline";
 import * as fs from "fs-extra";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { BlockingQueue } from "../../common/utilities/BlockingQueue";
-import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput, PacOrgListOutput, PacOrgWhoOutput, PacAuthWhoOutput } from "./PacTypes";
+import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput, PacOrgListOutput, PacOrgWhoOutput, PacAuthWhoOutput, PacPagesListOutput} from "./PacTypes";
 import { v4 } from "uuid";
 import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
@@ -227,6 +227,10 @@ export class PacWrapper {
             // Ignore exit errors, process might already be dead
         }
         // The next operation will create a new process
+    }
+
+    public async pagesList(): Promise<PacPagesListOutput> {
+        return this.executeCommandAndParseResults<PacPagesListOutput>(new PacArguments("pages", "list", "--verbose"));
     }
 
     public exit(): void {
