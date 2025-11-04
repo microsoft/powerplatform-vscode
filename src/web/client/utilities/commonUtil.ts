@@ -63,7 +63,8 @@ export function isExtensionNeededInFileName(entity: string) {
         || entity === schemaEntityName.BASICFORMS
         || entity === schemaEntityName.WEBPAGES
         || entity === schemaEntityName.CONTENTSNIPPETS
-        || entity === schemaEntityName.SERVERLOGICS;
+        || entity === schemaEntityName.SERVERLOGICS
+        || entity === schemaEntityName.BLOGS;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

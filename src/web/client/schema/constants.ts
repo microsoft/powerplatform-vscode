@@ -52,6 +52,7 @@ export enum schemaEntityName {
     BASICFORMS = "basicforms",
     ADVANCEDFORMS = "advancedforms",
     ADVANCEDFORMSTEPS = "advancedformsteps",
+    BLOGS = "blogs",
 }
 
 export enum MultiFileSupportedEntityName {
@@ -63,6 +64,7 @@ export enum MultiFileSupportedEntityName {
     LISTS = "lists",
     BASICFORMS = "basicforms",
     ADVANCEDFORMS = "advancedforms",
+    BLOGS = "blogs",
 }
 
 // This decides the folder hierarchy a file being displayed in File explorer will follow.
