@@ -131,5 +131,11 @@ export enum webExtensionTelemetryEventNames {
     WEB_EXTENSION_OPEN_DESKTOP_URI_OPENED = "WebExtensionOpenDesktopUriOpened",
     WEB_EXTENSION_OPEN_DESKTOP_DIALOG_DOWNLOAD_CLICKED = "WebExtensionOpenDesktopDialogDownloadClicked",
     WEB_EXTENSION_OPEN_DESKTOP_DIALOG_UPDATE_CLICKED = "WebExtensionOpenDesktopDialogUpdateClicked",
-    WEB_EXTENSION_DUPLICATE_FOLDER_NAME_CREATED = "WebExtensionDuplicateFolderNameCreated"
+    WEB_EXTENSION_DUPLICATE_FOLDER_NAME_CREATED = "WebExtensionDuplicateFolderNameCreated",
+    WEB_EXTENSION_POWER_PAGES_ACTIONS_VIEW_REVEALED = "WebExtensionPowerPagesActionsViewRevealed",
+    WEB_EXTENSION_POWER_PAGES_ACTIONS_VIEW_REVEAL_FAILED = "WebExtensionPowerPagesActionsViewRevealFailed",
+    WEB_EXTENSION_POWER_PAGES_ACTIONS_NOTIFICATION_SHOWN = "WebExtensionPowerPagesActionsNotificationShown",
+    WEB_EXTENSION_POWER_PAGES_ACTIONS_NOTIFICATION_PREVIEW_CLICKED = "WebExtensionPowerPagesActionsNotificationPreviewClicked",
+    WEB_EXTENSION_POWER_PAGES_ACTIONS_NOTIFICATION_STUDIO_CLICKED = "WebExtensionPowerPagesActionsNotificationStudioClicked",
+    WEB_EXTENSION_POWER_PAGES_ACTIONS_NOTIFICATION_DISABLED = "WebExtensionPowerPagesActionsNotificationDisabled"
 }

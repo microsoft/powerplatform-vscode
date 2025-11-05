@@ -15,6 +15,7 @@ export const PUBLIC = "public";
 export const MIMETYPE = "mimetype";
 export const IS_FIRST_RUN_EXPERIENCE = "isFirstRunExperience";
 export const IS_MULTIFILE_FIRST_RUN_EXPERIENCE = "isMultiFileFirstRunExperience";
+export const POWER_PAGES_ACTIONS_NOTIFICATION_DISABLED = "powerPagesActionsNotificationDisabled";
 export const ODATA_ETAG = "@odata.etag";
 export const ODATA_NEXT_LINK = "@odata.nextLink";
 export const ODATA_COUNT = "@odata.count";

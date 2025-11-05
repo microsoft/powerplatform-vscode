@@ -184,7 +184,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
                                     }
                                 );
 
-                                powerPagesNavigation();
+                                powerPagesNavigation(context);
 
                                 await NPSService.setEligibility();
                                 if (WebExtensionContext.npsEligibility) {
@@ -278,13 +278,32 @@ export function registerCollaborationView() {
     );
 }
 
-export function powerPagesNavigation() {
+export function powerPagesNavigation(context: vscode.ExtensionContext) {
     const powerPagesNavigationProvider = new PowerPagesNavigationProvider();
     vscode.window.registerTreeDataProvider('powerpages.powerPagesFileExplorer', powerPagesNavigationProvider);
     vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.powerPagesRuntimePreview', () => powerPagesNavigationProvider.previewPowerPageSite());
     vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.backToStudio', () => powerPagesNavigationProvider.backToStudio());
     vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.openInDesktop', () => powerPagesNavigationProvider.openInDesktop());
     WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_POWER_PAGES_WEB_VIEW_REGISTERED);
+
+    // Reveal the Power Pages Actions view to ensure visibility
+    vscode.commands.executeCommand('powerpages.powerPagesFileExplorer.focus').then(
+        () => {
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                webExtensionTelemetryEventNames.WEB_EXTENSION_POWER_PAGES_ACTIONS_VIEW_REVEALED
+            );
+        },
+        (error) => {
+            WebExtensionContext.telemetry.sendErrorTelemetry(
+                webExtensionTelemetryEventNames.WEB_EXTENSION_POWER_PAGES_ACTIONS_VIEW_REVEAL_FAILED,
+                'powerPagesNavigation',
+                error?.message || 'Failed to reveal Power Pages Actions view'
+            );
+        }
+    );
+
+    // Show notification for Power Pages Actions pane
+    showPowerPagesActionsNotification(context);
 }
 
 export function processWalkthroughFirstRunExperience(context: vscode.ExtensionContext) {
@@ -659,6 +678,85 @@ function showNotificationForCopilot(context: vscode.ExtensionContext, orgId: str
             { orgId: orgId });
         const telemetryData = JSON.stringify({ orgId: orgId });
         copilotNotificationPanel(context, telemetryData);
+    }
+}
+
+function showPowerPagesActionsNotification(context: vscode.ExtensionContext) {
+    const currentVersion = vscode.extensions.getExtension(EXTENSION_ID)?.packageJSON.version;
+    const storedVersion = context.globalState.get(EXTENSION_VERSION_KEY);
+
+    if (!storedVersion || storedVersion !== currentVersion) {
+        // Show notification for the first load or after an update
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            webExtensionTelemetryEventNames.WEB_EXTENSION_POWER_PAGES_ACTIONS_NOTIFICATION_SHOWN
+        );
+
+        const previewSite = vscode.l10n.t("Preview Site");
+        const openStudio = vscode.l10n.t("Open Power Pages Studio");
+        const dontShowAgain = vscode.l10n.t("Don't Show Again");
+
+        vscode.window.showInformationMessage(
+            vscode.l10n.t("Quick actions for your Power Pages site are now available in the sidebar. Preview your site, open Power Pages Studio, or open in VS Code Desktop."),
+            previewSite,
+            openStudio,
+            dontShowAgain
+        ).then((selection) => {
+            if (selection === previewSite) {
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_POWER_PAGES_ACTIONS_NOTIFICATION_PREVIEW_CLICKED
+                );
+                vscode.commands.executeCommand('powerpages.powerPagesFileExplorer.powerPagesRuntimePreview');
+            } else if (selection === openStudio) {
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_POWER_PAGES_ACTIONS_NOTIFICATION_STUDIO_CLICKED
+                );
+                vscode.commands.executeCommand('powerpages.powerPagesFileExplorer.backToStudio');
+            } else if (selection === dontShowAgain) {
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_POWER_PAGES_ACTIONS_NOTIFICATION_DISABLED
+                );
+                context.globalState.update(Constants.POWER_PAGES_ACTIONS_NOTIFICATION_DISABLED, true);
+            }
+        });
+
+        // Update the stored version to the current version
+        context.globalState.update(EXTENSION_VERSION_KEY, currentVersion);
+        return;
+    }
+
+    const isNotificationDisabled = context.globalState.get(Constants.POWER_PAGES_ACTIONS_NOTIFICATION_DISABLED, false);
+    if (!isNotificationDisabled) {
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            webExtensionTelemetryEventNames.WEB_EXTENSION_POWER_PAGES_ACTIONS_NOTIFICATION_SHOWN
+        );
+
+        const previewSite = vscode.l10n.t("Preview Site");
+        const openStudio = vscode.l10n.t("Open Power Pages Studio");
+        const dontShowAgain = vscode.l10n.t("Don't Show Again");
+
+        vscode.window.showInformationMessage(
+            vscode.l10n.t("Quick actions for your Power Pages site are now available in the sidebar. Preview your site, open Power Pages Studio, or open in VS Code Desktop."),
+            previewSite,
+            openStudio,
+            dontShowAgain
+        ).then((selection) => {
+            if (selection === previewSite) {
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_POWER_PAGES_ACTIONS_NOTIFICATION_PREVIEW_CLICKED
+                );
+                vscode.commands.executeCommand('powerpages.powerPagesFileExplorer.powerPagesRuntimePreview');
+            } else if (selection === openStudio) {
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_POWER_PAGES_ACTIONS_NOTIFICATION_STUDIO_CLICKED
+                );
+                vscode.commands.executeCommand('powerpages.powerPagesFileExplorer.backToStudio');
+            } else if (selection === dontShowAgain) {
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_POWER_PAGES_ACTIONS_NOTIFICATION_DISABLED
+                );
+                context.globalState.update(Constants.POWER_PAGES_ACTIONS_NOTIFICATION_DISABLED, true);
+            }
+        });
     }
 }
 
