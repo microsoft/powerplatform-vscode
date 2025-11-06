@@ -3,6 +3,9 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import { ECSFeaturesClient } from "../../../common/ecs-features/ecsFeatureClient";
+import { EnableBlogSupport } from "../../../common/ecs-features/ecsFeatureGates";
+
 export const portal_schema_V1 = {
     entities: {
         dataSourceProperties: {
@@ -232,24 +235,26 @@ export const portal_schema_V1 = {
                 _attributes: "adx_registerstartupscript",
                 _attributesExtension: new Map([["adx_registerstartupscript", "advancedformstep.customjs.js"]]),
             },
-            {
-                relationships: "",
-                _vscodeentityname: "blogs",
-                _dataverseenityname: "adx_blogs",
-                _displayname: "Blog",
-                _etc: "10061",
-                _primaryidfield: "adx_blogid",
-                _primarynamefield: "adx_name",
-                _disableplugins: "true",
-                _foldername: "blogs",
-                _exporttype: "SingleFolder",
-                _fetchQueryParameters:
-                    "?$filter=adx_blogid eq {entityId}&$select=adx_name,adx_summary",
-                _multiFileFetchQueryParameters:
-                    "?$filter=_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_summary,adx_blogid&$count=true",
-                _attributes: "adx_summary",
-                _attributesExtension: new Map([["adx_summary", "html"]]),
-            },
+            ...(ECSFeaturesClient.getConfig(EnableBlogSupport).enableBlogSupport ? [
+                {
+                    relationships: "",
+                    _vscodeentityname: "blogs",
+                    _dataverseenityname: "adx_blogs",
+                    _displayname: "Blog",
+                    _etc: "10061",
+                    _primaryidfield: "adx_blogid",
+                    _primarynamefield: "adx_name",
+                    _disableplugins: "true",
+                    _foldername: "blogs",
+                    _exporttype: "SingleFolder",
+                    _fetchQueryParameters:
+                        "?$filter=adx_blogid eq {entityId}&$select=adx_name,adx_summary",
+                    _multiFileFetchQueryParameters:
+                        "?$filter=_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_summary,adx_blogid&$count=true",
+                    _attributes: "adx_summary",
+                    _attributesExtension: new Map([["adx_summary", "html"]]),
+                },
+            ] : []),
         ],
         "_xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
     },
@@ -488,24 +493,26 @@ export const portal_schema_V2 = {
                 _attributes: "content.registerstartupscript",
                 _attributesExtension: new Map([["content.registerstartupscript", "advancedformstep.customjs.js"]]),
             },
-            {
-                relationships: "",
-                _vscodeentityname: "blogs",
-                _dataverseenityname: "adx_blogs",
-                _displayname: "Blog",
-                _etc: "10061",
-                _primaryidfield: "adx_blogid",
-                _primarynamefield: "adx_name",
-                _disableplugins: "true",
-                _foldername: "blogs",
-                _exporttype: "SingleFolder",
-                _fetchQueryParameters:
-                    "?$filter=adx_blogid eq {entityId}&$select=adx_name,adx_summary",
-                _multiFileFetchQueryParameters:
-                    "?$filter=_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_summary,adx_blogid&$count=true",
-                _attributes: "adx_summary",
-                _attributesExtension: new Map([["adx_summary", "html"]]),
-            },
+            ...(ECSFeaturesClient.getConfig(EnableBlogSupport).enableBlogSupport ? [
+                {
+                    relationships: "",
+                    _vscodeentityname: "blogs",
+                    _dataverseenityname: "adx_blogs",
+                    _displayname: "Blog",
+                    _etc: "10061",
+                    _primaryidfield: "adx_blogid",
+                    _primarynamefield: "adx_name",
+                    _disableplugins: "true",
+                    _foldername: "blogs",
+                    _exporttype: "SingleFolder",
+                    _fetchQueryParameters:
+                        "?$filter=adx_blogid eq {entityId}&$select=adx_name,adx_summary",
+                    _multiFileFetchQueryParameters:
+                        "?$filter=_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_summary,adx_blogid&$count=true",
+                    _attributes: "adx_summary",
+                    _attributesExtension: new Map([["adx_summary", "html"]]),
+                },
+            ] : []),
         ],
     },
 };

@@ -16,11 +16,19 @@ export function getFolderSubUris(): string[] {
 
     for (const entry of Object.entries(MultiFileSupportedEntityName)) {
         const entityDetails = WebExtensionContext.schemaEntitiesMap.get(entry[1]);
-        const subUri = entityDetails?.get(
+
+        // Skip if entity is not in schema (e.g., blogs when feature flag is off)
+        if (!entityDetails) {
+            continue;
+        }
+
+        const subUri = entityDetails.get(
             schemaEntityKey.FILE_FOLDER_NAME
         ) as string;
 
-        subUris.push(subUri);
+        if (subUri) {
+            subUris.push(subUri);
+        }
     }
 
     return subUris;
@@ -56,10 +64,15 @@ export function getRequestUrlForEntities(
     for (const entry of Object.entries(MultiFileSupportedEntityName)) {
         const entityDetails = WebExtensionContext.schemaEntitiesMap.get(entry[1]);
 
-        const folderName = entityDetails?.get(
+        // Skip if entity is not in schema (e.g., blogs when feature flag is off)
+        if (!entityDetails) {
+            continue;
+        }
+
+        const folderName = entityDetails.get(
             schemaEntityKey.FILE_FOLDER_NAME
         );
-        if (folderName && folderName?.length > 0) {
+        if (folderName && folderName.length > 0) {
             const requestURL = getRequestURL(
                 dataverseOrgUrl,
                 entityDetails?.get(
