@@ -29,7 +29,7 @@ import {
 } from "../utilities/schemaHelperUtil";
 import WebExtensionContext from "../WebExtensionContext";
 import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
-import { EntityMetadataKeyCore, SchemaEntityMetadata, folderExportType, schemaEntityKey, schemaEntityName, schemaKey, WEBPAGE_FOLDER_CONSTANTS } from "../schema/constants";
+import { EntityMetadataKeyCore, SchemaEntityMetadata, folderExportType, schemaEntityKey, schemaEntityName, WEBPAGE_FOLDER_CONSTANTS } from "../schema/constants";
 import { getEntityNameForExpandedEntityContent, getRequestUrlForEntities } from "../utilities/folderHelperUtility";
 import { IAttributePath, IFileInfo } from "../common/interfaces";
 import { portal_schema_V2 } from "../schema/portalSchema";
@@ -47,9 +47,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
         WebExtensionContext.getWebpageNames().clear();
 
         const entityRequestURLs = getRequestUrlForEntities(defaultFileInfo?.entityId, defaultFileInfo?.entityName);
-        const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
-            Constants.queryParameters.ORG_URL
-        ) as string;
+        const dataverseOrgUrl = WebExtensionContext.orgUrl;
         const { enableServerLogicChanges } = ECSFeaturesClient.getConfig(EnableServerLogicChanges);
         await Promise.all(entityRequestURLs.map(async (entity) => {
             const startTime = new Date().getTime();
@@ -211,9 +209,7 @@ async function createContentFiles(
             schemaEntityKey.MAPPING_ENTITY_FETCH_QUERY
         );
         const exportType = entityDetails?.get(schemaEntityKey.EXPORT_TYPE);
-        const portalFolderName = WebExtensionContext.urlParametersMap.get(
-            Constants.queryParameters.WEBSITE_NAME
-        ) as string;
+        const portalFolderName = decodeURI(WebExtensionContext.websiteName);
         const subUri = entityDetails?.get(schemaEntityKey.FILE_FOLDER_NAME);
         const fetchedFileName = entityDetails?.get(
             schemaEntityKey.FILE_NAME_FIELD
@@ -653,16 +649,12 @@ export async function preprocessData(
     entityType: string
 ) {
     try {
-        const schema = WebExtensionContext.urlParametersMap
-            .get(schemaKey.SCHEMA_VERSION)
-            ?.toLowerCase() as string;
+        const schema = WebExtensionContext.schema;
 
-        if (entityType === schemaEntityName.ADVANCEDFORMS &&
+        if (entityType === schemaEntityName.ADVANCEDFORMS && schema &&
             schema.toLowerCase() === portal_schema_V2.entities.dataSourceProperties.schema) {
             entityType = schemaEntityName.ADVANCEDFORMSTEPS;
-            const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
-                Constants.queryParameters.ORG_URL
-            ) as string;
+            const dataverseOrgUrl = WebExtensionContext.orgUrl;
             const entityDetails = getEntity(entityType);
             const fetchedFileId = entityDetails?.get(schemaEntityKey.FILE_ID_FIELD);
             const formsData = await fetchFromDataverseAndCreateFiles(entityType, getCustomRequestURL(dataverseOrgUrl, entityType));
