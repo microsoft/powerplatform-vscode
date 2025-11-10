@@ -54,6 +54,7 @@ import { PROVIDER_ID } from "../common/services/Constants";
 import { activateServerApiAutocomplete } from "../common/intellisense";
 import { EnableServerLogicChanges } from "../common/ecs-features/ecsFeatureGates";
 import { setServerApiTelemetryContext } from "../common/intellisense/ServerApiTelemetryContext";
+import { activateServerLogicDebugger } from "../debugger/server-logic/ServerLogicDebugger";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -246,6 +247,10 @@ export async function activate(
                         activateServerApiAutocomplete(_context, [
                             { languageId: 'javascript', triggerCharacters: ['.'] }
                         ]);
+
+                        // Activate Server Logic debugger
+                        activateServerLogicDebugger(_context);
+
                         serverApiAutocompleteInitialized = true;
                     }
                 }

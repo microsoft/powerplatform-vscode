@@ -405,6 +405,25 @@
         "title": "Explain"
       },
       {
+        "command": "powerpages.debugServerLogic",
+        "category": "Power Pages",
+        "title": "Debug Current Server Logic File",
+        "icon": "$(debug-alt)",
+        "enablement": "resourcePath =~ /server-logics/ && resourceExtname == .js"
+      },
+      {
+        "command": "powerpages.runServerLogic",
+        "category": "Power Pages",
+        "title": "Run Server Logic File",
+        "icon": "$(run)",
+        "enablement": "resourcePath =~ /server-logics/ && resourceExtname == .js"
+      },
+      {
+        "command": "powerpages.generateMockDataTemplate",
+        "category": "Power Pages",
+        "title": "Generate Mock Data Template for Server Logic"
+      },
+      {
         "command": "powerPlatform.previewCurrentActiveUsers",
         "title": "Current Active Users",
         "icon": "$(person)",
@@ -726,6 +745,45 @@
             }
           }
         }
+      },
+      {
+        "type": "node",
+        "label": "Power Pages Server Logic Debugger",
+        "configurationSnippets": [
+          {
+            "label": "Power Pages: Debug Server Logic",
+            "description": "Debug a Power Pages server logic file with mock SDK support",
+            "body": {
+              "type": "node",
+              "request": "launch",
+              "name": "Debug Power Pages Server Logic",
+              "program": "^\"\\${workspaceFolder}/server-logics/\\${1:MyServerLogic.js}\"",
+              "skipFiles": [
+                "<node_internals>/**"
+              ],
+              "console": "integratedTerminal",
+              "internalConsoleOptions": "neverOpen"
+            }
+          },
+          {
+            "label": "Power Pages: Debug Server Logic with Custom Mock Data",
+            "description": "Debug server logic with custom mock data from .vscode/mock-data.json",
+            "body": {
+              "type": "node",
+              "request": "launch",
+              "name": "Debug Server Logic with Custom Data",
+              "program": "^\"\\${workspaceFolder}/server-logics/\\${1:MyServerLogic.js}\"",
+              "env": {
+                "MOCK_DATA_PATH": "^\"\\${workspaceFolder}/.vscode/mock-data.json\""
+              },
+              "skipFiles": [
+                "<node_internals>/**"
+              ],
+              "console": "integratedTerminal",
+              "internalConsoleOptions": "neverOpen"
+            }
+          }
+        ]
       }
     ],
     "snippets": [
@@ -747,6 +805,11 @@
           "submenu": "microsoft-powerapps-portals.powerpages-copilot",
           "group": "0_powerpages-copilot",
           "when": "(powerpages.copilot.isVisible) && ((!virtualWorkspace && powerpages.websiteYmlExists && config.powerPlatform.experimental.copilotEnabled) || (isWeb && config.powerPlatform.experimental.enableWebCopilot))"
+        },
+        {
+          "command": "powerpages.debugServerLogic",
+          "group": "z_commands",
+          "when": "resourcePath =~ /server-logics/ && resourceExtname == .js && !virtualWorkspace"
         }
       ],
       "microsoft-powerapps-portals.powerpages-copilot": [
@@ -794,6 +857,11 @@
           "command": "powerPlatform.previewCurrentActiveUsers",
           "group": "navigation",
           "when": "isWeb && virtualWorkspace"
+        },
+        {
+          "command": "powerpages.debugServerLogic",
+          "group": "navigation",
+          "when": "resourcePath =~ /server-logics/ && resourceExtname == .js && !virtualWorkspace"
         }
       ],
       "commandPalette": [
