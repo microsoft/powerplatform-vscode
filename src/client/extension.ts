@@ -54,6 +54,7 @@ import { PROVIDER_ID } from "../common/services/Constants";
 import { activateServerApiAutocomplete } from "../common/intellisense";
 import { EnableServerLogicChanges } from "../common/ecs-features/ecsFeatureGates";
 import { setServerApiTelemetryContext } from "../common/intellisense/ServerApiTelemetryContext";
+import { MetadataDiffDesktop } from "./power-pages/metadata-diff/MetadataDiffDesktop";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -310,6 +311,8 @@ export async function activate(
 
     const workspaceFolderWatcher = vscode.workspace.onDidChangeWorkspaceFolders(handleWorkspaceFolderChange);
     _context.subscriptions.push(workspaceFolderWatcher);
+
+    MetadataDiffDesktop.initialize(context, pacTerminal)
 
     if (shouldEnableDebugger()) {
         activateDebugger(context);
