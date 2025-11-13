@@ -694,9 +694,16 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                 const reportContent = fs.readFileSync(fileUri[0].fsPath, 'utf8');
                 const report = JSON.parse(reportContent) as MetadataDiffReport;
 
-                // Clean up any existing tree data provider
-                const treeDataProvider = new MetadataDiffTreeDataProvider(context);
-                await treeDataProvider.setDiffFiles(report.files); // triggers refresh
+                // Use existing provider if present so Actions Hub keeps reference; otherwise create & register new provider.
+                // Accessing static private for backward compatibility without altering class surface area.
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const existingProvider = (MetadataDiffDesktop as any)._treeDataProvider as MetadataDiffTreeDataProvider | undefined;
+                const treeDataProvider = existingProvider || new MetadataDiffTreeDataProvider(context);
+                if (!existingProvider) {
+                    MetadataDiffDesktop.setTreeDataProvider(treeDataProvider);
+                    ActionsHubTreeDataProvider.setMetadataDiffProvider(treeDataProvider);
+                }
+                await treeDataProvider.setDiffFiles(report.files); // triggers refresh + context updates
                 vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
 
                 vscode.window.showInformationMessage("Report imported successfully");
