@@ -610,7 +610,11 @@ export class PortalsFS implements vscode.FileSystemProvider {
     // --- Dataverse calls
     private async _loadFromDataverseToVFS() {
         await WebExtensionContext.authenticateAndUpdateDataverseProperties();
-        await this.createFileSystem(WebExtensionContext.websiteName);
+        await this.createFileSystem(
+            WebExtensionContext.urlParametersMap.get(
+                queryParameters.WEBSITE_NAME
+            ) as string
+        );
 
         // Try Loading default file first
         const referrer = WebExtensionContext.urlParametersMap.get(queryParameters.REFERRER) as string
@@ -637,17 +641,21 @@ export class PortalsFS implements vscode.FileSystemProvider {
                     type: "file",
                     entityId: WebExtensionContext.defaultEntityId,
                     entityName: WebExtensionContext.defaultEntityType,
+                    isMultifileEnabled: WebExtensionContext.showMultifileInVSCode.toString(),
                     duration: (new Date().getTime() - WebExtensionContext.extensionActivationTime).toString(),
                 }
             );
         }
 
-        // load rest of the files
-        await fetchDataFromDataverseAndUpdateVFS(this);
+        if (WebExtensionContext.showMultifileInVSCode) {
+            // load rest of the files
+            await fetchDataFromDataverseAndUpdateVFS(this);
+        }
 
         WebExtensionContext.telemetry.sendInfoTelemetry(
             webExtensionTelemetryEventNames.WEB_EXTENSION_PREPARE_WORKSPACE_SUCCESS,
             {
+                isMultifileEnabled: WebExtensionContext.showMultifileInVSCode.toString(),
                 duration: (new Date().getTime() - WebExtensionContext.extensionActivationTime).toString(),
             }
         );
@@ -660,7 +668,11 @@ export class PortalsFS implements vscode.FileSystemProvider {
 
         if (entityId && entityName && fileName) {
             await WebExtensionContext.dataverseAuthentication();
-            await this.createFileSystem(WebExtensionContext.websiteName);
+            await this.createFileSystem(
+                WebExtensionContext.urlParametersMap.get(
+                    queryParameters.WEBSITE_NAME
+                ) as string
+            );
 
             await fetchDataFromDataverseAndUpdateVFS(
                 this,
