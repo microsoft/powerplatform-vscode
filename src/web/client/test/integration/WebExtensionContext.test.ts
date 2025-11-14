@@ -29,8 +29,10 @@ describe("WebExtensionContext", () => {
         const queryParamsMap = new Map<string, string>([
             ["_fetchQueryParameters", schemaEntityKey.FETCH_QUERY_PARAMETERS],
             [schemaEntityKey.DATAVERSE_ENTITY_NAME, "DATAVERSE_ENTITY_NAME"],
+            [schemaKey.SCHEMA_VERSION, "1.1"],
             [schemaKey.DATA, "schemaKey.DATA"],
-            [schemaKey.DATAVERSE_API_VERSION, "1.0"]
+            [schemaKey.DATAVERSE_API_VERSION, "1.0"],
+            [Constants.queryParameters.WEBSITE_NAME, "powerPages"],
         ]);
 
         const entityMap = new Map<string, string>([["test", "Entity"]]);
@@ -68,7 +70,7 @@ describe("WebExtensionContext", () => {
         );
 
         //Assert
-        expect(WebExtensionContext.schema).eq("portalschemav1");
+        expect(WebExtensionContext.currentSchemaVersion).eq("1.1");
         expect(WebExtensionContext.defaultEntityType).eq(
             entityName.toLowerCase()
         );
@@ -94,7 +96,8 @@ describe("WebExtensionContext", () => {
         const entityName = "webPages";
         const entityId = "3355d5ec-b38d-46ca-a150-c00386b0a4be";
         const queryParamsMap = new Map<string, string>([
-            [Constants.queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"]
+            [schemaKey.SCHEMA_VERSION, "1.1"],
+            [Constants.queryParameters.ORG_URL, "PowerPages.com"],
         ]);
 
         stub(authenticationProvider, "dataverseAuthentication").resolves({ accessToken: "", userId: "" });
@@ -136,7 +139,8 @@ describe("WebExtensionContext", () => {
         const entityName = "webPages";
         const entityId = "3355d5ec-b38d-46ca-a150-c00386b0a4be";
         const queryParamsMap = new Map<string, string>([
-            [Constants.queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"]
+            [schemaKey.SCHEMA_VERSION, "1.1"],
+            [Constants.queryParameters.ORG_URL, "PowerPages.com"],
         ]);
 
         stub(authenticationProvider, "dataverseAuthentication").resolves(
@@ -314,7 +318,8 @@ describe("WebExtensionContext", () => {
         const entityName = "webPages";
         const entityId = "3355d5ec-b38d-46ca-a150-c00386b0a4be";
         const queryParamsMap = new Map<string, string>([
-            [Constants.queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"]
+            [schemaKey.SCHEMA_VERSION, "1.1"],
+            [Constants.queryParameters.ORG_URL, "PowerPages.com"],
         ]);
 
         stub(authenticationProvider, "dataverseAuthentication").resolves({ accessToken: "", userId: "" });
@@ -354,11 +359,12 @@ describe("WebExtensionContext", () => {
             "4cdf3b4d873a65135553afdf420a47dbc898ba0c1c0ece2407bbbf2bde02a68b";
 
         const ORG_URL = "PowerPages.com";
-        const SCHEMA_VERSION = "portalschemav1";
+        const SCHEMA_VERSION = "powerPage";
         const entityName = "webPages";
         const entityId = "3355d5ec-b38d-46ca-a150-c00386b0a4be";
         const queryParamsMap = new Map<string, string>([
-            [Constants.queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"]
+            [schemaKey.SCHEMA_VERSION, SCHEMA_VERSION],
+            [Constants.queryParameters.ORG_URL, ORG_URL],
         ]);
 
         const dataverseAuthentication = stub(
@@ -433,7 +439,6 @@ describe("WebExtensionContext", () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
-        WebExtensionContext.orgUrl = ORG_URL;
         WebExtensionContext.setWebExtensionContext(
             entityName,
             entityId,
@@ -548,7 +553,7 @@ describe("WebExtensionContext", () => {
             {
                 headers: header,
                 dataverseOrgUrl: ORG_URL,
-                websiteId: '36429b2e-8b29-4020-8493-bd5e277444d8'
+                websiteId: undefined
             }
         );
     });
@@ -560,10 +565,12 @@ describe("WebExtensionContext", () => {
             "4cdf3b4d873a65135553afdf420a47dbc898ba0c1c0ece2407bbbf2bde02a68b";
 
         const ORG_URL = "PowerPages.com";
+        const SCHEMA_VERSION = "powerPage";
         const entityName = "webPages";
         const entityId = "3355d5ec-b38d-46ca-a150-c00386b0a4be";
         const queryParamsMap = new Map<string, string>([
-            [Constants.queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"]
+            [schemaKey.SCHEMA_VERSION, SCHEMA_VERSION],
+            [Constants.queryParameters.ORG_URL, ORG_URL],
         ]);
 
         const dataverseAuthentication = stub(
@@ -619,7 +626,6 @@ describe("WebExtensionContext", () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
-        WebExtensionContext.orgUrl = ORG_URL;
         WebExtensionContext.setWebExtensionContext(
             entityName,
             entityId,
@@ -687,10 +693,12 @@ describe("WebExtensionContext", () => {
             "4cdf3b4d873a65135553afdf420a47dbc898ba0c1c0ece2407bbbf2bde02a68b";
 
         const ORG_URL = "PowerPages.com";
+        const SCHEMA_VERSION = "powerPage";
         const entityName = "webPages";
         const entityId = "3355d5ec-b38d-46ca-a150-c00386b0a4be";
         const queryParamsMap = new Map<string, string>([
-            [Constants.queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"]
+            [schemaKey.SCHEMA_VERSION, SCHEMA_VERSION],
+            [Constants.queryParameters.ORG_URL, ORG_URL],
         ]);
 
         const dataverseAuthentication = stub(
@@ -731,7 +739,6 @@ describe("WebExtensionContext", () => {
         stub(schemaHelperUtil, "getPortalLanguageIdToLcidMap").returns(
             portalLanguageIdCodeMap
         );
-        WebExtensionContext.orgUrl = ORG_URL;
         WebExtensionContext.setWebExtensionContext(
             entityName,
             entityId,
