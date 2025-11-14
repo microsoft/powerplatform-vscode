@@ -6,7 +6,7 @@
 import { RequestInit } from "node-fetch";
 import * as vscode from "vscode";
 import { getCommonHeadersForDataverse } from "../../../common/services/AuthenticationProvider";
-import { BAD_REQUEST, MIMETYPE } from "../common/constants";
+import { BAD_REQUEST, MIMETYPE, queryParameters } from "../common/constants";
 import { showErrorDialog } from "../../../common/utilities/errorHandlerUtil";
 import { FileData } from "../context/fileData";
 import { httpMethod } from "../common/constants";
@@ -19,7 +19,7 @@ import { getPatchRequestUrl, getRequestURL } from "../utilities/urlBuilderUtil";
 import WebExtensionContext from "../WebExtensionContext";
 import { IAttributePath } from "../common/interfaces";
 import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
-import { schemaEntityName, schemaEntityKey } from "../schema/constants";
+import { MultiFileSupportedEntityName, schemaEntityKey } from "../schema/constants";
 import { getEntityMappingEntityId } from "../utilities/fileAndEntityUtil";
 
 interface ISaveCallParameters {
@@ -30,7 +30,9 @@ interface ISaveCallParameters {
 export async function saveData(fileUri: vscode.Uri) {
     const dataMap: Map<string, FileData> =
         WebExtensionContext.fileDataMap.getFileMap;
-    const dataverseOrgUrl = WebExtensionContext.orgUrl;
+    const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
+        queryParameters.ORG_URL
+    ) as string;
     const entityName = dataMap.get(fileUri.fsPath)?.entityName as string;
     const mappedEntity = getEntity(entityName)?.get(
         schemaEntityKey.MAPPING_ENTITY
@@ -91,7 +93,7 @@ async function getSaveParameters(
         );
         if (webFileV2) {
             let fileName = fileDataMap.get(fileUri.fsPath)?.fileName as string;
-            if (entityName === schemaEntityName.SERVERLOGICS && fileName && !fileName.endsWith('.sl')) {
+            if (entityName === MultiFileSupportedEntityName.SERVERLOGICS && fileName && !fileName.endsWith('.sl')) {
                 const baseName = fileName.endsWith('.js') ? fileName.slice(0, -3) : fileName;
                 fileName = `${baseName}.sl`;
             }
@@ -162,7 +164,7 @@ async function saveDataToDataverse(
         let fileExtensionType = fileDataMap.get(
             fileUri.fsPath
         )?.entityFileExtensionType;
-        if (entityName == schemaEntityName.SERVERLOGICS ) {
+        if(entityName == MultiFileSupportedEntityName.SERVERLOGICS ) {
             fileExtensionType = 'sl';
         }
 
