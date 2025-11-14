@@ -1,5 +1,9 @@
 # Change Log - Power Platform Extension
 
+## 2.0.109
+- Bug Fix
+  - Fixed VSCode Web launch issue from PMA/PPMA
+
 ## 2.0.107
 - pac CLI 1.50.1, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 - Added CodeQl and SARIF Viewer in Extension Pack
