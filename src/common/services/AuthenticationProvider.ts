@@ -316,11 +316,23 @@ export async function powerPlatformAPIAuthentication(
     let accessToken = "";
     const PPAPI_WEBSITES_ENDPOINT = serviceScopeMapping[serviceEndpointStamp];
     try {
-        const session = await vscode.authentication.getSession(
+        let session = await vscode.authentication.getSession(
             PROVIDER_ID,
             [PPAPI_WEBSITES_ENDPOINT],
             { silent: true }
         );
+
+        if (!session) {
+            // Only prompt for consent if this is the first authentication attempt
+            // This prevents multiple prompts during Actions Hub initialization
+            if (firstTimeAuth) {
+                session = await vscode.authentication.getSession(
+                    PROVIDER_ID,
+                    [PPAPI_WEBSITES_ENDPOINT],
+                    { createIfNone: true }
+                );
+            }
+        }
 
         if (!session) {
             return accessToken;
@@ -331,7 +343,7 @@ export async function powerPlatformAPIAuthentication(
             throw new Error(ERROR_CONSTANTS.NO_ACCESS_TOKEN);
         }
 
-        if (firstTimeAuth) {
+        if (firstTimeAuth && session) {
             sendTelemetryEvent({
                 eventName: VSCODE_EXTENSION_PPAPI_WEBSITES_AUTHENTICATION_COMPLETED,
                 userId:
