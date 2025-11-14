@@ -1,7 +1,7 @@
 # Change Log - Power Platform Extension
 
 ## 2.0.109
-- Bug Fixe
+- Bug Fix
   - Fixed VSCode Web launch issue from PMA/PPMA
 
 ## 2.0.107
