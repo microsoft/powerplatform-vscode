@@ -23,7 +23,7 @@
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title": "CodeQL 차단 실행",
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement.title": "사이트 관리 열기",
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite.title": "사이트 다시 활성화",
-  "microsoft.powerplatform.pages.actionsHub.login": "Power Pages 작업을 사용하려면 로그인하고 Power Pages 환경에 연결합니다. [자세한 정보](https://go.microsoft.com/fwlink/?linkid=2305702).\n[Login](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile)",
+  "microsoft.powerplatform.pages.actionsHub.login": "Power Pages 작업을 사용하려면 로그인하고 Power Pages 환경에 연결합니다. [자세한 정보](https://go.microsoft.com/fwlink/?linkid=2305702).\n[Login](command:microsoft.powerplatform.pages.actionsHub.loginToMatch)",
   "microsoft.powerplatform.pages.actionsHub.login.title": "새 인증 프로필 추가",
   "microsoft.powerplatform.pages.actionsHub.openSitesInStudio.title": "Power Pages 스튜디오에서 열기",
   "microsoft.powerplatform.pages.actionsHub.refresh.title": "새로 고침",
