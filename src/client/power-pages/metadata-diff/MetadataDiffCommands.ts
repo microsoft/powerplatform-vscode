@@ -19,6 +19,7 @@ import { createAuthProfileExp } from "../../../common/utilities/PacAuthUtil";
 import { getWebsiteRecordId } from "../../../common/utilities/WorkspaceInfoFinderUtil";
 import { generateDiffReport, getAllDiffFiles, MetadataDiffReport } from "./MetadataDiffUtils";
 import { getBaseEventInfo } from "../actions-hub/TelemetryHelper";
+import PacContext from "../../pac/PacContext";
 
 // ---------------- Helper Functions (internal) ----------------
 function getWorkspaceAndWebsiteId(): { workspacePath: string, websiteId: string } | undefined {
@@ -378,17 +379,15 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                 vscode.window.showErrorMessage("Website id not provided from context.");
                 return;
             }
-            // Get the PAC wrapper to access org list
-            const pacWrapper = pacTerminal.getWrapper();
 
             // Get current org info instead of prompting user
-            const pacActiveOrg = await pacWrapper.activeOrg();
-            if (!pacActiveOrg || pacActiveOrg.Status !== SUCCESS) {
+            const pacActiveOrg = PacContext.OrgInfo;
+            if (!pacActiveOrg) {
                 vscode.window.showErrorMessage("No active environment found. Please authenticate first.");
                 return;
             }
 
-            const orgUrl = pacActiveOrg.Results.OrgUrl;
+            const orgUrl = pacActiveOrg?.OrgUrl;
             if (!orgUrl) {
                 vscode.window.showErrorMessage("Current environment URL not found.");
                 return;
