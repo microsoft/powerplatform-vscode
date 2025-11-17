@@ -311,9 +311,8 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
         );
         try {
             // Only proceed if we already have data (context set by menu 'when' clause)
-            const pacWrapper = pacTerminal.getWrapper();
-            const pacActiveOrg = await pacWrapper.activeOrg();
-            if (!pacActiveOrg || pacActiveOrg.Status !== SUCCESS) {
+            const pacActiveOrg = PacContext.OrgInfo;
+            if (!pacActiveOrg) {
                 vscode.window.showErrorMessage("No active environment found. Please authenticate first.");
                 return;
             }
@@ -419,8 +418,8 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
             let orgUrl: string | undefined;
 
             // Get current active org first so we can mark it in the picker
-            const currentActiveOrg = await pacWrapper.activeOrg();
-            const currentOrgUrl = currentActiveOrg && currentActiveOrg.Status === SUCCESS ? currentActiveOrg.Results.OrgUrl : undefined;
+            const currentActiveOrg = PacContext.OrgInfo;
+            const currentOrgUrl = currentActiveOrg ? currentActiveOrg.OrgUrl : undefined;
 
             // Get list of available organizations
             const orgListResult = await pacWrapper.orgList();
@@ -487,8 +486,8 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
 
             const verifySwitch = async (attempts = 5, delayMs = 500): Promise<boolean> => {
                 for (let i = 0; i < attempts; i++) {
-                    const who = await pacWrapper.activeOrg();
-                    if (who && who.Status === SUCCESS && normalizeUrl(who.Results.OrgUrl) === targetUrlNormalized) {
+                    const currentActiveOrg = PacContext.OrgInfo;
+                    if (currentActiveOrg && normalizeUrl(currentActiveOrg.OrgUrl) === targetUrlNormalized) {
                         return true;
                     }
                     await new Promise(r => setTimeout(r, delayMs));
@@ -497,8 +496,8 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
             };
 
             const switchEnvironmentIfNeeded = async (): Promise<boolean> => {
-                const active = await pacWrapper.activeOrg();
-                if (!active || active.Status !== SUCCESS) {
+                const currentActiveOrg = PacContext.OrgInfo;
+                if (!currentActiveOrg) {
                     // No active org context -> create auth profile (will also set context)
                     await createAuthProfileExp(pacWrapper, orgUrl!);
                     const verified = await verifySwitch();
