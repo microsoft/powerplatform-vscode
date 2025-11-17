@@ -509,7 +509,7 @@ export async function registerMetadataDiffCommands(context: vscode.ExtensionCont
                     return true;
                 }
 
-                if (normalizeUrl(active.Results.OrgUrl) === targetUrlNormalized) {
+                if (normalizeUrl(currentActiveOrg.OrgUrl) === targetUrlNormalized) {
                     vscode.window.showInformationMessage("Already connected to the specified environment.");
                     return true;
                 }
