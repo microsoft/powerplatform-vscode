@@ -34,7 +34,7 @@ export const {
     description: 'Enable ProDev Copilot',
     fallback: {
         "capiSupportedProDevCopilotGeoList": "us,au,uk,eu,in",
-        "unsupportedProDevCopilotGeoList": "ca",
+        "unsupportedProDevCopilotGeoList": "",
         "capiSupportedProDevCopilotGeoWithCrossGeoDataFlow": "eu,se,ch,fr,de,no"
     },
 });
