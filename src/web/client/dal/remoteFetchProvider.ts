@@ -426,7 +426,13 @@ async function processDataAndCreateFile(
         else {
             let fileCreationValid = true;
             let fileNameWithExtension = GetFileNameWithExtension(entityName, fileName, languageCode, fileExtension);
-
+            if (entityName === schemaEntityName.SERVERLOGICS) {
+                // Modify filename for serverlogics: test.js -> test.serverlogics.customjs.js
+                if (fileNameWithExtension.endsWith('.js')) {
+                    const baseName = fileNameWithExtension.slice(0, -3); // Remove .js
+                    fileNameWithExtension = `${baseName}.serverlogic.customjs.js`;
+                }
+            }
             if (defaultFileInfo?.fileName) {
                 fileCreationValid = defaultFileInfo?.fileName === fileNameWithExtension ||
                     (defaultFileInfo?.fileName.startsWith(fileName) && defaultFileInfo?.fileName.endsWith(fileExtension));

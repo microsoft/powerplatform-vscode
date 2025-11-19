@@ -94,7 +94,12 @@ async function getSaveParameters(
         if (webFileV2) {
             let fileName = fileDataMap.get(fileUri.fsPath)?.fileName as string;
             if (entityName === MultiFileSupportedEntityName.SERVERLOGICS && fileName && !fileName.endsWith('.sl')) {
-                const baseName = fileName.endsWith('.js') ? fileName.slice(0, -3) : fileName;
+                // Handle filenames like test.serverlogics.customjs.js -> extract base name (test) and append .sl
+                let baseName = fileName;
+                // Remove .serverlogics.customjs if present
+                if (baseName.endsWith('.serverlogics.customjs')) {
+                    baseName = baseName.slice(0, -22); // Remove .serverlogics.customjs (22 characters)
+                }
                 fileName = `${baseName}.sl`;
             }
             saveCallParameters.requestInit.headers = {
