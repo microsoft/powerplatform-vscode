@@ -289,7 +289,7 @@ describe("URLBuilder", () => {
 
     it("getCustomRequestURL", () => {
         const mock = new Map<string, string>([
-            [schemaEntityKey.MULTI_FILE_FETCH_QUERY_PARAMETERS, "_fetchQueryParameters"],
+            ["_fetchQueryParameters", schemaEntityKey.FETCH_QUERY_PARAMETERS],
             [schemaEntityKey.DATAVERSE_ENTITY_NAME, "DATAVERSE_ENTITY_NAME"],
             [schemaKey.DATA, "schemaKey.DATA"],
             [schemaKey.DATAVERSE_API_VERSION, "1.0"],
