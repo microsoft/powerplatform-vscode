@@ -9,7 +9,7 @@ import { getCommonHeadersForDataverse } from "../../../common/services/Authentic
 import { BAD_REQUEST, MIMETYPE, queryParameters } from "../common/constants";
 import { showErrorDialog } from "../../../common/utilities/errorHandlerUtil";
 import { FileData } from "../context/fileData";
-import { httpMethod } from "../common/constants";
+import { httpMethod, SERVERLOGIC_FILE_EXTENSION } from "../common/constants";
 import {
     getEntity,
     isWebFileV2,
@@ -94,11 +94,11 @@ async function getSaveParameters(
         if (webFileV2) {
             let fileName = fileDataMap.get(fileUri.fsPath)?.fileName as string;
             if (entityName === MultiFileSupportedEntityName.SERVERLOGICS && fileName && !fileName.endsWith('.sl')) {
-                // Handle filenames like test.serverlogics.customjs.js -> extract base name (test) and append .sl
+                // Handle filenames like test.serverlogic.customjs.js -> extract base name (test) and append .sl
                 let baseName = fileName;
-                // Remove .serverlogics.customjs if present
-                if (baseName.endsWith('.serverlogics.customjs')) {
-                    baseName = baseName.slice(0, -22); // Remove .serverlogics.customjs (22 characters)
+                // Remove .serverlogic.customjs.js if present
+                if (baseName.endsWith(SERVERLOGIC_FILE_EXTENSION)) {
+                    baseName = baseName.slice(0, -24); // Remove .serverlogic.customjs.js (24 characters)
                 }
                 fileName = `${baseName}.sl`;
             }

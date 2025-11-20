@@ -430,7 +430,7 @@ async function processDataAndCreateFile(
                 // Modify filename for serverlogics: test.js -> test.serverlogics.customjs.js
                 if (fileNameWithExtension.endsWith('.js')) {
                     const baseName = fileNameWithExtension.slice(0, -3); // Remove .js
-                    fileNameWithExtension = `${baseName}.serverlogic.customjs.js`;
+                    fileNameWithExtension = `${baseName}${Constants.SERVERLOGIC_FILE_EXTENSION}`;
                 }
             }
             if (defaultFileInfo?.fileName) {
