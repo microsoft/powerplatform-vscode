@@ -19,8 +19,7 @@ export const providedServerLogicDebugConfig: vscode.DebugConfiguration = {
     name: 'Debug Power Pages Server Logic',
     program: '${file}',
     skipFiles: ['<node_internals>/**'],
-    console: 'integratedTerminal',
-    internalConsoleOptions: 'neverOpen'
+    console: 'internalConsole'
 };
 
 /**
@@ -178,8 +177,7 @@ export function activateServerLogicDebugger(context: vscode.ExtensionContext): v
                         name: 'Debug Current Server Logic',
                         program: filePath,
                         skipFiles: ['<node_internals>/**'],
-                        console: 'integratedTerminal',
-                        internalConsoleOptions: 'neverOpen'
+                        console: 'internalConsole'
                     }
                 );
 
@@ -222,8 +220,7 @@ export function activateServerLogicDebugger(context: vscode.ExtensionContext): v
                         name: 'Run Server Logic',
                         program: filePath,
                         skipFiles: ['<node_internals>/**'],
-                        console: 'integratedTerminal',
-                        internalConsoleOptions: 'neverOpen',
+                        console: 'internalConsole',
                         noDebug: true
                     }
                 );
