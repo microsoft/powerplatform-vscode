@@ -25,7 +25,7 @@ export class ServerLogicCodeLensProvider implements vscode.CodeLensProvider {
      */
     public provideCodeLenses(
         document: vscode.TextDocument,
-        _token: vscode.CancellationToken
+        _: vscode.CancellationToken
     ): vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
 
         // Only provide CodeLens for server logic files

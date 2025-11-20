@@ -30,9 +30,8 @@ export class ServerLogicDebugProvider implements vscode.DebugConfigurationProvid
     /**
      * Provides initial debug configurations
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     provideDebugConfigurations(
-        _folder: vscode.WorkspaceFolder | undefined
+        _: vscode.WorkspaceFolder | undefined
     ): vscode.ProviderResult<vscode.DebugConfiguration[]> {
         return [providedServerLogicDebugConfig];
     }
@@ -44,7 +43,7 @@ export class ServerLogicDebugProvider implements vscode.DebugConfigurationProvid
     async resolveDebugConfiguration(
         folder: vscode.WorkspaceFolder | undefined,
         config: vscode.DebugConfiguration,
-        _token?: vscode.CancellationToken
+        _?: vscode.CancellationToken
     ): Promise<vscode.DebugConfiguration | undefined> {
 
         // If no configuration provided, create default
