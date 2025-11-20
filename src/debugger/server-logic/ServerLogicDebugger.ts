@@ -109,7 +109,7 @@ export class ServerLogicDebugProvider implements vscode.DebugConfigurationProvid
     }
 
     /**
-     * Ensures the runtime loader file exists and is up to date
+     * Ensures the runtime loader file exists
      */
     private async ensureRuntimeLoader(folder: vscode.WorkspaceFolder): Promise<string> {
         const vscodeDir = path.join(folder.uri.fsPath, '.vscode');
@@ -120,11 +120,12 @@ export class ServerLogicDebugProvider implements vscode.DebugConfigurationProvid
             fs.mkdirSync(vscodeDir, { recursive: true });
         }
 
-        // Generate the runtime loader content
-        const loaderContent = generateServerMockSdk();
-
-        // Write the file
-        fs.writeFileSync(loaderPath, loaderContent, 'utf8');
+        // Generate the runtime loader only if it doesn't exist
+        // This allows users to edit the file without it being overwritten
+        if (!fs.existsSync(loaderPath)) {
+            const loaderContent = generateServerMockSdk();
+            fs.writeFileSync(loaderPath, loaderContent, 'utf8');
+        }
 
         return loaderPath;
     }

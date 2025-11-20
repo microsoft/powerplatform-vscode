@@ -37,59 +37,46 @@ export class ServerLogicCodeLensProvider implements vscode.CodeLensProvider {
         const text = document.getText();
         const lines = text.split('\n');
 
-        // Find function declarations
+        // Standard server logic functions to detect
+        const standardFunctions = ['get', 'post', 'put', 'patch', 'del'];
+
+        // Find function declarations for standard server logic functions
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
 
-            // Match function declarations: function name() or const name = function()
-            const functionMatch = line.match(/^\s*(function\s+\w+|const\s+\w+\s*=\s*(async\s+)?function)/);
+            // Match function declarations: function name() or async function name()
+            const functionMatch = line.match(/^\s*(async\s+)?function\s+(\w+)\s*\(/);
 
             if (functionMatch) {
-                const range = new vscode.Range(i, 0, i, line.length);
+                const functionName = functionMatch[2];
 
-                // Add "Debug" CodeLens
-                const debugLens = new vscode.CodeLens(range, {
-                    title: '$(debug-alt) Debug',
-                    tooltip: 'Debug this server logic file',
-                    command: 'powerpages.debugServerLogic',
-                    arguments: []
-                });
-                codeLenses.push(debugLens);
+                // Only add CodeLens for standard server logic functions
+                if (standardFunctions.includes(functionName.toLowerCase())) {
+                    const range = new vscode.Range(i, 0, i, line.length);
 
-                // Add "Run" CodeLens
-                const runLens = new vscode.CodeLens(range, {
-                    title: '$(run) Run',
-                    tooltip: 'Run this server logic file without debugging',
-                    command: 'powerpages.runServerLogic',
-                    arguments: []
-                });
-                codeLenses.push(runLens);
+                    // Add "Debug" CodeLens
+                    const debugLens = new vscode.CodeLens(range, {
+                        title: '$(debug-alt) Debug',
+                        tooltip: 'Debug this server logic file',
+                        command: 'powerpages.debugServerLogic',
+                        arguments: []
+                    });
+                    codeLenses.push(debugLens);
 
-                // Only show CodeLens for the first function
-                break;
+                    // Add "Run" CodeLens
+                    const runLens = new vscode.CodeLens(range, {
+                        title: '$(run) Run',
+                        tooltip: 'Run this server logic file without debugging',
+                        command: 'powerpages.runServerLogic',
+                        arguments: []
+                    });
+                    codeLenses.push(runLens);
+                }
             }
         }
 
-        // If no functions found, add CodeLens at the top of the file
-        if (codeLenses.length === 0 && lines.length > 0) {
-            const range = new vscode.Range(0, 0, 0, 0);
-
-            const debugLens = new vscode.CodeLens(range, {
-                title: '$(debug-alt) Debug',
-                tooltip: 'Debug this server logic file',
-                command: 'powerpages.debugServerLogic',
-                arguments: []
-            });
-            codeLenses.push(debugLens);
-
-            const runLens = new vscode.CodeLens(range, {
-                title: '$(run) Run',
-                tooltip: 'Run this server logic file without debugging',
-                command: 'powerpages.runServerLogic',
-                arguments: []
-            });
-            codeLenses.push(runLens);
-        }
+        // If no standard functions found, don't add any CodeLens
+        // (file doesn't follow standard server logic pattern)
 
         return codeLenses;
     }
