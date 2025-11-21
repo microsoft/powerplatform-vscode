@@ -13,7 +13,10 @@ import {
     ARTEMIS_RESPONSE_FAILED,
 } from "./common/constants";
 import { PortalsFS } from "./dal/fileSystemProvider";
-import { checkMandatoryParameters } from "./common/errorHandler";
+import {
+    checkMandatoryParameters,
+    removeEncodingFromParameters,
+} from "./common/errorHandler";
 import { WebExtensionTelemetry } from "./telemetry/webExtensionTelemetry";
 import { getEnvironmentIdFromUrl, isCoPresenceEnabled, updateFileContentInFileDataMap } from "./utilities/commonUtil";
 import { NPSService } from "./services/NPSService";
@@ -44,9 +47,6 @@ import { authenticateUserInVSCode } from "../../common/services/AuthenticationPr
 import { activateServerApiAutocomplete } from "../../common/intellisense";
 import { EnableServerLogicChanges } from "../../common/ecs-features/ecsFeatureGates";
 import { setServerApiTelemetryContext } from "../../common/intellisense/ServerApiTelemetryContext";
-import { PPAPIService } from "../../common/services/PPAPIService";
-import { SiteVisibility } from "../../client/power-pages/actions-hub/models/SiteVisibility";
-import { WebsiteDataModel } from "../../common/services/Constants";
 
 let serverApiAutocompleteInitialized = false;
 
@@ -100,18 +100,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
                     return;
                 }
 
-                const orgId = queryParamsMap.get(Constants.queryParameters.ORG_ID) as string;
-
-                const isSuccess = await fetchArtemisData(orgId);
-                if (!isSuccess) {
-                    return;
-                }
-
-                const isWebsiteFetchSuccessful = await initializeWebsiteDetails(queryParamsMap);
-                if (!isWebsiteFetchSuccessful) {
-                    return;
-                }
-
+                removeEncodingFromParameters(queryParamsMap);
                 WebExtensionContext.setWebExtensionContext(
                     entity,
                     entityId,
@@ -119,7 +108,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
                     context.extensionUri
                 );
 
-                WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_ORG_GEO, { orgId: WebExtensionContext.organizationId, orgGeo: WebExtensionContext.geoName });
+                const orgId = queryParamsMap.get(queryParameters.ORG_ID) as string;
+                await fetchArtemisData(orgId);
+                WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_ORG_GEO, { orgId: orgId, orgGeo: WebExtensionContext.geoName });
                 oneDSLoggerWrapper.instantiate(WebExtensionContext.geoName, WebExtensionContext.geoLongName, WebExtensionContext.serviceEndpointCategory);
 
                 WebExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(
@@ -154,9 +145,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
                                                 AppName: PowerPagesAppName,
                                                 EnvID: WebExtensionContext.environmentId,
                                                 UserID: WebExtensionContext.userId,
-                                                TenantID: WebExtensionContext.tenantId,
-                                                Region: WebExtensionContext.region,
-                                                Location: WebExtensionContext.urlParametersMap.get(queryParameters.GEO) ?? ""
+                                                TenantID: queryParamsMap.get(queryParameters.TENANT_ID) as string,
+                                                Region: queryParamsMap.get(queryParameters.REGION) as string,
+                                                Location: queryParamsMap.get(queryParameters.GEO) as string
                                             },
                                             PowerPagesClientName);
 
@@ -167,10 +158,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
                                         if (!serverApiAutocompleteInitialized && enableServerLogicChanges) {
                                             // Set telemetry context for Server API autocomplete events
                                             setServerApiTelemetryContext({
-                                                tenantId: WebExtensionContext.tenantId,
+                                                tenantId: queryParamsMap.get(queryParameters.TENANT_ID) as string,
                                                 envId: WebExtensionContext.environmentId,
                                                 userId: WebExtensionContext.userId,
-                                                orgId: WebExtensionContext.organizationId,
+                                                orgId: orgId,
                                                 geo: WebExtensionContext.geoName,
                                             });
                                             activateServerApiAutocomplete(context, [
@@ -292,7 +283,7 @@ export function processWalkthroughFirstRunExperience(context: vscode.ExtensionCo
         IS_MULTIFILE_FIRST_RUN_EXPERIENCE,
         true
     );
-    if (isMultifileFirstRun) {
+    if (isMultifileFirstRun && WebExtensionContext.showMultifileInVSCode) {
         vscode.commands.executeCommand(
             `workbench.action.openWalkthrough`,
             `microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted-multiFile`,
@@ -483,7 +474,11 @@ export function createWebWorkerInstance(
 }
 
 export async function showSiteVisibilityDialog() {
-    if (WebExtensionContext.siteVisibility === PUBLIC) {
+    if (
+        WebExtensionContext.urlParametersMap.get(
+            queryParameters.SITE_VISIBILITY
+        ) === PUBLIC
+    ) {
         const edit: vscode.MessageItem = {
             isCloseAffordance: true,
             title: vscode.l10n.t("Edit the site"),
@@ -604,18 +599,24 @@ export function showWalkthrough(
 export function registerCopilot(context: vscode.ExtensionContext) {
     try {
         const orgInfo = {
-            orgId: WebExtensionContext.organizationId,
+            orgId: WebExtensionContext.urlParametersMap.get(
+                queryParameters.ORG_ID
+            ) as string,
             environmentId: getEnvironmentIdFromUrl(),
             environmentName: "",
-            activeOrgUrl: WebExtensionContext.orgUrl,
-            tenantId: WebExtensionContext.tenantId,
+            activeOrgUrl: WebExtensionContext.urlParametersMap.get(queryParameters.ORG_URL) as string,
+            tenantId: WebExtensionContext.urlParametersMap.get(queryParameters.TENANT_ID) as string,
         } as IOrgInfo;
+
+        const websiteId = WebExtensionContext.urlParametersMap.get(
+            queryParameters.WEBSITE_ID
+        ) as string
 
         const copilotPanel = new copilot.PowerPagesCopilot(context.extensionUri,
             context,
             undefined,
             orgInfo,
-            WebExtensionContext.websiteId);
+            websiteId);
 
         context.subscriptions.push(vscode.window.registerWebviewViewProvider(copilot.PowerPagesCopilot.viewType, copilotPanel, {
             webviewOptions: {
@@ -678,73 +679,19 @@ function isActiveDocument(fileFsPath: string): boolean {
     );
 }
 
-async function fetchArtemisData(orgId: string): Promise<boolean> {
-    let isSuccess = true;
-    await vscode.window.withProgress(
-        {
-            location: vscode.ProgressLocation.Notification,
-            cancellable: true,
-            title: vscode.l10n.t("Fetching environment information ..."),
-        },
-        async () => {
-            const artemisResponse = await ArtemisService.getArtemisResponse(orgId, "");
-            if (artemisResponse === null || artemisResponse.response === null) {
-                WebExtensionContext.telemetry.sendErrorTelemetry(
-                    webExtensionTelemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE_FAILED,
-                    fetchArtemisData.name,
-                    ARTEMIS_RESPONSE_FAILED
-                );
-                showErrorDialog(
-                    vscode.l10n.t("There was a problem opening the workspace"),
-                    vscode.l10n.t("Unable to fetch environment information")
-                );
-                isSuccess = false;
-                return;
-            }
+async function fetchArtemisData(orgId: string) {
+    const artemisResponse = await ArtemisService.getArtemisResponse(orgId, "");
+    if (artemisResponse === null || artemisResponse.response === null) {
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            webExtensionTelemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE_FAILED,
+            fetchArtemisData.name,
+            ARTEMIS_RESPONSE_FAILED
+        );
+        return;
+    }
 
-            WebExtensionContext.region = artemisResponse.stamp;
-            WebExtensionContext.geoName = artemisResponse.response.geoName;
-            WebExtensionContext.geoLongName = artemisResponse.response.geoLongName;
-            WebExtensionContext.serviceEndpointCategory = artemisResponse.stamp;
-            WebExtensionContext.clusterLocation = getECSOrgLocationValue(artemisResponse.response.clusterName, artemisResponse.response.clusterNumber);
-        }
-    );
-    return isSuccess;
-}
-
-async function initializeWebsiteDetails(queryParamsMap: Map<string, string>) {
-    let isSuccess = true;
-
-    await vscode.window.withProgress(
-        {
-            location: vscode.ProgressLocation.Notification,
-            cancellable: true,
-            title: vscode.l10n.t("Fetching website details ..."),
-        },
-        async () => {
-            const portalId = queryParamsMap.get(queryParameters.PORTAL_ID) as string;
-            const envId = queryParamsMap.get(queryParameters.ENV_ID)?.split("/")?.pop() as string;
-            const websiteDetails = await PPAPIService.getWebsiteDetailsById(WebExtensionContext.serviceEndpointCategory, envId, portalId);
-
-            if (!websiteDetails) {
-                showErrorDialog(
-                    vscode.l10n.t("There was a problem opening the workspace"),
-                    vscode.l10n.t("Unable to fetch website details")
-                );
-
-                isSuccess = false;
-                return;
-            }
-
-            WebExtensionContext.tenantId = websiteDetails?.tenantId ?? "";
-            WebExtensionContext.websiteId = websiteDetails.websiteRecordId ?? "";
-            WebExtensionContext.schema = websiteDetails?.dataModel === WebsiteDataModel.Standard ? Constants.portalSchemaVersion.V1 : Constants.portalSchemaVersion.V2;
-            WebExtensionContext.siteVisibility = websiteDetails?.siteVisibility ?? SiteVisibility.Private;
-            WebExtensionContext.orgUrl = websiteDetails?.dataverseInstanceUrl?.replace(/\/$/, '') ?? "";
-            WebExtensionContext.websiteName = websiteDetails?.name ?? "";
-            WebExtensionContext.organizationId = websiteDetails?.dataverseOrganizationId ?? "";
-        }
-    );
-
-    return isSuccess;
+    WebExtensionContext.geoName = artemisResponse.response.geoName;
+    WebExtensionContext.geoLongName = artemisResponse.response.geoLongName;
+    WebExtensionContext.serviceEndpointCategory = artemisResponse.stamp;
+    WebExtensionContext.clusterLocation = getECSOrgLocationValue(artemisResponse.response.clusterName, artemisResponse.response.clusterNumber);
 }

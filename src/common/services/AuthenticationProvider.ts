@@ -89,10 +89,10 @@ export async function intelligenceAPIAuthentication(sessionID: string, orgId: st
     let user = '';
     let userId = '';
     try {
-        const session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { silent: true });
+        let session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { silent: true });
 
         if (!session) {
-            return { accessToken, user, userId };
+            session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { createIfNone: true });
         }
 
         accessToken = session?.accessToken ?? '';
@@ -121,7 +121,7 @@ export async function dataverseAuthentication(
     let accessToken = "";
     let userId = "";
     try {
-        const session = await vscode.authentication.getSession(
+        let session = await vscode.authentication.getSession(
             PROVIDER_ID,
             [
                 `${dataverseOrgURL}${SCOPE_OPTION_DEFAULT}`,
@@ -131,7 +131,14 @@ export async function dataverseAuthentication(
         );
 
         if (!session) {
-            return { accessToken, userId };
+            session = await vscode.authentication.getSession(
+                PROVIDER_ID,
+                [
+                    `${dataverseOrgURL}${SCOPE_OPTION_DEFAULT}`,
+                    `${SCOPE_OPTION_OFFLINE_ACCESS}`,
+                ],
+                { createIfNone: true }
+            );
         }
 
         accessToken = session?.accessToken ?? "";
@@ -172,11 +179,18 @@ export async function npsAuthentication(
         { eventName: VSCODE_EXTENSION_NPS_AUTHENTICATION_STARTED }
     );
     try {
-        const session = await vscode.authentication.getSession(
+        let session = await vscode.authentication.getSession(
             PROVIDER_ID,
-            [cesSurveyAuthorizationEndpoint],
+            [cesSurveyAuthorizationEndpoint, SCOPE_OPTION_OFFLINE_ACCESS],
             { silent: true }
         );
+        if (!session) {
+            session = await vscode.authentication.getSession(
+                PROVIDER_ID,
+                [cesSurveyAuthorizationEndpoint, SCOPE_OPTION_OFFLINE_ACCESS],
+                { createIfNone: true }
+            );
+        }
         accessToken = session?.accessToken ?? "";
         if (!accessToken) {
             throw new Error(ERROR_CONSTANTS.NO_ACCESS_TOKEN);
@@ -212,6 +226,7 @@ export async function graphClientAuthentication(
             [
                 SCOPE_OPTION_CONTACTS_READ,
                 SCOPE_OPTION_USERS_READ_BASIC_ALL,
+                SCOPE_OPTION_OFFLINE_ACCESS
             ],
             { silent: true }
         );
@@ -222,6 +237,7 @@ export async function graphClientAuthentication(
                 [
                     SCOPE_OPTION_CONTACTS_READ,
                     SCOPE_OPTION_USERS_READ_BASIC_ALL,
+                    SCOPE_OPTION_OFFLINE_ACCESS
                 ],
                 { createIfNone: true }
             );
@@ -258,14 +274,18 @@ export async function bapServiceAuthentication(
 ): Promise<string> {
     let accessToken = "";
     try {
-        const session = await vscode.authentication.getSession(
+        let session = await vscode.authentication.getSession(
             PROVIDER_ID,
-            [BAP_SERVICE_SCOPE_DEFAULT],
+            [BAP_SERVICE_SCOPE_DEFAULT, SCOPE_OPTION_OFFLINE_ACCESS],
             { silent: true }
         );
 
         if (!session) {
-            return accessToken;
+            session = await vscode.authentication.getSession(
+                PROVIDER_ID,
+                [BAP_SERVICE_SCOPE_DEFAULT, SCOPE_OPTION_OFFLINE_ACCESS],
+                { createIfNone: true }
+            );
         }
 
         accessToken = session?.accessToken ?? "";
@@ -316,14 +336,18 @@ export async function powerPlatformAPIAuthentication(
     let accessToken = "";
     const PPAPI_WEBSITES_ENDPOINT = serviceScopeMapping[serviceEndpointStamp];
     try {
-        const session = await vscode.authentication.getSession(
+        let session = await vscode.authentication.getSession(
             PROVIDER_ID,
-            [PPAPI_WEBSITES_ENDPOINT],
+            [PPAPI_WEBSITES_ENDPOINT, SCOPE_OPTION_OFFLINE_ACCESS],
             { silent: true }
         );
 
         if (!session) {
-            return accessToken;
+            session = await vscode.authentication.getSession(
+                PROVIDER_ID,
+                [PPAPI_WEBSITES_ENDPOINT, SCOPE_OPTION_OFFLINE_ACCESS],
+                { createIfNone: true }
+            );
         }
 
         accessToken = session?.accessToken ?? "";
@@ -379,7 +403,7 @@ export async function authenticateUserInVSCode(isSilent = false): Promise<void> 
  */
 async function authenticateUserInternal(createIfNone: boolean): Promise<boolean> {
     try {
-        const session = await vscode.authentication.getSession(PROVIDER_ID, [], { createIfNone: createIfNone });
+        const session = await vscode.authentication.getSession(PROVIDER_ID, [SCOPE_OPTION_OFFLINE_ACCESS], { createIfNone: createIfNone });
 
         if (session) {
             const userId = getOIDFromToken(session.accessToken);

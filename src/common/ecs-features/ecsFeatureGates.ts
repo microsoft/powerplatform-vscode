@@ -7,6 +7,16 @@ import { COPILOT_GOVERNANCE_SETTING_NAME, PowerPagesClientName } from './constan
 import { getFeatureConfigs } from './ecsFeatureUtil';
 
 export const {
+    feature: EnableMultifileVscodeWeb
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable multiple file view in Visual Studio Code Web',
+    fallback: {
+        enableMultifileVscodeWeb: false,
+    },
+});
+
+export const {
     feature: CopilotDisableList
 } = getFeatureConfigs({
     teamName: PowerPagesClientName,
@@ -24,7 +34,7 @@ export const {
     description: 'Enable ProDev Copilot',
     fallback: {
         "capiSupportedProDevCopilotGeoList": "us,au,uk,eu,in",
-        "unsupportedProDevCopilotGeoList": "ca",
+        "unsupportedProDevCopilotGeoList": "",
         "capiSupportedProDevCopilotGeoWithCrossGeoDataFlow": "eu,se,ch,fr,de,no"
     },
 });
