@@ -20,6 +20,7 @@ This directory contains the implementation for debugging Power Pages Server Logi
 ## Usage
 
 ### Quick Start
+
 1. Open a server logic file from `server-logics/` folder
 2. Start debugging using any of these methods:
    - Click the **Debug** button in the editor toolbar
@@ -30,16 +31,19 @@ This directory contains the implementation for debugging Power Pages Server Logi
 3. Set breakpoints and debug!
 
 ### Running Without Debugging
+
 - Click **▶ Run** CodeLens to execute without stopping at breakpoints
 - Use Command Palette: `Power Pages: Run Server Logic File`
 
 ### Commands
+
 - `Power Pages: Debug Current Server Logic File` - Start debugging the active file
 - `Power Pages: Run Server Logic File` - Run without debugging
-- `Power Pages: Generate Mock Data Template` - Create a template for custom mock data
 
 ### Configuration
+
 Add to your `launch.json`:
+
 ```json
 {
   "type": "node",
@@ -51,7 +55,9 @@ Add to your `launch.json`:
 ```
 
 ### Custom Mock Data
+
 Create `.vscode/mock-data.json`:
+
 ```json
 {
   "User": {
@@ -70,18 +76,21 @@ Create `.vscode/mock-data.json`:
 
 ## UI Features
 
-### Editor Toolbar
 When viewing a server logic file, you'll see a debug icon (🐛) in the editor toolbar for quick access.
 
 ### CodeLens
+
 Above functions in your server logic file, you'll see inline actions:
+
 - **▶ Debug** - Start debugging
 - **▶ Run** - Run without debugging
 
 ### Context Menu
+
 Right-click in any server logic file to access debug commands.
 
-### Welcome Notification
+## Welcome Notification
+
 First time you open a workspace with server logic files, you'll see a helpful notification with quick actions.
 
 ## Files

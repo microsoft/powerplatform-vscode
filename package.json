@@ -419,11 +419,6 @@
         "enablement": "resourcePath =~ /server-logics/ && resourceExtname == .js"
       },
       {
-        "command": "powerpages.generateMockDataTemplate",
-        "category": "Power Pages",
-        "title": "Generate Mock Data Template for Server Logic"
-      },
-      {
         "command": "powerPlatform.previewCurrentActiveUsers",
         "title": "Current Active Users",
         "icon": "$(person)",
@@ -805,11 +800,6 @@
           "submenu": "microsoft-powerapps-portals.powerpages-copilot",
           "group": "0_powerpages-copilot",
           "when": "(powerpages.copilot.isVisible) && ((!virtualWorkspace && powerpages.websiteYmlExists && config.powerPlatform.experimental.copilotEnabled) || (isWeb && config.powerPlatform.experimental.enableWebCopilot))"
-        },
-        {
-          "command": "powerpages.debugServerLogic",
-          "group": "z_commands",
-          "when": "resourcePath =~ /server-logics/ && resourceExtname == .js && !virtualWorkspace"
         }
       ],
       "microsoft-powerapps-portals.powerpages-copilot": [

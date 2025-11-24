@@ -40,8 +40,8 @@ export class ServerLogicCodeLensProvider implements vscode.CodeLensProvider {
 
         // Add "Debug" CodeLens
         const debugLens = new vscode.CodeLens(range, {
-            title: '$(debug-alt) Debug',
-            tooltip: 'Debug this server logic file',
+            title: `$(debug-alt) ${vscode.l10n.t('Debug')}`,
+            tooltip: vscode.l10n.t('Debug this server logic file'),
             command: 'powerpages.debugServerLogic',
             arguments: []
         });
@@ -49,8 +49,8 @@ export class ServerLogicCodeLensProvider implements vscode.CodeLensProvider {
 
         // Add "Run" CodeLens
         const runLens = new vscode.CodeLens(range, {
-            title: '$(run) Run',
-            tooltip: 'Run this server logic file without debugging',
+            title: `$(run) ${vscode.l10n.t('Run')}`,
+            tooltip: vscode.l10n.t('Run this server logic file without debugging'),
             command: 'powerpages.runServerLogic',
             arguments: []
         });

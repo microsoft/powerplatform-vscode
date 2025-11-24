@@ -9,6 +9,7 @@ import * as fs from 'fs';
 import { generateServerMockSdk } from './ServerLogicMockSdk';
 import { oneDSLoggerWrapper } from '../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import { ServerLogicCodeLensProvider } from './ServerLogicCodeLensProvider';
+import { desktopTelemetryEventNames } from '../../common/OneDSLoggerTelemetry/client/desktopExtensionTelemetryEventNames';
 
 /**
  * Provided debug configuration template for Server Logic debugging
@@ -16,7 +17,7 @@ import { ServerLogicCodeLensProvider } from './ServerLogicCodeLensProvider';
 export const providedServerLogicDebugConfig: vscode.DebugConfiguration = {
     type: 'node',
     request: 'launch',
-    name: 'Debug Power Pages Server Logic',
+    name: vscode.l10n.t('Debug Power Pages Server Logic'),
     program: '${file}',
     skipFiles: ['<node_internals>/**'],
     console: 'internalConsole'
@@ -39,14 +40,12 @@ export class ServerLogicDebugProvider implements vscode.DebugConfigurationProvid
     /**
      * Resolves the debug configuration before starting the debug session
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async resolveDebugConfiguration(
         folder: vscode.WorkspaceFolder | undefined,
         config: vscode.DebugConfiguration,
-        _?: vscode.CancellationToken
+        _: vscode.CancellationToken
     ): Promise<vscode.DebugConfiguration | undefined> {
 
-        // If no configuration provided, create default
         if (!config.type && !config.request && !config.name) {
             const editor = vscode.window.activeTextEditor;
             if (editor && this.isServerLogicFile(editor.document.uri.fsPath)) {
@@ -56,35 +55,30 @@ export class ServerLogicDebugProvider implements vscode.DebugConfigurationProvid
                 };
             } else {
                 vscode.window.showErrorMessage(
-                    'Cannot debug: Please open a server logic file (.js) from the server-logics folder.'
+                    vscode.l10n.t('Cannot debug: Please open a server logic file (.js) from the server-logics folder.')
                 );
                 return undefined;
             }
         }
 
-        // Ensure we have a workspace folder
         if (!folder) {
-            vscode.window.showErrorMessage('Server Logic debugging requires an open workspace.');
+            vscode.window.showErrorMessage(vscode.l10n.t('Server Logic debugging requires an open workspace.'));
             return undefined;
         }
 
         try {
-            // Generate/update the runtime loader
             const loaderPath = await this.ensureRuntimeLoader(folder);
 
-            // Inject the runtime loader into the debug configuration
             config.runtimeArgs = config.runtimeArgs || [];
             config.runtimeArgs.unshift('--require', loaderPath);
 
-            // Set environment variables if mock data path is provided
             if (config.mockDataPath) {
                 config.env = config.env || {};
                 config.env.MOCK_DATA_PATH = config.mockDataPath;
             }
 
-            // Log telemetry
             oneDSLoggerWrapper.getLogger().traceInfo(
-                'ServerLogicDebugStarted',
+                desktopTelemetryEventNames.SERVER_LOGIC_DEBUG_STARTED,
                 {
                     hasCustomMockData: !!config.mockDataPath
                 }
@@ -93,7 +87,7 @@ export class ServerLogicDebugProvider implements vscode.DebugConfigurationProvid
             return config;
         } catch (error) {
             vscode.window.showErrorMessage(
-                `Failed to initialize Server Logic debugger: ${error instanceof Error ? error.message : error}`
+                vscode.l10n.t('Failed to initialize Server Logic debugger: {0}', error instanceof Error ? error.message : String(error))
             );
             return undefined;
         }
@@ -107,25 +101,49 @@ export class ServerLogicDebugProvider implements vscode.DebugConfigurationProvid
     }
 
     /**
-     * Ensures the runtime loader file exists
+     * Ensures the runtime loader file exists and .gitignore is configured
      */
     private async ensureRuntimeLoader(folder: vscode.WorkspaceFolder): Promise<string> {
         const vscodeDir = path.join(folder.uri.fsPath, '.vscode');
         const loaderPath = path.join(vscodeDir, 'server-logic-runtime-loader.js');
+        const gitignorePath = path.join(vscodeDir, '.gitignore');
 
-        // Create .vscode directory if it doesn't exist
         if (!fs.existsSync(vscodeDir)) {
             fs.mkdirSync(vscodeDir, { recursive: true });
         }
 
-        // Generate the runtime loader only if it doesn't exist
-        // This allows users to edit the file without it being overwritten
         if (!fs.existsSync(loaderPath)) {
             const loaderContent = generateServerMockSdk();
             fs.writeFileSync(loaderPath, loaderContent, 'utf8');
         }
 
+        this.ensureGitignore(gitignorePath);
+
         return loaderPath;
+    }
+
+    /**
+     * Ensures .vscode/.gitignore includes server logic debug files
+     */
+    private ensureGitignore(gitignorePath: string): void {
+        const requiredEntries = ['server-logic-runtime-loader.js'];
+        let gitignoreContent = '';
+
+        if (fs.existsSync(gitignorePath)) {
+            gitignoreContent = fs.readFileSync(gitignorePath, 'utf8');
+        }
+
+        let modified = false;
+        for (const entry of requiredEntries) {
+            if (!gitignoreContent.includes(entry)) {
+                gitignoreContent += `\n${entry}`;
+                modified = true;
+            }
+        }
+
+        if (modified) {
+            fs.writeFileSync(gitignorePath, gitignoreContent.trim() + '\n', 'utf8');
+        }
     }
 }
 
@@ -133,13 +151,11 @@ export class ServerLogicDebugProvider implements vscode.DebugConfigurationProvid
  * Activates the Server Logic debugger
  */
 export function activateServerLogicDebugger(context: vscode.ExtensionContext): void {
-    // Register debug configuration provider
     const provider = new ServerLogicDebugProvider();
     context.subscriptions.push(
         vscode.debug.registerDebugConfigurationProvider('node', provider)
     );
 
-    // Register CodeLens provider for server logic files
     const codeLensProvider = new ServerLogicCodeLensProvider();
     context.subscriptions.push(
         vscode.languages.registerCodeLensProvider(
@@ -148,41 +164,38 @@ export function activateServerLogicDebugger(context: vscode.ExtensionContext): v
         )
     );
 
-    // Register command to debug current server logic file
     context.subscriptions.push(
         vscode.commands.registerCommand(
             'powerpages.debugServerLogic',
             async () => {
                 const editor = vscode.window.activeTextEditor;
                 if (!editor) {
-                    vscode.window.showErrorMessage('No active editor found.');
+                    vscode.window.showErrorMessage(vscode.l10n.t('No active editor found.'));
                     return;
                 }
 
                 const filePath = editor.document.uri.fsPath;
                 if (!filePath.includes('server-logics') || !filePath.endsWith('.js')) {
                     vscode.window.showWarningMessage(
-                        'Please open a server logic file (.js) from the server-logics folder.'
+                        vscode.l10n.t('Please open a server logic file (.js) from the server-logics folder.')
                     );
                     return;
                 }
 
-                // Start debugging with the current file
                 await vscode.debug.startDebugging(
                     vscode.workspace.getWorkspaceFolder(editor.document.uri),
                     {
                         type: 'node',
                         request: 'launch',
-                        name: 'Debug Current Server Logic',
+                        name: vscode.l10n.t('Debug Current Server Logic'),
                         program: filePath,
                         skipFiles: ['<node_internals>/**'],
                         console: 'internalConsole'
                     }
                 );
 
-                // Log telemetry
                 oneDSLoggerWrapper.getLogger().traceInfo(
-                    'ServerLogicDebugCommandExecuted',
+                    desktopTelemetryEventNames.SERVER_LOGIC_DEBUG_COMMAND_EXECUTED,
                     {
                         fileName: path.basename(filePath)
                     }
@@ -191,32 +204,30 @@ export function activateServerLogicDebugger(context: vscode.ExtensionContext): v
         )
     );
 
-    // Register command to run server logic without debugging
     context.subscriptions.push(
         vscode.commands.registerCommand(
             'powerpages.runServerLogic',
             async () => {
                 const editor = vscode.window.activeTextEditor;
                 if (!editor) {
-                    vscode.window.showWarningMessage('No active editor. Please open a server logic file.');
+                    vscode.window.showWarningMessage(vscode.l10n.t('No active editor. Please open a server logic file.'));
                     return;
                 }
 
                 const filePath = editor.document.uri.fsPath;
                 if (!filePath.includes('server-logics') || !filePath.endsWith('.js')) {
                     vscode.window.showWarningMessage(
-                        'Please open a server logic file (.js) from the server-logics folder.'
+                        vscode.l10n.t('Please open a server logic file (.js) from the server-logics folder.')
                     );
                     return;
                 }
 
-                // Run without debugging
                 await vscode.debug.startDebugging(
                     vscode.workspace.getWorkspaceFolder(editor.document.uri),
                     {
                         type: 'node',
                         request: 'launch',
-                        name: 'Run Server Logic',
+                        name: vscode.l10n.t('Run Server Logic'),
                         program: filePath,
                         skipFiles: ['<node_internals>/**'],
                         console: 'internalConsole',
@@ -224,9 +235,8 @@ export function activateServerLogicDebugger(context: vscode.ExtensionContext): v
                     }
                 );
 
-                // Log telemetry
                 oneDSLoggerWrapper.getLogger().traceInfo(
-                    'ServerLogicRunCommandExecuted',
+                    desktopTelemetryEventNames.SERVER_LOGIC_RUN_COMMAND_EXECUTED,
                     {
                         fileName: path.basename(filePath)
                     }
@@ -235,67 +245,6 @@ export function activateServerLogicDebugger(context: vscode.ExtensionContext): v
         )
     );
 
-    // Register command to generate mock data template
-    context.subscriptions.push(
-        vscode.commands.registerCommand(
-            'powerpages.generateMockDataTemplate',
-            async () => {
-                const workspaceFolders = vscode.workspace.workspaceFolders;
-                if (!workspaceFolders || workspaceFolders.length === 0) {
-                    vscode.window.showErrorMessage('No workspace folder is open.');
-                    return;
-                }
-
-                const vscodeDir = path.join(workspaceFolders[0].uri.fsPath, '.vscode');
-                const mockDataPath = path.join(vscodeDir, 'mock-data.json');
-
-                // Create .vscode directory if it doesn't exist
-                if (!fs.existsSync(vscodeDir)) {
-                    fs.mkdirSync(vscodeDir, { recursive: true });
-                }
-
-                // Generate template
-                const template = {
-                    User: {
-                        id: "custom-user-id",
-                        fullname: "John Doe",
-                        email: "john.doe@example.com",
-                        username: "johndoe",
-                        Roles: ["System Administrator"],
-                        IsAuthenticated: true,
-                        contactid: "contact-guid-here"
-                    },
-                    Context: {
-                        Method: "POST",
-                        Url: "https://yoursite.powerappsportals.com/api/custom"
-                    },
-                    QueryParameters: {
-                        id: "your-custom-id",
-                        action: "process"
-                    },
-                    Headers: {
-                        "Authorization": "Bearer your-token",
-                        "Content-Type": "application/json"
-                    }
-                };
-
-                fs.writeFileSync(mockDataPath, JSON.stringify(template, null, 4), 'utf8');
-
-                // Open the file
-                const document = await vscode.workspace.openTextDocument(mockDataPath);
-                await vscode.window.showTextDocument(document);
-
-                vscode.window.showInformationMessage(
-                    'Mock data template created at .vscode/mock-data.json'
-                );
-
-                // Log telemetry
-                oneDSLoggerWrapper.getLogger().traceInfo('ServerLogicMockDataTemplateGenerated');
-            }
-        )
-    );
-
-    // Show welcome notification if server-logics folder exists
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (workspaceFolders && workspaceFolders.length > 0) {
         const serverLogicsPath = path.join(workspaceFolders[0].uri.fsPath, 'server-logics');
@@ -316,19 +265,23 @@ function showServerLogicWelcomeNotification(): void {
         return;
     }
 
+    const debugButton = vscode.l10n.t('Debug Current File');
+    const learnMoreButton = vscode.l10n.t('Learn More');
+    const dontShowButton = vscode.l10n.t("Don't Show Again");
+
     vscode.window.showInformationMessage(
-        '🎯 Power Pages Server Logic detected! You can now debug your server logic files with breakpoints and IntelliSense.',
-        'Debug Current File',
-        'Learn More',
-        "Don't Show Again"
+        vscode.l10n.t('🎯 Power Pages Server Logic detected! You can now debug your server logic files with breakpoints and IntelliSense.'),
+        debugButton,
+        learnMoreButton,
+        dontShowButton
     ).then(selection => {
-        if (selection === 'Debug Current File') {
+        if (selection === debugButton) {
             vscode.commands.executeCommand('powerpages.debugServerLogic');
-        } else if (selection === 'Learn More') {
+        } else if (selection === learnMoreButton) {
             vscode.env.openExternal(
                 vscode.Uri.parse('https://learn.microsoft.com/power-pages/configure/server-side-scripting')
             );
-        } else if (selection === "Don't Show Again") {
+        } else if (selection === dontShowButton) {
             vscode.workspace.getConfiguration().update(
                 dontShowAgainKey,
                 true,
