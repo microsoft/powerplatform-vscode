@@ -14,11 +14,23 @@ import { getRequestURL } from "./urlBuilderUtil";
 export function getFolderSubUris(): string[] {
     const subUris: string[] = [];
 
+    // Entities that should only have folders created when they contain data
+    // These folders will be created lazily when files are fetched
+    const conditionalFolderEntities = [
+        schemaEntityName.BLOGS,
+        schemaEntityName.IDEAS,
+        schemaEntityName.IDEAFORUMS
+    ];
+
     for (const entry of Object.entries(MultiFileSupportedEntityName)) {
         const entityDetails = WebExtensionContext.schemaEntitiesMap.get(entry[1]);
 
         // Skip if entity is not in schema (e.g., blogs when feature flag is off)
         if (!entityDetails) {
+            continue;
+        }
+
+        if (conditionalFolderEntities.includes(entry[1] as unknown as schemaEntityName)) {
             continue;
         }
 
