@@ -749,12 +749,13 @@ async function createVirtualFile(
     const fileUriParsed = vscode.Uri.parse(fileUri);
 
     // Ensure parent directory exists before writing file for conditional entities
-    // This enables lazy folder creation for blogs, ideas, and ideaforums
+    // This enables lazy folder creation for blogs, ideas, ideaforums, and forum announcements
     const { enableBlogSupport } = ECSFeaturesClient.getConfig(EnableBlogSupport);
     const conditionalFolderEntities = [
         schemaEntityName.BLOGS,
         schemaEntityName.IDEAS,
-        schemaEntityName.IDEAFORUMS
+        schemaEntityName.IDEAFORUMS,
+        schemaEntityName.FORUMANNOUNCEMENTS
     ];
 
     if (enableBlogSupport && conditionalFolderEntities.includes(entityName as schemaEntityName)) {

@@ -19,7 +19,8 @@ export function getFolderSubUris(): string[] {
     const conditionalFolderEntities = [
         schemaEntityName.BLOGS,
         schemaEntityName.IDEAS,
-        schemaEntityName.IDEAFORUMS
+        schemaEntityName.IDEAFORUMS,
+        schemaEntityName.FORUMANNOUNCEMENTS
     ];
 
     for (const entry of Object.entries(MultiFileSupportedEntityName)) {
