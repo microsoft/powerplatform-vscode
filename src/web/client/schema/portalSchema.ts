@@ -273,8 +273,24 @@ export const portal_schema_V1 = {
                     _attributesExtension: new Map([["adx_copy", "html"]]),
                 },
                 {
-                    relationships: "",
-                    _vscodeentityname: "ideaforums",
+                    relationships: "",                    _vscodeentityname: "blogposts",
+                    _dataverseenityname: "adx_blogposts",
+                    _displayname: "Blog Post",
+                    _etc: "10056",
+                    _primaryidfield: "adx_blogpostid",
+                    _primarynamefield: "adx_name",
+                    _disableplugins: "true",
+                    _foldername: "blog-posts",
+                    _exporttype: "SingleFolder",
+                    _fetchQueryParameters:
+                        "?$filter=adx_blogpostid eq {entityId}&$select=adx_name,adx_copy",
+                    _multiFileFetchQueryParameters:
+                        "?$filter=_adx_blogid_value ne null &$select=adx_name,adx_copy,adx_blogpostid&$count=true",
+                    _attributes: "adx_copy",
+                    _attributesExtension: new Map([["adx_copy", "html"]]),
+                },
+                {
+                    relationships: "",                    _vscodeentityname: "ideaforums",
                     _dataverseenityname: "adx_ideaforums",
                     _displayname: "Idea Forum",
                     _etc: "10063",
@@ -547,6 +563,24 @@ export const portal_schema_V2 = {
                         "?$filter=_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_summary,adx_blogid&$count=true",
                     _attributes: "adx_summary",
                     _attributesExtension: new Map([["adx_summary", "html"]]),
+                },
+                {
+                    relationships: "",
+                    _vscodeentityname: "blogposts",
+                    _dataverseenityname: "adx_blogposts",
+                    _displayname: "Blog Post",
+                    _etc: "10056",
+                    _primaryidfield: "adx_blogpostid",
+                    _primarynamefield: "adx_name",
+                    _disableplugins: "true",
+                    _foldername: "blog-posts",
+                    _exporttype: "SingleFolder",
+                    _fetchQueryParameters:
+                        "?$filter=adx_blogpostid eq {entityId}&$select=adx_name,adx_copy",
+                    _multiFileFetchQueryParameters:
+                        "?$filter=_adx_blogid_value ne null &$select=adx_name,adx_copy,adx_blogpostid&$count=true",
+                    _attributes: "adx_copy",
+                    _attributesExtension: new Map([["adx_copy", "html"]]),
                 },
                 {
                     relationships: "",

@@ -53,8 +53,11 @@ export enum schemaEntityName {
     ADVANCEDFORMS = "advancedforms",
     ADVANCEDFORMSTEPS = "advancedformsteps",
     BLOGS = "blogs",
+    BLOGPOSTS = "blogposts",
     IDEAS = "ideas",
     IDEAFORUMS = "ideaforums",
+    FORUMANNOUNCEMENTS = "forumannouncements",
+    FORUMPOSTS = "forumposts",
 }
 
 export enum MultiFileSupportedEntityName {
@@ -67,8 +70,11 @@ export enum MultiFileSupportedEntityName {
     BASICFORMS = "basicforms",
     ADVANCEDFORMS = "advancedforms",
     BLOGS = "blogs",
+    BLOGPOSTS = "blogposts",
     IDEAS = "ideas",
     IDEAFORUMS = "ideaforums",
+    FORUMANNOUNCEMENTS = "forumannouncements",
+    FORUMPOSTS = "forumposts",
 }
 
 // This decides the folder hierarchy a file being displayed in File explorer will follow.
@@ -105,3 +111,14 @@ export const WEBPAGE_FOLDER_CONSTANTS = {
 export function getRootWebPageIdForTelemetry(rootWebPageId: string | undefined | null): string {
     return rootWebPageId || WEBPAGE_FOLDER_CONSTANTS.NULL_PLACEHOLDER;
 }
+
+// Entities that should only have folders created when they contain data
+// These folders will be created lazily when files are fetched
+export const conditionalFolderEntities = [
+    schemaEntityName.BLOGS,
+    schemaEntityName.BLOGPOSTS,
+    schemaEntityName.IDEAS,
+    schemaEntityName.IDEAFORUMS,
+    schemaEntityName.FORUMANNOUNCEMENTS,
+    schemaEntityName.FORUMPOSTS,
+];

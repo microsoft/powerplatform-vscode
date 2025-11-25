@@ -65,8 +65,11 @@ export function isExtensionNeededInFileName(entity: string) {
         || entity === schemaEntityName.CONTENTSNIPPETS
         || entity === schemaEntityName.SERVERLOGICS
         || entity === schemaEntityName.BLOGS
+        || entity === schemaEntityName.BLOGPOSTS
         || entity === schemaEntityName.IDEAS
-        || entity === schemaEntityName.IDEAFORUMS;
+        || entity === schemaEntityName.IDEAFORUMS
+        || entity === schemaEntityName.FORUMANNOUNCEMENTS
+        || entity === schemaEntityName.FORUMPOSTS;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
