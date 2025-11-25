@@ -64,7 +64,8 @@ export function isExtensionNeededInFileName(entity: string) {
         || entity === schemaEntityName.WEBPAGES
         || entity === schemaEntityName.CONTENTSNIPPETS
         || entity === schemaEntityName.SERVERLOGICS
-        || entity === schemaEntityName.BLOGS;
+        || entity === schemaEntityName.BLOGS
+        || entity === schemaEntityName.IDEAS;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
