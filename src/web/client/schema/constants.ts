@@ -53,6 +53,7 @@ export enum schemaEntityName {
     ADVANCEDFORMS = "advancedforms",
     ADVANCEDFORMSTEPS = "advancedformsteps",
     BLOGS = "blogs",
+    BLOGPOSTS = "blogposts",
     IDEAS = "ideas",
     IDEAFORUMS = "ideaforums",
     FORUMANNOUNCEMENTS = "forumannouncements",
@@ -69,6 +70,7 @@ export enum MultiFileSupportedEntityName {
     BASICFORMS = "basicforms",
     ADVANCEDFORMS = "advancedforms",
     BLOGS = "blogs",
+    BLOGPOSTS = "blogposts",
     IDEAS = "ideas",
     IDEAFORUMS = "ideaforums",
     FORUMANNOUNCEMENTS = "forumannouncements",
@@ -114,8 +116,9 @@ export function getRootWebPageIdForTelemetry(rootWebPageId: string | undefined |
 // These folders will be created lazily when files are fetched
 export const conditionalFolderEntities = [
     schemaEntityName.BLOGS,
+    schemaEntityName.BLOGPOSTS,
     schemaEntityName.IDEAS,
     schemaEntityName.IDEAFORUMS,
     schemaEntityName.FORUMANNOUNCEMENTS,
-    schemaEntityName.FORUMPOSTS
+    schemaEntityName.FORUMPOSTS,
 ];
