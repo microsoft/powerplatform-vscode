@@ -29,7 +29,7 @@ import {
 } from "../utilities/schemaHelperUtil";
 import WebExtensionContext from "../WebExtensionContext";
 import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
-import { EntityMetadataKeyCore, SchemaEntityMetadata, folderExportType, schemaEntityKey, schemaEntityName, WEBPAGE_FOLDER_CONSTANTS } from "../schema/constants";
+import { conditionalFolderEntities, EntityMetadataKeyCore, SchemaEntityMetadata, folderExportType, schemaEntityKey, schemaEntityName, WEBPAGE_FOLDER_CONSTANTS } from "../schema/constants";
 import { getEntityNameForExpandedEntityContent, getRequestUrlForEntities } from "../utilities/folderHelperUtility";
 import { IAttributePath, IFileInfo } from "../common/interfaces";
 import { portal_schema_V2 } from "../schema/portalSchema";
@@ -748,16 +748,9 @@ async function createVirtualFile(
 
     const fileUriParsed = vscode.Uri.parse(fileUri);
 
-    // Ensure parent directory exists before writing file for conditional entities
-    // This enables lazy folder creation for blogs, ideas, ideaforums, and forum announcements
     const { enableBlogSupport } = ECSFeaturesClient.getConfig(EnableBlogSupport);
-    const conditionalFolderEntities = [
-        schemaEntityName.BLOGS,
-        schemaEntityName.IDEAS,
-        schemaEntityName.IDEAFORUMS,
-        schemaEntityName.FORUMANNOUNCEMENTS
-    ];
-
+    // Ensure parent directory exists before writing file for conditional entities
+    // This enables lazy folder creation for blogs, ideas, ideaforums, forum announcements, and forum posts
     if (enableBlogSupport && conditionalFolderEntities.includes(entityName as schemaEntityName)) {
         const parentDirPath = fileUriParsed.path.substring(0, fileUriParsed.path.lastIndexOf('/'));
         const parentDirUri = fileUriParsed.with({ path: parentDirPath });
