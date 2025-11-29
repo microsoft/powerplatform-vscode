@@ -98,7 +98,7 @@ export const {
     fallback: {
         enableCodeQlScan: false,
     }
-})
+});
 
 export const {
     feature: EnableOpenInDesktop
@@ -119,4 +119,14 @@ export const {
         enableDuplicateFileHandling: true,
         disallowedDuplicateFileHandlingOrgs: "",
     }
+});
+
+export const {
+    feature: EnableMetadataDiff
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable Metadata Diff comparison in VS Code',
+    fallback: {
+        enableMetadataDiff: false,
+    },
 });
