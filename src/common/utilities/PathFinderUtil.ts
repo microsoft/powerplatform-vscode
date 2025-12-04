@@ -6,12 +6,34 @@
 import {
     WorkspaceFolder
 } from 'vscode-languageserver/node';
-import { URL } from 'url';
+import { URL, fileURLToPath, pathToFileURL } from 'url';
 import * as path from 'path';
 import * as fs from 'fs';
 import { glob } from 'glob';
 
 const portalConfigFolderName = '.portalconfig';
+
+/**
+ * Converts a URI string or file path to a file system path.
+ * Handles both file:// URIs and plain paths.
+ */
+function toFileSystemPath(uriOrPath: string): string {
+    if (uriOrPath.startsWith('file://')) {
+        return fileURLToPath(uriOrPath);
+    }
+    return uriOrPath;
+}
+
+/**
+ * Converts a file system path or URI to a URL object.
+ * Handles both file:// URIs and plain paths.
+ */
+function toFileURL(uriOrPath: string): URL {
+    if (uriOrPath.startsWith('file://')) {
+        return new URL(uriOrPath);
+    }
+    return pathToFileURL(uriOrPath);
+}
 
 export function workspaceContainsPortalConfigFolder(workspaceRootFolders: WorkspaceFolder[] | null): boolean {
     return workspaceRootFolders?.some(workspaceRootFolder => {
@@ -34,37 +56,37 @@ export function getPortalConfigFolderUrl(workspaceRootFolders: WorkspaceFolder[]
 */
 export function searchPortalConfigFolder(rootFolder: string | null, file: string): URL | null {
     if (!rootFolder) return null; // if a file is directly opened in VSCode
-    if (!file.startsWith(rootFolder)) return null; // if 'file' is not a node in the tree with root as 'rootFolder'
-    if (file === rootFolder) return null; // if we have already traversed all the nodes in the tree under 'rootFolder'
-    const portalConfigIsSibling = isSibling(file);
+
+    // Normalize both paths to file system paths for consistent comparison
+    const normalizedRootFolder = toFileSystemPath(rootFolder);
+    const normalizedFile = toFileSystemPath(file);
+
+    if (!normalizedFile.startsWith(normalizedRootFolder)) return null; // if 'file' is not a node in the tree with root as 'rootFolder'
+    if (normalizedFile === normalizedRootFolder) return null; // if we have already traversed all the nodes in the tree under 'rootFolder'
+    const portalConfigIsSibling = isSibling(normalizedFile);
     if (portalConfigIsSibling) {
         return portalConfigIsSibling;
     }
-    return searchPortalConfigFolder(rootFolder, getParentDirectory(file));
-}
-
-/**
- * returns parent directory/folder of a file
-*/
-function getParentDirectory(file: string): string {
-    return path.dirname(file);
+    const parentDir = path.dirname(normalizedFile);
+    // Prevent infinite recursion at filesystem root
+    if (parentDir === normalizedFile) return null;
+    return searchPortalConfigFolder(normalizedRootFolder, parentDir);
 }
 
 /**
  * Checks if the .portalconfig folder lies at the same level as file.
  * Returns path of .portalconfig folder if above is true else returns null.
+ * @param file - A normalized file system path (not a URI)
 */
 function isSibling(file: string): URL | null {
-    const parentDirectory = getParentDirectory(file);
+    const parentDirectory = path.dirname(file);
     if (parentDirectory) {
-        const parentDirectoryUrl = new URL(parentDirectory);
-        const parentDirectoryContents: string[] = fs.readdirSync(parentDirectoryUrl);
+        const parentDirectoryContents: string[] = fs.readdirSync(parentDirectory);
         for (let i = 0; i < parentDirectoryContents.length; i++) {
             const fileName = parentDirectoryContents[i];
-            const filePath = path.join(parentDirectoryUrl.href, fileName);
-            const fileUrl = new URL(filePath);
             if (fileName === portalConfigFolderName) {
-                return fileUrl;
+                const filePath = path.join(parentDirectory, fileName);
+                return toFileURL(filePath);
             }
         }
     }
