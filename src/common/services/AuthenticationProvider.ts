@@ -391,7 +391,11 @@ export async function authenticateUserInVSCode(isSilent = false): Promise<void> 
     } else {
         const isAuthenticated = await authenticateUserInternal(true);
         if (!isAuthenticated) {
-            await authenticateUserInternal(false);
+            const secondAttempt = await authenticateUserInternal(false);
+            if (!secondAttempt) {
+                // If both attempts failed and it's not a silent call, inform the user
+                throw new Error(vscode.l10n.t("Authentication failed. Please try again or check your internet connection."));
+            }
         }
     }
 }
