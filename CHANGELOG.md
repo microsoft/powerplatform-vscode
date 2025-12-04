@@ -1,5 +1,9 @@
 # Change Log - Power Platform Extension
 
+## 2.0.110
+- Bug Fix
+  - Fixed autocomplete issue for page-templates (Desktop)
+
 ## 2.0.109
 - Bug Fix
   - Fixed VSCode Web launch issue from PMA/PPMA
