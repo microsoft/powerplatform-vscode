@@ -6,7 +6,7 @@
 import * as assert from 'assert';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { CodeQLAction } from '../../../../../../power-pages/actions-hub/actions/code-ql/CodeQLAction';
+import { CodeQLAction } from '../../../../../../power-pages/actions-hub/handlers/code-ql/CodeQLAction';
 import * as TelemetryHelper from '../../../../../../power-pages/actions-hub/TelemetryHelper';
 
 describe('CodeQLAction', () => {

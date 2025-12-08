@@ -30,7 +30,7 @@ import path from 'path';
 import { SiteVisibility } from '../../../../power-pages/actions-hub/models/SiteVisibility';
 import * as TelemetryHelper from '../../../../power-pages/actions-hub/TelemetryHelper';
 import { CODEQL_EXTENSION_ID } from '../../../../../common/constants';
-import { CodeQLAction } from '../../../../power-pages/actions-hub/actions/codeQLAction';
+import { CodeQLAction } from '../../../../power-pages/actions-hub/handlers/codeQLAction';
 
 describe('ActionsHubCommandHandlers', () => {
     let sandbox: sinon.SinonSandbox;
