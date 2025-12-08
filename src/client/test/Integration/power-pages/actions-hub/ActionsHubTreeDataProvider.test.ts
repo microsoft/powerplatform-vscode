@@ -218,6 +218,18 @@ describe("ActionsHubTreeDataProvider", () => {
             expect(mockCommandHandler.calledOnce).to.be.true;
         });
 
+        it("should register compareWithLocal command", async () => {
+            const mockCommandHandler = sinon.stub(CommandHandlers, 'compareWithLocal');
+            mockCommandHandler.resolves();
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+
+            expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.compareWithLocal")).to.be.true;
+
+            await registerCommandStub.getCall(13).args[1]();
+            expect(mockCommandHandler.calledOnce).to.be.true;
+        });
+
         it("should register downloadSite command", async () => {
             const mockCommandHandler = sinon.stub(CommandHandlers, 'downloadSite');
             mockCommandHandler.resolves();
@@ -226,7 +238,7 @@ describe("ActionsHubTreeDataProvider", () => {
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite")).to.be.true;
 
-            await registerCommandStub.getCall(13).args[1]();
+            await registerCommandStub.getCall(14).args[1]();
             expect(mockCommandHandler.calledOnce).to.be.true;
         });
 
@@ -238,7 +250,7 @@ describe("ActionsHubTreeDataProvider", () => {
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio")).to.be.true;
 
-            await registerCommandStub.getCall(14).args[1]();
+            await registerCommandStub.getCall(15).args[1]();
             expect(mockCommandHandler.calledOnce).to.be.true;
         });
 
