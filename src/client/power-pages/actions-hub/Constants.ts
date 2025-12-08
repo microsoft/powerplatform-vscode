@@ -254,7 +254,8 @@ export const Constants = {
         ACTIONS_HUB_ACCOUNT_CHECK_FAILED: "ActionsHubAccountCheckFailed",
         ACTIONS_HUB_ACCOUNT_MISMATCH_UI_SHOWN: "ActionsHubAccountMismatchUIShown",
         ACTIONS_HUB_ACCOUNT_MATCH_RESOLVED: "ActionsHubAccountMatchResolved",
-        ACTIONS_HUB_LOGIN_PROMPT_CLICKED: "ActionsHubLoginPromptClicked"
+        ACTIONS_HUB_LOGIN_PROMPT_CLICKED: "ActionsHubLoginPromptClicked",
+        ACTIONS_HUB_REACTIVATE_SITE_CALLED: "ActionsHubReactivateSiteCalled"
     },
     FeatureNames: {
         REFRESH_ENVIRONMENT: "RefreshEnvironment"

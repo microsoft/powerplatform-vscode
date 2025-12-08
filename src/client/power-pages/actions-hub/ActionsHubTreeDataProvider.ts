@@ -12,7 +12,14 @@ import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLo
 import { EnvironmentGroupTreeItem } from "./tree-items/EnvironmentGroupTreeItem";
 import { IEnvironmentInfo } from "./models/IEnvironmentInfo";
 import { PacTerminal } from "../../lib/PacTerminal";
-import { fetchWebsites, openActiveSitesInStudio, openInactiveSitesInStudio, previewSite, createNewAuthProfile, refreshEnvironment, showEnvironmentDetails, switchEnvironment, revealInOS, openSiteManagement, uploadSite, showSiteDetails, downloadSite, openInStudio, reactivateSite, runCodeQLScreening, loginToMatch } from "./ActionsHubCommandHandlers";
+import { runCodeQLScreening } from "./actions/code-ql/RunCodeQlScreeningAction";
+import { revealInOS } from "./actions/RevealInOSAction";
+import { createNewAuthProfile } from "./actions/CreateNewAuthProfileAction";
+import { previewSite } from "./actions/PreviewSiteAction";
+import { openActiveSitesInStudio, openInactiveSitesInStudio, openSiteInStudio } from "./actions/OpenSiteInStudioAction";
+import { switchEnvironment } from "./actions/SwitchEnvironmentAction";
+import { showEnvironmentDetails } from "./actions/ShowEnvironmentDetailsAction";
+import { refreshEnvironment } from "./actions/RefreshEnvironmentAction";
 import PacContext from "../../pac/PacContext";
 import CurrentSiteContext from "./CurrentSiteContext";
 import { IOtherSiteInfo, IWebsiteDetails } from "../../../common/services/Interfaces";
@@ -21,6 +28,14 @@ import { getBaseEventInfo } from "./TelemetryHelper";
 import { PROVIDER_ID } from "../../../common/services/Constants";
 import { getOIDFromToken } from "../../../common/services/AuthenticationProvider";
 import ArtemisContext from "../../ArtemisContext";
+import { ActionsHub } from "./ActionsHub";
+import { fetchWebsites } from "./ActionsHubUtils";
+import { openSiteManagement } from "./actions/OpenSiteManagementAction";
+import { reactivateSite } from "./actions/ReactivateSiteAction";
+import { uploadSite } from "./actions/UploadSiteAction";
+import { showSiteDetails } from "./actions/ShowSiteDetailsAction";
+import { downloadSite } from "./actions/DownloadSiteAction";
+import { loginToMatch } from "./actions/LoginToMatchAction";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -87,7 +102,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
     private async checkAuthInfo(): Promise<boolean> {
         const authInfo = PacContext.AuthInfo;
-        const session  = await vscode.authentication.getSession(PROVIDER_ID, [], { silent: true });
+        const session = await vscode.authentication.getSession(PROVIDER_ID, [], { silent: true });
 
         if (session && session.accessToken && authInfo && authInfo.OrganizationFriendlyName) {
             return true;
@@ -175,7 +190,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
         try {
             const authInfo = PacContext.AuthInfo;
-            if (await this.checkAuthInfo() === true ) {
+            if (await this.checkAuthInfo() === true) {
                 // Check if accounts match before loading websites
                 const accountsMatch = await this.checkAccountsMatch();
                 if (!accountsMatch) {
@@ -195,7 +210,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                     currentEnvironmentName: authInfo!.OrganizationFriendlyName //Already checked in checkAuthInfo
                 };
 
-                if(!this._otherSites.length){
+                if (!this._otherSites.length) {
                     return [new EnvironmentGroupTreeItem(currentEnvInfo, this._context, this._activeSites, this._inactiveSites)];
                 }
                 return [
@@ -248,7 +263,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite", downloadSite),
 
-            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio", openInStudio),
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio", openSiteInStudio),
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite", reactivateSite),
 
