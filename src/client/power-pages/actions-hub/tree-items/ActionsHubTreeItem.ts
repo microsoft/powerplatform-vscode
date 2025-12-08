@@ -9,7 +9,7 @@ export abstract class ActionsHubTreeItem extends vscode.TreeItem {
     constructor(
         label: string | null | undefined,
         public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-        public readonly iconPath: string | vscode.Uri,
+        public readonly iconPath: string | vscode.IconPath,
         public readonly contextValue: string,
         public readonly description: string = "",
     ) {
