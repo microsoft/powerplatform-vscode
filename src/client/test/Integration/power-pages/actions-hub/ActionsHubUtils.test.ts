@@ -6,12 +6,14 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { fetchWebsites } from '../../../../power-pages/actions-hub/ActionsHubUtils';
+import { fetchWebsites, findOtherSites, createKnownSiteIdsSet } from '../../../../power-pages/actions-hub/ActionsHubUtils';
+import { Constants } from '../../../../power-pages/actions-hub/Constants';
 import { WebsiteDataModel, ServiceEndpointCategory } from '../../../../../common/services/Constants';
 import { IWebsiteDetails, IArtemisAPIOrgResponse } from '../../../../../common/services/Interfaces';
 import PacContext from '../../../../pac/PacContext';
 import ArtemisContext from '../../../../ArtemisContext';
 import * as WebsiteUtils from '../../../../../common/utilities/WebsiteUtil';
+import * as WorkspaceInfoFinderUtil from '../../../../../common/utilities/WorkspaceInfoFinderUtil';
 import * as TelemetryHelper from '../../../../power-pages/actions-hub/TelemetryHelper';
 
 describe('ActionsHubUtils', () => {
@@ -126,6 +128,135 @@ describe('ActionsHubUtils', () => {
 
             expect(response.activeSites).to.deep.equal([...activeSites.map(site => ({ ...site, isCodeSite: false, siteManagementUrl: "https://portalmanagement.com", createdOn: "2025-03-20", creator: "Test Creator" }))]);
             expect(response.inactiveSites).to.deep.equal(inactiveSites);
+        });
+    });
+
+    describe('findOtherSites', () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let mockFs: any;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let mockYaml: any;
+        let mockWorkspaceFolders: sinon.SinonStub;
+        let mockGetWebsiteRecordId: sinon.SinonStub;
+
+        beforeEach(() => {
+            // Create mock fs module with stubbed methods
+            mockFs = {
+                readdirSync: sandbox.stub(),
+                existsSync: sandbox.stub(),
+                readFileSync: sandbox.stub()
+            };
+
+            // Create mock yaml module with stubbed methods
+            mockYaml = {
+                load: sandbox.stub()
+            };
+
+            // Stub workspace folders
+            mockWorkspaceFolders = sandbox.stub(vscode.workspace, 'workspaceFolders').get(() => [{
+                uri: { fsPath: '/test/current/workspace' },
+                name: 'workspace',
+                index: 0
+            }]);
+
+            // Stub the getWebsiteRecordId function
+            mockGetWebsiteRecordId = sandbox.stub(WorkspaceInfoFinderUtil, 'getWebsiteRecordId');
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+
+        it('should return empty array when no workspace folders exist', () => {
+            mockWorkspaceFolders.get(() => undefined);
+
+            const result = findOtherSites(new Set(), mockFs, mockYaml);
+
+            expect(result).to.be.an('array').that.is.empty;
+        });
+
+        it('should handle filesystem errors', () => {
+            const knownSiteIds = new Set<string>();
+
+            mockFs.readdirSync.throws(new Error('Filesystem error'));
+
+            const result = findOtherSites(knownSiteIds, mockFs, mockYaml);
+
+            expect(result).to.be.an('array').that.is.empty;
+            expect(traceErrorStub.calledOnce).to.be.true;
+            expect(traceErrorStub.firstCall.args[0]).to.equal(Constants.EventNames.ACTIONS_HUB_FIND_OTHER_SITES_FAILED);
+        });
+
+        it('should skip sites with missing website id', () => {
+            const knownSiteIds = new Set<string>();
+
+            mockFs.readdirSync.returns([
+                { name: 'missing-id-site', isDirectory: () => true }
+            ]);
+
+            mockFs.existsSync.returns(true);
+            mockFs.readFileSync.returns('yaml content');
+            mockYaml.load.returns({
+                adx_name: 'Site With Missing ID'
+                // No adx_websiteid
+            });
+
+            // Setup the stub for getWebsiteRecordId to return null
+            mockGetWebsiteRecordId.withArgs('/test/current/workspace/missing-id-site').returns(null);
+
+            const result = findOtherSites(knownSiteIds, mockFs, mockYaml);
+
+            expect(result).to.be.an('array').that.is.empty;
+        });
+    });
+
+    describe('createKnownSiteIdsSet', () => {
+        it('should create a set with active and inactive site IDs', () => {
+            const activeSites = [
+                { websiteRecordId: 'active-1', name: 'Active Site 1' },
+                { websiteRecordId: 'active-2', name: 'Active Site 2' }
+            ] as IWebsiteDetails[];
+
+            const inactiveSites = [
+                { websiteRecordId: 'inactive-1', name: 'Inactive Site 1' },
+                { websiteRecordId: 'inactive-2', name: 'Inactive Site 2' }
+            ] as IWebsiteDetails[];
+
+            const result = createKnownSiteIdsSet(activeSites, inactiveSites);
+
+            expect(result.size).to.equal(4);
+            expect(result.has('active-1')).to.be.true;
+            expect(result.has('active-2')).to.be.true;
+            expect(result.has('inactive-1')).to.be.true;
+            expect(result.has('inactive-2')).to.be.true;
+        });
+
+        it('should handle case sensitivity by converting to lowercase', () => {
+            const activeSites = [
+                { websiteRecordId: 'ACTIVE-1', name: 'Active Site 1' }
+            ] as IWebsiteDetails[];
+
+            const result = createKnownSiteIdsSet(activeSites, undefined);
+
+            expect(result.size).to.equal(1);
+            expect(result.has('active-1')).to.be.true;
+        });
+
+        it('should handle undefined inputs', () => {
+            const result = createKnownSiteIdsSet(undefined, undefined);
+            expect(result.size).to.equal(0);
+        });
+
+        it('should skip sites with missing websiteRecordId', () => {
+            const activeSites = [
+                { websiteRecordId: 'active-1', name: 'Active Site 1' },
+                { name: 'Site Without ID' } as IWebsiteDetails
+            ] as IWebsiteDetails[];
+
+            const result = createKnownSiteIdsSet(activeSites, undefined);
+
+            expect(result.size).to.equal(1);
+            expect(result.has('active-1')).to.be.true;
         });
     });
 });

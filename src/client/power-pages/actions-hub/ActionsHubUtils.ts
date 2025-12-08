@@ -18,7 +18,7 @@ import { ServiceEndpointCategory } from "../../../common/services/Constants";
 import { getWebsiteRecordId, getWebsiteYamlPath, hasWebsiteYaml } from "../../../common/utilities/WorkspaceInfoFinderUtil";
 import { POWERPAGES_SITE_FOLDER, UTF8_ENCODING } from "../../../common/constants";
 
-function createKnownSiteIdsSet(
+export function createKnownSiteIdsSet(
     activeSites: IWebsiteDetails[] | undefined,
     inactiveSites: IWebsiteDetails[] | undefined
 ): Set<string> {
@@ -44,7 +44,7 @@ function createKnownSiteIdsSet(
  * @param knownSiteIds Set of site IDs that should be excluded from results
  * @returns Array of site information objects for sites found in the parent folder
  */
-function findOtherSites(knownSiteIds: Set<string>, fsModule = fs, yamlModule = yaml): IOtherSiteInfo[] {
+export function findOtherSites(knownSiteIds: Set<string>, fsModule = fs, yamlModule = yaml): IOtherSiteInfo[] {
     traceInfo(Constants.EventNames.ACTIONS_HUB_FIND_OTHER_SITES_CALLED, { methodName: findOtherSites.name });
 
     // Get the workspace folders
