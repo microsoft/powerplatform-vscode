@@ -37,6 +37,11 @@ import { downloadSite } from "./handlers/DownloadSiteHandler";
 import { loginToMatch } from "./handlers/LoginToMatchHandler";
 import { ActionsHub } from "./ActionsHub";
 import { compareWithLocal } from "./handlers/metadata-diff/CompareWithLocalHandler";
+import MetadataDiffContext from "./MetadataDiffContext";
+import { MetadataDiffGroupTreeItem } from "./tree-items/metadata-diff/MetadataDiffGroupTreeItem";
+import { openMetadataDiffFile } from "./handlers/metadata-diff/OpenMetadataDiffFileHandler";
+import { openAllMetadataDiffs } from "./handlers/metadata-diff/OpenAllMetadataDiffsHandler";
+import { clearMetadataDiff } from "./handlers/metadata-diff/ClearMetadataDiffHandler";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -75,7 +80,10 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                 });
                 this._loadWebsites = true;
                 this.refresh();
-            })
+            }),
+
+            // Subscribe to metadata diff changes to refresh tree when diff results are updated
+            MetadataDiffContext.onChanged(() => this.refresh())
         );
     }
 
@@ -211,13 +219,24 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                     currentEnvironmentName: authInfo!.OrganizationFriendlyName //Already checked in checkAuthInfo
                 };
 
-                if (!this._otherSites.length) {
-                    return [new EnvironmentGroupTreeItem(currentEnvInfo, this._context, this._activeSites, this._inactiveSites)];
-                }
-                return [
-                    new EnvironmentGroupTreeItem(currentEnvInfo, this._context, this._activeSites, this._inactiveSites),
-                    new OtherSitesGroupTreeItem(this._otherSites)
+                const children: ActionsHubTreeItem[] = [
+                    new EnvironmentGroupTreeItem(currentEnvInfo, this._context, this._activeSites, this._inactiveSites)
                 ];
+
+                // Add other sites group if there are other sites
+                if (this._otherSites.length) {
+                    children.push(new OtherSitesGroupTreeItem(this._otherSites));
+                }
+
+                // Add metadata diff group if there are comparison results (only when feature is enabled)
+                if (ActionsHub.isMetadataDiffEnabled() && MetadataDiffContext.isActive) {
+                    children.push(new MetadataDiffGroupTreeItem(
+                        MetadataDiffContext.comparisonResults,
+                        MetadataDiffContext.siteName
+                    ));
+                }
+
+                return children;
             } else {
                 // Login experience scenario
                 return [];
@@ -281,7 +300,10 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
         if (ActionsHub.isMetadataDiffEnabled()) {
             commands.push(
-                vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.compareWithLocal", compareWithLocal(this._pacTerminal, this._context))
+                vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.compareWithLocal", compareWithLocal(this._pacTerminal, this._context)),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_OPEN_FILE, openMetadataDiffFile),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_OPEN_ALL, openAllMetadataDiffs),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_CLEAR, clearMetadataDiff)
             );
         }
 

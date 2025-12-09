@@ -15,6 +15,7 @@ import { POWERPAGES_SITE_FOLDER } from "../../../../../common/constants";
 import { showProgressWithNotification } from "../../../../../common/utilities/Utils";
 import { IFileComparisonResult } from "../../models/IFileComparisonResult";
 import { getAllFiles } from "../../ActionsHubUtils";
+import MetadataDiffContext from "../../MetadataDiffContext";
 
 /**
  * Compares files between downloaded site and local workspace
@@ -69,45 +70,6 @@ function compareFiles(downloadedSitePath: string, localSitePath: string): IFileC
     }
 
     return results;
-}
-
-/**
- * Opens the VS Code diff editor for multi-file comparison
- * @param comparisonResults Array of file comparison results
- * @param siteName Name of the site for display purposes
- */
-async function showDiffEditor(comparisonResults: IFileComparisonResult[], siteName: string): Promise<void> {
-    if (comparisonResults.length === 0) {
-        vscode.window.showInformationMessage(Constants.Strings.NO_DIFFERENCES_FOUND);
-        return;
-    }
-
-    // Create resource list for the changes editor
-    // Format: [[labelUri, originalUri, modifiedUri], ...] where labelUri is used as the display label
-    // The label URI's path is used as the display name in the multi-diff editor
-    const resourceList: [vscode.Uri, vscode.Uri | undefined, vscode.Uri | undefined][] = comparisonResults.map(result => {
-        // Create a label URI using the relative path - this will be displayed in the editor
-        const labelUri = vscode.Uri.parse(`diff-label:${result.relativePath}`);
-        const originalUri = vscode.Uri.file(result.remotePath);
-        const modifiedUri = vscode.Uri.file(result.localPath);
-
-        // For the changes command: [labelUri, originalUri (remote/left), modifiedUri (local/right)]
-        // If file doesn't exist on one side, pass undefined
-        if (result.status === "deleted") {
-            // File exists in remote but not locally - show remote as original, undefined as modified
-            return [labelUri, originalUri, undefined];
-        } else if (result.status === "added") {
-            // File exists locally but not in remote - show undefined as original, local as modified
-            return [labelUri, undefined, modifiedUri];
-        } else {
-            // Modified - both exist
-            return [labelUri, originalUri, modifiedUri];
-        }
-    });
-
-    // Use the vscode.changes command to show multi-file diff
-    const title = vscode.l10n.t("Compare: {0} (Remote ↔ Local)", siteName);
-    await vscode.commands.executeCommand("vscode.changes", title, resourceList);
 }
 
 export const compareWithLocal = (pacTerminal: PacTerminal, context: vscode.ExtensionContext) => async (siteTreeItem: SiteTreeItem): Promise<void> => {
@@ -209,6 +171,8 @@ export const compareWithLocal = (pacTerminal: PacTerminal, context: vscode.Exten
                     methodName: compareWithLocal.name,
                     siteId: siteTreeItem.siteInfo.websiteId
                 });
+                vscode.window.showInformationMessage(Constants.Strings.NO_DIFFERENCES_FOUND);
+                MetadataDiffContext.clear();
             } else {
                 traceInfo(Constants.EventNames.ACTIONS_HUB_COMPARE_WITH_LOCAL_COMPLETED, {
                     methodName: compareWithLocal.name,
@@ -218,9 +182,11 @@ export const compareWithLocal = (pacTerminal: PacTerminal, context: vscode.Exten
                     addedFiles: comparisonResults.filter(r => r.status === "added").length.toString(),
                     deletedFiles: comparisonResults.filter(r => r.status === "deleted").length.toString()
                 });
+
+                // Store results in the context so the tree view can display them
+                MetadataDiffContext.setResults(comparisonResults, siteTreeItem.siteInfo.name);
             }
 
-            await showDiffEditor(comparisonResults, siteTreeItem.siteInfo.name);
             return true;
         }
     );

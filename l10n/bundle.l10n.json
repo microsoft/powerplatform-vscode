@@ -335,8 +335,16 @@
   "Error updating config file: {0}": "Error updating config file: {0}",
   "No workspace folder is open. Please open a folder containing your Power Pages site.": "No workspace folder is open. Please open a folder containing your Power Pages site.",
   "Website ID not found. Please ensure you have a valid Power Pages site open.": "Website ID not found. Please ensure you have a valid Power Pages site open.",
-  "Downloading site...": "Downloading site...",
+  "Downloading site for comparison...": "Downloading site for comparison...",
   "Site download failed. Please try again later.": "Site download failed. Please try again later.",
+  "No differences found between the remote site and your local workspace.": "No differences found between the remote site and your local workspace.",
+  "Comparing files...": "Comparing files...",
+  "Metadata Comparison": "Metadata Comparison",
+  "Modified": "Modified",
+  "Added locally": "Added locally",
+  "Deleted locally": "Deleted locally",
+  "{0} ({1} change(s))": "{0} ({1} change(s))",
+  "Show Diff": "Show Diff",
   "Friendly name: {0}/{0} is the website name": {
     "message": "Friendly name: {0}",
     "comment": [
@@ -445,6 +453,8 @@
       "{0} is the cluster geo name"
     ]
   },
+  "{0}: {1} (Remote ↔ Local)": "{0}: {1} (Remote ↔ Local)",
+  "Compare: {0} (Remote ↔ Local)": "Compare: {0} (Remote ↔ Local)",
   "Power Platform Tools: PAC CLI": "Power Platform Tools: PAC CLI",
   "Command completed successfully.": "Command completed successfully.",
   "PAC Telemetry enabled": "PAC Telemetry enabled",
