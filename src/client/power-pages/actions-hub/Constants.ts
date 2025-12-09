@@ -142,8 +142,10 @@ export const Constants = {
         CODEQL_CONFIG_FILE_UPDATE_ERROR: vscode.l10n.t("Error updating config file: {0}"),
         NO_WORKSPACE_FOLDER_OPEN: vscode.l10n.t("No workspace folder is open. Please open a folder containing your Power Pages site."),
         WEBSITE_ID_NOT_FOUND: vscode.l10n.t("Website ID not found. Please ensure you have a valid Power Pages site open."),
-        DOWNLOADING_SITE: vscode.l10n.t("Downloading site..."),
+        DOWNLOADING_SITE_FOR_COMPARISON: vscode.l10n.t("Downloading site for comparison..."),
         COMPARE_WITH_LOCAL_SITE_DOWNLOAD_FAILED: vscode.l10n.t("Site download failed. Please try again later."),
+        NO_DIFFERENCES_FOUND: vscode.l10n.t("No differences found between the remote site and your local workspace."),
+        COMPARING_FILES: vscode.l10n.t("Comparing files..."),
     },
     EventNames: {
         ACTIONS_HUB_ENABLED: "ActionsHubEnabled",
@@ -264,9 +266,8 @@ export const Constants = {
         ACTIONS_HUB_COMPARE_WITH_LOCAL_NO_WORKSPACE: "ActionsHubCompareWithLocalNoWorkspace",
         ACTIONS_HUB_COMPARE_WITH_LOCAL_WEBSITE_ID_NOT_FOUND: "ActionsHubCompareWithLocalWebsiteIdNotFound",
         ACTIONS_HUB_COMPARE_WITH_LOCAL_DOWNLOAD_FAILED: "ActionsHubCompareWithLocalDownloadFailed",
-    },
-    FeatureNames: {
-        REFRESH_ENVIRONMENT: "RefreshEnvironment"
+        ACTIONS_HUB_COMPARE_WITH_LOCAL_COMPLETED: "ActionsHubCompareWithLocalCompleted",
+        ACTIONS_HUB_COMPARE_WITH_LOCAL_NO_DIFFERENCES: "ActionsHubCompareWithLocalNoDifferences",
     },
     StudioEndpoints: {
         TEST: "https://make.test.powerpages.microsoft.com",

@@ -36,7 +36,7 @@ import { showSiteDetails } from "./handlers/ShowSiteDetailsHandler";
 import { downloadSite } from "./handlers/DownloadSiteHandler";
 import { loginToMatch } from "./handlers/LoginToMatchHandler";
 import { ActionsHub } from "./ActionsHub";
-import { compareWithLocal } from "./handlers/CompareWithLocalHandler";
+import { compareWithLocal } from "./handlers/metadata-diff/CompareWithLocalHandler";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
