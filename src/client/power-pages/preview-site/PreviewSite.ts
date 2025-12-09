@@ -21,9 +21,9 @@ import ArtemisContext from '../../ArtemisContext';
 import { PacTerminal } from '../../lib/PacTerminal';
 import CurrentSiteContext from '../actions-hub/CurrentSiteContext';
 import { IWebsiteDetails } from '../../../common/services/Interfaces';
-import { uploadSite } from '../actions-hub/ActionsHubCommandHandlers';
 import { SiteTreeItem } from '../actions-hub/tree-items/SiteTreeItem';
 import { SiteVisibility } from '../actions-hub/models/SiteVisibility';
+import { uploadSite } from '../actions-hub/handlers/UploadSiteHandler';
 
 export const SITE_PREVIEW_COMMAND_ID = "microsoft.powerplatform.pages.preview-site";
 
