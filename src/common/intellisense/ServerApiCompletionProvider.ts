@@ -175,20 +175,22 @@ export class ServerApiDefinitions {
                     parameters: [
                         { name: "entitySetName", type: "string", description: "The entity set name" },
                         { name: "id", type: "string", description: "The ID of the record to retrieve" },
-                        { name: "options", type: "string", description: "Query options (e.g., $select, $expand)" }
+                        { name: "options", type: "string", description: "Query options (e.g., $select, $expand)", optional: true },
+                        { name: "skipCache", type: "bool", description: "Whether to skip the cache and fetch fresh data", optional: true }
                     ],
                     returnType: "DataverseRecord",
-                    example: "Server.Connector.Dataverse.RetrieveRecord('contacts', contactId, '$select=firstname,lastname');"
+                    example: "Server.Connector.Dataverse.RetrieveRecord('contacts', contactId, '$select=firstname,lastname', false);"
                 },
                 {
                     name: "RetrieveMultipleRecords",
                     description: "Retrieves multiple records from Dataverse",
                     parameters: [
                         { name: "entitySetName", type: "string", description: "The entity set name" },
-                        { name: "options", type: "string", description: "Query options (e.g., $filter, $select, $orderby)" }
+                        { name: "options", type: "string", description: "Query options (e.g., $filter, $select, $orderby)", optional: true },
+                        { name: "skipCache", type: "bool", description: "Whether to skip the cache and fetch fresh data", optional: true }
                     ],
                     returnType: "DataverseRecord[]",
-                    example: "Server.Connector.Dataverse.RetrieveMultipleRecords('contacts', '$filter=lastname eq Smith');"
+                    example: "Server.Connector.Dataverse.RetrieveMultipleRecords('contacts', '$filter=lastname eq Smith', false);"
                 },
                 {
                     name: "UpdateRecord",
@@ -433,6 +435,22 @@ export class ServerApiDefinitions {
                 { name: "LogicalName", description: "Logical name of the referenced record", returnType: "string" },
                 { name: "Id", description: "ID (GUID) of the referenced record", returnType: "string" },
                 { name: "Name", description: "Name of the referenced record", returnType: "string" }
+            ]
+        },
+        // New: Server.EnvironmentVariable with get(name)
+        {
+            name: "EnvironmentVariable",
+            description: "Provides access to environment variables",
+            methods: [
+                {
+                    name: "get",
+                    description: "Gets an environment variable value by schema name",
+                    parameters: [
+                        { name: "schemaName", type: "string", description: "The environment variable schema name" }
+                    ],
+                    returnType: "string",
+                    example: "Server.EnvironmentVariable.get('new_MyEnvironmentVariable');"
+                }
             ]
         }
     ];
