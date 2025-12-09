@@ -35,6 +35,8 @@ import { uploadSite } from "./handlers/UploadSiteHandler";
 import { showSiteDetails } from "./handlers/ShowSiteDetailsHandler";
 import { downloadSite } from "./handlers/DownloadSiteHandler";
 import { loginToMatch } from "./handlers/LoginToMatchHandler";
+import { ActionsHub } from "./ActionsHub";
+import { compareWithLocal } from "./handlers/CompareWithLocalHandler";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -50,8 +52,9 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
     private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal, isCodeQlScanEnabled: boolean) {
         this._isCodeQlScanEnabled = isCodeQlScanEnabled;
+        this._context = context;
         this._disposables.push(
-            ...this.registerPanel(this._pacTerminal),
+            ...this.registerPanel(),
 
             PacContext.onChanged(() => {
                 this._loadWebsites = true;
@@ -74,7 +77,6 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                 this.refresh();
             })
         );
-        this._context = context;
     }
 
     private refresh(): void {
@@ -230,13 +232,12 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
         this._disposables.forEach(d => d.dispose());
     }
 
-    private registerPanel(pacTerminal: PacTerminal): vscode.Disposable[] {
+    private registerPanel(): vscode.Disposable[] {
         const commands = [
             vscode.window.registerTreeDataProvider("microsoft.powerplatform.pages.actionsHub", this),
 
-            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.refresh", async () => await refreshEnvironment(pacTerminal)),
-
-            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.switchEnvironment", async () => await switchEnvironment(pacTerminal)),
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.refresh", async () => await refreshEnvironment(this._pacTerminal)),
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.switchEnvironment", async () => await switchEnvironment(this._pacTerminal)),
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails", showEnvironmentDetails),
 
@@ -247,7 +248,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.preview", previewSite),
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.newAuthProfile", async () => {
-                await createNewAuthProfile(pacTerminal.getWrapper());
+                await createNewAuthProfile(this._pacTerminal.getWrapper());
             }),
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows", revealInOS),
@@ -275,6 +276,12 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
         if (this._isCodeQlScanEnabled) {
             commands.push(
                 vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening", runCodeQLScreening)
+            );
+        }
+
+        if (ActionsHub.isMetadataDiffEnabled()) {
+            commands.push(
+                vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.compareWithLocal", compareWithLocal(this._pacTerminal, this._context))
             );
         }
 

@@ -162,9 +162,6 @@ The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).
     <trans-unit id="++CODE++51e495f295ba55f724b77298746e3284ff9fc8e1e582828a9a3f4051fc577cb0">
       <source xml:lang="en">Code Block </source>
     </trans-unit>
-    <trans-unit id="++CODE++876831b143507fffa7cbdec8d0d72b9dc328976180b4206c83331911a27d6740">
-      <source xml:lang="en">CodeQL Analysis</source>
-    </trans-unit>
     <trans-unit id="++CODE++67fe2c02a3f3e19ede0f449f4e42c477c8b6a55baee7edb23a1928df18403c07">
       <source xml:lang="en">CodeQL CLI is not installed or not in PATH. Please install the CodeQL extension or add CodeQL CLI to your PATH.</source>
     </trans-unit>
@@ -208,6 +205,9 @@ Check the CodeQL extension panel for available queries.</source>
     </trans-unit>
     <trans-unit id="++CODE++1fb4405a792e9eb077d2bd96517eca8d81fc43bc251d5589e9d959fd07c8f31d">
       <source xml:lang="en">Command completed successfully (exit code: {0})</source>
+    </trans-unit>
+    <trans-unit id="++CODE++bf281cb4dcfdee3bea566c086c3d77aa9234f6854dfbcbcb25f2bcf19828e9b5">
+      <source xml:lang="en">Command completed successfully.</source>
     </trans-unit>
     <trans-unit id="++CODE++ff61c2f710070e267638038dfbd105cfffe4de4d37580f566f4537b304b6ca84">
       <source xml:lang="en">Command failed with exit code {0}: {1}</source>
@@ -302,6 +302,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     </trans-unit>
     <trans-unit id="++CODE++7f3601875ec37c14ea70acbdfab60e330eec2f6b65ccad92bee9823a2eb326de">
       <source xml:lang="en">Download failed: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++9987b686b6b2d6cb39aa37840ae3e6d41ebbc01fec5eef8bbaac67bcb04746f0">
+      <source xml:lang="en">Downloading site...</source>
     </trans-unit>
     <trans-unit id="++CODE++ac72407b10d30bf47faf11da09b605a85fc649bd3f2e33acb281655cb9021d9d">
       <source xml:lang="en">Edit the site</source>
@@ -628,6 +631,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++6da29e062697a9f26659ef14ebda075afe939756af5d8e1d3451eb7d6d6e1a8a">
       <source xml:lang="en">No workspace folder found</source>
     </trans-unit>
+    <trans-unit id="++CODE++9214ba9d7c0e1e98dc8919cffaa47b39e1444bcb5925a6c7818d11fa11363eb1">
+      <source xml:lang="en">No workspace folder is open. Please open a folder containing your Power Pages site.</source>
+    </trans-unit>
     <trans-unit id="++CODE++6c0242ffba2aababcb4e45831de1492e8bccae2cb0f3387dfe9c16620f6928ef">
       <source xml:lang="en">No workspace folder opened. Please open a site folder to preview.</source>
     </trans-unit>
@@ -732,6 +738,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++cce89cd3a0f118dafd3173f6444abdcd2b9782153af1b6bfa8f63ef3d4b68268">
       <source xml:lang="en">Power Pages studio URL is not available</source>
+    </trans-unit>
+    <trans-unit id="++CODE++92c355db79b65ac0ec6050657f427d46214ff364079cc646f7d255dec23586f8">
+      <source xml:lang="en">Power Platform Tools: PAC CLI</source>
     </trans-unit>
     <trans-unit id="++CODE++bf67e1194aabff2106dde73ed7318caf658a4cebe27dbd2d03239a141e16a211">
       <source xml:lang="en">PowerPages config file created successfully: {0}</source>
@@ -841,6 +850,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++c0917a71517a4a08ef56adaaec8f79404a4d5cc14afc8d141e9aa6181bee8622">
       <source xml:lang="en">Site download cancelled. No folder selected.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++e14f56f166e3f1c738244eb549eed009edbcede757905ce707cc30dbffd60c8b">
+      <source xml:lang="en">Site download failed. Please try again later.</source>
     </trans-unit>
     <trans-unit id="++CODE++a72357d268bce5e1643bfd74563495784179f75ace0d652db8f808f293586b63">
       <source xml:lang="en">Site management URL not found for the selected site. Please try again after refreshing the environment.</source>
@@ -1010,6 +1022,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++6a9f7c7cbfe7d5ae5e596c92dc8f1e73e79add5f6c7359c5fd0d61a23a66b668">
       <source xml:lang="en">Website ID is required</source>
     </trans-unit>
+    <trans-unit id="++CODE++a70c63db9e2d7ceb9f17f00065db00262718561d9330fbef203aba4acbf57d7b">
+      <source xml:lang="en">Website ID not found. Please ensure you have a valid Power Pages site open.</source>
+    </trans-unit>
     <trans-unit id="++CODE++d3eaa7bf5377b15781ad4c0f43e4da94b9a2bd485ddbbbe62a2c3d53c5c7fe4a">
       <source xml:lang="en">Website Id: {0}</source>
       <note>{0} is the website ID</note>
@@ -1094,6 +1109,9 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
     </trans-unit>
     <trans-unit id="powerpages.copilotPanel.clearConversation.title">
       <source xml:lang="en">Clear Conversation</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.compareWithLocal.title">
+      <source xml:lang="en">Compare with Local</source>
     </trans-unit>
     <trans-unit id="powerpages.copilotPanel.title">
       <source xml:lang="en">Copilot In Power Pages</source>

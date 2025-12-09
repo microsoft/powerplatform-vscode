@@ -495,6 +495,11 @@
         "category": "Power Pages",
         "title": "%microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title%",
         "when": "microsoft.powerplatform.pages.codeQlScanEnabled"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.activeSite.compareWithLocal",
+        "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.compareWithLocal.title%",
+        "when": "microsoft.powerplatform.pages.metadataDiffEnabled"
       }
     ],
     "configuration": {
@@ -1000,6 +1005,10 @@
         {
           "command": "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite",
           "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.compareWithLocal",
+          "when": "never"
         }
       ],
       "view/title": [
@@ -1177,6 +1186,11 @@
           "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == currentActiveSite && microsoft.powerplatform.pages.codeQlScanEnabled",
           "group": "siteAction@7"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.compareWithLocal",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite) &&microsoft.powerplatform.pages.metadataDiffEnabled",
+          "group": "siteAction@8"
         }
       ]
     },

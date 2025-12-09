@@ -268,7 +268,6 @@
   "The SARIF Viewer extension is recommended for viewing CodeQL results. Would you like to install it now?": "The SARIF Viewer extension is recommended for viewing CodeQL results. Would you like to install it now?",
   "Failed to install SARIF viewer extension. Opening results as text file.": "Failed to install SARIF viewer extension. Opening results as text file.",
   "Open as Text": "Open as Text",
-  "CodeQL Analysis": "CodeQL Analysis",
   "Starting CodeQL analysis for: {0}": "Starting CodeQL analysis for: {0}",
   "Database location: {0}": "Database location: {0}",
   "Creating CodeQL database...": "Creating CodeQL database...",
@@ -334,6 +333,52 @@
   "Error creating config file: {0}": "Error creating config file: {0}",
   "PowerPages config file updated successfully: {0}": "PowerPages config file updated successfully: {0}",
   "Error updating config file: {0}": "Error updating config file: {0}",
+  "No workspace folder is open. Please open a folder containing your Power Pages site.": "No workspace folder is open. Please open a folder containing your Power Pages site.",
+  "Website ID not found. Please ensure you have a valid Power Pages site open.": "Website ID not found. Please ensure you have a valid Power Pages site open.",
+  "Downloading site...": "Downloading site...",
+  "Site download failed. Please try again later.": "Site download failed. Please try again later.",
+  "Friendly name: {0}/{0} is the website name": {
+    "message": "Friendly name: {0}",
+    "comment": [
+      "{0} is the website name"
+    ]
+  },
+  "Website Id: {0}/{0} is the website ID": {
+    "message": "Website Id: {0}",
+    "comment": [
+      "{0} is the website ID"
+    ]
+  },
+  "Data model version: {0}/{0} is the data model version": {
+    "message": "Data model version: {0}",
+    "comment": [
+      "{0} is the data model version"
+    ]
+  },
+  "Website Url: {0}/{0} is the website Url": {
+    "message": "Website Url: {0}",
+    "comment": [
+      "{0} is the website Url"
+    ]
+  },
+  "Site visibility: {0}/{0} is the site visibility": {
+    "message": "Site visibility: {0}",
+    "comment": [
+      "{0} is the site visibility"
+    ]
+  },
+  "Creator: {0}/{0} is the creator": {
+    "message": "Creator: {0}",
+    "comment": [
+      "{0} is the creator"
+    ]
+  },
+  "Created on: {0}/{0} is the created date": {
+    "message": "Created on: {0}",
+    "comment": [
+      "{0} is the created date"
+    ]
+  },
   "Timestamp: {0}/{0} is the timestamp": {
     "message": "Timestamp: {0}",
     "comment": [
@@ -400,48 +445,8 @@
       "{0} is the cluster geo name"
     ]
   },
-  "Friendly name: {0}/{0} is the website name": {
-    "message": "Friendly name: {0}",
-    "comment": [
-      "{0} is the website name"
-    ]
-  },
-  "Website Id: {0}/{0} is the website ID": {
-    "message": "Website Id: {0}",
-    "comment": [
-      "{0} is the website ID"
-    ]
-  },
-  "Data model version: {0}/{0} is the data model version": {
-    "message": "Data model version: {0}",
-    "comment": [
-      "{0} is the data model version"
-    ]
-  },
-  "Website Url: {0}/{0} is the website Url": {
-    "message": "Website Url: {0}",
-    "comment": [
-      "{0} is the website Url"
-    ]
-  },
-  "Site visibility: {0}/{0} is the site visibility": {
-    "message": "Site visibility: {0}",
-    "comment": [
-      "{0} is the site visibility"
-    ]
-  },
-  "Creator: {0}/{0} is the creator": {
-    "message": "Creator: {0}",
-    "comment": [
-      "{0} is the creator"
-    ]
-  },
-  "Created on: {0}/{0} is the created date": {
-    "message": "Created on: {0}",
-    "comment": [
-      "{0} is the created date"
-    ]
-  },
+  "Power Platform Tools: PAC CLI": "Power Platform Tools: PAC CLI",
+  "Command completed successfully.": "Command completed successfully.",
   "PAC Telemetry enabled": "PAC Telemetry enabled",
   "Failed to enable PAC telemetry.": "Failed to enable PAC telemetry.",
   "PAC Telemetry disabled": "PAC Telemetry disabled",
