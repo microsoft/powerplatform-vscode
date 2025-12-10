@@ -268,7 +268,7 @@ export const portal_schema_V1 = {
                     _fetchQueryParameters:
                         "?$filter=adx_ideaid eq {entityId}&$select=adx_name,adx_copy",
                     _multiFileFetchQueryParameters:
-                        "?$filter=_adx_ideaforumid_value ne null &$select=adx_name,adx_copy,adx_ideaid&$count=true",
+                        "?$filter=_adx_ideaforumid_value ne null and adx_ideaforumId/_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_copy,adx_ideaid&$count=true",
                     _attributes: "adx_copy",
                     _attributesExtension: new Map([["adx_copy", "html"]]),
                 },
@@ -285,7 +285,7 @@ export const portal_schema_V1 = {
                     _fetchQueryParameters:
                         "?$filter=adx_blogpostid eq {entityId}&$select=adx_name,adx_copy",
                     _multiFileFetchQueryParameters:
-                        "?$filter=_adx_blogid_value ne null &$select=adx_name,adx_copy,adx_blogpostid&$count=true",
+                        "?$filter=_adx_blogid_value ne null and adx_blogid/_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_copy,adx_blogpostid&$count=true",
                     _attributes: "adx_copy",
                     _attributesExtension: new Map([["adx_copy", "html"]]),
                 },
@@ -578,7 +578,7 @@ export const portal_schema_V2 = {
                     _fetchQueryParameters:
                         "?$filter=adx_blogpostid eq {entityId}&$select=adx_name,adx_copy",
                     _multiFileFetchQueryParameters:
-                        "?$filter=_adx_blogid_value ne null &$select=adx_name,adx_copy,adx_blogpostid&$count=true",
+                        "?$filter=_adx_blogid_value ne null and adx_blogid/_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_copy,adx_blogpostid&$count=true",
                     _attributes: "adx_copy",
                     _attributesExtension: new Map([["adx_copy", "html"]]),
                 },
@@ -596,7 +596,7 @@ export const portal_schema_V2 = {
                     _fetchQueryParameters:
                         "?$filter=adx_ideaid eq {entityId}&$select=adx_name,adx_copy",
                     _multiFileFetchQueryParameters:
-                        "?$filter=_adx_ideaforumid_value ne null &$select=adx_name,adx_copy,adx_ideaid&$count=true",
+                        "?$filter=_adx_ideaforumid_value ne null and adx_ideaforumId/_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_copy,adx_ideaid&$count=true",
                     _attributes: "adx_copy",
                     _attributesExtension: new Map([["adx_copy", "html"]]),
                 },
