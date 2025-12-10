@@ -11,12 +11,13 @@ import { PortalsFS } from "../../dal/fileSystemProvider";
 import WebExtensionContext from "../../WebExtensionContext";
 import * as Constants from "../../common/constants";
 import * as schemaHelperUtil from "../../utilities/schemaHelperUtil";
-import { schemaEntityKey, schemaKey } from "../../schema/constants";
+import { schemaEntityKey, schemaKey, schemaEntityName } from "../../schema/constants";
 import * as urlBuilderUtil from "../../utilities/urlBuilderUtil";
 import * as commonUtil from "../../utilities/commonUtil";
 import { expect } from "chai";
 import * as authenticationProvider from "../../../../common/services/AuthenticationProvider";
 import { webExtensionTelemetryEventNames } from "../../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
+import * as ECSFeaturesClient from "../../../../common/ecs-features/ecsFeatureClient";
 
 describe("remoteFetchProvider", () => {
     afterEach(() => {
@@ -1147,5 +1148,73 @@ describe("remoteFetchProvider", () => {
         assert.calledOnce(updateSingleFileUrisInContext);
         assert.callCount(sendInfoTelemetry, 5);
         assert.callCount(sendAPISuccessTelemetry, 5);
+    });
+
+    it("fetchDataFromDataverseAndUpdateVFS_forConditionalEntity_shouldCreateDirectoryBeforeWritingFile", async () => {
+        // Arrange
+        const entityName = schemaEntityName.BLOGS;
+        const entityId = "blog-id-123";
+        const queryParamsMap = new Map<string, string>([
+            [Constants.queryParameters.ORG_URL, "powerPages.com"],
+            [Constants.queryParameters.WEBSITE_ID, "website-id-123"],
+            [Constants.queryParameters.WEBSITE_NAME, "testWebSite"],
+            [schemaKey.SCHEMA_VERSION, "portalschemav2"],
+        ]);
+
+        stub(authenticationProvider, "dataverseAuthentication").resolves(
+            { accessToken: "test-token", userId: "" }
+        );
+
+        stub(fetch, "default").resolves({
+            ok: true,
+            statusText: "statusText",
+            json: () => {
+                return new Promise((resolve) => {
+                    return resolve({
+                        value: [
+                            {
+                                "adx_blogid": entityId,
+                                "adx_name": "test-blog",
+                                "@odata.etag": "etag",
+                                "adx_content": "test content"
+                            }
+                        ]
+                    });
+                });
+            },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any);
+
+        stub(schemaHelperUtil, "getLcidCodeMap").returns(new Map([["1033", "en-US"]]));
+        stub(schemaHelperUtil, "getWebsiteIdToLcidMap").returns(new Map([["website-id-123", "1033"]]));
+        stub(schemaHelperUtil, "getWebsiteLanguageIdToPortalLanguageIdMap").returns(new Map());
+        stub(schemaHelperUtil, "getPortalLanguageIdToLcidMap").returns(new Map());
+        stub(urlBuilderUtil, "getRequestURL").returns("test-url");
+        stub(commonUtil, "GetFileNameWithExtension").returns("test-blog.html");
+        stub(schemaHelperUtil, "getAttributePath").returns({ source: "adx_content", relativePath: "" });
+        stub(schemaHelperUtil, "isBase64Encoded").returns(false);
+        stub(vscode.Uri, "parse").returns({ path: "powerplatform-vfs:/testWebSite/blogs/test-blog/" } as vscode.Uri);
+        stub(WebExtensionContext, "updateFileDetailsInContext");
+        stub(WebExtensionContext, "updateEntityDetailsInContext");
+        stub(WebExtensionContext.telemetry, "sendAPITelemetry");
+        stub(WebExtensionContext.telemetry, "sendAPISuccessTelemetry");
+        stub(WebExtensionContext.telemetry, "sendInfoTelemetry");
+
+        const getConfigStub = sinon.stub(ECSFeaturesClient.ECSFeaturesClient, "getConfig");
+        getConfigStub.returns({ enableBlogSupport: true });
+
+        const portalFs = new PortalsFS();
+        const createDirectory = stub(portalFs, "createDirectory");
+        const writeFile = stub(portalFs, "writeFile");
+
+        WebExtensionContext.setWebExtensionContext(entityName, entityId, queryParamsMap);
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
+
+        // Act
+        await fetchDataFromDataverseAndUpdateVFS(portalFs, { entityId: entityId, entityName: entityName });
+
+        // Assert
+        assert.calledOnce(createDirectory);
+        assert.calledOnce(writeFile);
     });
 });
