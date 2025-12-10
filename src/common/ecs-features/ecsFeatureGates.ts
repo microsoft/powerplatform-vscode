@@ -120,3 +120,13 @@ export const {
         disallowedDuplicateFileHandlingOrgs: "",
     }
 });
+
+export const {
+    feature: EnableBlogSupport
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable blog file support in VSCode (web & desktop)',
+    fallback: {
+        enableBlogSupport: false,
+    }
+});
