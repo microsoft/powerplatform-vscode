@@ -9,26 +9,11 @@ import {
     queryParameters,
 } from "../common/constants";
 import { IEntityRequestUrl } from "../common/interfaces";
-import { MultiFileSupportedEntityName, schemaEntityKey, schemaEntityName } from "../schema/constants";
-import { getEntity } from "./schemaHelperUtil";
+import { conditionalFolderEntities, MultiFileSupportedEntityName, schemaEntityKey, schemaEntityName } from "../schema/constants";
 import { getRequestURL } from "./urlBuilderUtil";
 
 export function getFolderSubUris(): string[] {
     const subUris: string[] = [];
-
-    // Entities that should only have folders created when they contain data
-    // These folders will be created lazily when files are fetched
-    const conditionalFolderEntities = [
-        schemaEntityName.BLOGS,
-        schemaEntityName.IDEAS,
-        schemaEntityName.IDEAFORUMS
-    ];
-
-    if (!WebExtensionContext.showMultifileInVSCode) {
-        const entityDetails = getEntity(WebExtensionContext.defaultEntityType);
-        const subUri = entityDetails?.get(schemaEntityKey.FILE_FOLDER_NAME);
-        return [subUri as string];
-    }
 
     for (const entry of Object.entries(MultiFileSupportedEntityName)) {
         const entityDetails = WebExtensionContext.schemaEntitiesMap.get(entry[1]);
