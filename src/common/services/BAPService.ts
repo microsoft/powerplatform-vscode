@@ -15,7 +15,7 @@ export class BAPService {
         try {
             const accessToken = await bapServiceAuthentication(true);
 
-            const response = await fetch(BAPService.getBAPCopilotCrossGeoFlagEndpoint(serviceEndpointStamp, environmentId), {
+            const response = await fetch(await BAPService.getBAPCopilotCrossGeoFlagEndpoint(serviceEndpointStamp, environmentId), {
                 method: 'GET',
                 headers: getCommonHeaders(accessToken)
             });
@@ -33,12 +33,13 @@ export class BAPService {
         return false;
     }
 
-    static getBAPCopilotCrossGeoFlagEndpoint(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string): string {
+    static async getBAPCopilotCrossGeoFlagEndpoint(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string): Promise<string> {
 
-        const bapEndpoint = getBAPEndpoint(serviceEndpointStamp);
+        const bapEndpoint = await getBAPEndpoint(serviceEndpointStamp);
 
         return BAP_SERVICE_ENDPOINT.replace('{rootURL}', bapEndpoint) +
             BAP_SERVICE_COPILOT_CROSS_GEO_FLAG_RELATIVE_URL.replace('{environmentID}', environmentId).replace('{apiVersion}', BAP_API_VERSION);
     }
 
 }
+

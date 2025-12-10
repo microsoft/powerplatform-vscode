@@ -1,5 +1,20 @@
 # Change Log - Power Platform Extension
 
+## 2.0.111
+- pac CLI 1.51.1, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+
+## 2.0.110
+- Bug Fix
+  - Fixed autocomplete issue for page-templates (Desktop)
+
+## 2.0.109
+- Bug Fix
+  - Fixed VSCode Web launch issue from PMA/PPMA
+
+## 2.0.107
+- pac CLI 1.50.1, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- Added CodeQl and SARIF Viewer in Extension Pack
+
 ## 2.0.105
 - pac CLI 1.49.4, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 

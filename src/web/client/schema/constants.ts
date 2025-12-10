@@ -8,6 +8,7 @@ export const SCHEMA_WEBFILE_FOLDER_NAME = "web-files";
 export enum schemaKey {
     SINGLE_ENTITY_URL = "singleEntityURL",
     MULTI_ENTITY_URL = "multiEntityURL",
+    SCHEMA_VERSION = "schema",
     DATAVERSE_API_VERSION = "version",
     DATA = "data",
     API = "api",

@@ -88,12 +88,21 @@ describe("webExtensionTelemetry", () => {
         //Act
         const queryParamsMap = new Map<string, string>([
             [queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"],
+            [queryParameters.TENANT_ID, "3fcf33c5-46c9-495e-a025-d1f2efe44667"],
             [queryParameters.PORTAL_ID, "36429b2e-8b29-4020-8493-bd5e277444d8"],
+            [
+                queryParameters.WEBSITE_ID,
+                "edde7aaf-ccde-4f2a-9ab2-f9086ac5b4be",
+            ],
+            [queryParameters.DATA_SOURCE, "SQL"],
+            [queryParameters.SCHEMA, "test"],
             [
                 queryParameters.REFERRER_SESSION_ID,
                 "4269b44f-8085-4001-88fe-3f30f1194c6f",
             ],
             [queryParameters.REFERRER, "yes"],
+            [queryParameters.SITE_VISIBILITY, "false"],
+            [queryParameters.REGION, "NAM"],
             [queryParameters.GEO, "US"],
             [queryParameters.ENV_ID, "c4dc3686-1e6b-e428-b886-16cd0b9f4918"],
             [queryParameters.ENTITY, "webpage"],
@@ -106,11 +115,17 @@ describe("webExtensionTelemetry", () => {
 
         const properties = {
             orgId: queryParamsMap.get(queryParameters.ORG_ID),
+            tenantId: queryParamsMap.get(queryParameters.TENANT_ID),
             portalId: queryParamsMap.get(queryParameters.PORTAL_ID),
+            websiteId: queryParamsMap.get(queryParameters.WEBSITE_ID),
+            dataSource: queryParamsMap.get(queryParameters.DATA_SOURCE),
+            schema: queryParamsMap.get(queryParameters.SCHEMA),
             referrerSessionId: queryParamsMap.get(
                 queryParameters.REFERRER_SESSION_ID
             ),
             referrer: queryParamsMap.get(queryParameters.REFERRER),
+            siteVisibility: queryParamsMap.get(queryParameters.SITE_VISIBILITY),
+            region: queryParamsMap.get(queryParameters.REGION),
             geo: queryParamsMap.get(queryParameters.GEO),
             envId: queryParamsMap.get(queryParameters.ENV_ID),
             entity: queryParamsMap.get(queryParameters.ENTITY),
@@ -143,11 +158,17 @@ describe("webExtensionTelemetry", () => {
 
         const properties = {
             orgId: queryParamsMap.get(queryParameters.ORG_ID),
+            tenantId: queryParamsMap.get(queryParameters.TENANT_ID),
             portalId: queryParamsMap.get(queryParameters.PORTAL_ID),
+            websiteId: queryParamsMap.get(queryParameters.WEBSITE_ID),
+            dataSource: queryParamsMap.get(queryParameters.DATA_SOURCE),
+            schema: queryParamsMap.get(queryParameters.SCHEMA),
             referrerSessionId: queryParamsMap.get(
                 queryParameters.REFERRER_SESSION_ID
             ),
             referrer: queryParamsMap.get(queryParameters.REFERRER),
+            siteVisibility: queryParamsMap.get(queryParameters.SITE_VISIBILITY),
+            region: queryParamsMap.get(queryParameters.REGION),
             geo: queryParamsMap.get(queryParameters.GEO),
             envId: queryParamsMap.get(queryParameters.ENV_ID),
             referrerSource: queryParamsMap.get(queryParameters.REFERRER_SOURCE),
