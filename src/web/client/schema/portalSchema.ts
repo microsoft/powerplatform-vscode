@@ -320,7 +320,7 @@ export const portal_schema_V1 = {
                     _fetchQueryParameters:
                         "?$filter=adx_communityforumannouncementid eq {entityId}&$select=adx_name,adx_content",
                     _multiFileFetchQueryParameters:
-                        "?$filter=_adx_forumid_value ne null &$select=adx_name,adx_content,adx_communityforumannouncementid&$count=true",
+                        "?$filter=_adx_forumid_value ne null and adx_forumid/_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_content,adx_communityforumannouncementid&$count=true",
                     _attributes: "adx_content",
                     _attributesExtension: new Map([["adx_content", "html"]]),
                 },
@@ -668,7 +668,7 @@ export const portal_schema_V2 = {
                     _fetchQueryParameters:
                         "?$filter=adx_communityforumannouncementid eq {entityId}&$select=adx_name,adx_content",
                     _multiFileFetchQueryParameters:
-                        "?$filter=_adx_forumid_value ne null &$select=adx_name,adx_content,adx_communityforumannouncementid&$count=true",
+                        "?$filter=_adx_forumid_value ne null and adx_forumid/_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_content,adx_communityforumannouncementid&$count=true",
                     _attributes: "adx_content",
                     _attributesExtension: new Map([["adx_content", "html"]]),
                 },
