@@ -85,7 +85,7 @@ export const compareWithLocal = (pacTerminal: PacTerminal, context: vscode.Exten
         traceInfo(Constants.EventNames.ACTIONS_HUB_COMPARE_WITH_LOCAL_NO_WORKSPACE, {
             methodName: compareWithLocal.name
         });
-        vscode.window.showErrorMessage(Constants.Strings.NO_WORKSPACE_FOLDER_OPEN);
+        await vscode.window.showErrorMessage(Constants.Strings.NO_WORKSPACE_FOLDER_OPEN);
         return;
     }
 
@@ -104,7 +104,7 @@ export const compareWithLocal = (pacTerminal: PacTerminal, context: vscode.Exten
         traceInfo(Constants.EventNames.ACTIONS_HUB_COMPARE_WITH_LOCAL_WEBSITE_ID_NOT_FOUND, {
             methodName: compareWithLocal.name
         });
-        vscode.window.showErrorMessage(Constants.Strings.WEBSITE_ID_NOT_FOUND);
+        await vscode.window.showErrorMessage(Constants.Strings.WEBSITE_ID_NOT_FOUND);
         return;
     }
 
@@ -125,7 +125,7 @@ export const compareWithLocal = (pacTerminal: PacTerminal, context: vscode.Exten
     const pacWrapper = pacTerminal.getWrapper();
 
     const success = await showProgressWithNotification(
-        Constants.Strings.DOWNLOADING_SITE_FOR_COMPARISON,
+        vscode.l10n.t(Constants.Strings.DOWNLOADING_SITE_FOR_COMPARISON, siteTreeItem.siteInfo.name),
         async () => pacWrapper.downloadSiteWithProgress(
             siteStoragePath,
             siteTreeItem.siteInfo.websiteId,
@@ -143,7 +143,7 @@ export const compareWithLocal = (pacTerminal: PacTerminal, context: vscode.Exten
                 dataModelVersion: siteTreeItem.siteInfo.dataModelVersion
             }
         );
-        vscode.window.showErrorMessage(Constants.Strings.COMPARE_WITH_LOCAL_SITE_DOWNLOAD_FAILED);
+        await vscode.window.showErrorMessage(Constants.Strings.COMPARE_WITH_LOCAL_SITE_DOWNLOAD_FAILED);
         return;
     }
 
@@ -171,7 +171,7 @@ export const compareWithLocal = (pacTerminal: PacTerminal, context: vscode.Exten
                     methodName: compareWithLocal.name,
                     siteId: siteTreeItem.siteInfo.websiteId
                 });
-                vscode.window.showInformationMessage(Constants.Strings.NO_DIFFERENCES_FOUND);
+                await vscode.window.showInformationMessage(Constants.Strings.NO_DIFFERENCES_FOUND);
                 MetadataDiffContext.clear();
             } else {
                 traceInfo(Constants.EventNames.ACTIONS_HUB_COMPARE_WITH_LOCAL_COMPLETED, {
@@ -190,4 +190,6 @@ export const compareWithLocal = (pacTerminal: PacTerminal, context: vscode.Exten
             return true;
         }
     );
+
+    await vscode.window.showInformationMessage(Constants.Strings.COMPARE_WITH_LOCAL_COMPLETED);
 }

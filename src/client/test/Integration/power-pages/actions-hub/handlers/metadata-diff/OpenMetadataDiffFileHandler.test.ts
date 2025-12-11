@@ -36,7 +36,7 @@ describe("OpenMetadataDiffFileHandler", () => {
                 relativePath: "folder/file.txt",
                 status: "modified"
             };
-            const fileItem = new MetadataDiffFileTreeItem("file.txt", comparisonResult, "Test Site");
+            const fileItem = new MetadataDiffFileTreeItem(comparisonResult, "Test Site");
 
             await openMetadataDiffFile(fileItem);
 
@@ -56,7 +56,7 @@ describe("OpenMetadataDiffFileHandler", () => {
                 relativePath: "file.txt",
                 status: "modified"
             };
-            const fileItem = new MetadataDiffFileTreeItem("file.txt", comparisonResult, "Test Site");
+            const fileItem = new MetadataDiffFileTreeItem(comparisonResult, "Test Site");
 
             await openMetadataDiffFile(fileItem);
 
@@ -78,7 +78,7 @@ describe("OpenMetadataDiffFileHandler", () => {
                 relativePath: "added.txt",
                 status: "added"
             };
-            const fileItem = new MetadataDiffFileTreeItem("added.txt", comparisonResult, "Test Site");
+            const fileItem = new MetadataDiffFileTreeItem(comparisonResult, "Test Site");
 
             await openMetadataDiffFile(fileItem);
 
@@ -99,7 +99,7 @@ describe("OpenMetadataDiffFileHandler", () => {
                 relativePath: "deleted.txt",
                 status: "deleted"
             };
-            const fileItem = new MetadataDiffFileTreeItem("deleted.txt", comparisonResult, "Test Site");
+            const fileItem = new MetadataDiffFileTreeItem(comparisonResult, "Test Site");
 
             await openMetadataDiffFile(fileItem);
 
@@ -120,7 +120,7 @@ describe("OpenMetadataDiffFileHandler", () => {
                 relativePath: "folder/file.txt",
                 status: "modified"
             };
-            const fileItem = new MetadataDiffFileTreeItem("file.txt", comparisonResult, "My Site");
+            const fileItem = new MetadataDiffFileTreeItem(comparisonResult, "My Site");
 
             await openMetadataDiffFile(fileItem);
 

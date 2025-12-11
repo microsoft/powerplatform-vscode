@@ -9,6 +9,7 @@ import { Constants } from "../../Constants";
 import { IFileComparisonResult } from "../../models/IFileComparisonResult";
 import { MetadataDiffFileTreeItem } from "./MetadataDiffFileTreeItem";
 import { MetadataDiffFolderTreeItem } from "./MetadataDiffFolderTreeItem";
+import MetadataDiffContext from "../../MetadataDiffContext";
 
 /**
  * Root group tree item for showing metadata diff comparison results
@@ -23,14 +24,33 @@ export class MetadataDiffGroupTreeItem extends ActionsHubTreeItem {
             vscode.TreeItemCollapsibleState.Expanded,
             Constants.Icons.METADATA_DIFF_GROUP,
             Constants.ContextValues.METADATA_DIFF_GROUP,
-            siteName // Show the website name as subtext
+            siteName // Subtext
         );
         this._comparisonResults = comparisonResults;
         this._siteName = siteName;
     }
 
     public getChildren(): ActionsHubTreeItem[] {
-        return this.buildTreeHierarchy();
+        if (MetadataDiffContext.isTreeView) {
+            return this.buildTreeHierarchy();
+        }
+        return this.buildFlatFileList();
+    }
+
+    /**
+     * Build a flat list of file tree items (Git-style list view).
+     * Files are sorted by folder path, then by file name.
+     */
+    private buildFlatFileList(): ActionsHubTreeItem[] {
+        // Sort results by relative path for consistent ordering
+        const sortedResults = [...this._comparisonResults].sort((a, b) =>
+            a.relativePath.localeCompare(b.relativePath)
+        );
+
+        // Create flat list of file items
+        return sortedResults.map(result =>
+            new MetadataDiffFileTreeItem(result, this._siteName)
+        );
     }
 
     /**
@@ -68,17 +88,15 @@ export class MetadataDiffGroupTreeItem extends ActionsHubTreeItem {
             }
 
             // Add the file to the appropriate folder (or root if no folders)
-            const fileName = parts[parts.length - 1];
             const fileItem = new MetadataDiffFileTreeItem(
-                fileName,
                 result,
                 this._siteName
             );
 
             if (currentFolder) {
-                currentFolder.childrenMap.set(fileName, fileItem);
+                currentFolder.childrenMap.set(result.relativePath, fileItem);
             } else {
-                rootChildren.set(fileName, fileItem);
+                rootChildren.set(result.relativePath, fileItem);
             }
         }
 

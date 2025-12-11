@@ -315,8 +315,12 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++7f3601875ec37c14ea70acbdfab60e330eec2f6b65ccad92bee9823a2eb326de">
       <source xml:lang="en">Download failed: {0}</source>
     </trans-unit>
-    <trans-unit id="++CODE++fc712246d708b7d31470c5c0886c05f99b5b51bdbeae94d82320f2b1d1cf04d3">
-      <source xml:lang="en">Downloading site for comparison...</source>
+    <trans-unit id="++CODE++f945885439672eb379c73eb7c9124496311c6ef5b3b04cd23ea0a1c146225b84">
+      <source xml:lang="en">Download is complete. You can now view the report.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++a5a4f0d8975940cbed234f9a5ee740f24e2b82f03a5b13e43f316b8395336e50">
+      <source xml:lang="en">Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel &quot;Show download output&quot;))...</source>
+      <note>This is a markdown formatting which must persist across translations.</note>
     </trans-unit>
     <trans-unit id="++CODE++ac72407b10d30bf47faf11da09b605a85fc649bd3f2e33acb281655cb9021d9d">
       <source xml:lang="en">Edit the site</source>
@@ -574,8 +578,8 @@ Return to this chat and @powerpages can help you write and edit your website cod
     <trans-unit id="++CODE++8a194d5287e3da019883144787cd5f282753f5ce892d933be0833b3818c25503">
       <source xml:lang="en">Maximum 30 characters allowed</source>
     </trans-unit>
-    <trans-unit id="++CODE++860f6f3c2e1d6181dc472b69025ea24381c462c5f48319a7cf667de1a78c714b">
-      <source xml:lang="en">Metadata Comparison</source>
+    <trans-unit id="++CODE++a6d287e1a3ca10ca1e47de17060293fbb14d1e43cd8ffb9a296661c576615b69">
+      <source xml:lang="en">Metadata Diff</source>
     </trans-unit>
     <trans-unit id="++CODE++b1c8258fb401975727a82d9ce473af0a600f076cc7b73dbd16524e815cf4153d">
       <source xml:lang="en">Microsoft wants your feedback</source>
@@ -1353,6 +1357,12 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite.title">
       <source xml:lang="en">Upload Site</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsList.title">
+      <source xml:lang="en">View as List</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsTree.title">
+      <source xml:lang="en">View as Tree</source>
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.description">
       <source xml:lang="en">Visual Studio Code for Web enables editing and publishing of web pages on your website.
