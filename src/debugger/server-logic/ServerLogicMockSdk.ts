@@ -4,385 +4,861 @@
  */
 
 /**
- * Generates the complete mock SDK implementation for Power Pages Server Logic
- * This SDK is injected at runtime to provide debugging capabilities
+ * Power Pages Server Logic - Mock SDK Runtime Loader
+ *
+ * This file provides mock implementations of the Server.* APIs for local debugging.
+ *
+ * HOW TO USE:
+ * 1. Edit the mock data below to match your test scenarios
+ * 2. Customize Server.Context with your test inputs (query params, body, headers)
+ * 3. Customize Dataverse responses with realistic test data
+ * 4. Set breakpoints in your server logic file and press F5 to debug
+ *
+ * This file is auto-generated but YOU CAN EDIT IT to customize test data.
+ * It's added to .gitignore so your changes won't affect source control.
  */
+
 export function generateServerMockSdk(): string {
     return `
 /**
  * Mock Server Object for Power Pages Server Logic SDK
- *
- * This provides a complete mock implementation for testing Server Logic locally
- * without requiring the actual Power Pages runtime environment.
  */
 
 const Server = {
-    /**
-     * Logger - Diagnostic logging functionality
-     */
     Logger: {
-        Log: function(message) {
+        Log: function (message) {
             console.log(\`[LOG] \${new Date().toISOString()} - \${message}\`);
         },
-        Error: function(message) {
+        Error: function (message) {
             console.error(\`[ERROR] \${new Date().toISOString()} - \${message}\`);
         },
-        Warning: function(message) {
+        Warning: function (message) {
             console.warn(\`[WARNING] \${new Date().toISOString()} - \${message}\`);
         },
-        Info: function(message) {
+        Info: function (message) {
             console.info(\`[INFO] \${new Date().toISOString()} - \${message}\`);
         }
     },
 
-    /**
-     * Context - Request context including query params, headers, body
-     */
     Context: {
         QueryParameters: {
-            // Mock query parameters - customize as needed
             "id": "12345-test-guid"
         },
         Headers: {
-            // Mock headers - customize as needed
             "Authorization": "Bearer mock-token",
             "Content-Type": "application/json",
             "User-Agent": "MockClient/1.0"
         },
         Body: JSON.stringify({
-            // Mock request body - customize as needed
             name: "Test Account",
             telephone1: "555-0100"
         }),
-        Method: "GET", // GET, POST, PUT, PATCH, DELETE
+        Method: "POST", // GET, POST, PUT, PATCH, DELETE
         Url: "https://mock-server.example.com/api/test"
     },
 
-    /**
-     * Connector - External integrations
-     */
     Connector: {
-        /**
-         * HttpClient - Make HTTP requests to external APIs
-         */
         HttpClient: {
-            GetAsync: async function(url, headers = {}) {
+            GetAsync: async function (url, headers = {}) {
                 Server.Logger.Log(\`[MOCK] HttpClient.GetAsync called with URL: \${url}\`);
 
-                // Simulate async delay
-                await new Promise(resolve => setTimeout(resolve, 100));
+                const isNodeJs = typeof process !== 'undefined' &&
+                    process.versions != null &&
+                    process.versions.node != null;
 
-                // Mock response structure
-                const mockResponse = {
-                    StatusCode: 200,
-                    Headers: {
-                        "Content-Type": "application/json",
-                        "X-Mock-Response": "true",
-                        "Date": new Date().toUTCString()
-                    },
-                    Body: JSON.stringify({
-                        version: "3.0.0",
-                        resources: [
-                            { "@id": "https://api.nuget.org/v3/registration5-gz-semver2/index.json", "@type": "RegistrationsBaseUrl" },
-                            { "@id": "https://api.nuget.org/v3/catalog0/index.json", "@type": "Catalog/3.0.0" }
-                        ],
-                        "@context": {
-                            "@vocab": "https://schema.nuget.org/schema#"
+                if (isNodeJs) {
+                    Server.Logger.Log(\`[NODE.JS] Making actual GET request to: \${url}\`);
+
+                    try {
+                        const https = require('https');
+                        const http = require('http');
+                        const urlLib = require('url');
+
+                        const parsedUrl = urlLib.parse(url);
+                        const protocol = parsedUrl.protocol === 'https:' ? https : http;
+
+                        return new Promise((resolve, reject) => {
+                            const options = {
+                                hostname: parsedUrl.hostname,
+                                port: parsedUrl.port,
+                                path: parsedUrl.path,
+                                method: 'GET',
+                                headers: headers
+                            };
+
+                            const req = protocol.request(options, (res) => {
+                                let data = '';
+
+                                res.on('data', (chunk) => {
+                                    data += chunk;
+                                });
+
+                                res.on('end', () => {
+                                    const responseHeaders = {};
+                                    for (const [key, value] of Object.entries(res.headers)) {
+                                        responseHeaders[key] = Array.isArray(value) ? value.join(', ') : value;
+                                    }
+
+                                    const response = {
+                                        StatusCode: res.statusCode,
+                                        Body: data,
+                                        IsSuccessStatusCode: res.statusCode >= 200 && res.statusCode < 300,
+                                        ReasonPhrase: res.statusMessage || '',
+                                        ServerError: false,
+                                        ServerErrorMessage: null,
+                                        Headers: responseHeaders
+                                    };
+                                    Server.Logger.Log(\`[NODE.JS] GET request completed with status: \${res.statusCode}\`);
+                                    resolve(JSON.stringify(response));
+                                });
+                            });
+
+                            req.on('error', (error) => {
+                                Server.Logger.Error(\`[NODE.JS] GET request failed: \${error.message}\`);
+
+                                const errorResponse = {
+                                    StatusCode: 0,
+                                    Body: null,
+                                    IsSuccessStatusCode: false,
+                                    ReasonPhrase: null,
+                                    ServerError: true,
+                                    ServerErrorMessage: \`Error executing GET request to '\${url}': \${error.message}\`,
+                                    Headers: {}
+                                };
+                                resolve(JSON.stringify(errorResponse));
+                            });
+
+                            req.end();
+                        });
+                    } catch (error) {
+                        Server.Logger.Error(\`[NODE.JS] Error making GET request: \${error.message}\`);
+
+                        const errorResponse = {
+                            StatusCode: 0,
+                            Body: null,
+                            IsSuccessStatusCode: false,
+                            ReasonPhrase: null,
+                            ServerError: true,
+                            ServerErrorMessage: \`Error executing GET request to '\${url}': \${error.message}\`,
+                            Headers: {}
+                        };
+                        return JSON.stringify(errorResponse);
+                    }
+                } else {
+                    Server.Logger.Log(\`[BROWSER] Returning mock response\`);
+
+                    await new Promise(resolve => setTimeout(resolve, 100));
+
+                    const mockResponse = {
+                        StatusCode: 200,
+                        Body: "{}",
+                        IsSuccessStatusCode: true,
+                        ReasonPhrase: "OK",
+                        ServerError: false,
+                        ServerErrorMessage: null,
+                        Headers: {
+                            "Content-Type": "application/json",
+                            "X-Mock-Response": "true"
                         }
-                    })
-                };
+                    };
 
-                return JSON.stringify(mockResponse);
+                    return JSON.stringify(mockResponse);
+                }
             },
 
-            PostAsync: async function(url, body, headers = {}, contentType = "application/json") {
+            PostAsync: async function (url, body, headers = {}, contentType = "application/json") {
                 Server.Logger.Log(\`[MOCK] HttpClient.PostAsync called with URL: \${url}\`);
                 Server.Logger.Log(\`[MOCK] Body: \${body}\`);
 
-                await new Promise(resolve => setTimeout(resolve, 100));
+                const isNodeJs = typeof process !== 'undefined' &&
+                    process.versions != null &&
+                    process.versions.node != null;
 
-                const mockResponse = {
-                    StatusCode: 201,
-                    Headers: {
-                        "Content-Type": contentType,
-                        "Location": \`\${url}/new-resource-id\`,
-                        "X-Mock-Response": "true"
-                    },
-                    Body: JSON.stringify({
-                        id: "new-resource-id",
-                        ...JSON.parse(body),
-                        createdAt: new Date().toISOString()
-                    })
-                };
+                if (isNodeJs) {
+                    Server.Logger.Log(\`[NODE.JS] Making actual POST request to: \${url}\`);
 
-                return JSON.stringify(mockResponse);
+                    try {
+                        const https = require('https');
+                        const http = require('http');
+                        const urlLib = require('url');
+
+                        const parsedUrl = urlLib.parse(url);
+                        const protocol = parsedUrl.protocol === 'https:' ? https : http;
+
+                        return new Promise((resolve, reject) => {
+                            const requestHeaders = {
+                                ...headers,
+                                'Content-Type': contentType,
+                                'Content-Length': Buffer.byteLength(body || '')
+                            };
+
+                            const options = {
+                                hostname: parsedUrl.hostname,
+                                port: parsedUrl.port,
+                                path: parsedUrl.path,
+                                method: 'POST',
+                                headers: requestHeaders
+                            };
+
+                            const req = protocol.request(options, (res) => {
+                                let data = '';
+
+                                res.on('data', (chunk) => {
+                                    data += chunk;
+                                });
+
+                                res.on('end', () => {
+                                    const responseHeaders = {};
+                                    for (const [key, value] of Object.entries(res.headers)) {
+                                        responseHeaders[key] = Array.isArray(value) ? value.join(', ') : value;
+                                    }
+
+                                    const response = {
+                                        StatusCode: res.statusCode,
+                                        Body: data,
+                                        IsSuccessStatusCode: res.statusCode >= 200 && res.statusCode < 300,
+                                        ReasonPhrase: res.statusMessage || '',
+                                        ServerError: false,
+                                        ServerErrorMessage: null,
+                                        Headers: responseHeaders
+                                    };
+                                    Server.Logger.Log(\`[NODE.JS] POST request completed with status: \${res.statusCode}\`);
+                                    resolve(JSON.stringify(response));
+                                });
+                            });
+
+                            req.on('error', (error) => {
+                                Server.Logger.Error(\`[NODE.JS] POST request failed: \${error.message}\`);
+                                const errorResponse = {
+                                    StatusCode: 0,
+                                    Body: null,
+                                    IsSuccessStatusCode: false,
+                                    ReasonPhrase: null,
+                                    ServerError: true,
+                                    ServerErrorMessage: \`Error executing POST request to '\${url}': \${error.message}\`,
+                                    Headers: {}
+                                };
+                                resolve(JSON.stringify(errorResponse));
+                            });
+
+                            if (body) {
+                                req.write(body);
+                            }
+                            req.end();
+                        });
+                    } catch (error) {
+                        Server.Logger.Error(\`[NODE.JS] Error making POST request: \${error.message}\`);
+                        const errorResponse = {
+                            StatusCode: 0,
+                            Body: null,
+                            IsSuccessStatusCode: false,
+                            ReasonPhrase: null,
+                            ServerError: true,
+                            ServerErrorMessage: \`Error executing POST request to '\${url}': \${error.message}\`,
+                            Headers: {}
+                        };
+                        return JSON.stringify(errorResponse);
+                    }
+                } else {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+
+                    const mockResponse = {
+                        StatusCode: 201,
+                        Body: "{}",
+                        IsSuccessStatusCode: true,
+                        ReasonPhrase: "Created",
+                        ServerError: false,
+                        ServerErrorMessage: null,
+                        Headers: {
+                            "Content-Type": contentType,
+                            "X-Mock-Response": "true"
+                        }
+                    };
+
+                    return JSON.stringify(mockResponse);
+                }
             },
 
-            PatchAsync: async function(url, body, headers = {}, contentType = "application/json") {
+            PatchAsync: async function (url, body, headers = {}, contentType = "application/json") {
                 Server.Logger.Log(\`[MOCK] HttpClient.PatchAsync called with URL: \${url}\`);
                 Server.Logger.Log(\`[MOCK] Body: \${body}\`);
 
-                await new Promise(resolve => setTimeout(resolve, 100));
+                const isNodeJs = typeof process !== 'undefined' &&
+                    process.versions != null &&
+                    process.versions.node != null;
 
-                const mockResponse = {
-                    StatusCode: 200,
-                    Headers: {
-                        "Content-Type": contentType,
-                        "X-Mock-Response": "true"
-                    },
-                    Body: JSON.stringify({
-                        ...JSON.parse(body),
-                        updatedAt: new Date().toISOString()
-                    })
-                };
+                if (isNodeJs) {
+                    Server.Logger.Log(\`[NODE.JS] Making actual PATCH request to: \${url}\`);
 
-                return JSON.stringify(mockResponse);
+                    try {
+                        const https = require('https');
+                        const http = require('http');
+                        const urlLib = require('url');
+
+                        const parsedUrl = urlLib.parse(url);
+                        const protocol = parsedUrl.protocol === 'https:' ? https : http;
+
+                        return new Promise((resolve, reject) => {
+                            const requestHeaders = {
+                                ...headers,
+                                'Content-Type': contentType,
+                                'Content-Length': Buffer.byteLength(body || '')
+                            };
+
+                            const options = {
+                                hostname: parsedUrl.hostname,
+                                port: parsedUrl.port,
+                                path: parsedUrl.path,
+                                method: 'PATCH',
+                                headers: requestHeaders
+                            };
+
+                            const req = protocol.request(options, (res) => {
+                                let data = '';
+
+                                res.on('data', (chunk) => {
+                                    data += chunk;
+                                });
+
+                                res.on('end', () => {
+                                    const responseHeaders = {};
+                                    for (const [key, value] of Object.entries(res.headers)) {
+                                        responseHeaders[key] = Array.isArray(value) ? value.join(', ') : value;
+                                    }
+
+                                    const response = {
+                                        StatusCode: res.statusCode,
+                                        Body: data,
+                                        IsSuccessStatusCode: res.statusCode >= 200 && res.statusCode < 300,
+                                        ReasonPhrase: res.statusMessage || '',
+                                        ServerError: false,
+                                        ServerErrorMessage: null,
+                                        Headers: responseHeaders
+                                    };
+                                    Server.Logger.Log(\`[NODE.JS] PATCH request completed with status: \${res.statusCode}\`);
+                                    resolve(JSON.stringify(response));
+                                });
+                            });
+
+                            req.on('error', (error) => {
+                                Server.Logger.Error(\`[NODE.JS] PATCH request failed: \${error.message}\`);
+                                const errorResponse = {
+                                    StatusCode: 0,
+                                    Body: null,
+                                    IsSuccessStatusCode: false,
+                                    ReasonPhrase: null,
+                                    ServerError: true,
+                                    ServerErrorMessage: \`Error executing PATCH request to '\${url}': \${error.message}\`,
+                                    Headers: {}
+                                };
+                                resolve(JSON.stringify(errorResponse));
+                            });
+
+                            if (body) {
+                                req.write(body);
+                            }
+                            req.end();
+                        });
+                    } catch (error) {
+                        Server.Logger.Error(\`[NODE.JS] Error making PATCH request: \${error.message}\`);
+                        const errorResponse = {
+                            StatusCode: 0,
+                            Body: null,
+                            IsSuccessStatusCode: false,
+                            ReasonPhrase: null,
+                            ServerError: true,
+                            ServerErrorMessage: \`Error executing PATCH request to '\${url}': \${error.message}\`,
+                            Headers: {}
+                        };
+                        return JSON.stringify(errorResponse);
+                    }
+                } else {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+
+                    const mockResponse = {
+                        StatusCode: 200,
+                        Body: "{}",
+                        IsSuccessStatusCode: true,
+                        ReasonPhrase: "OK",
+                        ServerError: false,
+                        ServerErrorMessage: null,
+                        Headers: {
+                            "Content-Type": contentType,
+                            "X-Mock-Response": "true"
+                        }
+                    };
+
+                    return JSON.stringify(mockResponse);
+                }
             },
 
-            PutAsync: async function(url, body, headers = {}, contentType = "application/json") {
+            PutAsync: async function (url, body, headers = {}, contentType = "application/json") {
                 Server.Logger.Log(\`[MOCK] HttpClient.PutAsync called with URL: \${url}\`);
                 Server.Logger.Log(\`[MOCK] Body: \${body}\`);
 
-                await new Promise(resolve => setTimeout(resolve, 100));
+                const isNodeJs = typeof process !== 'undefined' &&
+                    process.versions != null &&
+                    process.versions.node != null;
 
-                const mockResponse = {
-                    StatusCode: 200,
-                    Headers: {
-                        "Content-Type": contentType,
-                        "X-Mock-Response": "true"
-                    },
-                    Body: JSON.stringify({
-                        ...JSON.parse(body),
-                        updatedAt: new Date().toISOString()
-                    })
-                };
+                if (isNodeJs) {
+                    Server.Logger.Log(\`[NODE.JS] Making actual PUT request to: \${url}\`);
 
-                return JSON.stringify(mockResponse);
+                    try {
+                        const https = require('https');
+                        const http = require('http');
+                        const urlLib = require('url');
+
+                        const parsedUrl = urlLib.parse(url);
+                        const protocol = parsedUrl.protocol === 'https:' ? https : http;
+
+                        return new Promise((resolve, reject) => {
+                            const requestHeaders = {
+                                ...headers,
+                                'Content-Type': contentType,
+                                'Content-Length': Buffer.byteLength(body || '')
+                            };
+
+                            const options = {
+                                hostname: parsedUrl.hostname,
+                                port: parsedUrl.port,
+                                path: parsedUrl.path,
+                                method: 'PUT',
+                                headers: requestHeaders
+                            };
+
+                            const req = protocol.request(options, (res) => {
+                                let data = '';
+
+                                res.on('data', (chunk) => {
+                                    data += chunk;
+                                });
+
+                                res.on('end', () => {
+                                    const responseHeaders = {};
+                                    for (const [key, value] of Object.entries(res.headers)) {
+                                        responseHeaders[key] = Array.isArray(value) ? value.join(', ') : value;
+                                    }
+
+                                    const response = {
+                                        StatusCode: res.statusCode,
+                                        Body: data,
+                                        IsSuccessStatusCode: res.statusCode >= 200 && res.statusCode < 300,
+                                        ReasonPhrase: res.statusMessage || '',
+                                        ServerError: false,
+                                        ServerErrorMessage: null,
+                                        Headers: responseHeaders
+                                    };
+                                    Server.Logger.Log(\`[NODE.JS] PUT request completed with status: \${res.statusCode}\`);
+                                    resolve(JSON.stringify(response));
+                                });
+                            });
+
+                            req.on('error', (error) => {
+                                Server.Logger.Error(\`[NODE.JS] PUT request failed: \${error.message}\`);
+                                const errorResponse = {
+                                    StatusCode: 0,
+                                    Body: null,
+                                    IsSuccessStatusCode: false,
+                                    ReasonPhrase: null,
+                                    ServerError: true,
+                                    ServerErrorMessage: \`Error executing PUT request to '\${url}': \${error.message}\`,
+                                    Headers: {}
+                                };
+                                resolve(JSON.stringify(errorResponse));
+                            });
+
+                            if (body) {
+                                req.write(body);
+                            }
+                            req.end();
+                        });
+                    } catch (error) {
+                        Server.Logger.Error(\`[NODE.JS] Error making PUT request: \${error.message}\`);
+                        const errorResponse = {
+                            StatusCode: 0,
+                            Body: null,
+                            IsSuccessStatusCode: false,
+                            ReasonPhrase: null,
+                            ServerError: true,
+                            ServerErrorMessage: \`Error executing PUT request to '\${url}': \${error.message}\`,
+                            Headers: {}
+                        };
+                        return JSON.stringify(errorResponse);
+                    }
+                } else {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+
+                    const mockResponse = {
+                        StatusCode: 200,
+                        Body: "{}",
+                        IsSuccessStatusCode: true,
+                        ReasonPhrase: "OK",
+                        ServerError: false,
+                        ServerErrorMessage: null,
+                        Headers: {
+                            "Content-Type": contentType,
+                            "X-Mock-Response": "true"
+                        }
+                    };
+
+                    return JSON.stringify(mockResponse);
+                }
             },
 
-            DeleteAsync: async function(url, headers = {}, contentType = "application/json") {
+            DeleteAsync: async function (url, headers = {}, contentType = "application/json") {
                 Server.Logger.Log(\`[MOCK] HttpClient.DeleteAsync called with URL: \${url}\`);
 
-                await new Promise(resolve => setTimeout(resolve, 100));
+                const isNodeJs = typeof process !== 'undefined' &&
+                    process.versions != null &&
+                    process.versions.node != null;
 
-                const mockResponse = {
-                    StatusCode: 204,
-                    Headers: {
-                        "X-Mock-Response": "true"
-                    },
-                    Body: ""
-                };
+                if (isNodeJs) {
+                    Server.Logger.Log(\`[NODE.JS] Making actual DELETE request to: \${url}\`);
 
-                return JSON.stringify(mockResponse);
+                    try {
+                        const https = require('https');
+                        const http = require('http');
+                        const urlLib = require('url');
+
+                        const parsedUrl = urlLib.parse(url);
+                        const protocol = parsedUrl.protocol === 'https:' ? https : http;
+
+                        return new Promise((resolve, reject) => {
+                            const options = {
+                                hostname: parsedUrl.hostname,
+                                port: parsedUrl.port,
+                                path: parsedUrl.path,
+                                method: 'DELETE',
+                                headers: headers
+                            };
+
+                            const req = protocol.request(options, (res) => {
+                                let data = '';
+
+                                res.on('data', (chunk) => {
+                                    data += chunk;
+                                });
+
+                                res.on('end', () => {
+                                    const responseHeaders = {};
+                                    for (const [key, value] of Object.entries(res.headers)) {
+                                        responseHeaders[key] = Array.isArray(value) ? value.join(', ') : value;
+                                    }
+
+                                    const response = {
+                                        StatusCode: res.statusCode,
+                                        Body: data,
+                                        IsSuccessStatusCode: res.statusCode >= 200 && res.statusCode < 300,
+                                        ReasonPhrase: res.statusMessage || '',
+                                        ServerError: false,
+                                        ServerErrorMessage: null,
+                                        Headers: responseHeaders
+                                    };
+                                    Server.Logger.Log(\`[NODE.JS] DELETE request completed with status: \${res.statusCode}\`);
+                                    resolve(JSON.stringify(response));
+                                });
+                            });
+
+                            req.on('error', (error) => {
+                                Server.Logger.Error(\`[NODE.JS] DELETE request failed: \${error.message}\`);
+                                const errorResponse = {
+                                    StatusCode: 0,
+                                    Body: null,
+                                    IsSuccessStatusCode: false,
+                                    ReasonPhrase: null,
+                                    ServerError: true,
+                                    ServerErrorMessage: \`Error executing DELETE request to '\${url}': \${error.message}\`,
+                                    Headers: {}
+                                };
+                                resolve(JSON.stringify(errorResponse));
+                            });
+
+                            req.end();
+                        });
+                    } catch (error) {
+                        Server.Logger.Error(\`[NODE.JS] Error making DELETE request: \${error.message}\`);
+                        const errorResponse = {
+                            StatusCode: 0,
+                            Body: null,
+                            IsSuccessStatusCode: false,
+                            ReasonPhrase: null,
+                            ServerError: true,
+                            ServerErrorMessage: \`Error executing DELETE request to '\${url}': \${error.message}\`,
+                            Headers: {}
+                        };
+                        return JSON.stringify(errorResponse);
+                    }
+                } else {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+
+                    const mockResponse = {
+                        StatusCode: 204,
+                        Body: "",
+                        IsSuccessStatusCode: true,
+                        ReasonPhrase: "No Content",
+                        ServerError: false,
+                        ServerErrorMessage: null,
+                        Headers: {
+                            "X-Mock-Response": "true"
+                        }
+                    };
+
+                    return JSON.stringify(mockResponse);
+                }
             }
         },
 
-        /**
-         * Dataverse - CRUD operations on Dataverse tables and Custom APIs
-         */
         Dataverse: {
-            CreateRecord: function(entityName, body) {
-                Server.Logger.Log(\`[MOCK] Dataverse.CreateRecord called for entity: \${entityName}\`);
-                Server.Logger.Log(\`[MOCK] Body: \${body}\`);
+            CreateRecord: function (entitySetName, payload) {
+                Server.Logger.Log(\`[MOCK] Dataverse.CreateRecord called for entity: \${entitySetName}\`);
+                Server.Logger.Log(\`[MOCK] Body: \${payload}\`);
 
-                const parsedBody = JSON.parse(body);
-                const newId = \`\${entityName}-\${Date.now()}-mock-guid\`;
-
-                return JSON.stringify({
-                    id: newId,
-                    ...parsedBody,
-                    createdon: new Date().toISOString(),
-                    [\`\${entityName}id\`]: newId
-                });
-            },
-
-            RetrieveRecord: function(entityName, id, query = "") {
-                Server.Logger.Log(\`[MOCK] Dataverse.RetrieveRecord called for entity: \${entityName}, id: \${id}, query: \${query}\`);
-
-                return JSON.stringify({
-                    [\`\${entityName}id\`]: id,
-                    name: \`Mock \${entityName} Record\`,
-                    telephone1: "555-0100",
-                    createdon: new Date().toISOString(),
-                    modifiedon: new Date().toISOString()
-                });
-            },
-
-            UpdateRecord: function(entityName, id, body) {
-                Server.Logger.Log(\`[MOCK] Dataverse.UpdateRecord called for entity: \${entityName}, id: \${id}\`);
-                Server.Logger.Log(\`[MOCK] Body: \${body}\`);
-
-                const parsedBody = JSON.parse(body);
-
-                return JSON.stringify({
-                    [\`\${entityName}id\`]: id,
-                    ...parsedBody,
-                    modifiedon: new Date().toISOString()
-                });
-            },
-
-            DeleteRecord: function(entityName, id) {
-                Server.Logger.Log(\`[MOCK] Dataverse.DeleteRecord called for entity: \${entityName}, id: \${id}\`);
-
-                return JSON.stringify({
-                    success: true,
-                    message: \`Record \${id} deleted from \${entityName}\`
-                });
-            },
-
-            ExecuteCustomApi: function(apiName, parameters) {
-                Server.Logger.Log(\`[MOCK] Dataverse.ExecuteCustomApi called for API: \${apiName}\`);
-                Server.Logger.Log(\`[MOCK] Parameters: \${parameters}\`);
-
-                return JSON.stringify({
-                    success: true,
-                    apiName: apiName,
-                    result: {
-                        message: \`Custom API \${apiName} executed successfully\`,
-                        timestamp: new Date().toISOString()
-                    }
-                });
-            },
-
-            RetrieveMultiple: function(entityName, query) {
-                Server.Logger.Log(\`[MOCK] Dataverse.RetrieveMultiple called for entity: \${entityName}, query: \${query}\`);
-
-                return JSON.stringify({
-                    value: [
-                        {
-                            [\`\${entityName}id\`]: \`\${entityName}-1-mock-guid\`,
-                            name: \`Mock \${entityName} 1\`,
-                            createdon: new Date().toISOString()
-                        },
-                        {
-                            [\`\${entityName}id\`]: \`\${entityName}-2-mock-guid\`,
-                            name: \`Mock \${entityName} 2\`,
-                            createdon: new Date().toISOString()
+                try {
+                    const response = {
+                        StatusCode: 204,
+                        Body: "",
+                        IsSuccessStatusCode: true,
+                        ReasonPhrase: "No Content",
+                        ServerError: false,
+                        ServerErrorMessage: null,
+                        Headers: {
+                            "Location": "",
+                            "entityId": "xxxxxxxx-74cc-f011-8545-7ced8d3b4d9e",
+                            "X-Mock-Response": "true"
                         }
-                    ],
-                    "@odata.count": 2
-                });
+                    };
+
+                    return JSON.stringify(response);
+                } catch (error) {
+                    const errorResponse = {
+                        StatusCode: 500,
+                        Body: null,
+                        IsSuccessStatusCode: false,
+                        ReasonPhrase: "Internal Server Error",
+                        ServerError: true,
+                        ServerErrorMessage: \`Error executing POST request to '\${entitySetName}': \${error.message}\`,
+                        Headers: {}
+                    };
+                    return JSON.stringify(errorResponse);
+                }
+            },
+
+            RetrieveRecord: function (entitySetName, id, options = null, skipCache = false) {
+                Server.Logger.Log(\`[MOCK] Dataverse.RetrieveRecord called for entity: \${entitySetName}, id: \${id}, options: \${options}, skipCache: \${skipCache}\`);
+
+                try {
+                    const response = {
+                        StatusCode: 200,
+                        Body: "{}",
+                        IsSuccessStatusCode: true,
+                        ReasonPhrase: "OK",
+                        ServerError: false,
+                        ServerErrorMessage: null,
+                        Headers: {
+                            "OData-Version": "4.0",
+                            "X-Mock-Response": "true"
+                        }
+                    };
+
+                    return JSON.stringify(response);
+                } catch (error) {
+                    const errorResponse = {
+                        StatusCode: 500,
+                        Body: null,
+                        IsSuccessStatusCode: false,
+                        ReasonPhrase: "Internal Server Error",
+                        ServerError: true,
+                        ServerErrorMessage: \`Error executing GET request to '\${entitySetName}(\${id})': \${error.message}\`,
+                        Headers: {}
+                    };
+                    return JSON.stringify(errorResponse);
+                }
+            },
+
+            RetrieveMultipleRecords: function (entitySetName, options = null, skipCache = false) {
+                Server.Logger.Log(\`[MOCK] Dataverse.RetrieveMultipleRecords called for entity: \${entitySetName}, options: \${options}, skipCache: \${skipCache}\`);
+
+                try {
+                    const response = {
+                        StatusCode: 200,
+                        Body: "{}",
+                        IsSuccessStatusCode: true,
+                        ReasonPhrase: "OK",
+                        ServerError: false,
+                        ServerErrorMessage: null,
+                        Headers: {
+                            "OData-Version": "4.0",
+                            "X-Mock-Response": "true"
+                        }
+                    };
+
+                    return JSON.stringify(response);
+                } catch (error) {
+                    const errorResponse = {
+                        StatusCode: 500,
+                        Body: null,
+                        IsSuccessStatusCode: false,
+                        ReasonPhrase: "Internal Server Error",
+                        ServerError: true,
+                        ServerErrorMessage: \`Error executing GET request to '\${entitySetName}': \${error.message}\`,
+                        Headers: {}
+                    };
+                    return JSON.stringify(errorResponse);
+                }
+            },
+
+            UpdateRecord: function (entitySetName, id, payload) {
+                Server.Logger.Log(\`[MOCK] Dataverse.UpdateRecord called for entity: \${entitySetName}, id: \${id}\`);
+                Server.Logger.Log(\`[MOCK] Body: \${payload}\`);
+
+                try {
+                    const response = {
+                        StatusCode: 204,
+                        Body: "",
+                        IsSuccessStatusCode: true,
+                        ReasonPhrase: "No Content",
+                        ServerError: false,
+                        ServerErrorMessage: null,
+                        Headers: {
+                            "Location": "",
+                            "entityId": "xxxxxxxx-74cc-f011-8545-7ced8d3b4d9e",
+                            "X-Mock-Response": "true"
+                        }
+                    };
+
+                    return JSON.stringify(response);
+                } catch (error) {
+                    const errorResponse = {
+                        StatusCode: 500,
+                        Body: null,
+                        IsSuccessStatusCode: false,
+                        ReasonPhrase: "Internal Server Error",
+                        ServerError: true,
+                        ServerErrorMessage: \`Error executing PATCH request to '\${entitySetName}(\${id})': \${error.message}\`,
+                        Headers: {}
+                    };
+                    return JSON.stringify(errorResponse);
+                }
+            },
+
+            DeleteRecord: function (entitySetName, id) {
+                Server.Logger.Log(\`[MOCK] Dataverse.DeleteRecord called for entity: \${entitySetName}, id: \${id}\`);
+
+                try {
+                    const response = {
+                        StatusCode: 204,
+                        Body: "",
+                        IsSuccessStatusCode: true,
+                        ReasonPhrase: "No Content",
+                        ServerError: false,
+                        ServerErrorMessage: null,
+                        Headers: {
+                            "X-Mock-Response": "true"
+                        }
+                    };
+
+                    return JSON.stringify(response);
+                } catch (error) {
+                    const errorResponse = {
+                        StatusCode: 500,
+                        Body: null,
+                        IsSuccessStatusCode: false,
+                        ReasonPhrase: "Internal Server Error",
+                        ServerError: true,
+                        ServerErrorMessage: \`Error executing DELETE request to '\${entitySetName}(\${id})': \${error.message}\`,
+                        Headers: {}
+                    };
+                    return JSON.stringify(errorResponse);
+                }
+            },
+
+            InvokeCustomApi: function (method, url, payload = null) {
+                Server.Logger.Log(\`[MOCK] Dataverse.InvokeCustomApi called with method: \${method}, url: \${url}\`);
+                if (payload) {
+                    Server.Logger.Log(\`[MOCK] Payload: \${payload}\`);
+                }
+
+                try {
+                    // Validate method (only GET and POST supported)
+                    const upperMethod = method?.toUpperCase();
+                    if (upperMethod !== 'GET' && upperMethod !== 'POST') {
+                        const errorResponse = {
+                            StatusCode: 400,
+                            Body: null,
+                            IsSuccessStatusCode: false,
+                            ReasonPhrase: \`The HTTP method '\${method}' is not supported for invoking custom APIs. Only 'GET' and 'POST' are supported.\`,
+                            ServerError: true,
+                            ServerErrorMessage: \`Error executing \${method} request to '\${url}'\`,
+                            Headers: {}
+                        };
+                        return JSON.stringify(errorResponse);
+                    }
+
+                    const response = {
+                        StatusCode: 200,
+                        Body: "",
+                        IsSuccessStatusCode: true,
+                        ReasonPhrase: "OK",
+                        ServerError: false,
+                        ServerErrorMessage: null,
+                        Headers: {
+                            "X-Mock-Response": "true"
+                        }
+                    };
+
+                    return JSON.stringify(response);
+                } catch (error) {
+                    const errorResponse = {
+                        StatusCode: 500,
+                        Body: null,
+                        IsSuccessStatusCode: false,
+                        ReasonPhrase: "Internal Server Error",
+                        ServerError: true,
+                        ServerErrorMessage: \`Error executing \${method} request to '\${url}': \${error.message}\`,
+                        Headers: {}
+                    };
+                    return JSON.stringify(errorResponse);
+                }
             }
         }
     },
 
-    /**
-     * User - Information about the signed-in user
-     */
     User: {
-        id: "mock-user-id-12345",
         fullname: "Mock Test User",
         email: "mockuser@example.com",
-        username: "mockuser",
         Roles: ["System Administrator", "Portal User"],
-        IsAuthenticated: true,
         contactid: "contact-mock-guid-12345",
+    },
 
-        HasRole: function(roleName) {
-            return this.Roles.includes(roleName);
+    SiteSetting: {
+        Get: function (name) {
+            Server.Logger.Log(\`[MOCK] SiteSetting.Get called for: \${name}\`);
+
+            return \`mock-value-for-\${name}\`;
         }
     },
 
-    /**
-     * Environment - Environment variables and settings
-     */
-    Environment: {
-        GetVariable: function(variableName) {
+    Website: {
+        adx_name: "Mock Website Name",
+        adx_websiteid: "website-mock-guid-67890"
+    },
+
+    EnvironmentVariable: {
+        Get: function (variableName) {
             Server.Logger.Log(\`[MOCK] Environment.GetVariable called for: \${variableName}\`);
 
-            // Mock environment variables
-            const mockVariables = {
-                "ApiBaseUrl": "https://api.mock.com",
-                "ApiKey": "mock-api-key-12345",
-                "DebugMode": "true",
-                "MaxRetries": "3"
-            };
-
-            return mockVariables[variableName] || \`mock-value-for-\${variableName}\`;
-        }
-    },
-
-    /**
-     * Utility methods for testing
-     */
-    Mock: {
-        /**
-         * Reset mock data to defaults
-         */
-        Reset: function() {
-            Server.Context.QueryParameters = { "id": "12345-test-guid" };
-            Server.Context.Headers = {
-                "Authorization": "Bearer mock-token",
-                "Content-Type": "application/json"
-            };
-            Server.Context.Body = JSON.stringify({ name: "Test Account" });
-            Server.Context.Method = "GET";
-            Server.Logger.Log("[MOCK] Server mock reset to defaults");
-        },
-
-        /**
-         * Set custom query parameters
-         */
-        SetQueryParameters: function(params) {
-            Server.Context.QueryParameters = params;
-            Server.Logger.Log(\`[MOCK] Query parameters set: \${JSON.stringify(params)}\`);
-        },
-
-        /**
-         * Set custom headers
-         */
-        SetHeaders: function(headers) {
-            Server.Context.Headers = headers;
-            Server.Logger.Log(\`[MOCK] Headers set: \${JSON.stringify(headers)}\`);
-        },
-
-        /**
-         * Set request body
-         */
-        SetBody: function(body) {
-            Server.Context.Body = typeof body === 'string' ? body : JSON.stringify(body);
-            Server.Logger.Log(\`[MOCK] Body set: \${Server.Context.Body}\`);
-        },
-
-        /**
-         * Set HTTP method
-         */
-        SetMethod: function(method) {
-            Server.Context.Method = method;
-            Server.Logger.Log(\`[MOCK] Method set: \${method}\`);
+            return \`mock-value-for-\${variableName}\`;
         }
     }
 };
 
-// Make Server available globally
-global.Server = Server;
 
-// Load custom mock data if provided via environment variable
-try {
-    const mockDataPath = process.env.MOCK_DATA_PATH;
-    if (mockDataPath) {
-        const fs = require('fs');
-        const mockData = JSON.parse(fs.readFileSync(mockDataPath, 'utf8'));
-
-        // Merge custom mock data into Server.Context
-        if (mockData.User) {
-            Object.assign(global.Server.User, mockData.User);
-        }
-        if (mockData.Context) {
-            Object.assign(global.Server.Context, mockData.Context);
-        }
-        if (mockData.QueryParameters) {
-            Object.assign(global.Server.Context.QueryParameters, mockData.QueryParameters);
-        }
-        if (mockData.Headers) {
-            Object.assign(global.Server.Context.Headers, mockData.Headers);
-        }
-
-        console.log('[PowerPages] Custom mock data loaded from:', mockDataPath);
-    }
-} catch (e) {
-    // Silently ignore if no custom mock data is available
+// Make available globally for browser/script environments
+if (typeof global !== 'undefined') {
+    global.Server = Server;
 }
+
+
 
 console.log('\\n[PowerPages] ✅ Server Logic Mock SDK loaded successfully');
 console.log('[PowerPages] 📝 All Server.* APIs are now available for debugging\\n');
