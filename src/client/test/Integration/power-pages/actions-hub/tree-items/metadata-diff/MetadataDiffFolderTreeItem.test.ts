@@ -59,7 +59,7 @@ describe("MetadataDiffFolderTreeItem", () => {
                 relativePath: "folder/file.txt",
                 status: "modified"
             };
-            const fileItem = new MetadataDiffFileTreeItem("file.txt", comparisonResult, "Test Site");
+            const fileItem = new MetadataDiffFileTreeItem(comparisonResult, "Test Site");
 
             treeItem.childrenMap.set("file.txt", fileItem);
 
@@ -86,7 +86,7 @@ describe("MetadataDiffFolderTreeItem", () => {
                 relativePath: "folder/file.txt",
                 status: "modified"
             };
-            const fileItem = new MetadataDiffFileTreeItem("file.txt", comparisonResult, "Test Site");
+            const fileItem = new MetadataDiffFileTreeItem(comparisonResult, "Test Site");
 
             treeItem.childrenMap.set("subfolder", childFolder);
             treeItem.childrenMap.set("file.txt", fileItem);
@@ -113,7 +113,7 @@ describe("MetadataDiffFolderTreeItem", () => {
                 relativePath: "folder/file.txt",
                 status: "modified"
             };
-            const fileItem = new MetadataDiffFileTreeItem("file.txt", comparisonResult, "Test Site");
+            const fileItem = new MetadataDiffFileTreeItem(comparisonResult, "Test Site");
 
             treeItem.childrenMap.set("subfolder", childFolder);
             treeItem.childrenMap.set("file.txt", fileItem);
@@ -133,7 +133,7 @@ describe("MetadataDiffFolderTreeItem", () => {
                 relativePath: "folder/file.txt",
                 status: "modified"
             };
-            const fileItem = new MetadataDiffFileTreeItem("file.txt", comparisonResult, "Test Site");
+            const fileItem = new MetadataDiffFileTreeItem(comparisonResult, "Test Site");
 
             treeItem.childrenMap.set("file.txt", fileItem);
 
@@ -156,7 +156,7 @@ describe("MetadataDiffFolderTreeItem", () => {
                 relativePath: "root/level1/level2/file.txt",
                 status: "modified"
             };
-            const fileItem = new MetadataDiffFileTreeItem("file.txt", comparisonResult, "Test Site");
+            const fileItem = new MetadataDiffFileTreeItem(comparisonResult, "Test Site");
 
             level2Folder.childrenMap.set("file.txt", fileItem);
             level1Folder.childrenMap.set("level2", level2Folder);

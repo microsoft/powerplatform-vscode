@@ -1,5 +1,5 @@
 ---
-applyTo: src/client/**
+applyTo: "**/src/client/**"
 description: Desktop Extension Setup and Contribution Instructions
 ---
 

@@ -5,7 +5,8 @@
 
 import { expect } from "chai";
 import * as sinon from "sinon";
-import MetadataDiffContext from "../../../../power-pages/actions-hub/MetadataDiffContext";
+import * as vscode from "vscode";
+import MetadataDiffContext, { MetadataDiffViewMode } from "../../../../power-pages/actions-hub/MetadataDiffContext";
 import { IFileComparisonResult } from "../../../../power-pages/actions-hub/models/IFileComparisonResult";
 
 describe("MetadataDiffContext", () => {
@@ -15,6 +16,8 @@ describe("MetadataDiffContext", () => {
         sandbox = sinon.createSandbox();
         // Clear the context before each test
         MetadataDiffContext.clear();
+        // Reset view mode to default
+        MetadataDiffContext.setViewMode(MetadataDiffViewMode.List);
     });
 
     afterEach(() => {
@@ -163,6 +166,117 @@ describe("MetadataDiffContext", () => {
             MetadataDiffContext.clear();
 
             expect(onChangedSpy.calledOnce).to.be.true;
+        });
+    });
+
+    describe("viewMode", () => {
+        it("should default to list view mode", () => {
+            expect(MetadataDiffContext.viewMode).to.equal(MetadataDiffViewMode.List);
+        });
+
+        it("should allow setting view mode to tree", () => {
+            MetadataDiffContext.setViewMode(MetadataDiffViewMode.Tree);
+
+            expect(MetadataDiffContext.viewMode).to.equal(MetadataDiffViewMode.Tree);
+        });
+
+        it("should allow setting view mode to list", () => {
+            MetadataDiffContext.setViewMode(MetadataDiffViewMode.Tree);
+            MetadataDiffContext.setViewMode(MetadataDiffViewMode.List);
+
+            expect(MetadataDiffContext.viewMode).to.equal(MetadataDiffViewMode.List);
+        });
+
+        it("should return true for isTreeView when in tree mode", () => {
+            MetadataDiffContext.setViewMode(MetadataDiffViewMode.Tree);
+
+            expect(MetadataDiffContext.isTreeView).to.be.true;
+            expect(MetadataDiffContext.isListView).to.be.false;
+        });
+
+        it("should return true for isListView when in list mode", () => {
+            MetadataDiffContext.setViewMode(MetadataDiffViewMode.List);
+
+            expect(MetadataDiffContext.isListView).to.be.true;
+            expect(MetadataDiffContext.isTreeView).to.be.false;
+        });
+
+        it("should fire onChanged event when view mode changes", () => {
+            const onChangedSpy = sandbox.spy();
+            MetadataDiffContext.onChanged(onChangedSpy);
+
+            MetadataDiffContext.setViewMode(MetadataDiffViewMode.Tree);
+
+            expect(onChangedSpy.calledOnce).to.be.true;
+        });
+
+        it("should not fire onChanged event when view mode is set to same value", () => {
+            MetadataDiffContext.setViewMode(MetadataDiffViewMode.List);
+            const onChangedSpy = sandbox.spy();
+            MetadataDiffContext.onChanged(onChangedSpy);
+
+            MetadataDiffContext.setViewMode(MetadataDiffViewMode.List);
+
+            expect(onChangedSpy.called).to.be.false;
+        });
+
+        it("should toggle view mode between tree and list", () => {
+            expect(MetadataDiffContext.viewMode).to.equal(MetadataDiffViewMode.List);
+
+            MetadataDiffContext.toggleViewMode();
+            expect(MetadataDiffContext.viewMode).to.equal(MetadataDiffViewMode.Tree);
+
+            MetadataDiffContext.toggleViewMode();
+            expect(MetadataDiffContext.viewMode).to.equal(MetadataDiffViewMode.List);
+        });
+    });
+
+    describe("initialize", () => {
+        it("should load persisted view mode from global state", () => {
+            const mockGlobalState = {
+                get: sandbox.stub().returns(MetadataDiffViewMode.Tree),
+                update: sandbox.stub().resolves()
+            };
+            const mockContext = {
+                globalState: mockGlobalState
+            } as unknown as vscode.ExtensionContext;
+
+            MetadataDiffContext.initialize(mockContext);
+
+            expect(MetadataDiffContext.viewMode).to.equal(MetadataDiffViewMode.Tree);
+        });
+
+        it("should use default view mode when no persisted value exists", () => {
+            const mockGlobalState = {
+                get: sandbox.stub().returns(undefined),
+                update: sandbox.stub().resolves()
+            };
+            const mockContext = {
+                globalState: mockGlobalState
+            } as unknown as vscode.ExtensionContext;
+
+            MetadataDiffContext.setViewMode(MetadataDiffViewMode.List); // Reset to default
+            MetadataDiffContext.initialize(mockContext);
+
+            expect(MetadataDiffContext.viewMode).to.equal(MetadataDiffViewMode.List);
+        });
+
+        it("should persist view mode when changed after initialization", () => {
+            const mockGlobalState = {
+                get: sandbox.stub().returns(undefined),
+                update: sandbox.stub().resolves()
+            };
+            const mockContext = {
+                globalState: mockGlobalState
+            } as unknown as vscode.ExtensionContext;
+
+            MetadataDiffContext.initialize(mockContext);
+            MetadataDiffContext.setViewMode(MetadataDiffViewMode.Tree);
+
+            expect(mockGlobalState.update.calledWith(
+                "microsoft.powerplatform.pages.metadataDiff.viewModePreference",
+                MetadataDiffViewMode.Tree
+            )).to.be.true;
         });
     });
 
