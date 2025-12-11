@@ -15,6 +15,7 @@ export const Constants = {
         INACTIVE_SITE: "inactiveSite",
         OTHER_SITE: "otherSite",
         OTHER_SITES_GROUP: "otherSitesGroup",
+        TOOLS_GROUP: "toolsGroup",
         NO_SITES: "noSites",
         ACCOUNT_MISMATCH: "accountMismatch",
         LOGIN_PROMPT: "loginPrompt",
@@ -33,6 +34,7 @@ export const Constants = {
         SITE: new vscode.ThemeIcon('globe'),
         SITE_GROUP: new vscode.ThemeIcon('folder'),
         OTHER_SITES: new vscode.ThemeIcon('archive'),
+        TOOLS: new vscode.ThemeIcon('tools'),
         METADATA_DIFF_GROUP: new vscode.ThemeIcon('diff'),
         METADATA_DIFF_FOLDER: new vscode.ThemeIcon('folder'),
         METADATA_DIFF_MODIFIED: new vscode.ThemeIcon('diff-modified', new vscode.ThemeColor('gitDecoration.modifiedResourceForeground')),
@@ -41,6 +43,7 @@ export const Constants = {
     },
     Strings: {
         OTHER_SITES: vscode.l10n.t("Other Sites"),
+        TOOLS: vscode.l10n.t("Tools"),
         ACTIVE_SITES: vscode.l10n.t("Active Sites"),
         INACTIVE_SITES: vscode.l10n.t("Inactive Sites"),
         NO_SITES_FOUND: vscode.l10n.t("No sites found"),
