@@ -23,7 +23,7 @@
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title": "Ejecutar verificación con CodeQL",
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement.title": "Abrir administración del sitio",
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite.title": "Reactivar sitio",
-  "microsoft.powerplatform.pages.actionsHub.login": "Inicie sesión y conéctese a un entorno de Power Pages para usar las acciones de Power Pages. [Más información](https://go.microsoft.com/fwlink/?linkid=2305702).\n[Inicio de sesión](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile)",
+  "microsoft.powerplatform.pages.actionsHub.login": "Inicie sesión y conéctese a un entorno de Power Pages para usar las acciones de Power Pages. [Más información](https://go.microsoft.com/fwlink/?linkid=2305702).\n[Inicio de sesión](command:microsoft.powerplatform.pages.actionsHub.loginToMatch)",
   "microsoft.powerplatform.pages.actionsHub.login.title": "Agregar nuevo perfil de autenticación",
   "microsoft.powerplatform.pages.actionsHub.openSitesInStudio.title": "Abrir en el estudio de Power Pages",
   "microsoft.powerplatform.pages.actionsHub.refresh.title": "Actualizar",
