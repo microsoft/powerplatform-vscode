@@ -151,7 +151,7 @@ export const compareWithEnvironment = (pacTerminal: PacTerminal, context: vscode
     await pacWrapper.orgSelect(selectedOrgInfo.OrgUrl);
 
     const success = await showProgressWithNotification(
-        vscode.l10n.t(Constants.Strings.DOWNLOADING_SITE_FOR_COMPARISON, websiteDetails.name),
+        Constants.StringFunctions.DOWNLOADING_SITE_FOR_COMPARISON(websiteDetails.name),
         async () => pacWrapper.downloadSiteWithProgress(
             siteStoragePath,
             websiteDetails!.websiteRecordId,

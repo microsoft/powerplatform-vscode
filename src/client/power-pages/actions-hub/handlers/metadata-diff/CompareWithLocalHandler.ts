@@ -49,7 +49,7 @@ export const compareWithLocal = (pacTerminal: PacTerminal, context: vscode.Exten
     const pacWrapper = pacTerminal.getWrapper();
 
     const success = await showProgressWithNotification(
-        vscode.l10n.t(Constants.Strings.DOWNLOADING_SITE_FOR_COMPARISON, siteTreeItem.siteInfo.name),
+        Constants.StringFunctions.DOWNLOADING_SITE_FOR_COMPARISON(siteTreeItem.siteInfo.name),
         async () => pacWrapper.downloadSiteWithProgress(
             siteStoragePath,
             siteTreeItem.siteInfo.websiteId,

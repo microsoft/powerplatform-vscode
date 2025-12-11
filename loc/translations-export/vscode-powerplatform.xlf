@@ -1119,8 +1119,13 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++21c9bbf3ca8756722337933b27566345c8aa2794231295a3ede6204329456931">
       <source xml:lang="en">pac pcf init</source>
     </trans-unit>
-    <trans-unit id="++CODE++8d3cb42e3e3212d1301b30e2de80763361a074237ba5c603bad0bedf69f0d120">
-      <source xml:lang="en">{0} ({1} change(s))</source>
+    <trans-unit id="++CODE++1a0339214d26f1499ce28b0304c11fce7c177c9d6df1872ac1e9705760cfdbd8">
+      <source xml:lang="en">{0} ({1} file)</source>
+      <note>This is the site label showing the number of changed files. 'file' is singular.</note>
+    </trans-unit>
+    <trans-unit id="++CODE++baeef25dc2eb180f07d2588035131c67de574a67b5b59941b077d96c5e08ec9e">
+      <source xml:lang="en">{0} ({1} files)</source>
+      <note>This is the site label showing the number of changed files. 'files' is plural.</note>
     </trans-unit>
     <trans-unit id="++CODE++48c4c42c9b70ac4687a121f91d8cb9a9063a3b51fbc5eeb68e5edc961ee18482">
       <source xml:lang="en">{0} created!</source>
