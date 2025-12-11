@@ -24,6 +24,10 @@ export class MetadataDiffGroupTreeItem extends ActionsHubTreeItem {
             hasResults ? Constants.ContextValues.METADATA_DIFF_GROUP_WITH_RESULTS : Constants.ContextValues.METADATA_DIFF_GROUP,
             undefined
         );
+
+        // Set unique id that changes based on state to ensure VS Code respects our collapsibleState
+        // Without this, VS Code may cache the collapsed state from when there were no results
+        this.id = hasResults ? "metadataDiffGroup-withResults" : "metadataDiffGroup-noResults";
     }
 
     public getChildren(): ActionsHubTreeItem[] {
