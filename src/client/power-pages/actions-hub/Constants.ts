@@ -18,11 +18,24 @@ export const Constants = {
         NO_SITES: "noSites",
         ACCOUNT_MISMATCH: "accountMismatch",
         LOGIN_PROMPT: "loginPrompt",
+        METADATA_DIFF_GROUP: "metadataDiffGroup",
+        METADATA_DIFF_FOLDER: "metadataDiffFolder",
+        METADATA_DIFF_FILE: "metadataDiffFile",
+    },
+    Commands: {
+        METADATA_DIFF_OPEN_FILE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.openFile",
+        METADATA_DIFF_OPEN_ALL: "microsoft.powerplatform.pages.actionsHub.metadataDiff.openAll",
+        METADATA_DIFF_CLEAR: "microsoft.powerplatform.pages.actionsHub.metadataDiff.clear",
     },
     Icons: {
         SITE: new vscode.ThemeIcon('globe'),
         SITE_GROUP: new vscode.ThemeIcon('folder'),
-        OTHER_SITES: new vscode.ThemeIcon('archive')
+        OTHER_SITES: new vscode.ThemeIcon('archive'),
+        METADATA_DIFF_GROUP: new vscode.ThemeIcon('diff'),
+        METADATA_DIFF_FOLDER: new vscode.ThemeIcon('folder'),
+        METADATA_DIFF_MODIFIED: new vscode.ThemeIcon('diff-modified', new vscode.ThemeColor('gitDecoration.modifiedResourceForeground')),
+        METADATA_DIFF_ADDED: new vscode.ThemeIcon('diff-added', new vscode.ThemeColor('gitDecoration.addedResourceForeground')),
+        METADATA_DIFF_DELETED: new vscode.ThemeIcon('diff-removed', new vscode.ThemeColor('gitDecoration.deletedResourceForeground'))
     },
     Strings: {
         OTHER_SITES: vscode.l10n.t("Other Sites"),
@@ -74,7 +87,7 @@ export const Constants = {
         SARIF_VIEWER_NOT_INSTALLED: vscode.l10n.t("The SARIF Viewer extension is recommended for viewing CodeQL results. Would you like to install it now?"),
         SARIF_VIEWER_INSTALL_FAILED: vscode.l10n.t("Failed to install SARIF viewer extension. Opening results as text file."),
         OPEN_AS_TEXT: vscode.l10n.t("Open as Text"),
-        CODEQL_ANALYSIS_CHANNEL_NAME: vscode.l10n.t("CodeQL Analysis"),
+        CODEQL_ANALYSIS_CHANNEL_NAME: "Power Platform Tools: CodeQL Analysis",
         CODEQL_ANALYSIS_STARTING: vscode.l10n.t("Starting CodeQL analysis for: {0}"),
         CODEQL_DATABASE_LOCATION: vscode.l10n.t("Database location: {0}"),
         CODEQL_CREATING_DATABASE: vscode.l10n.t("Creating CodeQL database..."),
@@ -139,7 +152,17 @@ export const Constants = {
         CODEQL_CONFIG_FILE_CREATED_SUCCESSFULLY: vscode.l10n.t("PowerPages config file created successfully: {0}"),
         CODEQL_CONFIG_FILE_CREATE_ERROR: vscode.l10n.t("Error creating config file: {0}"),
         CODEQL_CONFIG_FILE_UPDATED_SUCCESSFULLY: vscode.l10n.t("PowerPages config file updated successfully: {0}"),
-        CODEQL_CONFIG_FILE_UPDATE_ERROR: vscode.l10n.t("Error updating config file: {0}")
+        CODEQL_CONFIG_FILE_UPDATE_ERROR: vscode.l10n.t("Error updating config file: {0}"),
+        NO_WORKSPACE_FOLDER_OPEN: vscode.l10n.t("No workspace folder is open. Please open a folder containing your Power Pages site."),
+        WEBSITE_ID_NOT_FOUND: vscode.l10n.t("Website ID not found. Please ensure you have a valid Power Pages site open."),
+        DOWNLOADING_SITE_FOR_COMPARISON: vscode.l10n.t("Downloading site for comparison..."),
+        COMPARE_WITH_LOCAL_SITE_DOWNLOAD_FAILED: vscode.l10n.t("Site download failed. Please try again later."),
+        NO_DIFFERENCES_FOUND: vscode.l10n.t("No differences found between the remote site and your local workspace."),
+        COMPARING_FILES: vscode.l10n.t("Comparing files..."),
+        METADATA_DIFF_GROUP: vscode.l10n.t("Metadata Comparison"),
+        METADATA_DIFF_MODIFIED: vscode.l10n.t("Modified"),
+        METADATA_DIFF_ADDED: vscode.l10n.t("Added locally"),
+        METADATA_DIFF_DELETED: vscode.l10n.t("Deleted locally"),
     },
     EventNames: {
         ACTIONS_HUB_ENABLED: "ActionsHubEnabled",
@@ -245,7 +268,7 @@ export const Constants = {
         ACTIONS_HUB_CODEQL_SARIF_VIEWER_OPENING_WITH_ISSUES: "ActionsHubCodeQLSarifViewerOpeningWithIssues",
         ACTIONS_HUB_CODEQL_ANALYSIS_CLEAN_RESULTS: "ActionsHubCodeQLAnalysisCleanResults",
         ACTIONS_HUB_CODEQL_FALLBACK_TO_TEXT_EDITOR: "ActionsHubCodeQLFallbackToTextEditor",
-         ACTIONS_HUB_ACCOUNT_MISMATCH_DETECTED: "ActionsHubAccountMismatchDetected",
+        ACTIONS_HUB_ACCOUNT_MISMATCH_DETECTED: "ActionsHubAccountMismatchDetected",
         ACTIONS_HUB_LOGIN_TO_MATCH_CALLED: "ActionsHubLoginToMatchCalled",
         ACTIONS_HUB_LOGIN_TO_MATCH_FAILED: "ActionsHubLoginToMatchFailed",
         ACTIONS_HUB_LOGIN_TO_MATCH_SUCCEEDED: "ActionsHubLoginToMatchSucceeded",
@@ -255,10 +278,16 @@ export const Constants = {
         ACTIONS_HUB_ACCOUNT_MISMATCH_UI_SHOWN: "ActionsHubAccountMismatchUIShown",
         ACTIONS_HUB_ACCOUNT_MATCH_RESOLVED: "ActionsHubAccountMatchResolved",
         ACTIONS_HUB_LOGIN_PROMPT_CLICKED: "ActionsHubLoginPromptClicked",
-        ACTIONS_HUB_REACTIVATE_SITE_CALLED: "ActionsHubReactivateSiteCalled"
-    },
-    FeatureNames: {
-        REFRESH_ENVIRONMENT: "RefreshEnvironment"
+        ACTIONS_HUB_REACTIVATE_SITE_CALLED: "ActionsHubReactivateSiteCalled",
+        ACTIONS_HUB_COMPARE_WITH_LOCAL_CALLED: "ActionsHubCompareWithLocalCalled",
+        ACTIONS_HUB_COMPARE_WITH_LOCAL_NO_WORKSPACE: "ActionsHubCompareWithLocalNoWorkspace",
+        ACTIONS_HUB_COMPARE_WITH_LOCAL_WEBSITE_ID_NOT_FOUND: "ActionsHubCompareWithLocalWebsiteIdNotFound",
+        ACTIONS_HUB_COMPARE_WITH_LOCAL_DOWNLOAD_FAILED: "ActionsHubCompareWithLocalDownloadFailed",
+        ACTIONS_HUB_COMPARE_WITH_LOCAL_COMPLETED: "ActionsHubCompareWithLocalCompleted",
+        ACTIONS_HUB_COMPARE_WITH_LOCAL_NO_DIFFERENCES: "ActionsHubCompareWithLocalNoDifferences",
+        ACTIONS_HUB_METADATA_DIFF_OPEN_FILE: "ActionsHubMetadataDiffOpenFile",
+        ACTIONS_HUB_METADATA_DIFF_OPEN_ALL: "ActionsHubMetadataDiffOpenAll",
+        ACTIONS_HUB_METADATA_DIFF_CLEAR: "ActionsHubMetadataDiffClear",
     },
     StudioEndpoints: {
         TEST: "https://make.test.powerpages.microsoft.com",

@@ -98,7 +98,7 @@ describe("ActionsHubTreeDataProvider", () => {
             const mockCommandHandler = sinon.stub(RefreshEnvironmentHandler, 'refreshEnvironment');
             mockCommandHandler.resolves();
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
-            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"]();
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.refresh")).to.be.true;
 
@@ -110,7 +110,7 @@ describe("ActionsHubTreeDataProvider", () => {
             const mockCommandHandler = sinon.stub(SwitchEnvironmentHandler, 'switchEnvironment');
             mockCommandHandler.resolves();
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
-            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"]();
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.switchEnvironment")).to.be.true;
 
@@ -122,7 +122,7 @@ describe("ActionsHubTreeDataProvider", () => {
             const mockCommandHandler = sinon.stub(ShowEnvironmentDetailsHandler, 'showEnvironmentDetails');
             mockCommandHandler.resolves();
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
-            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"]();
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails")).to.be.true;
 
@@ -134,7 +134,7 @@ describe("ActionsHubTreeDataProvider", () => {
             const mockCommandHandler = sinon.stub(OpenSiteInStudioHandler, 'openActiveSitesInStudio');
             mockCommandHandler.resolves();
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
-            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"]();
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.openActiveSitesInStudio")).to.be.true;
 
@@ -146,7 +146,7 @@ describe("ActionsHubTreeDataProvider", () => {
             const mockCommandHandler = sinon.stub(OpenSiteInStudioHandler, 'openInactiveSitesInStudio');
             mockCommandHandler.resolves();
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
-            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"]();
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.openInactiveSitesInStudio")).to.be.true;
 
@@ -158,7 +158,7 @@ describe("ActionsHubTreeDataProvider", () => {
             const mockCommandHandler = sinon.stub(PreviewSiteHandler, 'previewSite');
             mockCommandHandler.resolves();
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
-            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"]();
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.activeSite.preview")).to.be.true;
 
@@ -170,7 +170,7 @@ describe("ActionsHubTreeDataProvider", () => {
             const mockCommandHandler = sinon.stub(CreateNewAuthProfileHandler, 'createNewAuthProfile');
             mockCommandHandler.resolves();
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
-            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"]();
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.newAuthProfile")).to.be.true;
 
@@ -182,7 +182,7 @@ describe("ActionsHubTreeDataProvider", () => {
             const mockCommandHandler = sinon.stub(RevealInOSHandler, 'revealInOS');
             mockCommandHandler.resolves();
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
-            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"]();
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows")).to.be.true;
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac")).to.be.true;
@@ -198,7 +198,7 @@ describe("ActionsHubTreeDataProvider", () => {
             const mockCommandHandler = sinon.stub(OpenSiteManagementHandler, 'openSiteManagement');
             mockCommandHandler.resolves();
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
-            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"]();
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement")).to.be.true;
 
@@ -211,7 +211,7 @@ describe("ActionsHubTreeDataProvider", () => {
             const mockCommandHandler = sinon.stub(UploadSiteHandler, 'uploadSite');
             mockCommandHandler.resolves();
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
-            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"]();
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite")).to.be.true;
 
@@ -223,7 +223,7 @@ describe("ActionsHubTreeDataProvider", () => {
             const mockCommandHandler = sinon.stub(ShowSiteDetailsHandler, 'showSiteDetails');
             mockCommandHandler.resolves();
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
-            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"]();
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.siteDetails")).to.be.true;
 
@@ -235,7 +235,7 @@ describe("ActionsHubTreeDataProvider", () => {
             const mockCommandHandler = sinon.stub(DownloadSiteHandler, 'downloadSite');
             mockCommandHandler.resolves();
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
-            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"]();
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite")).to.be.true;
 
@@ -247,7 +247,7 @@ describe("ActionsHubTreeDataProvider", () => {
             const mockCommandHandler = sinon.stub(OpenSiteInStudioHandler, 'openSiteInStudio');
             mockCommandHandler.resolves();
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
-            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"]();
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio")).to.be.true;
 
@@ -259,7 +259,7 @@ describe("ActionsHubTreeDataProvider", () => {
             const mockCommandHandler = sinon.stub(LoginToMatchHandler, 'loginToMatch');
             mockCommandHandler.resolves();
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
-            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"]();
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.loginToMatch")).to.be.true;
 
@@ -278,7 +278,7 @@ describe("ActionsHubTreeDataProvider", () => {
             const mockCommandHandler = sinon.stub(RunCodeQLScreeningHandler, 'runCodeQLScreening');
             mockCommandHandler.resolves();
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, true);
-            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"]();
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening")).to.be.true;
 

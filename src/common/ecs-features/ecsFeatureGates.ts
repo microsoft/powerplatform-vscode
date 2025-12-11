@@ -130,3 +130,13 @@ export const {
         enableBlogSupport: false,
     }
 });
+
+export const {
+    feature: EnableMetadataDiff
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable Metadata Diff comparison in VS Code Desktop',
+    fallback: {
+        enableMetadataDiff: false,
+    }
+});
