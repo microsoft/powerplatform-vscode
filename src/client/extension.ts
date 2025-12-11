@@ -184,6 +184,9 @@ export async function activate(
     const basicPanels = RegisterBasicPanels(pacWrapper);
     _context.subscriptions.push(...basicPanels);
 
+    // Activate Server Logic debugger (always available, doesn't require authentication)
+    activateServerLogicDebugger(_context);
+
     let copilotNotificationShown = false;
 
     const workspaceFolders = getWorkspaceFolders();
@@ -247,9 +250,6 @@ export async function activate(
                         activateServerApiAutocomplete(_context, [
                             { languageId: 'javascript', triggerCharacters: ['.'] }
                         ]);
-
-                        // Activate Server Logic debugger
-                        activateServerLogicDebugger(_context);
 
                         serverApiAutocompleteInitialized = true;
                     }
