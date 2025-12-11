@@ -441,6 +441,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++aac77df347205252b074d45aff7891debdba0ff1466cc0c351416d1662bb71ab">
       <source xml:lang="en">Feedback</source>
     </trans-unit>
+    <trans-unit id="++CODE++adab78b8f35901e7816538a4b89ee6e3cbd40b3df8a43be64bac0da0091b6d8f">
+      <source xml:lang="en">Fetching websites from the selected environment...</source>
+    </trans-unit>
     <trans-unit id="++CODE++2a8ddde521f14ecd4a8717f2bcf9a2b021fa38a578518066d2ae32271aa95237">
       <source xml:lang="en">Fetching your file ...</source>
     </trans-unit>
@@ -836,6 +839,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++87468e6a845b82466220c11dd0ca315a4389dc1cb8e0ee102035bb4ce5cb7e39">
       <source xml:lang="en">Select an environment</source>
     </trans-unit>
+    <trans-unit id="++CODE++fafd4e6859e28fd1f76851b8a08f6d3ccb58402fb65e44f3c342575741b056e6">
+      <source xml:lang="en">Select an environment to compare with</source>
+    </trans-unit>
     <trans-unit id="++CODE++58ea04f09a2cbf67d55e70c45a6da4998e72e8e50f91e63862c0d65d14dfb1f5">
       <source xml:lang="en">Select folder for CodeQL database</source>
     </trans-unit>
@@ -938,6 +944,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++51d2fcbba3e5fc15afbd85f1d179e58b9c4328b466cd7872ec77dc0c9cb34afe">
       <source xml:lang="en">The preview shown is for published changes. Please publish any pending changes to see them in the preview.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++1f362261e8bb9564245fa7e590732de71b5f6cbb3e9963a8d8573b51ae18cbfe">
+      <source xml:lang="en">The website was not found in the selected environment. Please select a different environment.</source>
     </trans-unit>
     <trans-unit id="++CODE++18f3be2933741b96e56b1e1f70818fcba46ec9c5b3dcd0e28d801eab15791d84">
       <source xml:lang="en">There was a permissions problem with the server</source>
@@ -1149,6 +1158,9 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
     </trans-unit>
     <trans-unit id="powerpages.copilotPanel.clearConversation.title">
       <source xml:lang="en">Clear Conversation</source>
+    </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.compareWithEnvironment.title">
+      <source xml:lang="en">Compare with Environment</source>
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.compareWithLocal.title">
       <source xml:lang="en">Compare with Local</source>

@@ -350,6 +350,9 @@
   "Comparing files...": "Comparing files...",
   "Metadata Diff": "Metadata Diff",
   "Download is complete. You can now view the report.": "Download is complete. You can now view the report.",
+  "Select an environment to compare with": "Select an environment to compare with",
+  "The website was not found in the selected environment. Please select a different environment.": "The website was not found in the selected environment. Please select a different environment.",
+  "Fetching websites from the selected environment...": "Fetching websites from the selected environment...",
   "{0} ({1} change(s))": "{0} ({1} change(s))",
   "Show Diff": "Show Diff",
   "Friendly name: {0}/{0} is the website name": {

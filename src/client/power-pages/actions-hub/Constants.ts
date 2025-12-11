@@ -32,6 +32,7 @@ export const Constants = {
         METADATA_DIFF_REMOVE_SITE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.removeSite",
         METADATA_DIFF_VIEW_AS_TREE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsTree",
         METADATA_DIFF_VIEW_AS_LIST: "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsList",
+        COMPARE_WITH_ENVIRONMENT: "microsoft-powerapps-portals.compareWithEnvironment",
     },
     Icons: {
         SITE: new vscode.ThemeIcon('globe'),
@@ -175,6 +176,9 @@ export const Constants = {
         METADATA_DIFF_ADDED: vscode.l10n.t("Added locally"),
         METADATA_DIFF_DELETED: vscode.l10n.t("Deleted locally"),
         COMPARE_WITH_LOCAL_COMPLETED: vscode.l10n.t("Download is complete. You can now view the report."),
+        SELECT_ENVIRONMENT_TO_COMPARE: vscode.l10n.t("Select an environment to compare with"),
+        WEBSITE_NOT_FOUND_IN_ENVIRONMENT: vscode.l10n.t("The website was not found in the selected environment. Please select a different environment."),
+        FETCHING_WEBSITES_FROM_ENVIRONMENT: vscode.l10n.t("Fetching websites from the selected environment..."),
     },
     EventNames: {
         ACTIONS_HUB_ENABLED: "ActionsHubEnabled",
@@ -301,6 +305,13 @@ export const Constants = {
         ACTIONS_HUB_METADATA_DIFF_OPEN_ALL: "ActionsHubMetadataDiffOpenAll",
         ACTIONS_HUB_METADATA_DIFF_CLEAR: "ActionsHubMetadataDiffClear",
         ACTIONS_HUB_METADATA_DIFF_VIEW_MODE_CHANGED: "ActionsHubMetadataDiffViewModeChanged",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_CALLED: "ActionsHubCompareWithEnvironmentCalled",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_ENVIRONMENT_SELECTED: "ActionsHubCompareWithEnvironmentEnvironmentSelected",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_CANCELLED: "ActionsHubCompareWithEnvironmentCancelled",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_WEBSITE_NOT_FOUND: "ActionsHubCompareWithEnvironmentWebsiteNotFound",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_COMPLETED: "ActionsHubCompareWithEnvironmentCompleted",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_FAILED: "ActionsHubCompareWithEnvironmentFailed",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_NO_DIFFERENCES: "ActionsHubCompareWithEnvironmentNoDifferences",
     },
     StudioEndpoints: {
         TEST: "https://make.test.powerpages.microsoft.com",

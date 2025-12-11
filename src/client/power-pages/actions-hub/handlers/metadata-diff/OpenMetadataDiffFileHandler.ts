@@ -8,6 +8,7 @@ import * as fs from "fs";
 import { MetadataDiffFileTreeItem } from "../../tree-items/metadata-diff/MetadataDiffFileTreeItem";
 import { traceInfo } from "../../TelemetryHelper";
 import { Constants } from "../../Constants";
+import { FileComparisonStatus } from "../../models/IFileComparisonResult";
 
 /**
  * Opens a single file diff in the VS Code diff editor
@@ -24,7 +25,7 @@ export async function openMetadataDiffFile(fileItem: MetadataDiffFileTreeItem): 
     const title = vscode.l10n.t("{0}: {1} (Remote ↔ Local)", siteName, comparisonResult.relativePath);
 
     // Handle different diff scenarios based on file status
-    if (comparisonResult.status === "deleted") {
+    if (comparisonResult.status === FileComparisonStatus.DELETED) {
         // File exists in remote but not locally - show remote on left, empty on right
         const remoteUri = vscode.Uri.file(comparisonResult.remotePath);
 
@@ -32,7 +33,7 @@ export async function openMetadataDiffFile(fileItem: MetadataDiffFileTreeItem): 
             // Show the remote file only (since local doesn't exist)
             await vscode.commands.executeCommand("vscode.diff", remoteUri, vscode.Uri.parse("untitled:"), title);
         }
-    } else if (comparisonResult.status === "added") {
+    } else if (comparisonResult.status === FileComparisonStatus.ADDED) {
         // File exists locally but not in remote - show empty on left, local on right
         const localUri = vscode.Uri.file(comparisonResult.localPath);
 

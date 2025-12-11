@@ -6,7 +6,7 @@
 import * as vscode from "vscode";
 import { ActionsHubTreeItem } from "../ActionsHubTreeItem";
 import { Constants } from "../../Constants";
-import { IFileComparisonResult } from "../../models/IFileComparisonResult";
+import { FileComparisonStatus, IFileComparisonResult } from "../../models/IFileComparisonResult";
 import MetadataDiffContext from "../../MetadataDiffContext";
 
 /**
@@ -87,11 +87,11 @@ export class MetadataDiffFileTreeItem extends ActionsHubTreeItem {
      */
     private static getStatusDescription(status: IFileComparisonResult["status"]): string {
         switch (status) {
-            case "modified":
+            case FileComparisonStatus.MODIFIED:
                 return Constants.Strings.METADATA_DIFF_MODIFIED;
-            case "added":
+            case FileComparisonStatus.ADDED:
                 return Constants.Strings.METADATA_DIFF_ADDED;
-            case "deleted":
+            case FileComparisonStatus.DELETED:
                 return Constants.Strings.METADATA_DIFF_DELETED;
             default:
                 return "";

@@ -535,6 +535,12 @@
         "title": "%microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsList.title%",
         "icon": "$(list-flat)",
         "when": "microsoft.powerplatform.pages.metadataDiffEnabled && microsoft.powerplatform.pages.metadataDiffViewMode == 'tree'"
+      },
+      {
+        "command": "microsoft-powerapps-portals.compareWithEnvironment",
+        "category": "Powerpages",
+        "title": "%microsoft-powerapps-portals.compareWithEnvironment.title%",
+        "when": "microsoft.powerplatform.pages.metadataDiffEnabled"
       }
     ],
     "configuration": {
@@ -822,6 +828,11 @@
         {
           "command": "microsoft-powerapps-portals.pagetemplate",
           "group": "1_powerpages@2"
+        },
+        {
+          "command": "microsoft-powerapps-portals.compareWithEnvironment",
+          "group": "2_compare@1",
+          "when": "microsoft.powerplatform.pages.metadataDiffEnabled"
         }
       ],
       "editor/title": [
