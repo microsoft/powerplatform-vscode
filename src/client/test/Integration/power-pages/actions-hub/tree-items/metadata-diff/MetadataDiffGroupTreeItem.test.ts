@@ -106,6 +106,27 @@ describe("MetadataDiffGroupTreeItem", () => {
 
             expect(treeItem.contextValue).to.equal(Constants.ContextValues.METADATA_DIFF_GROUP_WITH_RESULTS);
         });
+
+        it("should have id without results suffix when no results", () => {
+            const treeItem = new MetadataDiffGroupTreeItem();
+
+            expect(treeItem.id).to.equal("metadataDiffGroup-noResults");
+        });
+
+        it("should have id with results suffix when results exist", () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/file.txt",
+                    remotePath: "/remote/file.txt",
+                    relativePath: "file.txt",
+                    status: "modified"
+                }
+            ];
+            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffGroupTreeItem();
+
+            expect(treeItem.id).to.equal("metadataDiffGroup-withResults");
+        });
     });
 
     describe("getChildren", () => {

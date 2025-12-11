@@ -21,8 +21,12 @@ export class MetadataDiffSiteTreeItem extends ActionsHubTreeItem {
     private readonly _environmentName: string;
 
     constructor(comparisonResults: IFileComparisonResult[], siteName: string, environmentName: string) {
+        const fileCount = comparisonResults.length;
+        const fileLabel = fileCount === 1
+            ? Constants.StringFunctions.SITE_WITH_FILE_COUNT_SINGULAR(siteName, fileCount)
+            : Constants.StringFunctions.SITE_WITH_FILE_COUNT_PLURAL(siteName, fileCount);
         super(
-            vscode.l10n.t("{0} ({1} change(s))", siteName, comparisonResults.length),
+            fileLabel,
             vscode.TreeItemCollapsibleState.Expanded,
             Constants.Icons.SITE,
             Constants.ContextValues.METADATA_DIFF_SITE,

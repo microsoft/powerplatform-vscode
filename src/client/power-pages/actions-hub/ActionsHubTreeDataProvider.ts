@@ -38,6 +38,7 @@ import { downloadSite } from "./handlers/DownloadSiteHandler";
 import { loginToMatch } from "./handlers/LoginToMatchHandler";
 import { ActionsHub } from "./ActionsHub";
 import { compareWithLocal } from "./handlers/metadata-diff/CompareWithLocalHandler";
+import { compareWithEnvironment } from "./handlers/metadata-diff/CompareWithEnvironmentHandler";
 import MetadataDiffContext from "./MetadataDiffContext";
 import { openMetadataDiffFile } from "./handlers/metadata-diff/OpenMetadataDiffFileHandler";
 import { openAllMetadataDiffs } from "./handlers/metadata-diff/OpenAllMetadataDiffsHandler";
@@ -303,6 +304,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
         if (ActionsHub.isMetadataDiffEnabled()) {
             commands.push(
                 vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.compareWithLocal", compareWithLocal(this._pacTerminal, this._context)),
+                vscode.commands.registerCommand(Constants.Commands.COMPARE_WITH_ENVIRONMENT, compareWithEnvironment(this._pacTerminal, this._context)),
                 vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.showOutputChannel", () => this._pacTerminal.getWrapper().showOutputChannel()),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_OPEN_FILE, openMetadataDiffFile),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_OPEN_ALL, openAllMetadataDiffs),

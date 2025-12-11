@@ -32,6 +32,7 @@ export const Constants = {
         METADATA_DIFF_REMOVE_SITE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.removeSite",
         METADATA_DIFF_VIEW_AS_TREE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsTree",
         METADATA_DIFF_VIEW_AS_LIST: "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsList",
+        COMPARE_WITH_ENVIRONMENT: "microsoft-powerapps-portals.compareWithEnvironment",
     },
     Icons: {
         SITE: new vscode.ThemeIcon('globe'),
@@ -163,10 +164,6 @@ export const Constants = {
         CODEQL_CONFIG_FILE_UPDATE_ERROR: vscode.l10n.t("Error updating config file: {0}"),
         NO_WORKSPACE_FOLDER_OPEN: vscode.l10n.t("No workspace folder is open. Please open a folder containing your Power Pages site."),
         WEBSITE_ID_NOT_FOUND: vscode.l10n.t("Website ID not found. Please ensure you have a valid Power Pages site open."),
-        DOWNLOADING_SITE_FOR_COMPARISON: vscode.l10n.t({
-            message: "Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\"))...",
-            comment: ["This is a markdown formatting which must persist across translations."]
-        }),
         COMPARE_WITH_LOCAL_SITE_DOWNLOAD_FAILED: vscode.l10n.t("Site download failed. Please try again later."),
         NO_DIFFERENCES_FOUND: vscode.l10n.t("No differences found between the remote site and your local workspace."),
         COMPARING_FILES: vscode.l10n.t("Comparing files..."),
@@ -175,6 +172,42 @@ export const Constants = {
         METADATA_DIFF_ADDED: vscode.l10n.t("Added locally"),
         METADATA_DIFF_DELETED: vscode.l10n.t("Deleted locally"),
         COMPARE_WITH_LOCAL_COMPLETED: vscode.l10n.t("Download is complete. You can now view the report."),
+        SELECT_ENVIRONMENT_TO_COMPARE: vscode.l10n.t("Select an environment to compare with"),
+        WEBSITE_NOT_FOUND_IN_ENVIRONMENT: vscode.l10n.t("The website was not found in the selected environment. Please select a different environment."),
+        FETCHING_WEBSITES_FROM_ENVIRONMENT: vscode.l10n.t("Fetching websites from the selected environment..."),
+    },
+    /**
+     * Functions that return localized strings with dynamic parameters.
+     * Use these for strings that require runtime values.
+     */
+    StringFunctions: {
+        /**
+         * Returns the downloading site message with site name
+         */
+        DOWNLOADING_SITE_FOR_COMPARISON: (siteName: string) =>
+            vscode.l10n.t({
+                message: "Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\"))...",
+                args: [siteName],
+                comment: ["This is a markdown formatting which must persist across translations."]
+            }),
+        /**
+         * Returns the site label with file count (singular: "1 file")
+         */
+        SITE_WITH_FILE_COUNT_SINGULAR: (siteName: string, fileCount: number) =>
+            vscode.l10n.t({
+                message: "{0} ({1} file)",
+                args: [siteName, fileCount],
+                comment: ["This is the site label showing the number of changed files. 'file' is singular."]
+            }),
+        /**
+         * Returns the site label with file count (plural: "X files")
+         */
+        SITE_WITH_FILE_COUNT_PLURAL: (siteName: string, fileCount: number) =>
+            vscode.l10n.t({
+                message: "{0} ({1} files)",
+                args: [siteName, fileCount],
+                comment: ["This is the site label showing the number of changed files. 'files' is plural."]
+            }),
     },
     EventNames: {
         ACTIONS_HUB_ENABLED: "ActionsHubEnabled",
@@ -301,6 +334,13 @@ export const Constants = {
         ACTIONS_HUB_METADATA_DIFF_OPEN_ALL: "ActionsHubMetadataDiffOpenAll",
         ACTIONS_HUB_METADATA_DIFF_CLEAR: "ActionsHubMetadataDiffClear",
         ACTIONS_HUB_METADATA_DIFF_VIEW_MODE_CHANGED: "ActionsHubMetadataDiffViewModeChanged",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_CALLED: "ActionsHubCompareWithEnvironmentCalled",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_ENVIRONMENT_SELECTED: "ActionsHubCompareWithEnvironmentEnvironmentSelected",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_CANCELLED: "ActionsHubCompareWithEnvironmentCancelled",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_WEBSITE_NOT_FOUND: "ActionsHubCompareWithEnvironmentWebsiteNotFound",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_COMPLETED: "ActionsHubCompareWithEnvironmentCompleted",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_FAILED: "ActionsHubCompareWithEnvironmentFailed",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_NO_DIFFERENCES: "ActionsHubCompareWithEnvironmentNoDifferences",
     },
     StudioEndpoints: {
         TEST: "https://make.test.powerpages.microsoft.com",

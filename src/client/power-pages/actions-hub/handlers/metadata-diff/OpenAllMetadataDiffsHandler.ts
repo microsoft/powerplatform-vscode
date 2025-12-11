@@ -7,6 +7,7 @@ import * as vscode from "vscode";
 import { MetadataDiffSiteTreeItem } from "../../tree-items/metadata-diff/MetadataDiffSiteTreeItem";
 import { traceInfo } from "../../TelemetryHelper";
 import { Constants } from "../../Constants";
+import { FileComparisonStatus } from "../../models/IFileComparisonResult";
 
 /**
  * Opens all file diffs in the multi-diff editor for a specific site
@@ -29,9 +30,9 @@ export async function openAllMetadataDiffs(siteItem: MetadataDiffSiteTreeItem): 
         const originalUri = vscode.Uri.file(result.remotePath);
         const modifiedUri = vscode.Uri.file(result.localPath);
 
-        if (result.status === "deleted") {
+        if (result.status === FileComparisonStatus.DELETED) {
             return [labelUri, originalUri, undefined];
-        } else if (result.status === "added") {
+        } else if (result.status === FileComparisonStatus.ADDED) {
             return [labelUri, undefined, modifiedUri];
         } else {
             return [labelUri, originalUri, modifiedUri];

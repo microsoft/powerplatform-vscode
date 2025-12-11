@@ -123,5 +123,6 @@
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.clear.title": "Clear Comparison",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.removeSite.title": "Remove Comparison",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsTree.title": "View as Tree",
-  "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsList.title": "View as List"
+  "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsList.title": "View as List",
+  "microsoft-powerapps-portals.compareWithEnvironment.title": "Compare with Environment"
 }
