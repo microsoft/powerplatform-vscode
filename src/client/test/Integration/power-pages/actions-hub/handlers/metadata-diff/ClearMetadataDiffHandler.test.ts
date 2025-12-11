@@ -35,7 +35,7 @@ describe("ClearMetadataDiffHandler", () => {
                     status: "modified"
                 }
             ];
-            MetadataDiffContext.setResults(results, "Test Site");
+            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
 
             clearMetadataDiff();
 

@@ -39,12 +39,12 @@ import { loginToMatch } from "./handlers/LoginToMatchHandler";
 import { ActionsHub } from "./ActionsHub";
 import { compareWithLocal } from "./handlers/metadata-diff/CompareWithLocalHandler";
 import MetadataDiffContext from "./MetadataDiffContext";
-import { MetadataDiffGroupTreeItem } from "./tree-items/metadata-diff/MetadataDiffGroupTreeItem";
 import { openMetadataDiffFile } from "./handlers/metadata-diff/OpenMetadataDiffFileHandler";
 import { openAllMetadataDiffs } from "./handlers/metadata-diff/OpenAllMetadataDiffsHandler";
 import { clearMetadataDiff } from "./handlers/metadata-diff/ClearMetadataDiffHandler";
 import { viewAsTree, viewAsList } from "./handlers/metadata-diff/ToggleViewModeHandler";
 import { MetadataDiffDecorationProvider } from "./MetadataDiffDecorationProvider";
+import { removeSiteComparison } from "./handlers/metadata-diff/RemoveSiteHandler";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -235,16 +235,8 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                     children.push(new OtherSitesGroupTreeItem(this._otherSites));
                 }
 
-                // Add tools group
+                // Add tools group (contains MetadataDiffGroupTreeItem when feature is enabled)
                 children.push(new ToolsGroupTreeItem());
-
-                // Add metadata diff group if there are comparison results (only when feature is enabled)
-                if (ActionsHub.isMetadataDiffEnabled() && MetadataDiffContext.isActive) {
-                    children.push(new MetadataDiffGroupTreeItem(
-                        MetadataDiffContext.comparisonResults,
-                        MetadataDiffContext.siteName
-                    ));
-                }
 
                 return children;
             } else {
@@ -315,6 +307,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_OPEN_FILE, openMetadataDiffFile),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_OPEN_ALL, openAllMetadataDiffs),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_CLEAR, clearMetadataDiff),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_REMOVE_SITE, removeSiteComparison),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_VIEW_AS_TREE, viewAsTree),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_VIEW_AS_LIST, viewAsList),
                 MetadataDiffDecorationProvider.getInstance().register()
