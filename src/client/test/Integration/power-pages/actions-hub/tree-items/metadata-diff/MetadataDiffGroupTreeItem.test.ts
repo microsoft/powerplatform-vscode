@@ -6,8 +6,7 @@
 import * as vscode from "vscode";
 import { expect } from "chai";
 import { MetadataDiffGroupTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/metadata-diff/MetadataDiffGroupTreeItem";
-import { MetadataDiffFileTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/metadata-diff/MetadataDiffFileTreeItem";
-import { MetadataDiffFolderTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/metadata-diff/MetadataDiffFolderTreeItem";
+import { MetadataDiffSiteTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/metadata-diff/MetadataDiffSiteTreeItem";
 import { ActionsHubTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
 import { IFileComparisonResult } from "../../../../../../power-pages/actions-hub/models/IFileComparisonResult";
 import { Constants } from "../../../../../../power-pages/actions-hub/Constants";
@@ -17,16 +16,29 @@ describe("MetadataDiffGroupTreeItem", () => {
     beforeEach(() => {
         // Reset to default list view mode before each test
         MetadataDiffContext.setViewMode(MetadataDiffViewMode.List);
+        // Clear all site results before each test
+        MetadataDiffContext.clear();
+    });
+
+    afterEach(() => {
+        // Clean up after each test
+        MetadataDiffContext.clear();
     });
 
     describe("constructor", () => {
         it("should be an instance of ActionsHubTreeItem", () => {
-            const treeItem = new MetadataDiffGroupTreeItem([], "Test Site");
+            const treeItem = new MetadataDiffGroupTreeItem();
 
             expect(treeItem).to.be.instanceOf(ActionsHubTreeItem);
         });
 
-        it("should have the expected label with change count", () => {
+        it("should have the base label when no results", () => {
+            const treeItem = new MetadataDiffGroupTreeItem();
+
+            expect(treeItem.label).to.equal("Metadata Diff");
+        });
+
+        it("should have the same label even when results exist", () => {
             const results: IFileComparisonResult[] = [
                 {
                     localPath: "/local/file1.txt",
@@ -41,46 +53,46 @@ describe("MetadataDiffGroupTreeItem", () => {
                     status: "added"
                 }
             ];
-            const treeItem = new MetadataDiffGroupTreeItem(results, "Test Site");
+            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffGroupTreeItem();
 
-            expect(treeItem.label).to.include("2");
+            expect(treeItem.label).to.equal("Metadata Diff");
         });
 
-        it("should have expanded collapsible state", () => {
-            const treeItem = new MetadataDiffGroupTreeItem([], "Test Site");
+        it("should have None collapsible state when no results", () => {
+            const treeItem = new MetadataDiffGroupTreeItem();
+
+            expect(treeItem.collapsibleState).to.equal(vscode.TreeItemCollapsibleState.None);
+        });
+
+        it("should have expanded state when results exist", () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/file1.txt",
+                    remotePath: "/remote/file1.txt",
+                    relativePath: "file1.txt",
+                    status: "modified"
+                }
+            ];
+            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffGroupTreeItem();
 
             expect(treeItem.collapsibleState).to.equal(vscode.TreeItemCollapsibleState.Expanded);
         });
 
         it("should have the diff icon", () => {
-            const treeItem = new MetadataDiffGroupTreeItem([], "Test Site");
+            const treeItem = new MetadataDiffGroupTreeItem();
 
             expect((treeItem.iconPath as vscode.ThemeIcon).id).to.equal("diff");
         });
 
-        it("should have the expected context value", () => {
-            const treeItem = new MetadataDiffGroupTreeItem([], "Test Site");
+        it("should have METADATA_DIFF_GROUP context value when no results", () => {
+            const treeItem = new MetadataDiffGroupTreeItem();
 
             expect(treeItem.contextValue).to.equal(Constants.ContextValues.METADATA_DIFF_GROUP);
         });
 
-        it("should have site name as description", () => {
-            const treeItem = new MetadataDiffGroupTreeItem([], "My Test Site");
-
-            expect(treeItem.description).to.equal("My Test Site");
-        });
-    });
-
-    describe("siteName", () => {
-        it("should return the site name", () => {
-            const treeItem = new MetadataDiffGroupTreeItem([], "Test Site");
-
-            expect(treeItem.siteName).to.equal("Test Site");
-        });
-    });
-
-    describe("comparisonResults", () => {
-        it("should return the comparison results", () => {
+        it("should have METADATA_DIFF_GROUP_WITH_RESULTS context value when results exist", () => {
             const results: IFileComparisonResult[] = [
                 {
                     localPath: "/local/file.txt",
@@ -89,26 +101,23 @@ describe("MetadataDiffGroupTreeItem", () => {
                     status: "modified"
                 }
             ];
-            const treeItem = new MetadataDiffGroupTreeItem(results, "Test Site");
+            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffGroupTreeItem();
 
-            expect(treeItem.comparisonResults).to.deep.equal(results);
+            expect(treeItem.contextValue).to.equal(Constants.ContextValues.METADATA_DIFF_GROUP_WITH_RESULTS);
         });
     });
 
-    describe("getChildren - list view mode", () => {
-        beforeEach(() => {
-            MetadataDiffContext.setViewMode(MetadataDiffViewMode.List);
-        });
-
+    describe("getChildren", () => {
         it("should return empty array when no results", () => {
-            const treeItem = new MetadataDiffGroupTreeItem([], "Test Site");
+            const treeItem = new MetadataDiffGroupTreeItem();
 
             const children = treeItem.getChildren();
 
             expect(children).to.have.lengthOf(0);
         });
 
-        it("should return file items as flat list", () => {
+        it("should return site tree items for each site's results", () => {
             const results: IFileComparisonResult[] = [
                 {
                     localPath: "/local/file.txt",
@@ -117,235 +126,75 @@ describe("MetadataDiffGroupTreeItem", () => {
                     status: "modified"
                 }
             ];
-            const treeItem = new MetadataDiffGroupTreeItem(results, "Test Site");
+            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffGroupTreeItem();
 
             const children = treeItem.getChildren();
 
             expect(children).to.have.lengthOf(1);
-            expect(children[0]).to.be.instanceOf(MetadataDiffFileTreeItem);
+            expect(children[0]).to.be.instanceOf(MetadataDiffSiteTreeItem);
         });
 
-        it("should return file items directly without folder hierarchy", () => {
-            const results: IFileComparisonResult[] = [
+        it("should return multiple site tree items when multiple sites have results", () => {
+            const results1: IFileComparisonResult[] = [
                 {
-                    localPath: "/local/folder/file.txt",
-                    remotePath: "/remote/folder/file.txt",
-                    relativePath: "folder/file.txt",
+                    localPath: "/local/file1.txt",
+                    remotePath: "/remote/file1.txt",
+                    relativePath: "file1.txt",
                     status: "modified"
                 }
             ];
-            const treeItem = new MetadataDiffGroupTreeItem(results, "Test Site");
-
-            const children = treeItem.getChildren();
-
-            expect(children).to.have.lengthOf(1);
-            expect(children[0]).to.be.instanceOf(MetadataDiffFileTreeItem);
-            expect(children[0].label).to.equal("file.txt");
-        });
-
-        it("should show folder path in description", () => {
-            const results: IFileComparisonResult[] = [
+            const results2: IFileComparisonResult[] = [
                 {
-                    localPath: "/local/folder/subfolder/file.txt",
-                    remotePath: "/remote/folder/subfolder/file.txt",
-                    relativePath: "folder/subfolder/file.txt",
-                    status: "modified"
-                }
-            ];
-            const treeItem = new MetadataDiffGroupTreeItem(results, "Test Site");
-
-            const children = treeItem.getChildren();
-
-            expect(children).to.have.lengthOf(1);
-            expect(children[0]).to.be.instanceOf(MetadataDiffFileTreeItem);
-            expect(children[0].description).to.equal("folder/subfolder");
-        });
-
-        it("should return all files in flat list", () => {
-            const results: IFileComparisonResult[] = [
-                {
-                    localPath: "/local/folder/file1.txt",
-                    remotePath: "/remote/folder/file1.txt",
-                    relativePath: "folder/file1.txt",
-                    status: "modified"
-                },
-                {
-                    localPath: "/local/folder/file2.txt",
-                    remotePath: "/remote/folder/file2.txt",
-                    relativePath: "folder/file2.txt",
+                    localPath: "/local/file2.txt",
+                    remotePath: "/remote/file2.txt",
+                    relativePath: "file2.txt",
                     status: "added"
                 }
             ];
-            const treeItem = new MetadataDiffGroupTreeItem(results, "Test Site");
+            MetadataDiffContext.setResults(results1, "Site 1", "Test Environment");
+            MetadataDiffContext.setResults(results2, "Site 2", "Test Environment");
+            const treeItem = new MetadataDiffGroupTreeItem();
 
             const children = treeItem.getChildren();
 
             expect(children).to.have.lengthOf(2);
-            expect(children[0]).to.be.instanceOf(MetadataDiffFileTreeItem);
-            expect(children[1]).to.be.instanceOf(MetadataDiffFileTreeItem);
+            expect(children[0]).to.be.instanceOf(MetadataDiffSiteTreeItem);
+            expect(children[1]).to.be.instanceOf(MetadataDiffSiteTreeItem);
         });
 
-        it("should sort files by relative path", () => {
-            const results: IFileComparisonResult[] = [
+        it("should replace existing site results when same site is compared again", () => {
+            const results1: IFileComparisonResult[] = [
                 {
-                    localPath: "/local/z-folder/file.txt",
-                    remotePath: "/remote/z-folder/file.txt",
-                    relativePath: "z-folder/file.txt",
+                    localPath: "/local/file1.txt",
+                    remotePath: "/remote/file1.txt",
+                    relativePath: "file1.txt",
                     status: "modified"
+                }
+            ];
+            const results2: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/file2.txt",
+                    remotePath: "/remote/file2.txt",
+                    relativePath: "file2.txt",
+                    status: "added"
                 },
                 {
-                    localPath: "/local/a-folder/file.txt",
-                    remotePath: "/remote/a-folder/file.txt",
-                    relativePath: "a-folder/file.txt",
-                    status: "added"
+                    localPath: "/local/file3.txt",
+                    remotePath: "/remote/file3.txt",
+                    relativePath: "file3.txt",
+                    status: "deleted"
                 }
             ];
-            const treeItem = new MetadataDiffGroupTreeItem(results, "Test Site");
-
-            const children = treeItem.getChildren();
-
-            expect(children).to.have.lengthOf(2);
-            expect((children[0] as MetadataDiffFileTreeItem).comparisonResult.relativePath).to.equal("a-folder/file.txt");
-            expect((children[1] as MetadataDiffFileTreeItem).comparisonResult.relativePath).to.equal("z-folder/file.txt");
-        });
-    });
-
-    describe("getChildren - tree view mode", () => {
-        beforeEach(() => {
-            MetadataDiffContext.setViewMode(MetadataDiffViewMode.Tree);
-        });
-
-        it("should return file items for files in root", () => {
-            const results: IFileComparisonResult[] = [
-                {
-                    localPath: "/local/file.txt",
-                    remotePath: "/remote/file.txt",
-                    relativePath: "file.txt",
-                    status: "modified"
-                }
-            ];
-            const treeItem = new MetadataDiffGroupTreeItem(results, "Test Site");
+            MetadataDiffContext.setResults(results1, "Test Site", "Test Environment");
+            MetadataDiffContext.setResults(results2, "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffGroupTreeItem();
 
             const children = treeItem.getChildren();
 
             expect(children).to.have.lengthOf(1);
-            expect(children[0]).to.be.instanceOf(MetadataDiffFileTreeItem);
-        });
-
-        it("should return folder items for files in folders", () => {
-            const results: IFileComparisonResult[] = [
-                {
-                    localPath: "/local/folder/file.txt",
-                    remotePath: "/remote/folder/file.txt",
-                    relativePath: "folder/file.txt",
-                    status: "modified"
-                }
-            ];
-            const treeItem = new MetadataDiffGroupTreeItem(results, "Test Site");
-
-            const children = treeItem.getChildren();
-
-            expect(children).to.have.lengthOf(1);
-            expect(children[0]).to.be.instanceOf(MetadataDiffFolderTreeItem);
-            expect(children[0].label).to.equal("folder");
-        });
-
-        it("should create nested folder hierarchy", () => {
-            const results: IFileComparisonResult[] = [
-                {
-                    localPath: "/local/folder/subfolder/file.txt",
-                    remotePath: "/remote/folder/subfolder/file.txt",
-                    relativePath: "folder/subfolder/file.txt",
-                    status: "modified"
-                }
-            ];
-            const treeItem = new MetadataDiffGroupTreeItem(results, "Test Site");
-
-            const children = treeItem.getChildren();
-
-            expect(children).to.have.lengthOf(1);
-            expect(children[0]).to.be.instanceOf(MetadataDiffFolderTreeItem);
-
-            const folderItem = children[0] as MetadataDiffFolderTreeItem;
-            const subChildren = folderItem.getChildren();
-
-            expect(subChildren).to.have.lengthOf(1);
-            expect(subChildren[0]).to.be.instanceOf(MetadataDiffFolderTreeItem);
-            expect(subChildren[0].label).to.equal("subfolder");
-        });
-
-        it("should group files in the same folder", () => {
-            const results: IFileComparisonResult[] = [
-                {
-                    localPath: "/local/folder/file1.txt",
-                    remotePath: "/remote/folder/file1.txt",
-                    relativePath: "folder/file1.txt",
-                    status: "modified"
-                },
-                {
-                    localPath: "/local/folder/file2.txt",
-                    remotePath: "/remote/folder/file2.txt",
-                    relativePath: "folder/file2.txt",
-                    status: "added"
-                }
-            ];
-            const treeItem = new MetadataDiffGroupTreeItem(results, "Test Site");
-
-            const children = treeItem.getChildren();
-
-            expect(children).to.have.lengthOf(1);
-            expect(children[0]).to.be.instanceOf(MetadataDiffFolderTreeItem);
-
-            const folderItem = children[0] as MetadataDiffFolderTreeItem;
-            const folderChildren = folderItem.getChildren();
-
-            expect(folderChildren).to.have.lengthOf(2);
-        });
-
-        it("should handle mixed root files and folders", () => {
-            const results: IFileComparisonResult[] = [
-                {
-                    localPath: "/local/root-file.txt",
-                    remotePath: "/remote/root-file.txt",
-                    relativePath: "root-file.txt",
-                    status: "modified"
-                },
-                {
-                    localPath: "/local/folder/nested-file.txt",
-                    remotePath: "/remote/folder/nested-file.txt",
-                    relativePath: "folder/nested-file.txt",
-                    status: "added"
-                }
-            ];
-            const treeItem = new MetadataDiffGroupTreeItem(results, "Test Site");
-
-            const children = treeItem.getChildren();
-
-            expect(children).to.have.lengthOf(2);
-
-            const fileItem = children.find(c => c instanceof MetadataDiffFileTreeItem);
-            const folderItem = children.find(c => c instanceof MetadataDiffFolderTreeItem);
-
-            expect(fileItem).to.not.be.undefined;
-            expect(folderItem).to.not.be.undefined;
-        });
-
-        it("should handle backslash path separators", () => {
-            const results: IFileComparisonResult[] = [
-                {
-                    localPath: "C:\\local\\folder\\file.txt",
-                    remotePath: "C:\\remote\\folder\\file.txt",
-                    relativePath: "folder\\file.txt",
-                    status: "modified"
-                }
-            ];
-            const treeItem = new MetadataDiffGroupTreeItem(results, "Test Site");
-
-            const children = treeItem.getChildren();
-
-            expect(children).to.have.lengthOf(1);
-            expect(children[0]).to.be.instanceOf(MetadataDiffFolderTreeItem);
-            expect(children[0].label).to.equal("folder");
+            const siteItem = children[0] as MetadataDiffSiteTreeItem;
+            expect(siteItem.comparisonResults).to.have.lengthOf(2);
         });
     });
 });

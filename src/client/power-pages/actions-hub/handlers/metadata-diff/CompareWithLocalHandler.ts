@@ -16,6 +16,7 @@ import { showProgressWithNotification } from "../../../../../common/utilities/Ut
 import { IFileComparisonResult } from "../../models/IFileComparisonResult";
 import { getAllFiles } from "../../ActionsHubUtils";
 import MetadataDiffContext from "../../MetadataDiffContext";
+import PacContext from "../../../../pac/PacContext";
 
 /**
  * Compares files between downloaded site and local workspace
@@ -184,7 +185,8 @@ export const compareWithLocal = (pacTerminal: PacTerminal, context: vscode.Exten
                 });
 
                 // Store results in the context so the tree view can display them
-                MetadataDiffContext.setResults(comparisonResults, siteTreeItem.siteInfo.name);
+                const environmentName = PacContext.AuthInfo?.OrganizationFriendlyName || "";
+                MetadataDiffContext.setResults(comparisonResults, siteTreeItem.siteInfo.name, environmentName);
             }
 
             return true;

@@ -6,6 +6,8 @@
 import * as vscode from "vscode";
 import { Constants } from "../Constants";
 import { ActionsHubTreeItem } from "./ActionsHubTreeItem";
+import { ActionsHub } from "../ActionsHub";
+import { MetadataDiffGroupTreeItem } from "./metadata-diff/MetadataDiffGroupTreeItem";
 
 export class ToolsGroupTreeItem extends ActionsHubTreeItem {
     constructor() {
@@ -18,7 +20,13 @@ export class ToolsGroupTreeItem extends ActionsHubTreeItem {
     }
 
     public getChildren(): ActionsHubTreeItem[] {
-        // Return empty array for now - children can be added later
-        return [];
+        const children: ActionsHubTreeItem[] = [];
+
+        // Add metadata diff group if the feature is enabled
+        if (ActionsHub.isMetadataDiffEnabled()) {
+            children.push(new MetadataDiffGroupTreeItem());
+        }
+
+        return children;
     }
 }

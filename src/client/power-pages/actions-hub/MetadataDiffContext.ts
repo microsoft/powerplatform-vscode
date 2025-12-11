@@ -14,17 +14,25 @@ export enum MetadataDiffViewMode {
     List = "list"
 }
 
+/**
+ * Interface for storing comparison results per site
+ */
+export interface ISiteComparisonResults {
+    siteName: string;
+    environmentName: string;
+    comparisonResults: IFileComparisonResult[];
+}
+
 const VIEW_MODE_CONTEXT_KEY = "microsoft.powerplatform.pages.metadataDiffViewMode";
 const VIEW_MODE_STORAGE_KEY = "microsoft.powerplatform.pages.metadataDiff.viewModePreference";
 
 /**
  * Context for storing metadata diff comparison results
  * This allows the ActionsHubTreeDataProvider to display the diff results in the tree view
+ * Supports multiple site comparisons simultaneously
  */
 class MetadataDiffContextClass {
-    private _comparisonResults: IFileComparisonResult[] = [];
-    private _siteName: string = "";
-    private _isActive: boolean = false;
+    private _siteResults: Map<string, ISiteComparisonResults> = new Map();
     private _viewMode: MetadataDiffViewMode = MetadataDiffViewMode.List;
     private _extensionContext: vscode.ExtensionContext | undefined;
 
@@ -46,16 +54,36 @@ class MetadataDiffContextClass {
         this.updateViewModeContext();
     }
 
-    public get comparisonResults(): IFileComparisonResult[] {
-        return this._comparisonResults;
+    /**
+     * Get all site comparison results
+     */
+    public get allSiteResults(): ISiteComparisonResults[] {
+        return Array.from(this._siteResults.values());
     }
 
-    public get siteName(): string {
-        return this._siteName;
+    /**
+     * Get comparison results for a specific site
+     */
+    public getSiteResults(siteName: string): ISiteComparisonResults | undefined {
+        return this._siteResults.get(siteName);
     }
 
+    /**
+     * Check if there are any active comparison results
+     */
     public get isActive(): boolean {
-        return this._isActive;
+        return this._siteResults.size > 0;
+    }
+
+    /**
+     * Get the total number of changes across all sites
+     */
+    public get totalChanges(): number {
+        let total = 0;
+        for (const siteResult of this._siteResults.values()) {
+            total += siteResult.comparisonResults.length;
+        }
+        return total;
     }
 
     public get viewMode(): MetadataDiffViewMode {
@@ -70,10 +98,31 @@ class MetadataDiffContextClass {
         return this._viewMode === MetadataDiffViewMode.List;
     }
 
-    public setResults(results: IFileComparisonResult[], siteName: string): void {
-        this._comparisonResults = results;
-        this._siteName = siteName;
-        this._isActive = results.length > 0;
+    /**
+     * Set results for a specific site. If results already exist for this site, they are replaced.
+     * @param results The comparison results
+     * @param siteName The name of the site
+     * @param environmentName The name of the environment
+     */
+    public setResults(results: IFileComparisonResult[], siteName: string, environmentName: string): void {
+        if (results.length > 0) {
+            this._siteResults.set(siteName, {
+                siteName,
+                environmentName,
+                comparisonResults: results
+            });
+        } else {
+            // If no results, remove the site from the map
+            this._siteResults.delete(siteName);
+        }
+        this._onChanged.fire();
+    }
+
+    /**
+     * Clear results for a specific site
+     */
+    public clearSite(siteName: string): void {
+        this._siteResults.delete(siteName);
         this._onChanged.fire();
     }
 
@@ -92,10 +141,11 @@ class MetadataDiffContextClass {
         }
     }
 
+    /**
+     * Clear all site comparison results
+     */
     public clear(): void {
-        this._comparisonResults = [];
-        this._siteName = "";
-        this._isActive = false;
+        this._siteResults.clear();
         this._onChanged.fire();
     }
 
@@ -113,6 +163,26 @@ class MetadataDiffContextClass {
         if (this._extensionContext) {
             this._extensionContext.globalState.update(VIEW_MODE_STORAGE_KEY, this._viewMode);
         }
+    }
+
+    // Legacy getters for backward compatibility
+    /**
+     * @deprecated Use allSiteResults instead
+     */
+    public get comparisonResults(): IFileComparisonResult[] {
+        const allResults: IFileComparisonResult[] = [];
+        for (const siteResult of this._siteResults.values()) {
+            allResults.push(...siteResult.comparisonResults);
+        }
+        return allResults;
+    }
+
+    /**
+     * @deprecated Use allSiteResults instead
+     */
+    public get siteName(): string {
+        const firstSite = this._siteResults.values().next().value;
+        return firstSite?.siteName || "";
     }
 }
 

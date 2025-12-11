@@ -961,6 +961,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++4f8c4d58a87feaaff06fd5f9cb84370ab4a42220bf1e8cbedbca716f8f21c9ee">
       <source xml:lang="en">To know more, see &lt;a href=&quot;https://go.microsoft.com/fwlink/?linkid=2206366&quot;&gt;Copilot in Power Pages documentation.</source>
     </trans-unit>
+    <trans-unit id="++CODE++ea93d6a262ecb87a9fa4d09edbd7654c046597936a8e235fc3949eb01775ff99">
+      <source xml:lang="en">Tools</source>
+    </trans-unit>
     <trans-unit id="++CODE++4a7c431a6572c68bba17c3a5d858adbf5112462574953baf4d7d2fd0619807fe">
       <source xml:lang="en">Try @powerpages with GitHub Copilot</source>
     </trans-unit>
@@ -1309,6 +1312,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.refresh.title">
       <source xml:lang="en">Refresh</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.removeSite.title">
+      <source xml:lang="en">Remove Comparison</source>
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows.title">
       <source xml:lang="en">Reveal in Explorer</source>

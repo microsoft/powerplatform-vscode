@@ -519,6 +519,12 @@
         "when": "microsoft.powerplatform.pages.metadataDiffEnabled"
       },
       {
+        "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.removeSite",
+        "title": "%microsoft.powerplatform.pages.actionsHub.metadataDiff.removeSite.title%",
+        "icon": "$(close)",
+        "when": "microsoft.powerplatform.pages.metadataDiffEnabled"
+      },
+      {
         "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsTree",
         "title": "%microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsTree.title%",
         "icon": "$(list-tree)",
@@ -1231,22 +1237,27 @@
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.openAll",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffGroup && microsoft.powerplatform.pages.metadataDiffEnabled",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffSite && microsoft.powerplatform.pages.metadataDiffEnabled",
           "group": "inline@1"
         },
         {
+          "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.removeSite",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffSite && microsoft.powerplatform.pages.metadataDiffEnabled",
+          "group": "inline@2"
+        },
+        {
           "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsTree",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffGroup && microsoft.powerplatform.pages.metadataDiffEnabled && microsoft.powerplatform.pages.metadataDiffViewMode == 'list'",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffGroupWithResults && microsoft.powerplatform.pages.metadataDiffEnabled && microsoft.powerplatform.pages.metadataDiffViewMode == 'list'",
           "group": "inline@2"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsList",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffGroup && microsoft.powerplatform.pages.metadataDiffEnabled && microsoft.powerplatform.pages.metadataDiffViewMode == 'tree'",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffGroupWithResults && microsoft.powerplatform.pages.metadataDiffEnabled && microsoft.powerplatform.pages.metadataDiffViewMode == 'tree'",
           "group": "inline@2"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.clear",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffGroup && microsoft.powerplatform.pages.metadataDiffEnabled",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffGroupWithResults && microsoft.powerplatform.pages.metadataDiffEnabled",
           "group": "inline@3"
         }
       ]

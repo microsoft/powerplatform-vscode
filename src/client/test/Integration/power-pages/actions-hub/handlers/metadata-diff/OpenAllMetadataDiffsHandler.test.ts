@@ -7,7 +7,7 @@ import { expect } from "chai";
 import * as sinon from "sinon";
 import * as vscode from "vscode";
 import { openAllMetadataDiffs } from "../../../../../../power-pages/actions-hub/handlers/metadata-diff/OpenAllMetadataDiffsHandler";
-import { MetadataDiffGroupTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/metadata-diff/MetadataDiffGroupTreeItem";
+import { MetadataDiffSiteTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/metadata-diff/MetadataDiffSiteTreeItem";
 import * as TelemetryHelper from "../../../../../../power-pages/actions-hub/TelemetryHelper";
 import { IFileComparisonResult } from "../../../../../../power-pages/actions-hub/models/IFileComparisonResult";
 
@@ -43,9 +43,9 @@ describe("OpenAllMetadataDiffsHandler", () => {
                     status: "added"
                 }
             ];
-            const groupItem = new MetadataDiffGroupTreeItem(results, "Test Site");
+            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
 
-            await openAllMetadataDiffs(groupItem);
+            await openAllMetadataDiffs(siteItem);
 
             expect(traceInfoStub.calledOnce).to.be.true;
             expect(traceInfoStub.firstCall.args[0]).to.equal("ActionsHubMetadataDiffOpenAll");
@@ -56,9 +56,9 @@ describe("OpenAllMetadataDiffsHandler", () => {
         });
 
         it("should not execute command when no results", async () => {
-            const groupItem = new MetadataDiffGroupTreeItem([], "Test Site");
+            const siteItem = new MetadataDiffSiteTreeItem([], "Test Site", "Test Environment");
 
-            await openAllMetadataDiffs(groupItem);
+            await openAllMetadataDiffs(siteItem);
 
             expect(executeCommandStub.called).to.be.false;
         });
@@ -72,9 +72,9 @@ describe("OpenAllMetadataDiffsHandler", () => {
                     status: "modified"
                 }
             ];
-            const groupItem = new MetadataDiffGroupTreeItem(results, "Test Site");
+            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
 
-            await openAllMetadataDiffs(groupItem);
+            await openAllMetadataDiffs(siteItem);
 
             expect(executeCommandStub.calledOnce).to.be.true;
             expect(executeCommandStub.firstCall.args[0]).to.equal("vscode.changes");
@@ -97,9 +97,9 @@ describe("OpenAllMetadataDiffsHandler", () => {
                     status: "added"
                 }
             ];
-            const groupItem = new MetadataDiffGroupTreeItem(results, "Test Site");
+            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
 
-            await openAllMetadataDiffs(groupItem);
+            await openAllMetadataDiffs(siteItem);
 
             const resourceList = executeCommandStub.firstCall.args[2];
             const [, originalUri, modifiedUri] = resourceList[0];
@@ -116,9 +116,9 @@ describe("OpenAllMetadataDiffsHandler", () => {
                     status: "deleted"
                 }
             ];
-            const groupItem = new MetadataDiffGroupTreeItem(results, "Test Site");
+            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
 
-            await openAllMetadataDiffs(groupItem);
+            await openAllMetadataDiffs(siteItem);
 
             const resourceList = executeCommandStub.firstCall.args[2];
             const [, originalUri, modifiedUri] = resourceList[0];
@@ -147,9 +147,9 @@ describe("OpenAllMetadataDiffsHandler", () => {
                     status: "deleted"
                 }
             ];
-            const groupItem = new MetadataDiffGroupTreeItem(results, "Test Site");
+            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
 
-            await openAllMetadataDiffs(groupItem);
+            await openAllMetadataDiffs(siteItem);
 
             const resourceList = executeCommandStub.firstCall.args[2];
             expect(resourceList).to.have.lengthOf(3);

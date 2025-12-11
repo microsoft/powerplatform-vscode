@@ -4,15 +4,15 @@
  */
 
 import * as vscode from "vscode";
-import { MetadataDiffGroupTreeItem } from "../../tree-items/metadata-diff/MetadataDiffGroupTreeItem";
+import { MetadataDiffSiteTreeItem } from "../../tree-items/metadata-diff/MetadataDiffSiteTreeItem";
 import { traceInfo } from "../../TelemetryHelper";
 import { Constants } from "../../Constants";
 
 /**
- * Opens all file diffs in the multi-diff editor
+ * Opens all file diffs in the multi-diff editor for a specific site
  */
-export async function openAllMetadataDiffs(groupItem: MetadataDiffGroupTreeItem): Promise<void> {
-    const { comparisonResults, siteName } = groupItem;
+export async function openAllMetadataDiffs(siteItem: MetadataDiffSiteTreeItem): Promise<void> {
+    const { comparisonResults, siteName } = siteItem;
 
     traceInfo(Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_OPEN_ALL, {
         methodName: openAllMetadataDiffs.name,
