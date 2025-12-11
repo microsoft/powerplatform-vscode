@@ -3,6 +3,9 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import { ECSFeaturesClient } from "../../../common/ecs-features/ecsFeatureClient";
+import { EnableBlogSupport } from "../../../common/ecs-features/ecsFeatureGates";
+
 export const portal_schema_V1 = {
     entities: {
         dataSourceProperties: {
@@ -232,6 +235,114 @@ export const portal_schema_V1 = {
                 _attributes: "adx_registerstartupscript",
                 _attributesExtension: new Map([["adx_registerstartupscript", "advancedformstep.customjs.js"]]),
             },
+            ...(ECSFeaturesClient.getConfig(EnableBlogSupport).enableBlogSupport ? [
+                {
+                    relationships: "",
+                    _vscodeentityname: "blogs",
+                    _dataverseenityname: "adx_blogs",
+                    _displayname: "Blog",
+                    _etc: "10061",
+                    _primaryidfield: "adx_blogid",
+                    _primarynamefield: "adx_name",
+                    _disableplugins: "true",
+                    _foldername: "blogs",
+                    _exporttype: "SingleFolder",
+                    _fetchQueryParameters:
+                        "?$filter=adx_blogid eq {entityId}&$select=adx_name,adx_summary",
+                    _multiFileFetchQueryParameters:
+                        "?$filter=_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_summary,adx_blogid&$count=true",
+                    _attributes: "adx_summary",
+                    _attributesExtension: new Map([["adx_summary", "html"]]),
+                },
+                {
+                    relationships: "",
+                    _vscodeentityname: "ideas",
+                    _dataverseenityname: "adx_ideas",
+                    _displayname: "Idea",
+                    _etc: "10062",
+                    _primaryidfield: "adx_ideaid",
+                    _primarynamefield: "adx_name",
+                    _disableplugins: "true",
+                    _foldername: "ideas",
+                    _exporttype: "SingleFolder",
+                    _fetchQueryParameters:
+                        "?$filter=adx_ideaid eq {entityId}&$select=adx_name,adx_copy",
+                    _multiFileFetchQueryParameters:
+                        "?$filter=_adx_ideaforumid_value ne null and adx_ideaforumId/_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_copy,adx_ideaid&$count=true",
+                    _attributes: "adx_copy",
+                    _attributesExtension: new Map([["adx_copy", "html"]]),
+                },
+                {
+                    relationships: "",                    _vscodeentityname: "blogposts",
+                    _dataverseenityname: "adx_blogposts",
+                    _displayname: "Blog Post",
+                    _etc: "10056",
+                    _primaryidfield: "adx_blogpostid",
+                    _primarynamefield: "adx_name",
+                    _disableplugins: "true",
+                    _foldername: "blog-posts",
+                    _exporttype: "SingleFolder",
+                    _fetchQueryParameters:
+                        "?$filter=adx_blogpostid eq {entityId}&$select=adx_name,adx_copy",
+                    _multiFileFetchQueryParameters:
+                        "?$filter=_adx_blogid_value ne null and adx_blogid/_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_copy,adx_blogpostid&$count=true",
+                    _attributes: "adx_copy",
+                    _attributesExtension: new Map([["adx_copy", "html"]]),
+                },
+                {
+                    relationships: "",                    _vscodeentityname: "ideaforums",
+                    _dataverseenityname: "adx_ideaforums",
+                    _displayname: "Idea Forum",
+                    _etc: "10063",
+                    _primaryidfield: "adx_ideaforumid",
+                    _primarynamefield: "adx_name",
+                    _disableplugins: "true",
+                    _foldername: "idea-forums",
+                    _exporttype: "SingleFolder",
+                    _fetchQueryParameters:
+                        "?$filter=adx_ideaforumid eq {entityId}&$select=adx_name,adx_summary",
+                    _multiFileFetchQueryParameters:
+                        "?$filter=_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_summary,adx_ideaforumid&$count=true",
+                    _attributes: "adx_summary",
+                    _attributesExtension: new Map([["adx_summary", "html"]]),
+                },
+                {
+                    relationships: "",
+                    _vscodeentityname: "forumannouncements",
+                    _dataverseenityname: "adx_communityforumannouncements",
+                    _displayname: "Forum Announcement",
+                    _etc: "10064",
+                    _primaryidfield: "adx_communityforumannouncementid",
+                    _primarynamefield: "adx_name",
+                    _disableplugins: "true",
+                    _foldername: "forum-announcements",
+                    _exporttype: "SingleFolder",
+                    _fetchQueryParameters:
+                        "?$filter=adx_communityforumannouncementid eq {entityId}&$select=adx_name,adx_content",
+                    _multiFileFetchQueryParameters:
+                        "?$filter=_adx_forumid_value ne null and adx_forumid/_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_content,adx_communityforumannouncementid&$count=true",
+                    _attributes: "adx_content",
+                    _attributesExtension: new Map([["adx_content", "html"]]),
+                },
+                {
+                    relationships: "",
+                    _vscodeentityname: "forumposts",
+                    _dataverseenityname: "adx_communityforumposts",
+                    _displayname: "Forum Post",
+                    _etc: "10065",
+                    _primaryidfield: "adx_communityforumpostid",
+                    _primarynamefield: "adx_name",
+                    _disableplugins: "true",
+                    _foldername: "forum-posts",
+                    _exporttype: "SingleFolder",
+                    _fetchQueryParameters:
+                        "?$filter=adx_communityforumpostid eq {entityId}&$select=adx_name,adx_content",
+                    _multiFileFetchQueryParameters:
+                        "?$filter=_adx_forumthreadid_value ne null &$select=adx_name,adx_content,adx_communityforumpostid&$count=true",
+                    _attributes: "adx_content",
+                    _attributesExtension: new Map([["adx_content", "html"]]),
+                },
+            ] : []),
         ],
         "_xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
     },
@@ -470,6 +581,116 @@ export const portal_schema_V2 = {
                 _attributes: "content.registerstartupscript",
                 _attributesExtension: new Map([["content.registerstartupscript", "advancedformstep.customjs.js"]]),
             },
+            ...(ECSFeaturesClient.getConfig(EnableBlogSupport).enableBlogSupport ? [
+                {
+                    relationships: "",
+                    _vscodeentityname: "blogs",
+                    _dataverseenityname: "adx_blogs",
+                    _displayname: "Blog",
+                    _etc: "10061",
+                    _primaryidfield: "adx_blogid",
+                    _primarynamefield: "adx_name",
+                    _disableplugins: "true",
+                    _foldername: "blogs",
+                    _exporttype: "SingleFolder",
+                    _fetchQueryParameters:
+                        "?$filter=adx_blogid eq {entityId}&$select=adx_name,adx_summary",
+                    _multiFileFetchQueryParameters:
+                        "?$filter=_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_summary,adx_blogid&$count=true",
+                    _attributes: "adx_summary",
+                    _attributesExtension: new Map([["adx_summary", "html"]]),
+                },
+                {
+                    relationships: "",
+                    _vscodeentityname: "blogposts",
+                    _dataverseenityname: "adx_blogposts",
+                    _displayname: "Blog Post",
+                    _etc: "10056",
+                    _primaryidfield: "adx_blogpostid",
+                    _primarynamefield: "adx_name",
+                    _disableplugins: "true",
+                    _foldername: "blog-posts",
+                    _exporttype: "SingleFolder",
+                    _fetchQueryParameters:
+                        "?$filter=adx_blogpostid eq {entityId}&$select=adx_name,adx_copy",
+                    _multiFileFetchQueryParameters:
+                        "?$filter=_adx_blogid_value ne null and adx_blogid/_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_copy,adx_blogpostid&$count=true",
+                    _attributes: "adx_copy",
+                    _attributesExtension: new Map([["adx_copy", "html"]]),
+                },
+                {
+                    relationships: "",
+                    _vscodeentityname: "ideas",
+                    _dataverseenityname: "adx_ideas",
+                    _displayname: "Idea",
+                    _etc: "10062",
+                    _primaryidfield: "adx_ideaid",
+                    _primarynamefield: "adx_name",
+                    _disableplugins: "true",
+                    _foldername: "ideas",
+                    _exporttype: "SingleFolder",
+                    _fetchQueryParameters:
+                        "?$filter=adx_ideaid eq {entityId}&$select=adx_name,adx_copy",
+                    _multiFileFetchQueryParameters:
+                        "?$filter=_adx_ideaforumid_value ne null and adx_ideaforumId/_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_copy,adx_ideaid&$count=true",
+                    _attributes: "adx_copy",
+                    _attributesExtension: new Map([["adx_copy", "html"]]),
+                },
+                {
+                    relationships: "",
+                    _vscodeentityname: "ideaforums",
+                    _dataverseenityname: "adx_ideaforums",
+                    _displayname: "Idea Forum",
+                    _etc: "10063",
+                    _primaryidfield: "adx_ideaforumid",
+                    _primarynamefield: "adx_name",
+                    _disableplugins: "true",
+                    _foldername: "idea-forums",
+                    _exporttype: "SingleFolder",
+                    _fetchQueryParameters:
+                        "?$filter=adx_ideaforumid eq {entityId}&$select=adx_name,adx_summary",
+                    _multiFileFetchQueryParameters:
+                        "?$filter=_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_summary,adx_ideaforumid&$count=true",
+                    _attributes: "adx_summary",
+                    _attributesExtension: new Map([["adx_summary", "html"]]),
+                },
+                {
+                    relationships: "",
+                    _vscodeentityname: "forumannouncements",
+                    _dataverseenityname: "adx_communityforumannouncements",
+                    _displayname: "Forum Announcement",
+                    _etc: "10064",
+                    _primaryidfield: "adx_communityforumannouncementid",
+                    _primarynamefield: "adx_name",
+                    _disableplugins: "true",
+                    _foldername: "forum-announcements",
+                    _exporttype: "SingleFolder",
+                    _fetchQueryParameters:
+                        "?$filter=adx_communityforumannouncementid eq {entityId}&$select=adx_name,adx_content",
+                    _multiFileFetchQueryParameters:
+                        "?$filter=_adx_forumid_value ne null and adx_forumid/_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_content,adx_communityforumannouncementid&$count=true",
+                    _attributes: "adx_content",
+                    _attributesExtension: new Map([["adx_content", "html"]]),
+                },
+                {
+                    relationships: "",
+                    _vscodeentityname: "forumposts",
+                    _dataverseenityname: "adx_communityforumposts",
+                    _displayname: "Forum Post",
+                    _etc: "10065",
+                    _primaryidfield: "adx_communityforumpostid",
+                    _primarynamefield: "adx_name",
+                    _disableplugins: "true",
+                    _foldername: "forum-posts",
+                    _exporttype: "SingleFolder",
+                    _fetchQueryParameters:
+                        "?$filter=adx_communityforumpostid eq {entityId}&$select=adx_name,adx_content",
+                    _multiFileFetchQueryParameters:
+                        "?$filter=_adx_forumthreadid_value ne null &$select=adx_name,adx_content,adx_communityforumpostid&$count=true",
+                    _attributes: "adx_content",
+                    _attributesExtension: new Map([["adx_content", "html"]]),
+                },
+            ] : []),
         ],
     },
 };

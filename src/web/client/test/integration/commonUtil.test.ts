@@ -140,4 +140,124 @@ describe("commonUtil", async () => {
         //Assert
         expect(result).eq(fileName);
     });
+
+    it("GetFileNameWithExtension_withEntityBlogs_shouldAddFileNameWithExtension", () => {
+        //Act
+        const entity = schemaEntityName.BLOGS;
+        const fileName = "test-blog";
+        const languageCode = "en-Us";
+        const extension = "html";
+
+        //Action
+        const result = GetFileNameWithExtension(
+            entity,
+            fileName,
+            languageCode,
+            extension
+        );
+
+        //Assert
+        const expectedResult = `${fileName}.${extension}`;
+        expect(result).eq(expectedResult);
+    });
+
+    it("GetFileNameWithExtension_withEntityIdeas_shouldAddFileNameWithExtension", () => {
+        //Act
+        const entity = schemaEntityName.IDEAS;
+        const fileName = "test-idea";
+        const languageCode = "en-Us";
+        const extension = "html";
+
+        //Action
+        const result = GetFileNameWithExtension(
+            entity,
+            fileName,
+            languageCode,
+            extension
+        );
+
+        //Assert
+        const expectedResult = `${fileName}.${extension}`;
+        expect(result).eq(expectedResult);
+    });
+
+    it("GetFileNameWithExtension_withEntityBlogPosts_shouldAddFileNameWithExtension", () => {
+        //Act
+        const entity = schemaEntityName.BLOGPOSTS;
+        const fileName = "test-post";
+        const languageCode = "en-Us";
+        const extension = "html";
+
+        //Action
+        const result = GetFileNameWithExtension(
+            entity,
+            fileName,
+            languageCode,
+            extension
+        );
+
+        //Assert
+        const expectedResult = `${fileName}.${extension}`;
+        expect(result).eq(expectedResult);
+    });
+
+    it("GetFileNameWithExtension_withEntityIdeaForums_shouldAddFileNameWithExtension", () => {
+        //Act
+        const entity = schemaEntityName.IDEAFORUMS;
+        const fileName = "test-forum";
+        const languageCode = "en-Us";
+        const extension = "html";
+
+        //Action
+        const result = GetFileNameWithExtension(
+            entity,
+            fileName,
+            languageCode,
+            extension
+        );
+
+        //Assert
+        const expectedResult = `${fileName}.${extension}`;
+        expect(result).eq(expectedResult);
+    });
+
+    it("GetFileNameWithExtension_withEntityForumAnnouncements_shouldAddFileNameWithExtension", () => {
+        //Act
+        const entity = schemaEntityName.FORUMANNOUNCEMENTS;
+        const fileName = "test-announcement";
+        const languageCode = "en-Us";
+        const extension = "html";
+
+        //Action
+        const result = GetFileNameWithExtension(
+            entity,
+            fileName,
+            languageCode,
+            extension
+        );
+
+        //Assert
+        const expectedResult = `${fileName}.${extension}`;
+        expect(result).eq(expectedResult);
+    });
+
+    it("GetFileNameWithExtension_withEntityForumPosts_shouldAddFileNameWithExtension", () => {
+        //Act
+        const entity = schemaEntityName.FORUMPOSTS;
+        const fileName = "test-forum-post";
+        const languageCode = "en-Us";
+        const extension = "html";
+
+        //Action
+        const result = GetFileNameWithExtension(
+            entity,
+            fileName,
+            languageCode,
+            extension
+        );
+
+        //Assert
+        const expectedResult = `${fileName}.${extension}`;
+        expect(result).eq(expectedResult);
+    });
 });

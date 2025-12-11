@@ -122,11 +122,21 @@ export const {
 });
 
 export const {
+    feature: EnableBlogSupport
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable blog file support in VSCode (web & desktop)',
+    fallback: {
+        enableBlogSupport: false,
+    }
+});
+
+export const {
     feature: EnableMetadataDiff
 } = getFeatureConfigs({
     teamName: PowerPagesClientName,
-    description: 'Enable Metadata Diff comparison in VS Code',
+    description: 'Enable Metadata Diff comparison in VS Code Desktop',
     fallback: {
         enableMetadataDiff: false,
-    },
+    }
 });

@@ -29,13 +29,13 @@ import {
 } from "../utilities/schemaHelperUtil";
 import WebExtensionContext from "../WebExtensionContext";
 import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
-import { EntityMetadataKeyCore, SchemaEntityMetadata, folderExportType, schemaEntityKey, schemaEntityName, schemaKey, WEBPAGE_FOLDER_CONSTANTS } from "../schema/constants";
+import { conditionalFolderEntities, EntityMetadataKeyCore, SchemaEntityMetadata, folderExportType, schemaEntityKey, schemaEntityName, schemaKey, WEBPAGE_FOLDER_CONSTANTS } from "../schema/constants";
 import { getEntityNameForExpandedEntityContent, getRequestUrlForEntities } from "../utilities/folderHelperUtility";
 import { IAttributePath, IFileInfo } from "../common/interfaces";
 import { portal_schema_V2 } from "../schema/portalSchema";
 import { ERROR_CONSTANTS } from "../../../common/ErrorConstants";
 import { showErrorDialog } from "../../../common/utilities/errorHandlerUtil";
-import { EnableServerLogicChanges, EnableDuplicateFileHandling } from "../../../common/ecs-features/ecsFeatureGates";
+import { EnableServerLogicChanges, EnableDuplicateFileHandling, EnableBlogSupport } from "../../../common/ecs-features/ecsFeatureGates";
 import { ECSFeaturesClient } from "../../../common/ecs-features/ecsFeatureClient";
 
 export async function fetchDataFromDataverseAndUpdateVFS(
@@ -760,9 +760,27 @@ async function createVirtualFile(
         entityMetadata
     );
 
+    const fileUriParsed = vscode.Uri.parse(fileUri);
+
+    const { enableBlogSupport } = ECSFeaturesClient.getConfig(EnableBlogSupport);
+    // Ensure parent directory exists before writing file for conditional entities
+    // This enables lazy folder creation for blogs, ideas, ideaforums, forum announcements, and forum posts
+    if (enableBlogSupport && conditionalFolderEntities.includes(entityName as schemaEntityName)) {
+        const parentDirPath = fileUriParsed.path.substring(0, fileUriParsed.path.lastIndexOf('/'));
+        const parentDirUri = fileUriParsed.with({ path: parentDirPath });
+
+        try {
+            // createDirectory is idempotent - it checks if directory exists before creating
+            await portalsFS.createDirectory(parentDirUri);
+        } catch (error) {
+            //Directory might already exist or parent lookup might succeed anyway
+
+        }
+    }
+
     // Call file system provider write call for buffering file data in VFS
     await portalsFS.writeFile(
-        vscode.Uri.parse(fileUri),
+        fileUriParsed,
         fileContent,
         { create: true, overwrite: true },
         true
