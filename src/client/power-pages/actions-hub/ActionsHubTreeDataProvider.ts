@@ -6,6 +6,7 @@
 import * as vscode from "vscode";
 import { ActionsHubTreeItem } from "./tree-items/ActionsHubTreeItem";
 import { OtherSitesGroupTreeItem } from "./tree-items/OtherSitesGroupTreeItem";
+import { ToolsGroupTreeItem } from "./tree-items/ToolsGroupTreeItem";
 import { AccountMismatchTreeItem } from "./tree-items/AccountMismatchTreeItem";
 import { Constants } from "./Constants";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
@@ -233,6 +234,9 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                 if (this._otherSites.length) {
                     children.push(new OtherSitesGroupTreeItem(this._otherSites));
                 }
+
+                // Add tools group
+                children.push(new ToolsGroupTreeItem());
 
                 // Add metadata diff group if there are comparison results (only when feature is enabled)
                 if (ActionsHub.isMetadataDiffEnabled() && MetadataDiffContext.isActive) {

@@ -11,6 +11,7 @@ import { ActionsHubTreeDataProvider } from "../../../../power-pages/actions-hub/
 import { oneDSLoggerWrapper } from "../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { EnvironmentGroupTreeItem } from "../../../../power-pages/actions-hub/tree-items/EnvironmentGroupTreeItem";
 import { OtherSitesGroupTreeItem } from "../../../../power-pages/actions-hub/tree-items/OtherSitesGroupTreeItem";
+import { ToolsGroupTreeItem } from "../../../../power-pages/actions-hub/tree-items/ToolsGroupTreeItem";
 import { ActionsHubTreeItem } from "../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
 import { PacTerminal } from "../../../../lib/PacTerminal";
 import { PacWrapper } from "../../../../pac/PacWrapper";
@@ -394,9 +395,10 @@ describe("ActionsHubTreeDataProvider", () => {
 
             expect(result).to.not.be.null;
             expect(result).to.not.be.undefined;
-            expect(result).to.have.lengthOf(2);
+            expect(result).to.have.lengthOf(3);
             expect(result![0]).to.be.instanceOf(EnvironmentGroupTreeItem);
             expect(result![1]).to.be.instanceOf(OtherSitesGroupTreeItem);
+            expect(result![2]).to.be.instanceOf(ToolsGroupTreeItem);
 
             const environmentGroup = result![0] as EnvironmentGroupTreeItem;
             expect(environmentGroup.environmentInfo.currentEnvironmentName).to.equal("TestOrg");
@@ -724,9 +726,10 @@ describe("ActionsHubTreeDataProvider", () => {
 
             expect(result).to.not.be.null;
             expect(result).to.not.be.undefined;
-            expect(result).to.have.lengthOf(2); // EnvironmentGroupTreeItem and OtherSitesGroupTreeItem
+            expect(result).to.have.lengthOf(3); // EnvironmentGroupTreeItem, OtherSitesGroupTreeItem, and ToolsGroupTreeItem
             expect(result![0]).to.be.instanceOf(EnvironmentGroupTreeItem);
             expect(result![1]).to.be.instanceOf(OtherSitesGroupTreeItem);
+            expect(result![2]).to.be.instanceOf(ToolsGroupTreeItem);
 
             // Verify telemetry was called for successful account check
             expect(traceInfoStub.calledTwice).to.be.true;
