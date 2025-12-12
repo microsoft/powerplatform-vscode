@@ -21,7 +21,13 @@ import { isPowerPagesGitHubCopilotEnabled } from '../../copilot/utils/copilotUti
 import { ADX_WEBPAGE, IApiRequestParams, IRelatedFiles } from '../../constants';
 import { oneDSLoggerWrapper } from '../../OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import { CommandRegistry } from '../CommandRegistry';
-import { VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NOT_AVAILABLE_ECS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SUCCESSFUL_PROMPT, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WELCOME_PROMPT, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NO_PROMPT, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_LOCATION_REFERENCED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WEBPAGE_RELATED_FILES, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ERROR, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_COMMAND_TRIGGERED } from './PowerPagesChatParticipantTelemetryConstants';
+import { VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NOT_AVAILABLE_ECS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SUCCESSFUL_PROMPT, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WELCOME_PROMPT, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NO_PROMPT, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_LOCATION_REFERENCED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WEBPAGE_RELATED_FILES, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ERROR, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_COMMAND_TRIGGERED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_USING_VSCODE_LLM, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_USING_CUSTOM_BACKEND } from './PowerPagesChatParticipantTelemetryConstants';
+import { VsCodeLlmService, IVsCodeLlmRequestParams, IConversationTurn, setExtensionContext, setLlmServiceExtensionContext } from './tools';
+
+/**
+ * Configuration setting name for using VS Code LLM API
+ */
+const USE_VSCODE_LLM_SETTING = 'powerPlatform.experimental.useVsCodeLlm';
 
 export class PowerPagesChatParticipant {
     private static instance: PowerPagesChatParticipant | null = null;
@@ -36,6 +42,7 @@ export class PowerPagesChatParticipant {
     private orgID: string | undefined;
     private orgUrl: string | undefined;
     private environmentID: string | undefined;
+    private vsCodeLlmService: VsCodeLlmService;
 
     private constructor(context: vscode.ExtensionContext, pacWrapper?: PacWrapper, websiteId?: string) {
 
@@ -60,6 +67,14 @@ export class PowerPagesChatParticipant {
         this._pacWrapper = pacWrapper;
 
         this.websiteId = websiteId;
+
+        // Set extension context for prompt file loading
+        setExtensionContext(context);
+        setLlmServiceExtensionContext(context);
+
+        // Initialize VS Code LLM Service and register tools
+        this.vsCodeLlmService = VsCodeLlmService.getInstance();
+        this._disposables.push(this.vsCodeLlmService.registerTools());
 
         registerButtonCommands();
 
@@ -88,7 +103,7 @@ export class PowerPagesChatParticipant {
         request: vscode.ChatRequest,
         _context: vscode.ChatContext,
         stream: vscode.ChatResponseStream,
-        //_token: vscode.CancellationToken
+        token: vscode.CancellationToken
     ): Promise<IPowerPagesChatResult> => {
         try {
             oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, { sessionId: this.powerPagesAgentSessionId });
@@ -104,143 +119,15 @@ export class PowerPagesChatParticipant {
 
             stream.progress(RESPONSE_AWAITED_MSG);
 
-            if (!this.orgID || !this.environmentID) {
-                oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, { sessionId: this.powerPagesAgentSessionId });
-                return createErrorResult(PAC_AUTH_NOT_FOUND, RESPONSE_SCENARIOS.PAC_AUTH_NOT_FOUND, '');
-            }
+            // Check if VS Code LLM mode is enabled
+            const useVsCodeLlm = vscode.workspace.getConfiguration().get<boolean>(USE_VSCODE_LLM_SETTING, true);
 
-            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, { orgID: this.orgID, environmentID: this.environmentID, sessionId: this.powerPagesAgentSessionId });
-
-            if (!isPowerPagesGitHubCopilotEnabled()) {
-                stream.markdown(COPILOT_NOT_RELEASED_MSG);
-                oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NOT_AVAILABLE_ECS, { sessionId: this.powerPagesAgentSessionId, orgID: this.orgID });
-                return createSuccessResult('', RESPONSE_SCENARIOS.COPILOT_NOT_RELEASED, this.orgID);
-            }            const intelligenceApiAuthResponse = await intelligenceAPIAuthentication(this.powerPagesAgentSessionId, this.orgID, true);
-
-            if (!intelligenceApiAuthResponse || !intelligenceApiAuthResponse.accessToken || intelligenceApiAuthResponse.accessToken === '') {
-                
-                stream.button({
-                    command: LOGIN_BTN_CMD,
-                    title: LOGIN_BTN_TITLE,
-                    tooltip: LOGIN_BTN_TOOLTIP
-                });
-
-                return createErrorResult(AUTHENTICATION_FAILED_MSG, RESPONSE_SCENARIOS.AUTHENTICATION_FAILED, this.orgID);
-            }
-            const intelligenceApiToken = intelligenceApiAuthResponse.accessToken;
-            const userId = intelligenceApiAuthResponse.userId;
-
-            // Use cached endpoint info instead of calling getEndpoint on every request
-            if (!this.cachedEndpoint || !this.cachedEndpoint.intelligenceEndpoint) {
-                // If not yet initialized, initialize it now
-                const endpointInitialized = await this.initializeEndpoint();
-                if (!endpointInitialized) {
-                    return createErrorResult(COPILOT_NOT_AVAILABLE_MSG, RESPONSE_SCENARIOS.COPILOT_NOT_AVAILABLE, this.orgID);
-                }
-            }
-            // Using non-null assertion since we've already checked above
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const intelligenceAPIEndpointInfo = this.cachedEndpoint!;
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const copilotAvailabilityStatus = checkCopilotAvailability(intelligenceAPIEndpointInfo.intelligenceEndpoint!, this.orgID, this.powerPagesAgentSessionId);
-
-            if (!copilotAvailabilityStatus) {
-                return createErrorResult(COPILOT_NOT_AVAILABLE_MSG, RESPONSE_SCENARIOS.COPILOT_NOT_AVAILABLE, this.orgID);
-            }
-
-            let userPrompt = request.prompt;
-
-            userPrompt = removeChatVariables(userPrompt);
-
-            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SUCCESSFUL_PROMPT, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
-
-            if (userPrompt === WELCOME_PROMPT) {
-                stream.markdown(WELCOME_MESSAGE);
-                oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WELCOME_PROMPT, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
-                return createSuccessResult(STATER_PROMPTS, RESPONSE_SCENARIOS.WELCOME_PROMPT, this.orgID);
-            } else if (!userPrompt) {
-                stream.markdown(NO_PROMPT_MESSAGE);
-                oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NO_PROMPT, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
-                return createSuccessResult('', RESPONSE_SCENARIOS.NO_PROMPT, this.orgID);
-            }
-
-            const { activeFileContent, activeFileUri, startLine, endLine, activeFileParams } = getActiveEditorContent();
-            const location = activeFileUri ? createAndReferenceLocation(activeFileUri, startLine, endLine) : undefined;
-
-            if (request.command) {
-                oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_COMMAND_TRIGGERED, {  commandName: request.command, sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
-
-                const command = commandRegistry.get(request.command);
-
-                const commandRequest = {
-                    request,
-                    stream,
-                    intelligenceAPIEndpointInfo: this.cachedEndpoint,
-                    intelligenceApiToken,
-                    powerPagesAgentSessionId: this.powerPagesAgentSessionId,
-                    orgID: this.orgID,
-                    envID: this.environmentID,
-                    userId: userId,
-                    extensionContext: this.extensionContext
-                };
-
-                return await command.execute(commandRequest, stream);
+            if (useVsCodeLlm) {
+                oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_USING_VSCODE_LLM, { sessionId: this.powerPagesAgentSessionId });
+                return await this.handleWithVsCodeLlm(request, _context, stream, token);
             } else {
-                if (location) {
-                    oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_LOCATION_REFERENCED, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
-                    stream.reference(location);
-                }
-
-                const relatedFiles: IRelatedFiles[] = [];
-
-                // Based on dataverse entity fetch required context for the active file
-                switch (activeFileParams.dataverseEntity) {
-                    case ADX_WEBPAGE:
-                        if (activeFileUri) {
-                            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WEBPAGE_RELATED_FILES, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
-                            const files = await fetchRelatedFiles(activeFileUri, activeFileParams.dataverseEntity, activeFileParams.fieldType, this.powerPagesAgentSessionId);
-                            relatedFiles.push(...files);
-                        }
-                        break;
-                    default:
-                        break;
-                }
-
-                const { componentInfo, entityName }: IComponentInfo = await getComponentInfo(this.orgUrl, activeFileParams, this.powerPagesAgentSessionId);
-
-                const apiRequestParams: IApiRequestParams = {
-                    userPrompt: [{ displayText: userPrompt, code: activeFileContent }],
-                    activeFileParams: activeFileParams,
-                    orgID: this.orgID,
-                    apiToken: intelligenceApiToken,
-                    sessionID: this.powerPagesAgentSessionId,
-                    entityName: entityName,
-                    entityColumns: componentInfo,
-                    aibEndpoint: this.cachedEndpoint?.intelligenceEndpoint || '',
-                    geoName: this.cachedEndpoint?.geoName || '',
-                    crossGeoDataMovementEnabledPPACFlag: this.cachedEndpoint?.crossGeoDataMovementEnabledPPACFlag || false,
-                    relatedFiles: relatedFiles
-                };
-
-                const llmResponse = await sendApiRequest(apiRequestParams);
-
-                const scenario = llmResponse.length > 1 ? llmResponse[llmResponse.length - 1] : llmResponse[0].displayText;
-
-                oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, { scenario: scenario, sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
-
-                llmResponse.forEach((response: { displayText: string | vscode.MarkdownString; code: string; }) => {
-                    if (response.displayText) {
-                        stream.markdown(response.displayText);
-                        stream.markdown('\n');
-                    }
-                    if (response.code && !SKIP_CODES.includes(response.code)) {
-                        stream.markdown('\n```javascript\n' + response.code + '\n```');
-                    }
-                    stream.markdown('\n');
-                });
-
-                stream.markdown(DISCLAIMER_MESSAGE);
-                return createSuccessResult('', scenario.toString(), this.orgID);
+                oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_USING_CUSTOM_BACKEND, { sessionId: this.powerPagesAgentSessionId });
+                return await this.handleWithCustomBackend(request, _context, stream, commandRegistry);
             }
 
         } catch (error) {
@@ -248,6 +135,284 @@ export class PowerPagesChatParticipant {
             return createErrorResult(INVALID_RESPONSE, RESPONSE_SCENARIOS.INVALID_RESPONSE, this.orgID ? this.orgID : '');
         }
     };
+
+    /**
+     * Handles chat requests using VS Code's native LLM API
+     */
+    private async handleWithVsCodeLlm(
+        request: vscode.ChatRequest,
+        context: vscode.ChatContext,
+        stream: vscode.ChatResponseStream,
+        token: vscode.CancellationToken
+    ): Promise<IPowerPagesChatResult> {
+        let userPrompt = request.prompt;
+        userPrompt = removeChatVariables(userPrompt);
+
+        if (userPrompt === WELCOME_PROMPT) {
+            stream.markdown(WELCOME_MESSAGE);
+            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WELCOME_PROMPT, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID || '' });
+            return createSuccessResult(STATER_PROMPTS, RESPONSE_SCENARIOS.WELCOME_PROMPT, this.orgID || '');
+        } else if (!userPrompt) {
+            stream.markdown(NO_PROMPT_MESSAGE);
+            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NO_PROMPT, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID || '' });
+            return createSuccessResult('', RESPONSE_SCENARIOS.NO_PROMPT, this.orgID || '');
+        }
+
+        const { activeFileContent, activeFileUri, startLine, endLine, activeFileParams } = getActiveEditorContent();
+        const location = activeFileUri ? createAndReferenceLocation(activeFileUri, startLine, endLine) : undefined;
+
+        if (location) {
+            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_LOCATION_REFERENCED, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID || '' });
+            stream.reference(location);
+        }
+
+        const relatedFiles: IRelatedFiles[] = [];
+
+        // Fetch related files based on dataverse entity
+        if (activeFileParams.dataverseEntity === ADX_WEBPAGE && activeFileUri) {
+            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WEBPAGE_RELATED_FILES, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID || '' });
+            const files = await fetchRelatedFiles(activeFileUri, activeFileParams.dataverseEntity, activeFileParams.fieldType, this.powerPagesAgentSessionId);
+            relatedFiles.push(...files);
+        }
+
+        // Get component info if org details are available
+        let entityName = '';
+        let entityColumns: string[] = [];
+
+        if (this.orgUrl) {
+            const componentInfo: IComponentInfo = await getComponentInfo(this.orgUrl, activeFileParams, this.powerPagesAgentSessionId);
+            entityName = componentInfo.entityName;
+            entityColumns = componentInfo.componentInfo;
+        }
+
+        // Extract conversation history from chat context
+        const conversationHistory = this.extractConversationHistory(context);
+
+        // Build request params for VS Code LLM
+        const llmRequestParams: IVsCodeLlmRequestParams = {
+            userPrompt: userPrompt,
+            activeFileContent: activeFileContent,
+            activeFileParams: activeFileParams,
+            entityName: entityName,
+            entityColumns: entityColumns,
+            relatedFiles: relatedFiles,
+            sessionId: this.powerPagesAgentSessionId,
+            orgId: this.orgID || '',
+            conversationHistory: conversationHistory
+        };
+
+        try {
+            await this.vsCodeLlmService.sendRequest(llmRequestParams, stream, token);
+            stream.markdown('\n\n' + DISCLAIMER_MESSAGE);
+            return createSuccessResult('', 'VSCODE_LLM_RESPONSE', this.orgID || '');
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : INVALID_RESPONSE;
+            stream.markdown(errorMessage);
+            return createErrorResult(errorMessage, RESPONSE_SCENARIOS.INVALID_RESPONSE, this.orgID || '');
+        }
+    }
+
+    /**
+     * Extracts conversation history from VS Code chat context
+     */
+    private extractConversationHistory(context: vscode.ChatContext): IConversationTurn[] {
+        const history: IConversationTurn[] = [];
+
+        if (!context.history || context.history.length === 0) {
+            return history;
+        }
+
+        // Limit history to last 3 turns to avoid token limits
+        const maxTurns = 3;
+        const recentHistory = context.history.slice(-maxTurns * 2);
+
+        for (const turn of recentHistory) {
+            if (turn instanceof vscode.ChatRequestTurn) {
+                // User message
+                history.push({
+                    role: 'user',
+                    content: turn.prompt
+                });
+            } else if (turn instanceof vscode.ChatResponseTurn) {
+                // Assistant response - extract text from response parts
+                const responseText = this.extractResponseText(turn);
+                if (responseText) {
+                    history.push({
+                        role: 'assistant',
+                        content: responseText
+                    });
+                }
+            }
+        }
+
+        return history;
+    }
+
+    /**
+     * Extracts text content from a chat response turn
+     */
+    private extractResponseText(turn: vscode.ChatResponseTurn): string {
+        const textParts: string[] = [];
+
+        for (const part of turn.response) {
+            if (part instanceof vscode.ChatResponseMarkdownPart) {
+                textParts.push(part.value.value);
+            }
+        }
+
+        return textParts.join('');
+    }
+
+    /**
+     * Handles chat requests using the custom Intelligence API backend (original implementation)
+     */
+    private async handleWithCustomBackend(
+        request: vscode.ChatRequest,
+        _context: vscode.ChatContext,
+        stream: vscode.ChatResponseStream,
+        commandRegistry: CommandRegistry
+    ): Promise<IPowerPagesChatResult> {
+        if (!this.orgID || !this.environmentID) {
+            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, { sessionId: this.powerPagesAgentSessionId });
+            return createErrorResult(PAC_AUTH_NOT_FOUND, RESPONSE_SCENARIOS.PAC_AUTH_NOT_FOUND, '');
+        }
+
+        oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, { orgID: this.orgID, environmentID: this.environmentID, sessionId: this.powerPagesAgentSessionId });
+
+        if (!isPowerPagesGitHubCopilotEnabled()) {
+            stream.markdown(COPILOT_NOT_RELEASED_MSG);
+            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NOT_AVAILABLE_ECS, { sessionId: this.powerPagesAgentSessionId, orgID: this.orgID });
+            return createSuccessResult('', RESPONSE_SCENARIOS.COPILOT_NOT_RELEASED, this.orgID);
+        }
+
+        const intelligenceApiAuthResponse = await intelligenceAPIAuthentication(this.powerPagesAgentSessionId, this.orgID, true);
+
+        if (!intelligenceApiAuthResponse || !intelligenceApiAuthResponse.accessToken || intelligenceApiAuthResponse.accessToken === '') {
+
+            stream.button({
+                command: LOGIN_BTN_CMD,
+                title: LOGIN_BTN_TITLE,
+                tooltip: LOGIN_BTN_TOOLTIP
+            });
+
+            return createErrorResult(AUTHENTICATION_FAILED_MSG, RESPONSE_SCENARIOS.AUTHENTICATION_FAILED, this.orgID);
+        }
+        const intelligenceApiToken = intelligenceApiAuthResponse.accessToken;
+        const userId = intelligenceApiAuthResponse.userId;
+
+        // Use cached endpoint info instead of calling getEndpoint on every request
+        if (!this.cachedEndpoint || !this.cachedEndpoint.intelligenceEndpoint) {
+            // If not yet initialized, initialize it now
+            const endpointInitialized = await this.initializeEndpoint();
+            if (!endpointInitialized) {
+                return createErrorResult(COPILOT_NOT_AVAILABLE_MSG, RESPONSE_SCENARIOS.COPILOT_NOT_AVAILABLE, this.orgID);
+            }
+        }
+        // Using non-null assertion since we've already checked above
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const intelligenceAPIEndpointInfo = this.cachedEndpoint!;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const copilotAvailabilityStatus = checkCopilotAvailability(intelligenceAPIEndpointInfo.intelligenceEndpoint!, this.orgID, this.powerPagesAgentSessionId);
+
+        if (!copilotAvailabilityStatus) {
+            return createErrorResult(COPILOT_NOT_AVAILABLE_MSG, RESPONSE_SCENARIOS.COPILOT_NOT_AVAILABLE, this.orgID);
+        }
+
+        let userPrompt = request.prompt;
+
+        userPrompt = removeChatVariables(userPrompt);
+
+        oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SUCCESSFUL_PROMPT, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+
+        if (userPrompt === WELCOME_PROMPT) {
+            stream.markdown(WELCOME_MESSAGE);
+            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WELCOME_PROMPT, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+            return createSuccessResult(STATER_PROMPTS, RESPONSE_SCENARIOS.WELCOME_PROMPT, this.orgID);
+        } else if (!userPrompt) {
+            stream.markdown(NO_PROMPT_MESSAGE);
+            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NO_PROMPT, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+            return createSuccessResult('', RESPONSE_SCENARIOS.NO_PROMPT, this.orgID);
+        }
+
+        const { activeFileContent, activeFileUri, startLine, endLine, activeFileParams } = getActiveEditorContent();
+        const location = activeFileUri ? createAndReferenceLocation(activeFileUri, startLine, endLine) : undefined;
+
+        if (request.command) {
+            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_COMMAND_TRIGGERED, { commandName: request.command, sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+
+            const command = commandRegistry.get(request.command);
+
+            const commandRequest = {
+                request,
+                stream,
+                intelligenceAPIEndpointInfo: this.cachedEndpoint,
+                intelligenceApiToken,
+                powerPagesAgentSessionId: this.powerPagesAgentSessionId,
+                orgID: this.orgID,
+                envID: this.environmentID,
+                userId: userId,
+                extensionContext: this.extensionContext
+            };
+
+            return await command.execute(commandRequest, stream);
+        } else {
+            if (location) {
+                oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_LOCATION_REFERENCED, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+                stream.reference(location);
+            }
+
+            const relatedFiles: IRelatedFiles[] = [];
+
+            // Based on dataverse entity fetch required context for the active file
+            switch (activeFileParams.dataverseEntity) {
+                case ADX_WEBPAGE:
+                    if (activeFileUri) {
+                        oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WEBPAGE_RELATED_FILES, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+                        const files = await fetchRelatedFiles(activeFileUri, activeFileParams.dataverseEntity, activeFileParams.fieldType, this.powerPagesAgentSessionId);
+                        relatedFiles.push(...files);
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            const { componentInfo, entityName }: IComponentInfo = await getComponentInfo(this.orgUrl, activeFileParams, this.powerPagesAgentSessionId);
+
+            const apiRequestParams: IApiRequestParams = {
+                userPrompt: [{ displayText: userPrompt, code: activeFileContent }],
+                activeFileParams: activeFileParams,
+                orgID: this.orgID,
+                apiToken: intelligenceApiToken,
+                sessionID: this.powerPagesAgentSessionId,
+                entityName: entityName,
+                entityColumns: componentInfo,
+                aibEndpoint: this.cachedEndpoint?.intelligenceEndpoint || '',
+                geoName: this.cachedEndpoint?.geoName || '',
+                crossGeoDataMovementEnabledPPACFlag: this.cachedEndpoint?.crossGeoDataMovementEnabledPPACFlag || false,
+                relatedFiles: relatedFiles
+            };
+
+            const llmResponse = await sendApiRequest(apiRequestParams);
+
+            const scenario = llmResponse.length > 1 ? llmResponse[llmResponse.length - 1] : llmResponse[0].displayText;
+
+            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, { scenario: scenario, sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+
+            llmResponse.forEach((response: { displayText: string | vscode.MarkdownString; code: string; }) => {
+                if (response.displayText) {
+                    stream.markdown(response.displayText);
+                    stream.markdown('\n');
+                }
+                if (response.code && !SKIP_CODES.includes(response.code)) {
+                    stream.markdown('\n```javascript\n' + response.code + '\n```');
+                }
+                stream.markdown('\n');
+            });
+
+            stream.markdown(DISCLAIMER_MESSAGE);
+            return createSuccessResult('', scenario.toString(), this.orgID);
+        }
+    }
 
     private async initializeOrgDetails(): Promise<void> {
         try {

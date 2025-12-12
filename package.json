@@ -510,6 +510,11 @@
           "default": true,
           "markdownDescription": "Whether the Power Platform Copilot is enabled."
         },
+        "powerPlatform.experimental.useVsCodeLlm": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Use VS Code's native Language Model API instead of the custom backend for @powerpages chat participant. Requires GitHub Copilot extension."
+        },
         "powerPlatform.auth.cloud": {
           "type": "string",
           "default": "Public",

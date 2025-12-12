@@ -27,3 +27,18 @@ export const VSCODE_EXTENSION_NL2PAGE_REQUEST = 'VSCodeExtensionNL2PageRequest';
 export const VSCODE_EXTENSION_NL2SITE_REQUEST = 'VSCodeExtensionNL2SiteRequest';
 export const VSCODE_EXTENSION_PREVIEW_SITE_PAGES = 'VSCodeExtensionPreviewSitePages';
 export const VSCODE_EXTENSION_PREVIEW_SITE_PAGES_ERROR = 'VSCodeExtensionPreviewSitePagesError';
+
+// VS Code LLM API Telemetry Constants
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_LLM_REQUEST = 'VSCodeExtensionGitHubPowerPagesAgentLlmRequest';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_LLM_SUCCESS = 'VSCodeExtensionGitHubPowerPagesAgentLlmSuccess';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_LLM_ERROR = 'VSCodeExtensionGitHubPowerPagesAgentLlmError';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_LLM_NO_MODEL = 'VSCodeExtensionGitHubPowerPagesAgentLlmNoModel';
+
+// Power Pages Docs Tool Telemetry Constants
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_DOCS_TOOL_INVOKED = 'VSCodeExtensionGitHubPowerPagesAgentDocsToolInvoked';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_DOCS_TOOL_SUCCESS = 'VSCodeExtensionGitHubPowerPagesAgentDocsToolSuccess';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_DOCS_TOOL_ERROR = 'VSCodeExtensionGitHubPowerPagesAgentDocsToolError';
+
+// LLM Mode Configuration
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_USING_VSCODE_LLM = 'VSCodeExtensionGitHubPowerPagesAgentUsingVsCodeLlm';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_USING_CUSTOM_BACKEND = 'VSCodeExtensionGitHubPowerPagesAgentUsingCustomBackend';
