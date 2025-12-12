@@ -45,7 +45,7 @@ export const compareWithLocal = (pacTerminal: PacTerminal, context: vscode.Exten
         return;
     }
 
-    const siteStoragePath = prepareSiteStoragePath(storagePath);
+    const siteStoragePath = prepareSiteStoragePath(storagePath, siteTreeItem.siteInfo.websiteId);
     const pacWrapper = pacTerminal.getWrapper();
 
     const success = await showProgressWithNotification(

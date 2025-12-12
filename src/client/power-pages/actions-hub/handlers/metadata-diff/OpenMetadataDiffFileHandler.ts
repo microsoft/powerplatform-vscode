@@ -22,7 +22,7 @@ export async function openMetadataDiffFile(fileItem: MetadataDiffFileTreeItem): 
         status: comparisonResult.status
     });
 
-    const title = vscode.l10n.t("{0}: {1} (Remote ↔ Local)", siteName, comparisonResult.relativePath);
+    const title = Constants.StringFunctions.COMPARE_FILE_TITLE(siteName, comparisonResult.relativePath);
 
     // Handle different diff scenarios based on file status
     if (comparisonResult.status === FileComparisonStatus.DELETED) {

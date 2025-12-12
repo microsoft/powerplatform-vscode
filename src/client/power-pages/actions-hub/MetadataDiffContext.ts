@@ -126,6 +126,27 @@ class MetadataDiffContextClass {
         this._onChanged.fire();
     }
 
+    /**
+     * Remove a specific file from the comparison results for a site.
+     * If this is the last file in the site, the site is removed entirely.
+     * @param relativePath The relative path of the file to remove
+     * @param siteName The name of the site
+     */
+    public removeFile(relativePath: string, siteName: string): void {
+        const siteResult = this._siteResults.get(siteName);
+        if (siteResult) {
+            siteResult.comparisonResults = siteResult.comparisonResults.filter(
+                result => result.relativePath !== relativePath
+            );
+
+            if (siteResult.comparisonResults.length === 0) {
+                this._siteResults.delete(siteName);
+            }
+
+            this._onChanged.fire();
+        }
+    }
+
     public toggleViewMode(): void {
         this._viewMode = this._viewMode === MetadataDiffViewMode.Tree ? MetadataDiffViewMode.List : MetadataDiffViewMode.Tree;
         this.updateViewModeContext();

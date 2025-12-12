@@ -232,9 +232,6 @@
       "{0} will be replaced by the error message."
     ]
   },
-  "Modified": "Modified",
-  "Added locally": "Added locally",
-  "Deleted locally": "Deleted locally",
   "Other Sites": "Other Sites",
   "Tools": "Tools",
   "Active Sites": "Active Sites",
@@ -343,10 +340,15 @@
   "No differences found between the remote site and your local workspace.": "No differences found between the remote site and your local workspace.",
   "Comparing files...": "Comparing files...",
   "Metadata Diff": "Metadata Diff",
+  "Modified": "Modified",
+  "Added locally": "Added locally",
+  "Deleted locally": "Deleted locally",
   "Download is complete. You can now view the report.": "Download is complete. You can now view the report.",
   "Select an environment to compare with": "Select an environment to compare with",
   "The website was not found in the selected environment. Please select a different environment.": "The website was not found in the selected environment. Please select a different environment.",
   "Fetching websites from the selected environment...": "Fetching websites from the selected environment...",
+  "Discard Changes": "Discard Changes",
+  "Show Diff": "Show Diff",
   "Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\")).../This is a markdown formatting which must persist across translations.": {
     "message": "Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\"))...",
     "comment": [
@@ -365,7 +367,36 @@
       "This is the site label showing the number of changed files. 'files' is plural."
     ]
   },
-  "Show Diff": "Show Diff",
+  "Are you sure you want to discard local changes to '{0}'? This action cannot be undone./Confirmation message before discarding local changes to a file.": {
+    "message": "Are you sure you want to discard local changes to '{0}'? This action cannot be undone.",
+    "comment": [
+      "Confirmation message before discarding local changes to a file."
+    ]
+  },
+  "Successfully discarded local changes to '{0}'./Success message after discarding local changes to a file.": {
+    "message": "Successfully discarded local changes to '{0}'.",
+    "comment": [
+      "Success message after discarding local changes to a file."
+    ]
+  },
+  "Failed to discard local changes: {0}/Error message when discarding local changes fails.": {
+    "message": "Failed to discard local changes: {0}",
+    "comment": [
+      "Error message when discarding local changes fails."
+    ]
+  },
+  "Compare: {0} (Remote ↔ Local)/Title for the multi-diff editor when comparing all files in a site.": {
+    "message": "Compare: {0} (Remote ↔ Local)",
+    "comment": [
+      "Title for the multi-diff editor when comparing all files in a site."
+    ]
+  },
+  "{0}: {1} (Remote ↔ Local)/Title for the diff editor when comparing a single file.": {
+    "message": "{0}: {1} (Remote ↔ Local)",
+    "comment": [
+      "Title for the diff editor when comparing a single file."
+    ]
+  },
   "Friendly name: {0}/{0} is the website name": {
     "message": "Friendly name: {0}",
     "comment": [
@@ -474,8 +505,6 @@
       "{0} is the cluster geo name"
     ]
   },
-  "{0}: {1} (Remote ↔ Local)": "{0}: {1} (Remote ↔ Local)",
-  "Compare: {0} (Remote ↔ Local)": "Compare: {0} (Remote ↔ Local)",
   "Power Platform Tools: PAC CLI": "Power Platform Tools: PAC CLI",
   "Command completed successfully.": "Command completed successfully.",
   "PAC Telemetry enabled": "PAC Telemetry enabled",

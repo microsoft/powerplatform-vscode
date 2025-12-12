@@ -125,14 +125,12 @@ export function resolveSiteFromWorkspace(workingDirectory: string, resource?: vs
  * @param storagePath The extension storage path
  * @returns The prepared site storage path
  */
-export function prepareSiteStoragePath(storagePath: string): string {
-    const siteStoragePath = path.join(storagePath, "sites-for-comparison");
+export function prepareSiteStoragePath(storagePath: string, websiteId: string): string {
+    const siteStoragePath = path.join(storagePath, "sites-for-comparison", websiteId);
 
-    if (fs.existsSync(siteStoragePath)) {
-        fs.rmSync(siteStoragePath, { recursive: true, force: true });
+    if (!fs.existsSync(siteStoragePath)) {
+        fs.mkdirSync(siteStoragePath, { recursive: true });
     }
-
-    fs.mkdirSync(siteStoragePath, { recursive: true });
 
     return siteStoragePath;
 }

@@ -69,6 +69,10 @@
       <source xml:lang="en">Are you sure you want to delete the Auth Profile {0}-{1}?</source>
       <note>{0} is the user name, {1} is the URL of environment of the auth profile</note>
     </trans-unit>
+    <trans-unit id="++CODE++1d9cd153bf20c28e77061a9743a69cc8850f21221a1871f1c13b27e8470a2688">
+      <source xml:lang="en">Are you sure you want to discard local changes to '{0}'? This action cannot be undone.</source>
+      <note>Confirmation message before discarding local changes to a file.</note>
+    </trans-unit>
     <trans-unit id="++CODE++e149c8c84127919560017a77982c24d21203ea0835f21dc45f34682f5e65840d">
       <source xml:lang="en">Arrow icon</source>
     </trans-unit>
@@ -218,8 +222,9 @@ Check the CodeQL extension panel for available queries.</source>
     <trans-unit id="++CODE++67a58f1682f864bfa789f056e50bab25181dfcddf455fadaad856c826f852d6a">
       <source xml:lang="en">Command failed with exit code: {0}</source>
     </trans-unit>
-    <trans-unit id="++CODE++a5dd75e4f009266d387357e7177d51d70227a2d6e58e40bfa19c487a86119b18">
+    <trans-unit id="++CODE++95de5784f48c7fee97755bb29a90a128546a6a30201be3c73493229230ea7f72">
       <source xml:lang="en">Compare: {0} (Remote ↔ Local)</source>
+      <note>Title for the multi-diff editor when comparing all files in a site.</note>
     </trans-unit>
     <trans-unit id="++CODE++cf8510772ff5dbeb2edc5e7209cc8f47e6c7c79810155260b41c6aec64a9f277">
       <source xml:lang="en">Comparing files...</source>
@@ -288,6 +293,9 @@ Check the CodeQL extension panel for available queries.</source>
     </trans-unit>
     <trans-unit id="++CODE++9a983b9151d6fc6165f094e95ba9ba8cb588b59345cf8956f8fb77ee7ce36be2">
       <source xml:lang="en">Deleted locally</source>
+    </trans-unit>
+    <trans-unit id="++CODE++e07e053c2e10b3f1b6aef657d937cd91d45df4e40242788d7d621faea3380c27">
+      <source xml:lang="en">Discard Changes</source>
     </trans-unit>
     <trans-unit id="++CODE++21c02244893ddc07c4494a2ac7eb69a143e75d7b49d04f10234a1865c2111310">
       <source xml:lang="en">Dislike something? Tell us more.</source>
@@ -401,6 +409,10 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     </trans-unit>
     <trans-unit id="++CODE++d41633e985dc5f5045a42992788b803ca24b0b8d8f42d8db8f0ff08807d7299a">
       <source xml:lang="en">Failed to disable PAC telemetry.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++bae865c75bb42b029c9b92f7c0abb122a2615c2f0f5a658b1633df8f9e921a16">
+      <source xml:lang="en">Failed to discard local changes: {0}</source>
+      <note>Error message when discarding local changes fails.</note>
     </trans-unit>
     <trans-unit id="++CODE++95da24b6bc127a935e2e4323fe85d8f46be20c5e8ca5e10c6a134e5a0c6443a2">
       <source xml:lang="en">Failed to enable PAC telemetry.</source>
@@ -910,6 +922,10 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++155f816c0407310c0dab222493370773e045ee7fe04e6c9a951b07f495531264">
       <source xml:lang="en">Submit</source>
     </trans-unit>
+    <trans-unit id="++CODE++9543efee4b5aadd6f27f5d4a06361b18d153aaf0b66e0121622fb9fd3581fdf8">
+      <source xml:lang="en">Successfully discarded local changes to '{0}'.</source>
+      <note>Success message after discarding local changes to a file.</note>
+    </trans-unit>
     <trans-unit id="++CODE++e3a0cecb7c0c51b4a918164be2e4a75795139fbc652adbed3c6a144cf4adc009">
       <source xml:lang="en">Switching environment...</source>
     </trans-unit>
@@ -1131,8 +1147,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
       <source xml:lang="en">{0} created!</source>
       <note>{0} will be replaced by the entity type.</note>
     </trans-unit>
-    <trans-unit id="++CODE++21c6e9daa33e4efc327932fdbfaa13720e2536c8345dcc464d3022c4ef216731">
+    <trans-unit id="++CODE++21471e6993c28688e252bf884db38022cef15af0126d3d7f68c5e4a6c4dfd9d3">
       <source xml:lang="en">{0}: {1} (Remote ↔ Local)</source>
+      <note>Title for the diff editor when comparing a single file.</note>
     </trans-unit>
   </body></file>
   <file original="package" source-language="en" datatype="plaintext"><body>
@@ -1202,6 +1219,9 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
     </trans-unit>
     <trans-unit id="pacCLI.disableTelemetry.title">
       <source xml:lang="en">Disable PAC Telemetry</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFile.title">
+      <source xml:lang="en">Discard Local Changes</source>
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.description">
       <source xml:lang="en">Discover how you can make complete, modern websites right in Visual Studio Code</source>
@@ -1278,6 +1298,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.openAll.title">
       <source xml:lang="en">Open All Diffs</source>
     </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.openFile.title">
+      <source xml:lang="en">Open Comparison</source>
+    </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title">
       <source xml:lang="en">Open Containing Folder</source>
     </trans-unit>
@@ -1350,9 +1373,6 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="pacCLI.envAndSolutionsPanel.selectEnvironment.title">
       <source xml:lang="en">Select Environment</source>
-    </trans-unit>
-    <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.openFile.title">
-      <source xml:lang="en">Show Diff</source>
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails.title">
       <source xml:lang="en">Show Environment Details</source>
