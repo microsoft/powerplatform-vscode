@@ -76,6 +76,10 @@
       <source xml:lang="en">Are you sure you want to discard local changes to '{0}'? This action cannot be undone.</source>
       <note>Confirmation message before discarding local changes to a file.</note>
     </trans-unit>
+    <trans-unit id="++CODE++2281e368458cc996be41f578298aa205b51f467dd868c44b83560c80340785af">
+      <source xml:lang="en">Are you sure you want to discard local changes to all {0} files in '{1}'? This action cannot be undone.</source>
+      <note>Confirmation message before discarding all local changes in a folder.</note>
+    </trans-unit>
     <trans-unit id="++CODE++e149c8c84127919560017a77982c24d21203ea0835f21dc45f34682f5e65840d">
       <source xml:lang="en">Arrow icon</source>
     </trans-unit>
@@ -929,6 +933,10 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
       <source xml:lang="en">Successfully discarded local changes to '{0}'.</source>
       <note>Success message after discarding local changes to a file.</note>
     </trans-unit>
+    <trans-unit id="++CODE++52901a0a85676bc5805d19ecfc4921edeff3246e815b0d199dad38874519f160">
+      <source xml:lang="en">Successfully discarded local changes to {0} files in '{1}'.</source>
+      <note>Success message after discarding all local changes in a folder.</note>
+    </trans-unit>
     <trans-unit id="++CODE++e3a0cecb7c0c51b4a918164be2e4a75795139fbc652adbed3c6a144cf4adc009">
       <source xml:lang="en">Switching environment...</source>
     </trans-unit>
@@ -1226,6 +1234,9 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
     </trans-unit>
     <trans-unit id="pacCLI.disableTelemetry.title">
       <source xml:lang="en">Disable PAC Telemetry</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFolder.title">
+      <source xml:lang="en">Discard All Local Changes</source>
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFile.title">
       <source xml:lang="en">Discard Local Changes</source>

@@ -33,18 +33,16 @@ export const Constants = {
         METADATA_DIFF_VIEW_AS_TREE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsTree",
         METADATA_DIFF_VIEW_AS_LIST: "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsList",
         METADATA_DIFF_DISCARD_FILE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFile",
+        METADATA_DIFF_DISCARD_FOLDER: "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFolder",
         COMPARE_WITH_ENVIRONMENT: "microsoft-powerapps-portals.compareWithEnvironment",
     },
     Icons: {
         SITE: new vscode.ThemeIcon('globe'),
-        SITE_GROUP: new vscode.ThemeIcon('folder'),
+        SITE_GROUP: vscode.ThemeIcon.Folder,
         OTHER_SITES: new vscode.ThemeIcon('archive'),
         TOOLS: new vscode.ThemeIcon('tools'),
         METADATA_DIFF_GROUP: new vscode.ThemeIcon('diff'),
-        METADATA_DIFF_FOLDER: new vscode.ThemeIcon('folder'),
-        METADATA_DIFF_MODIFIED: new vscode.ThemeIcon('diff-modified', new vscode.ThemeColor('gitDecoration.modifiedResourceForeground')),
-        METADATA_DIFF_ADDED: new vscode.ThemeIcon('diff-added', new vscode.ThemeColor('gitDecoration.addedResourceForeground')),
-        METADATA_DIFF_DELETED: new vscode.ThemeIcon('diff-removed', new vscode.ThemeColor('gitDecoration.deletedResourceForeground'))
+        METADATA_DIFF_FOLDER: vscode.ThemeIcon.Folder,
     },
     Strings: {
         OTHER_SITES: vscode.l10n.t("Other Sites"),
@@ -240,6 +238,24 @@ export const Constants = {
                 comment: ["Error message when discarding local changes fails."]
             }),
         /**
+         * Returns the confirmation message for discarding all local changes in a folder
+         */
+        DISCARD_FOLDER_CHANGES_CONFIRM: (folderName: string, fileCount: number) =>
+            vscode.l10n.t({
+                message: "Are you sure you want to discard local changes to all {0} files in '{1}'? This action cannot be undone.",
+                args: [fileCount, folderName],
+                comment: ["Confirmation message before discarding all local changes in a folder."]
+            }),
+        /**
+         * Returns the success message after discarding all local changes in a folder
+         */
+        DISCARD_FOLDER_CHANGES_SUCCESS: (folderName: string, fileCount: number) =>
+            vscode.l10n.t({
+                message: "Successfully discarded local changes to {0} files in '{1}'.",
+                args: [fileCount, folderName],
+                comment: ["Success message after discarding all local changes in a folder."]
+            }),
+        /**
          * Returns the title for comparing all files in a site
          */
         COMPARE_ALL_TITLE: (siteName: string) =>
@@ -392,6 +408,7 @@ export const Constants = {
         ACTIONS_HUB_METADATA_DIFF_OPEN_ALL: "ActionsHubMetadataDiffOpenAll",
         ACTIONS_HUB_METADATA_DIFF_CLEAR: "ActionsHubMetadataDiffClear",
         ACTIONS_HUB_METADATA_DIFF_DISCARD_FILE: "ActionsHubMetadataDiffDiscardFile",
+        ACTIONS_HUB_METADATA_DIFF_DISCARD_FOLDER: "ActionsHubMetadataDiffDiscardFolder",
         ACTIONS_HUB_METADATA_DIFF_VIEW_MODE_CHANGED: "ActionsHubMetadataDiffViewModeChanged",
         ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_CALLED: "ActionsHubCompareWithEnvironmentCalled",
         ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_ENVIRONMENT_SELECTED: "ActionsHubCompareWithEnvironmentEnvironmentSelected",

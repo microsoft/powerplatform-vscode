@@ -386,6 +386,18 @@
       "Error message when discarding local changes fails."
     ]
   },
+  "Are you sure you want to discard local changes to all {0} files in '{1}'? This action cannot be undone./Confirmation message before discarding all local changes in a folder.": {
+    "message": "Are you sure you want to discard local changes to all {0} files in '{1}'? This action cannot be undone.",
+    "comment": [
+      "Confirmation message before discarding all local changes in a folder."
+    ]
+  },
+  "Successfully discarded local changes to {0} files in '{1}'./Success message after discarding all local changes in a folder.": {
+    "message": "Successfully discarded local changes to {0} files in '{1}'.",
+    "comment": [
+      "Success message after discarding all local changes in a folder."
+    ]
+  },
   "Compare: {0} (Remote ↔ Local)/Title for the multi-diff editor when comparing all files in a site.": {
     "message": "Compare: {0} (Remote ↔ Local)",
     "comment": [

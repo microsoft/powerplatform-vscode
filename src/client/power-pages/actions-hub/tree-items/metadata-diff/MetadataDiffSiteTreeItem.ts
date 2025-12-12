@@ -70,16 +70,18 @@ export class MetadataDiffSiteTreeItem extends ActionsHubTreeItem {
         for (const result of this._comparisonResults) {
             const parts = result.relativePath.split(/[/\\]/);
             let currentFolder: MetadataDiffFolderTreeItem | undefined;
+            let currentPath = "";
 
             // Process all parts except the last one (which is the file name)
             for (let i = 0; i < parts.length - 1; i++) {
                 const folderName = parts[i];
+                currentPath = currentPath ? `${currentPath}/${folderName}` : folderName;
 
                 if (i === 0) {
                     // Look in root children
                     let folder = rootChildren.get(folderName) as MetadataDiffFolderTreeItem | undefined;
                     if (!folder) {
-                        folder = new MetadataDiffFolderTreeItem(folderName);
+                        folder = new MetadataDiffFolderTreeItem(folderName, this._siteName, currentPath);
                         rootChildren.set(folderName, folder);
                     }
                     currentFolder = folder;
@@ -87,7 +89,7 @@ export class MetadataDiffSiteTreeItem extends ActionsHubTreeItem {
                     // Look in current folder's children
                     let folder = currentFolder.childrenMap.get(folderName) as MetadataDiffFolderTreeItem | undefined;
                     if (!folder) {
-                        folder = new MetadataDiffFolderTreeItem(folderName);
+                        folder = new MetadataDiffFolderTreeItem(folderName, this._siteName, currentPath);
                         currentFolder.childrenMap.set(folderName, folder);
                     }
                     currentFolder = folder;
