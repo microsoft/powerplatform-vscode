@@ -47,6 +47,7 @@ import { viewAsTree, viewAsList } from "./handlers/metadata-diff/ToggleViewModeH
 import { MetadataDiffDecorationProvider } from "./MetadataDiffDecorationProvider";
 import { removeSiteComparison } from "./handlers/metadata-diff/RemoveSiteHandler";
 import { discardLocalChanges } from "./handlers/metadata-diff/DiscardLocalChangesHandler";
+import { discardFolderChanges } from "./handlers/metadata-diff/DiscardFolderChangesHandler";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -314,6 +315,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_VIEW_AS_TREE, viewAsTree),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_VIEW_AS_LIST, viewAsList),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_DISCARD_FILE, discardLocalChanges),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_DISCARD_FOLDER, discardFolderChanges),
                 MetadataDiffDecorationProvider.getInstance().register()
             );
         }
