@@ -1,5 +1,5 @@
 ---
-applyTo: "**/src/web/**"
+applyTo: "src/web/**"
 description: Web Extension Setup and Contribution Instructions
 ---
 
