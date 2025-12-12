@@ -32,6 +32,7 @@ export const Constants = {
         METADATA_DIFF_REMOVE_SITE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.removeSite",
         METADATA_DIFF_VIEW_AS_TREE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsTree",
         METADATA_DIFF_VIEW_AS_LIST: "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsList",
+        METADATA_DIFF_DISCARD_FILE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFile",
         COMPARE_WITH_ENVIRONMENT: "microsoft-powerapps-portals.compareWithEnvironment",
     },
     Icons: {
@@ -175,6 +176,8 @@ export const Constants = {
         SELECT_ENVIRONMENT_TO_COMPARE: vscode.l10n.t("Select an environment to compare with"),
         WEBSITE_NOT_FOUND_IN_ENVIRONMENT: vscode.l10n.t("The website was not found in the selected environment. Please select a different environment."),
         FETCHING_WEBSITES_FROM_ENVIRONMENT: vscode.l10n.t("Fetching websites from the selected environment..."),
+        DISCARD_CHANGES: vscode.l10n.t("Discard Changes"),
+        SHOW_DIFF: vscode.l10n.t("Show Diff"),
     },
     /**
      * Functions that return localized strings with dynamic parameters.
@@ -207,6 +210,51 @@ export const Constants = {
                 message: "{0} ({1} files)",
                 args: [siteName, fileCount],
                 comment: ["This is the site label showing the number of changed files. 'files' is plural."]
+            }),
+        /**
+         * Returns the confirmation message for discarding local changes
+         */
+        DISCARD_LOCAL_CHANGES_CONFIRM: (relativePath: string) =>
+            vscode.l10n.t({
+                message: "Are you sure you want to discard local changes to '{0}'? This action cannot be undone.",
+                args: [relativePath],
+                comment: ["Confirmation message before discarding local changes to a file."]
+            }),
+        /**
+         * Returns the success message after discarding local changes
+         */
+        DISCARD_LOCAL_CHANGES_SUCCESS: (relativePath: string) =>
+            vscode.l10n.t({
+                message: "Successfully discarded local changes to '{0}'.",
+                args: [relativePath],
+                comment: ["Success message after discarding local changes to a file."]
+            }),
+        /**
+         * Returns the error message when discarding local changes fails
+         */
+        DISCARD_LOCAL_CHANGES_FAILED: (errorMessage: string) =>
+            vscode.l10n.t({
+                message: "Failed to discard local changes: {0}",
+                args: [errorMessage],
+                comment: ["Error message when discarding local changes fails."]
+            }),
+        /**
+         * Returns the title for comparing all files in a site
+         */
+        COMPARE_ALL_TITLE: (siteName: string) =>
+            vscode.l10n.t({
+                message: "Compare: {0} (Remote ↔ Local)",
+                args: [siteName],
+                comment: ["Title for the multi-diff editor when comparing all files in a site."]
+            }),
+        /**
+         * Returns the title for comparing a single file
+         */
+        COMPARE_FILE_TITLE: (siteName: string, relativePath: string) =>
+            vscode.l10n.t({
+                message: "{0}: {1} (Remote ↔ Local)",
+                args: [siteName, relativePath],
+                comment: ["Title for the diff editor when comparing a single file."]
             }),
     },
     EventNames: {
@@ -333,6 +381,7 @@ export const Constants = {
         ACTIONS_HUB_METADATA_DIFF_OPEN_FILE: "ActionsHubMetadataDiffOpenFile",
         ACTIONS_HUB_METADATA_DIFF_OPEN_ALL: "ActionsHubMetadataDiffOpenAll",
         ACTIONS_HUB_METADATA_DIFF_CLEAR: "ActionsHubMetadataDiffClear",
+        ACTIONS_HUB_METADATA_DIFF_DISCARD_FILE: "ActionsHubMetadataDiffDiscardFile",
         ACTIONS_HUB_METADATA_DIFF_VIEW_MODE_CHANGED: "ActionsHubMetadataDiffViewModeChanged",
         ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_CALLED: "ActionsHubCompareWithEnvironmentCalled",
         ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_ENVIRONMENT_SELECTED: "ActionsHubCompareWithEnvironmentEnvironmentSelected",

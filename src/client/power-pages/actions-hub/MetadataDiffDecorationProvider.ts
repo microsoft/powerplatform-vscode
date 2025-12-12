@@ -6,6 +6,7 @@
 import * as vscode from "vscode";
 import { METADATA_DIFF_URI_SCHEME } from "./tree-items/metadata-diff/MetadataDiffFileTreeItem";
 import { FileComparisonStatus } from "./models/IFileComparisonResult";
+import { Constants } from "./Constants";
 
 /**
  * File decoration provider for metadata diff files.
@@ -63,19 +64,19 @@ export class MetadataDiffDecorationProvider implements vscode.FileDecorationProv
             case FileComparisonStatus.MODIFIED:
                 return new vscode.FileDecoration(
                     "M",
-                    vscode.l10n.t("Modified"),
+                    Constants.Strings.METADATA_DIFF_MODIFIED,
                     new vscode.ThemeColor("gitDecoration.modifiedResourceForeground")
                 );
             case FileComparisonStatus.ADDED:
                 return new vscode.FileDecoration(
                     "A",
-                    vscode.l10n.t("Added locally"),
+                    Constants.Strings.METADATA_DIFF_ADDED,
                     new vscode.ThemeColor("gitDecoration.addedResourceForeground")
                 );
             case FileComparisonStatus.DELETED:
                 return new vscode.FileDecoration(
                     "D",
-                    vscode.l10n.t("Deleted locally"),
+                    Constants.Strings.METADATA_DIFF_DELETED,
                     new vscode.ThemeColor("gitDecoration.deletedResourceForeground")
                 );
             default:

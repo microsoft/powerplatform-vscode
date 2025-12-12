@@ -39,6 +39,6 @@ export async function openAllMetadataDiffs(siteItem: MetadataDiffSiteTreeItem): 
         }
     });
 
-    const title = vscode.l10n.t("Compare: {0} (Remote ↔ Local)", siteName);
+    const title = Constants.StringFunctions.COMPARE_ALL_TITLE(siteName);
     await vscode.commands.executeCommand("vscode.changes", title, resourceList);
 }

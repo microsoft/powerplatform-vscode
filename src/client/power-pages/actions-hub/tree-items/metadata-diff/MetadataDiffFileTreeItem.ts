@@ -59,7 +59,7 @@ export class MetadataDiffFileTreeItem extends ActionsHubTreeItem {
         // Set command to open diff when clicked
         this.command = {
             command: Constants.Commands.METADATA_DIFF_OPEN_FILE,
-            title: vscode.l10n.t("Show Diff"),
+            title: Constants.Strings.SHOW_DIFF,
             arguments: [this]
         };
     }

@@ -144,7 +144,7 @@ export const compareWithEnvironment = (pacTerminal: PacTerminal, context: vscode
         return;
     }
 
-    const siteStoragePath = prepareSiteStoragePath(storagePath);
+    const siteStoragePath = prepareSiteStoragePath(storagePath, websiteDetails.websiteRecordId);
     const pacWrapper = pacTerminal.getWrapper();
 
     // Select the environment before downloading
