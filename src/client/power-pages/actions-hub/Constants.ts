@@ -178,6 +178,7 @@ export const Constants = {
         FETCHING_WEBSITES_FROM_ENVIRONMENT: vscode.l10n.t("Fetching websites from the selected environment..."),
         DISCARD_CHANGES: vscode.l10n.t("Discard Changes"),
         SHOW_DIFF: vscode.l10n.t("Show Diff"),
+        METADATA_DIFF_ONLY_BINARY_FILES: vscode.l10n.t("All changed files are binary files (e.g., images) and cannot be displayed in the diff viewer. You can view them individually in the file tree."),
     },
     /**
      * Functions that return localized strings with dynamic parameters.
@@ -255,6 +256,15 @@ export const Constants = {
                 message: "{0}: {1} (Remote ↔ Local)",
                 args: [siteName, relativePath],
                 comment: ["Title for the diff editor when comparing a single file."]
+            }),
+        /**
+         * Returns the message for skipped binary files
+         */
+        METADATA_DIFF_BINARY_FILES_SKIPPED: (count: number) =>
+            vscode.l10n.t({
+                message: "{0} binary file(s) (e.g., images) were skipped as they cannot be displayed in the diff viewer. You can view them individually in the file tree.",
+                args: [count],
+                comment: ["Message shown when binary files are skipped in the multi-diff view."]
             }),
     },
     EventNames: {

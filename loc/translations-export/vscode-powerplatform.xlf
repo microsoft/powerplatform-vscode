@@ -56,6 +56,9 @@
       <source xml:lang="en">Adding {0} web file(s). Existing files will be skipped</source>
       <note>{0} represents the number of web files</note>
     </trans-unit>
+    <trans-unit id="++CODE++8890e663481705393ed3b1b4642095a11329e21320824ed567e383a12ea888f4">
+      <source xml:lang="en">All changed files are binary files (e.g., images) and cannot be displayed in the diff viewer. You can view them individually in the file tree.</source>
+    </trans-unit>
     <trans-unit id="++CODE++c910bd41bbf67f9965a2aabaec8d39b749280ffea62e9708c507374b581a331d">
       <source xml:lang="en">Analysis complete! Results saved to: {0}</source>
     </trans-unit>
@@ -1142,6 +1145,10 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++baeef25dc2eb180f07d2588035131c67de574a67b5b59941b077d96c5e08ec9e">
       <source xml:lang="en">{0} ({1} files)</source>
       <note>This is the site label showing the number of changed files. 'files' is plural.</note>
+    </trans-unit>
+    <trans-unit id="++CODE++7ec0c807a987e15ebf5bcf7dab23b8fea20b59ed72cae0172465ad0fdd200882">
+      <source xml:lang="en">{0} binary file(s) (e.g., images) were skipped as they cannot be displayed in the diff viewer. You can view them individually in the file tree.</source>
+      <note>Message shown when binary files are skipped in the multi-diff view.</note>
     </trans-unit>
     <trans-unit id="++CODE++48c4c42c9b70ac4687a121f91d8cb9a9063a3b51fbc5eeb68e5edc961ee18482">
       <source xml:lang="en">{0} created!</source>
