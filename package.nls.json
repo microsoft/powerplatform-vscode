@@ -120,5 +120,7 @@
   "microsoft.powerplatform.pages.actionsHub.activeSite.compareWithLocal.title": "Compare with Local",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.openFile.title": "Show Diff",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.openAll.title": "Open All Diffs",
-  "microsoft.powerplatform.pages.actionsHub.metadataDiff.clear.title": "Clear Comparison"
+  "microsoft.powerplatform.pages.actionsHub.metadataDiff.clear.title": "Clear Comparison",
+  "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsTree.title": "View as Tree",
+  "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsList.title": "View as List"
 }

@@ -42,6 +42,8 @@ import { MetadataDiffGroupTreeItem } from "./tree-items/metadata-diff/MetadataDi
 import { openMetadataDiffFile } from "./handlers/metadata-diff/OpenMetadataDiffFileHandler";
 import { openAllMetadataDiffs } from "./handlers/metadata-diff/OpenAllMetadataDiffsHandler";
 import { clearMetadataDiff } from "./handlers/metadata-diff/ClearMetadataDiffHandler";
+import { viewAsTree, viewAsList } from "./handlers/metadata-diff/ToggleViewModeHandler";
+import { MetadataDiffDecorationProvider } from "./MetadataDiffDecorationProvider";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -58,6 +60,10 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal, isCodeQlScanEnabled: boolean) {
         this._isCodeQlScanEnabled = isCodeQlScanEnabled;
         this._context = context;
+
+        // Initialize MetadataDiffContext with extension context for state persistence
+        MetadataDiffContext.initialize(context);
+
         this._disposables.push(
             ...this.registerPanel(),
 
@@ -301,9 +307,13 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
         if (ActionsHub.isMetadataDiffEnabled()) {
             commands.push(
                 vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.compareWithLocal", compareWithLocal(this._pacTerminal, this._context)),
+                vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.showOutputChannel", () => this._pacTerminal.getWrapper().showOutputChannel()),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_OPEN_FILE, openMetadataDiffFile),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_OPEN_ALL, openAllMetadataDiffs),
-                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_CLEAR, clearMetadataDiff)
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_CLEAR, clearMetadataDiff),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_VIEW_AS_TREE, viewAsTree),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_VIEW_AS_LIST, viewAsList),
+                MetadataDiffDecorationProvider.getInstance().register()
             );
         }
 

@@ -25,6 +25,7 @@ export interface IPacInterop {
     executeCommand(args: PacArguments): Promise<string>;
     executeCommandWithProgress(args: PacArguments): Promise<boolean>;
     exit(): void;
+    showOutputChannel(): void;
 }
 
 export class PacInterop implements IPacInterop {
@@ -138,7 +139,6 @@ export class PacInterop implements IPacInterop {
         const command = `pac ${args.Arguments.join(" ")}`;
 
         this.outputChannel.info(vscode.l10n.t("Executing: {0}", command));
-        this.outputChannel.show();
 
         return new Promise((resolve) => {
             const env: NodeJS.ProcessEnv = { ...process.env, 'PP_TOOLS_AUTOMATION_AGENT': this.context.automationAgent };
@@ -187,6 +187,14 @@ export class PacInterop implements IPacInterop {
                 resolve(false);
             });
         });
+    }
+
+    /**
+     * Shows the PAC CLI output channel to the user.
+     * Call this method when you want to display command output to the user.
+     */
+    public showOutputChannel(): void {
+        this.outputChannel.show();
     }
 }
 
@@ -316,6 +324,14 @@ export class PacWrapper {
             // Ignore exit errors, process might already be dead
         }
         // The next operation will create a new process
+    }
+
+    /**
+     * Shows the PAC CLI output channel to the user.
+     * Call this method when you want to display command output to the user.
+     */
+    public showOutputChannel(): void {
+        this.pacInterop.showOutputChannel();
     }
 
     public exit(): void {

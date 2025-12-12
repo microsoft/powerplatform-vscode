@@ -6,13 +6,19 @@
 import * as vscode from "vscode";
 import { expect } from "chai";
 import { MetadataDiffGroupTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/metadata-diff/MetadataDiffGroupTreeItem";
-import { MetadataDiffFolderTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/metadata-diff/MetadataDiffFolderTreeItem";
 import { MetadataDiffFileTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/metadata-diff/MetadataDiffFileTreeItem";
+import { MetadataDiffFolderTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/metadata-diff/MetadataDiffFolderTreeItem";
 import { ActionsHubTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
 import { IFileComparisonResult } from "../../../../../../power-pages/actions-hub/models/IFileComparisonResult";
 import { Constants } from "../../../../../../power-pages/actions-hub/Constants";
+import MetadataDiffContext, { MetadataDiffViewMode } from "../../../../../../power-pages/actions-hub/MetadataDiffContext";
 
 describe("MetadataDiffGroupTreeItem", () => {
+    beforeEach(() => {
+        // Reset to default list view mode before each test
+        MetadataDiffContext.setViewMode(MetadataDiffViewMode.List);
+    });
+
     describe("constructor", () => {
         it("should be an instance of ActionsHubTreeItem", () => {
             const treeItem = new MetadataDiffGroupTreeItem([], "Test Site");
@@ -89,13 +95,124 @@ describe("MetadataDiffGroupTreeItem", () => {
         });
     });
 
-    describe("getChildren", () => {
+    describe("getChildren - list view mode", () => {
+        beforeEach(() => {
+            MetadataDiffContext.setViewMode(MetadataDiffViewMode.List);
+        });
+
         it("should return empty array when no results", () => {
             const treeItem = new MetadataDiffGroupTreeItem([], "Test Site");
 
             const children = treeItem.getChildren();
 
             expect(children).to.have.lengthOf(0);
+        });
+
+        it("should return file items as flat list", () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/file.txt",
+                    remotePath: "/remote/file.txt",
+                    relativePath: "file.txt",
+                    status: "modified"
+                }
+            ];
+            const treeItem = new MetadataDiffGroupTreeItem(results, "Test Site");
+
+            const children = treeItem.getChildren();
+
+            expect(children).to.have.lengthOf(1);
+            expect(children[0]).to.be.instanceOf(MetadataDiffFileTreeItem);
+        });
+
+        it("should return file items directly without folder hierarchy", () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/folder/file.txt",
+                    remotePath: "/remote/folder/file.txt",
+                    relativePath: "folder/file.txt",
+                    status: "modified"
+                }
+            ];
+            const treeItem = new MetadataDiffGroupTreeItem(results, "Test Site");
+
+            const children = treeItem.getChildren();
+
+            expect(children).to.have.lengthOf(1);
+            expect(children[0]).to.be.instanceOf(MetadataDiffFileTreeItem);
+            expect(children[0].label).to.equal("file.txt");
+        });
+
+        it("should show folder path in description", () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/folder/subfolder/file.txt",
+                    remotePath: "/remote/folder/subfolder/file.txt",
+                    relativePath: "folder/subfolder/file.txt",
+                    status: "modified"
+                }
+            ];
+            const treeItem = new MetadataDiffGroupTreeItem(results, "Test Site");
+
+            const children = treeItem.getChildren();
+
+            expect(children).to.have.lengthOf(1);
+            expect(children[0]).to.be.instanceOf(MetadataDiffFileTreeItem);
+            expect(children[0].description).to.equal("folder/subfolder");
+        });
+
+        it("should return all files in flat list", () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/folder/file1.txt",
+                    remotePath: "/remote/folder/file1.txt",
+                    relativePath: "folder/file1.txt",
+                    status: "modified"
+                },
+                {
+                    localPath: "/local/folder/file2.txt",
+                    remotePath: "/remote/folder/file2.txt",
+                    relativePath: "folder/file2.txt",
+                    status: "added"
+                }
+            ];
+            const treeItem = new MetadataDiffGroupTreeItem(results, "Test Site");
+
+            const children = treeItem.getChildren();
+
+            expect(children).to.have.lengthOf(2);
+            expect(children[0]).to.be.instanceOf(MetadataDiffFileTreeItem);
+            expect(children[1]).to.be.instanceOf(MetadataDiffFileTreeItem);
+        });
+
+        it("should sort files by relative path", () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/z-folder/file.txt",
+                    remotePath: "/remote/z-folder/file.txt",
+                    relativePath: "z-folder/file.txt",
+                    status: "modified"
+                },
+                {
+                    localPath: "/local/a-folder/file.txt",
+                    remotePath: "/remote/a-folder/file.txt",
+                    relativePath: "a-folder/file.txt",
+                    status: "added"
+                }
+            ];
+            const treeItem = new MetadataDiffGroupTreeItem(results, "Test Site");
+
+            const children = treeItem.getChildren();
+
+            expect(children).to.have.lengthOf(2);
+            expect((children[0] as MetadataDiffFileTreeItem).comparisonResult.relativePath).to.equal("a-folder/file.txt");
+            expect((children[1] as MetadataDiffFileTreeItem).comparisonResult.relativePath).to.equal("z-folder/file.txt");
+        });
+    });
+
+    describe("getChildren - tree view mode", () => {
+        beforeEach(() => {
+            MetadataDiffContext.setViewMode(MetadataDiffViewMode.Tree);
         });
 
         it("should return file items for files in root", () => {

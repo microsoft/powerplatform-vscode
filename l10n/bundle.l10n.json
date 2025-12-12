@@ -232,6 +232,9 @@
       "{0} will be replaced by the error message."
     ]
   },
+  "Modified": "Modified",
+  "Added locally": "Added locally",
+  "Deleted locally": "Deleted locally",
   "Other Sites": "Other Sites",
   "Active Sites": "Active Sites",
   "Inactive Sites": "Inactive Sites",
@@ -335,14 +338,17 @@
   "Error updating config file: {0}": "Error updating config file: {0}",
   "No workspace folder is open. Please open a folder containing your Power Pages site.": "No workspace folder is open. Please open a folder containing your Power Pages site.",
   "Website ID not found. Please ensure you have a valid Power Pages site open.": "Website ID not found. Please ensure you have a valid Power Pages site open.",
-  "Downloading site for comparison...": "Downloading site for comparison...",
+  "Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\")).../This is a markdown formatting which must persist across translations.": {
+    "message": "Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\"))...",
+    "comment": [
+      "This is a markdown formatting which must persist across translations."
+    ]
+  },
   "Site download failed. Please try again later.": "Site download failed. Please try again later.",
   "No differences found between the remote site and your local workspace.": "No differences found between the remote site and your local workspace.",
   "Comparing files...": "Comparing files...",
-  "Metadata Comparison": "Metadata Comparison",
-  "Modified": "Modified",
-  "Added locally": "Added locally",
-  "Deleted locally": "Deleted locally",
+  "Metadata Diff": "Metadata Diff",
+  "Download is complete. You can now view the report.": "Download is complete. You can now view the report.",
   "{0} ({1} change(s))": "{0} ({1} change(s))",
   "Show Diff": "Show Diff",
   "Friendly name: {0}/{0} is the website name": {

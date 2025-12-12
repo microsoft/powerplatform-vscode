@@ -70,8 +70,12 @@ describe("ActionsHubTreeDataProvider", () => {
     beforeEach(() => {
         registerCommandStub = sinon.stub(vscode.commands, "registerCommand");
         context = {
-            extensionUri: vscode.Uri.parse("https://localhost:3000")
-        } as vscode.ExtensionContext;
+            extensionUri: vscode.Uri.parse("https://localhost:3000"),
+            globalState: {
+                get: sinon.stub().returns(undefined),
+                update: sinon.stub().resolves()
+            }
+        } as unknown as vscode.ExtensionContext;
         traceInfoStub = sinon.stub();
         traceErrorStub = sinon.stub();
         sinon.stub(oneDSLoggerWrapper, "getLogger").returns({

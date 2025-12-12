@@ -26,6 +26,8 @@ export const Constants = {
         METADATA_DIFF_OPEN_FILE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.openFile",
         METADATA_DIFF_OPEN_ALL: "microsoft.powerplatform.pages.actionsHub.metadataDiff.openAll",
         METADATA_DIFF_CLEAR: "microsoft.powerplatform.pages.actionsHub.metadataDiff.clear",
+        METADATA_DIFF_VIEW_AS_TREE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsTree",
+        METADATA_DIFF_VIEW_AS_LIST: "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsList",
     },
     Icons: {
         SITE: new vscode.ThemeIcon('globe'),
@@ -155,14 +157,18 @@ export const Constants = {
         CODEQL_CONFIG_FILE_UPDATE_ERROR: vscode.l10n.t("Error updating config file: {0}"),
         NO_WORKSPACE_FOLDER_OPEN: vscode.l10n.t("No workspace folder is open. Please open a folder containing your Power Pages site."),
         WEBSITE_ID_NOT_FOUND: vscode.l10n.t("Website ID not found. Please ensure you have a valid Power Pages site open."),
-        DOWNLOADING_SITE_FOR_COMPARISON: vscode.l10n.t("Downloading site for comparison..."),
+        DOWNLOADING_SITE_FOR_COMPARISON: vscode.l10n.t({
+            message: "Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\"))...",
+            comment: ["This is a markdown formatting which must persist across translations."]
+        }),
         COMPARE_WITH_LOCAL_SITE_DOWNLOAD_FAILED: vscode.l10n.t("Site download failed. Please try again later."),
         NO_DIFFERENCES_FOUND: vscode.l10n.t("No differences found between the remote site and your local workspace."),
         COMPARING_FILES: vscode.l10n.t("Comparing files..."),
-        METADATA_DIFF_GROUP: vscode.l10n.t("Metadata Comparison"),
+        METADATA_DIFF_GROUP: vscode.l10n.t("Metadata Diff"),
         METADATA_DIFF_MODIFIED: vscode.l10n.t("Modified"),
         METADATA_DIFF_ADDED: vscode.l10n.t("Added locally"),
         METADATA_DIFF_DELETED: vscode.l10n.t("Deleted locally"),
+        COMPARE_WITH_LOCAL_COMPLETED: vscode.l10n.t("Download is complete. You can now view the report."),
     },
     EventNames: {
         ACTIONS_HUB_ENABLED: "ActionsHubEnabled",
@@ -288,6 +294,7 @@ export const Constants = {
         ACTIONS_HUB_METADATA_DIFF_OPEN_FILE: "ActionsHubMetadataDiffOpenFile",
         ACTIONS_HUB_METADATA_DIFF_OPEN_ALL: "ActionsHubMetadataDiffOpenAll",
         ACTIONS_HUB_METADATA_DIFF_CLEAR: "ActionsHubMetadataDiffClear",
+        ACTIONS_HUB_METADATA_DIFF_VIEW_MODE_CHANGED: "ActionsHubMetadataDiffViewModeChanged",
     },
     StudioEndpoints: {
         TEST: "https://make.test.powerpages.microsoft.com",

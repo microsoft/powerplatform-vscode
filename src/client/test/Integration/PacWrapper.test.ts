@@ -31,6 +31,10 @@ class MockPacInterop implements IPacInterop {
         // no-op
     }
 
+    public showOutputChannel(): void {
+        // no-op
+    }
+
 }
 
 describe('PacWrapper', () => {
