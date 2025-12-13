@@ -17,7 +17,7 @@ import { ActiveOrgOutput } from "../../client/pac/PacTypes";
 import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotExplainCode, CopilotExplainCodeSize, CopilotNotAvailableECSConfig, CopilotPanelTryGitHubCopilotClicked, VSCodeExtensionGitHubChatPanelOpened, VSCodeExtensionGitHubChatNotFound } from "./telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { getEntityColumns, getEntityName, getFormXml } from "./dataverseMetadata";
-import { isWithinTokenLimit, encode } from "gpt-tokenizer";
+import { encode } from "gpt-tokenizer";
 import { orgChangeErrorEvent, orgChangeEvent } from "../../client/OrgChangeNotifier";
 import { getDisabledOrgList, getDisabledTenantList } from "./utils/copilotUtil";
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../services/Constants";
@@ -88,15 +88,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     vscode.window.showInformationMessage(vscode.l10n.t('Selection is empty.'));
                     return;
                 }
-                const withinTokenLimit = isWithinTokenLimit(selectedCode, 1000);
                 if (commandType === EXPLAIN_CODE) {
                     const tokenSize = encode(selectedCode).length;
                     sendTelemetryEvent({ eventName: CopilotExplainCodeSize, copilotSessionId: sessionID, orgId: orgID, userId: userID,  codeLineCount: String(selectedCodeLineRange.end - selectedCodeLineRange.start), tokenSize: String(tokenSize) });
-                    if (withinTokenLimit === false) {
-                        return;
-                    }
                 }
-                this.sendMessageToWebview({ type: commandType, value: { start: selectedCodeLineRange.start, end: selectedCodeLineRange.end, selectedCode: selectedCode, tokenSize: withinTokenLimit } });
+                this.sendMessageToWebview({ type: commandType, value: { start: selectedCodeLineRange.start, end: selectedCodeLineRange.end, selectedCode: selectedCode} });
             };
 
             this._disposables.push(
