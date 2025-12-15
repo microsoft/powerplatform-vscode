@@ -6,10 +6,10 @@
 import * as vscode from "vscode";
 import { ActionsHubTreeItem } from "../ActionsHubTreeItem";
 import { Constants } from "../../Constants";
-import { IFileComparisonResult } from "../../models/IFileComparisonResult";
+import { IFileComparisonResult, FileComparisonStatus } from "../../models/IFileComparisonResult";
 import { MetadataDiffFileTreeItem } from "./MetadataDiffFileTreeItem";
 import { MetadataDiffFolderTreeItem } from "./MetadataDiffFolderTreeItem";
-import MetadataDiffContext from "../../MetadataDiffContext";
+import MetadataDiffContext, { MetadataDiffSortMode } from "../../MetadataDiffContext";
 
 /**
  * Tree item representing a single website's metadata diff results.
@@ -46,18 +46,55 @@ export class MetadataDiffSiteTreeItem extends ActionsHubTreeItem {
 
     /**
      * Build a flat list of file tree items (Git-style list view).
-     * Files are sorted by folder path, then by file name.
+     * Files are sorted based on the current sort mode.
      */
     private buildFlatFileList(): ActionsHubTreeItem[] {
-        // Sort results by relative path for consistent ordering
-        const sortedResults = [...this._comparisonResults].sort((a, b) =>
-            a.relativePath.localeCompare(b.relativePath)
-        );
+        // Sort results based on current sort mode
+        const sortedResults = this.sortResults([...this._comparisonResults]);
 
         // Create flat list of file items
         return sortedResults.map(result =>
             new MetadataDiffFileTreeItem(result, this._siteName)
         );
+    }
+
+    /**
+     * Sort comparison results based on the current sort mode
+     */
+    private sortResults(results: IFileComparisonResult[]): IFileComparisonResult[] {
+        const sortMode = MetadataDiffContext.sortMode;
+
+        switch (sortMode) {
+            case MetadataDiffSortMode.Name:
+                // Sort by file name only
+                return results.sort((a, b) => {
+                    const nameA = a.relativePath.split(/[/\\]/).pop() || a.relativePath;
+                    const nameB = b.relativePath.split(/[/\\]/).pop() || b.relativePath;
+                    return nameA.localeCompare(nameB);
+                });
+
+            case MetadataDiffSortMode.Status:
+                // Sort by status (Added, Deleted, Modified), then by path
+                return results.sort((a, b) => {
+                    const statusOrder = {
+                        [FileComparisonStatus.ADDED]: 1,
+                        [FileComparisonStatus.DELETED]: 2,
+                        [FileComparisonStatus.MODIFIED]: 3
+                    };
+                    const statusCompare = statusOrder[a.status] - statusOrder[b.status];
+                    if (statusCompare !== 0) {
+                        return statusCompare;
+                    }
+                    return a.relativePath.localeCompare(b.relativePath);
+                });
+
+            case MetadataDiffSortMode.Path:
+            default:
+                // Sort by full relative path (default)
+                return results.sort((a, b) =>
+                    a.relativePath.localeCompare(b.relativePath)
+                );
+        }
     }
 
     /**

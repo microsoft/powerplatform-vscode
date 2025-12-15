@@ -126,5 +126,8 @@
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsList.title": "View as List",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFile.title": "Discard Local Changes",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFolder.title": "Discard All Local Changes",
+  "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByName.title": "Sort by Name",
+  "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByPath.title": "Sort by Path",
+  "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByStatus.title": "Sort by Status",
   "microsoft-powerapps-portals.compareWithEnvironment.title": "Compare with Environment"
 }

@@ -63,7 +63,7 @@ export async function discardLocalChanges(fileItem: MetadataDiffFileTreeItem): P
         status: comparisonResult.status
     });
 
-    const confirmMessage = Constants.StringFunctions.DISCARD_LOCAL_CHANGES_CONFIRM(comparisonResult.relativePath);
+    const confirmMessage = Constants.StringFunctions.DISCARD_LOCAL_CHANGES_CONFIRM(comparisonResult.localPath);
 
     const confirmButton = Constants.Strings.DISCARD_CHANGES;
     const result = await vscode.window.showWarningMessage(confirmMessage, { modal: true }, confirmButton);
