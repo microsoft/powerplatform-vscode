@@ -90,6 +90,7 @@ export enum folderExportType {
 export enum entityAttributesWithBase64Encoding {
     documentbody = "documentbody",
     filecontent = "filecontent",
+    adx_filecontent = "adx_filecontent",
 }
 
 export enum EntityMetadataKeyCore {

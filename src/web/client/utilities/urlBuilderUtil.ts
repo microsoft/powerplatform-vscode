@@ -152,7 +152,8 @@ export function getPatchRequestUrl(
     requestUrl: string
 ) {
     return (entity === schemaEntityName.WEBFILES || entity === schemaEntityName.SERVERLOGICS) &&
-        attributeType === entityAttributesWithBase64Encoding.filecontent
+        (attributeType === entityAttributesWithBase64Encoding.filecontent ||
+            attributeType === entityAttributesWithBase64Encoding.adx_filecontent)
         ? requestUrl + "/" + attributeType
         : requestUrl;
 }
