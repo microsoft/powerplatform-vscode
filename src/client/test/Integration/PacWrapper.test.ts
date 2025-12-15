@@ -15,10 +15,16 @@ class MockContext implements IPacWrapperContext {
 
 class MockPacInterop implements IPacInterop {
     public executeReturnValue = "";
+    public executeCommandWithProgressReturnValue = true;
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public async executeCommand(args: PacArguments): Promise<string> {
         return this.executeReturnValue;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public async executeCommandWithProgress(args: PacArguments): Promise<boolean> {
+        return this.executeCommandWithProgressReturnValue;
     }
 
     public exit(): void {

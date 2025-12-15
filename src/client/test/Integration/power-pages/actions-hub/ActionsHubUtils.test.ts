@@ -6,7 +6,10 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { fetchWebsites, findOtherSites, createKnownSiteIdsSet } from '../../../../power-pages/actions-hub/ActionsHubUtils';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
+import { fetchWebsites, findOtherSites, createKnownSiteIdsSet, getAllFiles } from '../../../../power-pages/actions-hub/ActionsHubUtils';
 import { Constants } from '../../../../power-pages/actions-hub/Constants';
 import { WebsiteDataModel, ServiceEndpointCategory } from '../../../../../common/services/Constants';
 import { IWebsiteDetails, IArtemisAPIOrgResponse } from '../../../../../common/services/Interfaces';
@@ -257,6 +260,107 @@ describe('ActionsHubUtils', () => {
 
             expect(result.size).to.equal(1);
             expect(result.has('active-1')).to.be.true;
+        });
+    });
+
+    describe('getAllFiles', () => {
+        let tempDir: string;
+
+        beforeEach(() => {
+            // Create a temporary directory for each test
+            tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'actions-hub-test-'));
+        });
+
+        afterEach(() => {
+            // Clean up the temporary directory
+            fs.rmSync(tempDir, { recursive: true, force: true });
+        });
+
+        it('should return empty map when directory does not exist', () => {
+            const result = getAllFiles('/non/existent/path');
+
+            expect(result.size).to.equal(0);
+        });
+
+        it('should return empty map for empty directory', () => {
+            const result = getAllFiles(tempDir);
+
+            expect(result.size).to.equal(0);
+        });
+
+        it('should return files in the directory', () => {
+            // Create test files
+            fs.writeFileSync(path.join(tempDir, 'file1.txt'), 'content1');
+            fs.writeFileSync(path.join(tempDir, 'file2.txt'), 'content2');
+
+            const result = getAllFiles(tempDir);
+
+            expect(result.size).to.equal(2);
+            expect(result.has('file1.txt')).to.be.true;
+            expect(result.has('file2.txt')).to.be.true;
+        });
+
+        it('should return nested files with relative paths', () => {
+            // Create nested directory structure
+            const subDir = path.join(tempDir, 'subdir');
+            fs.mkdirSync(subDir);
+            fs.writeFileSync(path.join(subDir, 'nested.txt'), 'content');
+
+            const result = getAllFiles(tempDir);
+
+            expect(result.size).to.equal(1);
+            const relativePath = path.join('subdir', 'nested.txt');
+            expect(result.has(relativePath)).to.be.true;
+        });
+
+        it('should skip directories starting with dot', () => {
+            // Create hidden directory
+            const hiddenDir = path.join(tempDir, '.hidden');
+            fs.mkdirSync(hiddenDir);
+            fs.writeFileSync(path.join(hiddenDir, 'hidden.txt'), 'content');
+
+            // Create regular file
+            fs.writeFileSync(path.join(tempDir, 'visible.txt'), 'content');
+
+            const result = getAllFiles(tempDir);
+
+            expect(result.size).to.equal(1);
+            expect(result.has('visible.txt')).to.be.true;
+        });
+
+        it('should skip files starting with dot', () => {
+            // Create hidden file
+            fs.writeFileSync(path.join(tempDir, '.hidden'), 'content');
+
+            // Create regular file
+            fs.writeFileSync(path.join(tempDir, 'visible.txt'), 'content');
+
+            const result = getAllFiles(tempDir);
+
+            expect(result.size).to.equal(1);
+            expect(result.has('visible.txt')).to.be.true;
+        });
+
+        it('should handle deeply nested directories', () => {
+            // Create deep nested structure
+            const deepPath = path.join(tempDir, 'level1', 'level2', 'level3');
+            fs.mkdirSync(deepPath, { recursive: true });
+            fs.writeFileSync(path.join(deepPath, 'deep.txt'), 'content');
+
+            const result = getAllFiles(tempDir);
+
+            expect(result.size).to.equal(1);
+            const expectedPath = path.join('level1', 'level2', 'level3', 'deep.txt');
+            expect(result.has(expectedPath)).to.be.true;
+        });
+
+        it('should return absolute paths as values', () => {
+            fs.writeFileSync(path.join(tempDir, 'test.txt'), 'content');
+
+            const result = getAllFiles(tempDir);
+
+            const absolutePath = result.get('test.txt');
+            expect(absolutePath).to.equal(path.join(tempDir, 'test.txt'));
         });
     });
 });
