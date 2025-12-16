@@ -36,7 +36,7 @@ describe("OpenMetadataDiffFileHandler", () => {
                 relativePath: "folder/file.txt",
                 status: "modified"
             };
-            const fileItem = new MetadataDiffFileTreeItem("file.txt", comparisonResult, "Test Site");
+            const fileItem = new MetadataDiffFileTreeItem(comparisonResult, "Test Site");
 
             await openMetadataDiffFile(fileItem);
 
@@ -56,7 +56,7 @@ describe("OpenMetadataDiffFileHandler", () => {
                 relativePath: "file.txt",
                 status: "modified"
             };
-            const fileItem = new MetadataDiffFileTreeItem("file.txt", comparisonResult, "Test Site");
+            const fileItem = new MetadataDiffFileTreeItem(comparisonResult, "Test Site");
 
             await openMetadataDiffFile(fileItem);
 
@@ -78,7 +78,7 @@ describe("OpenMetadataDiffFileHandler", () => {
                 relativePath: "added.txt",
                 status: "added"
             };
-            const fileItem = new MetadataDiffFileTreeItem("added.txt", comparisonResult, "Test Site");
+            const fileItem = new MetadataDiffFileTreeItem(comparisonResult, "Test Site");
 
             await openMetadataDiffFile(fileItem);
 
@@ -99,7 +99,7 @@ describe("OpenMetadataDiffFileHandler", () => {
                 relativePath: "deleted.txt",
                 status: "deleted"
             };
-            const fileItem = new MetadataDiffFileTreeItem("deleted.txt", comparisonResult, "Test Site");
+            const fileItem = new MetadataDiffFileTreeItem(comparisonResult, "Test Site");
 
             await openMetadataDiffFile(fileItem);
 
@@ -120,7 +120,7 @@ describe("OpenMetadataDiffFileHandler", () => {
                 relativePath: "folder/file.txt",
                 status: "modified"
             };
-            const fileItem = new MetadataDiffFileTreeItem("file.txt", comparisonResult, "My Site");
+            const fileItem = new MetadataDiffFileTreeItem(comparisonResult, "My Site");
 
             await openMetadataDiffFile(fileItem);
 
@@ -131,6 +131,91 @@ describe("OpenMetadataDiffFileHandler", () => {
                 const title = diffCall.args[3] as string;
                 expect(title).to.include("My Site");
                 expect(title).to.include("folder/file.txt");
+            }
+        });
+
+        it("should open binary files side by side for modified binary files", async () => {
+            // Note: Since we cannot stub fs.existsSync, this test verifies the handler
+            // doesn't throw errors for binary files. The actual vscode.open calls
+            // depend on file existence which we cannot mock.
+            const comparisonResult: IFileComparisonResult = {
+                localPath: "/local/image.png",
+                remotePath: "/remote/image.png",
+                relativePath: "image.png",
+                status: "modified"
+            };
+            const fileItem = new MetadataDiffFileTreeItem(comparisonResult, "Test Site");
+
+            // Should not throw
+            await openMetadataDiffFile(fileItem);
+
+            // Verify no vscode.diff was called (binary files should use vscode.open)
+            const diffCall = executeCommandStub.getCalls().find(
+                call => call.args[0] === "vscode.diff"
+            );
+            expect(diffCall).to.be.undefined;
+        });
+
+        it("should open local file for added binary files", async () => {
+            const comparisonResult: IFileComparisonResult = {
+                localPath: "/local/image.png",
+                remotePath: "/remote/image.png",
+                relativePath: "image.png",
+                status: "added"
+            };
+            const fileItem = new MetadataDiffFileTreeItem(comparisonResult, "Test Site");
+
+            // Should not throw
+            await openMetadataDiffFile(fileItem);
+
+            // Verify no vscode.diff was called for binary files
+            const diffCall = executeCommandStub.getCalls().find(
+                call => call.args[0] === "vscode.diff"
+            );
+            expect(diffCall).to.be.undefined;
+        });
+
+        it("should open remote file for deleted binary files", async () => {
+            const comparisonResult: IFileComparisonResult = {
+                localPath: "/local/image.png",
+                remotePath: "/remote/image.png",
+                relativePath: "image.png",
+                status: "deleted"
+            };
+            const fileItem = new MetadataDiffFileTreeItem(comparisonResult, "Test Site");
+
+            // Should not throw
+            await openMetadataDiffFile(fileItem);
+
+            // Verify no vscode.diff was called for binary files
+            const diffCall = executeCommandStub.getCalls().find(
+                call => call.args[0] === "vscode.diff"
+            );
+            expect(diffCall).to.be.undefined;
+        });
+
+        it("should handle various binary file extensions without using diff command", async () => {
+            const binaryExtensions = [".jpg", ".jpeg", ".gif", ".ico", ".webp", ".pdf", ".woff", ".mp4"];
+
+            for (const ext of binaryExtensions) {
+                executeCommandStub.resetHistory();
+
+                const comparisonResult: IFileComparisonResult = {
+                    localPath: `/local/file${ext}`,
+                    remotePath: `/remote/file${ext}`,
+                    relativePath: `file${ext}`,
+                    status: "modified"
+                };
+                const fileItem = new MetadataDiffFileTreeItem(comparisonResult, "Test Site");
+
+                // Should not throw
+                await openMetadataDiffFile(fileItem);
+
+                // Binary files should not use vscode.diff command
+                const diffCall = executeCommandStub.getCalls().find(
+                    call => call.args[0] === "vscode.diff"
+                );
+                expect(diffCall, `Expected no vscode.diff call for ${ext} file`).to.be.undefined;
             }
         });
     });

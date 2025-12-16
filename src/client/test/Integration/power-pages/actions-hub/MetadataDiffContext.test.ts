@@ -5,7 +5,8 @@
 
 import { expect } from "chai";
 import * as sinon from "sinon";
-import MetadataDiffContext from "../../../../power-pages/actions-hub/MetadataDiffContext";
+import * as vscode from "vscode";
+import MetadataDiffContext, { MetadataDiffViewMode, MetadataDiffSortMode } from "../../../../power-pages/actions-hub/MetadataDiffContext";
 import { IFileComparisonResult } from "../../../../power-pages/actions-hub/models/IFileComparisonResult";
 
 describe("MetadataDiffContext", () => {
@@ -15,6 +16,10 @@ describe("MetadataDiffContext", () => {
         sandbox = sinon.createSandbox();
         // Clear the context before each test
         MetadataDiffContext.clear();
+        // Reset view mode to default
+        MetadataDiffContext.setViewMode(MetadataDiffViewMode.List);
+        // Reset sort mode to default
+        MetadataDiffContext.setSortMode(MetadataDiffSortMode.Path);
     });
 
     afterEach(() => {
@@ -47,7 +52,7 @@ describe("MetadataDiffContext", () => {
                 }
             ];
 
-            MetadataDiffContext.setResults(results, "Test Site");
+            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
 
             expect(MetadataDiffContext.comparisonResults).to.deep.equal(results);
         });
@@ -62,7 +67,7 @@ describe("MetadataDiffContext", () => {
                 }
             ];
 
-            MetadataDiffContext.setResults(results, "My Test Site");
+            MetadataDiffContext.setResults(results, "My Test Site", "Test Environment");
 
             expect(MetadataDiffContext.siteName).to.equal("My Test Site");
         });
@@ -77,13 +82,13 @@ describe("MetadataDiffContext", () => {
                 }
             ];
 
-            MetadataDiffContext.setResults(results, "Test Site");
+            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
 
             expect(MetadataDiffContext.isActive).to.be.true;
         });
 
         it("should set isActive to false when results are empty", () => {
-            MetadataDiffContext.setResults([], "Test Site");
+            MetadataDiffContext.setResults([], "Test Site", "Test Environment");
 
             expect(MetadataDiffContext.isActive).to.be.false;
         });
@@ -101,7 +106,7 @@ describe("MetadataDiffContext", () => {
                 }
             ];
 
-            MetadataDiffContext.setResults(results, "Test Site");
+            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
 
             expect(onChangedSpy.calledOnce).to.be.true;
         });
@@ -117,7 +122,7 @@ describe("MetadataDiffContext", () => {
                     status: "modified"
                 }
             ];
-            MetadataDiffContext.setResults(results, "Test Site");
+            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
 
             MetadataDiffContext.clear();
 
@@ -133,7 +138,7 @@ describe("MetadataDiffContext", () => {
                     status: "modified"
                 }
             ];
-            MetadataDiffContext.setResults(results, "Test Site");
+            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
 
             MetadataDiffContext.clear();
 
@@ -149,7 +154,7 @@ describe("MetadataDiffContext", () => {
                     status: "modified"
                 }
             ];
-            MetadataDiffContext.setResults(results, "Test Site");
+            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
 
             MetadataDiffContext.clear();
 
@@ -163,6 +168,198 @@ describe("MetadataDiffContext", () => {
             MetadataDiffContext.clear();
 
             expect(onChangedSpy.calledOnce).to.be.true;
+        });
+    });
+
+    describe("viewMode", () => {
+        it("should default to list view mode", () => {
+            expect(MetadataDiffContext.viewMode).to.equal(MetadataDiffViewMode.List);
+        });
+
+        it("should allow setting view mode to tree", () => {
+            MetadataDiffContext.setViewMode(MetadataDiffViewMode.Tree);
+
+            expect(MetadataDiffContext.viewMode).to.equal(MetadataDiffViewMode.Tree);
+        });
+
+        it("should allow setting view mode to list", () => {
+            MetadataDiffContext.setViewMode(MetadataDiffViewMode.Tree);
+            MetadataDiffContext.setViewMode(MetadataDiffViewMode.List);
+
+            expect(MetadataDiffContext.viewMode).to.equal(MetadataDiffViewMode.List);
+        });
+
+        it("should return true for isTreeView when in tree mode", () => {
+            MetadataDiffContext.setViewMode(MetadataDiffViewMode.Tree);
+
+            expect(MetadataDiffContext.isTreeView).to.be.true;
+            expect(MetadataDiffContext.isListView).to.be.false;
+        });
+
+        it("should return true for isListView when in list mode", () => {
+            MetadataDiffContext.setViewMode(MetadataDiffViewMode.List);
+
+            expect(MetadataDiffContext.isListView).to.be.true;
+            expect(MetadataDiffContext.isTreeView).to.be.false;
+        });
+
+        it("should fire onChanged event when view mode changes", () => {
+            const onChangedSpy = sandbox.spy();
+            MetadataDiffContext.onChanged(onChangedSpy);
+
+            MetadataDiffContext.setViewMode(MetadataDiffViewMode.Tree);
+
+            expect(onChangedSpy.calledOnce).to.be.true;
+        });
+
+        it("should not fire onChanged event when view mode is set to same value", () => {
+            MetadataDiffContext.setViewMode(MetadataDiffViewMode.List);
+            const onChangedSpy = sandbox.spy();
+            MetadataDiffContext.onChanged(onChangedSpy);
+
+            MetadataDiffContext.setViewMode(MetadataDiffViewMode.List);
+
+            expect(onChangedSpy.called).to.be.false;
+        });
+
+        it("should toggle view mode between tree and list", () => {
+            expect(MetadataDiffContext.viewMode).to.equal(MetadataDiffViewMode.List);
+
+            MetadataDiffContext.toggleViewMode();
+            expect(MetadataDiffContext.viewMode).to.equal(MetadataDiffViewMode.Tree);
+
+            MetadataDiffContext.toggleViewMode();
+            expect(MetadataDiffContext.viewMode).to.equal(MetadataDiffViewMode.List);
+        });
+    });
+
+    describe("initialize", () => {
+        it("should load persisted view mode from global state", () => {
+            const mockGlobalState = {
+                get: sandbox.stub().returns(MetadataDiffViewMode.Tree),
+                update: sandbox.stub().resolves()
+            };
+            const mockContext = {
+                globalState: mockGlobalState
+            } as unknown as vscode.ExtensionContext;
+
+            MetadataDiffContext.initialize(mockContext);
+
+            expect(MetadataDiffContext.viewMode).to.equal(MetadataDiffViewMode.Tree);
+        });
+
+        it("should use default view mode when no persisted value exists", () => {
+            const mockGlobalState = {
+                get: sandbox.stub().returns(undefined),
+                update: sandbox.stub().resolves()
+            };
+            const mockContext = {
+                globalState: mockGlobalState
+            } as unknown as vscode.ExtensionContext;
+
+            MetadataDiffContext.setViewMode(MetadataDiffViewMode.List); // Reset to default
+            MetadataDiffContext.initialize(mockContext);
+
+            expect(MetadataDiffContext.viewMode).to.equal(MetadataDiffViewMode.List);
+        });
+
+        it("should persist view mode when changed after initialization", () => {
+            const mockGlobalState = {
+                get: sandbox.stub().returns(undefined),
+                update: sandbox.stub().resolves()
+            };
+            const mockContext = {
+                globalState: mockGlobalState
+            } as unknown as vscode.ExtensionContext;
+
+            MetadataDiffContext.initialize(mockContext);
+            MetadataDiffContext.setViewMode(MetadataDiffViewMode.Tree);
+
+            expect(mockGlobalState.update.calledWith(
+                "microsoft.powerplatform.pages.metadataDiff.viewModePreference",
+                MetadataDiffViewMode.Tree
+            )).to.be.true;
+        });
+    });
+
+    describe("sortMode", () => {
+        it("should default to path sort mode", () => {
+            expect(MetadataDiffContext.sortMode).to.equal(MetadataDiffSortMode.Path);
+        });
+
+        it("should allow setting sort mode to name", () => {
+            MetadataDiffContext.setSortMode(MetadataDiffSortMode.Name);
+
+            expect(MetadataDiffContext.sortMode).to.equal(MetadataDiffSortMode.Name);
+        });
+
+        it("should allow setting sort mode to status", () => {
+            MetadataDiffContext.setSortMode(MetadataDiffSortMode.Status);
+
+            expect(MetadataDiffContext.sortMode).to.equal(MetadataDiffSortMode.Status);
+        });
+
+        it("should allow setting sort mode to path", () => {
+            MetadataDiffContext.setSortMode(MetadataDiffSortMode.Name);
+            MetadataDiffContext.setSortMode(MetadataDiffSortMode.Path);
+
+            expect(MetadataDiffContext.sortMode).to.equal(MetadataDiffSortMode.Path);
+        });
+
+        it("should fire onChanged event when sort mode changes", () => {
+            const onChangedSpy = sandbox.spy();
+            MetadataDiffContext.onChanged(onChangedSpy);
+
+            MetadataDiffContext.setSortMode(MetadataDiffSortMode.Name);
+
+            expect(onChangedSpy.calledOnce).to.be.true;
+        });
+
+        it("should not fire onChanged event when sort mode is set to same value", () => {
+            MetadataDiffContext.setSortMode(MetadataDiffSortMode.Path);
+            const onChangedSpy = sandbox.spy();
+            MetadataDiffContext.onChanged(onChangedSpy);
+
+            MetadataDiffContext.setSortMode(MetadataDiffSortMode.Path);
+
+            expect(onChangedSpy.called).to.be.false;
+        });
+
+        it("should load persisted sort mode from global state", () => {
+            const mockGlobalState = {
+                get: sandbox.stub().callsFake((key: string) => {
+                    if (key === "microsoft.powerplatform.pages.metadataDiff.sortModePreference") {
+                        return MetadataDiffSortMode.Status;
+                    }
+                    return undefined;
+                }),
+                update: sandbox.stub().resolves()
+            };
+            const mockContext = {
+                globalState: mockGlobalState
+            } as unknown as vscode.ExtensionContext;
+
+            MetadataDiffContext.initialize(mockContext);
+
+            expect(MetadataDiffContext.sortMode).to.equal(MetadataDiffSortMode.Status);
+        });
+
+        it("should persist sort mode when changed after initialization", () => {
+            const mockGlobalState = {
+                get: sandbox.stub().returns(undefined),
+                update: sandbox.stub().resolves()
+            };
+            const mockContext = {
+                globalState: mockGlobalState
+            } as unknown as vscode.ExtensionContext;
+
+            MetadataDiffContext.initialize(mockContext);
+            MetadataDiffContext.setSortMode(MetadataDiffSortMode.Name);
+
+            expect(mockGlobalState.update.calledWith(
+                "microsoft.powerplatform.pages.metadataDiff.sortModePreference",
+                MetadataDiffSortMode.Name
+            )).to.be.true;
         });
     });
 
@@ -189,7 +386,7 @@ describe("MetadataDiffContext", () => {
                 }
             ];
 
-            MetadataDiffContext.setResults(results, "Test Site");
+            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
 
             expect(MetadataDiffContext.comparisonResults).to.have.lengthOf(3);
             expect(MetadataDiffContext.comparisonResults[0].status).to.equal("modified");

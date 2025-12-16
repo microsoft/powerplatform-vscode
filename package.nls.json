@@ -118,7 +118,16 @@
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title": "Run CodeQL Screening",
   "microsoft.powerplatform.pages.actionsHub.configuration.downloadSite.description": "The folder where site will be downloaded when using Power Pages Actions. Leave this empty to ask for a folder every time you download a site.",
   "microsoft.powerplatform.pages.actionsHub.activeSite.compareWithLocal.title": "Compare with Local",
-  "microsoft.powerplatform.pages.actionsHub.metadataDiff.openFile.title": "Show Diff",
+  "microsoft.powerplatform.pages.actionsHub.metadataDiff.openFile.title": "Open Comparison",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.openAll.title": "Open All Diffs",
-  "microsoft.powerplatform.pages.actionsHub.metadataDiff.clear.title": "Clear Comparison"
+  "microsoft.powerplatform.pages.actionsHub.metadataDiff.clear.title": "Clear Comparison",
+  "microsoft.powerplatform.pages.actionsHub.metadataDiff.removeSite.title": "Remove Comparison",
+  "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsTree.title": "View as Tree",
+  "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsList.title": "View as List",
+  "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFile.title": "Discard Local Changes",
+  "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFolder.title": "Discard All Local Changes",
+  "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByName.title": "Sort by Name",
+  "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByPath.title": "Sort by Path",
+  "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByStatus.title": "Sort by Status",
+  "microsoft-powerapps-portals.compareWithEnvironment.title": "Compare with Environment"
 }
