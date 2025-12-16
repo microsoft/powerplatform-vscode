@@ -200,3 +200,37 @@ export const getStudioBaseUrl = (): string => {
 
     return "";
 }
+
+/**
+ * Recursively collects all files from a directory
+ * @param dir Directory to scan
+ * @param baseDir Base directory for calculating relative paths
+ * @returns Map of relative path to absolute path
+ */
+export function getAllFiles(dir: string, baseDir: string = dir): Map<string, string> {
+    const files = new Map<string, string>();
+
+    if (!fs.existsSync(dir)) {
+        return files;
+    }
+
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+    for (const entry of entries) {
+        // Skip folders starting with '.' like .github, .portalconfig etc.
+        if (entry.name.startsWith(".")) {
+            continue;
+        }
+
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+            const subFiles = getAllFiles(fullPath, baseDir);
+            subFiles.forEach((value, key) => files.set(key, value));
+        } else if (entry.isFile()) {
+            const relativePath = path.relative(baseDir, fullPath);
+            files.set(relativePath, fullPath);
+        }
+    }
+
+    return files;
+}
