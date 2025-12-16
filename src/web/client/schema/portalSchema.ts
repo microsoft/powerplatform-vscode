@@ -117,17 +117,17 @@ export const portal_schema_V1 = {
                 _displayname: "Server Logic",
                 _etc: "11398",
                 _primaryidfield: "adx_serverlogicid",
-                _primarynamefield: "name",
+                _primarynamefield: "adx_name",
                 _disableplugins: "true",
                 _foldername: "server-logics",
                 _exporttype: "SingleFolder",
                 _fetchQueryParameters:
-                    "?$filter=adx_serverlogicid eq {entityId} &$select=name",
-                _multiFileFetchQueryParameters: "?$filter=_website_value eq {websiteId} &$select=adx_serverlogicid,name,filecontent&$count=true",
-                _attributes: "filecontent",
-                _attributesExtension: new Map([["filecontent", "js"]]),
+                    "?$filter=adx_serverlogicid eq {entityId} &$select=adx_name",
+                _multiFileFetchQueryParameters: "?$filter=_adx_websiteid_value eq {websiteId} &$select=adx_serverlogicid,adx_name,adx_filecontent&$count=true",
+                _attributes: "adx_filecontent",
+                _attributesExtension: new Map([["adx_filecontent", "js"]]),
                 _mappingEntityFetchQuery: new Map([
-                    ["filecontent", "({entityId})/filecontent"],
+                    ["adx_filecontent", "({entityId})/adx_filecontent"],
                 ]),
             },
             {
