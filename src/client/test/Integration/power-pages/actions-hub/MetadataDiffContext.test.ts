@@ -6,7 +6,7 @@
 import { expect } from "chai";
 import * as sinon from "sinon";
 import * as vscode from "vscode";
-import MetadataDiffContext, { MetadataDiffViewMode } from "../../../../power-pages/actions-hub/MetadataDiffContext";
+import MetadataDiffContext, { MetadataDiffViewMode, MetadataDiffSortMode } from "../../../../power-pages/actions-hub/MetadataDiffContext";
 import { IFileComparisonResult } from "../../../../power-pages/actions-hub/models/IFileComparisonResult";
 
 describe("MetadataDiffContext", () => {
@@ -18,6 +18,8 @@ describe("MetadataDiffContext", () => {
         MetadataDiffContext.clear();
         // Reset view mode to default
         MetadataDiffContext.setViewMode(MetadataDiffViewMode.List);
+        // Reset sort mode to default
+        MetadataDiffContext.setSortMode(MetadataDiffSortMode.Path);
     });
 
     afterEach(() => {
@@ -50,7 +52,7 @@ describe("MetadataDiffContext", () => {
                 }
             ];
 
-            MetadataDiffContext.setResults(results, "Test Site");
+            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
 
             expect(MetadataDiffContext.comparisonResults).to.deep.equal(results);
         });
@@ -65,7 +67,7 @@ describe("MetadataDiffContext", () => {
                 }
             ];
 
-            MetadataDiffContext.setResults(results, "My Test Site");
+            MetadataDiffContext.setResults(results, "My Test Site", "Test Environment");
 
             expect(MetadataDiffContext.siteName).to.equal("My Test Site");
         });
@@ -80,13 +82,13 @@ describe("MetadataDiffContext", () => {
                 }
             ];
 
-            MetadataDiffContext.setResults(results, "Test Site");
+            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
 
             expect(MetadataDiffContext.isActive).to.be.true;
         });
 
         it("should set isActive to false when results are empty", () => {
-            MetadataDiffContext.setResults([], "Test Site");
+            MetadataDiffContext.setResults([], "Test Site", "Test Environment");
 
             expect(MetadataDiffContext.isActive).to.be.false;
         });
@@ -104,7 +106,7 @@ describe("MetadataDiffContext", () => {
                 }
             ];
 
-            MetadataDiffContext.setResults(results, "Test Site");
+            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
 
             expect(onChangedSpy.calledOnce).to.be.true;
         });
@@ -120,7 +122,7 @@ describe("MetadataDiffContext", () => {
                     status: "modified"
                 }
             ];
-            MetadataDiffContext.setResults(results, "Test Site");
+            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
 
             MetadataDiffContext.clear();
 
@@ -136,7 +138,7 @@ describe("MetadataDiffContext", () => {
                     status: "modified"
                 }
             ];
-            MetadataDiffContext.setResults(results, "Test Site");
+            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
 
             MetadataDiffContext.clear();
 
@@ -152,7 +154,7 @@ describe("MetadataDiffContext", () => {
                     status: "modified"
                 }
             ];
-            MetadataDiffContext.setResults(results, "Test Site");
+            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
 
             MetadataDiffContext.clear();
 
@@ -280,6 +282,87 @@ describe("MetadataDiffContext", () => {
         });
     });
 
+    describe("sortMode", () => {
+        it("should default to path sort mode", () => {
+            expect(MetadataDiffContext.sortMode).to.equal(MetadataDiffSortMode.Path);
+        });
+
+        it("should allow setting sort mode to name", () => {
+            MetadataDiffContext.setSortMode(MetadataDiffSortMode.Name);
+
+            expect(MetadataDiffContext.sortMode).to.equal(MetadataDiffSortMode.Name);
+        });
+
+        it("should allow setting sort mode to status", () => {
+            MetadataDiffContext.setSortMode(MetadataDiffSortMode.Status);
+
+            expect(MetadataDiffContext.sortMode).to.equal(MetadataDiffSortMode.Status);
+        });
+
+        it("should allow setting sort mode to path", () => {
+            MetadataDiffContext.setSortMode(MetadataDiffSortMode.Name);
+            MetadataDiffContext.setSortMode(MetadataDiffSortMode.Path);
+
+            expect(MetadataDiffContext.sortMode).to.equal(MetadataDiffSortMode.Path);
+        });
+
+        it("should fire onChanged event when sort mode changes", () => {
+            const onChangedSpy = sandbox.spy();
+            MetadataDiffContext.onChanged(onChangedSpy);
+
+            MetadataDiffContext.setSortMode(MetadataDiffSortMode.Name);
+
+            expect(onChangedSpy.calledOnce).to.be.true;
+        });
+
+        it("should not fire onChanged event when sort mode is set to same value", () => {
+            MetadataDiffContext.setSortMode(MetadataDiffSortMode.Path);
+            const onChangedSpy = sandbox.spy();
+            MetadataDiffContext.onChanged(onChangedSpy);
+
+            MetadataDiffContext.setSortMode(MetadataDiffSortMode.Path);
+
+            expect(onChangedSpy.called).to.be.false;
+        });
+
+        it("should load persisted sort mode from global state", () => {
+            const mockGlobalState = {
+                get: sandbox.stub().callsFake((key: string) => {
+                    if (key === "microsoft.powerplatform.pages.metadataDiff.sortModePreference") {
+                        return MetadataDiffSortMode.Status;
+                    }
+                    return undefined;
+                }),
+                update: sandbox.stub().resolves()
+            };
+            const mockContext = {
+                globalState: mockGlobalState
+            } as unknown as vscode.ExtensionContext;
+
+            MetadataDiffContext.initialize(mockContext);
+
+            expect(MetadataDiffContext.sortMode).to.equal(MetadataDiffSortMode.Status);
+        });
+
+        it("should persist sort mode when changed after initialization", () => {
+            const mockGlobalState = {
+                get: sandbox.stub().returns(undefined),
+                update: sandbox.stub().resolves()
+            };
+            const mockContext = {
+                globalState: mockGlobalState
+            } as unknown as vscode.ExtensionContext;
+
+            MetadataDiffContext.initialize(mockContext);
+            MetadataDiffContext.setSortMode(MetadataDiffSortMode.Name);
+
+            expect(mockGlobalState.update.calledWith(
+                "microsoft.powerplatform.pages.metadataDiff.sortModePreference",
+                MetadataDiffSortMode.Name
+            )).to.be.true;
+        });
+    });
+
     describe("multiple file comparison results", () => {
         it("should handle modified, added, and deleted files", () => {
             const results: IFileComparisonResult[] = [
@@ -303,7 +386,7 @@ describe("MetadataDiffContext", () => {
                 }
             ];
 
-            MetadataDiffContext.setResults(results, "Test Site");
+            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
 
             expect(MetadataDiffContext.comparisonResults).to.have.lengthOf(3);
             expect(MetadataDiffContext.comparisonResults[0].status).to.equal("modified");

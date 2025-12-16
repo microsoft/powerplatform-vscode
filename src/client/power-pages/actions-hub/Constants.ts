@@ -20,6 +20,8 @@ export const Constants = {
         ACCOUNT_MISMATCH: "accountMismatch",
         LOGIN_PROMPT: "loginPrompt",
         METADATA_DIFF_GROUP: "metadataDiffGroup",
+        METADATA_DIFF_GROUP_WITH_RESULTS: "metadataDiffGroupWithResults",
+        METADATA_DIFF_SITE: "metadataDiffSite",
         METADATA_DIFF_FOLDER: "metadataDiffFolder",
         METADATA_DIFF_FILE: "metadataDiffFile",
     },
@@ -27,19 +29,23 @@ export const Constants = {
         METADATA_DIFF_OPEN_FILE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.openFile",
         METADATA_DIFF_OPEN_ALL: "microsoft.powerplatform.pages.actionsHub.metadataDiff.openAll",
         METADATA_DIFF_CLEAR: "microsoft.powerplatform.pages.actionsHub.metadataDiff.clear",
+        METADATA_DIFF_REMOVE_SITE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.removeSite",
         METADATA_DIFF_VIEW_AS_TREE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsTree",
         METADATA_DIFF_VIEW_AS_LIST: "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsList",
+        METADATA_DIFF_DISCARD_FILE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFile",
+        METADATA_DIFF_DISCARD_FOLDER: "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFolder",
+        METADATA_DIFF_SORT_BY_NAME: "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByName",
+        METADATA_DIFF_SORT_BY_PATH: "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByPath",
+        METADATA_DIFF_SORT_BY_STATUS: "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByStatus",
+        COMPARE_WITH_ENVIRONMENT: "microsoft-powerapps-portals.compareWithEnvironment",
     },
     Icons: {
         SITE: new vscode.ThemeIcon('globe'),
-        SITE_GROUP: new vscode.ThemeIcon('folder'),
+        SITE_GROUP: vscode.ThemeIcon.Folder,
         OTHER_SITES: new vscode.ThemeIcon('archive'),
         TOOLS: new vscode.ThemeIcon('tools'),
         METADATA_DIFF_GROUP: new vscode.ThemeIcon('diff'),
-        METADATA_DIFF_FOLDER: new vscode.ThemeIcon('folder'),
-        METADATA_DIFF_MODIFIED: new vscode.ThemeIcon('diff-modified', new vscode.ThemeColor('gitDecoration.modifiedResourceForeground')),
-        METADATA_DIFF_ADDED: new vscode.ThemeIcon('diff-added', new vscode.ThemeColor('gitDecoration.addedResourceForeground')),
-        METADATA_DIFF_DELETED: new vscode.ThemeIcon('diff-removed', new vscode.ThemeColor('gitDecoration.deletedResourceForeground'))
+        METADATA_DIFF_FOLDER: vscode.ThemeIcon.Folder,
     },
     Strings: {
         OTHER_SITES: vscode.l10n.t("Other Sites"),
@@ -160,10 +166,6 @@ export const Constants = {
         CODEQL_CONFIG_FILE_UPDATE_ERROR: vscode.l10n.t("Error updating config file: {0}"),
         NO_WORKSPACE_FOLDER_OPEN: vscode.l10n.t("No workspace folder is open. Please open a folder containing your Power Pages site."),
         WEBSITE_ID_NOT_FOUND: vscode.l10n.t("Website ID not found. Please ensure you have a valid Power Pages site open."),
-        DOWNLOADING_SITE_FOR_COMPARISON: vscode.l10n.t({
-            message: "Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\"))...",
-            comment: ["This is a markdown formatting which must persist across translations."]
-        }),
         COMPARE_WITH_LOCAL_SITE_DOWNLOAD_FAILED: vscode.l10n.t("Site download failed. Please try again later."),
         NO_DIFFERENCES_FOUND: vscode.l10n.t("No differences found between the remote site and your local workspace."),
         COMPARING_FILES: vscode.l10n.t("Comparing files..."),
@@ -172,6 +174,117 @@ export const Constants = {
         METADATA_DIFF_ADDED: vscode.l10n.t("Added locally"),
         METADATA_DIFF_DELETED: vscode.l10n.t("Deleted locally"),
         COMPARE_WITH_LOCAL_COMPLETED: vscode.l10n.t("Download is complete. You can now view the report."),
+        SELECT_ENVIRONMENT_TO_COMPARE: vscode.l10n.t("Select an environment to compare with"),
+        WEBSITE_NOT_FOUND_IN_ENVIRONMENT: vscode.l10n.t("The website was not found in the selected environment. Please select a different environment."),
+        FETCHING_WEBSITES_FROM_ENVIRONMENT: vscode.l10n.t("Fetching websites from the selected environment..."),
+        DISCARD_CHANGES: vscode.l10n.t("Discard Changes"),
+        SHOW_DIFF: vscode.l10n.t("Show Diff"),
+        METADATA_DIFF_ONLY_BINARY_FILES: vscode.l10n.t("All changed files are binary files (e.g., images) and cannot be displayed in the diff viewer. You can view them individually in the file tree."),
+    },
+    /**
+     * Functions that return localized strings with dynamic parameters.
+     * Use these for strings that require runtime values.
+     */
+    StringFunctions: {
+        /**
+         * Returns the downloading site message with site name
+         */
+        DOWNLOADING_SITE_FOR_COMPARISON: (siteName: string) =>
+            vscode.l10n.t({
+                message: "Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\"))...",
+                args: [siteName],
+                comment: ["This is a markdown formatting which must persist across translations."]
+            }),
+        /**
+         * Returns the site label with file count (singular: "1 file")
+         */
+        SITE_WITH_FILE_COUNT_SINGULAR: (siteName: string, fileCount: number) =>
+            vscode.l10n.t({
+                message: "{0} ({1} file)",
+                args: [siteName, fileCount],
+                comment: ["This is the site label showing the number of changed files. 'file' is singular."]
+            }),
+        /**
+         * Returns the site label with file count (plural: "X files")
+         */
+        SITE_WITH_FILE_COUNT_PLURAL: (siteName: string, fileCount: number) =>
+            vscode.l10n.t({
+                message: "{0} ({1} files)",
+                args: [siteName, fileCount],
+                comment: ["This is the site label showing the number of changed files. 'files' is plural."]
+            }),
+        /**
+         * Returns the confirmation message for discarding local changes
+         */
+        DISCARD_LOCAL_CHANGES_CONFIRM: (relativePath: string) =>
+            vscode.l10n.t({
+                message: "Are you sure you want to discard local changes to '{0}'? This action cannot be undone.",
+                args: [relativePath],
+                comment: ["Confirmation message before discarding local changes to a file."]
+            }),
+        /**
+         * Returns the success message after discarding local changes
+         */
+        DISCARD_LOCAL_CHANGES_SUCCESS: (relativePath: string) =>
+            vscode.l10n.t({
+                message: "Successfully discarded local changes to '{0}'.",
+                args: [relativePath],
+                comment: ["Success message after discarding local changes to a file."]
+            }),
+        /**
+         * Returns the error message when discarding local changes fails
+         */
+        DISCARD_LOCAL_CHANGES_FAILED: (errorMessage: string) =>
+            vscode.l10n.t({
+                message: "Failed to discard local changes: {0}",
+                args: [errorMessage],
+                comment: ["Error message when discarding local changes fails."]
+            }),
+        /**
+         * Returns the confirmation message for discarding all local changes in a folder
+         */
+        DISCARD_FOLDER_CHANGES_CONFIRM: (folderName: string, fileCount: number) =>
+            vscode.l10n.t({
+                message: "Are you sure you want to discard local changes to all {0} files in '{1}'? This action cannot be undone.",
+                args: [fileCount, folderName],
+                comment: ["Confirmation message before discarding all local changes in a folder."]
+            }),
+        /**
+         * Returns the success message after discarding all local changes in a folder
+         */
+        DISCARD_FOLDER_CHANGES_SUCCESS: (folderName: string, fileCount: number) =>
+            vscode.l10n.t({
+                message: "Successfully discarded local changes to {0} files in '{1}'.",
+                args: [fileCount, folderName],
+                comment: ["Success message after discarding all local changes in a folder."]
+            }),
+        /**
+         * Returns the title for comparing all files in a site
+         */
+        COMPARE_ALL_TITLE: (siteName: string) =>
+            vscode.l10n.t({
+                message: "Compare: {0} (Remote ↔ Local)",
+                args: [siteName],
+                comment: ["Title for the multi-diff editor when comparing all files in a site."]
+            }),
+        /**
+         * Returns the title for comparing a single file
+         */
+        COMPARE_FILE_TITLE: (siteName: string, relativePath: string) =>
+            vscode.l10n.t({
+                message: "{0}: {1} (Remote ↔ Local)",
+                args: [siteName, relativePath],
+                comment: ["Title for the diff editor when comparing a single file."]
+            }),
+        /**
+         * Returns the message for skipped binary files
+         */
+        METADATA_DIFF_BINARY_FILES_SKIPPED: (count: number) =>
+            vscode.l10n.t({
+                message: "{0} binary file(s) (e.g., images) were skipped as they cannot be displayed in the diff viewer. You can view them individually in the file tree.",
+                args: [count],
+                comment: ["Message shown when binary files are skipped in the multi-diff view."]
+            }),
     },
     EventNames: {
         ACTIONS_HUB_ENABLED: "ActionsHubEnabled",
@@ -297,7 +410,17 @@ export const Constants = {
         ACTIONS_HUB_METADATA_DIFF_OPEN_FILE: "ActionsHubMetadataDiffOpenFile",
         ACTIONS_HUB_METADATA_DIFF_OPEN_ALL: "ActionsHubMetadataDiffOpenAll",
         ACTIONS_HUB_METADATA_DIFF_CLEAR: "ActionsHubMetadataDiffClear",
+        ACTIONS_HUB_METADATA_DIFF_DISCARD_FILE: "ActionsHubMetadataDiffDiscardFile",
+        ACTIONS_HUB_METADATA_DIFF_DISCARD_FOLDER: "ActionsHubMetadataDiffDiscardFolder",
         ACTIONS_HUB_METADATA_DIFF_VIEW_MODE_CHANGED: "ActionsHubMetadataDiffViewModeChanged",
+        ACTIONS_HUB_METADATA_DIFF_SORT_MODE_CHANGED: "ActionsHubMetadataDiffSortModeChanged",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_CALLED: "ActionsHubCompareWithEnvironmentCalled",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_ENVIRONMENT_SELECTED: "ActionsHubCompareWithEnvironmentEnvironmentSelected",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_CANCELLED: "ActionsHubCompareWithEnvironmentCancelled",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_WEBSITE_NOT_FOUND: "ActionsHubCompareWithEnvironmentWebsiteNotFound",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_COMPLETED: "ActionsHubCompareWithEnvironmentCompleted",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_FAILED: "ActionsHubCompareWithEnvironmentFailed",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_NO_DIFFERENCES: "ActionsHubCompareWithEnvironmentNoDifferences",
     },
     StudioEndpoints: {
         TEST: "https://make.test.powerpages.microsoft.com",

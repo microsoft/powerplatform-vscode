@@ -39,6 +39,8 @@ import * as ShowSiteDetailsHandler from "../../../../power-pages/actions-hub/han
 import * as DownloadSiteHandler from "../../../../power-pages/actions-hub/handlers/DownloadSiteHandler";
 import * as LoginToMatchHandler from "../../../../power-pages/actions-hub/handlers/LoginToMatchHandler";
 import * as RunCodeQLScreeningHandler from "../../../../power-pages/actions-hub/handlers/code-ql/RunCodeQlScreeningHandler";
+import { ToolsGroupTreeItem } from "../../../../power-pages/actions-hub/tree-items/ToolsGroupTreeItem";
+import * as SortModeHandler from "../../../../power-pages/actions-hub/handlers/metadata-diff/SortModeHandler";
 
 // Add global type declaration for ArtemisContext
 describe("ActionsHubTreeDataProvider", () => {
@@ -297,6 +299,63 @@ describe("ActionsHubTreeDataProvider", () => {
                 expect(mockCommandHandler.calledOnce).to.be.true;
             } else {
                 throw new Error("CodeQL command was not registered");
+            }
+        });
+
+        it('should register sortByName command', async () => {
+            const mockCommandHandler = sinon.stub(SortModeHandler, 'sortByName');
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            actionsHubTreeDataProvider["registerPanel"]();
+
+            expect(registerCommandStub.calledWith(Constants.Commands.METADATA_DIFF_SORT_BY_NAME)).to.be.true;
+
+            const sortByNameCall = registerCommandStub.getCalls().find(call =>
+                call.args[0] === Constants.Commands.METADATA_DIFF_SORT_BY_NAME
+            );
+
+            if (sortByNameCall) {
+                sortByNameCall.args[1]();
+                expect(mockCommandHandler.calledOnce).to.be.true;
+            } else {
+                throw new Error("sortByName command was not registered");
+            }
+        });
+
+        it('should register sortByPath command', async () => {
+            const mockCommandHandler = sinon.stub(SortModeHandler, 'sortByPath');
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            actionsHubTreeDataProvider["registerPanel"]();
+
+            expect(registerCommandStub.calledWith(Constants.Commands.METADATA_DIFF_SORT_BY_PATH)).to.be.true;
+
+            const sortByPathCall = registerCommandStub.getCalls().find(call =>
+                call.args[0] === Constants.Commands.METADATA_DIFF_SORT_BY_PATH
+            );
+
+            if (sortByPathCall) {
+                sortByPathCall.args[1]();
+                expect(mockCommandHandler.calledOnce).to.be.true;
+            } else {
+                throw new Error("sortByPath command was not registered");
+            }
+        });
+
+        it('should register sortByStatus command', async () => {
+            const mockCommandHandler = sinon.stub(SortModeHandler, 'sortByStatus');
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            actionsHubTreeDataProvider["registerPanel"]();
+
+            expect(registerCommandStub.calledWith(Constants.Commands.METADATA_DIFF_SORT_BY_STATUS)).to.be.true;
+
+            const sortByStatusCall = registerCommandStub.getCalls().find(call =>
+                call.args[0] === Constants.Commands.METADATA_DIFF_SORT_BY_STATUS
+            );
+
+            if (sortByStatusCall) {
+                sortByStatusCall.args[1]();
+                expect(mockCommandHandler.calledOnce).to.be.true;
+            } else {
+                throw new Error("sortByStatus command was not registered");
             }
         });
     });
