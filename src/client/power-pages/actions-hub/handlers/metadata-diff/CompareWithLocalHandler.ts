@@ -95,7 +95,10 @@ export const compareWithLocal = (pacTerminal: PacTerminal, context: vscode.Exten
         compareWithLocal.name,
         siteTreeItem.siteInfo.websiteId,
         Constants.EventNames.ACTIONS_HUB_COMPARE_WITH_LOCAL_COMPLETED,
-        Constants.EventNames.ACTIONS_HUB_COMPARE_WITH_LOCAL_NO_DIFFERENCES
+        Constants.EventNames.ACTIONS_HUB_COMPARE_WITH_LOCAL_NO_DIFFERENCES,
+        undefined, // comparisonSubPath
+        undefined, // environmentId - will use current context
+        siteTreeItem.siteInfo.dataModelVersion
     );
 
     if (hasDifferences) {

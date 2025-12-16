@@ -169,6 +169,7 @@ export function prepareSiteStoragePath(storagePath: string, websiteId: string): 
  * @param noDifferencesEventName Telemetry event name for no differences
  * @param comparisonSubPath Optional sub-path to filter comparison results to a specific folder
  * @param environmentId Optional environment ID (defaults to current environment if not provided)
+ * @param dataModelVersion Optional data model version (1 = Standard, 2 = Enhanced)
  * @returns True if differences were found, false otherwise
  */
 export async function processComparisonResults(
@@ -182,7 +183,8 @@ export async function processComparisonResults(
     completedEventName: string,
     noDifferencesEventName: string,
     comparisonSubPath?: string,
-    environmentId?: string
+    environmentId?: string,
+    dataModelVersion?: 1 | 2
 ): Promise<boolean> {
     const comparisonResults = await showProgressWithNotification(
         Constants.Strings.COMPARING_FILES,
@@ -237,7 +239,10 @@ export async function processComparisonResults(
             localSiteName,
             environmentName,
             siteId,
-            resolvedEnvironmentId
+            resolvedEnvironmentId,
+            false, // isImported
+            undefined, // exportedAt
+            dataModelVersion
         );
         return true;
     }

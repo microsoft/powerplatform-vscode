@@ -330,7 +330,8 @@ export const compareWithEnvironment = (pacTerminal: PacTerminal, context: vscode
         Constants.EventNames.ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_COMPLETED,
         Constants.EventNames.ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_NO_DIFFERENCES,
         siteResolution.comparisonSubPath,
-        selectedOrgInfo.EnvironmentId
+        selectedOrgInfo.EnvironmentId,
+        dataModelVersion
     );
 
     if (hasDifferences) {

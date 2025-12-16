@@ -61,10 +61,9 @@ export const resyncMetadataDiff = (pacTerminal: PacTerminal, context: vscode.Ext
     const siteStoragePath = prepareSiteStoragePath(storagePath, siteItem.websiteId);
     const pacWrapper = pacTerminal.getWrapper();
 
-    // Determine data model version from existing comparison results
-    // We infer this from the site - if it's EDM, version is 2, otherwise 1
-    // For now, we'll default to version 1 and rely on the PAC CLI to handle it
-    const dataModelVersion = 1;
+    // Use the data model version from the existing comparison results
+    // Default to version 1 if not available (e.g., for older comparisons)
+    const dataModelVersion: 1 | 2 = siteItem.dataModelVersion ?? 1;
 
     const downloadStartTime = Date.now();
     const success = await showProgressWithNotification(
@@ -109,7 +108,8 @@ export const resyncMetadataDiff = (pacTerminal: PacTerminal, context: vscode.Ext
         Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_RESYNC_COMPLETED,
         Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_RESYNC_NO_DIFFERENCES,
         undefined, // No sub-path filtering for resync
-        siteItem.environmentId
+        siteItem.environmentId,
+        dataModelVersion
     );
 
     if (hasDifferences) {

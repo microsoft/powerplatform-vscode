@@ -161,6 +161,7 @@ class MetadataDiffContextClass {
      * @param environmentId The environment ID
      * @param isImported Whether this is an imported comparison
      * @param exportedAt ISO 8601 timestamp when the comparison was exported (only for imported comparisons)
+     * @param dataModelVersion The data model version of the site (1 = Standard, 2 = Enhanced)
      */
     public setResults(
         results: IFileComparisonResult[],
@@ -170,7 +171,8 @@ class MetadataDiffContextClass {
         websiteId: string,
         environmentId: string,
         isImported: boolean = false,
-        exportedAt?: string
+        exportedAt?: string,
+        dataModelVersion?: 1 | 2
     ): void {
         const key = this.getUniqueKey(websiteId, environmentId, isImported);
         if (results.length > 0) {
@@ -182,7 +184,8 @@ class MetadataDiffContextClass {
                 environmentId,
                 comparisonResults: results,
                 isImported,
-                exportedAt
+                exportedAt,
+                dataModelVersion
             });
         } else {
             // If no results, remove the site from the map
