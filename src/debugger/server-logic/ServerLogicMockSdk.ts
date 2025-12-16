@@ -4,6 +4,11 @@
  */
 
 /**
+ * Generates the Mock SDK Runtime Loader for Power Pages Server Logic debugging.
+ */
+export function generateServerMockSdk(): string {
+    return `
+/**
  * Power Pages Server Logic - Mock SDK Runtime Loader
  *
  * This file provides mock implementations of the Server.* APIs for local debugging.
@@ -11,18 +16,138 @@
  * HOW TO USE:
  * 1. Edit the mock data below to match your test scenarios
  * 2. Customize Server.Context with your test inputs (query params, body, headers)
- * 3. Customize Dataverse responses with realistic test data
- * 4. Set breakpoints in your server logic file and press F5 to debug
+ * 3. Set breakpoints in your server logic file and press F5 to debug
  *
- * This file is auto-generated but YOU CAN EDIT IT to customize test data.
- * It's added to .gitignore so your changes won't affect source control.
+ * DIRECT DATAVERSE CALLS:
+ * When authenticated to Power Platform (via PAC CLI), Dataverse calls will
+ * automatically use your authenticated credentials. No additional configuration needed!
+ *
+ * If not authenticated, mock responses will be returned instead.
+ * This file is auto-generated and added to .gitignore.
  */
 
-export function generateServerMockSdk(): string {
-    return `
+const DataverseConfig = {
+    getUrl: function() {
+        return process.env.DATAVERSE_URL || '';
+    },
+
+    getToken: function() {
+        return process.env.DATAVERSE_TOKEN || '';
+    },
+
+    getApiVersion: function() {
+        return process.env.DATAVERSE_API_VERSION || 'v9.2';
+    },
+
+    isConfigured: function() {
+        return this.getUrl() && this.getToken();
+    },
+
+    getApiUrl: function() {
+        const baseUrl = this.getUrl().endsWith('/') ? this.getUrl().slice(0, -1) : this.getUrl();
+        return \`\${baseUrl}/api/data/\${this.getApiVersion()}\`;
+    },
+
+    getHeaders: function() {
+        return {
+            'Authorization': \`Bearer \${this.getToken()}\`,
+            'OData-MaxVersion': '4.0',
+            'OData-Version': '4.0',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json; charset=utf-8',
+            'Prefer': 'return=representation'
+        };
+    }
+};
+
 /**
- * Mock Server Object for Power Pages Server Logic SDK
+ * Helper function to make HTTP requests to Dataverse
  */
+async function makeDataverseRequest(method, endpoint, body = null) {
+    const https = require('https');
+    const urlLib = require('url');
+
+    const apiUrl = DataverseConfig.getApiUrl();
+    const fullUrl = \`\${apiUrl}/\${endpoint}\`;
+    const parsedUrl = urlLib.parse(fullUrl);
+
+    return new Promise((resolve, reject) => {
+        const headers = DataverseConfig.getHeaders();
+        if (body) {
+            headers['Content-Length'] = Buffer.byteLength(body);
+        }
+
+        const options = {
+            hostname: parsedUrl.hostname,
+            port: parsedUrl.port || 443,
+            path: parsedUrl.path,
+            method: method,
+            headers: headers
+        };
+
+        Server.Logger.Log(\`[DATAVERSE] Making \${method} request to: \${fullUrl}\`);
+
+        const req = https.request(options, (res) => {
+            let data = '';
+
+            res.on('data', (chunk) => {
+                data += chunk;
+            });
+
+            res.on('end', () => {
+                const responseHeaders = {};
+                for (const [key, value] of Object.entries(res.headers)) {
+                    responseHeaders[key] = Array.isArray(value) ? value.join(', ') : value;
+                }
+
+                // Extract entity ID from OData-EntityId header if present
+                let entityId = null;
+                if (responseHeaders['odata-entityid']) {
+                    const match = responseHeaders['odata-entityid'].match(/\\(([^)]+)\\)/);
+                    if (match) {
+                        entityId = match[1];
+                    }
+                }
+
+                const response = {
+                    StatusCode: res.statusCode,
+                    Body: data || '',
+                    IsSuccessStatusCode: res.statusCode >= 200 && res.statusCode < 300,
+                    ReasonPhrase: res.statusMessage || '',
+                    ServerError: false,
+                    ServerErrorMessage: null,
+                    Headers: responseHeaders
+                };
+
+                if (entityId) {
+                    response.Headers.entityId = entityId;
+                }
+
+                Server.Logger.Log(\`[DATAVERSE] Request completed with status: \${res.statusCode}\`);
+                resolve(response);
+            });
+        });
+
+        req.on('error', (error) => {
+            Server.Logger.Error(\`[DATAVERSE] Request failed: \${error.message}\`);
+            const errorResponse = {
+                StatusCode: 0,
+                Body: null,
+                IsSuccessStatusCode: false,
+                ReasonPhrase: null,
+                ServerError: true,
+                ServerErrorMessage: \`Error executing \${method} request to '\${fullUrl}': \${error.message}\`,
+                Headers: {}
+            };
+            resolve(errorResponse);
+        });
+
+        if (body) {
+            req.write(body);
+        }
+        req.end();
+    });
+}
 
 const Server = {
     Logger: {
@@ -609,11 +734,17 @@ const Server = {
         },
 
         Dataverse: {
-            CreateRecord: function (entitySetName, payload) {
-                Server.Logger.Log(\`[MOCK] Dataverse.CreateRecord called for entity: \${entitySetName}\`);
-                Server.Logger.Log(\`[MOCK] Body: \${payload}\`);
+            CreateRecord: async function (entitySetName, payload) {
+                Server.Logger.Log(\`Dataverse.CreateRecord called for entity: \${entitySetName}\`);
 
                 try {
+                    // Check if direct Dataverse calls are configured
+                    if (DataverseConfig.isConfigured()) {
+                        const response = await makeDataverseRequest('POST', entitySetName, payload);
+                        return JSON.stringify(response);
+                    }
+
+                    // Return mock response if not configured
                     const response = {
                         StatusCode: 204,
                         Body: "",
@@ -643,10 +774,21 @@ const Server = {
                 }
             },
 
-            RetrieveRecord: function (entitySetName, id, options = null, skipCache = false) {
-                Server.Logger.Log(\`[MOCK] Dataverse.RetrieveRecord called for entity: \${entitySetName}, id: \${id}, options: \${options}, skipCache: \${skipCache}\`);
+            RetrieveRecord: async function (entitySetName, id, options = null, skipCache = false) {
+                Server.Logger.Log(\`Dataverse.RetrieveRecord called for entity: \${entitySetName}, id: \${id}\`);
 
                 try {
+                    // Check if direct Dataverse calls are configured
+                    if (DataverseConfig.isConfigured()) {
+                        let endpoint = \`\${entitySetName}(\${id})\`;
+                        if (options) {
+                            endpoint += options;
+                        }
+                        const response = await makeDataverseRequest('GET', endpoint);
+                        return JSON.stringify(response);
+                    }
+
+                    // Return mock response if not configured
                     const response = {
                         StatusCode: 200,
                         Body: "{}",
@@ -675,10 +817,21 @@ const Server = {
                 }
             },
 
-            RetrieveMultipleRecords: function (entitySetName, options = null, skipCache = false) {
-                Server.Logger.Log(\`[MOCK] Dataverse.RetrieveMultipleRecords called for entity: \${entitySetName}, options: \${options}, skipCache: \${skipCache}\`);
+            RetrieveMultipleRecords: async function (entitySetName, options = null, skipCache = false) {
+                Server.Logger.Log(\`Dataverse.RetrieveMultipleRecords called for entity: \${entitySetName}\`);
 
                 try {
+                    // Check if direct Dataverse calls are configured
+                    if (DataverseConfig.isConfigured()) {
+                        let endpoint = entitySetName;
+                        if (options) {
+                            endpoint += options;
+                        }
+                        const response = await makeDataverseRequest('GET', endpoint);
+                        return JSON.stringify(response);
+                    }
+
+                    // Return mock response if not configured
                     const response = {
                         StatusCode: 200,
                         Body: "{}",
@@ -707,11 +860,18 @@ const Server = {
                 }
             },
 
-            UpdateRecord: function (entitySetName, id, payload) {
-                Server.Logger.Log(\`[MOCK] Dataverse.UpdateRecord called for entity: \${entitySetName}, id: \${id}\`);
-                Server.Logger.Log(\`[MOCK] Body: \${payload}\`);
+            UpdateRecord: async function (entitySetName, id, payload) {
+                Server.Logger.Log(\`Dataverse.UpdateRecord called for entity: \${entitySetName}, id: \${id}\`);
 
                 try {
+                    // Check if direct Dataverse calls are configured
+                    if (DataverseConfig.isConfigured()) {
+                        const endpoint = \`\${entitySetName}(\${id})\`;
+                        const response = await makeDataverseRequest('PATCH', endpoint, payload);
+                        return JSON.stringify(response);
+                    }
+
+                    // Return mock response if not configured
                     const response = {
                         StatusCode: 204,
                         Body: "",
@@ -741,10 +901,18 @@ const Server = {
                 }
             },
 
-            DeleteRecord: function (entitySetName, id) {
-                Server.Logger.Log(\`[MOCK] Dataverse.DeleteRecord called for entity: \${entitySetName}, id: \${id}\`);
+            DeleteRecord: async function (entitySetName, id) {
+                Server.Logger.Log(\`Dataverse.DeleteRecord called for entity: \${entitySetName}, id: \${id}\`);
 
                 try {
+                    // Check if direct Dataverse calls are configured
+                    if (DataverseConfig.isConfigured()) {
+                        const endpoint = \`\${entitySetName}(\${id})\`;
+                        const response = await makeDataverseRequest('DELETE', endpoint);
+                        return JSON.stringify(response);
+                    }
+
+                    // Return mock response if not configured
                     const response = {
                         StatusCode: 204,
                         Body: "",
@@ -772,11 +940,8 @@ const Server = {
                 }
             },
 
-            InvokeCustomApi: function (method, url, payload = null) {
-                Server.Logger.Log(\`[MOCK] Dataverse.InvokeCustomApi called with method: \${method}, url: \${url}\`);
-                if (payload) {
-                    Server.Logger.Log(\`[MOCK] Payload: \${payload}\`);
-                }
+            InvokeCustomApi: async function (method, url, payload = null) {
+                Server.Logger.Log(\`Dataverse.InvokeCustomApi called with method: \${method}, url: \${url}\`);
 
                 try {
                     // Validate method (only GET and POST supported)
@@ -794,6 +959,13 @@ const Server = {
                         return JSON.stringify(errorResponse);
                     }
 
+                    // Check if direct Dataverse calls are configured
+                    if (DataverseConfig.isConfigured()) {
+                        const response = await makeDataverseRequest(upperMethod, url, upperMethod === 'POST' ? payload : null);
+                        return JSON.stringify(response);
+                    }
+
+                    // Return mock response if not configured
                     const response = {
                         StatusCode: 200,
                         Body: "",
@@ -856,11 +1028,21 @@ const Server = {
 // Make available globally for browser/script environments
 if (typeof global !== 'undefined') {
     global.Server = Server;
+    global.DataverseConfig = DataverseConfig;
 }
 
-
-
-console.log('\\n[PowerPages] ✅ Server Logic Mock SDK loaded successfully');
-console.log('[PowerPages] 📝 All Server.* APIs are now available for debugging\\n');
+// Log Dataverse configuration status
+if (DataverseConfig.isConfigured()) {
+    console.log('\\n[PowerPages] ✅ Server Logic Mock SDK loaded successfully');
+    console.log('[PowerPages] 🔗 Dataverse direct calls ENABLED');
+    console.log(\`[PowerPages] 📍 Dataverse URL: \${DataverseConfig.getUrl()}\`);
+    console.log('[PowerPages] 📝 All Server.* APIs are now available for debugging\\n');
+} else {
+    console.log('\\n[PowerPages] ✅ Server Logic Mock SDK loaded successfully');
+    console.log('[PowerPages] ⚠️  Dataverse direct calls DISABLED (mock mode)');
+    console.log('[PowerPages] 💡 Authenticate via PAC CLI to enable direct Dataverse calls:');
+    console.log('[PowerPages]    pac auth create --environment https://yourorg.crm.dynamics.com');
+    console.log('[PowerPages] 📝 All Server.* APIs are now available for debugging (with mock responses)\\n');
+}
 `;
 }

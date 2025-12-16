@@ -18,12 +18,16 @@
 * - Server.Connector.Dataverse → CRUD in Dataverse & CustomApi
 *   Example: Server.Connector.Dataverse.CreateRecord("accounts", "{"name":"Contoso Ltd."}");
 *   Example: Server.Connector.Dataverse.RetrieveRecord("accounts", "accountid-guid", "?$select=name,telephone1");
+*   Example: Server.Connector.Dataverse.RetrieveMultipleRecords("accounts", "?$select=name&$top=10");
 *   Example: Server.Connector.Dataverse.UpdateRecord("accounts", "accountid-guid", "{"telephone1":"123-456-7890"}");
 *   Example: Server.Connector.Dataverse.DeleteRecord("accounts", "accountid-guid");
-*   Example: Server.Connector.Dataverse.ExecuteCustomApi("new_CustomApiName", "{"ParameterName":"value"}");
+*   Example: Server.Connector.Dataverse.InvokeCustomApi("GET", "new_CustomApiName", null);
 *
 * - Server.User → signed-in user info
 *   Example: Server.User.fullname, Server.User.Roles, Server.User.Token
+*
+* 🔗 Dataverse Calls: Authenticate via PAC CLI for direct Dataverse access during debugging.
+*   Run: pac auth create --environment https://yourorg.crm.dynamics.com
 *
 * Full details: see https://go.microsoft.com/fwlink/?linkid=2334908
 */
@@ -118,4 +122,3 @@ function del() {
         return JSON.stringify({ status: "error", method: "DEL", message: err.message });
     }
 }
- 

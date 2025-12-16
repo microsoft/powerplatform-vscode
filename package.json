@@ -847,11 +847,6 @@
           "command": "powerPlatform.previewCurrentActiveUsers",
           "group": "navigation",
           "when": "isWeb && virtualWorkspace"
-        },
-        {
-          "command": "powerpages.debugServerLogic",
-          "group": "navigation",
-          "when": "resourcePath =~ /server-logics/ && resourceExtname == .js && !virtualWorkspace"
         }
       ],
       "commandPalette": [
