@@ -6,7 +6,7 @@
 import { expect } from "chai";
 import * as sinon from "sinon";
 import * as vscode from "vscode";
-import { openAllMetadataDiffs } from "../../../../../../power-pages/actions-hub/handlers/metadata-diff/OpenAllMetadataDiffsHandler";
+import { openAllMetadataDiffs, isBinaryFile } from "../../../../../../power-pages/actions-hub/handlers/metadata-diff/OpenAllMetadataDiffsHandler";
 import { MetadataDiffSiteTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/metadata-diff/MetadataDiffSiteTreeItem";
 import * as TelemetryHelper from "../../../../../../power-pages/actions-hub/TelemetryHelper";
 import { IFileComparisonResult } from "../../../../../../power-pages/actions-hub/models/IFileComparisonResult";
@@ -14,16 +14,72 @@ import { IFileComparisonResult } from "../../../../../../power-pages/actions-hub
 describe("OpenAllMetadataDiffsHandler", () => {
     let sandbox: sinon.SinonSandbox;
     let executeCommandStub: sinon.SinonStub;
+    let showInformationMessageStub: sinon.SinonStub;
 
     beforeEach(() => {
         sandbox = sinon.createSandbox();
         executeCommandStub = sandbox.stub(vscode.commands, "executeCommand");
+        showInformationMessageStub = sandbox.stub(vscode.window, "showInformationMessage");
         sandbox.stub(TelemetryHelper, "traceInfo");
         sandbox.stub(vscode.env, "sessionId").get(() => "test-session-id");
     });
 
     afterEach(() => {
         sandbox.restore();
+    });
+
+    describe("isBinaryFile", () => {
+        it("should return true for image files", () => {
+            expect(isBinaryFile("test.png")).to.be.true;
+            expect(isBinaryFile("test.jpg")).to.be.true;
+            expect(isBinaryFile("test.jpeg")).to.be.true;
+            expect(isBinaryFile("test.gif")).to.be.true;
+            expect(isBinaryFile("test.ico")).to.be.true;
+            expect(isBinaryFile("test.webp")).to.be.true;
+            expect(isBinaryFile("test.bmp")).to.be.true;
+            expect(isBinaryFile("test.svg")).to.be.true;
+        });
+
+        it("should return true for font files", () => {
+            expect(isBinaryFile("test.woff")).to.be.true;
+            expect(isBinaryFile("test.woff2")).to.be.true;
+            expect(isBinaryFile("test.ttf")).to.be.true;
+            expect(isBinaryFile("test.otf")).to.be.true;
+            expect(isBinaryFile("test.eot")).to.be.true;
+        });
+
+        it("should return true for media files", () => {
+            expect(isBinaryFile("test.mp4")).to.be.true;
+            expect(isBinaryFile("test.mp3")).to.be.true;
+            expect(isBinaryFile("test.wav")).to.be.true;
+        });
+
+        it("should return true for document files", () => {
+            expect(isBinaryFile("test.pdf")).to.be.true;
+            expect(isBinaryFile("test.doc")).to.be.true;
+            expect(isBinaryFile("test.docx")).to.be.true;
+        });
+
+        it("should return false for text files", () => {
+            expect(isBinaryFile("test.txt")).to.be.false;
+            expect(isBinaryFile("test.html")).to.be.false;
+            expect(isBinaryFile("test.css")).to.be.false;
+            expect(isBinaryFile("test.js")).to.be.false;
+            expect(isBinaryFile("test.json")).to.be.false;
+            expect(isBinaryFile("test.yml")).to.be.false;
+            expect(isBinaryFile("test.yaml")).to.be.false;
+        });
+
+        it("should be case insensitive", () => {
+            expect(isBinaryFile("test.PNG")).to.be.true;
+            expect(isBinaryFile("test.JPG")).to.be.true;
+            expect(isBinaryFile("folder/TEST.GIF")).to.be.true;
+        });
+
+        it("should handle files with paths", () => {
+            expect(isBinaryFile("folder/subfolder/image.png")).to.be.true;
+            expect(isBinaryFile("folder\\subfolder\\image.jpg")).to.be.true;
+        });
     });
 
     describe("openAllMetadataDiffs", () => {
@@ -165,6 +221,88 @@ describe("OpenAllMetadataDiffsHandler", () => {
             // Deleted file
             expect(resourceList[2][1]).to.not.be.undefined;
             expect(resourceList[2][2]).to.be.undefined;
+        });
+
+        it("should filter out binary files from multi-diff view", async () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/file.txt",
+                    remotePath: "/remote/file.txt",
+                    relativePath: "file.txt",
+                    status: "modified"
+                },
+                {
+                    localPath: "/local/image.png",
+                    remotePath: "/remote/image.png",
+                    relativePath: "image.png",
+                    status: "modified"
+                }
+            ];
+            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+
+            await openAllMetadataDiffs(siteItem);
+
+            // Should only include text file in multi-diff
+            const resourceList = executeCommandStub.firstCall.args[2];
+            expect(resourceList).to.have.lengthOf(1);
+            expect(resourceList[0][0].toString()).to.include("file.txt");
+
+            // Should show info message about binary files
+            expect(showInformationMessageStub.calledOnce).to.be.true;
+        });
+
+        it("should show message when all files are binary", async () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/image1.png",
+                    remotePath: "/remote/image1.png",
+                    relativePath: "image1.png",
+                    status: "modified"
+                },
+                {
+                    localPath: "/local/image2.jpg",
+                    remotePath: "/remote/image2.jpg",
+                    relativePath: "image2.jpg",
+                    status: "added"
+                }
+            ];
+            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+
+            await openAllMetadataDiffs(siteItem);
+
+            // Should not call vscode.changes when only binary files
+            expect(executeCommandStub.called).to.be.false;
+
+            // Should show info message about all files being binary
+            expect(showInformationMessageStub.calledOnce).to.be.true;
+        });
+
+        it("should log binary file count in telemetry", async () => {
+            const traceInfoStub = TelemetryHelper.traceInfo as sinon.SinonStub;
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/file.txt",
+                    remotePath: "/remote/file.txt",
+                    relativePath: "file.txt",
+                    status: "modified"
+                },
+                {
+                    localPath: "/local/image.png",
+                    remotePath: "/remote/image.png",
+                    relativePath: "image.png",
+                    status: "modified"
+                }
+            ];
+            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+
+            await openAllMetadataDiffs(siteItem);
+
+            // Should have two telemetry calls: one for total, one for binary stats
+            expect(traceInfoStub.calledTwice).to.be.true;
+            expect(traceInfoStub.secondCall.args[1]).to.deep.include({
+                binaryFilesSkipped: "1",
+                textFilesIncluded: "1"
+            });
         });
     });
 });

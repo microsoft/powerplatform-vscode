@@ -6,10 +6,10 @@
 import * as vscode from "vscode";
 import { ActionsHubTreeItem } from "../ActionsHubTreeItem";
 import { Constants } from "../../Constants";
-import { IFileComparisonResult } from "../../models/IFileComparisonResult";
+import { IFileComparisonResult, FileComparisonStatus } from "../../models/IFileComparisonResult";
 import { MetadataDiffFileTreeItem } from "./MetadataDiffFileTreeItem";
 import { MetadataDiffFolderTreeItem } from "./MetadataDiffFolderTreeItem";
-import MetadataDiffContext from "../../MetadataDiffContext";
+import MetadataDiffContext, { MetadataDiffSortMode } from "../../MetadataDiffContext";
 
 /**
  * Tree item representing a single website's metadata diff results.
@@ -46,18 +46,55 @@ export class MetadataDiffSiteTreeItem extends ActionsHubTreeItem {
 
     /**
      * Build a flat list of file tree items (Git-style list view).
-     * Files are sorted by folder path, then by file name.
+     * Files are sorted based on the current sort mode.
      */
     private buildFlatFileList(): ActionsHubTreeItem[] {
-        // Sort results by relative path for consistent ordering
-        const sortedResults = [...this._comparisonResults].sort((a, b) =>
-            a.relativePath.localeCompare(b.relativePath)
-        );
+        // Sort results based on current sort mode
+        const sortedResults = this.sortResults([...this._comparisonResults]);
 
         // Create flat list of file items
         return sortedResults.map(result =>
             new MetadataDiffFileTreeItem(result, this._siteName)
         );
+    }
+
+    /**
+     * Sort comparison results based on the current sort mode
+     */
+    private sortResults(results: IFileComparisonResult[]): IFileComparisonResult[] {
+        const sortMode = MetadataDiffContext.sortMode;
+
+        switch (sortMode) {
+            case MetadataDiffSortMode.Name:
+                // Sort by file name only
+                return results.sort((a, b) => {
+                    const nameA = a.relativePath.split(/[/\\]/).pop() || a.relativePath;
+                    const nameB = b.relativePath.split(/[/\\]/).pop() || b.relativePath;
+                    return nameA.localeCompare(nameB);
+                });
+
+            case MetadataDiffSortMode.Status:
+                // Sort by status (Added, Deleted, Modified), then by path
+                return results.sort((a, b) => {
+                    const statusOrder = {
+                        [FileComparisonStatus.ADDED]: 1,
+                        [FileComparisonStatus.DELETED]: 2,
+                        [FileComparisonStatus.MODIFIED]: 3
+                    };
+                    const statusCompare = statusOrder[a.status] - statusOrder[b.status];
+                    if (statusCompare !== 0) {
+                        return statusCompare;
+                    }
+                    return a.relativePath.localeCompare(b.relativePath);
+                });
+
+            case MetadataDiffSortMode.Path:
+            default:
+                // Sort by full relative path (default)
+                return results.sort((a, b) =>
+                    a.relativePath.localeCompare(b.relativePath)
+                );
+        }
     }
 
     /**
@@ -70,16 +107,18 @@ export class MetadataDiffSiteTreeItem extends ActionsHubTreeItem {
         for (const result of this._comparisonResults) {
             const parts = result.relativePath.split(/[/\\]/);
             let currentFolder: MetadataDiffFolderTreeItem | undefined;
+            let currentPath = "";
 
             // Process all parts except the last one (which is the file name)
             for (let i = 0; i < parts.length - 1; i++) {
                 const folderName = parts[i];
+                currentPath = currentPath ? `${currentPath}/${folderName}` : folderName;
 
                 if (i === 0) {
                     // Look in root children
                     let folder = rootChildren.get(folderName) as MetadataDiffFolderTreeItem | undefined;
                     if (!folder) {
-                        folder = new MetadataDiffFolderTreeItem(folderName);
+                        folder = new MetadataDiffFolderTreeItem(folderName, this._siteName, currentPath);
                         rootChildren.set(folderName, folder);
                     }
                     currentFolder = folder;
@@ -87,7 +126,7 @@ export class MetadataDiffSiteTreeItem extends ActionsHubTreeItem {
                     // Look in current folder's children
                     let folder = currentFolder.childrenMap.get(folderName) as MetadataDiffFolderTreeItem | undefined;
                     if (!folder) {
-                        folder = new MetadataDiffFolderTreeItem(folderName);
+                        folder = new MetadataDiffFolderTreeItem(folderName, this._siteName, currentPath);
                         currentFolder.childrenMap.set(folderName, folder);
                     }
                     currentFolder = folder;

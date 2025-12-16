@@ -9,8 +9,44 @@ import * as path from "path";
 import { MetadataDiffFileTreeItem } from "../../tree-items/metadata-diff/MetadataDiffFileTreeItem";
 import { traceInfo } from "../../TelemetryHelper";
 import { Constants } from "../../Constants";
-import { FileComparisonStatus } from "../../models/IFileComparisonResult";
+import { FileComparisonStatus, IFileComparisonResult } from "../../models/IFileComparisonResult";
 import MetadataDiffContext from "../../MetadataDiffContext";
+
+/**
+ * Discards changes for a single file without showing any UI prompts.
+ * This is the core logic shared between single file and folder discard operations.
+ */
+export function discardSingleFile(comparisonResult: IFileComparisonResult): void {
+    switch (comparisonResult.status) {
+        case FileComparisonStatus.MODIFIED:
+            // Copy remote content to local file
+            if (fs.existsSync(comparisonResult.remotePath)) {
+                const remoteContent = fs.readFileSync(comparisonResult.remotePath);
+                fs.writeFileSync(comparisonResult.localPath, remoteContent);
+            }
+            break;
+
+        case FileComparisonStatus.ADDED:
+            // Delete the local file (it doesn't exist in remote)
+            if (fs.existsSync(comparisonResult.localPath)) {
+                fs.unlinkSync(comparisonResult.localPath);
+            }
+            break;
+
+        case FileComparisonStatus.DELETED:
+            // Copy remote file to local path
+            if (fs.existsSync(comparisonResult.remotePath)) {
+                // Ensure directory exists
+                const parentDir = path.dirname(comparisonResult.localPath);
+                if (!fs.existsSync(parentDir)) {
+                    fs.mkdirSync(parentDir, { recursive: true });
+                }
+                const remoteContent = fs.readFileSync(comparisonResult.remotePath);
+                fs.writeFileSync(comparisonResult.localPath, remoteContent);
+            }
+            break;
+    }
+}
 
 /**
  * Discards local changes for a single file by reverting to the remote version.
@@ -27,7 +63,7 @@ export async function discardLocalChanges(fileItem: MetadataDiffFileTreeItem): P
         status: comparisonResult.status
     });
 
-    const confirmMessage = Constants.StringFunctions.DISCARD_LOCAL_CHANGES_CONFIRM(comparisonResult.relativePath);
+    const confirmMessage = Constants.StringFunctions.DISCARD_LOCAL_CHANGES_CONFIRM(comparisonResult.localPath);
 
     const confirmButton = Constants.Strings.DISCARD_CHANGES;
     const result = await vscode.window.showWarningMessage(confirmMessage, { modal: true }, confirmButton);
@@ -37,35 +73,7 @@ export async function discardLocalChanges(fileItem: MetadataDiffFileTreeItem): P
     }
 
     try {
-        switch (comparisonResult.status) {
-            case FileComparisonStatus.MODIFIED:
-                // Copy remote content to local file
-                if (fs.existsSync(comparisonResult.remotePath)) {
-                    const remoteContent = fs.readFileSync(comparisonResult.remotePath);
-                    fs.writeFileSync(comparisonResult.localPath, remoteContent);
-                }
-                break;
-
-            case FileComparisonStatus.ADDED:
-                // Delete the local file (it doesn't exist in remote)
-                if (fs.existsSync(comparisonResult.localPath)) {
-                    fs.unlinkSync(comparisonResult.localPath);
-                }
-                break;
-
-            case FileComparisonStatus.DELETED:
-                // Copy remote file to local path
-                if (fs.existsSync(comparisonResult.remotePath)) {
-                    // Ensure directory exists
-                    const parentDir = path.dirname(comparisonResult.localPath);
-                    if (!fs.existsSync(parentDir)) {
-                        fs.mkdirSync(parentDir, { recursive: true });
-                    }
-                    const remoteContent = fs.readFileSync(comparisonResult.remotePath);
-                    fs.writeFileSync(comparisonResult.localPath, remoteContent);
-                }
-                break;
-        }
+        discardSingleFile(comparisonResult);
 
         // Remove this file from the comparison results
         MetadataDiffContext.removeFile(comparisonResult.relativePath, siteName);
