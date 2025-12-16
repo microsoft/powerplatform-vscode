@@ -217,7 +217,8 @@ export async function processComparisonResults(
             methodName,
             siteId
         });
-        await vscode.window.showInformationMessage(Constants.Strings.NO_DIFFERENCES_FOUND);
+        // Don't await - show notification without blocking so callers can update UI immediately
+        vscode.window.showInformationMessage(Constants.Strings.NO_DIFFERENCES_FOUND);
         return false;
     } else {
         traceInfo(completedEventName, {
