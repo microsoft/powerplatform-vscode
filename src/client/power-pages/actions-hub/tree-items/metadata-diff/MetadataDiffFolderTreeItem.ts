@@ -29,7 +29,28 @@ export class MetadataDiffFolderTreeItem extends ActionsHubTreeItem {
     }
 
     public getChildren(): ActionsHubTreeItem[] {
-        return Array.from(this.childrenMap.values());
+        const children = Array.from(this.childrenMap.values());
+
+        // Separate folders and files
+        const folders: MetadataDiffFolderTreeItem[] = [];
+        const files: MetadataDiffFileTreeItem[] = [];
+
+        for (const child of children) {
+            if (child instanceof MetadataDiffFolderTreeItem) {
+                folders.push(child);
+            } else {
+                files.push(child);
+            }
+        }
+
+        // Sort folders alphabetically by label
+        folders.sort((a, b) => (a.label as string).localeCompare(b.label as string));
+
+        // Sort files alphabetically by label
+        files.sort((a, b) => (a.label as string).localeCompare(b.label as string));
+
+        // Return folders first, then files
+        return [...folders, ...files];
     }
 
     public get siteName(): string {

@@ -18,22 +18,25 @@ import MetadataDiffContext, { MetadataDiffSortMode } from "../../MetadataDiffCon
 export class MetadataDiffSiteTreeItem extends ActionsHubTreeItem {
     private readonly _comparisonResults: IFileComparisonResult[];
     private readonly _siteName: string;
+    private readonly _localSiteName: string;
     private readonly _environmentName: string;
 
-    constructor(comparisonResults: IFileComparisonResult[], siteName: string, environmentName: string) {
+    constructor(comparisonResults: IFileComparisonResult[], siteName: string, localSiteName: string, environmentName: string) {
         const fileCount = comparisonResults.length;
-        const fileLabel = fileCount === 1
-            ? Constants.StringFunctions.SITE_WITH_FILE_COUNT_SINGULAR(siteName, fileCount)
-            : Constants.StringFunctions.SITE_WITH_FILE_COUNT_PLURAL(siteName, fileCount);
+        const fileLabel = Constants.StringFunctions.COMPARISON_LABEL(siteName, environmentName, localSiteName);
+        const fileCountDescription = fileCount === 1
+            ? Constants.Strings.FILE_COUNT_DESCRIPTION_SINGULAR
+            : Constants.StringFunctions.FILE_COUNT_DESCRIPTION_PLURAL(fileCount);
         super(
             fileLabel,
             vscode.TreeItemCollapsibleState.Expanded,
             Constants.Icons.SITE,
             Constants.ContextValues.METADATA_DIFF_SITE,
-            environmentName // Show environment name as description/subtext
+            fileCountDescription
         );
         this._comparisonResults = comparisonResults;
         this._siteName = siteName;
+        this._localSiteName = localSiteName;
         this._environmentName = environmentName;
     }
 
@@ -146,7 +149,26 @@ export class MetadataDiffSiteTreeItem extends ActionsHubTreeItem {
             }
         }
 
-        return Array.from(rootChildren.values());
+        // Separate folders and files at root level
+        const folders: MetadataDiffFolderTreeItem[] = [];
+        const files: MetadataDiffFileTreeItem[] = [];
+
+        for (const child of rootChildren.values()) {
+            if (child instanceof MetadataDiffFolderTreeItem) {
+                folders.push(child);
+            } else {
+                files.push(child);
+            }
+        }
+
+        // Sort folders alphabetically by label
+        folders.sort((a, b) => (a.label as string).localeCompare(b.label as string));
+
+        // Sort files alphabetically by label
+        files.sort((a, b) => (a.label as string).localeCompare(b.label as string));
+
+        // Return folders first, then files
+        return [...folders, ...files];
     }
 
     public get siteName(): string {

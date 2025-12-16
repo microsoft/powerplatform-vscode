@@ -132,6 +132,63 @@ describe("MetadataDiffFolderTreeItem", () => {
             expect(children).to.include(fileItem);
         });
 
+        it("should return folders first alphabetically, then files alphabetically", () => {
+            const treeItem = new MetadataDiffFolderTreeItem("folder", "Test Site", "folder");
+
+            // Add folders in non-alphabetical order
+            const folderZ = new MetadataDiffFolderTreeItem("z-folder", "Test Site", "folder/z-folder");
+            const folderA = new MetadataDiffFolderTreeItem("a-folder", "Test Site", "folder/a-folder");
+            const folderM = new MetadataDiffFolderTreeItem("m-folder", "Test Site", "folder/m-folder");
+
+            // Add files in non-alphabetical order
+            const fileZ: IFileComparisonResult = {
+                localPath: "/local/z-file.txt",
+                remotePath: "/remote/z-file.txt",
+                relativePath: "folder/z-file.txt",
+                status: "modified"
+            };
+            const fileA: IFileComparisonResult = {
+                localPath: "/local/a-file.txt",
+                remotePath: "/remote/a-file.txt",
+                relativePath: "folder/a-file.txt",
+                status: "added"
+            };
+            const fileM: IFileComparisonResult = {
+                localPath: "/local/m-file.txt",
+                remotePath: "/remote/m-file.txt",
+                relativePath: "folder/m-file.txt",
+                status: "deleted"
+            };
+
+            // Add in random order
+            treeItem.childrenMap.set("z-file.txt", new MetadataDiffFileTreeItem(fileZ, "Test Site"));
+            treeItem.childrenMap.set("z-folder", folderZ);
+            treeItem.childrenMap.set("a-file.txt", new MetadataDiffFileTreeItem(fileA, "Test Site"));
+            treeItem.childrenMap.set("m-folder", folderM);
+            treeItem.childrenMap.set("m-file.txt", new MetadataDiffFileTreeItem(fileM, "Test Site"));
+            treeItem.childrenMap.set("a-folder", folderA);
+
+            const children = treeItem.getChildren();
+
+            expect(children).to.have.lengthOf(6);
+
+            // First 3 should be folders in alphabetical order
+            expect(children[0]).to.be.instanceOf(MetadataDiffFolderTreeItem);
+            expect(children[0].label).to.equal("a-folder");
+            expect(children[1]).to.be.instanceOf(MetadataDiffFolderTreeItem);
+            expect(children[1].label).to.equal("m-folder");
+            expect(children[2]).to.be.instanceOf(MetadataDiffFolderTreeItem);
+            expect(children[2].label).to.equal("z-folder");
+
+            // Last 3 should be files in alphabetical order
+            expect(children[3]).to.be.instanceOf(MetadataDiffFileTreeItem);
+            expect(children[3].label).to.equal("a-file.txt");
+            expect(children[4]).to.be.instanceOf(MetadataDiffFileTreeItem);
+            expect(children[4].label).to.equal("m-file.txt");
+            expect(children[5]).to.be.instanceOf(MetadataDiffFileTreeItem);
+            expect(children[5].label).to.equal("z-file.txt");
+        });
+
         it("should return ActionsHubTreeItem array", () => {
             const treeItem = new MetadataDiffFolderTreeItem("folder", "Test Site", "folder");
             const comparisonResult: IFileComparisonResult = {

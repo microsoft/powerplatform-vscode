@@ -11,12 +11,12 @@ import os from "os";
 import { traceError, traceInfo } from "./TelemetryHelper";
 import { Constants } from "./Constants";
 import { IOtherSiteInfo, IWebsiteDetails, WebsiteYaml } from "../../../common/services/Interfaces";
-import PacContext from "../../pac/PacContext";
 import ArtemisContext from "../../ArtemisContext";
 import { getActiveWebsites, getAllWebsites } from "../../../common/utilities/WebsiteUtil";
 import { ServiceEndpointCategory } from "../../../common/services/Constants";
 import { getWebsiteRecordId, getWebsiteYamlPath, hasWebsiteYaml } from "../../../common/utilities/WorkspaceInfoFinderUtil";
 import { POWERPAGES_SITE_FOLDER, UTF8_ENCODING } from "../../../common/constants";
+import { OrgInfo } from "../../pac/PacTypes";
 
 export function createKnownSiteIdsSet(
     activeSites: IWebsiteDetails[] | undefined,
@@ -134,10 +134,9 @@ const sortByCreatedOn = <T extends { createdOn?: string | null }>(item1: T, item
     return date2 - date1; // Sort in descending order (newest first)
 }
 
-export const fetchWebsites = async (): Promise<{ activeSites: IWebsiteDetails[], inactiveSites: IWebsiteDetails[], otherSites: IOtherSiteInfo[] }> => {
+export const fetchWebsites = async (orgInfo: OrgInfo, shouldReturnOtherSites: boolean): Promise<{ activeSites: IWebsiteDetails[], inactiveSites: IWebsiteDetails[], otherSites: IOtherSiteInfo[] }> => {
     traceInfo(Constants.EventNames.ACTIONS_HUB_FETCH_WEBSITES_CALLED, { methodName: fetchWebsites.name });
     try {
-        const orgInfo = PacContext.OrgInfo;
         if (ArtemisContext.ServiceResponse?.stamp && orgInfo) {
             let allSites: IWebsiteDetails[] = [];
             let activeWebsiteDetails: IWebsiteDetails[] = [];
@@ -167,7 +166,7 @@ export const fetchWebsites = async (): Promise<{ activeSites: IWebsiteDetails[],
             inactiveWebsiteDetails.sort(sortByCreatedOn);
 
             const currentEnvSiteIds = createKnownSiteIdsSet(activeWebsiteDetails, inactiveWebsiteDetails);
-            const otherSites = findOtherSites(currentEnvSiteIds);
+            const otherSites = shouldReturnOtherSites ? findOtherSites(currentEnvSiteIds) : [];
 
             return { activeSites: activeWebsiteDetails, inactiveSites: inactiveWebsiteDetails, otherSites: otherSites };
         }

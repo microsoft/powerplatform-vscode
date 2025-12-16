@@ -242,6 +242,8 @@
   "Session Details": "Session Details",
   "Changing environment...": "Changing environment...",
   "Current": "Current",
+  "Local": "Local",
+  "Local Site": "Local Site",
   "Site management URL not found for the selected site. Please try again after refreshing the environment.": "Site management URL not found for the selected site. Please try again after refreshing the environment.",
   "Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?": "Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?",
   "Current site path not found.": "Current site path not found.",
@@ -345,15 +347,40 @@
   "Deleted locally": "Deleted locally",
   "Download is complete. You can now view the report.": "Download is complete. You can now view the report.",
   "Select an environment to compare with": "Select an environment to compare with",
+  "Select a website to compare with": "Select a website to compare with",
+  "No sites found in the selected environment.": "No sites found in the selected environment.",
+  "Matching Site": "Matching Site",
+  "Enhanced Data Model": "Enhanced Data Model",
+  "Standard Data Model": "Standard Data Model",
+  "The website you selected is different from the local site. Are you sure you want to compare with this website?": "The website you selected is different from the local site. Are you sure you want to compare with this website?",
+  "Yes, Don't Ask Again": "Yes, Don't Ask Again",
   "The website was not found in the selected environment. Please select a different environment.": "The website was not found in the selected environment. Please select a different environment.",
-  "Fetching websites from the selected environment...": "Fetching websites from the selected environment...",
   "Discard Changes": "Discard Changes",
   "Show Diff": "Show Diff",
   "All changed files are binary files (e.g., images) and cannot be displayed in the diff viewer. You can view them individually in the file tree.": "All changed files are binary files (e.g., images) and cannot be displayed in the diff viewer. You can view them individually in the file tree.",
+  "1 file changed": "1 file changed",
+  "Fetching websites from '{0}'.../Message shown while fetching websites from an environment. {0} is the environment name.": {
+    "message": "Fetching websites from '{0}'...",
+    "comment": [
+      "Message shown while fetching websites from an environment. {0} is the environment name."
+    ]
+  },
   "Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\")).../This is a markdown formatting which must persist across translations.": {
     "message": "Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\"))...",
     "comment": [
       "This is a markdown formatting which must persist across translations."
+    ]
+  },
+  "{0} ({1}) ↔ {2} (Local)/Comparison label showing remote and local sites. Format: 'Remote (Env) ↔ Local (Local)'.": {
+    "message": "{0} ({1}) ↔ {2} (Local)",
+    "comment": [
+      "Comparison label showing remote and local sites. Format: 'Remote (Env) ↔ Local (Local)'."
+    ]
+  },
+  "{0} files changed/Description showing the number of changed files. 'files' is plural.": {
+    "message": "{0} files changed",
+    "comment": [
+      "Description showing the number of changed files. 'files' is plural."
     ]
   },
   "{0} ({1} file)/This is the site label showing the number of changed files. 'file' is singular.": {

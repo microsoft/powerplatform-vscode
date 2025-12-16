@@ -21,12 +21,12 @@ describe("MetadataDiffSiteTreeItem", () => {
 
     describe("constructor", () => {
         it("should be an instance of ActionsHubTreeItem", () => {
-            const treeItem = new MetadataDiffSiteTreeItem([], "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem([], "Test Site", "Local Test Site", "Test Environment");
 
             expect(treeItem).to.be.instanceOf(ActionsHubTreeItem);
         });
 
-        it("should have the expected label with site name and change count", () => {
+        it("should have the expected label with site name", () => {
             const results: IFileComparisonResult[] = [
                 {
                     localPath: "/local/file1.txt",
@@ -41,26 +41,27 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "added"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
 
             expect(treeItem.label).to.include("Test Site");
-            expect(treeItem.label).to.include("2");
+            expect(treeItem.label).to.include("Test Environment");
+            expect(treeItem.label).to.include("Local Test Site");
         });
 
         it("should have expanded collapsible state", () => {
-            const treeItem = new MetadataDiffSiteTreeItem([], "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem([], "Test Site", "Local Test Site", "Test Environment");
 
             expect(treeItem.collapsibleState).to.equal(vscode.TreeItemCollapsibleState.Expanded);
         });
 
         it("should have the globe icon", () => {
-            const treeItem = new MetadataDiffSiteTreeItem([], "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem([], "Test Site", "Local Test Site", "Test Environment");
 
             expect((treeItem.iconPath as vscode.ThemeIcon).id).to.equal("globe");
         });
 
         it("should have the expected context value", () => {
-            const treeItem = new MetadataDiffSiteTreeItem([], "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem([], "Test Site", "Local Test Site", "Test Environment");
 
             expect(treeItem.contextValue).to.equal(Constants.ContextValues.METADATA_DIFF_SITE);
         });
@@ -68,7 +69,7 @@ describe("MetadataDiffSiteTreeItem", () => {
 
     describe("siteName", () => {
         it("should return the site name", () => {
-            const treeItem = new MetadataDiffSiteTreeItem([], "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem([], "Test Site", "Local Test Site", "Test Environment");
 
             expect(treeItem.siteName).to.equal("Test Site");
         });
@@ -76,15 +77,30 @@ describe("MetadataDiffSiteTreeItem", () => {
 
     describe("environmentName", () => {
         it("should return the environment name", () => {
-            const treeItem = new MetadataDiffSiteTreeItem([], "Test Site", "My Environment");
+            const treeItem = new MetadataDiffSiteTreeItem([], "Test Site", "Local Test Site", "My Environment");
 
             expect(treeItem.environmentName).to.equal("My Environment");
         });
 
-        it("should show environment name as description", () => {
-            const treeItem = new MetadataDiffSiteTreeItem([], "Test Site", "My Environment");
+        it("should show file count as description", () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/file1.txt",
+                    remotePath: "/remote/file1.txt",
+                    relativePath: "file1.txt",
+                    status: "modified"
+                },
+                {
+                    localPath: "/local/file2.txt",
+                    remotePath: "/remote/file2.txt",
+                    relativePath: "file2.txt",
+                    status: "added"
+                }
+            ];
+            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "My Environment");
 
-            expect(treeItem.description).to.equal("My Environment");
+            expect(treeItem.description).to.include("2");
+            expect(treeItem.description).to.include("files changed");
         });
     });
 
@@ -98,7 +114,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "modified"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
 
             expect(treeItem.comparisonResults).to.deep.equal(results);
         });
@@ -110,7 +126,7 @@ describe("MetadataDiffSiteTreeItem", () => {
         });
 
         it("should return empty array when no results", () => {
-            const treeItem = new MetadataDiffSiteTreeItem([], "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem([], "Test Site", "Local Test Site", "Test Environment");
 
             const children = treeItem.getChildren();
 
@@ -126,7 +142,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "modified"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
 
             const children = treeItem.getChildren();
 
@@ -143,7 +159,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "modified"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
 
             const children = treeItem.getChildren();
 
@@ -161,7 +177,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "modified"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
 
             const children = treeItem.getChildren();
 
@@ -185,7 +201,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "added"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
 
             const children = treeItem.getChildren();
 
@@ -209,7 +225,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "added"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
 
             const children = treeItem.getChildren();
 
@@ -240,7 +256,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: FileComparisonStatus.ADDED
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
 
             const children = treeItem.getChildren();
 
@@ -265,7 +281,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: FileComparisonStatus.ADDED
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
 
             const children = treeItem.getChildren();
 
@@ -297,7 +313,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: FileComparisonStatus.DELETED
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
 
             const children = treeItem.getChildren();
 
@@ -324,7 +340,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: FileComparisonStatus.ADDED
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
 
             const children = treeItem.getChildren();
 
@@ -349,7 +365,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "modified"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
 
             const children = treeItem.getChildren();
 
@@ -366,7 +382,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "modified"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
 
             const children = treeItem.getChildren();
 
@@ -384,7 +400,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "modified"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
 
             const children = treeItem.getChildren();
 
@@ -414,7 +430,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "added"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
 
             const children = treeItem.getChildren();
 
@@ -427,7 +443,7 @@ describe("MetadataDiffSiteTreeItem", () => {
             expect(folderChildren).to.have.lengthOf(2);
         });
 
-        it("should handle mixed root files and folders", () => {
+        it("should handle mixed root files and folders with folders first alphabetically, then files", () => {
             const results: IFileComparisonResult[] = [
                 {
                     localPath: "/local/root-file.txt",
@@ -442,17 +458,79 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "added"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
 
             const children = treeItem.getChildren();
 
             expect(children).to.have.lengthOf(2);
 
-            const fileItem = children.find(c => c instanceof MetadataDiffFileTreeItem);
-            const folderItem = children.find(c => c instanceof MetadataDiffFolderTreeItem);
+            // Folders should come first, then files
+            expect(children[0]).to.be.instanceOf(MetadataDiffFolderTreeItem);
+            expect(children[0].label).to.equal("folder");
+            expect(children[1]).to.be.instanceOf(MetadataDiffFileTreeItem);
+            expect(children[1].label).to.equal("root-file.txt");
+        });
 
-            expect(fileItem).to.not.be.undefined;
-            expect(folderItem).to.not.be.undefined;
+        it("should sort folders alphabetically and files alphabetically at root level", () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/z-file.txt",
+                    remotePath: "/remote/z-file.txt",
+                    relativePath: "z-file.txt",
+                    status: "modified"
+                },
+                {
+                    localPath: "/local/a-folder/file.txt",
+                    remotePath: "/remote/a-folder/file.txt",
+                    relativePath: "a-folder/file.txt",
+                    status: "added"
+                },
+                {
+                    localPath: "/local/a-file.txt",
+                    remotePath: "/remote/a-file.txt",
+                    relativePath: "a-file.txt",
+                    status: "modified"
+                },
+                {
+                    localPath: "/local/z-folder/file.txt",
+                    remotePath: "/remote/z-folder/file.txt",
+                    relativePath: "z-folder/file.txt",
+                    status: "deleted"
+                },
+                {
+                    localPath: "/local/m-folder/file.txt",
+                    remotePath: "/remote/m-folder/file.txt",
+                    relativePath: "m-folder/file.txt",
+                    status: "modified"
+                },
+                {
+                    localPath: "/local/m-file.txt",
+                    remotePath: "/remote/m-file.txt",
+                    relativePath: "m-file.txt",
+                    status: "added"
+                }
+            ];
+            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+
+            const children = treeItem.getChildren();
+
+            expect(children).to.have.lengthOf(6);
+
+            // First 3 should be folders in alphabetical order
+            expect(children[0]).to.be.instanceOf(MetadataDiffFolderTreeItem);
+            expect(children[0].label).to.equal("a-folder");
+            expect(children[1]).to.be.instanceOf(MetadataDiffFolderTreeItem);
+            expect(children[1].label).to.equal("m-folder");
+            expect(children[2]).to.be.instanceOf(MetadataDiffFolderTreeItem);
+            expect(children[2].label).to.equal("z-folder");
+
+            // Last 3 should be files in alphabetical order
+            expect(children[3]).to.be.instanceOf(MetadataDiffFileTreeItem);
+            expect(children[3].label).to.equal("a-file.txt");
+            expect(children[4]).to.be.instanceOf(MetadataDiffFileTreeItem);
+            expect(children[4].label).to.equal("m-file.txt");
+            expect(children[5]).to.be.instanceOf(MetadataDiffFileTreeItem);
+            expect(children[5].label).to.equal("z-file.txt");
         });
 
         it("should handle backslash path separators", () => {
@@ -464,7 +542,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "modified"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
 
             const children = treeItem.getChildren();
 

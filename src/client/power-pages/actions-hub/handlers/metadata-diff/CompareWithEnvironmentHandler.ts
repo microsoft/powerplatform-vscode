@@ -5,45 +5,64 @@
 
 import * as vscode from "vscode";
 import { PacTerminal } from "../../../../lib/PacTerminal";
+import PacContext from "../../../../pac/PacContext";
 import { Constants } from "../../Constants";
 import { traceError, traceInfo } from "../../TelemetryHelper";
 import { showProgressWithNotification } from "../../../../../common/utilities/Utils";
 import { SUCCESS } from "../../../../../common/constants";
-import { OrgInfo, OrgListOutput } from "../../../../pac/PacTypes";
+import { OrgInfo } from "../../../../pac/PacTypes";
 import { IWebsiteDetails } from "../../../../../common/services/Interfaces";
-import { getAllWebsites } from "../../../../../common/utilities/WebsiteUtil";
 import { resolveSiteFromWorkspace, prepareSiteStoragePath, processComparisonResults } from "./MetadataDiffUtils";
+import { getWebsiteName } from "../../../../../common/utilities/WorkspaceInfoFinderUtil";
+import { fetchWebsites } from "../../ActionsHubUtils";
 
 /**
  * Environment quick pick item with full org info
  */
 interface EnvironmentQuickPickItem extends vscode.QuickPickItem {
     orgInfo: OrgInfo;
+    iconPath?: vscode.ThemeIcon | { light: vscode.Uri; dark: vscode.Uri };
 }
 
 /**
- * Gets the list of environments accessible to the user
+ * Website quick pick item with full website details
+ */
+interface WebsiteQuickPickItem extends vscode.QuickPickItem {
+    websiteDetails: IWebsiteDetails;
+    iconPath?: vscode.ThemeIcon;
+}
+
+/**
+ * Gets the list of environments accessible to the user, excluding the currently connected environment
  * @param pacTerminal The PAC terminal instance
+ * @param context The extension context for accessing icons
  * @returns Array of environment quick pick items with org info
  */
-async function getEnvironmentList(pacTerminal: PacTerminal): Promise<EnvironmentQuickPickItem[]> {
+async function getEnvironmentList(pacTerminal: PacTerminal, context: vscode.ExtensionContext): Promise<EnvironmentQuickPickItem[]> {
     const pacWrapper = pacTerminal.getWrapper();
     const envListOutput = await pacWrapper.orgList();
 
     if (envListOutput && envListOutput.Status === SUCCESS && envListOutput.Results) {
-        const envList = envListOutput.Results as OrgListOutput[];
+        const currentEnvironmentId = PacContext.OrgInfo?.EnvironmentId;
+        const envList = envListOutput.Results.filter(
+            (env) => env.EnvironmentIdentifier.Id !== currentEnvironmentId
+        );
         return envList.map((env) => ({
             label: env.FriendlyName,
             detail: env.EnvironmentUrl,
             description: "",
+            iconPath: {
+                light: vscode.Uri.joinPath(context.extensionUri, 'src', 'client', 'assets', 'environment-icon', 'light', 'environment.svg'),
+                dark: vscode.Uri.joinPath(context.extensionUri, 'src', 'client', 'assets', 'environment-icon', 'dark', 'environment.svg')
+            },
             orgInfo: {
                 OrgId: env.OrganizationId,
-                UniqueName: "",
+                UniqueName: env.UniqueName,
                 FriendlyName: env.FriendlyName,
                 OrgUrl: env.EnvironmentUrl,
                 UserEmail: "",
                 UserId: "",
-                EnvironmentId: env.EnvironmentId
+                EnvironmentId: env.EnvironmentIdentifier.Id
             }
         }));
     }
@@ -52,13 +71,79 @@ async function getEnvironmentList(pacTerminal: PacTerminal): Promise<Environment
 }
 
 /**
- * Finds a website in the given list by its website record ID
- * @param websites List of websites to search
- * @param websiteId The website record ID to find
- * @returns The matching website details or undefined
+ * Type guard to check if a quick pick item is a website item
  */
-function findWebsiteById(websites: IWebsiteDetails[], websiteId: string): IWebsiteDetails | undefined {
-    return websites.find(website => website.websiteRecordId === websiteId);
+function isWebsiteQuickPickItem(item: vscode.QuickPickItem | WebsiteQuickPickItem): item is WebsiteQuickPickItem {
+    return 'websiteDetails' in item;
+}
+
+/**
+ * Converts website details to quick pick items for selection
+ * @param activeSites List of active websites
+ * @param inactiveSites List of inactive websites
+ * @param localSiteId The website record ID from the local workspace (to prioritize matching site)
+ * @returns Array of website quick pick items sorted by: matching site first, then active status, then name, with separators between groups
+ */
+function getWebsiteQuickPickItems(activeSites: IWebsiteDetails[], inactiveSites: IWebsiteDetails[], localSiteId: string): (WebsiteQuickPickItem | vscode.QuickPickItem)[] {
+    const normalizedLocalSiteId = localSiteId.toLowerCase();
+
+    // Sort function for websites within a group
+    const sortByMatchingThenName = (a: IWebsiteDetails, b: IWebsiteDetails): number => {
+        const aMatches = a.websiteRecordId?.toLowerCase() === normalizedLocalSiteId;
+        const bMatches = b.websiteRecordId?.toLowerCase() === normalizedLocalSiteId;
+
+        // Matching site comes first
+        if (aMatches && !bMatches) {
+            return -1;
+        }
+        if (!aMatches && bMatches) {
+            return 1;
+        }
+
+        // Sort by name alphabetically
+        const nameA = a.name || "";
+        const nameB = b.name || "";
+        return nameA.localeCompare(nameB);
+    };
+
+    // Sort each group
+    const sortedActiveSites = [...activeSites].sort(sortByMatchingThenName);
+    const sortedInactiveSites = [...inactiveSites].sort(sortByMatchingThenName);
+
+    const createWebsiteItem = (website: IWebsiteDetails): WebsiteQuickPickItem => {
+        const isMatchingSite = website.websiteRecordId?.toLowerCase() === normalizedLocalSiteId;
+        const dataModelText = website.dataModel === "Enhanced" ? Constants.Strings.ENHANCED_DATA_MODEL : Constants.Strings.STANDARD_DATA_MODEL;
+        const matchingIndicator = isMatchingSite ? ` • ${Constants.Strings.MATCHING_SITE_INDICATOR}` : "";
+        return {
+            label: website.name,
+            detail: website.websiteUrl,
+            description: `${dataModelText}${matchingIndicator}`,
+            iconPath: Constants.Icons.SITE,
+            websiteDetails: website
+        };
+    };
+
+    const result: (WebsiteQuickPickItem | vscode.QuickPickItem)[] = [];
+
+    // Add active sites with separator
+    if (sortedActiveSites.length > 0) {
+        result.push({
+            label: Constants.Strings.ACTIVE_SITES,
+            kind: vscode.QuickPickItemKind.Separator
+        });
+        result.push(...sortedActiveSites.map(createWebsiteItem));
+    }
+
+    // Add inactive sites with separator
+    if (sortedInactiveSites.length > 0) {
+        result.push({
+            label: Constants.Strings.INACTIVE_SITES,
+            kind: vscode.QuickPickItemKind.Separator
+        });
+        result.push(...sortedInactiveSites.map(createWebsiteItem));
+    }
+
+    return result;
 }
 
 export const compareWithEnvironment = (pacTerminal: PacTerminal, context: vscode.ExtensionContext) => async (resource: vscode.Uri): Promise<void> => {
@@ -87,7 +172,7 @@ export const compareWithEnvironment = (pacTerminal: PacTerminal, context: vscode
     }
 
     // Show environment picker
-    const environmentList = await getEnvironmentList(pacTerminal);
+    const environmentList = await getEnvironmentList(pacTerminal, context);
 
     if (environmentList.length === 0) {
         await vscode.window.showErrorMessage(Constants.Strings.NO_ENVIRONMENTS_FOUND);
@@ -113,27 +198,77 @@ export const compareWithEnvironment = (pacTerminal: PacTerminal, context: vscode
         environmentName: selectedEnv.label
     });
 
-    // Fetch websites from selected environment
-    let websiteDetails: IWebsiteDetails | undefined;
+    // Fetch websites from selected environment and show picker
+    let activeSites: IWebsiteDetails[] = [];
+    let inactiveSites: IWebsiteDetails[] = [];
 
     await showProgressWithNotification(
-        Constants.Strings.FETCHING_WEBSITES_FROM_ENVIRONMENT,
+        Constants.StringFunctions.FETCHING_WEBSITES_FROM_ENVIRONMENT(selectedEnv.label),
         async () => {
-            const websites = await getAllWebsites(selectedOrgInfo);
-            websiteDetails = findWebsiteById(websites, siteResolution.siteId);
+            const result = await fetchWebsites(selectedOrgInfo, false);
+            activeSites = result.activeSites;
+            inactiveSites = result.inactiveSites;
             return true;
         }
     );
 
-    if (!websiteDetails) {
+    if (activeSites.length === 0 && inactiveSites.length === 0) {
         traceInfo(Constants.EventNames.ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_WEBSITE_NOT_FOUND, {
             methodName: compareWithEnvironment.name,
-            websiteId: siteResolution.siteId,
             environmentId: selectedOrgInfo.EnvironmentId
         });
-        await vscode.window.showErrorMessage(Constants.Strings.WEBSITE_NOT_FOUND_IN_ENVIRONMENT);
+        await vscode.window.showErrorMessage(Constants.Strings.NO_SITES_FOUND_IN_ENVIRONMENT);
         return;
     }
+
+    // Show website picker
+    const websiteQuickPickItems = getWebsiteQuickPickItems(activeSites, inactiveSites, siteResolution.siteId);
+    const selectedWebsite = await vscode.window.showQuickPick(websiteQuickPickItems, {
+        placeHolder: Constants.Strings.SELECT_WEBSITE_TO_COMPARE
+    });
+
+    if (!selectedWebsite || !isWebsiteQuickPickItem(selectedWebsite)) {
+        traceInfo(Constants.EventNames.ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_CANCELLED, {
+            methodName: compareWithEnvironment.name,
+            reason: "User cancelled website selection"
+        });
+        return;
+    }
+
+    const websiteDetails = selectedWebsite.websiteDetails;
+
+    // Check if selected website is different from local site and show confirmation
+    const isMatchingSite = websiteDetails.websiteRecordId?.toLowerCase() === siteResolution.siteId.toLowerCase();
+    if (!isMatchingSite) {
+        const config = vscode.workspace.getConfiguration(Constants.Strings.CONFIGURATION_NAME);
+        const shouldConfirm = config.get<boolean>("confirmDifferentWebsiteComparison", true);
+
+        if (shouldConfirm) {
+            const confirmation = await vscode.window.showWarningMessage(
+                Constants.Strings.DIFFERENT_WEBSITE_CONFIRMATION,
+                { modal: true },
+                Constants.Strings.YES,
+                Constants.Strings.YES_DONT_ASK_AGAIN
+            );
+
+            if (confirmation === Constants.Strings.YES_DONT_ASK_AGAIN) {
+                await config.update("confirmDifferentWebsiteComparison", false, vscode.ConfigurationTarget.Global);
+            } else if (confirmation !== Constants.Strings.YES) {
+                traceInfo(Constants.EventNames.ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_CANCELLED, {
+                    methodName: compareWithEnvironment.name,
+                    reason: "User cancelled after different website confirmation"
+                });
+                return;
+            }
+        }
+    }
+
+    traceInfo(Constants.EventNames.ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_WEBSITE_SELECTED, {
+        methodName: compareWithEnvironment.name,
+        websiteId: websiteDetails.websiteRecordId,
+        websiteName: websiteDetails.name,
+        environmentId: selectedOrgInfo.EnvironmentId
+    });
 
     // Determine data model version
     const dataModelVersion = websiteDetails.dataModel === "Enhanced" ? 2 : 1;
@@ -147,17 +282,17 @@ export const compareWithEnvironment = (pacTerminal: PacTerminal, context: vscode
     const siteStoragePath = prepareSiteStoragePath(storagePath, websiteDetails.websiteRecordId);
     const pacWrapper = pacTerminal.getWrapper();
 
-    // Select the environment before downloading
-    await pacWrapper.orgSelect(selectedOrgInfo.OrgUrl);
-
+    const downloadStartTime = Date.now();
     const success = await showProgressWithNotification(
         Constants.StringFunctions.DOWNLOADING_SITE_FOR_COMPARISON(websiteDetails.name),
         async () => pacWrapper.downloadSiteWithProgress(
             siteStoragePath,
             websiteDetails!.websiteRecordId,
-            dataModelVersion
+            dataModelVersion,
+            selectedEnv.orgInfo.OrgUrl
         )
     );
+    const downloadDurationMs = Date.now() - downloadStartTime;
 
     if (!success) {
         traceError(
@@ -173,16 +308,31 @@ export const compareWithEnvironment = (pacTerminal: PacTerminal, context: vscode
         return;
     }
 
-    await processComparisonResults(
+    traceInfo(Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_SITE_DOWNLOAD_COMPLETED, {
+        methodName: compareWithEnvironment.name,
+        siteId: websiteDetails.websiteRecordId,
+        environmentId: selectedOrgInfo.EnvironmentId,
+        dataModelVersion: dataModelVersion,
+        downloadDurationMs: downloadDurationMs
+    });
+
+    // Get local site name from website.yml
+    const localSiteName = getWebsiteName(siteResolution.localSitePath) || Constants.Strings.LOCAL_SITE;
+
+    const hasDifferences = await processComparisonResults(
         siteStoragePath,
         siteResolution.localSitePath,
         websiteDetails.name,
+        localSiteName,
         selectedEnv.label,
         compareWithEnvironment.name,
         websiteDetails.websiteRecordId,
         Constants.EventNames.ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_COMPLETED,
-        Constants.EventNames.ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_NO_DIFFERENCES
+        Constants.EventNames.ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_NO_DIFFERENCES,
+        siteResolution.comparisonSubPath
     );
 
-    await vscode.window.showInformationMessage(Constants.Strings.COMPARE_WITH_LOCAL_COMPLETED);
+    if (hasDifferences) {
+        await vscode.window.showInformationMessage(Constants.Strings.COMPARE_WITH_LOCAL_COMPLETED);
+    }
 };

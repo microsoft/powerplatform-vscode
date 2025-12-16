@@ -13,11 +13,11 @@ import { fetchWebsites, findOtherSites, createKnownSiteIdsSet, getAllFiles } fro
 import { Constants } from '../../../../power-pages/actions-hub/Constants';
 import { WebsiteDataModel, ServiceEndpointCategory } from '../../../../../common/services/Constants';
 import { IWebsiteDetails, IArtemisAPIOrgResponse } from '../../../../../common/services/Interfaces';
-import PacContext from '../../../../pac/PacContext';
 import ArtemisContext from '../../../../ArtemisContext';
 import * as WebsiteUtils from '../../../../../common/utilities/WebsiteUtil';
 import * as WorkspaceInfoFinderUtil from '../../../../../common/utilities/WorkspaceInfoFinderUtil';
 import * as TelemetryHelper from '../../../../power-pages/actions-hub/TelemetryHelper';
+import { OrgInfo } from '../../../../pac/PacTypes';
 
 describe('ActionsHubUtils', () => {
     let sandbox: sinon.SinonSandbox;
@@ -51,25 +51,6 @@ describe('ActionsHubUtils', () => {
             ArtemisContext["_artemisResponse"] = { stamp: ServiceEndpointCategory.TEST, response: artemisResponse };
             mockGetActiveWebsites = sandbox.stub(WebsiteUtils, 'getActiveWebsites');
             mockGetAllWebsites = sandbox.stub(WebsiteUtils, 'getAllWebsites');
-            sinon.stub(PacContext, "OrgInfo").get(() => ({ OrgId: 'test-org-id', EnvironmentId: 'test-env-id' }));
-        });
-
-        it('should not call getActiveWebsites and getAllWebsites', async () => {
-            sinon.stub(PacContext, "OrgInfo").get(() => undefined);
-
-            await fetchWebsites();
-
-            expect(mockGetActiveWebsites.called).to.be.false;
-            expect(mockGetAllWebsites.called).to.be.false;
-        });
-
-        it('should return empty response when orgInfo is null', async () => {
-            sinon.stub(PacContext, "OrgInfo").get(() => undefined);
-
-            const response = await fetchWebsites();
-
-            expect(response.activeSites).to.be.empty;
-            expect(response.inactiveSites).to.be.empty;
         });
 
         it('should log the error when there is problem is fetching websites', async () => {
@@ -86,7 +67,7 @@ describe('ActionsHubUtils', () => {
             mockGetActiveWebsites.resolves(activeSites);
             mockGetAllWebsites.rejects(new Error('Test error'));
 
-            const response = await fetchWebsites();
+            const response = await fetchWebsites({} as OrgInfo, true);
 
             expect(response.activeSites).to.be.empty;
             expect(response.inactiveSites).to.be.empty;
@@ -127,7 +108,7 @@ describe('ActionsHubUtils', () => {
             mockGetActiveWebsites.resolves(activeSites);
             mockGetAllWebsites.resolves(allSites);
 
-            const response = await fetchWebsites();
+            const response = await fetchWebsites({} as OrgInfo, true);
 
             expect(response.activeSites).to.deep.equal([...activeSites.map(site => ({ ...site, isCodeSite: false, siteManagementUrl: "https://portalmanagement.com", createdOn: "2025-03-20", creator: "Test Creator" }))]);
             expect(response.inactiveSites).to.deep.equal(inactiveSites);

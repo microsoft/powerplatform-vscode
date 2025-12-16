@@ -55,9 +55,12 @@ export type PacSolutionListOutput = PacOutputWithResultList<SolutionListing>;
 export type OrgListOutput = {
     FriendlyName: string,
     OrganizationId: string,
-    EnvironmentId: string,
+    EnvironmentIdentifier: {
+        Id: string
+    },
     EnvironmentUrl: string,
-    IsActive: boolean
+    IsActive: boolean,
+    UniqueName: string
 }
 
 export type PacOrgListOutput = PacOutputWithResultList<OrgListOutput>;

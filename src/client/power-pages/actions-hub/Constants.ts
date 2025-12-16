@@ -59,6 +59,8 @@ export const Constants = {
         SESSION_DETAILS: vscode.l10n.t("Session Details"),
         CHANGING_ENVIRONMENT: vscode.l10n.t("Changing environment..."),
         CURRENT: vscode.l10n.t("Current"),
+        LOCAL: vscode.l10n.t("Local"),
+        LOCAL_SITE: vscode.l10n.t("Local Site"),
         SITE_MANAGEMENT_URL_NOT_FOUND: vscode.l10n.t("Site management URL not found for the selected site. Please try again after refreshing the environment."),
         SITE_UPLOAD_CONFIRMATION: vscode.l10n.t(`Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?`),
         YES: vscode.l10n.t("Yes"),
@@ -175,17 +177,33 @@ export const Constants = {
         METADATA_DIFF_DELETED: vscode.l10n.t("Deleted locally"),
         COMPARE_WITH_LOCAL_COMPLETED: vscode.l10n.t("Download is complete. You can now view the report."),
         SELECT_ENVIRONMENT_TO_COMPARE: vscode.l10n.t("Select an environment to compare with"),
+        SELECT_WEBSITE_TO_COMPARE: vscode.l10n.t("Select a website to compare with"),
+        NO_SITES_FOUND_IN_ENVIRONMENT: vscode.l10n.t("No sites found in the selected environment."),
+        MATCHING_SITE_INDICATOR: vscode.l10n.t("Matching Site"),
+        ENHANCED_DATA_MODEL: vscode.l10n.t("Enhanced Data Model"),
+        STANDARD_DATA_MODEL: vscode.l10n.t("Standard Data Model"),
+        DIFFERENT_WEBSITE_CONFIRMATION: vscode.l10n.t("The website you selected is different from the local site. Are you sure you want to compare with this website?"),
+        YES_DONT_ASK_AGAIN: vscode.l10n.t("Yes, Don't Ask Again"),
         WEBSITE_NOT_FOUND_IN_ENVIRONMENT: vscode.l10n.t("The website was not found in the selected environment. Please select a different environment."),
-        FETCHING_WEBSITES_FROM_ENVIRONMENT: vscode.l10n.t("Fetching websites from the selected environment..."),
         DISCARD_CHANGES: vscode.l10n.t("Discard Changes"),
         SHOW_DIFF: vscode.l10n.t("Show Diff"),
         METADATA_DIFF_ONLY_BINARY_FILES: vscode.l10n.t("All changed files are binary files (e.g., images) and cannot be displayed in the diff viewer. You can view them individually in the file tree."),
+        FILE_COUNT_DESCRIPTION_SINGULAR: vscode.l10n.t("1 file changed"),
     },
     /**
      * Functions that return localized strings with dynamic parameters.
      * Use these for strings that require runtime values.
      */
     StringFunctions: {
+        /**
+         * Returns the fetching websites message with environment name
+         */
+        FETCHING_WEBSITES_FROM_ENVIRONMENT: (environmentName: string) =>
+            vscode.l10n.t({
+                message: "Fetching websites from '{0}'...",
+                args: [environmentName],
+                comment: ["Message shown while fetching websites from an environment. {0} is the environment name."]
+            }),
         /**
          * Returns the downloading site message with site name
          */
@@ -194,6 +212,25 @@ export const Constants = {
                 message: "Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\"))...",
                 args: [siteName],
                 comment: ["This is a markdown formatting which must persist across translations."]
+            }),
+        /**
+         * Returns the comparison label showing remote and local site without file count
+         * Format: "<Remote Website Name> (Environment Name) <-> <Local Website Name> (Local)"
+         */
+        COMPARISON_LABEL: (remoteSiteName: string, environmentName: string, localSiteName: string) =>
+            vscode.l10n.t({
+                message: "{0} ({1}) ↔ {2} (Local)",
+                args: [remoteSiteName, environmentName, localSiteName],
+                comment: ["Comparison label showing remote and local sites. Format: 'Remote (Env) ↔ Local (Local)'."]
+            }),
+        /**
+         * Returns the file count description (plural: "X files changed")
+         */
+        FILE_COUNT_DESCRIPTION_PLURAL: (fileCount: number) =>
+            vscode.l10n.t({
+                message: "{0} files changed",
+                args: [fileCount],
+                comment: ["Description showing the number of changed files. 'files' is plural."]
             }),
         /**
          * Returns the site label with file count (singular: "1 file")
@@ -416,11 +453,13 @@ export const Constants = {
         ACTIONS_HUB_METADATA_DIFF_SORT_MODE_CHANGED: "ActionsHubMetadataDiffSortModeChanged",
         ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_CALLED: "ActionsHubCompareWithEnvironmentCalled",
         ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_ENVIRONMENT_SELECTED: "ActionsHubCompareWithEnvironmentEnvironmentSelected",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_WEBSITE_SELECTED: "ActionsHubCompareWithEnvironmentWebsiteSelected",
         ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_CANCELLED: "ActionsHubCompareWithEnvironmentCancelled",
         ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_WEBSITE_NOT_FOUND: "ActionsHubCompareWithEnvironmentWebsiteNotFound",
         ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_COMPLETED: "ActionsHubCompareWithEnvironmentCompleted",
         ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_FAILED: "ActionsHubCompareWithEnvironmentFailed",
         ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_NO_DIFFERENCES: "ActionsHubCompareWithEnvironmentNoDifferences",
+        ACTIONS_HUB_METADATA_DIFF_SITE_DOWNLOAD_COMPLETED: "ActionsHubMetadataDiffSiteDownloadCompleted",
     },
     StudioEndpoints: {
         TEST: "https://make.test.powerpages.microsoft.com",

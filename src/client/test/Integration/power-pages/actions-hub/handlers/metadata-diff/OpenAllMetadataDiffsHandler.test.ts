@@ -99,7 +99,7 @@ describe("OpenAllMetadataDiffsHandler", () => {
                     status: "added"
                 }
             ];
-            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
 
             await openAllMetadataDiffs(siteItem);
 
@@ -112,7 +112,7 @@ describe("OpenAllMetadataDiffsHandler", () => {
         });
 
         it("should not execute command when no results", async () => {
-            const siteItem = new MetadataDiffSiteTreeItem([], "Test Site", "Test Environment");
+            const siteItem = new MetadataDiffSiteTreeItem([], "Test Site", "Local Test Site", "Test Environment");
 
             await openAllMetadataDiffs(siteItem);
 
@@ -128,7 +128,7 @@ describe("OpenAllMetadataDiffsHandler", () => {
                     status: "modified"
                 }
             ];
-            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
 
             await openAllMetadataDiffs(siteItem);
 
@@ -153,7 +153,7 @@ describe("OpenAllMetadataDiffsHandler", () => {
                     status: "added"
                 }
             ];
-            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
 
             await openAllMetadataDiffs(siteItem);
 
@@ -172,7 +172,7 @@ describe("OpenAllMetadataDiffsHandler", () => {
                     status: "deleted"
                 }
             ];
-            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
 
             await openAllMetadataDiffs(siteItem);
 
@@ -203,7 +203,7 @@ describe("OpenAllMetadataDiffsHandler", () => {
                     status: "deleted"
                 }
             ];
-            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
 
             await openAllMetadataDiffs(siteItem);
 
@@ -238,7 +238,7 @@ describe("OpenAllMetadataDiffsHandler", () => {
                     status: "modified"
                 }
             ];
-            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
 
             await openAllMetadataDiffs(siteItem);
 
@@ -266,7 +266,7 @@ describe("OpenAllMetadataDiffsHandler", () => {
                     status: "added"
                 }
             ];
-            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
 
             await openAllMetadataDiffs(siteItem);
 
@@ -293,7 +293,7 @@ describe("OpenAllMetadataDiffsHandler", () => {
                     status: "modified"
                 }
             ];
-            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
 
             await openAllMetadataDiffs(siteItem);
 

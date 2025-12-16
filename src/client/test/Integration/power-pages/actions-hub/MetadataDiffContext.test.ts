@@ -52,7 +52,7 @@ describe("MetadataDiffContext", () => {
                 }
             ];
 
-            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment");
 
             expect(MetadataDiffContext.comparisonResults).to.deep.equal(results);
         });
@@ -67,7 +67,7 @@ describe("MetadataDiffContext", () => {
                 }
             ];
 
-            MetadataDiffContext.setResults(results, "My Test Site", "Test Environment");
+            MetadataDiffContext.setResults(results, "My Test Site", "Local Test Site", "Test Environment");
 
             expect(MetadataDiffContext.siteName).to.equal("My Test Site");
         });
@@ -82,13 +82,13 @@ describe("MetadataDiffContext", () => {
                 }
             ];
 
-            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment");
 
             expect(MetadataDiffContext.isActive).to.be.true;
         });
 
         it("should set isActive to false when results are empty", () => {
-            MetadataDiffContext.setResults([], "Test Site", "Test Environment");
+            MetadataDiffContext.setResults([], "Test Site", "Local Test Site", "Test Environment");
 
             expect(MetadataDiffContext.isActive).to.be.false;
         });
@@ -106,7 +106,7 @@ describe("MetadataDiffContext", () => {
                 }
             ];
 
-            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment");
 
             expect(onChangedSpy.calledOnce).to.be.true;
         });
@@ -122,7 +122,7 @@ describe("MetadataDiffContext", () => {
                     status: "modified"
                 }
             ];
-            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment");
 
             MetadataDiffContext.clear();
 
@@ -138,7 +138,7 @@ describe("MetadataDiffContext", () => {
                     status: "modified"
                 }
             ];
-            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment");
 
             MetadataDiffContext.clear();
 
@@ -154,7 +154,7 @@ describe("MetadataDiffContext", () => {
                     status: "modified"
                 }
             ];
-            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment");
 
             MetadataDiffContext.clear();
 
@@ -386,7 +386,7 @@ describe("MetadataDiffContext", () => {
                 }
             ];
 
-            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment");
 
             expect(MetadataDiffContext.comparisonResults).to.have.lengthOf(3);
             expect(MetadataDiffContext.comparisonResults[0].status).to.equal("modified");

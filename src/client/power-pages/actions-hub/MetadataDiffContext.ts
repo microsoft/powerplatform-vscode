@@ -28,6 +28,7 @@ export enum MetadataDiffSortMode {
  */
 export interface ISiteComparisonResults {
     siteName: string;
+    localSiteName: string;
     environmentName: string;
     comparisonResults: IFileComparisonResult[];
 }
@@ -132,13 +133,15 @@ class MetadataDiffContextClass {
     /**
      * Set results for a specific site. If results already exist for this site, they are replaced.
      * @param results The comparison results
-     * @param siteName The name of the site
+     * @param siteName The name of the remote site
+     * @param localSiteName The name of the local site
      * @param environmentName The name of the environment
      */
-    public setResults(results: IFileComparisonResult[], siteName: string, environmentName: string): void {
+    public setResults(results: IFileComparisonResult[], siteName: string, localSiteName: string, environmentName: string): void {
         if (results.length > 0) {
             this._siteResults.set(siteName, {
                 siteName,
+                localSiteName,
                 environmentName,
                 comparisonResults: results
             });

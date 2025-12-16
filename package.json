@@ -703,6 +703,11 @@
           "type": "string",
           "description": "%microsoft.powerplatform.pages.actionsHub.configuration.downloadSite.description%",
           "default": ""
+        },
+        "powerPlatform.pages.confirmDifferentWebsiteComparison": {
+          "type": "boolean",
+          "description": "%microsoft.powerplatform.pages.actionsHub.configuration.confirmDifferentWebsiteComparison.description%",
+          "default": true
         }
       }
     },

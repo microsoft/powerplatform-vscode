@@ -53,7 +53,7 @@ describe("MetadataDiffGroupTreeItem", () => {
                     status: "added"
                 }
             ];
-            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment");
             const treeItem = new MetadataDiffGroupTreeItem();
 
             expect(treeItem.label).to.equal("Metadata Diff");
@@ -74,7 +74,7 @@ describe("MetadataDiffGroupTreeItem", () => {
                     status: "modified"
                 }
             ];
-            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment");
             const treeItem = new MetadataDiffGroupTreeItem();
 
             expect(treeItem.collapsibleState).to.equal(vscode.TreeItemCollapsibleState.Expanded);
@@ -101,7 +101,7 @@ describe("MetadataDiffGroupTreeItem", () => {
                     status: "modified"
                 }
             ];
-            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment");
             const treeItem = new MetadataDiffGroupTreeItem();
 
             expect(treeItem.contextValue).to.equal(Constants.ContextValues.METADATA_DIFF_GROUP_WITH_RESULTS);
@@ -122,7 +122,7 @@ describe("MetadataDiffGroupTreeItem", () => {
                     status: "modified"
                 }
             ];
-            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment");
             const treeItem = new MetadataDiffGroupTreeItem();
 
             expect(treeItem.id).to.equal("metadataDiffGroup-withResults");
@@ -147,7 +147,7 @@ describe("MetadataDiffGroupTreeItem", () => {
                     status: "modified"
                 }
             ];
-            MetadataDiffContext.setResults(results, "Test Site", "Test Environment");
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment");
             const treeItem = new MetadataDiffGroupTreeItem();
 
             const children = treeItem.getChildren();
@@ -173,8 +173,8 @@ describe("MetadataDiffGroupTreeItem", () => {
                     status: "added"
                 }
             ];
-            MetadataDiffContext.setResults(results1, "Site 1", "Test Environment");
-            MetadataDiffContext.setResults(results2, "Site 2", "Test Environment");
+            MetadataDiffContext.setResults(results1, "Site 1", "Local Site 1", "Test Environment");
+            MetadataDiffContext.setResults(results2, "Site 2", "Local Site 2", "Test Environment");
             const treeItem = new MetadataDiffGroupTreeItem();
 
             const children = treeItem.getChildren();
@@ -207,8 +207,8 @@ describe("MetadataDiffGroupTreeItem", () => {
                     status: "deleted"
                 }
             ];
-            MetadataDiffContext.setResults(results1, "Test Site", "Test Environment");
-            MetadataDiffContext.setResults(results2, "Test Site", "Test Environment");
+            MetadataDiffContext.setResults(results1, "Test Site", "Local Test Site", "Test Environment");
+            MetadataDiffContext.setResults(results2, "Test Site", "Local Test Site", "Test Environment");
             const treeItem = new MetadataDiffGroupTreeItem();
 
             const children = treeItem.getChildren();

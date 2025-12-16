@@ -117,6 +117,7 @@
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite.title": "Reactivate Site",
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title": "Run CodeQL Screening",
   "microsoft.powerplatform.pages.actionsHub.configuration.downloadSite.description": "The folder where site will be downloaded when using Power Pages Actions. Leave this empty to ask for a folder every time you download a site.",
+  "microsoft.powerplatform.pages.actionsHub.configuration.confirmDifferentWebsiteComparison.description": "Show a confirmation dialog when comparing with a different website than the local site. Set to false to suppress this confirmation.",
   "microsoft.powerplatform.pages.actionsHub.activeSite.compareWithLocal.title": "Compare with Local",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.openFile.title": "Open Comparison",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.openAll.title": "Open All Diffs",

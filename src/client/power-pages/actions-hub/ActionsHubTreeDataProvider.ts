@@ -107,7 +107,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
         if (this._loadWebsites) {
             try {
                 vscode.commands.executeCommand('setContext', 'microsoft.powerplatform.pages.actionsHub.loadingWebsites', true);
-                const websites = await fetchWebsites();
+                const websites = await fetchWebsites(PacContext.OrgInfo! , true);
                 this._activeSites = websites.activeSites;
                 this._inactiveSites = websites.inactiveSites;
                 this._otherSites = websites.otherSites;

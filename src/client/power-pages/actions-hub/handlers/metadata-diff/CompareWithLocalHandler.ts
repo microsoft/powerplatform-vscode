@@ -10,6 +10,7 @@ import { traceError, traceInfo } from "../../TelemetryHelper";
 import { SiteTreeItem } from "../../tree-items/SiteTreeItem";
 import { showProgressWithNotification } from "../../../../../common/utilities/Utils";
 import PacContext from "../../../../pac/PacContext";
+import { getWebsiteName } from "../../../../../common/utilities/WorkspaceInfoFinderUtil";
 import { resolveSiteFromWorkspace, prepareSiteStoragePath, processComparisonResults } from "./MetadataDiffUtils";
 
 export const compareWithLocal = (pacTerminal: PacTerminal, context: vscode.ExtensionContext) => async (siteTreeItem: SiteTreeItem): Promise<void> => {
@@ -48,6 +49,7 @@ export const compareWithLocal = (pacTerminal: PacTerminal, context: vscode.Exten
     const siteStoragePath = prepareSiteStoragePath(storagePath, siteTreeItem.siteInfo.websiteId);
     const pacWrapper = pacTerminal.getWrapper();
 
+    const downloadStartTime = Date.now();
     const success = await showProgressWithNotification(
         Constants.StringFunctions.DOWNLOADING_SITE_FOR_COMPARISON(siteTreeItem.siteInfo.name),
         async () => pacWrapper.downloadSiteWithProgress(
@@ -56,6 +58,7 @@ export const compareWithLocal = (pacTerminal: PacTerminal, context: vscode.Exten
             siteTreeItem.siteInfo.dataModelVersion
         )
     );
+    const downloadDurationMs = Date.now() - downloadStartTime;
 
     if (!success) {
         traceError(
@@ -73,10 +76,21 @@ export const compareWithLocal = (pacTerminal: PacTerminal, context: vscode.Exten
 
     const environmentName = PacContext.AuthInfo?.OrganizationFriendlyName || "";
 
-    await processComparisonResults(
+    traceInfo(Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_SITE_DOWNLOAD_COMPLETED, {
+        methodName: compareWithLocal.name,
+        siteId: siteTreeItem.siteInfo.websiteId,
+        dataModelVersion: siteTreeItem.siteInfo.dataModelVersion,
+        downloadDurationMs: downloadDurationMs
+    });
+
+    // Get local site name from website.yml
+    const localSiteName = getWebsiteName(siteResolution.localSitePath) || Constants.Strings.LOCAL_SITE;
+
+    const hasDifferences = await processComparisonResults(
         siteStoragePath,
         siteResolution.localSitePath,
         siteTreeItem.siteInfo.name,
+        localSiteName,
         environmentName,
         compareWithLocal.name,
         siteTreeItem.siteInfo.websiteId,
@@ -84,5 +98,7 @@ export const compareWithLocal = (pacTerminal: PacTerminal, context: vscode.Exten
         Constants.EventNames.ACTIONS_HUB_COMPARE_WITH_LOCAL_NO_DIFFERENCES
     );
 
-    await vscode.window.showInformationMessage(Constants.Strings.COMPARE_WITH_LOCAL_COMPLETED);
+    if (hasDifferences) {
+        await vscode.window.showInformationMessage(Constants.Strings.COMPARE_WITH_LOCAL_COMPLETED);
+    }
 }

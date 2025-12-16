@@ -21,6 +21,11 @@ import MetadataDiffContext from "../../MetadataDiffContext";
 export interface SiteResolutionResult {
     siteId: string;
     localSitePath: string;
+    /**
+     * The relative path from site root to the folder user clicked on.
+     * Empty string means the entire site should be compared.
+     */
+    comparisonSubPath: string;
 }
 
 /**
@@ -87,17 +92,32 @@ export function compareFiles(downloadedSitePath: string, localSitePath: string):
 export function resolveSiteFromWorkspace(workingDirectory: string, resource?: vscode.Uri): SiteResolutionResult | undefined {
     let siteId: string | undefined;
     let localSitePath = workingDirectory;
+    let comparisonSubPath = "";
 
-    // Strategy 1: Check if website.yml exists directly in working directory
-    siteId = getWebsiteRecordId(workingDirectory);
-
-    // Strategy 2: If resource is provided, traverse up from resource to find website.yml
-    if (!siteId && resource?.fsPath) {
+    // Strategy 1: If resource is provided, traverse up from resource to find website.yml
+    // This takes priority as it identifies the specific site the user clicked on
+    if (resource?.fsPath) {
         const websiteYmlFolder = findWebsiteYmlFolder(resource.fsPath);
         if (websiteYmlFolder) {
             siteId = getWebsiteRecordId(websiteYmlFolder);
             localSitePath = websiteYmlFolder;
+
+            // Calculate the relative path from site root to the resource
+            // This allows comparing only the specific folder the user clicked on
+            const resourcePath = resource.fsPath;
+            if (resourcePath.startsWith(websiteYmlFolder)) {
+                const relativePath = path.relative(websiteYmlFolder, resourcePath);
+                // Only set comparisonSubPath if the resource is different from the site root
+                if (relativePath && relativePath !== "." && !relativePath.startsWith("..")) {
+                    comparisonSubPath = relativePath;
+                }
+            }
         }
+    }
+
+    // Strategy 2: Check if website.yml exists directly in working directory
+    if (!siteId) {
+        siteId = getWebsiteRecordId(workingDirectory);
     }
 
     // Strategy 3: Look for a 'site' folder in working directory
@@ -117,7 +137,7 @@ export function resolveSiteFromWorkspace(workingDirectory: string, resource?: vs
         return undefined;
     }
 
-    return { siteId, localSitePath };
+    return { siteId, localSitePath, comparisonSubPath };
 }
 
 /**
@@ -139,24 +159,29 @@ export function prepareSiteStoragePath(storagePath: string, websiteId: string): 
  * Processes comparison results and updates the MetadataDiffContext
  * @param siteStoragePath Path where site was downloaded
  * @param localSitePath Path to local site
- * @param siteName Name of the site being compared
+ * @param siteName Name of the remote site being compared
+ * @param localSiteName Name of the local site
  * @param environmentName Name of the environment
  * @param methodName Name of the calling method for telemetry
  * @param siteId Site ID for telemetry
  * @param completedEventName Telemetry event name for completion
  * @param noDifferencesEventName Telemetry event name for no differences
+ * @param comparisonSubPath Optional sub-path to filter comparison results to a specific folder
+ * @returns True if differences were found, false otherwise
  */
 export async function processComparisonResults(
     siteStoragePath: string,
     localSitePath: string,
     siteName: string,
+    localSiteName: string,
     environmentName: string,
     methodName: string,
     siteId: string,
     completedEventName: string,
-    noDifferencesEventName: string
-): Promise<void> {
-    await showProgressWithNotification(
+    noDifferencesEventName: string,
+    comparisonSubPath?: string
+): Promise<boolean> {
+    const comparisonResults = await showProgressWithNotification(
         Constants.Strings.COMPARING_FILES,
         async () => {
             // Find the actual downloaded site folder (name is not deterministic)
@@ -165,30 +190,42 @@ export async function processComparisonResults(
                 .map(entry => entry.name);
 
             const siteDownloadPath = path.join(siteStoragePath, downloadedFolders[0]);
-            const comparisonResults = compareFiles(siteDownloadPath, localSitePath);
+            let results = compareFiles(siteDownloadPath, localSitePath);
 
-            if (comparisonResults.length === 0) {
-                traceInfo(noDifferencesEventName, {
-                    methodName,
-                    siteId
+            // Filter results to only include files under the comparison sub-path
+            if (comparisonSubPath) {
+                const normalizedSubPath = comparisonSubPath.replace(/\\/g, "/");
+                results = results.filter(result => {
+                    const normalizedRelativePath = result.relativePath.replace(/\\/g, "/");
+                    return normalizedRelativePath.startsWith(normalizedSubPath + "/") ||
+                        normalizedRelativePath === normalizedSubPath;
                 });
-                await vscode.window.showInformationMessage(Constants.Strings.NO_DIFFERENCES_FOUND);
-                MetadataDiffContext.clear();
-            } else {
-                traceInfo(completedEventName, {
-                    methodName,
-                    siteId,
-                    totalDifferences: comparisonResults.length.toString(),
-                    modifiedFiles: comparisonResults.filter(r => r.status === FileComparisonStatus.MODIFIED).length.toString(),
-                    addedFiles: comparisonResults.filter(r => r.status === FileComparisonStatus.ADDED).length.toString(),
-                    deletedFiles: comparisonResults.filter(r => r.status === FileComparisonStatus.DELETED).length.toString()
-                });
-
-                // Store results in the context so the tree view can display them
-                MetadataDiffContext.setResults(comparisonResults, siteName, environmentName);
             }
 
-            return true;
+            return results;
         }
     );
+
+    // Handle results after progress notification is dismissed
+    if (comparisonResults.length === 0) {
+        traceInfo(noDifferencesEventName, {
+            methodName,
+            siteId
+        });
+        await vscode.window.showInformationMessage(Constants.Strings.NO_DIFFERENCES_FOUND);
+        return false;
+    } else {
+        traceInfo(completedEventName, {
+            methodName,
+            siteId,
+            totalDifferences: comparisonResults.length.toString(),
+            modifiedFiles: comparisonResults.filter(r => r.status === FileComparisonStatus.MODIFIED).length.toString(),
+            addedFiles: comparisonResults.filter(r => r.status === FileComparisonStatus.ADDED).length.toString(),
+            deletedFiles: comparisonResults.filter(r => r.status === FileComparisonStatus.DELETED).length.toString()
+        });
+
+        // Store results in the context so the tree view can display them
+        MetadataDiffContext.setResults(comparisonResults, siteName, localSiteName, environmentName);
+        return true;
+    }
 }
