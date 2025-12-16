@@ -52,6 +52,7 @@ import { discardFolderChanges } from "./handlers/metadata-diff/DiscardFolderChan
 import { generateHtmlReport } from "./handlers/metadata-diff/GenerateHtmlReportHandler";
 import { exportMetadataDiff } from "./handlers/metadata-diff/ExportMetadataDiffHandler";
 import { importMetadataDiff } from "./handlers/metadata-diff/ImportMetadataDiffHandler";
+import { resyncMetadataDiff } from "./handlers/metadata-diff/ResyncMetadataDiffHandler";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -326,6 +327,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_GENERATE_HTML_REPORT, generateHtmlReport),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_EXPORT, exportMetadataDiff),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_IMPORT, importMetadataDiff),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_RESYNC, resyncMetadataDiff(this._pacTerminal, this._context)),
                 MetadataDiffDecorationProvider.getInstance().register()
             );
         }

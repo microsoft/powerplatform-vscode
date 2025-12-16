@@ -394,13 +394,15 @@
   "Binary file content is not available in imported comparisons. The original file was not included in the export.": "Binary file content is not available in imported comparisons. The original file was not included in the export.",
   "An imported comparison already exists for this site. Do you want to replace it?": "An imported comparison already exists for this site. Do you want to replace it?",
   "Replace": "Replace",
+  "Comparison has been refreshed with the latest data from the environment.": "Comparison has been refreshed with the latest data from the environment.",
+  "Cannot refresh an imported comparison. Import a new file or run a new comparison.": "Cannot refresh an imported comparison. Import a new file or run a new comparison.",
   "Fetching websites from '{0}'.../Message shown while fetching websites from an environment. {0} is the environment name.": {
     "message": "Fetching websites from '{0}'...",
     "comment": [
       "Message shown while fetching websites from an environment. {0} is the environment name."
     ]
   },
-  "Downloading {0} `site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\")).../This is a markdown formatting which must persist across translations.": {
+  "Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\")).../This is a markdown formatting which must persist across translations.": {
     "message": "Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\"))...",
     "comment": [
       "This is a markdown formatting which must persist across translations."
@@ -512,6 +514,12 @@
     "message": "Comparison for '{0}' imported successfully.",
     "comment": [
       "Success message when import is complete. {0} is the site name."
+    ]
+  },
+  "Refreshing comparison for {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\")).../This is a markdown formatting which must persist across translations.": {
+    "message": "Refreshing comparison for {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\"))...",
+    "comment": [
+      "This is a markdown formatting which must persist across translations."
     ]
   },
   "Friendly name: {0}/{0} is the website name": {

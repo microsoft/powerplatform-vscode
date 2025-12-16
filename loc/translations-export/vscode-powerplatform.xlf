@@ -146,6 +146,9 @@
       <source xml:lang="en">Cannot install pac CLI: {0}</source>
       <note>{0} represents the error message returned from the exception</note>
     </trans-unit>
+    <trans-unit id="++CODE++ee3b92bec1620eefaad49e74f1055436ec9353e489407875694d5faf08207fa9">
+      <source xml:lang="en">Cannot refresh an imported comparison. Import a new file or run a new comparison.</source>
+    </trans-unit>
     <trans-unit id="++CODE++cdf024cea6f90cc5aacbe1c08a6c77b322820dc46ff96b1410e30527d7239c49">
       <source xml:lang="en">Changed Files</source>
     </trans-unit>
@@ -273,6 +276,9 @@ Check the CodeQL extension panel for available queries.</source>
     <trans-unit id="++CODE++af71f3c9dcd7adc1f7944d6fc3ca0af422603b9af8eb47c0d4c23cbeb91ea931">
       <source xml:lang="en">Comparison for '{0}' imported successfully.</source>
       <note>Success message when import is complete. {0} is the site name.</note>
+    </trans-unit>
+    <trans-unit id="++CODE++9c67b99ff5b13af52ba4fcdf8a23543ece796a42bdca07632507f5ac3ed6d32b">
+      <source xml:lang="en">Comparison has been refreshed with the latest data from the environment.</source>
     </trans-unit>
     <trans-unit id="++CODE++eebdd24a77d9ad32222660c07777163bf5f6732df2b172351f3f8d5783e4f529">
       <source xml:lang="en">Confirm</source>
@@ -941,6 +947,10 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++6e31aef31ad6cc82d8d8d41fd45043885761a11b9222b1ec7ce9d78a36dd4451">
       <source xml:lang="en">Ready to select download folder</source>
     </trans-unit>
+    <trans-unit id="++CODE++fdc383411e8354c470e19c960527019a9bf48c61c08a5c3ec3fb8b7b32ccba34">
+      <source xml:lang="en">Refreshing comparison for {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel &quot;Show download output&quot;))...</source>
+      <note>This is a markdown formatting which must persist across translations.</note>
+    </trans-unit>
     <trans-unit id="++CODE++95e154398a4bc0091aa4d6b607472ac5a89e41fbc84a3a49f823314d6de9eebc">
       <source xml:lang="en">Replace</source>
     </trans-unit>
@@ -1559,6 +1569,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.refresh.title">
       <source xml:lang="en">Refresh</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.resync.title">
+      <source xml:lang="en">Refresh Comparison</source>
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.removeSite.title">
       <source xml:lang="en">Remove Comparison</source>

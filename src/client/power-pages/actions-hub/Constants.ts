@@ -41,6 +41,7 @@ export const Constants = {
         METADATA_DIFF_GENERATE_HTML_REPORT: "microsoft.powerplatform.pages.actionsHub.metadataDiff.generateHtmlReport",
         METADATA_DIFF_EXPORT: "microsoft.powerplatform.pages.actionsHub.metadataDiff.export",
         METADATA_DIFF_IMPORT: "microsoft.powerplatform.pages.actionsHub.metadataDiff.import",
+        METADATA_DIFF_RESYNC: "microsoft.powerplatform.pages.actionsHub.metadataDiff.resync",
         COMPARE_WITH_ENVIRONMENT: "microsoft-powerapps-portals.compareWithEnvironment",
     },
     Icons: {
@@ -235,6 +236,8 @@ export const Constants = {
         METADATA_DIFF_BINARY_FILE_NOT_AVAILABLE: vscode.l10n.t("Binary file content is not available in imported comparisons. The original file was not included in the export."),
         METADATA_DIFF_REPLACE_EXISTING_IMPORT: vscode.l10n.t("An imported comparison already exists for this site. Do you want to replace it?"),
         REPLACE: vscode.l10n.t("Replace"),
+        METADATA_DIFF_RESYNC_COMPLETED: vscode.l10n.t("Comparison has been refreshed with the latest data from the environment."),
+        METADATA_DIFF_CANNOT_RESYNC_IMPORTED: vscode.l10n.t("Cannot refresh an imported comparison. Import a new file or run a new comparison."),
     },
     /**
      * Functions that return localized strings with dynamic parameters.
@@ -422,6 +425,15 @@ export const Constants = {
                 args: [siteName],
                 comment: ["Success message when import is complete. {0} is the site name."]
             }),
+        /**
+         * Returns the progress message when resyncing a site comparison
+         */
+        RESYNCING_SITE_COMPARISON: (siteName: string) =>
+            vscode.l10n.t({
+                message: "Refreshing comparison for {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\"))...",
+                args: [siteName],
+                comment: ["This is a markdown formatting which must persist across translations."]
+            }),
     },
     EventNames: {
         ACTIONS_HUB_ENABLED: "ActionsHubEnabled",
@@ -569,6 +581,10 @@ export const Constants = {
         ACTIONS_HUB_METADATA_DIFF_IMPORT: "ActionsHubMetadataDiffImport",
         ACTIONS_HUB_METADATA_DIFF_IMPORT_SUCCESS: "ActionsHubMetadataDiffImportSuccess",
         ACTIONS_HUB_METADATA_DIFF_IMPORT_FAILED: "ActionsHubMetadataDiffImportFailed",
+        ACTIONS_HUB_METADATA_DIFF_RESYNC: "ActionsHubMetadataDiffResync",
+        ACTIONS_HUB_METADATA_DIFF_RESYNC_COMPLETED: "ActionsHubMetadataDiffResyncCompleted",
+        ACTIONS_HUB_METADATA_DIFF_RESYNC_FAILED: "ActionsHubMetadataDiffResyncFailed",
+        ACTIONS_HUB_METADATA_DIFF_RESYNC_NO_DIFFERENCES: "ActionsHubMetadataDiffResyncNoDifferences",
     },
     StudioEndpoints: {
         TEST: "https://make.test.powerpages.microsoft.com",
