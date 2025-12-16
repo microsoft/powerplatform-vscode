@@ -130,5 +130,6 @@
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByName.title": "Sort by Name",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByPath.title": "Sort by Path",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByStatus.title": "Sort by Status",
+  "microsoft.powerplatform.pages.actionsHub.metadataDiff.generateHtmlReport.title": "Download HTML Report",
   "microsoft-powerapps-portals.compareWithEnvironment.title": "Compare with Environment"
 }

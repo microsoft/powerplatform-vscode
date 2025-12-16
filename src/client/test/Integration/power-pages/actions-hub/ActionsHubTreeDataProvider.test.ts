@@ -49,6 +49,7 @@ import * as ClearMetadataDiffHandler from "../../../../power-pages/actions-hub/h
 import * as RemoveSiteHandler from "../../../../power-pages/actions-hub/handlers/metadata-diff/RemoveSiteHandler";
 import * as DiscardLocalChangesHandler from "../../../../power-pages/actions-hub/handlers/metadata-diff/DiscardLocalChangesHandler";
 import * as DiscardFolderChangesHandler from "../../../../power-pages/actions-hub/handlers/metadata-diff/DiscardFolderChangesHandler";
+import * as GenerateHtmlReportHandler from "../../../../power-pages/actions-hub/handlers/metadata-diff/GenerateHtmlReportHandler";
 import { ActionsHub } from "../../../../power-pages/actions-hub/ActionsHub";
 
 // Add global type declaration for ArtemisContext
@@ -572,6 +573,27 @@ describe("ActionsHubTreeDataProvider", () => {
                 expect(mockCommandHandler.calledOnce).to.be.true;
             } else {
                 throw new Error("discardFolderChanges command was not registered");
+            }
+        });
+
+        it('should register generateHtmlReport command', async () => {
+            sinon.stub(ActionsHub, 'isMetadataDiffEnabled').returns(true);
+            const mockCommandHandler = sinon.stub(GenerateHtmlReportHandler, 'generateHtmlReport');
+            mockCommandHandler.resolves();
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            actionsHubTreeDataProvider["registerPanel"]();
+
+            expect(registerCommandStub.calledWith(Constants.Commands.METADATA_DIFF_GENERATE_HTML_REPORT)).to.be.true;
+
+            const generateHtmlReportCall = registerCommandStub.getCalls().find(call =>
+                call.args[0] === Constants.Commands.METADATA_DIFF_GENERATE_HTML_REPORT
+            );
+
+            if (generateHtmlReportCall) {
+                await generateHtmlReportCall.args[1]();
+                expect(mockCommandHandler.calledOnce).to.be.true;
+            } else {
+                throw new Error("generateHtmlReport command was not registered");
             }
         });
 

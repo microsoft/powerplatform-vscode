@@ -49,6 +49,7 @@ import { MetadataDiffDecorationProvider } from "./MetadataDiffDecorationProvider
 import { removeSiteComparison } from "./handlers/metadata-diff/RemoveSiteHandler";
 import { discardLocalChanges } from "./handlers/metadata-diff/DiscardLocalChangesHandler";
 import { discardFolderChanges } from "./handlers/metadata-diff/DiscardFolderChangesHandler";
+import { generateHtmlReport } from "./handlers/metadata-diff/GenerateHtmlReportHandler";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -107,7 +108,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
         if (this._loadWebsites) {
             try {
                 vscode.commands.executeCommand('setContext', 'microsoft.powerplatform.pages.actionsHub.loadingWebsites', true);
-                const websites = await fetchWebsites(PacContext.OrgInfo! , true);
+                const websites = await fetchWebsites(PacContext.OrgInfo!, true);
                 this._activeSites = websites.activeSites;
                 this._inactiveSites = websites.inactiveSites;
                 this._otherSites = websites.otherSites;
@@ -320,6 +321,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_SORT_BY_STATUS, sortByStatus),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_DISCARD_FILE, discardLocalChanges),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_DISCARD_FOLDER, discardFolderChanges),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_GENERATE_HTML_REPORT, generateHtmlReport),
                 MetadataDiffDecorationProvider.getInstance().register()
             );
         }

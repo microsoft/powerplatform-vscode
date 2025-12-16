@@ -572,6 +572,12 @@
         "category": "Powerpages",
         "title": "%microsoft-powerapps-portals.compareWithEnvironment.title%",
         "when": "microsoft.powerplatform.pages.metadataDiffEnabled"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.generateHtmlReport",
+        "title": "%microsoft.powerplatform.pages.actionsHub.metadataDiff.generateHtmlReport.title%",
+        "icon": "$(file-code)",
+        "when": "microsoft.powerplatform.pages.metadataDiffEnabled"
       }
     ],
     "configuration": {
@@ -1301,6 +1307,11 @@
           "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.removeSite",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffSite && microsoft.powerplatform.pages.metadataDiffEnabled",
           "group": "siteAction@2"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.generateHtmlReport",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffSite && microsoft.powerplatform.pages.metadataDiffEnabled",
+          "group": "siteAction@3"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsTree",
