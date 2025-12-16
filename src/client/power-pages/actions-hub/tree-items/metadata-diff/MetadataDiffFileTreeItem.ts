@@ -52,8 +52,7 @@ export class MetadataDiffFileTreeItem extends ActionsHubTreeItem {
         });
 
         // Set tooltip with full local path and status
-        this.tooltip = new vscode.MarkdownString();
-        this.tooltip.appendMarkdown(`${comparisonResult.localPath} • ${MetadataDiffFileTreeItem.getStatusDescription(comparisonResult.status)}`);
+        this.tooltip = new vscode.MarkdownString(`${comparisonResult.localPath} • ${MetadataDiffFileTreeItem.getStatusDescription(comparisonResult.status)}`);
 
         // Set command to open diff when clicked
         this.command = {
