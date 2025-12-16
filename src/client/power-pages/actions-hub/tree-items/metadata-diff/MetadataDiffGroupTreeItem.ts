@@ -6,108 +6,40 @@
 import * as vscode from "vscode";
 import { ActionsHubTreeItem } from "../ActionsHubTreeItem";
 import { Constants } from "../../Constants";
-import { IFileComparisonResult } from "../../models/IFileComparisonResult";
-import { MetadataDiffFileTreeItem } from "./MetadataDiffFileTreeItem";
-import { MetadataDiffFolderTreeItem } from "./MetadataDiffFolderTreeItem";
 import MetadataDiffContext from "../../MetadataDiffContext";
+import { MetadataDiffSiteTreeItem } from "./MetadataDiffSiteTreeItem";
 
 /**
- * Root group tree item for showing metadata diff comparison results
+ * Root group tree item for showing metadata diff comparison results.
+ * This is always visible under the Tools node and shows site children when comparisons exist.
  */
 export class MetadataDiffGroupTreeItem extends ActionsHubTreeItem {
-    private readonly _comparisonResults: IFileComparisonResult[];
-    private readonly _siteName: string;
+    constructor() {
+        const hasResults = MetadataDiffContext.isActive;
 
-    constructor(comparisonResults: IFileComparisonResult[], siteName: string) {
         super(
-            vscode.l10n.t("{0} ({1} change(s))", Constants.Strings.METADATA_DIFF_GROUP, comparisonResults.length),
-            vscode.TreeItemCollapsibleState.Expanded,
+            Constants.Strings.METADATA_DIFF_GROUP,
+            hasResults ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None,
             Constants.Icons.METADATA_DIFF_GROUP,
-            Constants.ContextValues.METADATA_DIFF_GROUP,
-            siteName // Subtext
+            hasResults ? Constants.ContextValues.METADATA_DIFF_GROUP_WITH_RESULTS : Constants.ContextValues.METADATA_DIFF_GROUP,
+            undefined
         );
-        this._comparisonResults = comparisonResults;
-        this._siteName = siteName;
+
+        // Set unique id that changes based on state to ensure VS Code respects our collapsibleState
+        // Without this, VS Code may cache the collapsed state from when there were no results
+        this.id = hasResults ? "metadataDiffGroup-withResults" : "metadataDiffGroup-noResults";
     }
 
     public getChildren(): ActionsHubTreeItem[] {
-        if (MetadataDiffContext.isTreeView) {
-            return this.buildTreeHierarchy();
-        }
-        return this.buildFlatFileList();
-    }
+        const siteResults = MetadataDiffContext.allSiteResults;
 
-    /**
-     * Build a flat list of file tree items (Git-style list view).
-     * Files are sorted by folder path, then by file name.
-     */
-    private buildFlatFileList(): ActionsHubTreeItem[] {
-        // Sort results by relative path for consistent ordering
-        const sortedResults = [...this._comparisonResults].sort((a, b) =>
-            a.relativePath.localeCompare(b.relativePath)
-        );
-
-        // Create flat list of file items
-        return sortedResults.map(result =>
-            new MetadataDiffFileTreeItem(result, this._siteName)
-        );
-    }
-
-    /**
-     * Build a hierarchical tree structure from flat file comparison results
-     */
-    private buildTreeHierarchy(): ActionsHubTreeItem[] {
-        // Create a map to hold folder structures at the root level
-        const rootChildren = new Map<string, MetadataDiffFolderTreeItem | MetadataDiffFileTreeItem>();
-
-        for (const result of this._comparisonResults) {
-            const parts = result.relativePath.split(/[/\\]/);
-            let currentFolder: MetadataDiffFolderTreeItem | undefined;
-
-            // Process all parts except the last one (which is the file name)
-            for (let i = 0; i < parts.length - 1; i++) {
-                const folderName = parts[i];
-
-                if (i === 0) {
-                    // Look in root children
-                    let folder = rootChildren.get(folderName) as MetadataDiffFolderTreeItem | undefined;
-                    if (!folder) {
-                        folder = new MetadataDiffFolderTreeItem(folderName);
-                        rootChildren.set(folderName, folder);
-                    }
-                    currentFolder = folder;
-                } else if (currentFolder) {
-                    // Look in current folder's children
-                    let folder = currentFolder.childrenMap.get(folderName) as MetadataDiffFolderTreeItem | undefined;
-                    if (!folder) {
-                        folder = new MetadataDiffFolderTreeItem(folderName);
-                        currentFolder.childrenMap.set(folderName, folder);
-                    }
-                    currentFolder = folder;
-                }
-            }
-
-            // Add the file to the appropriate folder (or root if no folders)
-            const fileItem = new MetadataDiffFileTreeItem(
-                result,
-                this._siteName
-            );
-
-            if (currentFolder) {
-                currentFolder.childrenMap.set(result.relativePath, fileItem);
-            } else {
-                rootChildren.set(result.relativePath, fileItem);
-            }
+        if (siteResults.length === 0) {
+            return [];
         }
 
-        return Array.from(rootChildren.values());
-    }
-
-    public get siteName(): string {
-        return this._siteName;
-    }
-
-    public get comparisonResults(): IFileComparisonResult[] {
-        return this._comparisonResults;
+        // Create a site tree item for each site's comparison results
+        return siteResults.map(siteResult =>
+            new MetadataDiffSiteTreeItem(siteResult.comparisonResults, siteResult.siteName, siteResult.environmentName)
+        );
     }
 }

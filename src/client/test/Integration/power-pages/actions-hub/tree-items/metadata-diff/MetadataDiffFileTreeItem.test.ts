@@ -156,11 +156,30 @@ describe("MetadataDiffFileTreeItem", () => {
     });
 
     describe("tooltip", () => {
-        it("should have tooltip with full path and status", () => {
+        it("should have tooltip with local path and status", () => {
             const result: IFileComparisonResult = { ...mockComparisonResult, status: "modified" };
             const treeItem = new MetadataDiffFileTreeItem(result, "Test Site");
 
             expect(treeItem.tooltip).to.be.instanceOf(vscode.MarkdownString);
+            const tooltipValue = (treeItem.tooltip as vscode.MarkdownString).value;
+            expect(tooltipValue).to.include("/local/file.txt");
+            expect(tooltipValue).to.include("Modified");
+        });
+
+        it("should show Added status in tooltip for added files", () => {
+            const result: IFileComparisonResult = { ...mockComparisonResult, status: "added" };
+            const treeItem = new MetadataDiffFileTreeItem(result, "Test Site");
+
+            const tooltipValue = (treeItem.tooltip as vscode.MarkdownString).value;
+            expect(tooltipValue).to.include("Added");
+        });
+
+        it("should show Deleted status in tooltip for deleted files", () => {
+            const result: IFileComparisonResult = { ...mockComparisonResult, status: "deleted" };
+            const treeItem = new MetadataDiffFileTreeItem(result, "Test Site");
+
+            const tooltipValue = (treeItem.tooltip as vscode.MarkdownString).value;
+            expect(tooltipValue).to.include("Deleted");
         });
     });
 });

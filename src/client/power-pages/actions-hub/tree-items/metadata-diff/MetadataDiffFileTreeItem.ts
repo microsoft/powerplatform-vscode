@@ -6,7 +6,7 @@
 import * as vscode from "vscode";
 import { ActionsHubTreeItem } from "../ActionsHubTreeItem";
 import { Constants } from "../../Constants";
-import { IFileComparisonResult } from "../../models/IFileComparisonResult";
+import { FileComparisonStatus, IFileComparisonResult } from "../../models/IFileComparisonResult";
 import MetadataDiffContext from "../../MetadataDiffContext";
 
 /**
@@ -51,15 +51,14 @@ export class MetadataDiffFileTreeItem extends ActionsHubTreeItem {
             query: `status=${comparisonResult.status}`
         });
 
-        // Set tooltip with full path and status
+        // Set tooltip with full local path and status
         this.tooltip = new vscode.MarkdownString();
-        this.tooltip.appendMarkdown(`**${comparisonResult.relativePath}**\n\n`);
-        this.tooltip.appendMarkdown(`Status: ${MetadataDiffFileTreeItem.getStatusDescription(comparisonResult.status)}`);
+        this.tooltip.appendMarkdown(`${comparisonResult.localPath} • ${MetadataDiffFileTreeItem.getStatusDescription(comparisonResult.status)}`);
 
         // Set command to open diff when clicked
         this.command = {
             command: Constants.Commands.METADATA_DIFF_OPEN_FILE,
-            title: vscode.l10n.t("Show Diff"),
+            title: Constants.Strings.SHOW_DIFF,
             arguments: [this]
         };
     }
@@ -87,11 +86,11 @@ export class MetadataDiffFileTreeItem extends ActionsHubTreeItem {
      */
     private static getStatusDescription(status: IFileComparisonResult["status"]): string {
         switch (status) {
-            case "modified":
+            case FileComparisonStatus.MODIFIED:
                 return Constants.Strings.METADATA_DIFF_MODIFIED;
-            case "added":
+            case FileComparisonStatus.ADDED:
                 return Constants.Strings.METADATA_DIFF_ADDED;
-            case "deleted":
+            case FileComparisonStatus.DELETED:
                 return Constants.Strings.METADATA_DIFF_DELETED;
             default:
                 return "";
