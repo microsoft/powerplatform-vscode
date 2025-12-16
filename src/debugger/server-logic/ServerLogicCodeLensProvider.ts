@@ -6,22 +6,38 @@
 import * as vscode from 'vscode';
 
 /**
- * Provides CodeLens for server logic files showing debug/run actions
+ * Server Logic folder pattern for matching file paths
  */
-export class ServerLogicCodeLensProvider implements vscode.CodeLensProvider {
+const SERVER_LOGICS_FOLDER_PATTERN = /[/\\]server-logics[/\\]/;
 
-    private _onDidChangeCodeLenses: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
+/**
+ * Provides CodeLens for server logic files showing debug/run actions.
+ * Displays "Debug" and "Run" buttons at the top of .js files in server-logics folders.
+ */
+export class ServerLogicCodeLensProvider implements vscode.CodeLensProvider, vscode.Disposable {
+
+    private readonly _onDidChangeCodeLenses: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
     public readonly onDidChangeCodeLenses: vscode.Event<void> = this._onDidChangeCodeLenses.event;
 
     /**
-     * Refresh CodeLens display
+     * Disposes of the CodeLens provider resources
+     */
+    public dispose(): void {
+        this._onDidChangeCodeLenses.dispose();
+    }
+
+    /**
+     * Refreshes the CodeLens display by firing the change event
      */
     public refresh(): void {
         this._onDidChangeCodeLenses.fire();
     }
 
     /**
-     * Provide CodeLens for the document
+     * Provides CodeLens items for server logic documents
+     * @param document - The text document to provide CodeLens for
+     * @param _ - Cancellation token (unused)
+     * @returns Array of CodeLens items or empty array if not a server logic file
      */
     public provideCodeLenses(
         document: vscode.TextDocument,
@@ -29,7 +45,7 @@ export class ServerLogicCodeLensProvider implements vscode.CodeLensProvider {
     ): vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
 
         // Only provide CodeLens for server logic files
-        if (!document.fileName.includes('server-logics') || !document.fileName.endsWith('.js')) {
+        if (!this.isServerLogicFile(document.fileName)) {
             return [];
         }
 
@@ -57,5 +73,14 @@ export class ServerLogicCodeLensProvider implements vscode.CodeLensProvider {
         codeLenses.push(runLens);
 
         return codeLenses;
+    }
+
+    /**
+     * Checks if a file is a server logic file based on path and extension
+     * @param filePath - The file path to check
+     * @returns True if the file is in a server-logics folder and has .js extension
+     */
+    private isServerLogicFile(filePath: string): boolean {
+        return SERVER_LOGICS_FOLDER_PATTERN.test(filePath) && filePath.endsWith('.js');
     }
 }

@@ -4,6 +4,12 @@
  */
 
 /**
+ * Generates the mock SDK runtime loader content for Server Logic debugging
+ * @returns The JavaScript content for the runtime loader file
+ */
+export function generateServerMockSdk(): string {
+    return `
+/**
  * Power Pages Server Logic - Mock SDK Runtime Loader
  *
  * This file provides mock implementations of the Server.* APIs for local debugging.
@@ -16,12 +22,6 @@
  *
  * This file is auto-generated but YOU CAN EDIT IT to customize test data.
  * It's added to .gitignore so your changes won't affect source control.
- */
-
-export function generateServerMockSdk(): string {
-    return `
-/**
- * Mock Server Object for Power Pages Server Logic SDK
  */
 
 const Server = {
