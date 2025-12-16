@@ -38,13 +38,17 @@ import { downloadSite } from "./handlers/DownloadSiteHandler";
 import { loginToMatch } from "./handlers/LoginToMatchHandler";
 import { ActionsHub } from "./ActionsHub";
 import { compareWithLocal } from "./handlers/metadata-diff/CompareWithLocalHandler";
+import { compareWithEnvironment } from "./handlers/metadata-diff/CompareWithEnvironmentHandler";
 import MetadataDiffContext from "./MetadataDiffContext";
 import { openMetadataDiffFile } from "./handlers/metadata-diff/OpenMetadataDiffFileHandler";
 import { openAllMetadataDiffs } from "./handlers/metadata-diff/OpenAllMetadataDiffsHandler";
 import { clearMetadataDiff } from "./handlers/metadata-diff/ClearMetadataDiffHandler";
 import { viewAsTree, viewAsList } from "./handlers/metadata-diff/ToggleViewModeHandler";
+import { sortByName, sortByPath, sortByStatus } from "./handlers/metadata-diff/SortModeHandler";
 import { MetadataDiffDecorationProvider } from "./MetadataDiffDecorationProvider";
 import { removeSiteComparison } from "./handlers/metadata-diff/RemoveSiteHandler";
+import { discardLocalChanges } from "./handlers/metadata-diff/DiscardLocalChangesHandler";
+import { discardFolderChanges } from "./handlers/metadata-diff/DiscardFolderChangesHandler";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -303,6 +307,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
         if (ActionsHub.isMetadataDiffEnabled()) {
             commands.push(
                 vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.compareWithLocal", compareWithLocal(this._pacTerminal, this._context)),
+                vscode.commands.registerCommand(Constants.Commands.COMPARE_WITH_ENVIRONMENT, compareWithEnvironment(this._pacTerminal, this._context)),
                 vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.showOutputChannel", () => this._pacTerminal.getWrapper().showOutputChannel()),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_OPEN_FILE, openMetadataDiffFile),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_OPEN_ALL, openAllMetadataDiffs),
@@ -310,6 +315,11 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_REMOVE_SITE, removeSiteComparison),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_VIEW_AS_TREE, viewAsTree),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_VIEW_AS_LIST, viewAsList),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_SORT_BY_NAME, sortByName),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_SORT_BY_PATH, sortByPath),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_SORT_BY_STATUS, sortByStatus),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_DISCARD_FILE, discardLocalChanges),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_DISCARD_FOLDER, discardFolderChanges),
                 MetadataDiffDecorationProvider.getInstance().register()
             );
         }

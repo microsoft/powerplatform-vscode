@@ -15,6 +15,15 @@ export enum MetadataDiffViewMode {
 }
 
 /**
+ * Enum for metadata diff sort modes (used in list view)
+ */
+export enum MetadataDiffSortMode {
+    Path = "path",
+    Name = "name",
+    Status = "status"
+}
+
+/**
  * Interface for storing comparison results per site
  */
 export interface ISiteComparisonResults {
@@ -25,6 +34,8 @@ export interface ISiteComparisonResults {
 
 const VIEW_MODE_CONTEXT_KEY = "microsoft.powerplatform.pages.metadataDiffViewMode";
 const VIEW_MODE_STORAGE_KEY = "microsoft.powerplatform.pages.metadataDiff.viewModePreference";
+const SORT_MODE_CONTEXT_KEY = "microsoft.powerplatform.pages.metadataDiffSortMode";
+const SORT_MODE_STORAGE_KEY = "microsoft.powerplatform.pages.metadataDiff.sortModePreference";
 
 /**
  * Context for storing metadata diff comparison results
@@ -33,7 +44,8 @@ const VIEW_MODE_STORAGE_KEY = "microsoft.powerplatform.pages.metadataDiff.viewMo
  */
 class MetadataDiffContextClass {
     private _siteResults: Map<string, ISiteComparisonResults> = new Map();
-    private _viewMode: MetadataDiffViewMode = MetadataDiffViewMode.List;
+    private _viewMode: MetadataDiffViewMode = MetadataDiffViewMode.Tree;
+    private _sortMode: MetadataDiffSortMode = MetadataDiffSortMode.Path;
     private _extensionContext: vscode.ExtensionContext | undefined;
 
     private _onChanged: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
@@ -50,8 +62,14 @@ class MetadataDiffContextClass {
         if (savedViewMode) {
             this._viewMode = savedViewMode;
         }
-        // Update VS Code context with loaded view mode
+        // Load persisted sort mode preference from global state
+        const savedSortMode = context.globalState.get<MetadataDiffSortMode>(SORT_MODE_STORAGE_KEY);
+        if (savedSortMode) {
+            this._sortMode = savedSortMode;
+        }
+        // Update VS Code context with loaded view mode and sort mode
         this.updateViewModeContext();
+        this.updateSortModeContext();
     }
 
     /**
@@ -98,6 +116,19 @@ class MetadataDiffContextClass {
         return this._viewMode === MetadataDiffViewMode.List;
     }
 
+    public get sortMode(): MetadataDiffSortMode {
+        return this._sortMode;
+    }
+
+    public setSortMode(mode: MetadataDiffSortMode): void {
+        if (this._sortMode !== mode) {
+            this._sortMode = mode;
+            this.updateSortModeContext();
+            this.persistSortMode();
+            this._onChanged.fire();
+        }
+    }
+
     /**
      * Set results for a specific site. If results already exist for this site, they are replaced.
      * @param results The comparison results
@@ -124,6 +155,27 @@ class MetadataDiffContextClass {
     public clearSite(siteName: string): void {
         this._siteResults.delete(siteName);
         this._onChanged.fire();
+    }
+
+    /**
+     * Remove a specific file from the comparison results for a site.
+     * If this is the last file in the site, the site is removed entirely.
+     * @param relativePath The relative path of the file to remove
+     * @param siteName The name of the site
+     */
+    public removeFile(relativePath: string, siteName: string): void {
+        const siteResult = this._siteResults.get(siteName);
+        if (siteResult) {
+            siteResult.comparisonResults = siteResult.comparisonResults.filter(
+                result => result.relativePath !== relativePath
+            );
+
+            if (siteResult.comparisonResults.length === 0) {
+                this._siteResults.delete(siteName);
+            }
+
+            this._onChanged.fire();
+        }
     }
 
     public toggleViewMode(): void {
@@ -162,6 +214,22 @@ class MetadataDiffContextClass {
     private persistViewMode(): void {
         if (this._extensionContext) {
             this._extensionContext.globalState.update(VIEW_MODE_STORAGE_KEY, this._viewMode);
+        }
+    }
+
+    /**
+     * Update VS Code context for sort mode to control command visibility
+     */
+    private updateSortModeContext(): void {
+        vscode.commands.executeCommand("setContext", SORT_MODE_CONTEXT_KEY, this._sortMode);
+    }
+
+    /**
+     * Persist sort mode preference to global state (user-specific, not workspace-specific)
+     */
+    private persistSortMode(): void {
+        if (this._extensionContext) {
+            this._extensionContext.globalState.update(SORT_MODE_STORAGE_KEY, this._sortMode);
         }
     }
 
