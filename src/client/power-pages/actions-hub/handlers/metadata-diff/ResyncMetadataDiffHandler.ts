@@ -10,6 +10,7 @@ import { traceError, traceInfo } from "../../TelemetryHelper";
 import { showProgressWithNotification } from "../../../../../common/utilities/Utils";
 import { MetadataDiffSiteTreeItem } from "../../tree-items/metadata-diff/MetadataDiffSiteTreeItem";
 import { resolveSiteFromWorkspace, prepareSiteStoragePath, processComparisonResults } from "./MetadataDiffUtils";
+import MetadataDiffContext from "../../MetadataDiffContext";
 
 /**
  * Re-syncs (refreshes) the comparison results for a specific site by re-downloading
@@ -114,5 +115,8 @@ export const resyncMetadataDiff = (pacTerminal: PacTerminal, context: vscode.Ext
 
     if (hasDifferences) {
         await vscode.window.showInformationMessage(Constants.Strings.METADATA_DIFF_RESYNC_COMPLETED);
+    } else {
+        // Remove the comparison node since there are no more differences
+        MetadataDiffContext.clearSiteByKey(siteItem.websiteId, siteItem.environmentId, siteItem.isImported);
     }
 };
