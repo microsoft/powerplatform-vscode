@@ -1099,11 +1099,51 @@
           "when": "never"
         },
         {
+          "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.openFile",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.openAll",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.clear",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.removeSite",
+          "when": "never"
+        },
+        {
           "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsTree",
           "when": "never"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsList",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFile",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFolder",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByName",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByPath",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByStatus",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.generateHtmlReport",
           "when": "never"
         }
       ],
