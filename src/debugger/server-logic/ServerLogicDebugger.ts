@@ -12,6 +12,46 @@ import { ServerLogicCodeLensProvider } from './ServerLogicCodeLensProvider';
 import { desktopTelemetryEventNames } from '../../common/OneDSLoggerTelemetry/client/desktopExtensionTelemetryEventNames';
 
 /**
+ * Server Logic folder pattern for matching file paths
+ */
+const SERVER_LOGICS_FOLDER_PATTERN = /[/\\]server-logics[/\\]/;
+
+/**
+ * Checks if a file is a server logic file based on path and extension
+ * @param filePath - The file path to check
+ * @returns True if the file is in a server-logics folder and has .js extension
+ */
+function isServerLogicFile(filePath: string): boolean {
+    return SERVER_LOGICS_FOLDER_PATTERN.test(filePath) && filePath.endsWith('.js');
+}
+
+/**
+ * Creates a debug configuration for server logic files
+ * @param program - The file path to debug
+ * @param name - Optional custom name for the configuration
+ * @param noDebug - If true, runs without debugging
+ * @returns A VS Code debug configuration
+ */
+function createServerLogicDebugConfig(
+    program: string,
+    name?: string,
+    noDebug?: boolean
+): vscode.DebugConfiguration {
+    const config: vscode.DebugConfiguration = {
+        type: 'node',
+        request: 'launch',
+        name: name ?? vscode.l10n.t('Debug Power Pages Server Logic'),
+        program,
+        skipFiles: ['<node_internals>/**'],
+        console: 'internalConsole'
+    };
+    if (noDebug) {
+        config.noDebug = true;
+    }
+    return config;
+}
+
+/**
  * Provided debug configuration template for Server Logic debugging
  */
 export const providedServerLogicDebugConfig: vscode.DebugConfiguration = {
@@ -48,11 +88,8 @@ export class ServerLogicDebugProvider implements vscode.DebugConfigurationProvid
 
         if (!config.type && !config.request && !config.name) {
             const editor = vscode.window.activeTextEditor;
-            if (editor && this.isServerLogicFile(editor.document.uri.fsPath)) {
-                config = {
-                    ...providedServerLogicDebugConfig,
-                    program: editor.document.uri.fsPath
-                };
+            if (editor && isServerLogicFile(editor.document.uri.fsPath)) {
+                config = createServerLogicDebugConfig(editor.document.uri.fsPath);
             } else {
                 vscode.window.showErrorMessage(
                     vscode.l10n.t('Cannot debug: Please open a server logic file (.js) from the server-logics folder.')
@@ -91,13 +128,6 @@ export class ServerLogicDebugProvider implements vscode.DebugConfigurationProvid
             );
             return undefined;
         }
-    }
-
-    /**
-     * Checks if a file is a server logic file
-     */
-    private isServerLogicFile(filePath: string): boolean {
-        return filePath.includes('server-logics') && filePath.endsWith('.js');
     }
 
     /**
@@ -176,7 +206,7 @@ export function activateServerLogicDebugger(context: vscode.ExtensionContext): v
                 }
 
                 const filePath = editor.document.uri.fsPath;
-                if (!filePath.includes('server-logics') || !filePath.endsWith('.js')) {
+                if (!isServerLogicFile(filePath)) {
                     vscode.window.showWarningMessage(
                         vscode.l10n.t('Please open a server logic file (.js) from the server-logics folder.')
                     );
@@ -185,14 +215,7 @@ export function activateServerLogicDebugger(context: vscode.ExtensionContext): v
 
                 await vscode.debug.startDebugging(
                     vscode.workspace.getWorkspaceFolder(editor.document.uri),
-                    {
-                        type: 'node',
-                        request: 'launch',
-                        name: vscode.l10n.t('Debug Current Server Logic'),
-                        program: filePath,
-                        skipFiles: ['<node_internals>/**'],
-                        console: 'internalConsole'
-                    }
+                    createServerLogicDebugConfig(filePath, vscode.l10n.t('Debug Current Server Logic'))
                 );
 
                 oneDSLoggerWrapper.getLogger().traceInfo(
@@ -216,7 +239,7 @@ export function activateServerLogicDebugger(context: vscode.ExtensionContext): v
                 }
 
                 const filePath = editor.document.uri.fsPath;
-                if (!filePath.includes('server-logics') || !filePath.endsWith('.js')) {
+                if (!isServerLogicFile(filePath)) {
                     vscode.window.showWarningMessage(
                         vscode.l10n.t('Please open a server logic file (.js) from the server-logics folder.')
                     );
@@ -225,15 +248,7 @@ export function activateServerLogicDebugger(context: vscode.ExtensionContext): v
 
                 await vscode.debug.startDebugging(
                     vscode.workspace.getWorkspaceFolder(editor.document.uri),
-                    {
-                        type: 'node',
-                        request: 'launch',
-                        name: vscode.l10n.t('Run Server Logic'),
-                        program: filePath,
-                        skipFiles: ['<node_internals>/**'],
-                        console: 'internalConsole',
-                        noDebug: true
-                    }
+                    createServerLogicDebugConfig(filePath, vscode.l10n.t('Run Server Logic'), true)
                 );
 
                 oneDSLoggerWrapper.getLogger().traceInfo(
