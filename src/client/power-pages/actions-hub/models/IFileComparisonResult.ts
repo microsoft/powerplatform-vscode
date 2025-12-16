@@ -20,3 +20,19 @@ export interface IFileComparisonResult {
     relativePath: string;
     status: FileComparisonStatusType;
 }
+
+/**
+ * Interface for storing comparison results per site
+ */
+export interface ISiteComparisonResults {
+    siteName: string;
+    localSiteName: string;
+    environmentName: string;
+    websiteId: string;
+    environmentId: string;
+    comparisonResults: IFileComparisonResult[];
+    /** Whether this comparison was imported from an export file */
+    isImported?: boolean;
+    /** ISO 8601 timestamp when the comparison was exported (only set for imported comparisons) */
+    exportedAt?: string;
+}

@@ -50,6 +50,8 @@ import { removeSiteComparison } from "./handlers/metadata-diff/RemoveSiteHandler
 import { discardLocalChanges } from "./handlers/metadata-diff/DiscardLocalChangesHandler";
 import { discardFolderChanges } from "./handlers/metadata-diff/DiscardFolderChangesHandler";
 import { generateHtmlReport } from "./handlers/metadata-diff/GenerateHtmlReportHandler";
+import { exportMetadataDiff } from "./handlers/metadata-diff/ExportMetadataDiffHandler";
+import { importMetadataDiff } from "./handlers/metadata-diff/ImportMetadataDiffHandler";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -322,6 +324,8 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_DISCARD_FILE, discardLocalChanges),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_DISCARD_FOLDER, discardFolderChanges),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_GENERATE_HTML_REPORT, generateHtmlReport),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_EXPORT, exportMetadataDiff),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_IMPORT, importMetadataDiff),
                 MetadataDiffDecorationProvider.getInstance().register()
             );
         }

@@ -8,35 +8,7 @@ import { MetadataDiffSiteTreeItem } from "../../tree-items/metadata-diff/Metadat
 import { traceInfo } from "../../TelemetryHelper";
 import { Constants } from "../../Constants";
 import { FileComparisonStatus, IFileComparisonResult } from "../../models/IFileComparisonResult";
-
-/**
- * Common binary file extensions that cannot be diffed in the text diff viewer
- */
-const BINARY_FILE_EXTENSIONS = new Set([
-    // Images
-    ".png", ".jpg", ".jpeg", ".gif", ".ico", ".webp", ".bmp", ".tiff", ".tif", ".svg",
-    // Fonts
-    ".woff", ".woff2", ".ttf", ".otf", ".eot",
-    // Media
-    ".mp4", ".mp3", ".wav", ".ogg", ".webm", ".avi", ".mov",
-    // Documents
-    ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
-    // Archives
-    ".zip", ".rar", ".7z", ".tar", ".gz",
-    // Other binary
-    ".exe", ".dll", ".so", ".dylib"
-]);
-
-/**
- * Checks if a file is a binary file based on its extension
- * @param relativePath The relative path of the file
- * @returns True if the file is binary, false otherwise
- */
-export function isBinaryFile(relativePath: string): boolean {
-    const lowerPath = relativePath.toLowerCase();
-    const extension = lowerPath.substring(lowerPath.lastIndexOf("."));
-    return BINARY_FILE_EXTENSIONS.has(extension);
-}
+import { isBinaryFile } from "../../ActionsHubUtils";
 
 /**
  * Opens all file diffs in the multi-diff editor for a specific site

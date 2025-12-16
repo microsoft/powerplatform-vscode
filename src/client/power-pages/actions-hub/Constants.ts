@@ -22,6 +22,7 @@ export const Constants = {
         METADATA_DIFF_GROUP: "metadataDiffGroup",
         METADATA_DIFF_GROUP_WITH_RESULTS: "metadataDiffGroupWithResults",
         METADATA_DIFF_SITE: "metadataDiffSite",
+        METADATA_DIFF_SITE_IMPORTED: "metadataDiffSiteImported",
         METADATA_DIFF_FOLDER: "metadataDiffFolder",
         METADATA_DIFF_FILE: "metadataDiffFile",
     },
@@ -38,10 +39,13 @@ export const Constants = {
         METADATA_DIFF_SORT_BY_PATH: "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByPath",
         METADATA_DIFF_SORT_BY_STATUS: "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByStatus",
         METADATA_DIFF_GENERATE_HTML_REPORT: "microsoft.powerplatform.pages.actionsHub.metadataDiff.generateHtmlReport",
+        METADATA_DIFF_EXPORT: "microsoft.powerplatform.pages.actionsHub.metadataDiff.export",
+        METADATA_DIFF_IMPORT: "microsoft.powerplatform.pages.actionsHub.metadataDiff.import",
         COMPARE_WITH_ENVIRONMENT: "microsoft-powerapps-portals.compareWithEnvironment",
     },
     Icons: {
         SITE: new vscode.ThemeIcon('globe'),
+        IMPORTED_SITE: new vscode.ThemeIcon('cloud-download'),
         SITE_GROUP: vscode.ThemeIcon.Folder,
         OTHER_SITES: new vscode.ThemeIcon('archive'),
         TOOLS: new vscode.ThemeIcon('tools'),
@@ -221,6 +225,16 @@ export const Constants = {
         HTML_REPORT_UNABLE_TO_READ_LOCAL: vscode.l10n.t("Unable to read local file"),
         HTML_REPORT_UNABLE_TO_READ_REMOTE: vscode.l10n.t("Unable to read remote file"),
         HTML_REPORT_UNABLE_TO_READ_BOTH: vscode.l10n.t("Unable to read one or both files"),
+        // Export/Import strings
+        METADATA_DIFF_EXPORT_PROGRESS: vscode.l10n.t("Exporting comparison..."),
+        METADATA_DIFF_IMPORT_PROGRESS: vscode.l10n.t("Importing comparison..."),
+        METADATA_DIFF_EXPORT_INVALID_FILE: vscode.l10n.t("Invalid file format. The file does not contain valid metadata diff data."),
+        METADATA_DIFF_EXPORT_UNSUPPORTED_VERSION: vscode.l10n.t("Unsupported version. This file was created with a newer version of the extension."),
+        METADATA_DIFF_EXPORT_NEWER_EXTENSION_VERSION: vscode.l10n.t("This file was exported with a newer version of the extension. Please update your extension to import this file."),
+        METADATA_DIFF_EXPORT_FILTER_NAME: vscode.l10n.t("Metadata Diff JSON"),
+        METADATA_DIFF_BINARY_FILE_NOT_AVAILABLE: vscode.l10n.t("Binary file content is not available in imported comparisons. The original file was not included in the export."),
+        METADATA_DIFF_REPLACE_EXISTING_IMPORT: vscode.l10n.t("An imported comparison already exists for this site. Do you want to replace it?"),
+        REPLACE: vscode.l10n.t("Replace"),
     },
     /**
      * Functions that return localized strings with dynamic parameters.
@@ -372,6 +386,42 @@ export const Constants = {
                 args: [errorMessage],
                 comment: ["Error message when HTML report generation fails. {0} is the error message."]
             }),
+        /**
+         * Returns the description for imported comparison showing file count and export date
+         */
+        IMPORTED_COMPARISON_DESCRIPTION: (fileCount: number, formattedDate: string) =>
+            vscode.l10n.t({
+                message: "{0} files changed (Imported {1})",
+                args: [fileCount, formattedDate],
+                comment: ["Description for imported comparison. {0} is file count, {1} is formatted date."]
+            }),
+        /**
+         * Returns the error message when a required field is missing in import
+         */
+        METADATA_DIFF_MISSING_REQUIRED_FIELD: (fieldName: string) =>
+            vscode.l10n.t({
+                message: "Missing required field: {0}",
+                args: [fieldName],
+                comment: ["Error when importing a file that is missing a required field."]
+            }),
+        /**
+         * Returns the success message when export is complete
+         */
+        METADATA_DIFF_EXPORT_SUCCESS: (filePath: string) =>
+            vscode.l10n.t({
+                message: "Comparison exported successfully to '{0}'.",
+                args: [filePath],
+                comment: ["Success message when export is saved. {0} is the file path."]
+            }),
+        /**
+         * Returns the success message when import is complete
+         */
+        METADATA_DIFF_IMPORT_SUCCESS: (siteName: string) =>
+            vscode.l10n.t({
+                message: "Comparison for '{0}' imported successfully.",
+                args: [siteName],
+                comment: ["Success message when import is complete. {0} is the site name."]
+            }),
     },
     EventNames: {
         ACTIONS_HUB_ENABLED: "ActionsHubEnabled",
@@ -513,6 +563,12 @@ export const Constants = {
         ACTIONS_HUB_METADATA_DIFF_GENERATE_HTML_REPORT: "ActionsHubMetadataDiffGenerateHtmlReport",
         ACTIONS_HUB_METADATA_DIFF_HTML_REPORT_SAVED: "ActionsHubMetadataDiffHtmlReportSaved",
         ACTIONS_HUB_METADATA_DIFF_HTML_REPORT_FAILED: "ActionsHubMetadataDiffHtmlReportFailed",
+        ACTIONS_HUB_METADATA_DIFF_EXPORT: "ActionsHubMetadataDiffExport",
+        ACTIONS_HUB_METADATA_DIFF_EXPORT_SUCCESS: "ActionsHubMetadataDiffExportSuccess",
+        ACTIONS_HUB_METADATA_DIFF_EXPORT_FAILED: "ActionsHubMetadataDiffExportFailed",
+        ACTIONS_HUB_METADATA_DIFF_IMPORT: "ActionsHubMetadataDiffImport",
+        ACTIONS_HUB_METADATA_DIFF_IMPORT_SUCCESS: "ActionsHubMetadataDiffImportSuccess",
+        ACTIONS_HUB_METADATA_DIFF_IMPORT_FAILED: "ActionsHubMetadataDiffImportFailed",
     },
     StudioEndpoints: {
         TEST: "https://make.test.powerpages.microsoft.com",

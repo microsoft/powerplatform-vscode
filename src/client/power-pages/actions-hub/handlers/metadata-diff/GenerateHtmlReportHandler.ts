@@ -8,7 +8,7 @@ import { MetadataDiffSiteTreeItem } from "../../tree-items/metadata-diff/Metadat
 import { IFileComparisonResult, FileComparisonStatus } from "../../models/IFileComparisonResult";
 import { Constants } from "../../Constants";
 import { traceInfo, traceError } from "../../TelemetryHelper";
-import { isBinaryFile } from "./OpenAllMetadataDiffsHandler";
+import { isBinaryFile } from "../../ActionsHubUtils";
 
 /**
  * Represents the content of a file comparison

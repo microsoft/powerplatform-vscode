@@ -385,13 +385,22 @@
   "Unable to read local file": "Unable to read local file",
   "Unable to read remote file": "Unable to read remote file",
   "Unable to read one or both files": "Unable to read one or both files",
+  "Exporting comparison...": "Exporting comparison...",
+  "Importing comparison...": "Importing comparison...",
+  "Invalid file format. The file does not contain valid metadata diff data.": "Invalid file format. The file does not contain valid metadata diff data.",
+  "Unsupported version. This file was created with a newer version of the extension.": "Unsupported version. This file was created with a newer version of the extension.",
+  "This file was exported with a newer version of the extension. Please update your extension to import this file.": "This file was exported with a newer version of the extension. Please update your extension to import this file.",
+  "Metadata Diff JSON": "Metadata Diff JSON",
+  "Binary file content is not available in imported comparisons. The original file was not included in the export.": "Binary file content is not available in imported comparisons. The original file was not included in the export.",
+  "An imported comparison already exists for this site. Do you want to replace it?": "An imported comparison already exists for this site. Do you want to replace it?",
+  "Replace": "Replace",
   "Fetching websites from '{0}'.../Message shown while fetching websites from an environment. {0} is the environment name.": {
     "message": "Fetching websites from '{0}'...",
     "comment": [
       "Message shown while fetching websites from an environment. {0} is the environment name."
     ]
   },
-  "Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\")).../This is a markdown formatting which must persist across translations.": {
+  "Downloading {0} `site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\")).../This is a markdown formatting which must persist across translations.": {
     "message": "Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\"))...",
     "comment": [
       "This is a markdown formatting which must persist across translations."
@@ -479,6 +488,30 @@
     "message": "Failed to generate HTML report: {0}",
     "comment": [
       "Error message when HTML report generation fails. {0} is the error message."
+    ]
+  },
+  "{0} files changed (Imported {1})/Description for imported comparison. {0} is file count, {1} is formatted date.": {
+    "message": "{0} files changed (Imported {1})",
+    "comment": [
+      "Description for imported comparison. {0} is file count, {1} is formatted date."
+    ]
+  },
+  "Missing required field: {0}/Error when importing a file that is missing a required field.": {
+    "message": "Missing required field: {0}",
+    "comment": [
+      "Error when importing a file that is missing a required field."
+    ]
+  },
+  "Comparison exported successfully to '{0}'./Success message when export is saved. {0} is the file path.": {
+    "message": "Comparison exported successfully to '{0}'.",
+    "comment": [
+      "Success message when export is saved. {0} is the file path."
+    ]
+  },
+  "Comparison for '{0}' imported successfully./Success message when import is complete. {0} is the site name.": {
+    "message": "Comparison for '{0}' imported successfully.",
+    "comment": [
+      "Success message when import is complete. {0} is the site name."
     ]
   },
   "Friendly name: {0}/{0} is the website name": {
@@ -589,6 +622,10 @@
       "{0} is the cluster geo name"
     ]
   },
+  "Import Metadata Diff": "Import Metadata Diff",
+  "Failed to import comparison: {0}": "Failed to import comparison: {0}",
+  "Export Metadata Diff": "Export Metadata Diff",
+  "Failed to export comparison: {0}": "Failed to export comparison: {0}",
   "Power Platform Tools: PAC CLI": "Power Platform Tools: PAC CLI",
   "Command completed successfully.": "Command completed successfully.",
   "PAC Telemetry enabled": "PAC Telemetry enabled",

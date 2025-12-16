@@ -6,10 +6,25 @@
 import { expect } from "chai";
 import * as sinon from "sinon";
 import * as vscode from "vscode";
-import { openAllMetadataDiffs, isBinaryFile } from "../../../../../../power-pages/actions-hub/handlers/metadata-diff/OpenAllMetadataDiffsHandler";
+import { openAllMetadataDiffs } from "../../../../../../power-pages/actions-hub/handlers/metadata-diff/OpenAllMetadataDiffsHandler";
+import { isBinaryFile } from "../../../../../../power-pages/actions-hub/ActionsHubUtils";
 import { MetadataDiffSiteTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/metadata-diff/MetadataDiffSiteTreeItem";
 import * as TelemetryHelper from "../../../../../../power-pages/actions-hub/TelemetryHelper";
-import { IFileComparisonResult } from "../../../../../../power-pages/actions-hub/models/IFileComparisonResult";
+import { IFileComparisonResult, ISiteComparisonResults } from "../../../../../../power-pages/actions-hub/models/IFileComparisonResult";
+
+/**
+ * Helper function to create ISiteComparisonResults for testing
+ */
+function createSiteResults(comparisonResults: IFileComparisonResult[], siteName = "Test Site", localSiteName = "Local Test Site", environmentName = "Test Environment"): ISiteComparisonResults {
+    return {
+        comparisonResults,
+        siteName,
+        localSiteName,
+        environmentName,
+        websiteId: "test-website-id",
+        environmentId: "test-environment-id"
+    };
+}
 
 describe("OpenAllMetadataDiffsHandler", () => {
     let sandbox: sinon.SinonSandbox;
@@ -99,7 +114,7 @@ describe("OpenAllMetadataDiffsHandler", () => {
                     status: "added"
                 }
             ];
-            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const siteItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             await openAllMetadataDiffs(siteItem);
 
@@ -112,7 +127,7 @@ describe("OpenAllMetadataDiffsHandler", () => {
         });
 
         it("should not execute command when no results", async () => {
-            const siteItem = new MetadataDiffSiteTreeItem([], "Test Site", "Local Test Site", "Test Environment");
+            const siteItem = new MetadataDiffSiteTreeItem(createSiteResults([]));
 
             await openAllMetadataDiffs(siteItem);
 
@@ -128,7 +143,7 @@ describe("OpenAllMetadataDiffsHandler", () => {
                     status: "modified"
                 }
             ];
-            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const siteItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             await openAllMetadataDiffs(siteItem);
 
@@ -153,7 +168,7 @@ describe("OpenAllMetadataDiffsHandler", () => {
                     status: "added"
                 }
             ];
-            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const siteItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             await openAllMetadataDiffs(siteItem);
 
@@ -172,7 +187,7 @@ describe("OpenAllMetadataDiffsHandler", () => {
                     status: "deleted"
                 }
             ];
-            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const siteItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             await openAllMetadataDiffs(siteItem);
 
@@ -203,7 +218,7 @@ describe("OpenAllMetadataDiffsHandler", () => {
                     status: "deleted"
                 }
             ];
-            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const siteItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             await openAllMetadataDiffs(siteItem);
 
@@ -238,7 +253,7 @@ describe("OpenAllMetadataDiffsHandler", () => {
                     status: "modified"
                 }
             ];
-            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const siteItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             await openAllMetadataDiffs(siteItem);
 
@@ -266,7 +281,7 @@ describe("OpenAllMetadataDiffsHandler", () => {
                     status: "added"
                 }
             ];
-            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const siteItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             await openAllMetadataDiffs(siteItem);
 
@@ -293,7 +308,7 @@ describe("OpenAllMetadataDiffsHandler", () => {
                     status: "modified"
                 }
             ];
-            const siteItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const siteItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             await openAllMetadataDiffs(siteItem);
 

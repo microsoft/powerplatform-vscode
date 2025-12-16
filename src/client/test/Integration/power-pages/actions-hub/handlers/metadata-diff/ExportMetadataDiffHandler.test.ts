@@ -6,22 +6,22 @@
 import * as vscode from "vscode";
 import { expect } from "chai";
 import sinon from "sinon";
-import { generateHtmlReport } from "../../../../../../power-pages/actions-hub/handlers/metadata-diff/GenerateHtmlReportHandler";
+import { exportMetadataDiff } from "../../../../../../power-pages/actions-hub/handlers/metadata-diff/ExportMetadataDiffHandler";
 import { MetadataDiffSiteTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/metadata-diff/MetadataDiffSiteTreeItem";
 import { FileComparisonStatus, IFileComparisonResult, ISiteComparisonResults } from "../../../../../../power-pages/actions-hub/models/IFileComparisonResult";
 import * as TelemetryHelper from "../../../../../../power-pages/actions-hub/TelemetryHelper";
 
-describe("GenerateHtmlReportHandler", () => {
+describe("ExportMetadataDiffHandler", () => {
     let sandbox: sinon.SinonSandbox;
     let showSaveDialogStub: sinon.SinonStub;
+    let showInformationMessageStub: sinon.SinonStub;
+    let showErrorMessageStub: sinon.SinonStub;
 
     beforeEach(() => {
         sandbox = sinon.createSandbox();
         showSaveDialogStub = sandbox.stub(vscode.window, "showSaveDialog");
-        // Stub other methods to prevent actual calls during tests
-        sandbox.stub(vscode.window, "showInformationMessage");
-        sandbox.stub(vscode.window, "showErrorMessage");
-        sandbox.stub(vscode.env, "openExternal");
+        showInformationMessageStub = sandbox.stub(vscode.window, "showInformationMessage");
+        showErrorMessageStub = sandbox.stub(vscode.window, "showErrorMessage");
         // Stub telemetry helpers
         sandbox.stub(TelemetryHelper, "traceInfo");
         sandbox.stub(TelemetryHelper, "traceError");
@@ -31,22 +31,32 @@ describe("GenerateHtmlReportHandler", () => {
         sandbox.restore();
     });
 
-    function createSiteResults(comparisonResults: IFileComparisonResult[], siteName = "Test Site", localSiteName = "Local Test Site", environmentName = "Test Environment"): ISiteComparisonResults {
+    function createSiteResults(
+        comparisonResults: IFileComparisonResult[],
+        siteName = "Test Site",
+        localSiteName = "Local Test Site",
+        environmentName = "Test Environment",
+        websiteId = "test-website-id",
+        environmentId = "test-environment-id"
+    ): ISiteComparisonResults {
         return {
             comparisonResults,
             siteName,
             localSiteName,
             environmentName,
-            websiteId: "test-website-id",
-            environmentId: "test-environment-id"
+            websiteId,
+            environmentId
         };
     }
 
-    function createMockTreeItem(comparisonResults: IFileComparisonResult[], siteName = "Test Site", localSiteName = "Local Test Site", environmentName = "Test Environment"): MetadataDiffSiteTreeItem {
-        return new MetadataDiffSiteTreeItem(createSiteResults(comparisonResults, siteName, localSiteName, environmentName));
+    function createMockTreeItem(
+        comparisonResults: IFileComparisonResult[],
+        siteName = "Test Site"
+    ): MetadataDiffSiteTreeItem {
+        return new MetadataDiffSiteTreeItem(createSiteResults(comparisonResults, siteName));
     }
 
-    describe("generateHtmlReport", () => {
+    describe("exportMetadataDiff", () => {
         it("should prompt user to save file", async () => {
             const mockResults: IFileComparisonResult[] = [
                 { localPath: "/local/file.html", remotePath: "/remote/file.html", relativePath: "file.html", status: FileComparisonStatus.MODIFIED }
@@ -55,7 +65,7 @@ describe("GenerateHtmlReportHandler", () => {
 
             showSaveDialogStub.resolves(undefined); // User cancelled
 
-            await generateHtmlReport(treeItem);
+            await exportMetadataDiff(treeItem);
 
             expect(showSaveDialogStub.calledOnce).to.be.true;
             expect(showSaveDialogStub.firstCall.args[0]).to.have.property("filters");
@@ -69,14 +79,13 @@ describe("GenerateHtmlReportHandler", () => {
 
             showSaveDialogStub.resolves(undefined);
 
-            // When user cancels, the function should return early without showing success message
-            await generateHtmlReport(treeItem);
+            await exportMetadataDiff(treeItem);
 
-            // No error should be thrown and the function should complete
             expect(showSaveDialogStub.calledOnce).to.be.true;
+            expect(showInformationMessageStub.called).to.be.false;
         });
 
-        it("should have HTML filter in save dialog", async () => {
+        it("should have JSON filter in save dialog", async () => {
             const mockResults: IFileComparisonResult[] = [
                 { localPath: "/local/file.html", remotePath: "/remote/file.html", relativePath: "file.html", status: FileComparisonStatus.MODIFIED }
             ];
@@ -84,11 +93,11 @@ describe("GenerateHtmlReportHandler", () => {
 
             showSaveDialogStub.resolves(undefined);
 
-            await generateHtmlReport(treeItem);
+            await exportMetadataDiff(treeItem);
 
             const saveDialogOptions = showSaveDialogStub.firstCall.args[0];
-            expect(saveDialogOptions.filters).to.have.property("HTML Files");
-            expect(saveDialogOptions.filters["HTML Files"]).to.include("html");
+            expect(saveDialogOptions.filters).to.have.property("Metadata Diff JSON");
+            expect(saveDialogOptions.filters["Metadata Diff JSON"]).to.include("json");
         });
 
         it("should use site name in default file name", async () => {
@@ -99,10 +108,10 @@ describe("GenerateHtmlReportHandler", () => {
 
             showSaveDialogStub.resolves(undefined);
 
-            await generateHtmlReport(treeItem);
+            await exportMetadataDiff(treeItem);
 
             const saveDialogOptions = showSaveDialogStub.firstCall.args[0];
-            expect(saveDialogOptions.defaultUri.fsPath).to.include("My-Test-Site");
+            expect(saveDialogOptions.defaultUri.fsPath).to.include("My_Test_Site");
         });
 
         it("should sanitize special characters from site name in default file name", async () => {
@@ -113,14 +122,14 @@ describe("GenerateHtmlReportHandler", () => {
 
             showSaveDialogStub.resolves(undefined);
 
-            await generateHtmlReport(treeItem);
+            await exportMetadataDiff(treeItem);
 
             const saveDialogOptions = showSaveDialogStub.firstCall.args[0];
-            // Special characters should be replaced with hyphens
-            expect(saveDialogOptions.defaultUri.fsPath).to.include("Site-With-Special-Chars");
+            // Special characters should be replaced with underscores
+            expect(saveDialogOptions.defaultUri.fsPath).to.include("Site_With_Special_Chars");
         });
 
-        it("should include metadata-diff-report prefix in default file name", async () => {
+        it("should include -diff- in default file name", async () => {
             const mockResults: IFileComparisonResult[] = [
                 { localPath: "/local/file.html", remotePath: "/remote/file.html", relativePath: "file.html", status: FileComparisonStatus.MODIFIED }
             ];
@@ -128,10 +137,54 @@ describe("GenerateHtmlReportHandler", () => {
 
             showSaveDialogStub.resolves(undefined);
 
-            await generateHtmlReport(treeItem);
+            await exportMetadataDiff(treeItem);
 
             const saveDialogOptions = showSaveDialogStub.firstCall.args[0];
-            expect(saveDialogOptions.defaultUri.fsPath).to.include("metadata-diff-report");
+            expect(saveDialogOptions.defaultUri.fsPath).to.include("-diff-");
+        });
+
+        it("should include .json extension in default file name", async () => {
+            const mockResults: IFileComparisonResult[] = [
+                { localPath: "/local/file.html", remotePath: "/remote/file.html", relativePath: "file.html", status: FileComparisonStatus.MODIFIED }
+            ];
+            const treeItem = createMockTreeItem(mockResults);
+
+            showSaveDialogStub.resolves(undefined);
+
+            await exportMetadataDiff(treeItem);
+
+            const saveDialogOptions = showSaveDialogStub.firstCall.args[0];
+            expect(saveDialogOptions.defaultUri.fsPath).to.include(".json");
+        });
+
+        it("should log telemetry on export start", async () => {
+            const mockResults: IFileComparisonResult[] = [
+                { localPath: "/local/file.html", remotePath: "/remote/file.html", relativePath: "file.html", status: FileComparisonStatus.MODIFIED }
+            ];
+            const treeItem = createMockTreeItem(mockResults);
+            const traceInfoStub = TelemetryHelper.traceInfo as sinon.SinonStub;
+
+            showSaveDialogStub.resolves(undefined);
+
+            await exportMetadataDiff(treeItem);
+
+            expect(traceInfoStub.called).to.be.true;
+            expect(traceInfoStub.firstCall.args[0]).to.equal("ActionsHubMetadataDiffExport");
+        });
+
+        it("should include file count in telemetry", async () => {
+            const mockResults: IFileComparisonResult[] = [
+                { localPath: "/local/file1.html", remotePath: "/remote/file1.html", relativePath: "file1.html", status: FileComparisonStatus.MODIFIED },
+                { localPath: "/local/file2.html", remotePath: "/remote/file2.html", relativePath: "file2.html", status: FileComparisonStatus.ADDED }
+            ];
+            const treeItem = createMockTreeItem(mockResults);
+            const traceInfoStub = TelemetryHelper.traceInfo as sinon.SinonStub;
+
+            showSaveDialogStub.resolves(undefined);
+
+            await exportMetadataDiff(treeItem);
+
+            expect(traceInfoStub.firstCall.args[1]).to.have.property("fileCount", "2");
         });
     });
 });

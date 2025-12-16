@@ -21,10 +21,12 @@ export const METADATA_DIFF_URI_SCHEME = "pp-metadata-diff";
 export class MetadataDiffFileTreeItem extends ActionsHubTreeItem {
     public readonly comparisonResult: IFileComparisonResult;
     private readonly _siteName: string;
+    private readonly _isImported: boolean;
 
     constructor(
         comparisonResult: IFileComparisonResult,
-        siteName: string
+        siteName: string,
+        isImported: boolean = false
     ) {
         // Use file name as the label
         const fileName = comparisonResult.relativePath.split(/[/\\]/).pop() || comparisonResult.relativePath;
@@ -42,6 +44,7 @@ export class MetadataDiffFileTreeItem extends ActionsHubTreeItem {
         );
         this.comparisonResult = comparisonResult;
         this._siteName = siteName;
+        this._isImported = isImported;
 
         // Use resourceUri for file-type icon detection and decoration
         // Encode the status in the URI so FileDecorationProvider can read it
@@ -98,5 +101,9 @@ export class MetadataDiffFileTreeItem extends ActionsHubTreeItem {
 
     public get siteName(): string {
         return this._siteName;
+    }
+
+    public get isImported(): boolean {
+        return this._isImported;
     }
 }

@@ -9,24 +9,31 @@ import { MetadataDiffFileTreeItem } from "../../tree-items/metadata-diff/Metadat
 import { traceInfo } from "../../TelemetryHelper";
 import { Constants } from "../../Constants";
 import { FileComparisonStatus } from "../../models/IFileComparisonResult";
-import { isBinaryFile } from "./OpenAllMetadataDiffsHandler";
+import { isBinaryFile } from "../../ActionsHubUtils";
 
 /**
  * Opens a single file diff in the VS Code diff editor
  */
 export async function openMetadataDiffFile(fileItem: MetadataDiffFileTreeItem): Promise<void> {
-    const { comparisonResult, siteName } = fileItem;
+    const { comparisonResult, siteName, isImported } = fileItem;
 
     traceInfo(Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_OPEN_FILE, {
         methodName: openMetadataDiffFile.name,
         relativePath: comparisonResult.relativePath,
-        status: comparisonResult.status
+        status: comparisonResult.status,
+        isImported: isImported
     });
 
     const title = Constants.StringFunctions.COMPARE_FILE_TITLE(siteName, comparisonResult.relativePath);
 
     // Handle binary files - open them directly instead of trying to diff
     if (isBinaryFile(comparisonResult.relativePath)) {
+        // For imported comparisons, binary content is not available
+        if (isImported) {
+            vscode.window.showInformationMessage(Constants.Strings.METADATA_DIFF_BINARY_FILE_NOT_AVAILABLE);
+            return;
+        }
+
         await openBinaryFile(comparisonResult.localPath, comparisonResult.remotePath, comparisonResult.status);
         return;
     }

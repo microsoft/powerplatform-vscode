@@ -52,7 +52,7 @@ describe("MetadataDiffContext", () => {
                 }
             ];
 
-            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment");
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "test-website-id", "test-environment-id");
 
             expect(MetadataDiffContext.comparisonResults).to.deep.equal(results);
         });
@@ -67,7 +67,7 @@ describe("MetadataDiffContext", () => {
                 }
             ];
 
-            MetadataDiffContext.setResults(results, "My Test Site", "Local Test Site", "Test Environment");
+            MetadataDiffContext.setResults(results, "My Test Site", "Local Test Site", "Test Environment", "test-website-id", "test-environment-id");
 
             expect(MetadataDiffContext.siteName).to.equal("My Test Site");
         });
@@ -82,13 +82,13 @@ describe("MetadataDiffContext", () => {
                 }
             ];
 
-            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment");
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "test-website-id", "test-environment-id");
 
             expect(MetadataDiffContext.isActive).to.be.true;
         });
 
         it("should set isActive to false when results are empty", () => {
-            MetadataDiffContext.setResults([], "Test Site", "Local Test Site", "Test Environment");
+            MetadataDiffContext.setResults([], "Test Site", "Local Test Site", "Test Environment", "test-website-id", "test-environment-id");
 
             expect(MetadataDiffContext.isActive).to.be.false;
         });
@@ -106,7 +106,7 @@ describe("MetadataDiffContext", () => {
                 }
             ];
 
-            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment");
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "test-website-id", "test-environment-id");
 
             expect(onChangedSpy.calledOnce).to.be.true;
         });
@@ -122,7 +122,7 @@ describe("MetadataDiffContext", () => {
                     status: "modified"
                 }
             ];
-            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment");
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "test-website-id", "test-environment-id");
 
             MetadataDiffContext.clear();
 
@@ -138,7 +138,7 @@ describe("MetadataDiffContext", () => {
                     status: "modified"
                 }
             ];
-            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment");
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "test-website-id", "test-environment-id");
 
             MetadataDiffContext.clear();
 
@@ -154,7 +154,7 @@ describe("MetadataDiffContext", () => {
                     status: "modified"
                 }
             ];
-            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment");
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "test-website-id", "test-environment-id");
 
             MetadataDiffContext.clear();
 
@@ -386,12 +386,178 @@ describe("MetadataDiffContext", () => {
                 }
             ];
 
-            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment");
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "test-website-id", "test-environment-id");
 
             expect(MetadataDiffContext.comparisonResults).to.have.lengthOf(3);
             expect(MetadataDiffContext.comparisonResults[0].status).to.equal("modified");
             expect(MetadataDiffContext.comparisonResults[1].status).to.equal("added");
             expect(MetadataDiffContext.comparisonResults[2].status).to.equal("deleted");
+        });
+    });
+
+    describe("getUniqueKey", () => {
+        it("should generate key for live comparison", () => {
+            const key = MetadataDiffContext.getUniqueKey("website-123", "env-456", false);
+            expect(key).to.equal("website-123_env-456");
+        });
+
+        it("should generate key with _imported suffix for imported comparison", () => {
+            const key = MetadataDiffContext.getUniqueKey("website-123", "env-456", true);
+            expect(key).to.equal("website-123_env-456_imported");
+        });
+
+        it("should default isImported to false", () => {
+            const key = MetadataDiffContext.getUniqueKey("website-123", "env-456");
+            expect(key).to.equal("website-123_env-456");
+        });
+    });
+
+    describe("hasImportedComparison", () => {
+        it("should return false when no imported comparison exists", () => {
+            expect(MetadataDiffContext.hasImportedComparison("website-123", "env-456")).to.be.false;
+        });
+
+        it("should return true when imported comparison exists", () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/file.txt",
+                    remotePath: "/remote/file.txt",
+                    relativePath: "file.txt",
+                    status: "modified"
+                }
+            ];
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "website-123", "env-456", true, "2024-01-15T10:30:00Z");
+
+            expect(MetadataDiffContext.hasImportedComparison("website-123", "env-456")).to.be.true;
+        });
+
+        it("should return false when only live comparison exists", () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/file.txt",
+                    remotePath: "/remote/file.txt",
+                    relativePath: "file.txt",
+                    status: "modified"
+                }
+            ];
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "website-123", "env-456", false);
+
+            expect(MetadataDiffContext.hasImportedComparison("website-123", "env-456")).to.be.false;
+        });
+    });
+
+    describe("clearSiteByKey", () => {
+        it("should clear live comparison by key", () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/file.txt",
+                    remotePath: "/remote/file.txt",
+                    relativePath: "file.txt",
+                    status: "modified"
+                }
+            ];
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "website-123", "env-456", false);
+
+            expect(MetadataDiffContext.isActive).to.be.true;
+
+            MetadataDiffContext.clearSiteByKey("website-123", "env-456", false);
+
+            expect(MetadataDiffContext.isActive).to.be.false;
+        });
+
+        it("should clear imported comparison by key", () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/file.txt",
+                    remotePath: "/remote/file.txt",
+                    relativePath: "file.txt",
+                    status: "modified"
+                }
+            ];
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "website-123", "env-456", true, "2024-01-15T10:30:00Z");
+
+            expect(MetadataDiffContext.hasImportedComparison("website-123", "env-456")).to.be.true;
+
+            MetadataDiffContext.clearSiteByKey("website-123", "env-456", true);
+
+            expect(MetadataDiffContext.hasImportedComparison("website-123", "env-456")).to.be.false;
+        });
+
+        it("should only clear specified comparison type", () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/file.txt",
+                    remotePath: "/remote/file.txt",
+                    relativePath: "file.txt",
+                    status: "modified"
+                }
+            ];
+            // Add both live and imported comparisons
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "website-123", "env-456", false);
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "website-123", "env-456", true, "2024-01-15T10:30:00Z");
+
+            expect(MetadataDiffContext.allSiteResults).to.have.lengthOf(2);
+
+            // Clear only the imported one
+            MetadataDiffContext.clearSiteByKey("website-123", "env-456", true);
+
+            expect(MetadataDiffContext.allSiteResults).to.have.lengthOf(1);
+            expect(MetadataDiffContext.hasImportedComparison("website-123", "env-456")).to.be.false;
+            expect(MetadataDiffContext.isActive).to.be.true;
+        });
+
+        it("should fire onChanged event when clearing", () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/file.txt",
+                    remotePath: "/remote/file.txt",
+                    relativePath: "file.txt",
+                    status: "modified"
+                }
+            ];
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "website-123", "env-456", false);
+
+            const onChangedSpy = sandbox.spy();
+            MetadataDiffContext.onChanged(onChangedSpy);
+
+            MetadataDiffContext.clearSiteByKey("website-123", "env-456", false);
+
+            expect(onChangedSpy.calledOnce).to.be.true;
+        });
+    });
+
+    describe("imported comparisons", () => {
+        it("should store imported comparison with exportedAt timestamp", () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/file.txt",
+                    remotePath: "/remote/file.txt",
+                    relativePath: "file.txt",
+                    status: "modified"
+                }
+            ];
+            const exportedAt = "2024-01-15T10:30:00Z";
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "website-123", "env-456", true, exportedAt);
+
+            const siteResults = MetadataDiffContext.allSiteResults;
+            expect(siteResults).to.have.lengthOf(1);
+            expect(siteResults[0].isImported).to.be.true;
+            expect(siteResults[0].exportedAt).to.equal(exportedAt);
+        });
+
+        it("should allow both live and imported comparisons for same site", () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/file.txt",
+                    remotePath: "/remote/file.txt",
+                    relativePath: "file.txt",
+                    status: "modified"
+                }
+            ];
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "website-123", "env-456", false);
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "website-123", "env-456", true, "2024-01-15T10:30:00Z");
+
+            expect(MetadataDiffContext.allSiteResults).to.have.lengthOf(2);
         });
     });
 });
