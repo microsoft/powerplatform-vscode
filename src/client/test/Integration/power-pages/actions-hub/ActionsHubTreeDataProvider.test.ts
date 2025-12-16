@@ -39,8 +39,17 @@ import * as ShowSiteDetailsHandler from "../../../../power-pages/actions-hub/han
 import * as DownloadSiteHandler from "../../../../power-pages/actions-hub/handlers/DownloadSiteHandler";
 import * as LoginToMatchHandler from "../../../../power-pages/actions-hub/handlers/LoginToMatchHandler";
 import * as RunCodeQLScreeningHandler from "../../../../power-pages/actions-hub/handlers/code-ql/RunCodeQlScreeningHandler";
-import { ToolsGroupTreeItem } from "../../../../power-pages/actions-hub/tree-items/ToolsGroupTreeItem";
 import * as SortModeHandler from "../../../../power-pages/actions-hub/handlers/metadata-diff/SortModeHandler";
+import * as ToggleViewModeHandler from "../../../../power-pages/actions-hub/handlers/metadata-diff/ToggleViewModeHandler";
+import * as CompareWithLocalHandler from "../../../../power-pages/actions-hub/handlers/metadata-diff/CompareWithLocalHandler";
+import * as CompareWithEnvironmentHandler from "../../../../power-pages/actions-hub/handlers/metadata-diff/CompareWithEnvironmentHandler";
+import * as OpenMetadataDiffFileHandler from "../../../../power-pages/actions-hub/handlers/metadata-diff/OpenMetadataDiffFileHandler";
+import * as OpenAllMetadataDiffsHandler from "../../../../power-pages/actions-hub/handlers/metadata-diff/OpenAllMetadataDiffsHandler";
+import * as ClearMetadataDiffHandler from "../../../../power-pages/actions-hub/handlers/metadata-diff/ClearMetadataDiffHandler";
+import * as RemoveSiteHandler from "../../../../power-pages/actions-hub/handlers/metadata-diff/RemoveSiteHandler";
+import * as DiscardLocalChangesHandler from "../../../../power-pages/actions-hub/handlers/metadata-diff/DiscardLocalChangesHandler";
+import * as DiscardFolderChangesHandler from "../../../../power-pages/actions-hub/handlers/metadata-diff/DiscardFolderChangesHandler";
+import { ActionsHub } from "../../../../power-pages/actions-hub/ActionsHub";
 
 // Add global type declaration for ArtemisContext
 describe("ActionsHubTreeDataProvider", () => {
@@ -303,6 +312,7 @@ describe("ActionsHubTreeDataProvider", () => {
         });
 
         it('should register sortByName command', async () => {
+            sinon.stub(ActionsHub, 'isMetadataDiffEnabled').returns(true);
             const mockCommandHandler = sinon.stub(SortModeHandler, 'sortByName');
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
             actionsHubTreeDataProvider["registerPanel"]();
@@ -322,6 +332,7 @@ describe("ActionsHubTreeDataProvider", () => {
         });
 
         it('should register sortByPath command', async () => {
+            sinon.stub(ActionsHub, 'isMetadataDiffEnabled').returns(true);
             const mockCommandHandler = sinon.stub(SortModeHandler, 'sortByPath');
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
             actionsHubTreeDataProvider["registerPanel"]();
@@ -341,6 +352,7 @@ describe("ActionsHubTreeDataProvider", () => {
         });
 
         it('should register sortByStatus command', async () => {
+            sinon.stub(ActionsHub, 'isMetadataDiffEnabled').returns(true);
             const mockCommandHandler = sinon.stub(SortModeHandler, 'sortByStatus');
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
             actionsHubTreeDataProvider["registerPanel"]();
@@ -356,6 +368,234 @@ describe("ActionsHubTreeDataProvider", () => {
                 expect(mockCommandHandler.calledOnce).to.be.true;
             } else {
                 throw new Error("sortByStatus command was not registered");
+            }
+        });
+
+        it('should register viewAsTree command', async () => {
+            sinon.stub(ActionsHub, 'isMetadataDiffEnabled').returns(true);
+            const mockCommandHandler = sinon.stub(ToggleViewModeHandler, 'viewAsTree');
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            actionsHubTreeDataProvider["registerPanel"]();
+
+            expect(registerCommandStub.calledWith(Constants.Commands.METADATA_DIFF_VIEW_AS_TREE)).to.be.true;
+
+            const viewAsTreeCall = registerCommandStub.getCalls().find(call =>
+                call.args[0] === Constants.Commands.METADATA_DIFF_VIEW_AS_TREE
+            );
+
+            if (viewAsTreeCall) {
+                viewAsTreeCall.args[1]();
+                expect(mockCommandHandler.calledOnce).to.be.true;
+            } else {
+                throw new Error("viewAsTree command was not registered");
+            }
+        });
+
+        it('should register viewAsList command', async () => {
+            sinon.stub(ActionsHub, 'isMetadataDiffEnabled').returns(true);
+            const mockCommandHandler = sinon.stub(ToggleViewModeHandler, 'viewAsList');
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            actionsHubTreeDataProvider["registerPanel"]();
+
+            expect(registerCommandStub.calledWith(Constants.Commands.METADATA_DIFF_VIEW_AS_LIST)).to.be.true;
+
+            const viewAsListCall = registerCommandStub.getCalls().find(call =>
+                call.args[0] === Constants.Commands.METADATA_DIFF_VIEW_AS_LIST
+            );
+
+            if (viewAsListCall) {
+                viewAsListCall.args[1]();
+                expect(mockCommandHandler.calledOnce).to.be.true;
+            } else {
+                throw new Error("viewAsList command was not registered");
+            }
+        });
+
+        it('should register compareWithLocal command', async () => {
+            sinon.stub(ActionsHub, 'isMetadataDiffEnabled').returns(true);
+            const innerHandler = sinon.stub();
+            sinon.stub(CompareWithLocalHandler, 'compareWithLocal').returns(innerHandler);
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            actionsHubTreeDataProvider["registerPanel"]();
+
+            expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.activeSite.compareWithLocal")).to.be.true;
+
+            const compareWithLocalCall = registerCommandStub.getCalls().find(call =>
+                call.args[0] === "microsoft.powerplatform.pages.actionsHub.activeSite.compareWithLocal"
+            );
+
+            if (compareWithLocalCall) {
+                expect(compareWithLocalCall.args[1]).to.equal(innerHandler);
+            } else {
+                throw new Error("compareWithLocal command was not registered");
+            }
+        });
+
+        it('should register compareWithEnvironment command', async () => {
+            sinon.stub(ActionsHub, 'isMetadataDiffEnabled').returns(true);
+            const innerHandler = sinon.stub();
+            sinon.stub(CompareWithEnvironmentHandler, 'compareWithEnvironment').returns(innerHandler);
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            actionsHubTreeDataProvider["registerPanel"]();
+
+            expect(registerCommandStub.calledWith(Constants.Commands.COMPARE_WITH_ENVIRONMENT)).to.be.true;
+
+            const compareWithEnvironmentCall = registerCommandStub.getCalls().find(call =>
+                call.args[0] === Constants.Commands.COMPARE_WITH_ENVIRONMENT
+            );
+
+            if (compareWithEnvironmentCall) {
+                expect(compareWithEnvironmentCall.args[1]).to.equal(innerHandler);
+            } else {
+                throw new Error("compareWithEnvironment command was not registered");
+            }
+        });
+
+        it('should register openMetadataDiffFile command', async () => {
+            sinon.stub(ActionsHub, 'isMetadataDiffEnabled').returns(true);
+            const mockCommandHandler = sinon.stub(OpenMetadataDiffFileHandler, 'openMetadataDiffFile');
+            mockCommandHandler.resolves();
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            actionsHubTreeDataProvider["registerPanel"]();
+
+            expect(registerCommandStub.calledWith(Constants.Commands.METADATA_DIFF_OPEN_FILE)).to.be.true;
+
+            const openFileCall = registerCommandStub.getCalls().find(call =>
+                call.args[0] === Constants.Commands.METADATA_DIFF_OPEN_FILE
+            );
+
+            if (openFileCall) {
+                await openFileCall.args[1]();
+                expect(mockCommandHandler.calledOnce).to.be.true;
+            } else {
+                throw new Error("openMetadataDiffFile command was not registered");
+            }
+        });
+
+        it('should register openAllMetadataDiffs command', async () => {
+            sinon.stub(ActionsHub, 'isMetadataDiffEnabled').returns(true);
+            const mockCommandHandler = sinon.stub(OpenAllMetadataDiffsHandler, 'openAllMetadataDiffs');
+            mockCommandHandler.resolves();
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            actionsHubTreeDataProvider["registerPanel"]();
+
+            expect(registerCommandStub.calledWith(Constants.Commands.METADATA_DIFF_OPEN_ALL)).to.be.true;
+
+            const openAllCall = registerCommandStub.getCalls().find(call =>
+                call.args[0] === Constants.Commands.METADATA_DIFF_OPEN_ALL
+            );
+
+            if (openAllCall) {
+                await openAllCall.args[1]();
+                expect(mockCommandHandler.calledOnce).to.be.true;
+            } else {
+                throw new Error("openAllMetadataDiffs command was not registered");
+            }
+        });
+
+        it('should register clearMetadataDiff command', async () => {
+            sinon.stub(ActionsHub, 'isMetadataDiffEnabled').returns(true);
+            const mockCommandHandler = sinon.stub(ClearMetadataDiffHandler, 'clearMetadataDiff');
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            actionsHubTreeDataProvider["registerPanel"]();
+
+            expect(registerCommandStub.calledWith(Constants.Commands.METADATA_DIFF_CLEAR)).to.be.true;
+
+            const clearCall = registerCommandStub.getCalls().find(call =>
+                call.args[0] === Constants.Commands.METADATA_DIFF_CLEAR
+            );
+
+            if (clearCall) {
+                clearCall.args[1]();
+                expect(mockCommandHandler.calledOnce).to.be.true;
+            } else {
+                throw new Error("clearMetadataDiff command was not registered");
+            }
+        });
+
+        it('should register removeSiteComparison command', async () => {
+            sinon.stub(ActionsHub, 'isMetadataDiffEnabled').returns(true);
+            const mockCommandHandler = sinon.stub(RemoveSiteHandler, 'removeSiteComparison');
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            actionsHubTreeDataProvider["registerPanel"]();
+
+            expect(registerCommandStub.calledWith(Constants.Commands.METADATA_DIFF_REMOVE_SITE)).to.be.true;
+
+            const removeSiteCall = registerCommandStub.getCalls().find(call =>
+                call.args[0] === Constants.Commands.METADATA_DIFF_REMOVE_SITE
+            );
+
+            if (removeSiteCall) {
+                removeSiteCall.args[1]();
+                expect(mockCommandHandler.calledOnce).to.be.true;
+            } else {
+                throw new Error("removeSiteComparison command was not registered");
+            }
+        });
+
+        it('should register discardLocalChanges command', async () => {
+            sinon.stub(ActionsHub, 'isMetadataDiffEnabled').returns(true);
+            const mockCommandHandler = sinon.stub(DiscardLocalChangesHandler, 'discardLocalChanges');
+            mockCommandHandler.resolves();
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            actionsHubTreeDataProvider["registerPanel"]();
+
+            expect(registerCommandStub.calledWith(Constants.Commands.METADATA_DIFF_DISCARD_FILE)).to.be.true;
+
+            const discardFileCall = registerCommandStub.getCalls().find(call =>
+                call.args[0] === Constants.Commands.METADATA_DIFF_DISCARD_FILE
+            );
+
+            if (discardFileCall) {
+                await discardFileCall.args[1]();
+                expect(mockCommandHandler.calledOnce).to.be.true;
+            } else {
+                throw new Error("discardLocalChanges command was not registered");
+            }
+        });
+
+        it('should register discardFolderChanges command', async () => {
+            sinon.stub(ActionsHub, 'isMetadataDiffEnabled').returns(true);
+            const mockCommandHandler = sinon.stub(DiscardFolderChangesHandler, 'discardFolderChanges');
+            mockCommandHandler.resolves();
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            actionsHubTreeDataProvider["registerPanel"]();
+
+            expect(registerCommandStub.calledWith(Constants.Commands.METADATA_DIFF_DISCARD_FOLDER)).to.be.true;
+
+            const discardFolderCall = registerCommandStub.getCalls().find(call =>
+                call.args[0] === Constants.Commands.METADATA_DIFF_DISCARD_FOLDER
+            );
+
+            if (discardFolderCall) {
+                await discardFolderCall.args[1]();
+                expect(mockCommandHandler.calledOnce).to.be.true;
+            } else {
+                throw new Error("discardFolderChanges command was not registered");
+            }
+        });
+
+        it('should register showOutputChannel command', async () => {
+            sinon.stub(ActionsHub, 'isMetadataDiffEnabled').returns(true);
+            const showOutputChannelStub = sinon.stub();
+            (pacTerminal.getWrapper as sinon.SinonStub).returns({
+                ...pacWrapperStub,
+                showOutputChannel: showOutputChannelStub
+            });
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            actionsHubTreeDataProvider["registerPanel"]();
+
+            expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.showOutputChannel")).to.be.true;
+
+            const showOutputCall = registerCommandStub.getCalls().find(call =>
+                call.args[0] === "microsoft.powerplatform.pages.actionsHub.showOutputChannel"
+            );
+
+            if (showOutputCall) {
+                showOutputCall.args[1]();
+                expect(showOutputChannelStub.calledOnce).to.be.true;
+            } else {
+                throw new Error("showOutputChannel command was not registered");
             }
         });
     });
