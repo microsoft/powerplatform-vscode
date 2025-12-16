@@ -9,6 +9,7 @@ import { MetadataDiffFileTreeItem } from "../../tree-items/metadata-diff/Metadat
 import { traceInfo } from "../../TelemetryHelper";
 import { Constants } from "../../Constants";
 import { FileComparisonStatus } from "../../models/IFileComparisonResult";
+import { isBinaryFile } from "./OpenAllMetadataDiffsHandler";
 
 /**
  * Opens a single file diff in the VS Code diff editor
@@ -22,7 +23,13 @@ export async function openMetadataDiffFile(fileItem: MetadataDiffFileTreeItem): 
         status: comparisonResult.status
     });
 
-    const title = vscode.l10n.t("{0}: {1} (Remote ↔ Local)", siteName, comparisonResult.relativePath);
+    const title = Constants.StringFunctions.COMPARE_FILE_TITLE(siteName, comparisonResult.relativePath);
+
+    // Handle binary files - open them directly instead of trying to diff
+    if (isBinaryFile(comparisonResult.relativePath)) {
+        await openBinaryFile(comparisonResult.localPath, comparisonResult.remotePath, comparisonResult.status);
+        return;
+    }
 
     // Handle different diff scenarios based on file status
     if (comparisonResult.status === FileComparisonStatus.DELETED) {
@@ -47,6 +54,40 @@ export async function openMetadataDiffFile(fileItem: MetadataDiffFileTreeItem): 
 
         if (fs.existsSync(comparisonResult.remotePath) && fs.existsSync(comparisonResult.localPath)) {
             await vscode.commands.executeCommand("vscode.diff", remoteUri, localUri, title);
+        }
+    }
+}
+
+/**
+ * Opens binary files directly since they can't be diffed in text format.
+ * For modified files, opens both remote and local versions side by side for visual comparison.
+ * For added files, opens the local version.
+ * For deleted files, opens the remote version.
+ */
+async function openBinaryFile(localPath: string, remotePath: string, status: string): Promise<void> {
+    if (status === FileComparisonStatus.DELETED) {
+        // For deleted files, the file only exists in remote
+        if (fs.existsSync(remotePath)) {
+            await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(remotePath));
+        }
+    } else if (status === FileComparisonStatus.ADDED) {
+        // For added files, open the local version
+        if (fs.existsSync(localPath)) {
+            await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(localPath));
+        }
+    } else {
+        // For modified files, open both remote and local side by side for visual comparison
+        if (fs.existsSync(remotePath) && fs.existsSync(localPath)) {
+            // Open remote file in the first editor group (left side)
+            await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(remotePath), vscode.ViewColumn.One);
+            // Open local file in the second editor group (right side)
+            await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(localPath), vscode.ViewColumn.Two);
+        } else if (fs.existsSync(localPath)) {
+            // Fallback: if only local exists, just open it
+            await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(localPath));
+        } else if (fs.existsSync(remotePath)) {
+            // Fallback: if only remote exists, just open it
+            await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(remotePath));
         }
     }
 }

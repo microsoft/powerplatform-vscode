@@ -9,9 +9,9 @@ import { MetadataDiffSiteTreeItem } from "../../../../../../power-pages/actions-
 import { MetadataDiffFileTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/metadata-diff/MetadataDiffFileTreeItem";
 import { MetadataDiffFolderTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/metadata-diff/MetadataDiffFolderTreeItem";
 import { ActionsHubTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
-import { IFileComparisonResult } from "../../../../../../power-pages/actions-hub/models/IFileComparisonResult";
+import { IFileComparisonResult, FileComparisonStatus } from "../../../../../../power-pages/actions-hub/models/IFileComparisonResult";
 import { Constants } from "../../../../../../power-pages/actions-hub/Constants";
-import MetadataDiffContext, { MetadataDiffViewMode } from "../../../../../../power-pages/actions-hub/MetadataDiffContext";
+import MetadataDiffContext, { MetadataDiffViewMode, MetadataDiffSortMode } from "../../../../../../power-pages/actions-hub/MetadataDiffContext";
 
 describe("MetadataDiffSiteTreeItem", () => {
     beforeEach(() => {
@@ -216,6 +216,122 @@ describe("MetadataDiffSiteTreeItem", () => {
             expect(children).to.have.lengthOf(2);
             expect((children[0] as MetadataDiffFileTreeItem).comparisonResult.relativePath).to.equal("a-folder/file.txt");
             expect((children[1] as MetadataDiffFileTreeItem).comparisonResult.relativePath).to.equal("z-folder/file.txt");
+        });
+    });
+
+    describe("getChildren - list view sorting", () => {
+        beforeEach(() => {
+            MetadataDiffContext.setViewMode(MetadataDiffViewMode.List);
+        });
+
+        it("should sort by path when sort mode is path", () => {
+            MetadataDiffContext.setSortMode(MetadataDiffSortMode.Path);
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/z-folder/file.txt",
+                    remotePath: "/remote/z-folder/file.txt",
+                    relativePath: "z-folder/file.txt",
+                    status: FileComparisonStatus.MODIFIED
+                },
+                {
+                    localPath: "/local/a-folder/file.txt",
+                    remotePath: "/remote/a-folder/file.txt",
+                    relativePath: "a-folder/file.txt",
+                    status: FileComparisonStatus.ADDED
+                }
+            ];
+            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+
+            const children = treeItem.getChildren();
+
+            expect(children).to.have.lengthOf(2);
+            expect((children[0] as MetadataDiffFileTreeItem).comparisonResult.relativePath).to.equal("a-folder/file.txt");
+            expect((children[1] as MetadataDiffFileTreeItem).comparisonResult.relativePath).to.equal("z-folder/file.txt");
+        });
+
+        it("should sort by file name when sort mode is name", () => {
+            MetadataDiffContext.setSortMode(MetadataDiffSortMode.Name);
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/a-folder/zebra.txt",
+                    remotePath: "/remote/a-folder/zebra.txt",
+                    relativePath: "a-folder/zebra.txt",
+                    status: FileComparisonStatus.MODIFIED
+                },
+                {
+                    localPath: "/local/z-folder/apple.txt",
+                    remotePath: "/remote/z-folder/apple.txt",
+                    relativePath: "z-folder/apple.txt",
+                    status: FileComparisonStatus.ADDED
+                }
+            ];
+            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+
+            const children = treeItem.getChildren();
+
+            expect(children).to.have.lengthOf(2);
+            // Sorted by file name: apple.txt comes before zebra.txt
+            expect((children[0] as MetadataDiffFileTreeItem).comparisonResult.relativePath).to.equal("z-folder/apple.txt");
+            expect((children[1] as MetadataDiffFileTreeItem).comparisonResult.relativePath).to.equal("a-folder/zebra.txt");
+        });
+
+        it("should sort by status when sort mode is status", () => {
+            MetadataDiffContext.setSortMode(MetadataDiffSortMode.Status);
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/file3.txt",
+                    remotePath: "/remote/file3.txt",
+                    relativePath: "file3.txt",
+                    status: FileComparisonStatus.MODIFIED
+                },
+                {
+                    localPath: "/local/file1.txt",
+                    remotePath: "/remote/file1.txt",
+                    relativePath: "file1.txt",
+                    status: FileComparisonStatus.ADDED
+                },
+                {
+                    localPath: "/local/file2.txt",
+                    remotePath: "/remote/file2.txt",
+                    relativePath: "file2.txt",
+                    status: FileComparisonStatus.DELETED
+                }
+            ];
+            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+
+            const children = treeItem.getChildren();
+
+            expect(children).to.have.lengthOf(3);
+            // Sorted by status: Added, Deleted, Modified
+            expect((children[0] as MetadataDiffFileTreeItem).comparisonResult.status).to.equal(FileComparisonStatus.ADDED);
+            expect((children[1] as MetadataDiffFileTreeItem).comparisonResult.status).to.equal(FileComparisonStatus.DELETED);
+            expect((children[2] as MetadataDiffFileTreeItem).comparisonResult.status).to.equal(FileComparisonStatus.MODIFIED);
+        });
+
+        it("should sort by path within same status when sort mode is status", () => {
+            MetadataDiffContext.setSortMode(MetadataDiffSortMode.Status);
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/z-file.txt",
+                    remotePath: "/remote/z-file.txt",
+                    relativePath: "z-file.txt",
+                    status: FileComparisonStatus.ADDED
+                },
+                {
+                    localPath: "/local/a-file.txt",
+                    remotePath: "/remote/a-file.txt",
+                    relativePath: "a-file.txt",
+                    status: FileComparisonStatus.ADDED
+                }
+            ];
+            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Test Environment");
+
+            const children = treeItem.getChildren();
+
+            expect(children).to.have.lengthOf(2);
+            // Both are added, so should be sorted by path: a-file.txt before z-file.txt
+            expect((children[0] as MetadataDiffFileTreeItem).comparisonResult.relativePath).to.equal("a-file.txt");
+            expect((children[1] as MetadataDiffFileTreeItem).comparisonResult.relativePath).to.equal("z-file.txt");
         });
     });
 
