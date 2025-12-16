@@ -34,6 +34,9 @@ export const Constants = {
         METADATA_DIFF_VIEW_AS_LIST: "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsList",
         METADATA_DIFF_DISCARD_FILE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFile",
         METADATA_DIFF_DISCARD_FOLDER: "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFolder",
+        METADATA_DIFF_SORT_BY_NAME: "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByName",
+        METADATA_DIFF_SORT_BY_PATH: "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByPath",
+        METADATA_DIFF_SORT_BY_STATUS: "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByStatus",
         COMPARE_WITH_ENVIRONMENT: "microsoft-powerapps-portals.compareWithEnvironment",
     },
     Icons: {
@@ -410,6 +413,7 @@ export const Constants = {
         ACTIONS_HUB_METADATA_DIFF_DISCARD_FILE: "ActionsHubMetadataDiffDiscardFile",
         ACTIONS_HUB_METADATA_DIFF_DISCARD_FOLDER: "ActionsHubMetadataDiffDiscardFolder",
         ACTIONS_HUB_METADATA_DIFF_VIEW_MODE_CHANGED: "ActionsHubMetadataDiffViewModeChanged",
+        ACTIONS_HUB_METADATA_DIFF_SORT_MODE_CHANGED: "ActionsHubMetadataDiffSortModeChanged",
         ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_CALLED: "ActionsHubCompareWithEnvironmentCalled",
         ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_ENVIRONMENT_SELECTED: "ActionsHubCompareWithEnvironmentEnvironmentSelected",
         ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_CANCELLED: "ActionsHubCompareWithEnvironmentCancelled",

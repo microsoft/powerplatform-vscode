@@ -44,6 +44,7 @@ import { openMetadataDiffFile } from "./handlers/metadata-diff/OpenMetadataDiffF
 import { openAllMetadataDiffs } from "./handlers/metadata-diff/OpenAllMetadataDiffsHandler";
 import { clearMetadataDiff } from "./handlers/metadata-diff/ClearMetadataDiffHandler";
 import { viewAsTree, viewAsList } from "./handlers/metadata-diff/ToggleViewModeHandler";
+import { sortByName, sortByPath, sortByStatus } from "./handlers/metadata-diff/SortModeHandler";
 import { MetadataDiffDecorationProvider } from "./MetadataDiffDecorationProvider";
 import { removeSiteComparison } from "./handlers/metadata-diff/RemoveSiteHandler";
 import { discardLocalChanges } from "./handlers/metadata-diff/DiscardLocalChangesHandler";
@@ -314,6 +315,9 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_REMOVE_SITE, removeSiteComparison),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_VIEW_AS_TREE, viewAsTree),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_VIEW_AS_LIST, viewAsList),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_SORT_BY_NAME, sortByName),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_SORT_BY_PATH, sortByPath),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_SORT_BY_STATUS, sortByStatus),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_DISCARD_FILE, discardLocalChanges),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_DISCARD_FOLDER, discardFolderChanges),
                 MetadataDiffDecorationProvider.getInstance().register()
