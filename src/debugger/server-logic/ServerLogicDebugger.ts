@@ -10,6 +10,8 @@ import { generateServerMockSdk } from './ServerLogicMockSdk';
 import { oneDSLoggerWrapper } from '../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import { ServerLogicCodeLensProvider } from './ServerLogicCodeLensProvider';
 import { desktopTelemetryEventNames } from '../../common/OneDSLoggerTelemetry/client/desktopExtensionTelemetryEventNames';
+import { dataverseAuthentication } from '../../common/services/AuthenticationProvider';
+import { PacWrapper } from '../../client/pac/PacWrapper';
 
 /**
  * Provided debug configuration template for Server Logic debugging
@@ -148,9 +150,115 @@ export class ServerLogicDebugProvider implements vscode.DebugConfigurationProvid
 }
 
 /**
- * Activates the Server Logic debugger
+ * Helper function to get Dataverse credentials from PAC auth
+ * Returns the org URL and access token from the currently authenticated profile
  */
-export function activateServerLogicDebugger(context: vscode.ExtensionContext): void {
+async function getDataverseCredentials(pacWrapper?: PacWrapper): Promise<{ orgUrl: string; accessToken: string } | undefined> {
+    if (!pacWrapper) {
+        return undefined;
+    }
+
+    try {
+        // Get the active org from PAC CLI
+        const activeOrgResult = await pacWrapper.activeOrg();
+
+        if (activeOrgResult?.Status !== 'Success' || !activeOrgResult.Results?.OrgUrl) {
+            return undefined;
+        }
+
+        const orgUrl = activeOrgResult.Results.OrgUrl;
+
+        // Get an access token for the Dataverse org
+        const authResult = await dataverseAuthentication(orgUrl);
+
+        if (!authResult.accessToken) {
+            return undefined;
+        }
+
+        return {
+            orgUrl,
+            accessToken: authResult.accessToken
+        };
+    } catch (error) {
+        oneDSLoggerWrapper.getLogger().traceError(
+            desktopTelemetryEventNames.SERVER_LOGIC_AUTH_ERROR,
+            'Failed to get Dataverse credentials',
+            error instanceof Error ? error : new Error(String(error))
+        );
+        return undefined;
+    }
+}
+
+/**
+ * Validates the current editor has a server logic file open
+ * @returns The file path if valid, undefined otherwise
+ */
+function validateServerLogicFile(): string | undefined {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        vscode.window.showErrorMessage(vscode.l10n.t('No active editor found.'));
+        return undefined;
+    }
+
+    const filePath = editor.document.uri.fsPath;
+    if (!filePath.includes('server-logics') || !filePath.endsWith('.js')) {
+        vscode.window.showWarningMessage(
+            vscode.l10n.t('Please open a server logic file (.js) from the server-logics folder.')
+        );
+        return undefined;
+    }
+
+    return filePath;
+}
+
+/**
+ * Starts a debug session for the server logic file
+ * @param filePath Path to the server logic file
+ * @param pacWrapper PacWrapper for authentication
+ * @param noDebug Whether to run without debugging
+ */
+async function startServerLogicSession(
+    filePath: string,
+    pacWrapper: PacWrapper | undefined,
+    noDebug: boolean
+): Promise<{ hasCredentials: boolean }> {
+    const env: Record<string, string> = {};
+
+    // Try to get credentials from PAC auth
+    const credentials = await getDataverseCredentials(pacWrapper);
+
+    if (credentials) {
+        env.DATAVERSE_URL = credentials.orgUrl;
+        env.DATAVERSE_TOKEN = credentials.accessToken;
+    }
+
+    const sessionName = noDebug
+        ? vscode.l10n.t('Run Server Logic')
+        : vscode.l10n.t('Debug Current Server Logic');
+
+    await vscode.debug.startDebugging(
+        vscode.workspace.getWorkspaceFolder(vscode.window.activeTextEditor!.document.uri),
+        {
+            type: 'node',
+            request: 'launch',
+            name: sessionName,
+            program: filePath,
+            skipFiles: ['<node_internals>/**'],
+            console: 'internalConsole',
+            ...(noDebug && { noDebug: true }),
+            env
+        }
+    );
+
+    return { hasCredentials: !!credentials };
+}
+
+/**
+ * Activates the Server Logic debugger
+ * @param context The extension context
+ * @param pacWrapper Optional PacWrapper instance for automatic authentication
+ */
+export function activateServerLogicDebugger(context: vscode.ExtensionContext, pacWrapper?: PacWrapper): void {
     const provider = new ServerLogicDebugProvider();
     context.subscriptions.push(
         vscode.debug.registerDebugConfigurationProvider('node', provider)
@@ -168,36 +276,18 @@ export function activateServerLogicDebugger(context: vscode.ExtensionContext): v
         vscode.commands.registerCommand(
             'powerpages.debugServerLogic',
             async () => {
-                const editor = vscode.window.activeTextEditor;
-                if (!editor) {
-                    vscode.window.showErrorMessage(vscode.l10n.t('No active editor found.'));
+                const filePath = validateServerLogicFile();
+                if (!filePath) {
                     return;
                 }
 
-                const filePath = editor.document.uri.fsPath;
-                if (!filePath.includes('server-logics') || !filePath.endsWith('.js')) {
-                    vscode.window.showWarningMessage(
-                        vscode.l10n.t('Please open a server logic file (.js) from the server-logics folder.')
-                    );
-                    return;
-                }
-
-                await vscode.debug.startDebugging(
-                    vscode.workspace.getWorkspaceFolder(editor.document.uri),
-                    {
-                        type: 'node',
-                        request: 'launch',
-                        name: vscode.l10n.t('Debug Current Server Logic'),
-                        program: filePath,
-                        skipFiles: ['<node_internals>/**'],
-                        console: 'internalConsole'
-                    }
-                );
+                const result = await startServerLogicSession(filePath, pacWrapper, false);
 
                 oneDSLoggerWrapper.getLogger().traceInfo(
                     desktopTelemetryEventNames.SERVER_LOGIC_DEBUG_COMMAND_EXECUTED,
                     {
-                        fileName: path.basename(filePath)
+                        fileName: path.basename(filePath),
+                        hasDataverseCredentials: result.hasCredentials
                     }
                 );
             }
@@ -208,37 +298,18 @@ export function activateServerLogicDebugger(context: vscode.ExtensionContext): v
         vscode.commands.registerCommand(
             'powerpages.runServerLogic',
             async () => {
-                const editor = vscode.window.activeTextEditor;
-                if (!editor) {
-                    vscode.window.showWarningMessage(vscode.l10n.t('No active editor. Please open a server logic file.'));
+                const filePath = validateServerLogicFile();
+                if (!filePath) {
                     return;
                 }
 
-                const filePath = editor.document.uri.fsPath;
-                if (!filePath.includes('server-logics') || !filePath.endsWith('.js')) {
-                    vscode.window.showWarningMessage(
-                        vscode.l10n.t('Please open a server logic file (.js) from the server-logics folder.')
-                    );
-                    return;
-                }
-
-                await vscode.debug.startDebugging(
-                    vscode.workspace.getWorkspaceFolder(editor.document.uri),
-                    {
-                        type: 'node',
-                        request: 'launch',
-                        name: vscode.l10n.t('Run Server Logic'),
-                        program: filePath,
-                        skipFiles: ['<node_internals>/**'],
-                        console: 'internalConsole',
-                        noDebug: true
-                    }
-                );
+                const result = await startServerLogicSession(filePath, pacWrapper, true);
 
                 oneDSLoggerWrapper.getLogger().traceInfo(
                     desktopTelemetryEventNames.SERVER_LOGIC_RUN_COMMAND_EXECUTED,
                     {
-                        fileName: path.basename(filePath)
+                        fileName: path.basename(filePath),
+                        hasDataverseCredentials: result.hasCredentials
                     }
                 );
             }

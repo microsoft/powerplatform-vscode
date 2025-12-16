@@ -184,8 +184,8 @@ export async function activate(
     const basicPanels = RegisterBasicPanels(pacWrapper);
     _context.subscriptions.push(...basicPanels);
 
-    // Activate Server Logic debugger (always available, doesn't require authentication)
-    activateServerLogicDebugger(_context);
+    // Activate Server Logic debugger with PAC wrapper for automatic authentication
+    activateServerLogicDebugger(_context, pacWrapper);
 
     let copilotNotificationShown = false;
 
