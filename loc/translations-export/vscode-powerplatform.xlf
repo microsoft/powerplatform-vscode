@@ -489,8 +489,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++95da24b6bc127a935e2e4323fe85d8f46be20c5e8ca5e10c6a134e5a0c6443a2">
       <source xml:lang="en">Failed to enable PAC telemetry.</source>
     </trans-unit>
-    <trans-unit id="++CODE++f6bbb96bbaa4fd26d2826ab43ea9df5b11c9d054ac19064c71f8575e6b1aef43">
+    <trans-unit id="++CODE++43dbf70c21c86c0ae92c85969872317a7a1e68ced8adb94059fafd83cac30eb5">
       <source xml:lang="en">Failed to export comparison: {0}</source>
+      <note>Error message when export fails. {0} is the error message.</note>
     </trans-unit>
     <trans-unit id="++CODE++83d9d98e86aca9239f8a2635a98356d956268fb41a465fbc039b9ac979c61649">
       <source xml:lang="en">Failed to fetch some files.</source>
@@ -514,8 +515,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++fc80bc8b6f74fff75eee85e53e42036bc6069a2fa632337a52789dacf96e9ba9">
       <source xml:lang="en">Failed to handle Power Pages URI: {0}</source>
     </trans-unit>
-    <trans-unit id="++CODE++557385a4e419d12322d59f4536b71ef893218900db605a6b7508c2d3bc86715f">
+    <trans-unit id="++CODE++01f0b1383686ea2dbed659b38128c80a17f90fd15b9c8636871a01f34fbd0f2c">
       <source xml:lang="en">Failed to import comparison: {0}</source>
+      <note>Error message when import fails. {0} is the error message.</note>
     </trans-unit>
     <trans-unit id="++CODE++9696573fbb3df8812e2d0b83aa3d9077681bf992c9f9514fbbb81fcc7787560d">
       <source xml:lang="en">Failed to install SARIF viewer extension. Opening results as text file.</source>
