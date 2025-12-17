@@ -84,7 +84,7 @@ export function getLastThreePartsOfFileName(string: string): string[] {
 }
 
 export function escapeDollarSign(paragraph: string): string {
-    return paragraph.replace(/\$/g, "\\$");
+    return paragraph.replace(/\\/g, "\\\\").replace(/\$/g, "\\$");
 }
 
 //TODO: Take message as a parameter
