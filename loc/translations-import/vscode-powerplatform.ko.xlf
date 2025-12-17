@@ -75,6 +75,10 @@
         <note>{0} represents the number of web files</note>
         <target state="translated">{0}개 웹 파일을 추가하는 중입니다. 기존 파일은 건너뜁니다.</target>
       </trans-unit>
+      <trans-unit id="++CODE++8890e663481705393ed3b1b4642095a11329e21320824ed567e383a12ea888f4">
+        <source xml:lang="en">All changed files are binary files (e.g., images) and cannot be displayed in the diff viewer. You can view them individually in the file tree.</source>
+        <target state="new">All changed files are binary files (e.g., images) and cannot be displayed in the diff viewer. You can view them individually in the file tree.</target>
+      </trans-unit>
       <trans-unit id="++CODE++c910bd41bbf67f9965a2aabaec8d39b749280ffea62e9708c507374b581a331d">
         <source xml:lang="en">Analysis complete! Results saved to: {0}</source>
         <target state="translated">분석이 완료되었습니다! 결과 저장 위치: {0}</target>
@@ -91,6 +95,16 @@
         <source xml:lang="en">Are you sure you want to delete the Auth Profile {0}-{1}?</source>
         <note>{0} is the user name, {1} is the URL of environment of the auth profile</note>
         <target state="translated">인증 프로필 {0}-{1}을(를) 삭제하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="++CODE++1d9cd153bf20c28e77061a9743a69cc8850f21221a1871f1c13b27e8470a2688">
+        <source xml:lang="en">Are you sure you want to discard local changes to '{0}'? This action cannot be undone.</source>
+        <note>Confirmation message before discarding local changes to a file.</note>
+        <target state="new">Are you sure you want to discard local changes to '{0}'? This action cannot be undone.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++2281e368458cc996be41f578298aa205b51f467dd868c44b83560c80340785af">
+        <source xml:lang="en">Are you sure you want to discard local changes to all {0} files in '{1}'? This action cannot be undone.</source>
+        <note>Confirmation message before discarding all local changes in a folder.</note>
+        <target state="new">Are you sure you want to discard local changes to all {0} files in '{1}'? This action cannot be undone.</target>
       </trans-unit>
       <trans-unit id="++CODE++e149c8c84127919560017a77982c24d21203ea0835f21dc45f34682f5e65840d">
         <source xml:lang="en">Arrow icon</source>
@@ -291,8 +305,9 @@ CodeQL 확장 패널에서 사용 가능한 쿼리를 확인합니다.</target>
         <source xml:lang="en">Command failed with exit code: {0}</source>
         <target state="translated">다음 종료 코드와 함께 명령 실패: {0}</target>
       </trans-unit>
-      <trans-unit id="++CODE++a5dd75e4f009266d387357e7177d51d70227a2d6e58e40bfa19c487a86119b18">
+      <trans-unit id="++CODE++95de5784f48c7fee97755bb29a90a128546a6a30201be3c73493229230ea7f72">
         <source xml:lang="en">Compare: {0} (Remote ↔ Local)</source>
+        <note>Title for the multi-diff editor when comparing all files in a site.</note>
         <target state="new">Compare: {0} (Remote ↔ Local)</target>
       </trans-unit>
       <trans-unit id="++CODE++cf8510772ff5dbeb2edc5e7209cc8f47e6c7c79810155260b41c6aec64a9f277">
@@ -384,6 +399,10 @@ CodeQL 확장 패널에서 사용 가능한 쿼리를 확인합니다.</target>
         <source xml:lang="en">Deleted locally</source>
         <target state="new">Deleted locally</target>
       </trans-unit>
+      <trans-unit id="++CODE++e07e053c2e10b3f1b6aef657d937cd91d45df4e40242788d7d621faea3380c27">
+        <source xml:lang="en">Discard Changes</source>
+        <target state="new">Discard Changes</target>
+      </trans-unit>
       <trans-unit id="++CODE++21c02244893ddc07c4494a2ac7eb69a143e75d7b49d04f10234a1865c2111310">
         <source xml:lang="en">Dislike something? Tell us more.</source>
         <target state="translated">불만이 있나요? 자세히 알려주세요.</target>
@@ -419,9 +438,14 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
         <source xml:lang="en">Download failed: {0}</source>
         <target state="translated">다운로드 실패: {0}</target>
       </trans-unit>
-      <trans-unit id="++CODE++fc712246d708b7d31470c5c0886c05f99b5b51bdbeae94d82320f2b1d1cf04d3">
-        <source xml:lang="en">Downloading site for comparison...</source>
-        <target state="new">Downloading site for comparison...</target>
+      <trans-unit id="++CODE++f945885439672eb379c73eb7c9124496311c6ef5b3b04cd23ea0a1c146225b84">
+        <source xml:lang="en">Download is complete. You can now view the report.</source>
+        <target state="new">Download is complete. You can now view the report.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++a5a4f0d8975940cbed234f9a5ee740f24e2b82f03a5b13e43f316b8395336e50">
+        <source xml:lang="en">Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show download output"))...</source>
+        <note>This is a markdown formatting which must persist across translations.</note>
+        <target state="new">Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show download output"))...</target>
       </trans-unit>
       <trans-unit id="++CODE++ac72407b10d30bf47faf11da09b605a85fc649bd3f2e33acb281655cb9021d9d">
         <source xml:lang="en">Edit the site</source>
@@ -529,6 +553,11 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
         <source xml:lang="en">Failed to disable PAC telemetry.</source>
         <target state="translated">PAC 원격 분석 기능을 사용 중지하지 못했습니다.</target>
       </trans-unit>
+      <trans-unit id="++CODE++bae865c75bb42b029c9b92f7c0abb122a2615c2f0f5a658b1633df8f9e921a16">
+        <source xml:lang="en">Failed to discard local changes: {0}</source>
+        <note>Error message when discarding local changes fails.</note>
+        <target state="new">Failed to discard local changes: {0}</target>
+      </trans-unit>
       <trans-unit id="++CODE++95da24b6bc127a935e2e4323fe85d8f46be20c5e8ca5e10c6a134e5a0c6443a2">
         <source xml:lang="en">Failed to enable PAC telemetry.</source>
         <target state="translated">PAC 원격 분석 기능을 사용 설정하지 못했습니다.</target>
@@ -580,6 +609,10 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
       <trans-unit id="++CODE++aac77df347205252b074d45aff7891debdba0ff1466cc0c351416d1662bb71ab">
         <source xml:lang="en">Feedback</source>
         <target state="translated">피드백</target>
+      </trans-unit>
+      <trans-unit id="++CODE++adab78b8f35901e7816538a4b89ee6e3cbd40b3df8a43be64bac0da0091b6d8f">
+        <source xml:lang="en">Fetching websites from the selected environment...</source>
+        <target state="new">Fetching websites from the selected environment...</target>
       </trans-unit>
       <trans-unit id="++CODE++2a8ddde521f14ecd4a8717f2bcf9a2b021fa38a578518066d2ae32271aa95237">
         <source xml:lang="en">Fetching your file ...</source>
@@ -765,9 +798,9 @@ Return to this chat and @powerpages can help you write and edit your website cod
         <source xml:lang="en">Maximum 30 characters allowed</source>
         <target state="translated">최대 30자까지 허용됩니다.</target>
       </trans-unit>
-      <trans-unit id="++CODE++860f6f3c2e1d6181dc472b69025ea24381c462c5f48319a7cf667de1a78c714b">
-        <source xml:lang="en">Metadata Comparison</source>
-        <target state="new">Metadata Comparison</target>
+      <trans-unit id="++CODE++a6d287e1a3ca10ca1e47de17060293fbb14d1e43cd8ffb9a296661c576615b69">
+        <source xml:lang="en">Metadata Diff</source>
+        <target state="new">Metadata Diff</target>
       </trans-unit>
       <trans-unit id="++CODE++b1c8258fb401975727a82d9ce473af0a600f076cc7b73dbd16524e815cf4153d">
         <source xml:lang="en">Microsoft wants your feedback</source>
@@ -1107,6 +1140,10 @@ URL: {1}
         <source xml:lang="en">Select an environment</source>
         <target state="translated">환경 선택</target>
       </trans-unit>
+      <trans-unit id="++CODE++fafd4e6859e28fd1f76851b8a08f6d3ccb58402fb65e44f3c342575741b056e6">
+        <source xml:lang="en">Select an environment to compare with</source>
+        <target state="new">Select an environment to compare with</target>
+      </trans-unit>
       <trans-unit id="++CODE++58ea04f09a2cbf67d55e70c45a6da4998e72e8e50f91e63862c0d65d14dfb1f5">
         <source xml:lang="en">Select folder for CodeQL database</source>
         <target state="translated">CodeQL 데이터베이스의 폴더 선택</target>
@@ -1197,6 +1234,16 @@ URL: {1}
         <source xml:lang="en">Submit</source>
         <target state="translated">제출</target>
       </trans-unit>
+      <trans-unit id="++CODE++9543efee4b5aadd6f27f5d4a06361b18d153aaf0b66e0121622fb9fd3581fdf8">
+        <source xml:lang="en">Successfully discarded local changes to '{0}'.</source>
+        <note>Success message after discarding local changes to a file.</note>
+        <target state="new">Successfully discarded local changes to '{0}'.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++52901a0a85676bc5805d19ecfc4921edeff3246e815b0d199dad38874519f160">
+        <source xml:lang="en">Successfully discarded local changes to {0} files in '{1}'.</source>
+        <note>Success message after discarding all local changes in a folder.</note>
+        <target state="new">Successfully discarded local changes to {0} files in '{1}'.</target>
+      </trans-unit>
       <trans-unit id="++CODE++e3a0cecb7c0c51b4a918164be2e4a75795139fbc652adbed3c6a144cf4adc009">
         <source xml:lang="en">Switching environment...</source>
         <target state="translated">환경 전환 중...</target>
@@ -1243,6 +1290,10 @@ URL: {1}
         <source xml:lang="en">The preview shown is for published changes. Please publish any pending changes to see them in the preview.</source>
         <target state="translated">표시된 미리 보기는 게시된 변경 내용에 대한 것입니다. 보류 중인 변경 내용을 게시하면 미리 보기에서 볼 수 있습니다.</target>
       </trans-unit>
+      <trans-unit id="++CODE++1f362261e8bb9564245fa7e590732de71b5f6cbb3e9963a8d8573b51ae18cbfe">
+        <source xml:lang="en">The website was not found in the selected environment. Please select a different environment.</source>
+        <target state="new">The website was not found in the selected environment. Please select a different environment.</target>
+      </trans-unit>
       <trans-unit id="++CODE++18f3be2933741b96e56b1e1f70818fcba46ec9c5b3dcd0e28d801eab15791d84">
         <source xml:lang="en">There was a permissions problem with the server</source>
         <target state="translated">서버에 권한 문제가 있습니다.</target>
@@ -1271,6 +1322,10 @@ URL: {1}
       <trans-unit id="++CODE++4f8c4d58a87feaaff06fd5f9cb84370ab4a42220bf1e8cbedbca716f8f21c9ee">
         <source xml:lang="en">To know more, see &lt;a href="https://go.microsoft.com/fwlink/?linkid=2206366"&gt;Copilot in Power Pages documentation.</source>
         <target state="translated">자세한 내용은 &lt;a href="https://go.microsoft.com/fwlink/?linkid=2206366"&gt;Power Pages 설명서에서 Copilot을 참조하세요.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++ea93d6a262ecb87a9fa4d09edbd7654c046597936a8e235fc3949eb01775ff99">
+        <source xml:lang="en">Tools</source>
+        <target state="new">Tools</target>
       </trans-unit>
       <trans-unit id="++CODE++4a7c431a6572c68bba17c3a5d858adbf5112462574953baf4d7d2fd0619807fe">
         <source xml:lang="en">Try @powerpages with GitHub Copilot</source>
@@ -1465,17 +1520,29 @@ URL: {1}
         <source xml:lang="en">pac pcf init</source>
         <target state="translated">pac pcf init</target>
       </trans-unit>
-      <trans-unit id="++CODE++8d3cb42e3e3212d1301b30e2de80763361a074237ba5c603bad0bedf69f0d120">
-        <source xml:lang="en">{0} ({1} change(s))</source>
-        <target state="new">{0} ({1} change(s))</target>
+      <trans-unit id="++CODE++1a0339214d26f1499ce28b0304c11fce7c177c9d6df1872ac1e9705760cfdbd8">
+        <source xml:lang="en">{0} ({1} file)</source>
+        <note>This is the site label showing the number of changed files. 'file' is singular.</note>
+        <target state="new">{0} ({1} file)</target>
+      </trans-unit>
+      <trans-unit id="++CODE++baeef25dc2eb180f07d2588035131c67de574a67b5b59941b077d96c5e08ec9e">
+        <source xml:lang="en">{0} ({1} files)</source>
+        <note>This is the site label showing the number of changed files. 'files' is plural.</note>
+        <target state="new">{0} ({1} files)</target>
+      </trans-unit>
+      <trans-unit id="++CODE++7ec0c807a987e15ebf5bcf7dab23b8fea20b59ed72cae0172465ad0fdd200882">
+        <source xml:lang="en">{0} binary file(s) (e.g., images) were skipped as they cannot be displayed in the diff viewer. You can view them individually in the file tree.</source>
+        <note>Message shown when binary files are skipped in the multi-diff view.</note>
+        <target state="new">{0} binary file(s) (e.g., images) were skipped as they cannot be displayed in the diff viewer. You can view them individually in the file tree.</target>
       </trans-unit>
       <trans-unit id="++CODE++48c4c42c9b70ac4687a121f91d8cb9a9063a3b51fbc5eeb68e5edc961ee18482">
         <source xml:lang="en">{0} created!</source>
         <note>{0} will be replaced by the entity type.</note>
         <target state="translated">{0} 생성 완료!</target>
       </trans-unit>
-      <trans-unit id="++CODE++21c6e9daa33e4efc327932fdbfaa13720e2536c8345dcc464d3022c4ef216731">
+      <trans-unit id="++CODE++21471e6993c28688e252bf884db38022cef15af0126d3d7f68c5e4a6c4dfd9d3">
         <source xml:lang="en">{0}: {1} (Remote ↔ Local)</source>
+        <note>Title for the diff editor when comparing a single file.</note>
         <target state="new">{0}: {1} (Remote ↔ Local)</target>
       </trans-unit>
     </body>
@@ -1519,6 +1586,10 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
       <trans-unit id="powerpages.copilotPanel.clearConversation.title">
         <source xml:lang="en">Clear Conversation</source>
         <target state="translated">대화 삭제</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.compareWithEnvironment.title">
+        <source xml:lang="en">Compare with Environment</source>
+        <target state="new">Compare with Environment</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.compareWithLocal.title">
         <source xml:lang="en">Compare with Local</source>
@@ -1567,6 +1638,14 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
       <trans-unit id="pacCLI.disableTelemetry.title">
         <source xml:lang="en">Disable PAC Telemetry</source>
         <target state="translated">PAC 원격 분석 사용 중지</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFolder.title">
+        <source xml:lang="en">Discard All Local Changes</source>
+        <target state="new">Discard All Local Changes</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFile.title">
+        <source xml:lang="en">Discard Local Changes</source>
+        <target state="new">Discard Local Changes</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.description">
         <source xml:lang="en">Discover how you can make complete, modern websites right in Visual Studio Code</source>
@@ -1672,6 +1751,10 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
         <source xml:lang="en">Open All Diffs</source>
         <target state="new">Open All Diffs</target>
       </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.openFile.title">
+        <source xml:lang="en">Open Comparison</source>
+        <target state="new">Open Comparison</target>
+      </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title">
         <source xml:lang="en">Open Containing Folder</source>
         <target state="translated">포함 폴더 열기</target>
@@ -1741,6 +1824,10 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
         <source xml:lang="en">Refresh</source>
         <target state="translated">새로 고침</target>
       </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.removeSite.title">
+        <source xml:lang="en">Remove Comparison</source>
+        <target state="new">Remove Comparison</target>
+      </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows.title">
         <source xml:lang="en">Reveal in Explorer</source>
         <target state="translated">탐색기에 표시</target>
@@ -1764,10 +1851,6 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       <trans-unit id="pacCLI.envAndSolutionsPanel.selectEnvironment.title">
         <source xml:lang="en">Select Environment</source>
         <target state="translated">환경 선택</target>
-      </trans-unit>
-      <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.openFile.title">
-        <source xml:lang="en">Show Diff</source>
-        <target state="new">Show Diff</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails.title">
         <source xml:lang="en">Show Environment Details</source>
@@ -1797,6 +1880,18 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
         <source xml:lang="en">Site Details</source>
         <target state="translated">사이트 정보</target>
       </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByName.title">
+        <source xml:lang="en">Sort by Name</source>
+        <target state="new">Sort by Name</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByPath.title">
+        <source xml:lang="en">Sort by Path</source>
+        <target state="new">Sort by Path</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByStatus.title">
+        <source xml:lang="en">Sort by Status</source>
+        <target state="new">Sort by Status</target>
+      </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.configuration.downloadSite.description">
         <source xml:lang="en">The folder where site will be downloaded when using Power Pages Actions. Leave this empty to ask for a folder every time you download a site.</source>
         <target state="translated">Power Pages 작업을 사용할 때 사이트가 다운로드되는 폴더입니다. 사이트를 다운로드할 때마다 폴더를 요청하려면 이 칸을 비워 두세요.</target>
@@ -1804,6 +1899,14 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite.title">
         <source xml:lang="en">Upload Site</source>
         <target state="translated">사이트 업로드</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsList.title">
+        <source xml:lang="en">View as List</source>
+        <target state="new">View as List</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsTree.title">
+        <source xml:lang="en">View as Tree</source>
+        <target state="new">View as Tree</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.description">
         <source xml:lang="en">Visual Studio Code for Web enables editing and publishing of web pages on your website.
