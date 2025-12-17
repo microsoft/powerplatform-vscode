@@ -7,9 +7,9 @@ import * as vscode from 'vscode';
 import { exec, spawn } from 'child_process';
 import * as path from 'path';
 import * as fs from 'fs';
-import { CODEQL_EXTENSION_ID } from '../../../../common/constants';
-import { Constants } from '../Constants';
-import { traceInfo, traceError, getBaseEventInfo } from '../TelemetryHelper';
+import { CODEQL_EXTENSION_ID } from '../../../../../common/constants';
+import { Constants } from '../../Constants';
+import { traceInfo, traceError, getBaseEventInfo } from '../../TelemetryHelper';
 
 interface PowerPagesConfig {
     codeQlQuery?: string;
@@ -521,14 +521,14 @@ export class CodeQLAction {
                                 await newSarifExt.exports.openLogs([vscode.Uri.file(resultsPath)]);
                                 this.outputChannel.appendLine(Constants.Strings.CODEQL_SARIF_VIEWER_OPENED);
 
-                traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_OPENED, {
-                    methodName: 'openWithSarifViewer',
-                    resultsPath: resultsPath,
-                    extensionId: 'MS-SarifVSCode.sarif-viewer',
-                    openedAfterInstall: true,
-                    issueCount: this.getIssueCountFromResults(resultsPath),
-                    ...getBaseEventInfo()
-                });                                return;
+                                traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_SARIF_VIEWER_OPENED, {
+                                    methodName: 'openWithSarifViewer',
+                                    resultsPath: resultsPath,
+                                    extensionId: 'MS-SarifVSCode.sarif-viewer',
+                                    openedAfterInstall: true,
+                                    issueCount: this.getIssueCountFromResults(resultsPath),
+                                    ...getBaseEventInfo()
+                                }); return;
                             }
                         }
 
@@ -645,7 +645,7 @@ export class CodeQLAction {
 
             await this.fallbackToTextEditor(resultsPath);
         }
-    }    private async fallbackToTextEditor(resultsPath: string): Promise<void> {
+    } private async fallbackToTextEditor(resultsPath: string): Promise<void> {
         try {
             traceInfo(Constants.EventNames.ACTIONS_HUB_CODEQL_FALLBACK_TO_TEXT_EDITOR, {
                 methodName: 'fallbackToTextEditor',
@@ -823,6 +823,7 @@ export class CodeQLAction {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     public dispose(): void {
 
     }

@@ -7,6 +7,7 @@ import * as os from "os";
 import * as path from "path";
 import * as readline from "readline";
 import * as fs from "fs-extra";
+import * as vscode from "vscode";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { BlockingQueue } from "../../common/utilities/BlockingQueue";
 import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput, PacOrgListOutput, PacOrgWhoOutput, PacAuthWhoOutput } from "./PacTypes";
@@ -22,7 +23,9 @@ export interface IPacWrapperContext {
 
 export interface IPacInterop {
     executeCommand(args: PacArguments): Promise<string>;
+    executeCommandWithProgress(args: PacArguments): Promise<boolean>;
     exit(): void;
+    showOutputChannel(): void;
 }
 
 export class PacInterop implements IPacInterop {
@@ -30,6 +33,7 @@ export class PacInterop implements IPacInterop {
     private outputQueue = new BlockingQueue<string>();
     private tempWorkingDirectory: string;
     private pacExecutablePath: string;
+    private _outputChannel: vscode.LogOutputChannel | undefined;
 
     public constructor(private readonly context: IPacWrapperContext, cliPath: string) {
         // Set the Working Directory to a random temp folder, as we do not want
@@ -39,7 +43,14 @@ export class PacInterop implements IPacInterop {
         this.pacExecutablePath = path.join(cliPath, PacInterop.getPacExecutableName());
     }
 
-    private static getPacExecutableName(): string {
+    private get outputChannel(): vscode.LogOutputChannel {
+        if (!this._outputChannel) {
+            this._outputChannel = vscode.window.createOutputChannel(vscode.l10n.t("Power Platform Tools: PAC CLI"), { log: true });
+        }
+        return this._outputChannel;
+    }
+
+    public static getPacExecutableName(): string {
         const platformName = os.platform();
         switch (platformName) {
             case 'win32':
@@ -116,6 +127,74 @@ export class PacInterop implements IPacInterop {
 
             oneDSLoggerWrapper.getLogger().traceInfo('InternalPacProcessReset');
         }
+    }
+
+    /**
+     * Executes a PAC command with output streamed to a VS Code Output Channel.
+     * This allows the user to see progress in real-time while still awaiting completion.
+     * @param args The PAC command arguments
+     * @returns Promise that resolves to true if command succeeded, false otherwise
+     */
+    public async executeCommandWithProgress(args: PacArguments): Promise<boolean> {
+        const command = `pac ${args.Arguments.join(" ")}`;
+
+        this.outputChannel.info(vscode.l10n.t("Executing: {0}", command));
+
+        return new Promise((resolve) => {
+            const env: NodeJS.ProcessEnv = { ...process.env, 'PP_TOOLS_AUTOMATION_AGENT': this.context.automationAgent };
+
+            //TODO: Enable this when PAC CLI issue is fixed
+            // if (!this.context.IsTelemetryEnabled()) {
+            //     env['PP_TOOLS_TELEMETRY_OPTOUT'] = 'true';
+            // }
+
+            if (os.platform() === 'darwin' && os.version().includes('ARM64')) {
+                env['DOTNET_ROLL_FORWARD'] = 'Major';
+            }
+
+            const proc = spawn(this.pacExecutablePath, args.Arguments, {
+                cwd: this.tempWorkingDirectory,
+                env: env,
+                stdio: ['pipe', 'pipe', 'pipe']
+            });
+
+            proc.stdout?.on('data', (data: Buffer) => {
+                const output = data.toString().trim();
+                if (output) {
+                    this.outputChannel.info(output);
+                }
+            });
+
+            proc.stderr?.on('data', (data: Buffer) => {
+                const output = data.toString().trim();
+                if (output) {
+                    this.outputChannel.warn(output);
+                }
+            });
+
+            proc.on('close', (code: number) => {
+                if (code === 0) {
+                    this.outputChannel.info(vscode.l10n.t("Command completed successfully."));
+                    resolve(true);
+                } else {
+                    this.outputChannel.error(vscode.l10n.t("Command failed with exit code: {0}", code.toString()));
+                    resolve(false);
+                }
+            });
+
+            proc.on('error', (error: Error) => {
+                this.outputChannel.error(vscode.l10n.t("Process error: {0}", error.message));
+                resolve(false);
+            });
+        });
+    }
+
+    /**
+     * Shows the PAC CLI output channel to the user.
+     * Call this method when you want to display command output to the user.
+     */
+    public showOutputChannel(): void {
+        this.outputChannel.show();
     }
 }
 
@@ -220,6 +299,31 @@ export class PacWrapper {
         }
     }
 
+    /**
+     * Downloads a site with output streamed to a VS Code Output Channel.
+     * This allows the user to see progress in real-time while still awaiting completion.
+     * @param downloadPath Path to download to
+     * @param websiteId Website ID
+     * @param dataModelVersion Data model version (1 or 2)
+     * @returns Promise that resolves to true if download succeeded, false otherwise
+     */
+    public async downloadSiteWithProgress(
+        downloadPath: string,
+        websiteId: string,
+        dataModelVersion: 1 | 2,
+        environmentUrl?: string
+    ): Promise<boolean> {
+        const pacArguments = ["pages", "download", "--path", downloadPath, "--webSiteId", websiteId, "--modelVersion", dataModelVersion.toString(), "--overwrite"];
+
+        if (environmentUrl) {
+            pacArguments.push("--environment", environmentUrl);
+        }
+
+        return this.pacInterop.executeCommandWithProgress(
+            new PacArguments(...pacArguments)
+        );
+    }
+
     public async resetPacProcess(): Promise<void> {
         try {
             await this.pacInterop.exit();
@@ -227,6 +331,14 @@ export class PacWrapper {
             // Ignore exit errors, process might already be dead
         }
         // The next operation will create a new process
+    }
+
+    /**
+     * Shows the PAC CLI output channel to the user.
+     * Call this method when you want to display command output to the user.
+     */
+    public showOutputChannel(): void {
+        this.pacInterop.showOutputChannel();
     }
 
     public exit(): void {

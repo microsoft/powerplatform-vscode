@@ -81,7 +81,7 @@ export class EnvAndSolutionTreeView implements vscode.TreeDataProvider<EnvOrSolu
                 vscode.env.clipboard.writeText((item.model as OrgListOutput).FriendlyName);
             }),
             vscode.commands.registerCommand("pacCLI.envAndSolutionsPanel.copyEnvironmentId", (item: EnvOrSolutionTreeItem) => {
-                vscode.env.clipboard.writeText((item.model as OrgListOutput).EnvironmentId);
+                vscode.env.clipboard.writeText((item.model as OrgListOutput).EnvironmentIdentifier.Id);
             }),
             vscode.commands.registerCommand("pacCLI.envAndSolutionsPanel.copyEnvironmentUrl", (item: EnvOrSolutionTreeItem) => {
                 vscode.env.clipboard.writeText((item.model as OrgListOutput).EnvironmentUrl);
@@ -135,7 +135,7 @@ class EnvOrSolutionTreeItem extends vscode.TreeItem {
             this.tooltip = vscode.l10n.t(
                 {
                     message: "Name: {0}\nURL: {1}\nEnvironment ID: {2}\nOrganization ID: {3}",
-                    args: [model.FriendlyName, model.EnvironmentUrl, model.EnvironmentId, model.OrganizationId],
+                    args: [model.FriendlyName, model.EnvironmentUrl, model.EnvironmentIdentifier.Id, model.OrganizationId],
                     comment: [
                         "This is a multi-line tooltip",
                         "The {0} represents Dataverse Environment's Friendly / Display name",

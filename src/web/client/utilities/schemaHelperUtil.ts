@@ -68,7 +68,8 @@ export function isBase64Encoded(
     return (
         (entity === schemaEntityName.WEBFILES || entity === schemaEntityName.SERVERLOGICS) &&
         (attributeType === entityAttributesWithBase64Encoding.documentbody ||
-            attributeType === entityAttributesWithBase64Encoding.filecontent)
+            attributeType === entityAttributesWithBase64Encoding.filecontent ||
+            attributeType === entityAttributesWithBase64Encoding.adx_filecontent)
     );
 }
 
@@ -85,14 +86,16 @@ export function useOctetStreamContentType(
 ) {
     return (
         (entity === schemaEntityName.WEBFILES || entity === schemaEntityName.SERVERLOGICS) &&
-        attributeType === entityAttributesWithBase64Encoding.filecontent
+        (attributeType === entityAttributesWithBase64Encoding.filecontent ||
+            attributeType === entityAttributesWithBase64Encoding.adx_filecontent)
     );
 }
 
 export function isWebFileV2(entity: string, attributeType: string) {
     return (
         (entity === schemaEntityName.WEBFILES || entity === schemaEntityName.SERVERLOGICS) &&
-        attributeType === entityAttributesWithBase64Encoding.filecontent
+        (attributeType === entityAttributesWithBase64Encoding.filecontent ||
+            attributeType === entityAttributesWithBase64Encoding.adx_filecontent)
     );
 }
 

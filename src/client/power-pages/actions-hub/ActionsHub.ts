@@ -5,7 +5,7 @@
 
 import * as vscode from "vscode";
 import { ECSFeaturesClient } from "../../../common/ecs-features/ecsFeatureClient";
-import { EnableActionsHub, EnableCodeQlScan } from "../../../common/ecs-features/ecsFeatureGates";
+import { EnableActionsHub, EnableCodeQlScan, EnableMetadataDiff } from "../../../common/ecs-features/ecsFeatureGates";
 import { ActionsHubTreeDataProvider } from "./ActionsHubTreeDataProvider";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { PacTerminal } from "../../lib/PacTerminal";
@@ -35,10 +35,18 @@ export class ActionsHub {
         return enableCodeQlScan;
     }
 
+    static isMetadataDiffEnabled(): boolean {
+        const enableMetadataDiff = ECSFeaturesClient.getConfig(EnableMetadataDiff).enableMetadataDiff;
+
+        return !!enableMetadataDiff;
+    }
+
     static async initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal): Promise<void> {
         if (ActionsHub._isInitialized) {
             return;
         }
+
+        vscode.commands.executeCommand('setContext', 'microsoft.powerplatform.pages.actionsHub.loadingWebsites', false);
 
         try {
             const isActionsHubEnabled = ActionsHub.isEnabled();
@@ -51,6 +59,7 @@ export class ActionsHub {
 
             vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", isActionsHubEnabled);
             vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.codeQlScanEnabled", isCodeQlScanEnabled);
+            vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.metadataDiffEnabled", ActionsHub.isMetadataDiffEnabled());
 
             if (!isActionsHubEnabled) {
                 return;
