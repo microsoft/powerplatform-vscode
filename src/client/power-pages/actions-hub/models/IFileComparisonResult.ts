@@ -35,4 +35,6 @@ export interface ISiteComparisonResults {
     isImported?: boolean;
     /** ISO 8601 timestamp when the comparison was exported (only set for imported comparisons) */
     exportedAt?: string;
+    /** The data model version of the site (1 = Standard, 2 = Enhanced) */
+    dataModelVersion?: 1 | 2;
 }

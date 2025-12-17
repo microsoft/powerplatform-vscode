@@ -101,7 +101,7 @@ describe("ImportMetadataDiffHandler", () => {
             await importMetadataDiff();
 
             expect(traceInfoStub.called).to.be.true;
-            expect(traceInfoStub.firstCall.args[0]).to.equal("ActionsHubMetadataDiffImport");
+            expect(traceInfoStub.firstCall.args[0]).to.equal("ActionsHubMetadataDiffImportCalled");
         });
     });
 });

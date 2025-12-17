@@ -102,7 +102,7 @@ function validateImportData(data: unknown): string | undefined {
  * Imports a metadata diff from a JSON file
  */
 export async function importMetadataDiff(): Promise<void> {
-    traceInfo(Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_IMPORT, {
+    traceInfo(Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_IMPORT_CALLED, {
         methodName: importMetadataDiff.name
     });
 
@@ -264,7 +264,7 @@ export async function importMetadataDiff(): Promise<void> {
             { methodName: importMetadataDiff.name }
         );
         vscode.window.showErrorMessage(
-            vscode.l10n.t("Failed to import comparison: {0}", (error as Error).message)
+            Constants.StringFunctions.METADATA_DIFF_IMPORT_FAILED((error as Error).message)
         );
     }
 }

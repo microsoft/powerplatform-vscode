@@ -19,6 +19,8 @@ describe('ShowEnvironmentDetailsHandler', () => {
     let sandbox: sinon.SinonSandbox;
     let mockShowInformationMessage: sinon.SinonStub;
     let traceErrorStub: sinon.SinonStub;
+    let originalClipboard: typeof vscode.env.clipboard;
+    let mockWriteText: sinon.SinonStub;
 
     const mockAuthInfo: AuthInfo = {
         UserType: 'user-type',
@@ -63,16 +65,29 @@ describe('ShowEnvironmentDetailsHandler', () => {
         sandbox.stub(TelemetryHelper, "getBaseEventInfo").returns({ foo: 'bar' });
         sandbox.stub(TelemetryHelper, "traceInfo");
         sandbox.stub(vscode.env, 'sessionId').get(() => 'test-session-id');
+
+        // Save original clipboard and create mock
+        originalClipboard = vscode.env.clipboard;
+        mockWriteText = sandbox.stub().resolves();
+        Object.defineProperty(vscode.env, 'clipboard', {
+            value: { writeText: mockWriteText, readText: sandbox.stub().resolves('') },
+            configurable: true
+        });
     });
 
     afterEach(() => {
+        // Restore original clipboard
+        Object.defineProperty(vscode.env, 'clipboard', {
+            value: originalClipboard,
+            configurable: true
+        });
         sandbox.restore();
     });
 
     describe('showEnvironmentDetails', () => {
         it('should show information notification', async () => {
             PacContext['_authInfo'] = mockAuthInfo;
-            mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
+            mockShowInformationMessage.resolves(undefined);
 
             await showEnvironmentDetails();
 
@@ -81,7 +96,7 @@ describe('ShowEnvironmentDetailsHandler', () => {
 
         it('should have expected heading', async () => {
             PacContext['_authInfo'] = mockAuthInfo;
-            mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
+            mockShowInformationMessage.resolves(undefined);
 
             await showEnvironmentDetails();
 
@@ -91,7 +106,7 @@ describe('ShowEnvironmentDetailsHandler', () => {
 
         it('should be rendered as modal', async () => {
             PacContext['_authInfo'] = mockAuthInfo;
-            mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
+            mockShowInformationMessage.resolves(undefined);
 
             await showEnvironmentDetails();
 
@@ -102,7 +117,7 @@ describe('ShowEnvironmentDetailsHandler', () => {
         it('should show environment details when auth info is available', async () => {
             PacContext['_authInfo'] = mockAuthInfo;
             PacContext['_orgInfo'] = mockOrgInfo;
-            mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
+            mockShowInformationMessage.resolves(undefined);
 
             await showEnvironmentDetails();
 
@@ -124,7 +139,7 @@ describe('ShowEnvironmentDetailsHandler', () => {
 
         it('should handle cases without auth info', async () => {
             PacContext['_authInfo'] = null;
-            mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
+            mockShowInformationMessage.resolves(undefined);
 
             await showEnvironmentDetails();
 
@@ -138,6 +153,28 @@ describe('ShowEnvironmentDetailsHandler', () => {
 
             expect(traceErrorStub.calledOnce).to.be.true;
             expect(traceErrorStub.firstCall.args[0]).to.equal(Constants.EventNames.ACTIONS_HUB_SHOW_ENVIRONMENT_DETAILS_FAILED);
+        });
+
+        it('should copy details to clipboard when user clicks copy button', async () => {
+            PacContext['_authInfo'] = mockAuthInfo;
+            PacContext['_orgInfo'] = mockOrgInfo;
+            mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
+
+            await showEnvironmentDetails();
+
+            expect(mockWriteText.calledOnce).to.be.true;
+            const clipboardContent = mockWriteText.firstCall.args[0];
+            expect(clipboardContent).to.include("Session ID: test-session-id");
+            expect(clipboardContent).to.include("Tenant ID: test-tenant");
+        });
+
+        it('should not copy to clipboard when user dismisses dialog', async () => {
+            PacContext['_authInfo'] = mockAuthInfo;
+            mockShowInformationMessage.resolves(undefined);
+
+            await showEnvironmentDetails();
+
+            expect(mockWriteText.called).to.be.false;
         });
     });
 });

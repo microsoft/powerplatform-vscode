@@ -41,6 +41,7 @@ export const Constants = {
         METADATA_DIFF_GENERATE_HTML_REPORT: "microsoft.powerplatform.pages.actionsHub.metadataDiff.generateHtmlReport",
         METADATA_DIFF_EXPORT: "microsoft.powerplatform.pages.actionsHub.metadataDiff.export",
         METADATA_DIFF_IMPORT: "microsoft.powerplatform.pages.actionsHub.metadataDiff.import",
+        METADATA_DIFF_RESYNC: "microsoft.powerplatform.pages.actionsHub.metadataDiff.resync",
         COMPARE_WITH_ENVIRONMENT: "microsoft-powerapps-portals.compareWithEnvironment",
     },
     Icons: {
@@ -227,6 +228,7 @@ export const Constants = {
         HTML_REPORT_UNABLE_TO_READ_BOTH: vscode.l10n.t("Unable to read one or both files"),
         // Export/Import strings
         METADATA_DIFF_EXPORT_PROGRESS: vscode.l10n.t("Exporting comparison..."),
+        METADATA_DIFF_EXPORT_TITLE: vscode.l10n.t("Export Metadata Diff"),
         METADATA_DIFF_IMPORT_PROGRESS: vscode.l10n.t("Importing comparison..."),
         METADATA_DIFF_EXPORT_INVALID_FILE: vscode.l10n.t("Invalid file format. The file does not contain valid metadata diff data."),
         METADATA_DIFF_EXPORT_UNSUPPORTED_VERSION: vscode.l10n.t("Unsupported version. This file was created with a newer version of the extension."),
@@ -235,6 +237,8 @@ export const Constants = {
         METADATA_DIFF_BINARY_FILE_NOT_AVAILABLE: vscode.l10n.t("Binary file content is not available in imported comparisons. The original file was not included in the export."),
         METADATA_DIFF_REPLACE_EXISTING_IMPORT: vscode.l10n.t("An imported comparison already exists for this site. Do you want to replace it?"),
         REPLACE: vscode.l10n.t("Replace"),
+        METADATA_DIFF_RESYNC_COMPLETED: vscode.l10n.t("Comparison has been refreshed with the latest data from the environment."),
+        METADATA_DIFF_CANNOT_RESYNC_IMPORTED: vscode.l10n.t("Cannot refresh an imported comparison. Import a new file or run a new comparison."),
     },
     /**
      * Functions that return localized strings with dynamic parameters.
@@ -414,6 +418,15 @@ export const Constants = {
                 comment: ["Success message when export is saved. {0} is the file path."]
             }),
         /**
+         * Returns the error message when export fails
+         */
+        METADATA_DIFF_EXPORT_FAILED: (errorMessage: string) =>
+            vscode.l10n.t({
+                message: "Failed to export comparison: {0}",
+                args: [errorMessage],
+                comment: ["Error message when export fails. {0} is the error message."]
+            }),
+        /**
          * Returns the success message when import is complete
          */
         METADATA_DIFF_IMPORT_SUCCESS: (siteName: string) =>
@@ -421,6 +434,24 @@ export const Constants = {
                 message: "Comparison for '{0}' imported successfully.",
                 args: [siteName],
                 comment: ["Success message when import is complete. {0} is the site name."]
+            }),
+        /**
+         * Returns the error message when import fails
+         */
+        METADATA_DIFF_IMPORT_FAILED: (errorMessage: string) =>
+            vscode.l10n.t({
+                message: "Failed to import comparison: {0}",
+                args: [errorMessage],
+                comment: ["Error message when import fails. {0} is the error message."]
+            }),
+        /**
+         * Returns the progress message when resyncing a site comparison
+         */
+        RESYNCING_SITE_COMPARISON: (siteName: string) =>
+            vscode.l10n.t({
+                message: "Refreshing comparison for {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\"))...",
+                args: [siteName],
+                comment: ["This is a markdown formatting which must persist across translations."]
             }),
     },
     EventNames: {
@@ -560,15 +591,20 @@ export const Constants = {
         ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_FAILED: "ActionsHubCompareWithEnvironmentFailed",
         ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_NO_DIFFERENCES: "ActionsHubCompareWithEnvironmentNoDifferences",
         ACTIONS_HUB_METADATA_DIFF_SITE_DOWNLOAD_COMPLETED: "ActionsHubMetadataDiffSiteDownloadCompleted",
-        ACTIONS_HUB_METADATA_DIFF_GENERATE_HTML_REPORT: "ActionsHubMetadataDiffGenerateHtmlReport",
+        ACTIONS_HUB_METADATA_DIFF_GENERATE_HTML_REPORT_CALLED: "ActionsHubMetadataDiffGenerateHtmlReportCalled",
         ACTIONS_HUB_METADATA_DIFF_HTML_REPORT_SAVED: "ActionsHubMetadataDiffHtmlReportSaved",
         ACTIONS_HUB_METADATA_DIFF_HTML_REPORT_FAILED: "ActionsHubMetadataDiffHtmlReportFailed",
-        ACTIONS_HUB_METADATA_DIFF_EXPORT: "ActionsHubMetadataDiffExport",
+        ACTIONS_HUB_METADATA_DIFF_EXPORT_CALLED: "ActionsHubMetadataDiffExportCalled",
+        ACTIONS_HUB_METADATA_DIFF_EXPORT_CANCELLED: "ActionsHubMetadataDiffExportCancelled",
         ACTIONS_HUB_METADATA_DIFF_EXPORT_SUCCESS: "ActionsHubMetadataDiffExportSuccess",
         ACTIONS_HUB_METADATA_DIFF_EXPORT_FAILED: "ActionsHubMetadataDiffExportFailed",
-        ACTIONS_HUB_METADATA_DIFF_IMPORT: "ActionsHubMetadataDiffImport",
+        ACTIONS_HUB_METADATA_DIFF_IMPORT_CALLED: "ActionsHubMetadataDiffImportCalled",
         ACTIONS_HUB_METADATA_DIFF_IMPORT_SUCCESS: "ActionsHubMetadataDiffImportSuccess",
         ACTIONS_HUB_METADATA_DIFF_IMPORT_FAILED: "ActionsHubMetadataDiffImportFailed",
+        ACTIONS_HUB_METADATA_DIFF_RESYNC_CALLED: "ActionsHubMetadataDiffResyncCalled",
+        ACTIONS_HUB_METADATA_DIFF_RESYNC_COMPLETED: "ActionsHubMetadataDiffResyncCompleted",
+        ACTIONS_HUB_METADATA_DIFF_RESYNC_FAILED: "ActionsHubMetadataDiffResyncFailed",
+        ACTIONS_HUB_METADATA_DIFF_RESYNC_NO_DIFFERENCES: "ActionsHubMetadataDiffResyncNoDifferences",
     },
     StudioEndpoints: {
         TEST: "https://make.test.powerpages.microsoft.com",

@@ -24,6 +24,7 @@ export class MetadataDiffSiteTreeItem extends ActionsHubTreeItem {
     private readonly _environmentId: string;
     private readonly _isImported: boolean;
     private readonly _exportedAt?: string;
+    private readonly _dataModelVersion?: 1 | 2;
 
     constructor(siteResults: ISiteComparisonResults) {
         const fileCount = siteResults.comparisonResults.length;
@@ -53,6 +54,7 @@ export class MetadataDiffSiteTreeItem extends ActionsHubTreeItem {
         this._environmentId = siteResults.environmentId;
         this._isImported = isImported;
         this._exportedAt = siteResults.exportedAt;
+        this._dataModelVersion = siteResults.dataModelVersion;
     }
 
     public getChildren(): ActionsHubTreeItem[] {
@@ -217,5 +219,9 @@ export class MetadataDiffSiteTreeItem extends ActionsHubTreeItem {
 
     public get localSiteName(): string {
         return this._localSiteName;
+    }
+
+    public get dataModelVersion(): (1 | 2) | undefined {
+        return this._dataModelVersion;
     }
 }

@@ -134,4 +134,57 @@ describe("GenerateHtmlReportHandler", () => {
             expect(saveDialogOptions.defaultUri.fsPath).to.include("metadata-diff-report");
         });
     });
+
+    describe("telemetry", () => {
+        it("should call traceInfo when generateHtmlReport is invoked", async () => {
+            const mockResults: IFileComparisonResult[] = [
+                { localPath: "/local/file.html", remotePath: "/remote/file.html", relativePath: "file.html", status: FileComparisonStatus.MODIFIED }
+            ];
+            const treeItem = createMockTreeItem(mockResults, "Telemetry Test Site");
+
+            showSaveDialogStub.resolves(undefined);
+
+            await generateHtmlReport(treeItem);
+
+            const traceInfoStub = TelemetryHelper.traceInfo as sinon.SinonStub;
+            expect(traceInfoStub.called).to.be.true;
+            expect(traceInfoStub.firstCall.args[0]).to.equal("ActionsHubMetadataDiffGenerateHtmlReportCalled");
+            expect(traceInfoStub.firstCall.args[1]).to.deep.include({
+                siteName: "Telemetry Test Site",
+                fileCount: 1
+            });
+        });
+
+        it("should include correct file count in telemetry for multiple files", async () => {
+            const mockResults: IFileComparisonResult[] = [
+                { localPath: "/local/file1.html", remotePath: "/remote/file1.html", relativePath: "file1.html", status: FileComparisonStatus.MODIFIED },
+                { localPath: "/local/file2.html", remotePath: "/remote/file2.html", relativePath: "file2.html", status: FileComparisonStatus.ADDED },
+                { localPath: "/local/file3.html", remotePath: "/remote/file3.html", relativePath: "file3.html", status: FileComparisonStatus.DELETED }
+            ];
+            const treeItem = createMockTreeItem(mockResults);
+
+            showSaveDialogStub.resolves(undefined);
+
+            await generateHtmlReport(treeItem);
+
+            const traceInfoStub = TelemetryHelper.traceInfo as sinon.SinonStub;
+            expect(traceInfoStub.firstCall.args[1]).to.deep.include({
+                fileCount: 3
+            });
+        });
+
+        it("should not call traceError when user cancels save dialog", async () => {
+            const mockResults: IFileComparisonResult[] = [
+                { localPath: "/local/file.html", remotePath: "/remote/file.html", relativePath: "file.html", status: FileComparisonStatus.MODIFIED }
+            ];
+            const treeItem = createMockTreeItem(mockResults);
+
+            showSaveDialogStub.resolves(undefined);
+
+            await generateHtmlReport(treeItem);
+
+            const traceErrorStub = TelemetryHelper.traceError as sinon.SinonStub;
+            expect(traceErrorStub.called).to.be.false;
+        });
+    });
 });
