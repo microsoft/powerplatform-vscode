@@ -50,6 +50,9 @@ import * as RemoveSiteHandler from "../../../../power-pages/actions-hub/handlers
 import * as DiscardLocalChangesHandler from "../../../../power-pages/actions-hub/handlers/metadata-diff/DiscardLocalChangesHandler";
 import * as DiscardFolderChangesHandler from "../../../../power-pages/actions-hub/handlers/metadata-diff/DiscardFolderChangesHandler";
 import * as GenerateHtmlReportHandler from "../../../../power-pages/actions-hub/handlers/metadata-diff/GenerateHtmlReportHandler";
+import * as ExportMetadataDiffHandler from "../../../../power-pages/actions-hub/handlers/metadata-diff/ExportMetadataDiffHandler";
+import * as ImportMetadataDiffHandler from "../../../../power-pages/actions-hub/handlers/metadata-diff/ImportMetadataDiffHandler";
+import * as ResyncMetadataDiffHandler from "../../../../power-pages/actions-hub/handlers/metadata-diff/ResyncMetadataDiffHandler";
 import { ActionsHub } from "../../../../power-pages/actions-hub/ActionsHub";
 
 // Add global type declaration for ArtemisContext
@@ -594,6 +597,68 @@ describe("ActionsHubTreeDataProvider", () => {
                 expect(mockCommandHandler.calledOnce).to.be.true;
             } else {
                 throw new Error("generateHtmlReport command was not registered");
+            }
+        });
+
+        it('should register exportMetadataDiff command', async () => {
+            sinon.stub(ActionsHub, 'isMetadataDiffEnabled').returns(true);
+            const mockCommandHandler = sinon.stub(ExportMetadataDiffHandler, 'exportMetadataDiff');
+            mockCommandHandler.resolves();
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            actionsHubTreeDataProvider["registerPanel"]();
+
+            expect(registerCommandStub.calledWith(Constants.Commands.METADATA_DIFF_EXPORT)).to.be.true;
+
+            const exportCall = registerCommandStub.getCalls().find(call =>
+                call.args[0] === Constants.Commands.METADATA_DIFF_EXPORT
+            );
+
+            if (exportCall) {
+                await exportCall.args[1]();
+                expect(mockCommandHandler.calledOnce).to.be.true;
+            } else {
+                throw new Error("exportMetadataDiff command was not registered");
+            }
+        });
+
+        it('should register importMetadataDiff command', async () => {
+            sinon.stub(ActionsHub, 'isMetadataDiffEnabled').returns(true);
+            const mockCommandHandler = sinon.stub(ImportMetadataDiffHandler, 'importMetadataDiff');
+            mockCommandHandler.resolves();
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            actionsHubTreeDataProvider["registerPanel"]();
+
+            expect(registerCommandStub.calledWith(Constants.Commands.METADATA_DIFF_IMPORT)).to.be.true;
+
+            const importCall = registerCommandStub.getCalls().find(call =>
+                call.args[0] === Constants.Commands.METADATA_DIFF_IMPORT
+            );
+
+            if (importCall) {
+                await importCall.args[1]();
+                expect(mockCommandHandler.calledOnce).to.be.true;
+            } else {
+                throw new Error("importMetadataDiff command was not registered");
+            }
+        });
+
+        it('should register resyncMetadataDiff command', async () => {
+            sinon.stub(ActionsHub, 'isMetadataDiffEnabled').returns(true);
+            const innerHandler = sinon.stub();
+            sinon.stub(ResyncMetadataDiffHandler, 'resyncMetadataDiff').returns(innerHandler);
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            actionsHubTreeDataProvider["registerPanel"]();
+
+            expect(registerCommandStub.calledWith(Constants.Commands.METADATA_DIFF_RESYNC)).to.be.true;
+
+            const resyncCall = registerCommandStub.getCalls().find(call =>
+                call.args[0] === Constants.Commands.METADATA_DIFF_RESYNC
+            );
+
+            if (resyncCall) {
+                expect(resyncCall.args[1]).to.equal(innerHandler);
+            } else {
+                throw new Error("resyncMetadataDiff command was not registered");
             }
         });
 

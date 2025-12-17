@@ -8,7 +8,7 @@ import { MetadataDiffSiteTreeItem } from "../../tree-items/metadata-diff/Metadat
 import { IFileComparisonResult, FileComparisonStatus } from "../../models/IFileComparisonResult";
 import { Constants } from "../../Constants";
 import { traceInfo, traceError } from "../../TelemetryHelper";
-import { isBinaryFile } from "./OpenAllMetadataDiffsHandler";
+import { isBinaryFile } from "../../ActionsHubUtils";
 
 /**
  * Represents the content of a file comparison
@@ -25,7 +25,7 @@ interface IFileContentComparison {
  * The report can be saved and shared with non-technical users.
  */
 export async function generateHtmlReport(treeItem: MetadataDiffSiteTreeItem): Promise<void> {
-    traceInfo(Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_GENERATE_HTML_REPORT, {
+    traceInfo(Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_GENERATE_HTML_REPORT_CALLED, {
         siteName: treeItem.siteName,
         fileCount: treeItem.comparisonResults.length
     });

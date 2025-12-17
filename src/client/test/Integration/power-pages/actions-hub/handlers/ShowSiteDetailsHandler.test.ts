@@ -16,23 +16,39 @@ import * as TelemetryHelper from '../../../../../power-pages/actions-hub/Telemet
 describe('ShowSiteDetailsHandler', () => {
     let sandbox: sinon.SinonSandbox;
     let mockShowInformationMessage: sinon.SinonStub;
+    let traceInfoStub: sinon.SinonStub;
+    let originalClipboard: typeof vscode.env.clipboard;
+    let mockWriteText: sinon.SinonStub;
 
     beforeEach(() => {
         sandbox = sinon.createSandbox();
         mockShowInformationMessage = sandbox.stub(vscode.window, 'showInformationMessage');
         sandbox.stub(TelemetryHelper, 'traceError');
         sandbox.stub(TelemetryHelper, "getBaseEventInfo").returns({ foo: 'bar' });
-        sandbox.stub(TelemetryHelper, "traceInfo");
+        traceInfoStub = sandbox.stub(TelemetryHelper, "traceInfo");
         sandbox.stub(vscode.env, 'sessionId').get(() => 'test-session-id');
+
+        // Save original clipboard and create mock
+        originalClipboard = vscode.env.clipboard;
+        mockWriteText = sandbox.stub().resolves();
+        Object.defineProperty(vscode.env, 'clipboard', {
+            value: { writeText: mockWriteText, readText: sandbox.stub().resolves('') },
+            configurable: true
+        });
     });
 
     afterEach(() => {
+        // Restore original clipboard
+        Object.defineProperty(vscode.env, 'clipboard', {
+            value: originalClipboard,
+            configurable: true
+        });
         sandbox.restore();
     });
 
     describe('showSiteDetails', () => {
         it('should show information notification', async () => {
-            mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
+            mockShowInformationMessage.resolves(undefined);
 
             await showSiteDetails({
                 siteInfo: {
@@ -46,7 +62,7 @@ describe('ShowSiteDetailsHandler', () => {
         });
 
         it('should have expected heading', async () => {
-            mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
+            mockShowInformationMessage.resolves(undefined);
 
             await showSiteDetails({
                 siteInfo: {
@@ -61,7 +77,7 @@ describe('ShowSiteDetailsHandler', () => {
         });
 
         it('should be rendered as modal', async () => {
-            mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
+            mockShowInformationMessage.resolves(undefined);
 
             await showSiteDetails({
                 siteInfo: {
@@ -76,7 +92,7 @@ describe('ShowSiteDetailsHandler', () => {
         });
 
         it('should show site details', async () => {
-            mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
+            mockShowInformationMessage.resolves(undefined);
 
             await showSiteDetails({
                 siteInfo: {
@@ -100,6 +116,55 @@ describe('ShowSiteDetailsHandler', () => {
             expect(message).to.include("Site visibility: Public");
             expect(message).to.include("Creator: Test Creator");
             expect(message).to.include("Created on: March 20, 2025");
+        });
+
+        it('should copy details to clipboard when user clicks copy button', async () => {
+            mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
+
+            await showSiteDetails({
+                siteInfo: {
+                    name: "Test Site",
+                    websiteId: "test-id",
+                    dataModelVersion: 1,
+                    websiteUrl: 'https://test-site.com',
+                    siteVisibility: SiteVisibility.Public,
+                    createdOn: "2025-03-20T00:00:00Z",
+                    creator: "Test Creator"
+                } as IWebsiteInfo
+            } as SiteTreeItem);
+
+            expect(mockWriteText.calledOnce).to.be.true;
+            const clipboardContent = mockWriteText.firstCall.args[0];
+            expect(clipboardContent).to.include("Friendly name: Test Site");
+            expect(clipboardContent).to.include("Website Id: test-id");
+        });
+
+        it('should log telemetry when user clicks copy button', async () => {
+            mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
+
+            await showSiteDetails({
+                siteInfo: {
+                    name: "Test Site",
+                    websiteId: "test-id",
+                    dataModelVersion: 1
+                } as IWebsiteInfo
+            } as SiteTreeItem);
+
+            expect(traceInfoStub.calledWith(Constants.EventNames.ACTIONS_HUB_SHOW_SITE_DETAILS_COPY_TO_CLIPBOARD)).to.be.true;
+        });
+
+        it('should not copy to clipboard when user dismisses dialog', async () => {
+            mockShowInformationMessage.resolves(undefined);
+
+            await showSiteDetails({
+                siteInfo: {
+                    name: "Test Site",
+                    websiteId: "test-id",
+                    dataModelVersion: 1
+                } as IWebsiteInfo
+            } as SiteTreeItem);
+
+            expect(mockWriteText.called).to.be.false;
         });
     });
 });
