@@ -24,7 +24,9 @@ export const Constants = {
         METADATA_DIFF_SITE: "metadataDiffSite",
         METADATA_DIFF_SITE_IMPORTED: "metadataDiffSiteImported",
         METADATA_DIFF_FOLDER: "metadataDiffFolder",
+        METADATA_DIFF_FOLDER_IMPORTED: "metadataDiffFolderImported",
         METADATA_DIFF_FILE: "metadataDiffFile",
+        METADATA_DIFF_FILE_IMPORTED: "metadataDiffFileImported",
     },
     Commands: {
         METADATA_DIFF_OPEN_FILE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.openFile",

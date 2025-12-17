@@ -43,6 +43,12 @@ describe("MetadataDiffFolderTreeItem", () => {
             expect(treeItem.contextValue).to.equal(Constants.ContextValues.METADATA_DIFF_FOLDER);
         });
 
+        it("should have imported context value when isImported is true", () => {
+            const treeItem = new MetadataDiffFolderTreeItem("folder", "Test Site", "folder", true);
+
+            expect(treeItem.contextValue).to.equal(Constants.ContextValues.METADATA_DIFF_FOLDER_IMPORTED);
+        });
+
         it("should have empty children map initially", () => {
             const treeItem = new MetadataDiffFolderTreeItem("folder", "Test Site", "folder");
 
@@ -54,6 +60,18 @@ describe("MetadataDiffFolderTreeItem", () => {
 
             expect(treeItem.siteName).to.equal("Test Site");
             expect(treeItem.folderPath).to.equal("root/folder");
+        });
+
+        it("should have isImported default to false", () => {
+            const treeItem = new MetadataDiffFolderTreeItem("folder", "Test Site", "folder");
+
+            expect(treeItem.isImported).to.be.false;
+        });
+
+        it("should store isImported when provided", () => {
+            const treeItem = new MetadataDiffFolderTreeItem("folder", "Test Site", "folder", true);
+
+            expect(treeItem.isImported).to.be.true;
         });
     });
 

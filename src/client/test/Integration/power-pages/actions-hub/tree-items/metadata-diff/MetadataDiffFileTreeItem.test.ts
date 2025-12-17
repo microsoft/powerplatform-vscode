@@ -56,6 +56,12 @@ describe("MetadataDiffFileTreeItem", () => {
 
             expect(treeItem.contextValue).to.equal(Constants.ContextValues.METADATA_DIFF_FILE);
         });
+
+        it("should have imported context value when isImported is true", () => {
+            const treeItem = new MetadataDiffFileTreeItem(mockComparisonResult, "Test Site", true);
+
+            expect(treeItem.contextValue).to.equal(Constants.ContextValues.METADATA_DIFF_FILE_IMPORTED);
+        });
     });
 
     describe("resourceUri", () => {

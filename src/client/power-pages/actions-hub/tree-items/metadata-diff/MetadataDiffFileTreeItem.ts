@@ -34,12 +34,17 @@ export class MetadataDiffFileTreeItem extends ActionsHubTreeItem {
         // Build description based on view mode
         const description = MetadataDiffFileTreeItem.buildDescription(comparisonResult);
 
+        // Use different context value for imported items to hide discard option
+        const contextValue = isImported
+            ? Constants.ContextValues.METADATA_DIFF_FILE_IMPORTED
+            : Constants.ContextValues.METADATA_DIFF_FILE;
+
         super(
             fileName,
             vscode.TreeItemCollapsibleState.None,
             // Pass empty ThemeIcon - it will be overridden by resourceUri
             new vscode.ThemeIcon("file"),
-            Constants.ContextValues.METADATA_DIFF_FILE,
+            contextValue,
             description
         );
         this.comparisonResult = comparisonResult;
