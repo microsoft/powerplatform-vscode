@@ -386,6 +386,7 @@
   "Unable to read remote file": "Unable to read remote file",
   "Unable to read one or both files": "Unable to read one or both files",
   "Exporting comparison...": "Exporting comparison...",
+  "Export Metadata Diff": "Export Metadata Diff",
   "Importing comparison...": "Importing comparison...",
   "Invalid file format. The file does not contain valid metadata diff data.": "Invalid file format. The file does not contain valid metadata diff data.",
   "Unsupported version. This file was created with a newer version of the extension.": "Unsupported version. This file was created with a newer version of the extension.",
@@ -510,10 +511,22 @@
       "Success message when export is saved. {0} is the file path."
     ]
   },
+  "Failed to export comparison: {0}/Error message when export fails. {0} is the error message.": {
+    "message": "Failed to export comparison: {0}",
+    "comment": [
+      "Error message when export fails. {0} is the error message."
+    ]
+  },
   "Comparison for '{0}' imported successfully./Success message when import is complete. {0} is the site name.": {
     "message": "Comparison for '{0}' imported successfully.",
     "comment": [
       "Success message when import is complete. {0} is the site name."
+    ]
+  },
+  "Failed to import comparison: {0}/Error message when import fails. {0} is the error message.": {
+    "message": "Failed to import comparison: {0}",
+    "comment": [
+      "Error message when import fails. {0} is the error message."
     ]
   },
   "Refreshing comparison for {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\")).../This is a markdown formatting which must persist across translations.": {
@@ -631,9 +644,6 @@
     ]
   },
   "Import Metadata Diff": "Import Metadata Diff",
-  "Failed to import comparison: {0}": "Failed to import comparison: {0}",
-  "Export Metadata Diff": "Export Metadata Diff",
-  "Failed to export comparison: {0}": "Failed to export comparison: {0}",
   "Power Platform Tools: PAC CLI": "Power Platform Tools: PAC CLI",
   "Command completed successfully.": "Command completed successfully.",
   "PAC Telemetry enabled": "PAC Telemetry enabled",
