@@ -15,13 +15,11 @@ describe("ExportMetadataDiffHandler", () => {
     let sandbox: sinon.SinonSandbox;
     let showSaveDialogStub: sinon.SinonStub;
     let showInformationMessageStub: sinon.SinonStub;
-    let showErrorMessageStub: sinon.SinonStub;
 
     beforeEach(() => {
         sandbox = sinon.createSandbox();
         showSaveDialogStub = sandbox.stub(vscode.window, "showSaveDialog");
         showInformationMessageStub = sandbox.stub(vscode.window, "showInformationMessage");
-        showErrorMessageStub = sandbox.stub(vscode.window, "showErrorMessage");
         // Stub telemetry helpers
         sandbox.stub(TelemetryHelper, "traceInfo");
         sandbox.stub(TelemetryHelper, "traceError");
@@ -169,7 +167,7 @@ describe("ExportMetadataDiffHandler", () => {
             await exportMetadataDiff(treeItem);
 
             expect(traceInfoStub.called).to.be.true;
-            expect(traceInfoStub.firstCall.args[0]).to.equal("ActionsHubMetadataDiffExport");
+            expect(traceInfoStub.firstCall.args[0]).to.equal("ActionsHubMetadataDiffExportCalled");
         });
 
         it("should include file count in telemetry", async () => {

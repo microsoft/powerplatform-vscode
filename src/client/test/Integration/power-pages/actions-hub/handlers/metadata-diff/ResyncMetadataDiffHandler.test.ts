@@ -94,9 +94,9 @@ describe("ResyncMetadataDiffHandler", () => {
                 const handler = resyncMetadataDiff(mockPacTerminal as unknown as PacTerminal, mockExtensionContext);
                 await handler(siteItem);
 
-                expect(traceInfoStub.calledWith(Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_RESYNC)).to.be.true;
+                expect(traceInfoStub.calledWith(Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_RESYNC_CALLED)).to.be.true;
                 const callArgs = traceInfoStub.getCalls().find(
-                    call => call.args[0] === Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_RESYNC
+                    call => call.args[0] === Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_RESYNC_CALLED
                 )?.args[1];
                 expect(callArgs).to.deep.include({
                     methodName: "resyncMetadataDiff",
@@ -211,9 +211,9 @@ describe("ResyncMetadataDiffHandler", () => {
                 const handler = resyncMetadataDiff(mockPacTerminal as unknown as PacTerminal, mockExtensionContext);
                 await handler(siteItem);
 
-                expect(traceInfoStub.calledWith(Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_RESYNC)).to.be.true;
+                expect(traceInfoStub.calledWith(Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_RESYNC_CALLED)).to.be.true;
                 const callArgs = traceInfoStub.getCalls().find(
-                    call => call.args[0] === Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_RESYNC
+                    call => call.args[0] === Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_RESYNC_CALLED
                 )?.args[1];
                 expect(callArgs).to.deep.include({
                     methodName: "resyncMetadataDiff",

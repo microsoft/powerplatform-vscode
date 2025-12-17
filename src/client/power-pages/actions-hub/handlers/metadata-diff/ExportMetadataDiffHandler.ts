@@ -18,7 +18,7 @@ import { FileComparisonStatus } from "../../models/IFileComparisonResult";
  * @param siteTreeItem The site tree item containing the comparison results
  */
 export async function exportMetadataDiff(siteTreeItem: MetadataDiffSiteTreeItem): Promise<void> {
-    traceInfo(Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_EXPORT, {
+    traceInfo(Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_EXPORT_CALLED, {
         methodName: exportMetadataDiff.name,
         websiteId: siteTreeItem.websiteId,
         fileCount: siteTreeItem.comparisonResults.length.toString()

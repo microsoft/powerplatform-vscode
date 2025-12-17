@@ -18,7 +18,7 @@ import MetadataDiffContext from "../../MetadataDiffContext";
  * This is useful when the remote site has been updated since the last comparison.
  */
 export const resyncMetadataDiff = (pacTerminal: PacTerminal, context: vscode.ExtensionContext) => async (siteItem: MetadataDiffSiteTreeItem): Promise<void> => {
-    traceInfo(Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_RESYNC, {
+    traceInfo(Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_RESYNC_CALLED, {
         methodName: resyncMetadataDiff.name,
         siteName: siteItem.siteName,
         environmentName: siteItem.environmentName,
@@ -29,7 +29,7 @@ export const resyncMetadataDiff = (pacTerminal: PacTerminal, context: vscode.Ext
 
     // Cannot resync imported comparisons - they are static snapshots
     if (siteItem.isImported) {
-        await vscode.window.showWarningMessage(Constants.Strings.METADATA_DIFF_CANNOT_RESYNC_IMPORTED);
+        vscode.window.showWarningMessage(Constants.Strings.METADATA_DIFF_CANNOT_RESYNC_IMPORTED);
         return;
     }
 

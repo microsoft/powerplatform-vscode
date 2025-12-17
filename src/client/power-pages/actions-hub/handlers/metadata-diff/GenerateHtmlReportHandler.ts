@@ -25,7 +25,7 @@ interface IFileContentComparison {
  * The report can be saved and shared with non-technical users.
  */
 export async function generateHtmlReport(treeItem: MetadataDiffSiteTreeItem): Promise<void> {
-    traceInfo(Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_GENERATE_HTML_REPORT, {
+    traceInfo(Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_GENERATE_HTML_REPORT_CALLED, {
         siteName: treeItem.siteName,
         fileCount: treeItem.comparisonResults.length
     });

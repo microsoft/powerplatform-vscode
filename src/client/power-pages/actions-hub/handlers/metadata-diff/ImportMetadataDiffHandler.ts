@@ -102,7 +102,7 @@ function validateImportData(data: unknown): string | undefined {
  * Imports a metadata diff from a JSON file
  */
 export async function importMetadataDiff(): Promise<void> {
-    traceInfo(Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_IMPORT, {
+    traceInfo(Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_IMPORT_CALLED, {
         methodName: importMetadataDiff.name
     });
 
