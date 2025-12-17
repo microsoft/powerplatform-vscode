@@ -264,7 +264,7 @@ export async function importMetadataDiff(): Promise<void> {
             { methodName: importMetadataDiff.name }
         );
         vscode.window.showErrorMessage(
-            vscode.l10n.t("Failed to import comparison: {0}", (error as Error).message)
+            Constants.StringFunctions.METADATA_DIFF_IMPORT_FAILED((error as Error).message)
         );
     }
 }

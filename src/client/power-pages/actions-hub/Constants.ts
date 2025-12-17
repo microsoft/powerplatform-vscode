@@ -228,6 +228,7 @@ export const Constants = {
         HTML_REPORT_UNABLE_TO_READ_BOTH: vscode.l10n.t("Unable to read one or both files"),
         // Export/Import strings
         METADATA_DIFF_EXPORT_PROGRESS: vscode.l10n.t("Exporting comparison..."),
+        METADATA_DIFF_EXPORT_TITLE: vscode.l10n.t("Export Metadata Diff"),
         METADATA_DIFF_IMPORT_PROGRESS: vscode.l10n.t("Importing comparison..."),
         METADATA_DIFF_EXPORT_INVALID_FILE: vscode.l10n.t("Invalid file format. The file does not contain valid metadata diff data."),
         METADATA_DIFF_EXPORT_UNSUPPORTED_VERSION: vscode.l10n.t("Unsupported version. This file was created with a newer version of the extension."),
@@ -417,6 +418,15 @@ export const Constants = {
                 comment: ["Success message when export is saved. {0} is the file path."]
             }),
         /**
+         * Returns the error message when export fails
+         */
+        METADATA_DIFF_EXPORT_FAILED: (errorMessage: string) =>
+            vscode.l10n.t({
+                message: "Failed to export comparison: {0}",
+                args: [errorMessage],
+                comment: ["Error message when export fails. {0} is the error message."]
+            }),
+        /**
          * Returns the success message when import is complete
          */
         METADATA_DIFF_IMPORT_SUCCESS: (siteName: string) =>
@@ -424,6 +434,15 @@ export const Constants = {
                 message: "Comparison for '{0}' imported successfully.",
                 args: [siteName],
                 comment: ["Success message when import is complete. {0} is the site name."]
+            }),
+        /**
+         * Returns the error message when import fails
+         */
+        METADATA_DIFF_IMPORT_FAILED: (errorMessage: string) =>
+            vscode.l10n.t({
+                message: "Failed to import comparison: {0}",
+                args: [errorMessage],
+                comment: ["Error message when import fails. {0} is the error message."]
             }),
         /**
          * Returns the progress message when resyncing a site comparison
@@ -576,6 +595,7 @@ export const Constants = {
         ACTIONS_HUB_METADATA_DIFF_HTML_REPORT_SAVED: "ActionsHubMetadataDiffHtmlReportSaved",
         ACTIONS_HUB_METADATA_DIFF_HTML_REPORT_FAILED: "ActionsHubMetadataDiffHtmlReportFailed",
         ACTIONS_HUB_METADATA_DIFF_EXPORT_CALLED: "ActionsHubMetadataDiffExportCalled",
+        ACTIONS_HUB_METADATA_DIFF_EXPORT_CANCELLED: "ActionsHubMetadataDiffExportCancelled",
         ACTIONS_HUB_METADATA_DIFF_EXPORT_SUCCESS: "ActionsHubMetadataDiffExportSuccess",
         ACTIONS_HUB_METADATA_DIFF_EXPORT_FAILED: "ActionsHubMetadataDiffExportFailed",
         ACTIONS_HUB_METADATA_DIFF_IMPORT_CALLED: "ActionsHubMetadataDiffImportCalled",

@@ -37,10 +37,14 @@ export async function exportMetadataDiff(siteTreeItem: MetadataDiffSiteTreeItem)
             filters: {
                 [Constants.Strings.METADATA_DIFF_EXPORT_FILTER_NAME]: ["json"]
             },
-            title: vscode.l10n.t("Export Metadata Diff")
+            title: Constants.Strings.METADATA_DIFF_EXPORT_TITLE
         });
 
         if (!saveUri) {
+            traceInfo(Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_EXPORT_CANCELLED, {
+                methodName: exportMetadataDiff.name,
+                websiteId: siteTreeItem.websiteId
+            });
             return; // User cancelled
         }
 
@@ -132,7 +136,7 @@ export async function exportMetadataDiff(siteTreeItem: MetadataDiffSiteTreeItem)
             }
         );
         vscode.window.showErrorMessage(
-            vscode.l10n.t("Failed to export comparison: {0}", (error as Error).message)
+            Constants.StringFunctions.METADATA_DIFF_EXPORT_FAILED((error as Error).message)
         );
     }
 }
