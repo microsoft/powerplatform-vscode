@@ -10,11 +10,13 @@ import { generateServerMockSdk } from './ServerLogicMockSdk';
 import { oneDSLoggerWrapper } from '../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import { ServerLogicCodeLensProvider } from './ServerLogicCodeLensProvider';
 import { desktopTelemetryEventNames } from '../../common/OneDSLoggerTelemetry/client/desktopExtensionTelemetryEventNames';
-
-/**
- * Server Logic folder pattern for matching file paths
- */
-const SERVER_LOGICS_FOLDER_PATTERN = /[/\\]server-logics[/\\]/;
+import {
+    SERVER_LOGIC_CONFIG_KEYS,
+    SERVER_LOGIC_FILES,
+    SERVER_LOGIC_URLS,
+    SERVER_LOGIC_STRINGS,
+    SERVER_LOGICS_FOLDER_PATTERN
+} from './Constants';
 
 /**
  * Checks if a file is a server logic file based on path and extension
@@ -40,7 +42,7 @@ function createServerLogicDebugConfig(
     const config: vscode.DebugConfiguration = {
         type: 'node',
         request: 'launch',
-        name: name ?? vscode.l10n.t('Debug Power Pages Server Logic'),
+        name: name ?? vscode.l10n.t(SERVER_LOGIC_STRINGS.DEBUG_CONFIG_NAME),
         program,
         skipFiles: ['<node_internals>/**'],
         console: 'internalConsole'
@@ -58,9 +60,9 @@ function createServerLogicDebugConfig(
  * @returns The path to the runtime loader file
  */
 async function ensureRuntimeLoader(folder: vscode.WorkspaceFolder): Promise<string> {
-    const vscodeDir = path.join(folder.uri.fsPath, '.vscode');
-    const loaderPath = path.join(vscodeDir, 'server-logic-runtime-loader.js');
-    const gitignorePath = path.join(vscodeDir, '.gitignore');
+    const vscodeDir = path.join(folder.uri.fsPath, SERVER_LOGIC_FILES.VSCODE_FOLDER);
+    const loaderPath = path.join(vscodeDir, SERVER_LOGIC_FILES.RUNTIME_LOADER);
+    const gitignorePath = path.join(vscodeDir, SERVER_LOGIC_FILES.GITIGNORE);
 
     if (!fs.existsSync(vscodeDir)) {
         fs.mkdirSync(vscodeDir, { recursive: true });
@@ -82,7 +84,7 @@ async function ensureRuntimeLoader(folder: vscode.WorkspaceFolder): Promise<stri
  * @param gitignorePath - Path to the .gitignore file
  */
 function ensureGitignore(gitignorePath: string): void {
-    const requiredEntries = ['server-logic-runtime-loader.js'];
+    const requiredEntries = [SERVER_LOGIC_FILES.RUNTIME_LOADER];
     let gitignoreContent = '';
 
     if (fs.existsSync(gitignorePath)) {
@@ -108,7 +110,7 @@ function ensureGitignore(gitignorePath: string): void {
 export const providedServerLogicDebugConfig: vscode.DebugConfiguration = {
     type: 'node',
     request: 'launch',
-    name: vscode.l10n.t('Debug Power Pages Server Logic'),
+    name: vscode.l10n.t(SERVER_LOGIC_STRINGS.DEBUG_CONFIG_NAME),
     program: '${file}',
     skipFiles: ['<node_internals>/**'],
     console: 'internalConsole'
@@ -143,14 +145,14 @@ export class ServerLogicDebugProvider implements vscode.DebugConfigurationProvid
                 config = createServerLogicDebugConfig(editor.document.uri.fsPath);
             } else {
                 vscode.window.showErrorMessage(
-                    vscode.l10n.t('Cannot debug: Please open a server logic file (.js) from the server-logics folder.')
+                    vscode.l10n.t(SERVER_LOGIC_STRINGS.ERROR_OPEN_SERVER_LOGIC_FILE)
                 );
                 return undefined;
             }
         }
 
         if (!folder) {
-            vscode.window.showErrorMessage(vscode.l10n.t('Server Logic debugging requires an open workspace.'));
+            vscode.window.showErrorMessage(vscode.l10n.t(SERVER_LOGIC_STRINGS.ERROR_REQUIRES_WORKSPACE));
             return undefined;
         }
 
@@ -175,7 +177,7 @@ export class ServerLogicDebugProvider implements vscode.DebugConfigurationProvid
             return config;
         } catch (error) {
             vscode.window.showErrorMessage(
-                vscode.l10n.t('Failed to initialize Server Logic debugger: {0}', error instanceof Error ? error.message : String(error))
+                vscode.l10n.t(SERVER_LOGIC_STRINGS.ERROR_INIT_FAILED, error instanceof Error ? error.message : String(error))
             );
             return undefined;
         }
@@ -206,26 +208,26 @@ export function activateServerLogicDebugger(context: vscode.ExtensionContext): v
             async () => {
                 const editor = vscode.window.activeTextEditor;
                 if (!editor) {
-                    vscode.window.showErrorMessage(vscode.l10n.t('No active editor found.'));
+                    vscode.window.showErrorMessage(vscode.l10n.t(SERVER_LOGIC_STRINGS.ERROR_NO_ACTIVE_EDITOR));
                     return;
                 }
 
                 const filePath = editor.document.uri.fsPath;
                 if (!isServerLogicFile(filePath)) {
                     vscode.window.showWarningMessage(
-                        vscode.l10n.t('Please open a server logic file (.js) from the server-logics folder.')
+                        vscode.l10n.t(SERVER_LOGIC_STRINGS.WARNING_OPEN_SERVER_LOGIC_FILE)
                     );
                     return;
                 }
 
                 const workspaceFolder = vscode.workspace.getWorkspaceFolder(editor.document.uri);
                 if (!workspaceFolder) {
-                    vscode.window.showErrorMessage(vscode.l10n.t('Server Logic debugging requires an open workspace.'));
+                    vscode.window.showErrorMessage(vscode.l10n.t(SERVER_LOGIC_STRINGS.ERROR_REQUIRES_WORKSPACE));
                     return;
                 }
 
                 const loaderPath = await ensureRuntimeLoader(workspaceFolder);
-                const config = createServerLogicDebugConfig(filePath, vscode.l10n.t('Debug Current Server Logic'));
+                const config = createServerLogicDebugConfig(filePath, vscode.l10n.t(SERVER_LOGIC_STRINGS.DEBUG_CURRENT_CONFIG_NAME));
                 config.runtimeArgs = ['--require', loaderPath];
 
                 await vscode.debug.startDebugging(workspaceFolder, config);
@@ -246,26 +248,26 @@ export function activateServerLogicDebugger(context: vscode.ExtensionContext): v
             async () => {
                 const editor = vscode.window.activeTextEditor;
                 if (!editor) {
-                    vscode.window.showWarningMessage(vscode.l10n.t('No active editor. Please open a server logic file.'));
+                    vscode.window.showWarningMessage(vscode.l10n.t(SERVER_LOGIC_STRINGS.WARNING_NO_ACTIVE_EDITOR));
                     return;
                 }
 
                 const filePath = editor.document.uri.fsPath;
                 if (!isServerLogicFile(filePath)) {
                     vscode.window.showWarningMessage(
-                        vscode.l10n.t('Please open a server logic file (.js) from the server-logics folder.')
+                        vscode.l10n.t(SERVER_LOGIC_STRINGS.WARNING_OPEN_SERVER_LOGIC_FILE)
                     );
                     return;
                 }
 
                 const workspaceFolder = vscode.workspace.getWorkspaceFolder(editor.document.uri);
                 if (!workspaceFolder) {
-                    vscode.window.showErrorMessage(vscode.l10n.t('Server Logic debugging requires an open workspace.'));
+                    vscode.window.showErrorMessage(vscode.l10n.t(SERVER_LOGIC_STRINGS.ERROR_REQUIRES_WORKSPACE));
                     return;
                 }
 
                 const loaderPath = await ensureRuntimeLoader(workspaceFolder);
-                const config = createServerLogicDebugConfig(filePath, vscode.l10n.t('Run Server Logic'), true);
+                const config = createServerLogicDebugConfig(filePath, vscode.l10n.t(SERVER_LOGIC_STRINGS.RUN_CONFIG_NAME), true);
                 config.runtimeArgs = ['--require', loaderPath];
 
                 await vscode.debug.startDebugging(workspaceFolder, config);
@@ -282,7 +284,7 @@ export function activateServerLogicDebugger(context: vscode.ExtensionContext): v
 
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (workspaceFolders && workspaceFolders.length > 0) {
-        const serverLogicsPath = path.join(workspaceFolders[0].uri.fsPath, 'server-logics');
+        const serverLogicsPath = path.join(workspaceFolders[0].uri.fsPath, SERVER_LOGIC_FILES.SERVER_LOGICS_FOLDER);
         if (fs.existsSync(serverLogicsPath)) {
             showServerLogicWelcomeNotification();
         }
@@ -293,19 +295,18 @@ export function activateServerLogicDebugger(context: vscode.ExtensionContext): v
  * Shows a welcome notification for server logic debugging
  */
 function showServerLogicWelcomeNotification(): void {
-    const dontShowAgainKey = 'powerPages.serverLogic.dontShowWelcome';
-    const dontShowAgain = vscode.workspace.getConfiguration().get(dontShowAgainKey, false);
+    const dontShowAgain = vscode.workspace.getConfiguration().get(SERVER_LOGIC_CONFIG_KEYS.DONT_SHOW_WELCOME, false);
 
     if (dontShowAgain) {
         return;
     }
 
-    const debugButton = vscode.l10n.t('Debug Current File');
-    const learnMoreButton = vscode.l10n.t('Learn More');
-    const dontShowButton = vscode.l10n.t("Don't Show Again");
+    const debugButton = vscode.l10n.t(SERVER_LOGIC_STRINGS.BUTTON_DEBUG_CURRENT_FILE);
+    const learnMoreButton = vscode.l10n.t(SERVER_LOGIC_STRINGS.BUTTON_LEARN_MORE);
+    const dontShowButton = vscode.l10n.t(SERVER_LOGIC_STRINGS.BUTTON_DONT_SHOW_AGAIN);
 
     vscode.window.showInformationMessage(
-        vscode.l10n.t('🎯 Power Pages Server Logic detected! You can now debug your server logic files with breakpoints and IntelliSense.'),
+        vscode.l10n.t(SERVER_LOGIC_STRINGS.WELCOME_MESSAGE),
         debugButton,
         learnMoreButton,
         dontShowButton
@@ -314,11 +315,11 @@ function showServerLogicWelcomeNotification(): void {
             vscode.commands.executeCommand('powerpages.debugServerLogic');
         } else if (selection === learnMoreButton) {
             vscode.env.openExternal(
-                vscode.Uri.parse('https://learn.microsoft.com/power-pages/configure/server-side-scripting')
+                vscode.Uri.parse(SERVER_LOGIC_URLS.LEARN_MORE)
             );
         } else if (selection === dontShowButton) {
             vscode.workspace.getConfiguration().update(
-                dontShowAgainKey,
+                SERVER_LOGIC_CONFIG_KEYS.DONT_SHOW_WELCOME,
                 true,
                 vscode.ConfigurationTarget.Global
             );
