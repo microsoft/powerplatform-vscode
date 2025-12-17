@@ -4,7 +4,7 @@
  */
 
 import * as vscode from "vscode";
-import { IFileComparisonResult } from "./models/IFileComparisonResult";
+import { IFileComparisonResult, ISiteComparisonResults } from "./models/IFileComparisonResult";
 
 /**
  * Enum for metadata diff view modes
@@ -21,16 +21,6 @@ export enum MetadataDiffSortMode {
     Path = "path",
     Name = "name",
     Status = "status"
-}
-
-/**
- * Interface for storing comparison results per site
- */
-export interface ISiteComparisonResults {
-    siteName: string;
-    localSiteName: string;
-    environmentName: string;
-    comparisonResults: IFileComparisonResult[];
 }
 
 const VIEW_MODE_CONTEXT_KEY = "microsoft.powerplatform.pages.metadataDiffViewMode";
@@ -51,6 +41,37 @@ class MetadataDiffContextClass {
 
     private _onChanged: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
     public readonly onChanged: vscode.Event<void> = this._onChanged.event;
+
+    /**
+     * Generate a unique key for storing site comparison results
+     * @param websiteId The website ID
+     * @param environmentId The environment ID
+     * @param isImported Whether this is an imported comparison
+     * @returns A unique key string
+     */
+    public getUniqueKey(websiteId: string, environmentId: string, isImported: boolean = false): string {
+        return isImported
+            ? `${websiteId}_${environmentId}_imported`
+            : `${websiteId}_${environmentId}`;
+    }
+
+    /**
+     * Check if there is an imported comparison for the given website and environment
+     * @param websiteId The website ID
+     * @param environmentId The environment ID
+     * @returns True if an imported comparison exists
+     */
+    public hasImportedComparison(websiteId: string, environmentId: string): boolean {
+        const key = this.getUniqueKey(websiteId, environmentId, true);
+        return this._siteResults.has(key);
+    }
+
+    /**
+     * Get the extension context for accessing global storage
+     */
+    public get extensionContext(): vscode.ExtensionContext | undefined {
+        return this._extensionContext;
+    }
 
     /**
      * Initialize the context with the extension context for state persistence.
@@ -136,27 +157,67 @@ class MetadataDiffContextClass {
      * @param siteName The name of the remote site
      * @param localSiteName The name of the local site
      * @param environmentName The name of the environment
+     * @param websiteId The website ID
+     * @param environmentId The environment ID
+     * @param isImported Whether this is an imported comparison
+     * @param exportedAt ISO 8601 timestamp when the comparison was exported (only for imported comparisons)
+     * @param dataModelVersion The data model version of the site (1 = Standard, 2 = Enhanced)
      */
-    public setResults(results: IFileComparisonResult[], siteName: string, localSiteName: string, environmentName: string): void {
+    public setResults(
+        results: IFileComparisonResult[],
+        siteName: string,
+        localSiteName: string,
+        environmentName: string,
+        websiteId: string,
+        environmentId: string,
+        isImported: boolean = false,
+        exportedAt?: string,
+        dataModelVersion?: 1 | 2
+    ): void {
+        const key = this.getUniqueKey(websiteId, environmentId, isImported);
         if (results.length > 0) {
-            this._siteResults.set(siteName, {
+            this._siteResults.set(key, {
                 siteName,
                 localSiteName,
                 environmentName,
-                comparisonResults: results
+                websiteId,
+                environmentId,
+                comparisonResults: results,
+                isImported,
+                exportedAt,
+                dataModelVersion
             });
         } else {
             // If no results, remove the site from the map
-            this._siteResults.delete(siteName);
+            this._siteResults.delete(key);
         }
         this._onChanged.fire();
     }
 
     /**
-     * Clear results for a specific site
+     * Clear results for a specific site using the unique key
+     * @param websiteId The website ID
+     * @param environmentId The environment ID
+     * @param isImported Whether this is an imported comparison
+     */
+    public clearSiteByKey(websiteId: string, environmentId: string, isImported: boolean = false): void {
+        const key = this.getUniqueKey(websiteId, environmentId, isImported);
+        this._siteResults.delete(key);
+        this._onChanged.fire();
+    }
+
+    /**
+     * Clear results for a specific site by site name
+     * @deprecated Use clearSiteByKey instead for better precision
      */
     public clearSite(siteName: string): void {
-        this._siteResults.delete(siteName);
+        // Find and remove the site by name (backward compatibility)
+        for (const [key, result] of this._siteResults.entries()) {
+            if (result.siteName === siteName) {
+                this._siteResults.delete(key);
+                break;
+            }
+        }
         this._onChanged.fire();
     }
 
@@ -167,17 +228,20 @@ class MetadataDiffContextClass {
      * @param siteName The name of the site
      */
     public removeFile(relativePath: string, siteName: string): void {
-        const siteResult = this._siteResults.get(siteName);
-        if (siteResult) {
-            siteResult.comparisonResults = siteResult.comparisonResults.filter(
-                result => result.relativePath !== relativePath
-            );
+        // Find the site by name
+        for (const [key, siteResult] of this._siteResults.entries()) {
+            if (siteResult.siteName === siteName) {
+                siteResult.comparisonResults = siteResult.comparisonResults.filter(
+                    result => result.relativePath !== relativePath
+                );
 
-            if (siteResult.comparisonResults.length === 0) {
-                this._siteResults.delete(siteName);
+                if (siteResult.comparisonResults.length === 0) {
+                    this._siteResults.delete(key);
+                }
+
+                this._onChanged.fire();
+                break;
             }
-
-            this._onChanged.fire();
         }
     }
 

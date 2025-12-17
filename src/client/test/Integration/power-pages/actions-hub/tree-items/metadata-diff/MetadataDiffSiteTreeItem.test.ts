@@ -9,9 +9,34 @@ import { MetadataDiffSiteTreeItem } from "../../../../../../power-pages/actions-
 import { MetadataDiffFileTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/metadata-diff/MetadataDiffFileTreeItem";
 import { MetadataDiffFolderTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/metadata-diff/MetadataDiffFolderTreeItem";
 import { ActionsHubTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
-import { IFileComparisonResult, FileComparisonStatus } from "../../../../../../power-pages/actions-hub/models/IFileComparisonResult";
+import { IFileComparisonResult, FileComparisonStatus, ISiteComparisonResults } from "../../../../../../power-pages/actions-hub/models/IFileComparisonResult";
 import { Constants } from "../../../../../../power-pages/actions-hub/Constants";
 import MetadataDiffContext, { MetadataDiffViewMode, MetadataDiffSortMode } from "../../../../../../power-pages/actions-hub/MetadataDiffContext";
+
+/**
+ * Helper function to create ISiteComparisonResults for testing
+ */
+function createSiteResults(
+    comparisonResults: IFileComparisonResult[],
+    siteName = "Test Site",
+    localSiteName = "Local Test Site",
+    environmentName = "Test Environment",
+    websiteId = "test-website-id",
+    environmentId = "test-environment-id",
+    isImported = false,
+    exportedAt?: string
+): ISiteComparisonResults {
+    return {
+        comparisonResults,
+        siteName,
+        localSiteName,
+        environmentName,
+        websiteId,
+        environmentId,
+        isImported,
+        exportedAt
+    };
+}
 
 describe("MetadataDiffSiteTreeItem", () => {
     beforeEach(() => {
@@ -21,7 +46,7 @@ describe("MetadataDiffSiteTreeItem", () => {
 
     describe("constructor", () => {
         it("should be an instance of ActionsHubTreeItem", () => {
-            const treeItem = new MetadataDiffSiteTreeItem([], "Test Site", "Local Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults([]));
 
             expect(treeItem).to.be.instanceOf(ActionsHubTreeItem);
         });
@@ -41,7 +66,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "added"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             expect(treeItem.label).to.include("Test Site");
             expect(treeItem.label).to.include("Test Environment");
@@ -49,27 +74,47 @@ describe("MetadataDiffSiteTreeItem", () => {
         });
 
         it("should have expanded collapsible state", () => {
-            const treeItem = new MetadataDiffSiteTreeItem([], "Test Site", "Local Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults([]));
 
             expect(treeItem.collapsibleState).to.equal(vscode.TreeItemCollapsibleState.Expanded);
         });
 
         it("should have the globe icon", () => {
-            const treeItem = new MetadataDiffSiteTreeItem([], "Test Site", "Local Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults([]));
 
             expect((treeItem.iconPath as vscode.ThemeIcon).id).to.equal("globe");
         });
 
         it("should have the expected context value", () => {
-            const treeItem = new MetadataDiffSiteTreeItem([], "Test Site", "Local Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults([]));
 
             expect(treeItem.contextValue).to.equal(Constants.ContextValues.METADATA_DIFF_SITE);
+        });
+
+        it("should have imported icon and context value for imported comparisons", () => {
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults([], "Test Site", "Local Test Site", "Test Environment", "web-id", "env-id", true, "2024-01-15T10:30:00Z"));
+
+            expect((treeItem.iconPath as vscode.ThemeIcon).id).to.equal("cloud-download");
+            expect(treeItem.contextValue).to.equal(Constants.ContextValues.METADATA_DIFF_SITE_IMPORTED);
+        });
+
+        it("should store exportedAt for imported comparisons", () => {
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults([
+                {
+                    localPath: "/local/file1.txt",
+                    remotePath: "/remote/file1.txt",
+                    relativePath: "file1.txt",
+                    status: "modified"
+                }
+            ], "Test Site", "Local Test Site", "Test Environment", "web-id", "env-id", true, "2024-01-15T10:30:00Z"));
+
+            expect(treeItem.exportedAt).to.equal("2024-01-15T10:30:00Z");
         });
     });
 
     describe("siteName", () => {
         it("should return the site name", () => {
-            const treeItem = new MetadataDiffSiteTreeItem([], "Test Site", "Local Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults([]));
 
             expect(treeItem.siteName).to.equal("Test Site");
         });
@@ -77,7 +122,7 @@ describe("MetadataDiffSiteTreeItem", () => {
 
     describe("environmentName", () => {
         it("should return the environment name", () => {
-            const treeItem = new MetadataDiffSiteTreeItem([], "Test Site", "Local Test Site", "My Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults([], "Test Site", "Local Test Site", "My Environment"));
 
             expect(treeItem.environmentName).to.equal("My Environment");
         });
@@ -97,7 +142,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "added"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "My Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults(results, "Test Site", "Local Test Site", "My Environment"));
 
             expect(treeItem.description).to.include("2");
             expect(treeItem.description).to.include("files changed");
@@ -114,9 +159,23 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "modified"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             expect(treeItem.comparisonResults).to.deep.equal(results);
+        });
+    });
+
+    describe("websiteId and environmentId", () => {
+        it("should return the websiteId", () => {
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults([], "Test Site", "Local Test Site", "Test Environment", "my-website-id", "my-env-id"));
+
+            expect(treeItem.websiteId).to.equal("my-website-id");
+        });
+
+        it("should return the environmentId", () => {
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults([], "Test Site", "Local Test Site", "Test Environment", "my-website-id", "my-env-id"));
+
+            expect(treeItem.environmentId).to.equal("my-env-id");
         });
     });
 
@@ -126,7 +185,7 @@ describe("MetadataDiffSiteTreeItem", () => {
         });
 
         it("should return empty array when no results", () => {
-            const treeItem = new MetadataDiffSiteTreeItem([], "Test Site", "Local Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults([]));
 
             const children = treeItem.getChildren();
 
@@ -142,7 +201,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "modified"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             const children = treeItem.getChildren();
 
@@ -159,7 +218,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "modified"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             const children = treeItem.getChildren();
 
@@ -177,7 +236,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "modified"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             const children = treeItem.getChildren();
 
@@ -201,7 +260,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "added"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             const children = treeItem.getChildren();
 
@@ -225,7 +284,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "added"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             const children = treeItem.getChildren();
 
@@ -256,7 +315,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: FileComparisonStatus.ADDED
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             const children = treeItem.getChildren();
 
@@ -281,7 +340,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: FileComparisonStatus.ADDED
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             const children = treeItem.getChildren();
 
@@ -313,7 +372,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: FileComparisonStatus.DELETED
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             const children = treeItem.getChildren();
 
@@ -340,7 +399,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: FileComparisonStatus.ADDED
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             const children = treeItem.getChildren();
 
@@ -365,7 +424,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "modified"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             const children = treeItem.getChildren();
 
@@ -382,7 +441,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "modified"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             const children = treeItem.getChildren();
 
@@ -400,7 +459,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "modified"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             const children = treeItem.getChildren();
 
@@ -430,7 +489,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "added"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             const children = treeItem.getChildren();
 
@@ -458,7 +517,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "added"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             const children = treeItem.getChildren();
 
@@ -510,7 +569,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "added"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             const children = treeItem.getChildren();
 
@@ -542,7 +601,7 @@ describe("MetadataDiffSiteTreeItem", () => {
                     status: "modified"
                 }
             ];
-            const treeItem = new MetadataDiffSiteTreeItem(results, "Test Site", "Local Test Site", "Test Environment");
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
 
             const children = treeItem.getChildren();
 

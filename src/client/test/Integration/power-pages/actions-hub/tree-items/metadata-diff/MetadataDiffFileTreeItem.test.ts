@@ -182,4 +182,24 @@ describe("MetadataDiffFileTreeItem", () => {
             expect(tooltipValue).to.include("Deleted");
         });
     });
+
+    describe("isImported", () => {
+        it("should return false by default", () => {
+            const treeItem = new MetadataDiffFileTreeItem(mockComparisonResult, "Test Site");
+
+            expect(treeItem.isImported).to.be.false;
+        });
+
+        it("should return false when explicitly set to false", () => {
+            const treeItem = new MetadataDiffFileTreeItem(mockComparisonResult, "Test Site", false);
+
+            expect(treeItem.isImported).to.be.false;
+        });
+
+        it("should return true when explicitly set to true", () => {
+            const treeItem = new MetadataDiffFileTreeItem(mockComparisonResult, "Test Site", true);
+
+            expect(treeItem.isImported).to.be.true;
+        });
+    });
 });

@@ -18,6 +18,49 @@ import { getWebsiteRecordId, getWebsiteYamlPath, hasWebsiteYaml } from "../../..
 import { POWERPAGES_SITE_FOLDER, UTF8_ENCODING } from "../../../common/constants";
 import { OrgInfo } from "../../pac/PacTypes";
 
+/**
+ * Common binary file extensions that cannot be diffed in the text diff viewer
+ */
+const BINARY_FILE_EXTENSIONS = new Set([
+    // Images
+    ".png", ".jpg", ".jpeg", ".gif", ".ico", ".webp", ".bmp", ".tiff", ".tif",
+    // Fonts
+    ".woff", ".woff2", ".ttf", ".otf", ".eot",
+    // Media
+    ".mp4", ".mp3", ".wav", ".ogg", ".webm", ".avi", ".mov",
+    // Documents
+    ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
+    // Archives
+    ".zip", ".rar", ".7z", ".tar", ".gz",
+    // Other binary
+    ".exe", ".dll", ".so", ".dylib"
+]);
+
+/**
+ * Checks if a file is a binary file based on its extension.
+ * Binary files cannot be meaningfully diffed as text.
+ * @param filePath The file path to check
+ * @param includeSvg Whether to treat SVG as binary (true for diff viewing, false for export since SVG is text)
+ * @returns True if the file is binary, false otherwise
+ */
+export function isBinaryFile(filePath: string, includeSvg: boolean = true): boolean {
+    const lowerPath = filePath.toLowerCase();
+    const lastDotIndex = lowerPath.lastIndexOf(".");
+
+    if (lastDotIndex === -1) {
+        return false;
+    }
+
+    const extension = lowerPath.substring(lastDotIndex);
+
+    // SVG is text-based but may be treated as binary for diff viewing purposes
+    if (extension === ".svg") {
+        return includeSvg;
+    }
+
+    return BINARY_FILE_EXTENSIONS.has(extension);
+}
+
 export function createKnownSiteIdsSet(
     activeSites: IWebsiteDetails[] | undefined,
     inactiveSites: IWebsiteDetails[] | undefined

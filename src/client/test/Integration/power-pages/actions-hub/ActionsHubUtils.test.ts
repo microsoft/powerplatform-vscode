@@ -9,7 +9,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import { fetchWebsites, findOtherSites, createKnownSiteIdsSet, getAllFiles } from '../../../../power-pages/actions-hub/ActionsHubUtils';
+import { fetchWebsites, findOtherSites, createKnownSiteIdsSet, getAllFiles, isBinaryFile } from '../../../../power-pages/actions-hub/ActionsHubUtils';
 import { Constants } from '../../../../power-pages/actions-hub/Constants';
 import { WebsiteDataModel, ServiceEndpointCategory } from '../../../../../common/services/Constants';
 import { IWebsiteDetails, IArtemisAPIOrgResponse } from '../../../../../common/services/Interfaces';
@@ -342,6 +342,123 @@ describe('ActionsHubUtils', () => {
 
             const absolutePath = result.get('test.txt');
             expect(absolutePath).to.equal(path.join(tempDir, 'test.txt'));
+        });
+    });
+
+    describe('isBinaryFile', () => {
+        describe('image files', () => {
+            it('should return true for common image formats', () => {
+                expect(isBinaryFile("image.png")).to.be.true;
+                expect(isBinaryFile("folder/image.png")).to.be.true;
+                expect(isBinaryFile("image.jpg")).to.be.true;
+                expect(isBinaryFile("image.jpeg")).to.be.true;
+                expect(isBinaryFile("animation.gif")).to.be.true;
+                expect(isBinaryFile("favicon.ico")).to.be.true;
+                expect(isBinaryFile("image.webp")).to.be.true;
+                expect(isBinaryFile("bitmap.bmp")).to.be.true;
+            });
+
+            it('should treat SVG as binary by default (for diff viewing)', () => {
+                expect(isBinaryFile("icon.svg")).to.be.true;
+                expect(isBinaryFile("folder/icon.svg")).to.be.true;
+            });
+
+            it('should treat SVG as text when includeSvg is false (for export)', () => {
+                expect(isBinaryFile("icon.svg", false)).to.be.false;
+                expect(isBinaryFile("folder/icon.svg", false)).to.be.false;
+            });
+        });
+
+        describe('font files', () => {
+            it('should return true for font formats', () => {
+                expect(isBinaryFile("font.woff")).to.be.true;
+                expect(isBinaryFile("font.woff2")).to.be.true;
+                expect(isBinaryFile("font.ttf")).to.be.true;
+                expect(isBinaryFile("font.otf")).to.be.true;
+                expect(isBinaryFile("font.eot")).to.be.true;
+            });
+        });
+
+        describe('media files', () => {
+            it('should return true for media formats', () => {
+                expect(isBinaryFile("video.mp4")).to.be.true;
+                expect(isBinaryFile("audio.mp3")).to.be.true;
+                expect(isBinaryFile("audio.wav")).to.be.true;
+                expect(isBinaryFile("audio.ogg")).to.be.true;
+            });
+        });
+
+        describe('document and archive files', () => {
+            it('should return true for document formats', () => {
+                expect(isBinaryFile("document.pdf")).to.be.true;
+                expect(isBinaryFile("document.doc")).to.be.true;
+                expect(isBinaryFile("document.docx")).to.be.true;
+            });
+
+            it('should return true for archive formats', () => {
+                expect(isBinaryFile("archive.zip")).to.be.true;
+                expect(isBinaryFile("archive.rar")).to.be.true;
+                expect(isBinaryFile("archive.7z")).to.be.true;
+            });
+        });
+
+        describe('text files', () => {
+            it('should return false for text formats', () => {
+                expect(isBinaryFile("page.html")).to.be.false;
+                expect(isBinaryFile("styles.css")).to.be.false;
+                expect(isBinaryFile("script.js")).to.be.false;
+                expect(isBinaryFile("data.json")).to.be.false;
+                expect(isBinaryFile("config.xml")).to.be.false;
+                expect(isBinaryFile("readme.txt")).to.be.false;
+                expect(isBinaryFile("config.yml")).to.be.false;
+                expect(isBinaryFile("config.yaml")).to.be.false;
+                expect(isBinaryFile("readme.md")).to.be.false;
+            });
+        });
+
+        describe('case insensitivity', () => {
+            it('should handle uppercase extensions', () => {
+                expect(isBinaryFile("IMAGE.PNG")).to.be.true;
+                expect(isBinaryFile("IMAGE.JPG")).to.be.true;
+            });
+
+            it('should handle mixed case extensions', () => {
+                expect(isBinaryFile("image.Png")).to.be.true;
+                expect(isBinaryFile("folder/IMAGE.JpG")).to.be.true;
+            });
+        });
+
+        describe('edge cases', () => {
+            it('should return false for files without extension', () => {
+                expect(isBinaryFile("Makefile")).to.be.false;
+                expect(isBinaryFile("README")).to.be.false;
+            });
+
+            it('should handle files with multiple dots', () => {
+                expect(isBinaryFile("file.backup.png")).to.be.true;
+                expect(isBinaryFile("archive.tar.gz")).to.be.true;
+            });
+
+            it('should handle paths with dots in folder names', () => {
+                expect(isBinaryFile("folder.name/image.png")).to.be.true;
+                expect(isBinaryFile(".hidden/file.txt")).to.be.false;
+            });
+
+            it('should handle empty string', () => {
+                expect(isBinaryFile("")).to.be.false;
+            });
+        });
+
+        describe('file paths', () => {
+            it('should handle Unix-style paths', () => {
+                expect(isBinaryFile("folder/subfolder/image.png")).to.be.true;
+                expect(isBinaryFile("/absolute/path/image.jpg")).to.be.true;
+            });
+
+            it('should handle Windows-style paths', () => {
+                expect(isBinaryFile("folder\\subfolder\\image.png")).to.be.true;
+                expect(isBinaryFile("C:\\Users\\test\\image.jpg")).to.be.true;
+            });
         });
     });
 });

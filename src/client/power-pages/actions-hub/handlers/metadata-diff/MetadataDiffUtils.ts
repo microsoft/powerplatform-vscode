@@ -14,6 +14,7 @@ import { showProgressWithNotification } from "../../../../../common/utilities/Ut
 import { FileComparisonStatus, IFileComparisonResult } from "../../models/IFileComparisonResult";
 import { getAllFiles } from "../../ActionsHubUtils";
 import MetadataDiffContext from "../../MetadataDiffContext";
+import PacContext from "../../../../pac/PacContext";
 
 /**
  * Result of resolving site information from workspace
@@ -167,6 +168,8 @@ export function prepareSiteStoragePath(storagePath: string, websiteId: string): 
  * @param completedEventName Telemetry event name for completion
  * @param noDifferencesEventName Telemetry event name for no differences
  * @param comparisonSubPath Optional sub-path to filter comparison results to a specific folder
+ * @param environmentId Optional environment ID (defaults to current environment if not provided)
+ * @param dataModelVersion Optional data model version (1 = Standard, 2 = Enhanced)
  * @returns True if differences were found, false otherwise
  */
 export async function processComparisonResults(
@@ -179,7 +182,9 @@ export async function processComparisonResults(
     siteId: string,
     completedEventName: string,
     noDifferencesEventName: string,
-    comparisonSubPath?: string
+    comparisonSubPath?: string,
+    environmentId?: string,
+    dataModelVersion?: 1 | 2
 ): Promise<boolean> {
     const comparisonResults = await showProgressWithNotification(
         Constants.Strings.COMPARING_FILES,
@@ -212,7 +217,8 @@ export async function processComparisonResults(
             methodName,
             siteId
         });
-        await vscode.window.showInformationMessage(Constants.Strings.NO_DIFFERENCES_FOUND);
+        // Don't await - show notification without blocking so callers can update UI immediately
+        vscode.window.showInformationMessage(Constants.Strings.NO_DIFFERENCES_FOUND);
         return false;
     } else {
         traceInfo(completedEventName, {
@@ -224,8 +230,21 @@ export async function processComparisonResults(
             deletedFiles: comparisonResults.filter(r => r.status === FileComparisonStatus.DELETED).length.toString()
         });
 
+        // Get the environment ID from context if not provided
+        const resolvedEnvironmentId = environmentId || PacContext.AuthInfo?.EnvironmentId || "";
+
         // Store results in the context so the tree view can display them
-        MetadataDiffContext.setResults(comparisonResults, siteName, localSiteName, environmentName);
+        MetadataDiffContext.setResults(
+            comparisonResults,
+            siteName,
+            localSiteName,
+            environmentName,
+            siteId,
+            resolvedEnvironmentId,
+            false, // isImported
+            undefined, // exportedAt
+            dataModelVersion
+        );
         return true;
     }
 }
