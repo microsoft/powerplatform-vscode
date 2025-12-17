@@ -409,14 +409,14 @@
         "category": "Power Pages",
         "title": "Debug Current Server Logic File",
         "icon": "$(debug-alt)",
-        "enablement": "resourcePath =~ /server-logics/ && resourceExtname == .js"
+        "enablement": "resourcePath =~ /server-logics[/\\\\]/ && resourceExtname == .js"
       },
       {
         "command": "powerpages.runServerLogic",
         "category": "Power Pages",
         "title": "Run Server Logic File",
         "icon": "$(run)",
-        "enablement": "resourcePath =~ /server-logics/ && resourceExtname == .js"
+        "enablement": "resourcePath =~ /server-logics[/\\\\]/ && resourceExtname == .js"
       },
       {
         "command": "powerPlatform.previewCurrentActiveUsers",
