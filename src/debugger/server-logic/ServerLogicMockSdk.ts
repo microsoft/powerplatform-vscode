@@ -852,13 +852,9 @@ const Server = {
     }
 };
 
-
-// Make available globally for browser/script environments
-if (typeof global !== 'undefined') {
-    global.Server = Server;
-}
-
-
+// Make Server available globally for the user's server logic files
+// This works in Node.js when loaded via --require
+globalThis.Server = Server;
 
 console.log('\\n[PowerPages] ✅ Server Logic Mock SDK loaded successfully');
 console.log('[PowerPages] 📝 All Server.* APIs are now available for debugging\\n');

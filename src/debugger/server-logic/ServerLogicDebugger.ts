@@ -52,6 +52,57 @@ function createServerLogicDebugConfig(
 }
 
 /**
+ * Ensures the runtime loader file exists and returns its path.
+ * Only creates the file if it doesn't exist, preserving user customizations.
+ * @param folder - The workspace folder
+ * @returns The path to the runtime loader file
+ */
+async function ensureRuntimeLoader(folder: vscode.WorkspaceFolder): Promise<string> {
+    const vscodeDir = path.join(folder.uri.fsPath, '.vscode');
+    const loaderPath = path.join(vscodeDir, 'server-logic-runtime-loader.js');
+    const gitignorePath = path.join(vscodeDir, '.gitignore');
+
+    if (!fs.existsSync(vscodeDir)) {
+        fs.mkdirSync(vscodeDir, { recursive: true });
+    }
+
+    // Only create if it doesn't exist to preserve user customizations
+    if (!fs.existsSync(loaderPath)) {
+        const loaderContent = generateServerMockSdk();
+        fs.writeFileSync(loaderPath, loaderContent, 'utf8');
+    }
+
+    ensureGitignore(gitignorePath);
+
+    return loaderPath;
+}
+
+/**
+ * Ensures .vscode/.gitignore includes server logic debug files
+ * @param gitignorePath - Path to the .gitignore file
+ */
+function ensureGitignore(gitignorePath: string): void {
+    const requiredEntries = ['server-logic-runtime-loader.js'];
+    let gitignoreContent = '';
+
+    if (fs.existsSync(gitignorePath)) {
+        gitignoreContent = fs.readFileSync(gitignorePath, 'utf8');
+    }
+
+    let modified = false;
+    for (const entry of requiredEntries) {
+        if (!gitignoreContent.includes(entry)) {
+            gitignoreContent += `\n${entry}`;
+            modified = true;
+        }
+    }
+
+    if (modified) {
+        fs.writeFileSync(gitignorePath, gitignoreContent.trim() + '\n', 'utf8');
+    }
+}
+
+/**
  * Provided debug configuration template for Server Logic debugging
  */
 export const providedServerLogicDebugConfig: vscode.DebugConfiguration = {
@@ -104,7 +155,7 @@ export class ServerLogicDebugProvider implements vscode.DebugConfigurationProvid
         }
 
         try {
-            const loaderPath = await this.ensureRuntimeLoader(folder);
+            const loaderPath = await ensureRuntimeLoader(folder);
 
             config.runtimeArgs = config.runtimeArgs || [];
             config.runtimeArgs.unshift('--require', loaderPath);
@@ -127,52 +178,6 @@ export class ServerLogicDebugProvider implements vscode.DebugConfigurationProvid
                 vscode.l10n.t('Failed to initialize Server Logic debugger: {0}', error instanceof Error ? error.message : String(error))
             );
             return undefined;
-        }
-    }
-
-    /**
-     * Ensures the runtime loader file exists and .gitignore is configured
-     */
-    private async ensureRuntimeLoader(folder: vscode.WorkspaceFolder): Promise<string> {
-        const vscodeDir = path.join(folder.uri.fsPath, '.vscode');
-        const loaderPath = path.join(vscodeDir, 'server-logic-runtime-loader.js');
-        const gitignorePath = path.join(vscodeDir, '.gitignore');
-
-        if (!fs.existsSync(vscodeDir)) {
-            fs.mkdirSync(vscodeDir, { recursive: true });
-        }
-
-        if (!fs.existsSync(loaderPath)) {
-            const loaderContent = generateServerMockSdk();
-            fs.writeFileSync(loaderPath, loaderContent, 'utf8');
-        }
-
-        this.ensureGitignore(gitignorePath);
-
-        return loaderPath;
-    }
-
-    /**
-     * Ensures .vscode/.gitignore includes server logic debug files
-     */
-    private ensureGitignore(gitignorePath: string): void {
-        const requiredEntries = ['server-logic-runtime-loader.js'];
-        let gitignoreContent = '';
-
-        if (fs.existsSync(gitignorePath)) {
-            gitignoreContent = fs.readFileSync(gitignorePath, 'utf8');
-        }
-
-        let modified = false;
-        for (const entry of requiredEntries) {
-            if (!gitignoreContent.includes(entry)) {
-                gitignoreContent += `\n${entry}`;
-                modified = true;
-            }
-        }
-
-        if (modified) {
-            fs.writeFileSync(gitignorePath, gitignoreContent.trim() + '\n', 'utf8');
         }
     }
 }
@@ -213,10 +218,17 @@ export function activateServerLogicDebugger(context: vscode.ExtensionContext): v
                     return;
                 }
 
-                await vscode.debug.startDebugging(
-                    vscode.workspace.getWorkspaceFolder(editor.document.uri),
-                    createServerLogicDebugConfig(filePath, vscode.l10n.t('Debug Current Server Logic'))
-                );
+                const workspaceFolder = vscode.workspace.getWorkspaceFolder(editor.document.uri);
+                if (!workspaceFolder) {
+                    vscode.window.showErrorMessage(vscode.l10n.t('Server Logic debugging requires an open workspace.'));
+                    return;
+                }
+
+                const loaderPath = await ensureRuntimeLoader(workspaceFolder);
+                const config = createServerLogicDebugConfig(filePath, vscode.l10n.t('Debug Current Server Logic'));
+                config.runtimeArgs = ['--require', loaderPath];
+
+                await vscode.debug.startDebugging(workspaceFolder, config);
 
                 oneDSLoggerWrapper.getLogger().traceInfo(
                     desktopTelemetryEventNames.SERVER_LOGIC_DEBUG_COMMAND_EXECUTED,
@@ -246,10 +258,17 @@ export function activateServerLogicDebugger(context: vscode.ExtensionContext): v
                     return;
                 }
 
-                await vscode.debug.startDebugging(
-                    vscode.workspace.getWorkspaceFolder(editor.document.uri),
-                    createServerLogicDebugConfig(filePath, vscode.l10n.t('Run Server Logic'), true)
-                );
+                const workspaceFolder = vscode.workspace.getWorkspaceFolder(editor.document.uri);
+                if (!workspaceFolder) {
+                    vscode.window.showErrorMessage(vscode.l10n.t('Server Logic debugging requires an open workspace.'));
+                    return;
+                }
+
+                const loaderPath = await ensureRuntimeLoader(workspaceFolder);
+                const config = createServerLogicDebugConfig(filePath, vscode.l10n.t('Run Server Logic'), true);
+                config.runtimeArgs = ['--require', loaderPath];
+
+                await vscode.debug.startDebugging(workspaceFolder, config);
 
                 oneDSLoggerWrapper.getLogger().traceInfo(
                     desktopTelemetryEventNames.SERVER_LOGIC_RUN_COMMAND_EXECUTED,
