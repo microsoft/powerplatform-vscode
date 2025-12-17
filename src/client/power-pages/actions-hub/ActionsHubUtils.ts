@@ -11,12 +11,55 @@ import os from "os";
 import { traceError, traceInfo } from "./TelemetryHelper";
 import { Constants } from "./Constants";
 import { IOtherSiteInfo, IWebsiteDetails, WebsiteYaml } from "../../../common/services/Interfaces";
-import PacContext from "../../pac/PacContext";
 import ArtemisContext from "../../ArtemisContext";
 import { getActiveWebsites, getAllWebsites } from "../../../common/utilities/WebsiteUtil";
 import { ServiceEndpointCategory } from "../../../common/services/Constants";
 import { getWebsiteRecordId, getWebsiteYamlPath, hasWebsiteYaml } from "../../../common/utilities/WorkspaceInfoFinderUtil";
 import { POWERPAGES_SITE_FOLDER, UTF8_ENCODING } from "../../../common/constants";
+import { OrgInfo } from "../../pac/PacTypes";
+
+/**
+ * Common binary file extensions that cannot be diffed in the text diff viewer
+ */
+const BINARY_FILE_EXTENSIONS = new Set([
+    // Images
+    ".png", ".jpg", ".jpeg", ".gif", ".ico", ".webp", ".bmp", ".tiff", ".tif",
+    // Fonts
+    ".woff", ".woff2", ".ttf", ".otf", ".eot",
+    // Media
+    ".mp4", ".mp3", ".wav", ".ogg", ".webm", ".avi", ".mov",
+    // Documents
+    ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
+    // Archives
+    ".zip", ".rar", ".7z", ".tar", ".gz",
+    // Other binary
+    ".exe", ".dll", ".so", ".dylib"
+]);
+
+/**
+ * Checks if a file is a binary file based on its extension.
+ * Binary files cannot be meaningfully diffed as text.
+ * @param filePath The file path to check
+ * @param includeSvg Whether to treat SVG as binary (true for diff viewing, false for export since SVG is text)
+ * @returns True if the file is binary, false otherwise
+ */
+export function isBinaryFile(filePath: string, includeSvg: boolean = true): boolean {
+    const lowerPath = filePath.toLowerCase();
+    const lastDotIndex = lowerPath.lastIndexOf(".");
+
+    if (lastDotIndex === -1) {
+        return false;
+    }
+
+    const extension = lowerPath.substring(lastDotIndex);
+
+    // SVG is text-based but may be treated as binary for diff viewing purposes
+    if (extension === ".svg") {
+        return includeSvg;
+    }
+
+    return BINARY_FILE_EXTENSIONS.has(extension);
+}
 
 export function createKnownSiteIdsSet(
     activeSites: IWebsiteDetails[] | undefined,
@@ -134,10 +177,9 @@ const sortByCreatedOn = <T extends { createdOn?: string | null }>(item1: T, item
     return date2 - date1; // Sort in descending order (newest first)
 }
 
-export const fetchWebsites = async (): Promise<{ activeSites: IWebsiteDetails[], inactiveSites: IWebsiteDetails[], otherSites: IOtherSiteInfo[] }> => {
+export const fetchWebsites = async (orgInfo: OrgInfo, shouldReturnOtherSites: boolean): Promise<{ activeSites: IWebsiteDetails[], inactiveSites: IWebsiteDetails[], otherSites: IOtherSiteInfo[] }> => {
     traceInfo(Constants.EventNames.ACTIONS_HUB_FETCH_WEBSITES_CALLED, { methodName: fetchWebsites.name });
     try {
-        const orgInfo = PacContext.OrgInfo;
         if (ArtemisContext.ServiceResponse?.stamp && orgInfo) {
             let allSites: IWebsiteDetails[] = [];
             let activeWebsiteDetails: IWebsiteDetails[] = [];
@@ -167,7 +209,7 @@ export const fetchWebsites = async (): Promise<{ activeSites: IWebsiteDetails[],
             inactiveWebsiteDetails.sort(sortByCreatedOn);
 
             const currentEnvSiteIds = createKnownSiteIdsSet(activeWebsiteDetails, inactiveWebsiteDetails);
-            const otherSites = findOtherSites(currentEnvSiteIds);
+            const otherSites = shouldReturnOtherSites ? findOtherSites(currentEnvSiteIds) : [];
 
             return { activeSites: activeWebsiteDetails, inactiveSites: inactiveWebsiteDetails, otherSites: otherSites };
         }

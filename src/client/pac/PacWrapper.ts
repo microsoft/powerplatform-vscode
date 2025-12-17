@@ -310,10 +310,17 @@ export class PacWrapper {
     public async downloadSiteWithProgress(
         downloadPath: string,
         websiteId: string,
-        dataModelVersion: 1 | 2
+        dataModelVersion: 1 | 2,
+        environmentUrl?: string
     ): Promise<boolean> {
+        const pacArguments = ["pages", "download", "--path", downloadPath, "--webSiteId", websiteId, "--modelVersion", dataModelVersion.toString(), "--overwrite"];
+
+        if (environmentUrl) {
+            pacArguments.push("--environment", environmentUrl);
+        }
+
         return this.pacInterop.executeCommandWithProgress(
-            new PacArguments("pages", "download", "--path", downloadPath, "--webSiteId", websiteId, "--modelVersion", dataModelVersion.toString(), "--overwrite")
+            new PacArguments(...pacArguments)
         );
     }
 

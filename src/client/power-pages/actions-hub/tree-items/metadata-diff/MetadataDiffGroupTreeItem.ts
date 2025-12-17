@@ -38,8 +38,6 @@ export class MetadataDiffGroupTreeItem extends ActionsHubTreeItem {
         }
 
         // Create a site tree item for each site's comparison results
-        return siteResults.map(siteResult =>
-            new MetadataDiffSiteTreeItem(siteResult.comparisonResults, siteResult.siteName, siteResult.environmentName)
-        );
+        return siteResults.map(siteResult => new MetadataDiffSiteTreeItem(siteResult));
     }
 }

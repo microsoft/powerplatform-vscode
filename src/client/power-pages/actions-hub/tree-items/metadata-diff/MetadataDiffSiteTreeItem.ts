@@ -6,7 +6,7 @@
 import * as vscode from "vscode";
 import { ActionsHubTreeItem } from "../ActionsHubTreeItem";
 import { Constants } from "../../Constants";
-import { IFileComparisonResult, FileComparisonStatus } from "../../models/IFileComparisonResult";
+import { IFileComparisonResult, FileComparisonStatus, ISiteComparisonResults } from "../../models/IFileComparisonResult";
 import { MetadataDiffFileTreeItem } from "./MetadataDiffFileTreeItem";
 import { MetadataDiffFolderTreeItem } from "./MetadataDiffFolderTreeItem";
 import MetadataDiffContext, { MetadataDiffSortMode } from "../../MetadataDiffContext";
@@ -18,23 +18,43 @@ import MetadataDiffContext, { MetadataDiffSortMode } from "../../MetadataDiffCon
 export class MetadataDiffSiteTreeItem extends ActionsHubTreeItem {
     private readonly _comparisonResults: IFileComparisonResult[];
     private readonly _siteName: string;
+    private readonly _localSiteName: string;
     private readonly _environmentName: string;
+    private readonly _websiteId: string;
+    private readonly _environmentId: string;
+    private readonly _isImported: boolean;
+    private readonly _exportedAt?: string;
+    private readonly _dataModelVersion?: 1 | 2;
 
-    constructor(comparisonResults: IFileComparisonResult[], siteName: string, environmentName: string) {
-        const fileCount = comparisonResults.length;
-        const fileLabel = fileCount === 1
-            ? Constants.StringFunctions.SITE_WITH_FILE_COUNT_SINGULAR(siteName, fileCount)
-            : Constants.StringFunctions.SITE_WITH_FILE_COUNT_PLURAL(siteName, fileCount);
+    constructor(siteResults: ISiteComparisonResults) {
+        const fileCount = siteResults.comparisonResults.length;
+        const isImported = siteResults.isImported ?? false;
+
+        const fileLabel = Constants.StringFunctions.COMPARISON_LABEL(siteResults.siteName, siteResults.environmentName, siteResults.localSiteName);
+        const description = fileCount === 1
+            ? Constants.Strings.FILE_COUNT_DESCRIPTION_SINGULAR
+            : Constants.StringFunctions.FILE_COUNT_DESCRIPTION_PLURAL(fileCount);
+
+        // Use different icons and context values for imported vs live comparisons
+        const icon = isImported ? Constants.Icons.IMPORTED_SITE : Constants.Icons.SITE;
+        const contextValue = isImported ? Constants.ContextValues.METADATA_DIFF_SITE_IMPORTED : Constants.ContextValues.METADATA_DIFF_SITE;
+
         super(
             fileLabel,
             vscode.TreeItemCollapsibleState.Expanded,
-            Constants.Icons.SITE,
-            Constants.ContextValues.METADATA_DIFF_SITE,
-            environmentName // Show environment name as description/subtext
+            icon,
+            contextValue,
+            description
         );
-        this._comparisonResults = comparisonResults;
-        this._siteName = siteName;
-        this._environmentName = environmentName;
+        this._comparisonResults = siteResults.comparisonResults;
+        this._siteName = siteResults.siteName;
+        this._localSiteName = siteResults.localSiteName;
+        this._environmentName = siteResults.environmentName;
+        this._websiteId = siteResults.websiteId;
+        this._environmentId = siteResults.environmentId;
+        this._isImported = isImported;
+        this._exportedAt = siteResults.exportedAt;
+        this._dataModelVersion = siteResults.dataModelVersion;
     }
 
     public getChildren(): ActionsHubTreeItem[] {
@@ -54,7 +74,7 @@ export class MetadataDiffSiteTreeItem extends ActionsHubTreeItem {
 
         // Create flat list of file items
         return sortedResults.map(result =>
-            new MetadataDiffFileTreeItem(result, this._siteName)
+            new MetadataDiffFileTreeItem(result, this._siteName, this._isImported)
         );
     }
 
@@ -136,7 +156,8 @@ export class MetadataDiffSiteTreeItem extends ActionsHubTreeItem {
             // Add the file to the appropriate folder (or root if no folders)
             const fileItem = new MetadataDiffFileTreeItem(
                 result,
-                this._siteName
+                this._siteName,
+                this._isImported
             );
 
             if (currentFolder) {
@@ -146,7 +167,26 @@ export class MetadataDiffSiteTreeItem extends ActionsHubTreeItem {
             }
         }
 
-        return Array.from(rootChildren.values());
+        // Separate folders and files at root level
+        const folders: MetadataDiffFolderTreeItem[] = [];
+        const files: MetadataDiffFileTreeItem[] = [];
+
+        for (const child of rootChildren.values()) {
+            if (child instanceof MetadataDiffFolderTreeItem) {
+                folders.push(child);
+            } else {
+                files.push(child);
+            }
+        }
+
+        // Sort folders alphabetically by label
+        folders.sort((a, b) => (a.label as string).localeCompare(b.label as string));
+
+        // Sort files alphabetically by label
+        files.sort((a, b) => (a.label as string).localeCompare(b.label as string));
+
+        // Return folders first, then files
+        return [...folders, ...files];
     }
 
     public get siteName(): string {
@@ -159,5 +199,29 @@ export class MetadataDiffSiteTreeItem extends ActionsHubTreeItem {
 
     public get comparisonResults(): IFileComparisonResult[] {
         return this._comparisonResults;
+    }
+
+    public get websiteId(): string {
+        return this._websiteId;
+    }
+
+    public get environmentId(): string {
+        return this._environmentId;
+    }
+
+    public get isImported(): boolean {
+        return this._isImported;
+    }
+
+    public get exportedAt(): string | undefined {
+        return this._exportedAt;
+    }
+
+    public get localSiteName(): string {
+        return this._localSiteName;
+    }
+
+    public get dataModelVersion(): (1 | 2) | undefined {
+        return this._dataModelVersion;
     }
 }

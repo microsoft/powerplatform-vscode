@@ -14,10 +14,12 @@ import { IFileComparisonResult } from "../../../../../../power-pages/actions-hub
 describe("OpenMetadataDiffFileHandler", () => {
     let sandbox: sinon.SinonSandbox;
     let executeCommandStub: sinon.SinonStub;
+    let showInformationMessageStub: sinon.SinonStub;
 
     beforeEach(() => {
         sandbox = sinon.createSandbox();
         executeCommandStub = sandbox.stub(vscode.commands, "executeCommand");
+        showInformationMessageStub = sandbox.stub(vscode.window, "showInformationMessage");
         sandbox.stub(TelemetryHelper, "traceInfo");
         sandbox.stub(vscode.env, "sessionId").get(() => "test-session-id");
     });
@@ -45,7 +47,8 @@ describe("OpenMetadataDiffFileHandler", () => {
             expect(traceInfoStub.firstCall.args[1]).to.deep.equal({
                 methodName: "openMetadataDiffFile",
                 relativePath: "folder/file.txt",
-                status: "modified"
+                status: "modified",
+                isImported: false
             });
         });
 
@@ -217,6 +220,55 @@ describe("OpenMetadataDiffFileHandler", () => {
                 );
                 expect(diffCall, `Expected no vscode.diff call for ${ext} file`).to.be.undefined;
             }
+        });
+
+        it("should include isImported in telemetry for imported comparisons", async () => {
+            const traceInfoStub = TelemetryHelper.traceInfo as sinon.SinonStub;
+
+            const comparisonResult: IFileComparisonResult = {
+                localPath: "/local/file.txt",
+                remotePath: "/remote/file.txt",
+                relativePath: "folder/file.txt",
+                status: "modified"
+            };
+            const fileItem = new MetadataDiffFileTreeItem(comparisonResult, "Test Site", true);
+
+            await openMetadataDiffFile(fileItem);
+
+            expect(traceInfoStub.calledOnce).to.be.true;
+            expect(traceInfoStub.firstCall.args[1]).to.have.property("isImported", true);
+        });
+
+        it("should show information message for binary files in imported comparisons", async () => {
+            const comparisonResult: IFileComparisonResult = {
+                localPath: "/local/image.png",
+                remotePath: "/remote/image.png",
+                relativePath: "image.png",
+                status: "modified"
+            };
+            const fileItem = new MetadataDiffFileTreeItem(comparisonResult, "Test Site", true);
+
+            await openMetadataDiffFile(fileItem);
+
+            expect(showInformationMessageStub.calledOnce).to.be.true;
+        });
+
+        it("should not open binary file for imported comparisons", async () => {
+            const comparisonResult: IFileComparisonResult = {
+                localPath: "/local/image.png",
+                remotePath: "/remote/image.png",
+                relativePath: "image.png",
+                status: "modified"
+            };
+            const fileItem = new MetadataDiffFileTreeItem(comparisonResult, "Test Site", true);
+
+            await openMetadataDiffFile(fileItem);
+
+            // Should not call vscode.open or vscode.diff for imported binary files
+            const openCall = executeCommandStub.getCalls().find(
+                call => call.args[0] === "vscode.open" || call.args[0] === "vscode.diff"
+            );
+            expect(openCall).to.be.undefined;
         });
     });
 });
