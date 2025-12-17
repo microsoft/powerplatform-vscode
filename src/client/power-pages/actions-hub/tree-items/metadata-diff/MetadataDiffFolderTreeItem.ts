@@ -15,17 +15,24 @@ export class MetadataDiffFolderTreeItem extends ActionsHubTreeItem {
     public readonly childrenMap: Map<string, MetadataDiffFolderTreeItem | MetadataDiffFileTreeItem>;
     private readonly _siteName: string;
     private readonly _folderPath: string;
+    private readonly _isImported: boolean;
 
-    constructor(folderName: string, siteName: string, folderPath: string) {
+    constructor(folderName: string, siteName: string, folderPath: string, isImported: boolean = false) {
+        // Use different context value for imported items to hide discard option
+        const contextValue = isImported
+            ? Constants.ContextValues.METADATA_DIFF_FOLDER_IMPORTED
+            : Constants.ContextValues.METADATA_DIFF_FOLDER;
+
         super(
             folderName,
             vscode.TreeItemCollapsibleState.Expanded,
             Constants.Icons.METADATA_DIFF_FOLDER,
-            Constants.ContextValues.METADATA_DIFF_FOLDER
+            contextValue
         );
         this.childrenMap = new Map();
         this._siteName = siteName;
         this._folderPath = folderPath;
+        this._isImported = isImported;
     }
 
     public getChildren(): ActionsHubTreeItem[] {
@@ -59,6 +66,10 @@ export class MetadataDiffFolderTreeItem extends ActionsHubTreeItem {
 
     public get folderPath(): string {
         return this._folderPath;
+    }
+
+    public get isImported(): boolean {
+        return this._isImported;
     }
 
     /**

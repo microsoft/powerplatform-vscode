@@ -138,7 +138,7 @@ export class MetadataDiffSiteTreeItem extends ActionsHubTreeItem {
                     // Look in root children
                     let folder = rootChildren.get(folderName) as MetadataDiffFolderTreeItem | undefined;
                     if (!folder) {
-                        folder = new MetadataDiffFolderTreeItem(folderName, this._siteName, currentPath);
+                        folder = new MetadataDiffFolderTreeItem(folderName, this._siteName, currentPath, this._isImported);
                         rootChildren.set(folderName, folder);
                     }
                     currentFolder = folder;
@@ -146,7 +146,7 @@ export class MetadataDiffSiteTreeItem extends ActionsHubTreeItem {
                     // Look in current folder's children
                     let folder = currentFolder.childrenMap.get(folderName) as MetadataDiffFolderTreeItem | undefined;
                     if (!folder) {
-                        folder = new MetadataDiffFolderTreeItem(folderName, this._siteName, currentPath);
+                        folder = new MetadataDiffFolderTreeItem(folderName, this._siteName, currentPath, this._isImported);
                         currentFolder.childrenMap.set(folderName, folder);
                     }
                     currentFolder = folder;
