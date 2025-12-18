@@ -1738,7 +1738,7 @@
     "@fluidframework/azure-client": "^2.31.1",
     "@microsoft/1ds-core-js": "4.0.5",
     "@microsoft/1ds-post-js": "4.0.5",
-    "@microsoft/generator-powerpages": "1.21.19",
+    "@microsoft/generator-powerpages": "^1.39.3",
     "@types/jwt-decode": "2.2.0",
     "@types/node-fetch": "^2.6.2",
     "@vscode/extension-telemetry": "^0.6.2",
@@ -1774,5 +1774,11 @@
   "optionalDependencies": {
     "bufferutil": "^4.0.6",
     "utf-8-validate": "^5.0.9"
+  },
+  "overrides": {
+    "tmp": "^0.2.4",
+    "@octokit/request": "^8.4.1",
+    "@octokit/plugin-paginate-rest": "^9.2.2",
+    "@octokit/request-error": "^5.1.1"
   }
 }
