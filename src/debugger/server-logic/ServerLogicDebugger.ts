@@ -69,9 +69,17 @@ async function ensureRuntimeLoader(folder: vscode.WorkspaceFolder): Promise<stri
     }
 
     // Only create if it doesn't exist to preserve user customizations
-    if (!fs.existsSync(loaderPath)) {
+    const loaderExists = fs.existsSync(loaderPath);
+    if (!loaderExists) {
         const loaderContent = generateServerMockSdk();
         fs.writeFileSync(loaderPath, loaderContent, 'utf8');
+
+        oneDSLoggerWrapper.getLogger().traceInfo(
+            desktopTelemetryEventNames.SERVER_LOGIC_RUNTIME_LOADER_CREATED,
+            {
+                workspaceFolder: folder.name
+            }
+        );
     }
 
     ensureGitignore(gitignorePath);
@@ -170,14 +178,28 @@ export class ServerLogicDebugProvider implements vscode.DebugConfigurationProvid
             oneDSLoggerWrapper.getLogger().traceInfo(
                 desktopTelemetryEventNames.SERVER_LOGIC_DEBUG_STARTED,
                 {
-                    hasCustomMockData: !!config.mockDataPath
+                    hasCustomMockData: String(!!config.mockDataPath),
+                    workspaceFolder: folder.name,
+                    programFile: config.program ? path.basename(config.program) : 'unknown'
                 }
             );
 
             return config;
         } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+
+            oneDSLoggerWrapper.getLogger().traceError(
+                desktopTelemetryEventNames.SERVER_LOGIC_DEBUG_ERROR,
+                errorMessage,
+                error instanceof Error ? error : new Error(errorMessage),
+                {
+                    phase: 'resolveDebugConfiguration',
+                    workspaceFolder: folder.name
+                }
+            );
+
             vscode.window.showErrorMessage(
-                vscode.l10n.t(SERVER_LOGIC_STRINGS.ERROR_INIT_FAILED, error instanceof Error ? error.message : String(error))
+                vscode.l10n.t(SERVER_LOGIC_STRINGS.ERROR_INIT_FAILED, errorMessage)
             );
             return undefined;
         }
@@ -235,7 +257,9 @@ export function activateServerLogicDebugger(context: vscode.ExtensionContext): v
                 oneDSLoggerWrapper.getLogger().traceInfo(
                     desktopTelemetryEventNames.SERVER_LOGIC_DEBUG_COMMAND_EXECUTED,
                     {
-                        fileName: path.basename(filePath)
+                        fileName: path.basename(filePath),
+                        workspaceFolder: workspaceFolder.name,
+                        triggerSource: 'command'
                     }
                 );
             }
@@ -275,7 +299,9 @@ export function activateServerLogicDebugger(context: vscode.ExtensionContext): v
                 oneDSLoggerWrapper.getLogger().traceInfo(
                     desktopTelemetryEventNames.SERVER_LOGIC_RUN_COMMAND_EXECUTED,
                     {
-                        fileName: path.basename(filePath)
+                        fileName: path.basename(filePath),
+                        workspaceFolder: workspaceFolder.name,
+                        triggerSource: 'command'
                     }
                 );
             }
@@ -305,6 +331,11 @@ function showServerLogicWelcomeNotification(): void {
     const learnMoreButton = vscode.l10n.t(SERVER_LOGIC_STRINGS.BUTTON_LEARN_MORE);
     const dontShowButton = vscode.l10n.t(SERVER_LOGIC_STRINGS.BUTTON_DONT_SHOW_AGAIN);
 
+    oneDSLoggerWrapper.getLogger().traceInfo(
+        desktopTelemetryEventNames.SERVER_LOGIC_WELCOME_NOTIFICATION_SHOWN,
+        {}
+    );
+
     vscode.window.showInformationMessage(
         vscode.l10n.t(SERVER_LOGIC_STRINGS.WELCOME_MESSAGE),
         debugButton,
@@ -312,16 +343,33 @@ function showServerLogicWelcomeNotification(): void {
         dontShowButton
     ).then(selection => {
         if (selection === debugButton) {
+            oneDSLoggerWrapper.getLogger().traceInfo(
+                desktopTelemetryEventNames.SERVER_LOGIC_WELCOME_NOTIFICATION_ACTION,
+                { action: 'debug' }
+            );
             vscode.commands.executeCommand('powerpages.debugServerLogic');
         } else if (selection === learnMoreButton) {
+            oneDSLoggerWrapper.getLogger().traceInfo(
+                desktopTelemetryEventNames.SERVER_LOGIC_WELCOME_NOTIFICATION_ACTION,
+                { action: 'learnMore' }
+            );
             vscode.env.openExternal(
                 vscode.Uri.parse(SERVER_LOGIC_URLS.LEARN_MORE)
             );
         } else if (selection === dontShowButton) {
+            oneDSLoggerWrapper.getLogger().traceInfo(
+                desktopTelemetryEventNames.SERVER_LOGIC_WELCOME_NOTIFICATION_ACTION,
+                { action: 'dontShowAgain' }
+            );
             vscode.workspace.getConfiguration().update(
                 SERVER_LOGIC_CONFIG_KEYS.DONT_SHOW_WELCOME,
                 true,
                 vscode.ConfigurationTarget.Global
+            );
+        } else {
+            oneDSLoggerWrapper.getLogger().traceInfo(
+                desktopTelemetryEventNames.SERVER_LOGIC_WELCOME_NOTIFICATION_ACTION,
+                { action: 'dismissed' }
             );
         }
     });
