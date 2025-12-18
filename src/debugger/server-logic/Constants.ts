@@ -24,7 +24,7 @@ export const SERVER_LOGIC_FILES = {
  * URLs for Server Logic documentation
  */
 export const SERVER_LOGIC_URLS = {
-    LEARN_MORE: 'https://learn.microsoft.com/power-pages/configure/server-side-scripting'
+    LEARN_MORE: 'https://go.microsoft.com/fwlink/?linkid=2346212'
 } as const;
 
 /**
