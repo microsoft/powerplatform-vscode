@@ -9,7 +9,9 @@ import * as vscode from 'vscode';
 import {
     ServerLogicDebugProvider,
     providedServerLogicDebugConfig,
-    generateServerMockSdk
+    generateServerMockSdk,
+    isServerLogicFile,
+    SERVER_LOGIC_COMMANDS
 } from '../../server-logic';
 
 describe('ServerLogicDebugger', () => {
@@ -21,6 +23,37 @@ describe('ServerLogicDebugger', () => {
 
     afterEach(() => {
         sandbox.restore();
+    });
+
+    describe('isServerLogicFile', () => {
+        it('should return true for .js files in server-logics folder', () => {
+            expect(isServerLogicFile('/project/server-logics/handler.js')).to.be.true;
+            expect(isServerLogicFile('C:\\project\\server-logics\\handler.js')).to.be.true;
+        });
+
+        it('should return true for .js files in server-logic folder (singular)', () => {
+            expect(isServerLogicFile('/project/server-logic/handler.js')).to.be.true;
+            expect(isServerLogicFile('C:\\project\\server-logic\\handler.js')).to.be.true;
+        });
+
+        it('should return false for .ts files in server-logics folder', () => {
+            expect(isServerLogicFile('/project/server-logics/handler.ts')).to.be.false;
+        });
+
+        it('should return false for .js files outside server-logics folder', () => {
+            expect(isServerLogicFile('/project/src/handler.js')).to.be.false;
+            expect(isServerLogicFile('/project/server-logic-other/handler.js')).to.be.false;
+        });
+    });
+
+    describe('SERVER_LOGIC_COMMANDS', () => {
+        it('should have correct debug command', () => {
+            expect(SERVER_LOGIC_COMMANDS.DEBUG).to.equal('microsoft.powerplatform.pages.debugServerLogic');
+        });
+
+        it('should have correct run command', () => {
+            expect(SERVER_LOGIC_COMMANDS.RUN).to.equal('microsoft.powerplatform.pages.runServerLogic');
+        });
     });
 
     describe('providedServerLogicDebugConfig', () => {

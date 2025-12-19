@@ -4,11 +4,7 @@
  */
 
 import * as vscode from 'vscode';
-
-/**
- * Server Logic folder pattern for matching file paths
- */
-const SERVER_LOGICS_FOLDER_PATTERN = /[/\\]server-logics[/\\]/;
+import { isServerLogicFile, SERVER_LOGIC_COMMANDS, SERVER_LOGIC_STRINGS } from './Constants';
 
 /**
  * Provides CodeLens for server logic files showing debug/run actions.
@@ -45,7 +41,7 @@ export class ServerLogicCodeLensProvider implements vscode.CodeLensProvider, vsc
     ): vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
 
         // Only provide CodeLens for server logic files
-        if (!this.isServerLogicFile(document.fileName)) {
+        if (!isServerLogicFile(document.fileName)) {
             return [];
         }
 
@@ -56,31 +52,22 @@ export class ServerLogicCodeLensProvider implements vscode.CodeLensProvider, vsc
 
         // Add "Debug" CodeLens
         const debugLens = new vscode.CodeLens(range, {
-            title: `$(debug-alt) ${vscode.l10n.t('Debug')}`,
-            tooltip: vscode.l10n.t('Debug this server logic file'),
-            command: 'powerpages.debugServerLogic',
+            title: `$(debug-alt) ${SERVER_LOGIC_STRINGS.CODELENS_DEBUG}`,
+            tooltip: SERVER_LOGIC_STRINGS.CODELENS_DEBUG_TOOLTIP,
+            command: SERVER_LOGIC_COMMANDS.DEBUG,
             arguments: []
         });
         codeLenses.push(debugLens);
 
         // Add "Run" CodeLens
         const runLens = new vscode.CodeLens(range, {
-            title: `$(run) ${vscode.l10n.t('Run')}`,
-            tooltip: vscode.l10n.t('Run this server logic file without debugging'),
-            command: 'powerpages.runServerLogic',
+            title: `$(run) ${SERVER_LOGIC_STRINGS.CODELENS_RUN}`,
+            tooltip: SERVER_LOGIC_STRINGS.CODELENS_RUN_TOOLTIP,
+            command: SERVER_LOGIC_COMMANDS.RUN,
             arguments: []
         });
         codeLenses.push(runLens);
 
         return codeLenses;
-    }
-
-    /**
-     * Checks if a file is a server logic file based on path and extension
-     * @param filePath - The file path to check
-     * @returns True if the file is in a server-logics folder and has .js extension
-     */
-    private isServerLogicFile(filePath: string): boolean {
-        return SERVER_LOGICS_FOLDER_PATTERN.test(filePath) && filePath.endsWith('.js');
     }
 }

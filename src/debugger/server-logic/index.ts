@@ -5,9 +5,13 @@
 
 export {
     activateServerLogicDebugger,
+    createServerLogicDebugConfig,
+    ensureRuntimeLoader
+} from './ServerLogicDebugger';
+export {
     ServerLogicDebugProvider,
     providedServerLogicDebugConfig
-} from './ServerLogicDebugger';
+} from './ServerLogicDebugProvider';
 export { ServerLogicCodeLensProvider } from './ServerLogicCodeLensProvider';
 export { generateServerMockSdk } from './ServerLogicMockSdk';
 export {
@@ -15,5 +19,7 @@ export {
     SERVER_LOGIC_FILES,
     SERVER_LOGIC_URLS,
     SERVER_LOGIC_STRINGS,
-    SERVER_LOGICS_FOLDER_PATTERN
+    SERVER_LOGIC_COMMANDS,
+    SERVER_LOGICS_FOLDER_PATTERN,
+    isServerLogicFile
 } from './Constants';
