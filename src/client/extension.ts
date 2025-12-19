@@ -183,6 +183,10 @@ export async function activate(
     const basicPanels = RegisterBasicPanels(pacWrapper);
     _context.subscriptions.push(...basicPanels);
 
+    // Register copilot panels immediately during activation to ensure chat participant is always available
+    // This ensures @powerpages works even when user is not authenticated
+    registerCopilotPanels(pacWrapper);
+
     let copilotNotificationShown = false;
 
     const workspaceFolders = getWorkspaceFolders();
@@ -513,5 +517,7 @@ function registerCopilotPanels(pacWrapper: PacWrapper): void {
         copilotPanelsDisposable = RegisterCopilotPanels(pacWrapper, _context);
         _context.subscriptions.push(...copilotPanelsDisposable);
         copilotPanelsRegistered = true;
+
+        oneDSLoggerWrapper.getLogger().traceInfo("CopilotPanelsRegistered");
     }
 }
