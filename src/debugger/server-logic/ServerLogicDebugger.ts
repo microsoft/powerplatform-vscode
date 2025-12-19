@@ -113,7 +113,10 @@ export function activateServerLogicDebugger(context: vscode.ExtensionContext): v
     context.subscriptions.push(
         codeLensProvider,
         vscode.languages.registerCodeLensProvider(
-            { pattern: '**/server-logic?(s)/**/*.js' },
+            [
+                { pattern: '**/server-logics/**/*.js' },
+                { pattern: '**/server-logic/**/*.js' }
+            ],
             codeLensProvider
         )
     );
