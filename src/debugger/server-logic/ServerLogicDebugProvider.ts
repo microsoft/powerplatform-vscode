@@ -1,0 +1,104 @@
+/*
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ */
+
+import * as vscode from 'vscode';
+import * as path from 'path';
+import { isServerLogicFile } from './ServerLogicUtils';
+import { ensureRuntimeLoader, createServerLogicDebugConfig } from './ServerLogicDebuggerHelpers';
+import { oneDSLoggerWrapper } from '../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
+import { desktopTelemetryEventNames } from '../../common/OneDSLoggerTelemetry/client/desktopExtensionTelemetryEventNames';
+import { getLocalizedStrings } from './Constants';
+
+/**
+ * Provided debug configuration template for Server Logic debugging
+ */
+export const providedServerLogicDebugConfig: vscode.DebugConfiguration = {
+    type: 'node',
+    request: 'launch',
+    name: 'Debug Power Pages Server Logic',
+    program: '${file}',
+    skipFiles: ['<node_internals>/**'],
+    console: 'internalConsole'
+};
+
+/**
+ * Debug configuration provider for Power Pages Server Logic
+ */
+export class ServerLogicDebugProvider implements vscode.DebugConfigurationProvider {
+
+    /**
+     * Provides initial debug configurations
+     */
+    provideDebugConfigurations(
+        _: vscode.WorkspaceFolder | undefined
+    ): vscode.ProviderResult<vscode.DebugConfiguration[]> {
+        return [providedServerLogicDebugConfig];
+    }
+
+    /**
+     * Resolves the debug configuration before starting the debug session
+     */
+    async resolveDebugConfiguration(
+        folder: vscode.WorkspaceFolder | undefined,
+        config: vscode.DebugConfiguration,
+        _: vscode.CancellationToken
+    ): Promise<vscode.DebugConfiguration | undefined> {
+
+        const localizedStrings = getLocalizedStrings();
+
+        if (!config.type && !config.request && !config.name) {
+            const editor = vscode.window.activeTextEditor;
+            if (editor && isServerLogicFile(editor.document.uri.fsPath)) {
+                config = createServerLogicDebugConfig(editor.document.uri.fsPath);
+            } else {
+                vscode.window.showErrorMessage(localizedStrings.ERROR_OPEN_SERVER_LOGIC_FILE);
+                return undefined;
+            }
+        }
+
+        if (!folder) {
+            vscode.window.showErrorMessage(localizedStrings.ERROR_REQUIRES_WORKSPACE);
+            return undefined;
+        }
+
+        try {
+            const loaderPath = await ensureRuntimeLoader(folder);
+
+            config.runtimeArgs = config.runtimeArgs || [];
+            config.runtimeArgs.unshift('--require', loaderPath);
+
+            if (config.mockDataPath) {
+                config.env = config.env || {};
+                config.env.MOCK_DATA_PATH = config.mockDataPath;
+            }
+
+            oneDSLoggerWrapper.getLogger().traceInfo(
+                desktopTelemetryEventNames.SERVER_LOGIC_DEBUG_STARTED,
+                {
+                    hasCustomMockData: String(!!config.mockDataPath),
+                    workspaceFolder: folder.name,
+                    programFile: config.program ? path.basename(config.program) : 'unknown'
+                }
+            );
+
+            return config;
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+
+            oneDSLoggerWrapper.getLogger().traceError(
+                desktopTelemetryEventNames.SERVER_LOGIC_DEBUG_ERROR,
+                errorMessage,
+                error instanceof Error ? error : new Error(errorMessage),
+                {
+                    phase: 'resolveDebugConfiguration',
+                    workspaceFolder: folder.name
+                }
+            );
+
+            vscode.window.showErrorMessage(localizedStrings.ERROR_INIT_FAILED(errorMessage));
+            return undefined;
+        }
+    }
+}
