@@ -201,12 +201,19 @@ export function activateServerLogicDebugger(context: vscode.ExtensionContext): v
         )
     );
 
-    const workspaceFolders = vscode.workspace.workspaceFolders;
-    if (workspaceFolders && workspaceFolders.length > 0) {
-        const serverLogicsPath = path.join(workspaceFolders[0].uri.fsPath, SERVER_LOGIC_FILES.SERVER_LOGICS_FOLDER);
-        if (fs.existsSync(serverLogicsPath)) {
-            showServerLogicWelcomeNotification();
-        }
+    // Show welcome notification when a server logic file is opened
+    context.subscriptions.push(
+        vscode.window.onDidChangeActiveTextEditor(editor => {
+            if (editor && isServerLogicFile(editor.document.uri.fsPath)) {
+                showServerLogicWelcomeNotification();
+            }
+        })
+    );
+
+    // Check if active editor already has a server logic file
+    const activeEditor = vscode.window.activeTextEditor;
+    if (activeEditor && isServerLogicFile(activeEditor.document.uri.fsPath)) {
+        showServerLogicWelcomeNotification();
     }
 }
 

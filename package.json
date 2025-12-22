@@ -958,6 +958,11 @@
           "command": "powerPlatform.previewCurrentActiveUsers",
           "group": "navigation",
           "when": "isWeb && virtualWorkspace"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.debugServerLogic",
+          "group": "navigation",
+          "when": "resourcePath =~ /server-logics?[/\\\\]/ && resourceExtname == .js"
         }
       ],
       "commandPalette": [
