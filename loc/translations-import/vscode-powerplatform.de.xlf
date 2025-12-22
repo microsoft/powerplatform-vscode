@@ -93,7 +93,7 @@
       </trans-unit>
       <trans-unit id="++CODE++8890e663481705393ed3b1b4642095a11329e21320824ed567e383a12ea888f4">
         <source xml:lang="en">All changed files are binary files (e.g., images) and cannot be displayed in the diff viewer. You can view them individually in the file tree.</source>
-        <target state="new">All changed files are binary files (e.g., images) and cannot be displayed in the diff viewer. You can view them individually in the file tree.</target>
+        <target state="translated">Alle geänderten Dateien sind Binärdateien (z. B. Bilder) und können im Diff-Viewer nicht angezeigt werden. Sie können sie einzeln in der Dateistruktur anzeigen.</target>
       </trans-unit>
       <trans-unit id="++CODE++5490d0b16535529301b0cda95abc687e682b2964413863130a9a2debf61c279f">
         <source xml:lang="en">An imported comparison already exists for this site. Do you want to replace it?</source>
@@ -119,12 +119,12 @@
       <trans-unit id="++CODE++1d9cd153bf20c28e77061a9743a69cc8850f21221a1871f1c13b27e8470a2688">
         <source xml:lang="en">Are you sure you want to discard local changes to '{0}'? This action cannot be undone.</source>
         <note>Confirmation message before discarding local changes to a file.</note>
-        <target state="new">Are you sure you want to discard local changes to '{0}'? This action cannot be undone.</target>
+        <target state="translated">Möchten Sie lokale Änderungen an „{0}“ wirklich verwerfen? Diese Aktion kann nicht rückgängig gemacht werden.</target>
       </trans-unit>
       <trans-unit id="++CODE++2281e368458cc996be41f578298aa205b51f467dd868c44b83560c80340785af">
         <source xml:lang="en">Are you sure you want to discard local changes to all {0} files in '{1}'? This action cannot be undone.</source>
         <note>Confirmation message before discarding all local changes in a folder.</note>
-        <target state="new">Are you sure you want to discard local changes to all {0} files in '{1}'? This action cannot be undone.</target>
+        <target state="translated">Möchten Sie lokale Änderungen an allen {0} Dateien in „{1}“ verwerfen? Diese Aktion kann nicht rückgängig gemacht werden.</target>
       </trans-unit>
       <trans-unit id="++CODE++e149c8c84127919560017a77982c24d21203ea0835f21dc45f34682f5e65840d">
         <source xml:lang="en">Arrow icon</source>
@@ -348,7 +348,7 @@ Check the CodeQL extension panel for available queries.</source>
       <trans-unit id="++CODE++95de5784f48c7fee97755bb29a90a128546a6a30201be3c73493229230ea7f72">
         <source xml:lang="en">Compare: {0} (Remote ↔ Local)</source>
         <note>Title for the multi-diff editor when comparing all files in a site.</note>
-        <target state="new">Compare: {0} (Remote ↔ Local)</target>
+        <target state="translated">Vergleichen: {0} (remote ↔ lokal)</target>
       </trans-unit>
       <trans-unit id="++CODE++cf8510772ff5dbeb2edc5e7209cc8f47e6c7c79810155260b41c6aec64a9f277">
         <source xml:lang="en">Comparing files...</source>
@@ -467,7 +467,7 @@ Check the CodeQL extension panel for available queries.</source>
       </trans-unit>
       <trans-unit id="++CODE++e07e053c2e10b3f1b6aef657d937cd91d45df4e40242788d7d621faea3380c27">
         <source xml:lang="en">Discard Changes</source>
-        <target state="new">Discard Changes</target>
+        <target state="translated">Änderungen verwerfen</target>
       </trans-unit>
       <trans-unit id="++CODE++21c02244893ddc07c4494a2ac7eb69a143e75d7b49d04f10234a1865c2111310">
         <source xml:lang="en">Dislike something? Tell us more.</source>
@@ -506,12 +506,12 @@ Typ: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++f945885439672eb379c73eb7c9124496311c6ef5b3b04cd23ea0a1c146225b84">
         <source xml:lang="en">Download is complete. You can now view the report.</source>
-        <target state="new">Download is complete. You can now view the report.</target>
+        <target state="translated">Der Download ist abgeschlossen. Sie können den Bericht jetzt anzeigen.</target>
       </trans-unit>
       <trans-unit id="++CODE++a5a4f0d8975940cbed234f9a5ee740f24e2b82f03a5b13e43f316b8395336e50">
         <source xml:lang="en">Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show download output"))...</source>
         <note>This is a markdown formatting which must persist across translations.</note>
-        <target state="new">Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show download output"))...</target>
+        <target state="translated">Metadaten der Website {0} werden heruntergeladen ([Details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Downloadausgabe anzeigen"))...</target>
       </trans-unit>
       <trans-unit id="++CODE++ac72407b10d30bf47faf11da09b605a85fc649bd3f2e33acb281655cb9021d9d">
         <source xml:lang="en">Edit the site</source>
@@ -642,7 +642,7 @@ Typ: {3}</target>
       <trans-unit id="++CODE++bae865c75bb42b029c9b92f7c0abb122a2615c2f0f5a658b1633df8f9e921a16">
         <source xml:lang="en">Failed to discard local changes: {0}</source>
         <note>Error message when discarding local changes fails.</note>
-        <target state="new">Failed to discard local changes: {0}</target>
+        <target state="translated">Fehler beim Verwerfen der lokalen Änderungen: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++95da24b6bc127a935e2e4323fe85d8f46be20c5e8ca5e10c6a134e5a0c6443a2">
         <source xml:lang="en">Failed to enable PAC telemetry.</source>
@@ -939,7 +939,7 @@ Kehren Sie zu diesem Chat zurück, und @powerpages unterstützt Sie beim Schreib
       </trans-unit>
       <trans-unit id="++CODE++a6d287e1a3ca10ca1e47de17060293fbb14d1e43cd8ffb9a296661c576615b69">
         <source xml:lang="en">Metadata Diff</source>
-        <target state="new">Metadata Diff</target>
+        <target state="translated">Metadatenvergleich</target>
       </trans-unit>
       <trans-unit id="++CODE++d39a5fa0fca9df105f95b7dfa9a2705ccddaead33bd3119052baabe6c923a85d">
         <source xml:lang="en">Metadata Diff JSON</source>
@@ -1331,7 +1331,7 @@ Organisations-ID: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++fafd4e6859e28fd1f76851b8a08f6d3ccb58402fb65e44f3c342575741b056e6">
         <source xml:lang="en">Select an environment to compare with</source>
-        <target state="new">Select an environment to compare with</target>
+        <target state="translated">Eine Umgebung zum Vergleichen auswählen</target>
       </trans-unit>
       <trans-unit id="++CODE++58ea04f09a2cbf67d55e70c45a6da4998e72e8e50f91e63862c0d65d14dfb1f5">
         <source xml:lang="en">Select folder for CodeQL database</source>
@@ -1434,12 +1434,12 @@ Organisations-ID: {3}</target>
       <trans-unit id="++CODE++9543efee4b5aadd6f27f5d4a06361b18d153aaf0b66e0121622fb9fd3581fdf8">
         <source xml:lang="en">Successfully discarded local changes to '{0}'.</source>
         <note>Success message after discarding local changes to a file.</note>
-        <target state="new">Successfully discarded local changes to '{0}'.</target>
+        <target state="translated">Lokale Änderungen an „{0}“ wurden erfolgreich verworfen.</target>
       </trans-unit>
       <trans-unit id="++CODE++52901a0a85676bc5805d19ecfc4921edeff3246e815b0d199dad38874519f160">
         <source xml:lang="en">Successfully discarded local changes to {0} files in '{1}'.</source>
         <note>Success message after discarding all local changes in a folder.</note>
-        <target state="new">Successfully discarded local changes to {0} files in '{1}'.</target>
+        <target state="translated">Lokale Änderungen an {0} Dateien in „{1}“ wurden erfolgreich verworfen.</target>
       </trans-unit>
       <trans-unit id="++CODE++e3a0cecb7c0c51b4a918164be2e4a75795139fbc652adbed3c6a144cf4adc009">
         <source xml:lang="en">Switching environment...</source>
@@ -1489,7 +1489,7 @@ Organisations-ID: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++1f362261e8bb9564245fa7e590732de71b5f6cbb3e9963a8d8573b51ae18cbfe">
         <source xml:lang="en">The website was not found in the selected environment. Please select a different environment.</source>
-        <target state="new">The website was not found in the selected environment. Please select a different environment.</target>
+        <target state="translated">Die Website wurde in der ausgewählten Umgebung nicht gefunden. Wählen Sie eine andere Umgebung aus.</target>
       </trans-unit>
       <trans-unit id="++CODE++6f309003581fafdd78e247cd0fe8b4b7f57ed89a60325b01e6725e8c078f23de">
         <source xml:lang="en">The website you selected is different from the local site. Are you sure you want to compare with this website?</source>
@@ -1530,7 +1530,7 @@ Organisations-ID: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++ea93d6a262ecb87a9fa4d09edbd7654c046597936a8e235fc3949eb01775ff99">
         <source xml:lang="en">Tools</source>
-        <target state="new">Tools</target>
+        <target state="translated">Tools</target>
       </trans-unit>
       <trans-unit id="++CODE++9ffd094afb84d3a84bbf1b4ec8210ba5344169e9b2726ce366ccf3e231b7e9b7">
         <source xml:lang="en">Total Changes</source>
@@ -1760,12 +1760,12 @@ Organisations-ID: {3}</target>
       <trans-unit id="++CODE++1a0339214d26f1499ce28b0304c11fce7c177c9d6df1872ac1e9705760cfdbd8">
         <source xml:lang="en">{0} ({1} file)</source>
         <note>This is the site label showing the number of changed files. 'file' is singular.</note>
-        <target state="new">{0} ({1} file)</target>
+        <target state="translated">{0} ({1} Datei)</target>
       </trans-unit>
       <trans-unit id="++CODE++baeef25dc2eb180f07d2588035131c67de574a67b5b59941b077d96c5e08ec9e">
         <source xml:lang="en">{0} ({1} files)</source>
         <note>This is the site label showing the number of changed files. 'files' is plural.</note>
-        <target state="new">{0} ({1} files)</target>
+        <target state="translated">{0} ({1} Dateien)</target>
       </trans-unit>
       <trans-unit id="++CODE++dcbed1e6ea38a3f7f5e64925ed3898dc74721389792c65218b5216538214e3b7">
         <source xml:lang="en">{0} ({1}) ↔ {2} (Local)</source>
@@ -1775,7 +1775,7 @@ Organisations-ID: {3}</target>
       <trans-unit id="++CODE++7ec0c807a987e15ebf5bcf7dab23b8fea20b59ed72cae0172465ad0fdd200882">
         <source xml:lang="en">{0} binary file(s) (e.g., images) were skipped as they cannot be displayed in the diff viewer. You can view them individually in the file tree.</source>
         <note>Message shown when binary files are skipped in the multi-diff view.</note>
-        <target state="new">{0} binary file(s) (e.g., images) were skipped as they cannot be displayed in the diff viewer. You can view them individually in the file tree.</target>
+        <target state="translated">{0} Binärdatei(en) (z. B. Bilder) wurde(n) übersprungen, da eine Anzeige im Diff-Viewer nicht möglich ist. Sie können sie einzeln in der Dateistruktur anzeigen.</target>
       </trans-unit>
       <trans-unit id="++CODE++48c4c42c9b70ac4687a121f91d8cb9a9063a3b51fbc5eeb68e5edc961ee18482">
         <source xml:lang="en">{0} created!</source>
@@ -1795,7 +1795,7 @@ Organisations-ID: {3}</target>
       <trans-unit id="++CODE++21471e6993c28688e252bf884db38022cef15af0126d3d7f68c5e4a6c4dfd9d3">
         <source xml:lang="en">{0}: {1} (Remote ↔ Local)</source>
         <note>Title for the diff editor when comparing a single file.</note>
-        <target state="new">{0}: {1} (Remote ↔ Local)</target>
+        <target state="translated">{0}: {1} (remote ↔ lokal)</target>
       </trans-unit>
     </body>
   </file>
@@ -1841,7 +1841,7 @@ Weitere Informationen finden Sie unter [Vermeiden von versehentlichen Überschre
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.compareWithEnvironment.title">
         <source xml:lang="en">Compare with Environment</source>
-        <target state="new">Compare with Environment</target>
+        <target state="translated">Mit Umgebung vergleichen</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.compareWithLocal.title">
         <source xml:lang="en">Compare with Local</source>
@@ -1893,11 +1893,11 @@ Weitere Informationen finden Sie unter [Vermeiden von versehentlichen Überschre
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFolder.title">
         <source xml:lang="en">Discard All Local Changes</source>
-        <target state="new">Discard All Local Changes</target>
+        <target state="translated">Alle lokalen Änderungen verwerfen</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFile.title">
         <source xml:lang="en">Discard Local Changes</source>
-        <target state="new">Discard Local Changes</target>
+        <target state="translated">Lokale Änderungen verwerfen</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.description">
         <source xml:lang="en">Discover how you can make complete, modern websites right in Visual Studio Code</source>
@@ -2017,7 +2017,7 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.openFile.title">
         <source xml:lang="en">Open Comparison</source>
-        <target state="new">Open Comparison</target>
+        <target state="translated">Vergleich öffnen</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title">
         <source xml:lang="en">Open Containing Folder</source>
@@ -2094,7 +2094,7 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.removeSite.title">
         <source xml:lang="en">Remove Comparison</source>
-        <target state="new">Remove Comparison</target>
+        <target state="translated">Vergleich entfernen</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows.title">
         <source xml:lang="en">Reveal in Explorer</source>
@@ -2154,15 +2154,15 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByName.title">
         <source xml:lang="en">Sort by Name</source>
-        <target state="new">Sort by Name</target>
+        <target state="translated">Nach Namen sortieren</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByPath.title">
         <source xml:lang="en">Sort by Path</source>
-        <target state="new">Sort by Path</target>
+        <target state="translated">Nach Pfad sortieren</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByStatus.title">
         <source xml:lang="en">Sort by Status</source>
-        <target state="new">Sort by Status</target>
+        <target state="translated">Nach Status sortieren</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.configuration.downloadSite.description">
         <source xml:lang="en">The folder where site will be downloaded when using Power Pages Actions. Leave this empty to ask for a folder every time you download a site.</source>
@@ -2174,11 +2174,11 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsList.title">
         <source xml:lang="en">View as List</source>
-        <target state="new">View as List</target>
+        <target state="translated">Als Liste anzeigen</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsTree.title">
         <source xml:lang="en">View as Tree</source>
-        <target state="new">View as Tree</target>
+        <target state="translated">Als Struktur anzeigen</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.description">
         <source xml:lang="en">Visual Studio Code for Web enables editing and publishing of web pages on your website.
