@@ -260,6 +260,9 @@ export async function activate(
                 if (AadObjectId) {
                     initContext = { ...initContext, AadId: AadObjectId }
                 }
+                if (TenantID) {
+                    initContext = { ...initContext, tenantId: TenantID }
+                }
                 oneDSLoggerWrapper.getLogger().traceInfo(desktopTelemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, initContext);
             }
 
