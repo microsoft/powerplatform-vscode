@@ -101,57 +101,40 @@ describe('ServerLogicDebugger', () => {
                 showErrorMessageStub = sandbox.stub(vscode.window, 'showErrorMessage');
             });
 
-            it('should return undefined and show error when no folder provided', async () => {
+            it('should pass through config when no active editor', async () => {
+                const folder: vscode.WorkspaceFolder = {
+                    uri: vscode.Uri.file('some/path'),
+                    index: 0,
+                    name: 'Workspace',
+                };
                 const config: vscode.DebugConfiguration = {
                     type: 'node',
                     request: 'launch',
                     name: 'Test'
                 };
 
-                const result = await provider.resolveDebugConfiguration(
-                    undefined,
-                    config,
-                    {} as vscode.CancellationToken
-                );
-
-                expect(result).to.be.undefined;
-                expect(showErrorMessageStub.calledOnce).to.be.true;
-            });
-
-            it('should show error when empty config and no server logic file open', async () => {
-                const folder: vscode.WorkspaceFolder = {
-                    uri: vscode.Uri.file('some/path'),
-                    index: 0,
-                    name: 'Workspace',
-                };
-                const emptyConfig: vscode.DebugConfiguration = {
-                    type: '',
-                    request: '',
-                    name: ''
-                };
-
                 sandbox.stub(vscode.window, 'activeTextEditor').value(undefined);
 
                 const result = await provider.resolveDebugConfiguration(
                     folder,
-                    emptyConfig,
+                    config,
                     {} as vscode.CancellationToken
                 );
 
-                expect(result).to.be.undefined;
-                expect(showErrorMessageStub.calledOnce).to.be.true;
+                expect(result).to.deep.equal(config);
+                expect(showErrorMessageStub.called).to.be.false;
             });
 
-            it('should show error when file is not in server-logics folder', async () => {
+            it('should pass through config when file is not in server-logics folder', async () => {
                 const folder: vscode.WorkspaceFolder = {
                     uri: vscode.Uri.file('some/path'),
                     index: 0,
                     name: 'Workspace',
                 };
-                const emptyConfig: vscode.DebugConfiguration = {
-                    type: '',
-                    request: '',
-                    name: ''
+                const config: vscode.DebugConfiguration = {
+                    type: 'node',
+                    request: 'launch',
+                    name: 'Test'
                 };
 
                 const mockEditor = {
@@ -165,24 +148,24 @@ describe('ServerLogicDebugger', () => {
 
                 const result = await provider.resolveDebugConfiguration(
                     folder,
-                    emptyConfig,
+                    config,
                     {} as vscode.CancellationToken
                 );
 
-                expect(result).to.be.undefined;
-                expect(showErrorMessageStub.calledOnce).to.be.true;
+                expect(result).to.deep.equal(config);
+                expect(showErrorMessageStub.called).to.be.false;
             });
 
-            it('should show error when file is .ts instead of .js', async () => {
+            it('should pass through config when file is .ts instead of .js', async () => {
                 const folder: vscode.WorkspaceFolder = {
                     uri: vscode.Uri.file('some/path'),
                     index: 0,
                     name: 'Workspace',
                 };
-                const emptyConfig: vscode.DebugConfiguration = {
-                    type: '',
-                    request: '',
-                    name: ''
+                const config: vscode.DebugConfiguration = {
+                    type: 'node',
+                    request: 'launch',
+                    name: 'Test'
                 };
 
                 const mockEditor = {
@@ -196,7 +179,33 @@ describe('ServerLogicDebugger', () => {
 
                 const result = await provider.resolveDebugConfiguration(
                     folder,
-                    emptyConfig,
+                    config,
+                    {} as vscode.CancellationToken
+                );
+
+                expect(result).to.deep.equal(config);
+                expect(showErrorMessageStub.called).to.be.false;
+            });
+
+            it('should show error when server logic file but no folder provided', async () => {
+                const config: vscode.DebugConfiguration = {
+                    type: 'node',
+                    request: 'launch',
+                    name: 'Test'
+                };
+
+                const mockEditor = {
+                    document: {
+                        uri: {
+                            fsPath: '/project/server-logics/handler.js'
+                        }
+                    }
+                };
+                sandbox.stub(vscode.window, 'activeTextEditor').value(mockEditor);
+
+                const result = await provider.resolveDebugConfiguration(
+                    undefined,
+                    config,
                     {} as vscode.CancellationToken
                 );
 

@@ -134,6 +134,9 @@
     <trans-unit id="++CODE++19766ed6ccb2f4a32778eed80d1928d2c87a18d7c275ccb163ec6709d3eb2e27">
       <source xml:lang="en">Cancel</source>
     </trans-unit>
+    <trans-unit id="++CODE++2007ab2650ce558e97a30b2aa70e1c881773cf3db7fbd8a430db221b06364579">
+      <source xml:lang="en">Cannot debug: Please open a server logic file (.js) from the server-logics folder.</source>
+    </trans-unit>
     <trans-unit id="++CODE++75106b7b8e0c597d51e042edbde3498f813c9cd7bd59759f4dde848abc054e85">
       <source xml:lang="en">Cannot install Power Pages generator. Please install npm and try again.</source>
       <note>Do not translate 'npm'</note>
@@ -338,6 +341,21 @@ Check the CodeQL extension panel for available queries.</source>
     <trans-unit id="++CODE++f88d5f387c99b46f054799a5bc6bac06d5b9f5dfd9eaf95627b5f34b137c7cb2">
       <source xml:lang="en">Database location: {0}</source>
     </trans-unit>
+    <trans-unit id="++CODE++1a03bd2fd107c453f3183e30b9716f82200671e8270fbbefbe602f5a48705527">
+      <source xml:lang="en">Debug</source>
+    </trans-unit>
+    <trans-unit id="++CODE++c290c1e52a812e64e79be343e932a767838b3045abdc429dad559882f68f999d">
+      <source xml:lang="en">Debug Current File</source>
+    </trans-unit>
+    <trans-unit id="++CODE++187bba1fb2a0c6f665f35430ac7e2d820aab5b73b2921b99e26096a92cdf98e4">
+      <source xml:lang="en">Debug Current Server Logic</source>
+    </trans-unit>
+    <trans-unit id="++CODE++136d1125a6f04a9c7c631e9be49bc4fca530e921f2af0fe5e2a9b1d95e0aa6ca">
+      <source xml:lang="en">Debug Power Pages Server Logic</source>
+    </trans-unit>
+    <trans-unit id="++CODE++ff0a1f27b622e2032d9c0df2db5943ac6504497bf01e48c77335b6591f134522">
+      <source xml:lang="en">Debug this server logic file</source>
+    </trans-unit>
     <trans-unit id="++CODE++5bd78fcb75f98d65ab8f89a8f0b6681c25c13308fa8643c44ab459b7783c06c9">
       <source xml:lang="en">Default Environment: {0}</source>
       <note>The {0} represents profile's resource/environment URL</note>
@@ -370,6 +388,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     </trans-unit>
     <trans-unit id="++CODE++183c7081100618aebb39219dd011d8d9961649aad278be8fe49c0d1a8874684f">
       <source xml:lang="en">Do not show again</source>
+    </trans-unit>
+    <trans-unit id="++CODE++1d60d0cdcb5408b8e39ed364f675c9cad8a2f6174a413324d1e34437bd41269b">
+      <source xml:lang="en">Don't Show Again</source>
     </trans-unit>
     <trans-unit id="++CODE++668c177d38e6f62ffe2ca64e3915151cfcd566204fd4e4b499e7fe237ad63fb1">
       <source xml:lang="en">Download Power Pages Site</source>
@@ -519,6 +540,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
       <source xml:lang="en">Failed to import comparison: {0}</source>
       <note>Error message when import fails. {0} is the error message.</note>
     </trans-unit>
+    <trans-unit id="++CODE++7df498affc70b3844ab77806857554f50899316597e96d91097dcefd8e225024">
+      <source xml:lang="en">Failed to initialize Server Logic debugger: {0}</source>
+    </trans-unit>
     <trans-unit id="++CODE++9696573fbb3df8812e2d0b83aa3d9077681bf992c9f9514fbbb81fcc7787560d">
       <source xml:lang="en">Failed to install SARIF viewer extension. Opening results as text file.</source>
     </trans-unit>
@@ -663,6 +687,9 @@ Return to this chat and @powerpages can help you write and edit your website cod
     <trans-unit id="++CODE++8e79146ac2ac83ff880a2a3860077ea6cfed5cdcea1ea169fed12fdd03b5360d">
       <source xml:lang="en">Invalid file format. The file does not contain valid metadata diff data.</source>
     </trans-unit>
+    <trans-unit id="++CODE++8d8cd546b58d91c300d3149ef40b8d98d3061dc38f15ea937d2ed785a3f25771">
+      <source xml:lang="en">Learn More</source>
+    </trans-unit>
     <trans-unit id="++CODE++c59fe0045151cddc10b8384a437337e86eab905877883c18b53e068a3d36121d">
       <source xml:lang="en">Learn more about Copilot</source>
     </trans-unit>
@@ -763,6 +790,12 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++b1061a7adf836619e40617bbbbe42d04a9c167b5756a2b4926c02d88e780a7f9">
       <source xml:lang="en">No Website Data Found in Current Directory. Please switch to a directory that contains the PAC downloaded website data to continue.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++4e0d6304be5d5157d4b4b95a0bbffe07b9c2a84f6849b3bb0d591e79b864f33c">
+      <source xml:lang="en">No active editor found.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++5fa52f38613f411a293ae2794bdd18faa33ed13bc586c60a8bd774832069c82e">
+      <source xml:lang="en">No active editor. Please open a server logic file.</source>
     </trans-unit>
     <trans-unit id="++CODE++1b03558147265e7c9bd70e6a4abe031ef65dbca05e01d94953e58b86ec82c859">
       <source xml:lang="en">No analysis results found.</source>
@@ -892,6 +925,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++6355962eca901310bd24d2142605263344a3f09fb4fc30fc0f9dcf4cd56bf534">
       <source xml:lang="en">Please login to preview the site.</source>
     </trans-unit>
+    <trans-unit id="++CODE++2e56799726107b8b44bdcad31ef1ce0515cfacc9372b34946a4257af3bcf2919">
+      <source xml:lang="en">Please open a server logic file (.js) from the server-logics folder.</source>
+    </trans-unit>
     <trans-unit id="++CODE++f413d35f48356c6c13c6c9d8947f011221acb3bea7d0ce74eb2f5ed217f26bad">
       <source xml:lang="en">Please select the folder that contains your compiled output to upload your site.</source>
     </trans-unit>
@@ -901,6 +937,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++1bac158cc07a75506df3774db0ad7c188c19ccad4943c4cf03da8b6700ef9ce4">
       <source xml:lang="en">Power Pages Copilot is now connected to the environment: {0} : {1}</source>
       <note>{0} represents the environment name</note>
+    </trans-unit>
+    <trans-unit id="++CODE++f519c6aeba20c1a712f6043bf6eb52bf3bb8834f5f1a6c9ea60244dbbb30453c">
+      <source xml:lang="en">Power Pages Server Logic detected! You can now debug your server logic files with breakpoints and IntelliSense.</source>
     </trans-unit>
     <trans-unit id="++CODE++db40be71cd139d96719d08f10c843b8bf1c2a0d3d2da06902109a758a98bc9f9">
       <source xml:lang="en">Power Pages Site Comparison Results</source>
@@ -962,6 +1001,15 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++b87504a6b179044cf99d39cf641f47aa5e76c4c5b949413ec33953ec35c10ac4">
       <source xml:lang="en">Results opened in SARIF viewer successfully.</source>
     </trans-unit>
+    <trans-unit id="++CODE++00d60e31a4e6b8344d4201f25a6a7dee770713107f6d097abb01559d32b17f26">
+      <source xml:lang="en">Run</source>
+    </trans-unit>
+    <trans-unit id="++CODE++ea703d2310b31c503c3e81398804a049aa6e65f78dbe7014f8f52dae263dadfb">
+      <source xml:lang="en">Run Server Logic</source>
+    </trans-unit>
+    <trans-unit id="++CODE++80b0001b823cb916650c75c5c08b3bdf9be4951036ec14ee4086b487125d05c8">
+      <source xml:lang="en">Run this server logic file without debugging</source>
+    </trans-unit>
     <trans-unit id="++CODE++9eb3810da0fd0dbacf4b6f4d7ad58e6e631ab807c0dd404dcb9f03066da8443b">
       <source xml:lang="en">Running CodeQL analysis...</source>
     </trans-unit>
@@ -1019,6 +1067,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++d4e969ee5e3ea8fe5e7f9195be448fd5fd5d2cb6f487929c3e495cbbe7e8f1e8">
       <source xml:lang="en">Selection is too large. Try making a shorter selection.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++f460c321b3d56be39d9fae8946e759608e6b8f34c0378aaa91e2996b2bd8f2b5">
+      <source xml:lang="en">Server Logic debugging requires an open workspace.</source>
     </trans-unit>
     <trans-unit id="++CODE++142027a259879fdd2b6410360a9cd3798f433c2fc5668bb685dd4ff513072e16">
       <source xml:lang="en">Session Details</source>
