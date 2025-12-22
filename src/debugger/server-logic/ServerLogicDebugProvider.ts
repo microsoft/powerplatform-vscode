@@ -48,14 +48,17 @@ export class ServerLogicDebugProvider implements vscode.DebugConfigurationProvid
         _: vscode.CancellationToken
     ): Promise<vscode.DebugConfiguration | undefined> {
 
+        const editor = vscode.window.activeTextEditor;
+
+        // Only handle server logic files
+        if (!editor || !isServerLogicFile(editor.document.uri.fsPath)) {
+            // Not a server logic file, let other providers handle it
+            return config;
+        }
+
+        // If empty config (F5 with no launch.json), create one for the current file
         if (!config.type && !config.request && !config.name) {
-            const editor = vscode.window.activeTextEditor;
-            if (editor && isServerLogicFile(editor.document.uri.fsPath)) {
-                config = createServerLogicDebugConfig(editor.document.uri.fsPath);
-            } else {
-                vscode.window.showErrorMessage(SERVER_LOGIC_STRINGS.ERROR_OPEN_SERVER_LOGIC_FILE);
-                return undefined;
-            }
+            config = createServerLogicDebugConfig(editor.document.uri.fsPath);
         }
 
         if (!folder) {
