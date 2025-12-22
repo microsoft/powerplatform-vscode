@@ -84,7 +84,7 @@
       </trans-unit>
       <trans-unit id="++CODE++466ad00fc6eece4d1ca46baf1d8a6faf8dffc1745c77094b4eb8fd3697fb9a28">
         <source xml:lang="en">Added locally</source>
-        <target state="new">Added locally</target>
+        <target state="translated">Yerel olarak eklendi</target>
       </trans-unit>
       <trans-unit id="++CODE++e7027d80d4c05ae510621f20062db71d499cbd4f8760e3076a3530220fbf0a18">
         <source xml:lang="en">Adding {0} web file(s). Existing files will be skipped</source>
@@ -93,7 +93,7 @@
       </trans-unit>
       <trans-unit id="++CODE++8890e663481705393ed3b1b4642095a11329e21320824ed567e383a12ea888f4">
         <source xml:lang="en">All changed files are binary files (e.g., images) and cannot be displayed in the diff viewer. You can view them individually in the file tree.</source>
-        <target state="new">All changed files are binary files (e.g., images) and cannot be displayed in the diff viewer. You can view them individually in the file tree.</target>
+        <target state="translated">Değiştirilen tüm dosyalar ikili dosyalardır (ör. resimler) ve fark görüntüleyicide görüntülenemez. Bunları dosya ağacında tek tek görüntüleyebilirsiniz.</target>
       </trans-unit>
       <trans-unit id="++CODE++5490d0b16535529301b0cda95abc687e682b2964413863130a9a2debf61c279f">
         <source xml:lang="en">An imported comparison already exists for this site. Do you want to replace it?</source>
@@ -119,12 +119,12 @@
       <trans-unit id="++CODE++1d9cd153bf20c28e77061a9743a69cc8850f21221a1871f1c13b27e8470a2688">
         <source xml:lang="en">Are you sure you want to discard local changes to '{0}'? This action cannot be undone.</source>
         <note>Confirmation message before discarding local changes to a file.</note>
-        <target state="new">Are you sure you want to discard local changes to '{0}'? This action cannot be undone.</target>
+        <target state="translated">‘{0}’ dosyasında yapılan yerel değişiklikleri atmak istediğinizden emin misiniz? Bu eylem geri alınamaz.</target>
       </trans-unit>
       <trans-unit id="++CODE++2281e368458cc996be41f578298aa205b51f467dd868c44b83560c80340785af">
         <source xml:lang="en">Are you sure you want to discard local changes to all {0} files in '{1}'? This action cannot be undone.</source>
         <note>Confirmation message before discarding all local changes in a folder.</note>
-        <target state="new">Are you sure you want to discard local changes to all {0} files in '{1}'? This action cannot be undone.</target>
+        <target state="translated">‘{1}’ klasöründeki {0} dosyanın tümünde yapılan yerel değişiklikleri atmak istediğinizden emin misiniz? Bu eylem geri alınamaz.</target>
       </trans-unit>
       <trans-unit id="++CODE++e149c8c84127919560017a77982c24d21203ea0835f21dc45f34682f5e65840d">
         <source xml:lang="en">Arrow icon</source>
@@ -335,7 +335,7 @@ Kullanılabilir sorgular için CodeQL uzantı panelini kontrol edin.</target>
       </trans-unit>
       <trans-unit id="++CODE++bf281cb4dcfdee3bea566c086c3d77aa9234f6854dfbcbcb25f2bcf19828e9b5">
         <source xml:lang="en">Command completed successfully.</source>
-        <target state="new">Command completed successfully.</target>
+        <target state="translated">Komut başarıyla tamamlandı.</target>
       </trans-unit>
       <trans-unit id="++CODE++ff61c2f710070e267638038dfbd105cfffe4de4d37580f566f4537b304b6ca84">
         <source xml:lang="en">Command failed with exit code {0}: {1}</source>
@@ -348,11 +348,11 @@ Kullanılabilir sorgular için CodeQL uzantı panelini kontrol edin.</target>
       <trans-unit id="++CODE++95de5784f48c7fee97755bb29a90a128546a6a30201be3c73493229230ea7f72">
         <source xml:lang="en">Compare: {0} (Remote ↔ Local)</source>
         <note>Title for the multi-diff editor when comparing all files in a site.</note>
-        <target state="new">Compare: {0} (Remote ↔ Local)</target>
+        <target state="translated">Karşılaştırma: {0} (Uzak ↔ Yerel)</target>
       </trans-unit>
       <trans-unit id="++CODE++cf8510772ff5dbeb2edc5e7209cc8f47e6c7c79810155260b41c6aec64a9f277">
         <source xml:lang="en">Comparing files...</source>
-        <target state="new">Comparing files...</target>
+        <target state="translated">Dosyalar karşılaştırılıyor...</target>
       </trans-unit>
       <trans-unit id="++CODE++5b79ce1b6eead3275d92572d5997ed876b99fe9d47141f8b785abf94a4ff52c0">
         <source xml:lang="en">Comparison Details</source>
@@ -463,11 +463,11 @@ Kullanılabilir sorgular için CodeQL uzantı panelini kontrol edin.</target>
       </trans-unit>
       <trans-unit id="++CODE++9a983b9151d6fc6165f094e95ba9ba8cb588b59345cf8956f8fb77ee7ce36be2">
         <source xml:lang="en">Deleted locally</source>
-        <target state="new">Deleted locally</target>
+        <target state="translated">Yerel olarak silindi</target>
       </trans-unit>
       <trans-unit id="++CODE++e07e053c2e10b3f1b6aef657d937cd91d45df4e40242788d7d621faea3380c27">
         <source xml:lang="en">Discard Changes</source>
-        <target state="new">Discard Changes</target>
+        <target state="translated">Değişiklikleri At</target>
       </trans-unit>
       <trans-unit id="++CODE++21c02244893ddc07c4494a2ac7eb69a143e75d7b49d04f10234a1865c2111310">
         <source xml:lang="en">Dislike something? Tell us more.</source>
@@ -506,12 +506,12 @@ Tür: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++f945885439672eb379c73eb7c9124496311c6ef5b3b04cd23ea0a1c146225b84">
         <source xml:lang="en">Download is complete. You can now view the report.</source>
-        <target state="new">Download is complete. You can now view the report.</target>
+        <target state="translated">İndirme tamamlandı. Şimdi raporu görüntüleyebilirsiniz.</target>
       </trans-unit>
       <trans-unit id="++CODE++a5a4f0d8975940cbed234f9a5ee740f24e2b82f03a5b13e43f316b8395336e50">
         <source xml:lang="en">Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show download output"))...</source>
         <note>This is a markdown formatting which must persist across translations.</note>
-        <target state="new">Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show download output"))...</target>
+        <target state="translated">{0} sitesi meta verileri indiriliyor ([ayrıntılar](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "İndirme çıktısını göster"))...</target>
       </trans-unit>
       <trans-unit id="++CODE++ac72407b10d30bf47faf11da09b605a85fc649bd3f2e33acb281655cb9021d9d">
         <source xml:lang="en">Edit the site</source>
@@ -642,7 +642,7 @@ Tür: {3}</target>
       <trans-unit id="++CODE++bae865c75bb42b029c9b92f7c0abb122a2615c2f0f5a658b1633df8f9e921a16">
         <source xml:lang="en">Failed to discard local changes: {0}</source>
         <note>Error message when discarding local changes fails.</note>
-        <target state="new">Failed to discard local changes: {0}</target>
+        <target state="translated">Yerel değişiklikler atılamadı: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++95da24b6bc127a935e2e4323fe85d8f46be20c5e8ca5e10c6a134e5a0c6443a2">
         <source xml:lang="en">Failed to enable PAC telemetry.</source>
@@ -939,7 +939,7 @@ Bu sohbete geri dönün ve @powerpages web sitenizin kodunu yazmanıza ve düzen
       </trans-unit>
       <trans-unit id="++CODE++a6d287e1a3ca10ca1e47de17060293fbb14d1e43cd8ffb9a296661c576615b69">
         <source xml:lang="en">Metadata Diff</source>
-        <target state="new">Metadata Diff</target>
+        <target state="translated">Meta Veri Farkı</target>
       </trans-unit>
       <trans-unit id="++CODE++d39a5fa0fca9df105f95b7dfa9a2705ccddaead33bd3119052baabe6c923a85d">
         <source xml:lang="en">Metadata Diff JSON</source>
@@ -964,7 +964,7 @@ Bu sohbete geri dönün ve @powerpages web sitenizin kodunu yazmanıza ve düzen
       </trans-unit>
       <trans-unit id="++CODE++e8ce5dcaf408935ff76747226d2e8bee4319a2f593c1d7a838115e56183d1f37">
         <source xml:lang="en">Modified</source>
-        <target state="new">Modified</target>
+        <target state="translated">Değiştirildi</target>
       </trans-unit>
       <trans-unit id="++CODE++a253ff09c5a8678e1fd1962b2c329245e139e45f9cc6ced4e5d7ad42c4108fc0">
         <source xml:lang="en">NEW</source>
@@ -1020,7 +1020,7 @@ Kuruluş Kimliği: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++fe9da58a68fc4d4ac79a76febed4ff3a3ebc116954b5b383578fd1803f2f7268">
         <source xml:lang="en">No differences found between the remote site and your local workspace.</source>
-        <target state="new">No differences found between the remote site and your local workspace.</target>
+        <target state="translated">Uzak site ve yerel çalışma alanınız arasında fark bulunamadı.</target>
       </trans-unit>
       <trans-unit id="++CODE++80266a1ea7e6671d65c98a0624c254f5b9acfacddd05d69524b7f034eeba3268">
         <source xml:lang="en">No environments found</source>
@@ -1060,7 +1060,7 @@ Kuruluş Kimliği: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++9214ba9d7c0e1e98dc8919cffaa47b39e1444bcb5925a6c7818d11fa11363eb1">
         <source xml:lang="en">No workspace folder is open. Please open a folder containing your Power Pages site.</source>
-        <target state="new">No workspace folder is open. Please open a folder containing your Power Pages site.</target>
+        <target state="translated">Açık olan çalışma alanı klasörü yok. Lütfen Power Pages sitenizi içeren bir klasörü açın.</target>
       </trans-unit>
       <trans-unit id="++CODE++6c0242ffba2aababcb4e45831de1492e8bccae2cb0f3387dfe9c16620f6928ef">
         <source xml:lang="en">No workspace folder opened. Please open a site folder to preview.</source>
@@ -1215,7 +1215,7 @@ Kuruluş Kimliği: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++92c355db79b65ac0ec6050657f427d46214ff364079cc646f7d255dec23586f8">
         <source xml:lang="en">Power Platform Tools: PAC CLI</source>
-        <target state="new">Power Platform Tools: PAC CLI</target>
+        <target state="translated">Power Platform Araçları: PAC CLI</target>
       </trans-unit>
       <trans-unit id="++CODE++bf67e1194aabff2106dde73ed7318caf658a4cebe27dbd2d03239a141e16a211">
         <source xml:lang="en">PowerPages config file created successfully: {0}</source>
@@ -1331,7 +1331,7 @@ Kuruluş Kimliği: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++fafd4e6859e28fd1f76851b8a08f6d3ccb58402fb65e44f3c342575741b056e6">
         <source xml:lang="en">Select an environment to compare with</source>
-        <target state="new">Select an environment to compare with</target>
+        <target state="translated">Karşılaştırmak üzere bir ortam seçin</target>
       </trans-unit>
       <trans-unit id="++CODE++58ea04f09a2cbf67d55e70c45a6da4998e72e8e50f91e63862c0d65d14dfb1f5">
         <source xml:lang="en">Select folder for CodeQL database</source>
@@ -1364,7 +1364,7 @@ Kuruluş Kimliği: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++b874846bfcc51aecfc0366c676894ca6aa980e7f8de9a6632bb6ade00b49bc47">
         <source xml:lang="en">Show Diff</source>
-        <target state="new">Show Diff</target>
+        <target state="translated">Farkı Göster</target>
       </trans-unit>
       <trans-unit id="++CODE++899fb203e6c2faac8093e21a2fa8db0d4b13d16ea5492461d8b72dbcee3ecf2a">
         <source xml:lang="en">Show Output Panel</source>
@@ -1396,7 +1396,7 @@ Kuruluş Kimliği: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++e14f56f166e3f1c738244eb549eed009edbcede757905ce707cc30dbffd60c8b">
         <source xml:lang="en">Site download failed. Please try again later.</source>
-        <target state="new">Site download failed. Please try again later.</target>
+        <target state="translated">Site indirilemedi. Lütfen daha sonra yeniden deneyin.</target>
       </trans-unit>
       <trans-unit id="++CODE++a72357d268bce5e1643bfd74563495784179f75ace0d652db8f808f293586b63">
         <source xml:lang="en">Site management URL not found for the selected site. Please try again after refreshing the environment.</source>
@@ -1434,12 +1434,12 @@ Kuruluş Kimliği: {3}</target>
       <trans-unit id="++CODE++9543efee4b5aadd6f27f5d4a06361b18d153aaf0b66e0121622fb9fd3581fdf8">
         <source xml:lang="en">Successfully discarded local changes to '{0}'.</source>
         <note>Success message after discarding local changes to a file.</note>
-        <target state="new">Successfully discarded local changes to '{0}'.</target>
+        <target state="translated">‘{0}’ dosyasında yapılan yerel değişiklikler başarıyla atıldı.</target>
       </trans-unit>
       <trans-unit id="++CODE++52901a0a85676bc5805d19ecfc4921edeff3246e815b0d199dad38874519f160">
         <source xml:lang="en">Successfully discarded local changes to {0} files in '{1}'.</source>
         <note>Success message after discarding all local changes in a folder.</note>
-        <target state="new">Successfully discarded local changes to {0} files in '{1}'.</target>
+        <target state="translated">‘{1}’ klasöründeki {0} dosyada yapılan yerel değişiklikler başarıyla atıldı.</target>
       </trans-unit>
       <trans-unit id="++CODE++e3a0cecb7c0c51b4a918164be2e4a75795139fbc652adbed3c6a144cf4adc009">
         <source xml:lang="en">Switching environment...</source>
@@ -1489,7 +1489,7 @@ Kuruluş Kimliği: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++1f362261e8bb9564245fa7e590732de71b5f6cbb3e9963a8d8573b51ae18cbfe">
         <source xml:lang="en">The website was not found in the selected environment. Please select a different environment.</source>
-        <target state="new">The website was not found in the selected environment. Please select a different environment.</target>
+        <target state="translated">Web sitesi seçilen ortamda bulunamadı. Lütfen farklı bir ortam seçin.</target>
       </trans-unit>
       <trans-unit id="++CODE++6f309003581fafdd78e247cd0fe8b4b7f57ed89a60325b01e6725e8c078f23de">
         <source xml:lang="en">The website you selected is different from the local site. Are you sure you want to compare with this website?</source>
@@ -1530,7 +1530,7 @@ Kuruluş Kimliği: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++ea93d6a262ecb87a9fa4d09edbd7654c046597936a8e235fc3949eb01775ff99">
         <source xml:lang="en">Tools</source>
-        <target state="new">Tools</target>
+        <target state="translated">Araçlar</target>
       </trans-unit>
       <trans-unit id="++CODE++9ffd094afb84d3a84bbf1b4ec8210ba5344169e9b2726ce366ccf3e231b7e9b7">
         <source xml:lang="en">Total Changes</source>
@@ -1680,7 +1680,7 @@ Kuruluş Kimliği: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++a70c63db9e2d7ceb9f17f00065db00262718561d9330fbef203aba4acbf57d7b">
         <source xml:lang="en">Website ID not found. Please ensure you have a valid Power Pages site open.</source>
-        <target state="new">Website ID not found. Please ensure you have a valid Power Pages site open.</target>
+        <target state="translated">Web sitesi kimliği bulunamadı. Lütfen geçerli bir Power Pages sitesinin açık olduğundan emin olun.</target>
       </trans-unit>
       <trans-unit id="++CODE++d3eaa7bf5377b15781ad4c0f43e4da94b9a2bd485ddbbbe62a2c3d53c5c7fe4a">
         <source xml:lang="en">Website Id: {0}</source>
@@ -1760,12 +1760,12 @@ Kuruluş Kimliği: {3}</target>
       <trans-unit id="++CODE++1a0339214d26f1499ce28b0304c11fce7c177c9d6df1872ac1e9705760cfdbd8">
         <source xml:lang="en">{0} ({1} file)</source>
         <note>This is the site label showing the number of changed files. 'file' is singular.</note>
-        <target state="new">{0} ({1} file)</target>
+        <target state="translated">{0} ({1} dosya)</target>
       </trans-unit>
       <trans-unit id="++CODE++baeef25dc2eb180f07d2588035131c67de574a67b5b59941b077d96c5e08ec9e">
         <source xml:lang="en">{0} ({1} files)</source>
         <note>This is the site label showing the number of changed files. 'files' is plural.</note>
-        <target state="new">{0} ({1} files)</target>
+        <target state="translated">{0} ({1} dosya)</target>
       </trans-unit>
       <trans-unit id="++CODE++dcbed1e6ea38a3f7f5e64925ed3898dc74721389792c65218b5216538214e3b7">
         <source xml:lang="en">{0} ({1}) ↔ {2} (Local)</source>
@@ -1775,7 +1775,7 @@ Kuruluş Kimliği: {3}</target>
       <trans-unit id="++CODE++7ec0c807a987e15ebf5bcf7dab23b8fea20b59ed72cae0172465ad0fdd200882">
         <source xml:lang="en">{0} binary file(s) (e.g., images) were skipped as they cannot be displayed in the diff viewer. You can view them individually in the file tree.</source>
         <note>Message shown when binary files are skipped in the multi-diff view.</note>
-        <target state="new">{0} binary file(s) (e.g., images) were skipped as they cannot be displayed in the diff viewer. You can view them individually in the file tree.</target>
+        <target state="translated">{0} ikili dosya (ör. resimler) fark görüntüleyicide gösterilemediği için atlandı. Bunları dosya ağacında tek tek görüntüleyebilirsiniz.</target>
       </trans-unit>
       <trans-unit id="++CODE++48c4c42c9b70ac4687a121f91d8cb9a9063a3b51fbc5eeb68e5edc961ee18482">
         <source xml:lang="en">{0} created!</source>
@@ -1795,7 +1795,7 @@ Kuruluş Kimliği: {3}</target>
       <trans-unit id="++CODE++21471e6993c28688e252bf884db38022cef15af0126d3d7f68c5e4a6c4dfd9d3">
         <source xml:lang="en">{0}: {1} (Remote ↔ Local)</source>
         <note>Title for the diff editor when comparing a single file.</note>
-        <target state="new">{0}: {1} (Remote ↔ Local)</target>
+        <target state="translated">{0}: {1} (Uzak ↔ Yerel)</target>
       </trans-unit>
     </body>
   </file>
@@ -1833,7 +1833,7 @@ Daha fazla bilgi edinmek için [Yanlışlıkla üzerine yazmaları önleme](comm
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.clear.title">
         <source xml:lang="en">Clear Comparison</source>
-        <target state="new">Clear Comparison</target>
+        <target state="translated">Karşılaştırmayı Temizle</target>
       </trans-unit>
       <trans-unit id="powerpages.copilotPanel.clearConversation.title">
         <source xml:lang="en">Clear Conversation</source>
@@ -1841,11 +1841,11 @@ Daha fazla bilgi edinmek için [Yanlışlıkla üzerine yazmaları önleme](comm
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.compareWithEnvironment.title">
         <source xml:lang="en">Compare with Environment</source>
-        <target state="new">Compare with Environment</target>
+        <target state="translated">Ortam ile Karşılaştır</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.compareWithLocal.title">
         <source xml:lang="en">Compare with Local</source>
-        <target state="new">Compare with Local</target>
+        <target state="translated">Yerel ile karşılaştır</target>
       </trans-unit>
       <trans-unit id="powerpages.copilotPanel.title">
         <source xml:lang="en">Copilot In Power Pages</source>
@@ -1893,11 +1893,11 @@ Daha fazla bilgi edinmek için [Yanlışlıkla üzerine yazmaları önleme](comm
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFolder.title">
         <source xml:lang="en">Discard All Local Changes</source>
-        <target state="new">Discard All Local Changes</target>
+        <target state="translated">Tüm Yerel Değişiklikleri At</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFile.title">
         <source xml:lang="en">Discard Local Changes</source>
-        <target state="new">Discard Local Changes</target>
+        <target state="translated">Yerel Değişiklikleri At</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.description">
         <source xml:lang="en">Discover how you can make complete, modern websites right in Visual Studio Code</source>
@@ -2013,11 +2013,11 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.openAll.title">
         <source xml:lang="en">Open All Diffs</source>
-        <target state="new">Open All Diffs</target>
+        <target state="translated">Tüm Farkları Aç</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.openFile.title">
         <source xml:lang="en">Open Comparison</source>
-        <target state="new">Open Comparison</target>
+        <target state="translated">Karşılaştırmayı Aç</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title">
         <source xml:lang="en">Open Containing Folder</source>
@@ -2094,7 +2094,7 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.removeSite.title">
         <source xml:lang="en">Remove Comparison</source>
-        <target state="new">Remove Comparison</target>
+        <target state="translated">Karşılaştırmayı Kaldır</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows.title">
         <source xml:lang="en">Reveal in Explorer</source>
@@ -2154,15 +2154,15 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByName.title">
         <source xml:lang="en">Sort by Name</source>
-        <target state="new">Sort by Name</target>
+        <target state="translated">Ada göre Sıralayın</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByPath.title">
         <source xml:lang="en">Sort by Path</source>
-        <target state="new">Sort by Path</target>
+        <target state="translated">Yola göre Sırala</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByStatus.title">
         <source xml:lang="en">Sort by Status</source>
-        <target state="new">Sort by Status</target>
+        <target state="translated">Duruma göre Sırala</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.configuration.downloadSite.description">
         <source xml:lang="en">The folder where site will be downloaded when using Power Pages Actions. Leave this empty to ask for a folder every time you download a site.</source>
@@ -2174,11 +2174,11 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsList.title">
         <source xml:lang="en">View as List</source>
-        <target state="new">View as List</target>
+        <target state="translated">Liste olarak Görüntüle</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsTree.title">
         <source xml:lang="en">View as Tree</source>
-        <target state="new">View as Tree</target>
+        <target state="translated">Simge olarak Görüntüle</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.description">
         <source xml:lang="en">Visual Studio Code for Web enables editing and publishing of web pages on your website.
