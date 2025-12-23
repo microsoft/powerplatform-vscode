@@ -542,7 +542,7 @@ const Server = {
                 }
             },
 
-            DeleteAsync: async function (url, headers = {}, contentType = "application/json") {
+            DeleteAsync: async function (url, headers = {}) {
                 Server.Logger.Log(\`[MOCK] HttpClient.DeleteAsync called with URL: \${url}\`);
 
                 const isNodeJs = typeof process !== 'undefined' &&
