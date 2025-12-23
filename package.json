@@ -962,7 +962,7 @@
         {
           "command": "microsoft.powerplatform.pages.debugServerLogic",
           "group": "navigation",
-          "when": "resourcePath =~ /server-logics?[/\\\\]/ && resourceExtname == .js"
+          "when": "microsoft.powerplatform.pages.serverLogicDebuggingEnabled && resourcePath =~ /server-logics?[/\\\\]/ && resourceExtname == .js"
         }
       ],
       "commandPalette": [

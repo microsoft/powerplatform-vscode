@@ -115,8 +115,13 @@ export function isServerLogicDebuggingEnabled(): boolean {
  * Activates the Server Logic debugger
  */
 export function activateServerLogicDebugger(context: vscode.ExtensionContext): void {
+    const isEnabled = isServerLogicDebuggingEnabled();
+
+    // Set context for menu visibility
+    vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.serverLogicDebuggingEnabled", isEnabled);
+
     // Check FCB before activating
-    if (!isServerLogicDebuggingEnabled()) {
+    if (!isEnabled) {
         oneDSLoggerWrapper.getLogger().traceInfo(
             desktopTelemetryEventNames.SERVER_LOGIC_DEBUG_FEATURE_DISABLED,
             {}
