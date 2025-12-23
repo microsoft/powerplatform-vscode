@@ -94,16 +94,15 @@ const Server = {
                     try {
                         const https = require('https');
                         const http = require('http');
-                        const urlLib = require('url');
 
-                        const parsedUrl = urlLib.parse(url);
+                        const parsedUrl = new URL(url);
                         const protocol = parsedUrl.protocol === 'https:' ? https : http;
 
                         return new Promise((resolve, reject) => {
                             const options = {
                                 hostname: parsedUrl.hostname,
-                                port: parsedUrl.port,
-                                path: parsedUrl.path,
+                                port: parsedUrl.port || (parsedUrl.protocol === 'https:' ? 443 : 80),
+                                path: parsedUrl.pathname + parsedUrl.search,
                                 method: 'GET',
                                 headers: headers
                             };
@@ -207,9 +206,8 @@ const Server = {
                     try {
                         const https = require('https');
                         const http = require('http');
-                        const urlLib = require('url');
 
-                        const parsedUrl = urlLib.parse(url);
+                        const parsedUrl = new URL(url);
                         const protocol = parsedUrl.protocol === 'https:' ? https : http;
 
                         return new Promise((resolve, reject) => {
@@ -221,8 +219,8 @@ const Server = {
 
                             const options = {
                                 hostname: parsedUrl.hostname,
-                                port: parsedUrl.port,
-                                path: parsedUrl.path,
+                                port: parsedUrl.port || (parsedUrl.protocol === 'https:' ? 443 : 80),
+                                path: parsedUrl.pathname + parsedUrl.search,
                                 method: 'POST',
                                 headers: requestHeaders
                             };
@@ -325,9 +323,8 @@ const Server = {
                     try {
                         const https = require('https');
                         const http = require('http');
-                        const urlLib = require('url');
 
-                        const parsedUrl = urlLib.parse(url);
+                        const parsedUrl = new URL(url);
                         const protocol = parsedUrl.protocol === 'https:' ? https : http;
 
                         return new Promise((resolve, reject) => {
@@ -339,8 +336,8 @@ const Server = {
 
                             const options = {
                                 hostname: parsedUrl.hostname,
-                                port: parsedUrl.port,
-                                path: parsedUrl.path,
+                                port: parsedUrl.port || (parsedUrl.protocol === 'https:' ? 443 : 80),
+                                path: parsedUrl.pathname + parsedUrl.search,
                                 method: 'PATCH',
                                 headers: requestHeaders
                             };
@@ -443,9 +440,8 @@ const Server = {
                     try {
                         const https = require('https');
                         const http = require('http');
-                        const urlLib = require('url');
 
-                        const parsedUrl = urlLib.parse(url);
+                        const parsedUrl = new URL(url);
                         const protocol = parsedUrl.protocol === 'https:' ? https : http;
 
                         return new Promise((resolve, reject) => {
@@ -457,8 +453,8 @@ const Server = {
 
                             const options = {
                                 hostname: parsedUrl.hostname,
-                                port: parsedUrl.port,
-                                path: parsedUrl.path,
+                                port: parsedUrl.port || (parsedUrl.protocol === 'https:' ? 443 : 80),
+                                path: parsedUrl.pathname + parsedUrl.search,
                                 method: 'PUT',
                                 headers: requestHeaders
                             };
@@ -555,16 +551,15 @@ const Server = {
                     try {
                         const https = require('https');
                         const http = require('http');
-                        const urlLib = require('url');
 
-                        const parsedUrl = urlLib.parse(url);
+                        const parsedUrl = new URL(url);
                         const protocol = parsedUrl.protocol === 'https:' ? https : http;
 
                         return new Promise((resolve, reject) => {
                             const options = {
                                 hostname: parsedUrl.hostname,
-                                port: parsedUrl.port,
-                                path: parsedUrl.path,
+                                port: parsedUrl.port || (parsedUrl.protocol === 'https:' ? 443 : 80),
+                                path: parsedUrl.pathname + parsedUrl.search,
                                 method: 'DELETE',
                                 headers: headers
                             };
