@@ -140,3 +140,13 @@ export const {
         enableMetadataDiff: false,
     }
 });
+
+export const {
+    feature: EnableServerLogicDebugging
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable Server Logic Debugging in VS Code Desktop',
+    fallback: {
+        enableServerLogicDebugging: false,
+    }
+});

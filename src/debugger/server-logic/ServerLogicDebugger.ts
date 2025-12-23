@@ -11,6 +11,8 @@ import { oneDSLoggerWrapper } from '../../common/OneDSLoggerTelemetry/oneDSLogge
 import { ServerLogicCodeLensProvider } from './ServerLogicCodeLensProvider';
 import { ServerLogicDebugProvider } from './ServerLogicDebugProvider';
 import { desktopTelemetryEventNames } from '../../common/OneDSLoggerTelemetry/client/desktopExtensionTelemetryEventNames';
+import { ECSFeaturesClient } from '../../common/ecs-features/ecsFeatureClient';
+import { EnableServerLogicDebugging } from '../../common/ecs-features/ecsFeatureGates';
 import {
     SERVER_LOGIC_CONFIG_KEYS,
     SERVER_LOGIC_FILES,
@@ -101,9 +103,27 @@ function ensureGitignore(gitignorePath: string): void {
 }
 
 /**
+ * Checks if server logic debugging is enabled via FCB
+ * @returns true if the feature is enabled
+ */
+export function isServerLogicDebuggingEnabled(): boolean {
+    const { enableServerLogicDebugging } = ECSFeaturesClient.getConfig(EnableServerLogicDebugging);
+    return enableServerLogicDebugging;
+}
+
+/**
  * Activates the Server Logic debugger
  */
 export function activateServerLogicDebugger(context: vscode.ExtensionContext): void {
+    // Check FCB before activating
+    if (!isServerLogicDebuggingEnabled()) {
+        oneDSLoggerWrapper.getLogger().traceInfo(
+            desktopTelemetryEventNames.SERVER_LOGIC_DEBUG_FEATURE_DISABLED,
+            {}
+        );
+        return;
+    }
+
     const provider = new ServerLogicDebugProvider();
     context.subscriptions.push(
         vscode.debug.registerDebugConfigurationProvider('node', provider)
