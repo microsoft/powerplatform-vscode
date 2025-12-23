@@ -59,6 +59,28 @@ const Server = {
 
     Connector: {
         HttpClient: {
+            _processBodyForContentType: function(body, contentType) {
+                if (contentType === "application/x-www-form-urlencoded" && body) {
+                    try {
+                        const bodyObj = JSON.parse(body);
+                        const isNodeJs = typeof process !== 'undefined' &&
+                                         process.versions != null &&
+                                         process.versions.node != null;
+
+                        if (isNodeJs) {
+                            const querystring = require('querystring');
+                            return querystring.stringify(bodyObj);
+                        } else {
+                            return new URLSearchParams(bodyObj).toString();
+                        }
+                    } catch (e) {
+                        Server.Logger.Warning(\`[TRANSFORM] Body is not valid JSON, using as-is: \${e.message}\`);
+                        return body;
+                    }
+                }
+                return body;
+            },
+
             GetAsync: async function (url, headers = {}) {
                 Server.Logger.Log(\`[MOCK] HttpClient.GetAsync called with URL: \${url}\`);
 
@@ -174,6 +196,11 @@ const Server = {
                     process.versions != null &&
                     process.versions.node != null;
 
+                const processedBody = this._processBodyForContentType(body, contentType);
+                if (processedBody !== body) {
+                    Server.Logger.Log(\`[TRANSFORM] Converted JSON to URL-encoded: \${processedBody}\`);
+                }
+
                 if (isNodeJs) {
                     Server.Logger.Log(\`[NODE.JS] Making actual POST request to: \${url}\`);
 
@@ -189,7 +216,7 @@ const Server = {
                             const requestHeaders = {
                                 ...headers,
                                 'Content-Type': contentType,
-                                'Content-Length': Buffer.byteLength(body || '')
+                                'Content-Length': Buffer.byteLength(processedBody || '')
                             };
 
                             const options = {
@@ -241,8 +268,8 @@ const Server = {
                                 resolve(JSON.stringify(errorResponse));
                             });
 
-                            if (body) {
-                                req.write(body);
+                            if (processedBody) {
+                                req.write(processedBody);
                             }
                             req.end();
                         });
@@ -287,6 +314,11 @@ const Server = {
                     process.versions != null &&
                     process.versions.node != null;
 
+                const processedBody = this._processBodyForContentType(body, contentType);
+                if (processedBody !== body) {
+                    Server.Logger.Log(\`[TRANSFORM] Converted JSON to URL-encoded: \${processedBody}\`);
+                }
+
                 if (isNodeJs) {
                     Server.Logger.Log(\`[NODE.JS] Making actual PATCH request to: \${url}\`);
 
@@ -302,7 +334,7 @@ const Server = {
                             const requestHeaders = {
                                 ...headers,
                                 'Content-Type': contentType,
-                                'Content-Length': Buffer.byteLength(body || '')
+                                'Content-Length': Buffer.byteLength(processedBody || '')
                             };
 
                             const options = {
@@ -354,8 +386,8 @@ const Server = {
                                 resolve(JSON.stringify(errorResponse));
                             });
 
-                            if (body) {
-                                req.write(body);
+                            if (processedBody) {
+                                req.write(processedBody);
                             }
                             req.end();
                         });
@@ -400,6 +432,11 @@ const Server = {
                     process.versions != null &&
                     process.versions.node != null;
 
+                const processedBody = this._processBodyForContentType(body, contentType);
+                if (processedBody !== body) {
+                    Server.Logger.Log(\`[TRANSFORM] Converted JSON to URL-encoded: \${processedBody}\`);
+                }
+
                 if (isNodeJs) {
                     Server.Logger.Log(\`[NODE.JS] Making actual PUT request to: \${url}\`);
 
@@ -415,7 +452,7 @@ const Server = {
                             const requestHeaders = {
                                 ...headers,
                                 'Content-Type': contentType,
-                                'Content-Length': Buffer.byteLength(body || '')
+                                'Content-Length': Buffer.byteLength(processedBody || '')
                             };
 
                             const options = {
@@ -467,8 +504,8 @@ const Server = {
                                 resolve(JSON.stringify(errorResponse));
                             });
 
-                            if (body) {
-                                req.write(body);
+                            if (processedBody) {
+                                req.write(processedBody);
                             }
                             req.end();
                         });
