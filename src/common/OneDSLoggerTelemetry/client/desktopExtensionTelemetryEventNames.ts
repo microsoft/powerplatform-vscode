@@ -7,6 +7,7 @@ export enum desktopTelemetryEventNames {
     DESKTOP_EXTENSION_INIT_CONTEXT = "DesktopExtensionInitContext",
 
     // Server Logic Debugger Events
+    SERVER_LOGIC_DEBUG_FEATURE_DISABLED = "ServerLogicDebugFeatureDisabled",
     SERVER_LOGIC_DEBUG_STARTED = "ServerLogicDebugStarted",
     SERVER_LOGIC_DEBUG_COMMAND_EXECUTED = "ServerLogicDebugCommandExecuted",
     SERVER_LOGIC_RUN_COMMAND_EXECUTED = "ServerLogicRunCommandExecuted",
