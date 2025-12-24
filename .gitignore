@@ -25,3 +25,6 @@ l10n/package.nls.*.json
 
 # Code Coverage Output
 .nyc_output/
+
+# Local Claude settings
+.claude/*.local.*

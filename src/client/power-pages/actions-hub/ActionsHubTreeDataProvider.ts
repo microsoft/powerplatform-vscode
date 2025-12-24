@@ -111,6 +111,11 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
         if (this._loadWebsites) {
             try {
                 vscode.commands.executeCommand('setContext', 'microsoft.powerplatform.pages.actionsHub.loadingWebsites', true);
+
+                // Pre-authenticate for all required scopes before fetching websites
+                // This prevents multiple simultaneous authentication prompts
+                await this.preAuthenticateForWebsites();
+
                 const websites = await fetchWebsites(PacContext.OrgInfo!, true);
                 this._activeSites = websites.activeSites;
                 this._inactiveSites = websites.inactiveSites;
@@ -133,6 +138,55 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
         }
 
         return false;
+    }
+
+    /**
+     * Pre-authenticates for all scopes required to fetch websites.
+     * This ensures we only prompt the user once (if needed) instead of multiple times.
+     * Authenticates sequentially: first for PPAPI (Power Platform API), then for Dataverse.
+     */
+    private async preAuthenticateForWebsites(): Promise<void> {
+        try {
+            const orgInfo = PacContext.OrgInfo;
+            const serviceEndpointStamp = ArtemisContext.ServiceResponse?.stamp;
+
+            if (!orgInfo || !serviceEndpointStamp) {
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_PRE_AUTH_SKIPPED, {
+                    methodName: this.preAuthenticateForWebsites.name,
+                    reason: 'missing_org_or_endpoint',
+                    hasOrgInfo: !!orgInfo,
+                    hasServiceEndpoint: !!serviceEndpointStamp,
+                    ...getBaseEventInfo()
+                });
+                return;
+            }
+
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_PRE_AUTH_STARTED, {
+                methodName: this.preAuthenticateForWebsites.name,
+                ...getBaseEventInfo()
+            });
+
+            // Import authentication functions dynamically to avoid circular dependencies
+            const { powerPlatformAPIAuthentication, dataverseAuthentication } = await import('../../../common/services/AuthenticationProvider');
+
+            // Authenticate sequentially to avoid multiple simultaneous prompts
+            // 1. First authenticate for Power Platform API (needed for getActiveWebsites)
+            await powerPlatformAPIAuthentication(serviceEndpointStamp, false);
+
+            // 2. Then authenticate for Dataverse (needed for getAllWebsites)
+            await dataverseAuthentication(orgInfo.OrgUrl ?? '', false);
+
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_PRE_AUTH_COMPLETED, {
+                methodName: this.preAuthenticateForWebsites.name,
+                ...getBaseEventInfo()
+            });
+        } catch (error) {
+            // Log but don't throw - fetchWebsites will handle authentication errors
+            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_PRE_AUTH_FAILED, error as string, error as Error, {
+                methodName: this.preAuthenticateForWebsites.name,
+                ...getBaseEventInfo()
+            });
+        }
     }
 
     private async checkAccountsMatch(): Promise<boolean> {

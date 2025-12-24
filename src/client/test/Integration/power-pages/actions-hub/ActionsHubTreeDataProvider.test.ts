@@ -54,6 +54,9 @@ import * as ExportMetadataDiffHandler from "../../../../power-pages/actions-hub/
 import * as ImportMetadataDiffHandler from "../../../../power-pages/actions-hub/handlers/metadata-diff/ImportMetadataDiffHandler";
 import * as ResyncMetadataDiffHandler from "../../../../power-pages/actions-hub/handlers/metadata-diff/ResyncMetadataDiffHandler";
 import { ActionsHub } from "../../../../power-pages/actions-hub/ActionsHub";
+import ArtemisContext from "../../../../ArtemisContext";
+import { ServiceEndpointCategory } from "../../../../../common/services/Constants";
+import { IArtemisAPIOrgResponse } from "../../../../../common/services/Interfaces";
 
 // Add global type declaration for ArtemisContext
 describe("ActionsHubTreeDataProvider", () => {
@@ -1118,7 +1121,7 @@ describe("ActionsHubTreeDataProvider", () => {
             expect(result![2]).to.be.instanceOf(ToolsGroupTreeItem);
 
             // Verify telemetry was called for successful account check
-            expect(traceInfoStub.calledTwice).to.be.true;
+            expect(traceInfoStub.called).to.be.true;
             const accountMatchCall = traceInfoStub.getCalls().find(call =>
                 call.args[0] === Constants.EventNames.ACTIONS_HUB_ACCOUNT_MATCH_RESOLVED
             );
@@ -1128,6 +1131,300 @@ describe("ActionsHubTreeDataProvider", () => {
                     methodName: 'checkAccountsMatch'
                 });
             }
+        });
+    });
+
+    describe('preAuthenticateForWebsites', () => {
+        beforeEach(async () => {
+            // Reset ArtemisContext before each test
+            ArtemisContext.setContext({
+                stamp: ServiceEndpointCategory.PROD,
+                response: {
+                    geoName: 'us',
+                    environment: 'prod',
+                    clusterNumber: '1',
+                    geoLongName: 'United States',
+                    clusterCategory: 'test-category',
+                    clusterName: 'test-cluster',
+                    clusterType: 'test-type'
+                }
+            });
+        });
+
+        it('should skip pre-authentication when OrgInfo is missing', async () => {
+            PacContext['_authInfo'] = mockAuthInfo;
+            sinon.stub(PacContext, "OrgInfo").get(() => null);
+
+            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            await provider['preAuthenticateForWebsites']();
+
+            expect(traceInfoStub.called).to.be.true;
+            const preAuthSkippedCall = traceInfoStub.getCalls().find(call =>
+                call.args[0] === Constants.EventNames.ACTIONS_HUB_PRE_AUTH_SKIPPED
+            );
+            expect(preAuthSkippedCall).to.not.be.undefined;
+            if (preAuthSkippedCall) {
+                expect(preAuthSkippedCall.args[1]).to.deep.include({
+                    reason: 'missing_org_or_endpoint',
+                    hasOrgInfo: false,
+                    hasServiceEndpoint: true
+                });
+            }
+        });
+
+        it('should skip pre-authentication when ServiceEndpoint is missing', async () => {
+            PacContext['_authInfo'] = mockAuthInfo;
+            sinon.stub(PacContext, "OrgInfo").get(() => ({
+                EnvironmentId: "test-env-id",
+                OrgUrl: "https://test.crm.dynamics.com"
+            }));
+
+            // Clear ArtemisContext
+            ArtemisContext.setContext({
+                stamp: null as unknown as ServiceEndpointCategory,
+                response: null as unknown as IArtemisAPIOrgResponse
+            });
+
+            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            await provider['preAuthenticateForWebsites']();
+
+            expect(traceInfoStub.called).to.be.true;
+            const preAuthSkippedCall = traceInfoStub.getCalls().find(call =>
+                call.args[0] === Constants.EventNames.ACTIONS_HUB_PRE_AUTH_SKIPPED
+            );
+            expect(preAuthSkippedCall).to.not.be.undefined;
+            if (preAuthSkippedCall) {
+                expect(preAuthSkippedCall.args[1]).to.deep.include({
+                    reason: 'missing_org_or_endpoint',
+                    hasOrgInfo: true,
+                    hasServiceEndpoint: false
+                });
+            }
+        });
+
+        it('should log pre-auth started and completed events', async () => {
+            PacContext['_authInfo'] = mockAuthInfo;
+            sinon.stub(PacContext, "OrgInfo").get(() => ({
+                EnvironmentId: "test-env-id",
+                OrgUrl: "https://test.crm.dynamics.com"
+            }));
+
+            ArtemisContext.setContext({
+                stamp: ServiceEndpointCategory.PROD,
+                response: {
+                    geoName: 'us',
+                    environment: 'prod',
+                    clusterNumber: '1',
+                    geoLongName: 'United States',
+                    clusterCategory: 'test-category',
+                    clusterName: 'test-cluster',
+                    clusterType: 'test-type'
+                }
+            });
+
+            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            await provider['preAuthenticateForWebsites']();
+
+            // Check that pre-auth started was logged
+            const preAuthStartedCall = traceInfoStub.getCalls().find(call =>
+                call.args[0] === Constants.EventNames.ACTIONS_HUB_PRE_AUTH_STARTED
+            );
+            expect(preAuthStartedCall).to.not.be.undefined;
+
+            // Check that pre-auth completed was logged
+            const preAuthCompletedCall = traceInfoStub.getCalls().find(call =>
+                call.args[0] === Constants.EventNames.ACTIONS_HUB_PRE_AUTH_COMPLETED
+            );
+            expect(preAuthCompletedCall).to.not.be.undefined;
+        });
+
+        it('should handle authentication errors gracefully', async () => {
+            PacContext['_authInfo'] = mockAuthInfo;
+            sinon.stub(PacContext, "OrgInfo").get(() => ({
+                EnvironmentId: "test-env-id",
+                OrgUrl: "https://test.crm.dynamics.com"
+            }));
+
+            ArtemisContext.setContext({
+                stamp: ServiceEndpointCategory.PROD,
+                response: {
+                    geoName: 'us',
+                    environment: 'prod',
+                    clusterNumber: '1',
+                    geoLongName: 'United States',
+                    clusterCategory: 'test-category',
+                    clusterName: 'test-cluster',
+                    clusterType: 'test-type'
+                }
+            });
+
+            // Stub the dynamic import to throw an error
+            const authError = new Error('Authentication failed');
+            sinon.stub(AuthenticationProvider, 'powerPlatformAPIAuthentication').rejects(authError);
+
+            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            await provider['preAuthenticateForWebsites']();
+
+            // Should log error but not throw
+            expect(traceErrorStub.called).to.be.true;
+            const preAuthFailedCall = traceErrorStub.getCalls().find(call =>
+                call.args[0] === Constants.EventNames.ACTIONS_HUB_PRE_AUTH_FAILED
+            );
+            expect(preAuthFailedCall).to.not.be.undefined;
+        });
+
+        it('should call pre-authentication before fetching websites', async () => {
+            const mockActiveSites = [
+                { name: "Foo", websiteRecordId: 'foo', websiteUrl: "https://foo.com" }
+            ] as IWebsiteDetails[];
+            const mockInactiveSites = [] as IWebsiteDetails[];
+            const otherSites = [] as IOtherSiteInfo[];
+
+            const fetchWebsitesStub = sinon.stub(ActionsHubUtils, 'fetchWebsites').resolves({
+                activeSites: mockActiveSites,
+                inactiveSites: mockInactiveSites,
+                otherSites: otherSites
+            });
+
+            PacContext['_authInfo'] = mockAuthInfo;
+            sinon.stub(PacContext, "OrgInfo").get(() => ({
+                EnvironmentId: "test-env-id",
+                OrgUrl: "https://test.crm.dynamics.com"
+            }));
+
+            ArtemisContext.setContext({
+                stamp: ServiceEndpointCategory.PROD,
+                response: {
+                    geoName: 'us',
+                    environment: 'prod',
+                    clusterNumber: '1',
+                    geoLongName: 'United States',
+                    clusterCategory: 'test-category',
+                    clusterName: 'test-cluster',
+                    clusterType: 'test-type'
+                }
+            });
+
+            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            provider['_loadWebsites'] = true;
+
+            // Spy on preAuthenticateForWebsites
+            const preAuthSpy = sinon.spy(provider, 'preAuthenticateForWebsites' as keyof typeof provider);
+
+            await provider['loadWebsites']();
+
+            // Verify pre-auth was called
+            expect(preAuthSpy.calledOnce).to.be.true;
+
+            // Verify pre-auth was called before fetchWebsites
+            expect(preAuthSpy.calledBefore(fetchWebsitesStub)).to.be.true;
+
+            // Verify fetchWebsites was called
+            expect(fetchWebsitesStub.calledOnce).to.be.true;
+        });
+
+        it('should authenticate sequentially for PPAPI and Dataverse', async () => {
+            PacContext['_authInfo'] = mockAuthInfo;
+            sinon.stub(PacContext, "OrgInfo").get(() => ({
+                EnvironmentId: "test-env-id",
+                OrgUrl: "https://test.crm.dynamics.com"
+            }));
+
+            ArtemisContext.setContext({
+                stamp: ServiceEndpointCategory.PROD,
+                response: {
+                    geoName: 'us',
+                    environment: 'prod',
+                    clusterNumber: '1',
+                    geoLongName: 'United States',
+                    clusterCategory: 'test-category',
+                    clusterName: 'test-cluster',
+                    clusterType: 'test-type'
+                }
+            });
+
+            // Stub the authentication functions to track call order
+            const ppapiAuthStub = sinon.stub(AuthenticationProvider, 'powerPlatformAPIAuthentication').resolves('ppapi-token');
+            const dataverseAuthStub = sinon.stub(AuthenticationProvider, 'dataverseAuthentication').resolves({ accessToken: 'dataverse-token', userId: 'user-id' });
+
+            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            await provider['preAuthenticateForWebsites']();
+
+            // Verify both authentications were called
+            expect(ppapiAuthStub.calledOnce).to.be.true;
+            expect(dataverseAuthStub.calledOnce).to.be.true;
+
+            // Verify PPAPI auth was called with correct parameters
+            expect(ppapiAuthStub.firstCall.args[0]).to.equal(ServiceEndpointCategory.PROD);
+            expect(ppapiAuthStub.firstCall.args[1]).to.equal(false); // firstTimeAuth = false
+
+            // Verify Dataverse auth was called with correct parameters
+            expect(dataverseAuthStub.firstCall.args[0]).to.equal("https://test.crm.dynamics.com");
+            expect(dataverseAuthStub.firstCall.args[1]).to.equal(false); // firstTimeAuth = false
+
+            // Verify PPAPI auth was called before Dataverse auth (sequential, not parallel)
+            expect(ppapiAuthStub.calledBefore(dataverseAuthStub)).to.be.true;
+        });
+
+        it('should not load websites multiple times when _loadWebsites is false', async () => {
+            const fetchWebsitesStub = sinon.stub(ActionsHubUtils, 'fetchWebsites').resolves({
+                activeSites: [],
+                inactiveSites: [],
+                otherSites: []
+            });
+
+            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            provider['_loadWebsites'] = false;
+
+            await provider['loadWebsites']();
+
+            // Verify fetchWebsites was not called
+            expect(fetchWebsitesStub.called).to.be.false;
+        });
+
+        it('should handle pre-auth errors and continue with website loading', async () => {
+            const mockActiveSites = [
+                { name: "Foo", websiteRecordId: 'foo', websiteUrl: "https://foo.com" }
+            ] as IWebsiteDetails[];
+
+            const fetchWebsitesStub = sinon.stub(ActionsHubUtils, 'fetchWebsites').resolves({
+                activeSites: mockActiveSites,
+                inactiveSites: [],
+                otherSites: []
+            });
+
+            PacContext['_authInfo'] = mockAuthInfo;
+            sinon.stub(PacContext, "OrgInfo").get(() => ({
+                EnvironmentId: "test-env-id",
+                OrgUrl: "https://test.crm.dynamics.com"
+            }));
+
+            ArtemisContext.setContext({
+                stamp: ServiceEndpointCategory.PROD,
+                response: {
+                    geoName: 'us',
+                    environment: 'prod',
+                    clusterNumber: '1',
+                    geoLongName: 'United States',
+                    clusterCategory: 'test-category',
+                    clusterName: 'test-cluster',
+                    clusterType: 'test-type'
+                }
+            });
+
+            // Stub pre-auth to throw error
+            sinon.stub(AuthenticationProvider, 'powerPlatformAPIAuthentication').rejects(new Error('Auth failed'));
+
+            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            provider['_loadWebsites'] = true;
+
+            await provider['loadWebsites']();
+
+            // Verify error was logged
+            expect(traceErrorStub.called).to.be.true;
+
+            // Verify fetchWebsites was still called despite pre-auth error
+            expect(fetchWebsitesStub.calledOnce).to.be.true;
         });
     });
 });
