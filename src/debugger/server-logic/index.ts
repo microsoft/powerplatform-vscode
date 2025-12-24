@@ -6,7 +6,8 @@
 export {
     activateServerLogicDebugger,
     createServerLogicDebugConfig,
-    ensureRuntimeLoader
+    ensureRuntimeLoader,
+    isServerLogicDebuggingEnabled
 } from './ServerLogicDebugger';
 export {
     ServerLogicDebugProvider,

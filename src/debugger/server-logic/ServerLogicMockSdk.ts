@@ -59,6 +59,28 @@ const Server = {
 
     Connector: {
         HttpClient: {
+            _processBodyForContentType: function(body, contentType) {
+                if (contentType === "application/x-www-form-urlencoded" && body) {
+                    try {
+                        const bodyObj = JSON.parse(body);
+                        const isNodeJs = typeof process !== 'undefined' &&
+                                         process.versions != null &&
+                                         process.versions.node != null;
+
+                        if (isNodeJs) {
+                            const querystring = require('querystring');
+                            return querystring.stringify(bodyObj);
+                        } else {
+                            return new URLSearchParams(bodyObj).toString();
+                        }
+                    } catch (e) {
+                        Server.Logger.Warning(\`[TRANSFORM] Body is not valid JSON, using as-is: \${e.message}\`);
+                        return body;
+                    }
+                }
+                return body;
+            },
+
             GetAsync: async function (url, headers = {}) {
                 Server.Logger.Log(\`[MOCK] HttpClient.GetAsync called with URL: \${url}\`);
 
@@ -72,16 +94,15 @@ const Server = {
                     try {
                         const https = require('https');
                         const http = require('http');
-                        const urlLib = require('url');
 
-                        const parsedUrl = urlLib.parse(url);
+                        const parsedUrl = new URL(url);
                         const protocol = parsedUrl.protocol === 'https:' ? https : http;
 
                         return new Promise((resolve, reject) => {
                             const options = {
                                 hostname: parsedUrl.hostname,
-                                port: parsedUrl.port,
-                                path: parsedUrl.path,
+                                port: parsedUrl.port || (parsedUrl.protocol === 'https:' ? 443 : 80),
+                                path: parsedUrl.pathname + parsedUrl.search,
                                 method: 'GET',
                                 headers: headers
                             };
@@ -174,28 +195,32 @@ const Server = {
                     process.versions != null &&
                     process.versions.node != null;
 
+                const processedBody = this._processBodyForContentType(body, contentType);
+                if (processedBody !== body) {
+                    Server.Logger.Log(\`[TRANSFORM] Converted JSON to URL-encoded: \${processedBody}\`);
+                }
+
                 if (isNodeJs) {
                     Server.Logger.Log(\`[NODE.JS] Making actual POST request to: \${url}\`);
 
                     try {
                         const https = require('https');
                         const http = require('http');
-                        const urlLib = require('url');
 
-                        const parsedUrl = urlLib.parse(url);
+                        const parsedUrl = new URL(url);
                         const protocol = parsedUrl.protocol === 'https:' ? https : http;
 
                         return new Promise((resolve, reject) => {
                             const requestHeaders = {
                                 ...headers,
                                 'Content-Type': contentType,
-                                'Content-Length': Buffer.byteLength(body || '')
+                                'Content-Length': Buffer.byteLength(processedBody || '')
                             };
 
                             const options = {
                                 hostname: parsedUrl.hostname,
-                                port: parsedUrl.port,
-                                path: parsedUrl.path,
+                                port: parsedUrl.port || (parsedUrl.protocol === 'https:' ? 443 : 80),
+                                path: parsedUrl.pathname + parsedUrl.search,
                                 method: 'POST',
                                 headers: requestHeaders
                             };
@@ -241,8 +266,8 @@ const Server = {
                                 resolve(JSON.stringify(errorResponse));
                             });
 
-                            if (body) {
-                                req.write(body);
+                            if (processedBody) {
+                                req.write(processedBody);
                             }
                             req.end();
                         });
@@ -287,28 +312,32 @@ const Server = {
                     process.versions != null &&
                     process.versions.node != null;
 
+                const processedBody = this._processBodyForContentType(body, contentType);
+                if (processedBody !== body) {
+                    Server.Logger.Log(\`[TRANSFORM] Converted JSON to URL-encoded: \${processedBody}\`);
+                }
+
                 if (isNodeJs) {
                     Server.Logger.Log(\`[NODE.JS] Making actual PATCH request to: \${url}\`);
 
                     try {
                         const https = require('https');
                         const http = require('http');
-                        const urlLib = require('url');
 
-                        const parsedUrl = urlLib.parse(url);
+                        const parsedUrl = new URL(url);
                         const protocol = parsedUrl.protocol === 'https:' ? https : http;
 
                         return new Promise((resolve, reject) => {
                             const requestHeaders = {
                                 ...headers,
                                 'Content-Type': contentType,
-                                'Content-Length': Buffer.byteLength(body || '')
+                                'Content-Length': Buffer.byteLength(processedBody || '')
                             };
 
                             const options = {
                                 hostname: parsedUrl.hostname,
-                                port: parsedUrl.port,
-                                path: parsedUrl.path,
+                                port: parsedUrl.port || (parsedUrl.protocol === 'https:' ? 443 : 80),
+                                path: parsedUrl.pathname + parsedUrl.search,
                                 method: 'PATCH',
                                 headers: requestHeaders
                             };
@@ -354,8 +383,8 @@ const Server = {
                                 resolve(JSON.stringify(errorResponse));
                             });
 
-                            if (body) {
-                                req.write(body);
+                            if (processedBody) {
+                                req.write(processedBody);
                             }
                             req.end();
                         });
@@ -400,28 +429,32 @@ const Server = {
                     process.versions != null &&
                     process.versions.node != null;
 
+                const processedBody = this._processBodyForContentType(body, contentType);
+                if (processedBody !== body) {
+                    Server.Logger.Log(\`[TRANSFORM] Converted JSON to URL-encoded: \${processedBody}\`);
+                }
+
                 if (isNodeJs) {
                     Server.Logger.Log(\`[NODE.JS] Making actual PUT request to: \${url}\`);
 
                     try {
                         const https = require('https');
                         const http = require('http');
-                        const urlLib = require('url');
 
-                        const parsedUrl = urlLib.parse(url);
+                        const parsedUrl = new URL(url);
                         const protocol = parsedUrl.protocol === 'https:' ? https : http;
 
                         return new Promise((resolve, reject) => {
                             const requestHeaders = {
                                 ...headers,
                                 'Content-Type': contentType,
-                                'Content-Length': Buffer.byteLength(body || '')
+                                'Content-Length': Buffer.byteLength(processedBody || '')
                             };
 
                             const options = {
                                 hostname: parsedUrl.hostname,
-                                port: parsedUrl.port,
-                                path: parsedUrl.path,
+                                port: parsedUrl.port || (parsedUrl.protocol === 'https:' ? 443 : 80),
+                                path: parsedUrl.pathname + parsedUrl.search,
                                 method: 'PUT',
                                 headers: requestHeaders
                             };
@@ -467,8 +500,8 @@ const Server = {
                                 resolve(JSON.stringify(errorResponse));
                             });
 
-                            if (body) {
-                                req.write(body);
+                            if (processedBody) {
+                                req.write(processedBody);
                             }
                             req.end();
                         });
@@ -505,7 +538,7 @@ const Server = {
                 }
             },
 
-            DeleteAsync: async function (url, headers = {}, contentType = "application/json") {
+            DeleteAsync: async function (url, headers = {}) {
                 Server.Logger.Log(\`[MOCK] HttpClient.DeleteAsync called with URL: \${url}\`);
 
                 const isNodeJs = typeof process !== 'undefined' &&
@@ -518,16 +551,15 @@ const Server = {
                     try {
                         const https = require('https');
                         const http = require('http');
-                        const urlLib = require('url');
 
-                        const parsedUrl = urlLib.parse(url);
+                        const parsedUrl = new URL(url);
                         const protocol = parsedUrl.protocol === 'https:' ? https : http;
 
                         return new Promise((resolve, reject) => {
                             const options = {
                                 hostname: parsedUrl.hostname,
-                                port: parsedUrl.port,
-                                path: parsedUrl.path,
+                                port: parsedUrl.port || (parsedUrl.protocol === 'https:' ? 443 : 80),
+                                path: parsedUrl.pathname + parsedUrl.search,
                                 method: 'DELETE',
                                 headers: headers
                             };
