@@ -8,11 +8,11 @@
       </trans-unit>
       <trans-unit id="++CODE++d9b0470a805c5df4050b3070600c0d2b1d055d406d806105f17ba005ef775b6a">
         <source xml:lang="en">(click to expand diff)</source>
-        <target state="new">(click to expand diff)</target>
+        <target state="translated">(kliknutím rozbalíte rozdíl)</target>
       </trans-unit>
       <trans-unit id="++CODE++32dfcdbc5d61fc73e1012a0b09b6d9121d37e4a5e95726456066acfc313468a1">
         <source xml:lang="en">1 file changed</source>
-        <target state="new">1 file changed</target>
+        <target state="translated">1 změněný soubor</target>
       </trans-unit>
       <trans-unit id="++CODE++29bb69945e50cb632fabf16f3f89a25d813910c19059d8a792f66262a952039d">
         <source xml:lang="en">@PowerPages is not yet available in your region.</source>
@@ -72,11 +72,11 @@
       </trans-unit>
       <trans-unit id="++CODE++6b02e0d363a4af1c95eef50364bb0202c8b250aa05a48a69e68fd7787b4b0632">
         <source xml:lang="en">Added</source>
-        <target state="new">Added</target>
+        <target state="translated">Přidáno</target>
       </trans-unit>
       <trans-unit id="++CODE++15593a5b5afa7d2fd80e213e5035a35bb260e4cb5c1b18bca70583b796f11a5c">
         <source xml:lang="en">Added Locally</source>
-        <target state="new">Added Locally</target>
+        <target state="translated">Přidáno místně</target>
       </trans-unit>
       <trans-unit id="++CODE++0e24df55d08fd98cf5664002561cf1ab063231df2ec58e3a4ae50c063ba66828">
         <source xml:lang="en">Added default query suite to config: {0}</source>
@@ -97,7 +97,7 @@
       </trans-unit>
       <trans-unit id="++CODE++5490d0b16535529301b0cda95abc687e682b2964413863130a9a2debf61c279f">
         <source xml:lang="en">An imported comparison already exists for this site. Do you want to replace it?</source>
-        <target state="new">An imported comparison already exists for this site. Do you want to replace it?</target>
+        <target state="translated">Pro tento web už importované porovnání existuje. Chcete ho nahradit?</target>
       </trans-unit>
       <trans-unit id="++CODE++c910bd41bbf67f9965a2aabaec8d39b749280ffea62e9708c507374b581a331d">
         <source xml:lang="en">Analysis complete! Results saved to: {0}</source>
@@ -164,11 +164,11 @@
       </trans-unit>
       <trans-unit id="++CODE++53459da24b905cc5c62250bc26f29303b6e56df44f7f1e86fc4b6596a4aa67fd">
         <source xml:lang="en">Binary file - content comparison not available</source>
-        <target state="new">Binary file - content comparison not available</target>
+        <target state="translated">Binární soubor – porovnání obsahu není k dispozici.</target>
       </trans-unit>
       <trans-unit id="++CODE++c8baac5a74383177a725f6e5cc4254c0cfddfb0ab13f295520b96a30d7c5457e">
         <source xml:lang="en">Binary file content is not available in imported comparisons. The original file was not included in the export.</source>
-        <target state="new">Binary file content is not available in imported comparisons. The original file was not included in the export.</target>
+        <target state="translated">Obsah binárního souboru není v importovaných porovnáních k dispozici. Původní soubor nebyl zahrnut do exportu.</target>
       </trans-unit>
       <trans-unit id="++CODE++c58a6bd402efb06c3e7dfd6d68910412fee2dfc1788ae384dc123089ce912285">
         <source xml:lang="en">Browse...</source>
@@ -177,6 +177,10 @@
       <trans-unit id="++CODE++19766ed6ccb2f4a32778eed80d1928d2c87a18d7c275ccb163ec6709d3eb2e27">
         <source xml:lang="en">Cancel</source>
         <target state="translated">Zrušit</target>
+      </trans-unit>
+      <trans-unit id="++CODE++2007ab2650ce558e97a30b2aa70e1c881773cf3db7fbd8a430db221b06364579">
+        <source xml:lang="en">Cannot debug: Please open a server logic file (.js) from the server-logics folder.</source>
+        <target state="new">Cannot debug: Please open a server logic file (.js) from the server-logics folder.</target>
       </trans-unit>
       <trans-unit id="++CODE++75106b7b8e0c597d51e042edbde3498f813c9cd7bd59759f4dde848abc054e85">
         <source xml:lang="en">Cannot install Power Pages generator. Please install npm and try again.</source>
@@ -195,11 +199,11 @@
       </trans-unit>
       <trans-unit id="++CODE++ee3b92bec1620eefaad49e74f1055436ec9353e489407875694d5faf08207fa9">
         <source xml:lang="en">Cannot refresh an imported comparison. Import a new file or run a new comparison.</source>
-        <target state="new">Cannot refresh an imported comparison. Import a new file or run a new comparison.</target>
+        <target state="translated">Importované porovnání nelze aktualizovat. Importujte nový soubor nebo spusťte nové porovnání.</target>
       </trans-unit>
       <trans-unit id="++CODE++cdf024cea6f90cc5aacbe1c08a6c77b322820dc46ff96b1410e30527d7239c49">
         <source xml:lang="en">Changed Files</source>
-        <target state="new">Changed Files</target>
+        <target state="translated">Změněné soubory</target>
       </trans-unit>
       <trans-unit id="++CODE++b75d741af5a9c59c95a5c7b7d9f654bb93617232db14c8d2671a5c731828782b">
         <source xml:lang="en">Changing environment...</source>
@@ -327,7 +331,7 @@ Dostupné dotazy najdete na panelu rozšíření CodeQL.</target>
       </trans-unit>
       <trans-unit id="++CODE++55988e28a4e8720a588c5c53fd47616d929a404d3d2af7e6f8ba313dce6dc3e4">
         <source xml:lang="en">Collapse All</source>
-        <target state="new">Collapse All</target>
+        <target state="translated">Sbalit vše</target>
       </trans-unit>
       <trans-unit id="++CODE++1fb4405a792e9eb077d2bd96517eca8d81fc43bc251d5589e9d959fd07c8f31d">
         <source xml:lang="en">Command completed successfully (exit code: {0})</source>
@@ -356,21 +360,21 @@ Dostupné dotazy najdete na panelu rozšíření CodeQL.</target>
       </trans-unit>
       <trans-unit id="++CODE++5b79ce1b6eead3275d92572d5997ed876b99fe9d47141f8b785abf94a4ff52c0">
         <source xml:lang="en">Comparison Details</source>
-        <target state="new">Comparison Details</target>
+        <target state="translated">Podrobnosti porovnání</target>
       </trans-unit>
       <trans-unit id="++CODE++6f62222f8fc63948a524a47998f7426ba127721daff7b3830eaeca94ee399557">
         <source xml:lang="en">Comparison exported successfully to '{0}'.</source>
         <note>Success message when export is saved. {0} is the file path.</note>
-        <target state="new">Comparison exported successfully to '{0}'.</target>
+        <target state="translated">Porovnání se úspěšně exportovalo do cesty {0}.</target>
       </trans-unit>
       <trans-unit id="++CODE++af71f3c9dcd7adc1f7944d6fc3ca0af422603b9af8eb47c0d4c23cbeb91ea931">
         <source xml:lang="en">Comparison for '{0}' imported successfully.</source>
         <note>Success message when import is complete. {0} is the site name.</note>
-        <target state="new">Comparison for '{0}' imported successfully.</target>
+        <target state="translated">Porovnání pro {0} se úspěšně importovalo.</target>
       </trans-unit>
       <trans-unit id="++CODE++9c67b99ff5b13af52ba4fcdf8a23543ece796a42bdca07632507f5ac3ed6d32b">
         <source xml:lang="en">Comparison has been refreshed with the latest data from the environment.</source>
-        <target state="new">Comparison has been refreshed with the latest data from the environment.</target>
+        <target state="translated">Porovnání se aktualizovalo s nejnovějšími daty z prostředí.</target>
       </trans-unit>
       <trans-unit id="++CODE++eebdd24a77d9ad32222660c07777163bf5f6732df2b172351f3f8d5783e4f529">
         <source xml:lang="en">Confirm</source>
@@ -448,6 +452,26 @@ Dostupné dotazy najdete na panelu rozšíření CodeQL.</target>
         <source xml:lang="en">Database location: {0}</source>
         <target state="translated">Umístění databáze: {0}</target>
       </trans-unit>
+      <trans-unit id="++CODE++1a03bd2fd107c453f3183e30b9716f82200671e8270fbbefbe602f5a48705527">
+        <source xml:lang="en">Debug</source>
+        <target state="new">Debug</target>
+      </trans-unit>
+      <trans-unit id="++CODE++c290c1e52a812e64e79be343e932a767838b3045abdc429dad559882f68f999d">
+        <source xml:lang="en">Debug Current File</source>
+        <target state="new">Debug Current File</target>
+      </trans-unit>
+      <trans-unit id="++CODE++187bba1fb2a0c6f665f35430ac7e2d820aab5b73b2921b99e26096a92cdf98e4">
+        <source xml:lang="en">Debug Current Server Logic</source>
+        <target state="new">Debug Current Server Logic</target>
+      </trans-unit>
+      <trans-unit id="++CODE++136d1125a6f04a9c7c631e9be49bc4fca530e921f2af0fe5e2a9b1d95e0aa6ca">
+        <source xml:lang="en">Debug Power Pages Server Logic</source>
+        <target state="new">Debug Power Pages Server Logic</target>
+      </trans-unit>
+      <trans-unit id="++CODE++ff0a1f27b622e2032d9c0df2db5943ac6504497bf01e48c77335b6591f134522">
+        <source xml:lang="en">Debug this server logic file</source>
+        <target state="new">Debug this server logic file</target>
+      </trans-unit>
       <trans-unit id="++CODE++5bd78fcb75f98d65ab8f89a8f0b6681c25c13308fa8643c44ab459b7783c06c9">
         <source xml:lang="en">Default Environment: {0}</source>
         <note>The {0} represents profile's resource/environment URL</note>
@@ -455,11 +479,11 @@ Dostupné dotazy najdete na panelu rozšíření CodeQL.</target>
       </trans-unit>
       <trans-unit id="++CODE++b48ff39c2e0f5451b9b29b09c2a74d2760db230749ffd48a6e901cc91fef9a8d">
         <source xml:lang="en">Deleted</source>
-        <target state="new">Deleted</target>
+        <target state="translated">Odstraněno</target>
       </trans-unit>
       <trans-unit id="++CODE++bb1de92420a69402b065edb03f642d93984ea080582fb8b1ff49fee3aab7cab1">
         <source xml:lang="en">Deleted Locally</source>
-        <target state="new">Deleted Locally</target>
+        <target state="translated">Odstraněno místně</target>
       </trans-unit>
       <trans-unit id="++CODE++9a983b9151d6fc6165f094e95ba9ba8cb588b59345cf8956f8fb77ee7ce36be2">
         <source xml:lang="en">Deleted locally</source>
@@ -492,6 +516,10 @@ Typ: {3}</target>
         <source xml:lang="en">Do not show again</source>
         <target state="translated">Příště nezobrazovat</target>
       </trans-unit>
+      <trans-unit id="++CODE++1d60d0cdcb5408b8e39ed364f675c9cad8a2f6174a413324d1e34437bd41269b">
+        <source xml:lang="en">Don't Show Again</source>
+        <target state="new">Don't Show Again</target>
+      </trans-unit>
       <trans-unit id="++CODE++668c177d38e6f62ffe2ca64e3915151cfcd566204fd4e4b499e7fe237ad63fb1">
         <source xml:lang="en">Download Power Pages Site</source>
         <target state="translated">Stáhnout web Power Pages</target>
@@ -519,7 +547,7 @@ Typ: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++102f547594eb0c68a16e0e5eb6661fa576c7a5fb6ce224ea36194e9fd4f87dac">
         <source xml:lang="en">Enhanced Data Model</source>
-        <target state="new">Enhanced Data Model</target>
+        <target state="translated">Vylepšený datový model</target>
       </trans-unit>
       <trans-unit id="++CODE++0feefedc5916a0c9a464f4ef9f28fab835a23e1d035878f397e38053381aa3fa">
         <source xml:lang="en">Enter Organization ID</source>
@@ -556,7 +584,7 @@ Typ: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++340e3fe1f8281d7070af99b12b978e9e1d0ef8e853314ed1b6dc1dcafc8bb8f7">
         <source xml:lang="en">Environment:</source>
-        <target state="new">Environment:</target>
+        <target state="translated">Prostředí:</target>
       </trans-unit>
       <trans-unit id="++CODE++239d14b889f5a193581388efd042b82c5cb36e89f15b4141f740ec40d00ea868">
         <source xml:lang="en">Error accessing CodeQL extension: {0}</source>
@@ -604,7 +632,7 @@ Typ: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++9f5b023a413a7d0771cc3fb51b103dc0aaaafe8f7b7c88c7258d43e3bc5b243d">
         <source xml:lang="en">Expand All</source>
-        <target state="new">Expand All</target>
+        <target state="translated">Rozbalit vše</target>
       </trans-unit>
       <trans-unit id="++CODE++5a2391041cb1f6f5ab0cce07946dbf4222358fbd947768d94ac12ef5329485d3">
         <source xml:lang="en">Explain the following code snippet:</source>
@@ -616,11 +644,11 @@ Typ: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++faa8395365de427167672364e213e1f84ea2c3103922d44673f61ed2873f6745">
         <source xml:lang="en">Export Metadata Diff</source>
-        <target state="new">Export Metadata Diff</target>
+        <target state="translated">Exportovat rozdíly metadat</target>
       </trans-unit>
       <trans-unit id="++CODE++1f14b9b0b30891bec1ece43097d7ae38a34b666738f9173658022778f5ce3ebf">
         <source xml:lang="en">Exporting comparison...</source>
-        <target state="new">Exporting comparison...</target>
+        <target state="translated">Exportuje se porovnání…</target>
       </trans-unit>
       <trans-unit id="++CODE++173848927e1a6ed7f8c52d958d530c9ce90053649c734a3bc20bfb2053d8ef88">
         <source xml:lang="en">Extension installed but API not available yet. Opening as text file...</source>
@@ -651,7 +679,7 @@ Typ: {3}</target>
       <trans-unit id="++CODE++43dbf70c21c86c0ae92c85969872317a7a1e68ced8adb94059fafd83cac30eb5">
         <source xml:lang="en">Failed to export comparison: {0}</source>
         <note>Error message when export fails. {0} is the error message.</note>
-        <target state="new">Failed to export comparison: {0}</target>
+        <target state="translated">Nepovedlo se exportovat porovnání: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++83d9d98e86aca9239f8a2635a98356d956268fb41a465fbc039b9ac979c61649">
         <source xml:lang="en">Failed to fetch some files.</source>
@@ -660,7 +688,7 @@ Typ: {3}</target>
       <trans-unit id="++CODE++d604dc348b4d883f4a77c906c97d37e94d3f936c4ad815621d988bf5772b4ecb">
         <source xml:lang="en">Failed to generate HTML report: {0}</source>
         <note>Error message when HTML report generation fails. {0} is the error message.</note>
-        <target state="new">Failed to generate HTML report: {0}</target>
+        <target state="translated">Nepovedlo se vygenerovat sestavu HTML: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++f4948aad45ee9baaf762fbd640c551dc397190efdd9fb87468b559502ece927c">
         <source xml:lang="en">Failed to generate VS Code Desktop URL: {0}</source>
@@ -685,7 +713,11 @@ Typ: {3}</target>
       <trans-unit id="++CODE++01f0b1383686ea2dbed659b38128c80a17f90fd15b9c8636871a01f34fbd0f2c">
         <source xml:lang="en">Failed to import comparison: {0}</source>
         <note>Error message when import fails. {0} is the error message.</note>
-        <target state="new">Failed to import comparison: {0}</target>
+        <target state="translated">Nepovedlo se importovat porovnání: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++7df498affc70b3844ab77806857554f50899316597e96d91097dcefd8e225024">
+        <source xml:lang="en">Failed to initialize Server Logic debugger: {0}</source>
+        <target state="new">Failed to initialize Server Logic debugger: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++9696573fbb3df8812e2d0b83aa3d9077681bf992c9f9514fbbb81fcc7787560d">
         <source xml:lang="en">Failed to install SARIF viewer extension. Opening results as text file.</source>
@@ -714,7 +746,7 @@ Typ: {3}</target>
       <trans-unit id="++CODE++1b600fc82f2c98dc384adb9fa255ff5914978d978928c8aa5e56bf5fc64980b2">
         <source xml:lang="en">Fetching websites from '{0}'...</source>
         <note>Message shown while fetching websites from an environment. {0} is the environment name.</note>
-        <target state="new">Fetching websites from '{0}'...</target>
+        <target state="translated">Načítání webů z {0}…</target>
       </trans-unit>
       <trans-unit id="++CODE++2a8ddde521f14ecd4a8717f2bcf9a2b021fa38a578518066d2ae32271aa95237">
         <source xml:lang="en">Fetching your file ...</source>
@@ -764,11 +796,11 @@ Typ: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++9a0fee38744b1ebd6dee64a438507d597635a5773f9ecea2f587a1b560808d4b">
         <source xml:lang="en">Generated by</source>
-        <target state="new">Generated by</target>
+        <target state="translated">Vygeneroval/a</target>
       </trans-unit>
       <trans-unit id="++CODE++c7107175191436eb55e7271e43e636b598d8c80cbf2a9a32ac42bc03222f053c">
         <source xml:lang="en">Generated:</source>
-        <target state="new">Generated:</target>
+        <target state="translated">Vygenerováno:</target>
       </trans-unit>
       <trans-unit id="++CODE++c4c059b39483b39ccf3cb056feaa5e400e252a9c558deecdf8d301c1dac9485b">
         <source xml:lang="en">Generating a new Power Pages site...</source>
@@ -797,7 +829,7 @@ Typ: {3}</target>
       <trans-unit id="++CODE++7b9ca5026e65057a17f951928bd53dc4e7724c0850490d6237636e9d568db4b1">
         <source xml:lang="en">HTML report saved successfully to '{0}'.</source>
         <note>Success message when HTML report is saved. {0} is the file path.</note>
-        <target state="new">HTML report saved successfully to '{0}'.</target>
+        <target state="translated">Sestava HTML se úspěšně uložila do cesty {0}.</target>
       </trans-unit>
       <trans-unit id="++CODE++b9f4adbdfa2deef1eaa415a914f63329ee06c604b5a1bf34645175b9e28a9712">
         <source xml:lang="en">Here are a few suggestions to get you started</source>
@@ -831,11 +863,11 @@ Vraťte se do tohoto chatu a @powerpages vám může pomoci s psaním a úpravou
       </trans-unit>
       <trans-unit id="++CODE++fd6f929754f9e7358fbf47dfa5bdb5453b0866d18e8f50b2e915366dc64a1b14">
         <source xml:lang="en">Import Metadata Diff</source>
-        <target state="new">Import Metadata Diff</target>
+        <target state="translated">Importovat rozdíly metadat</target>
       </trans-unit>
       <trans-unit id="++CODE++721266427f4f6ab7a5409839b7675a73aed355db0e876c0464f100c99c4158f6">
         <source xml:lang="en">Importing comparison...</source>
-        <target state="new">Importing comparison...</target>
+        <target state="translated">Importuje se porovnání…</target>
       </trans-unit>
       <trans-unit id="++CODE++08295f3385931e35c850b945e2ae04882452c4bf0dd575f70e95aaa6ed00daa9">
         <source xml:lang="en">In your own words, describe what you need. You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.</source>
@@ -877,7 +909,11 @@ Vraťte se do tohoto chatu a @powerpages vám může pomoci s psaním a úpravou
       </trans-unit>
       <trans-unit id="++CODE++8e79146ac2ac83ff880a2a3860077ea6cfed5cdcea1ea169fed12fdd03b5360d">
         <source xml:lang="en">Invalid file format. The file does not contain valid metadata diff data.</source>
-        <target state="new">Invalid file format. The file does not contain valid metadata diff data.</target>
+        <target state="translated">Neplatný formát souboru. Soubor neobsahuje platná data rozdílů metadat.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++8d8cd546b58d91c300d3149ef40b8d98d3061dc38f15ea937d2ed785a3f25771">
+        <source xml:lang="en">Learn More</source>
+        <target state="new">Learn More</target>
       </trans-unit>
       <trans-unit id="++CODE++c59fe0045151cddc10b8384a437337e86eab905877883c18b53e068a3d36121d">
         <source xml:lang="en">Learn more about Copilot</source>
@@ -897,11 +933,11 @@ Vraťte se do tohoto chatu a @powerpages vám může pomoci s psaním a úpravou
       </trans-unit>
       <trans-unit id="++CODE++8c31e6e7223097e2e4847773c47a4efab6aaf79deeecc92a7759891c74976dde">
         <source xml:lang="en">Local</source>
-        <target state="new">Local</target>
+        <target state="translated">Místní</target>
       </trans-unit>
       <trans-unit id="++CODE++dff4c0c879ea2e4011d45f5b3caa7c64d15feac1416a9e90b4ba4723f7cfc6fa">
         <source xml:lang="en">Local Site</source>
-        <target state="new">Local Site</target>
+        <target state="translated">Místní web</target>
       </trans-unit>
       <trans-unit id="++CODE++9d6322c1f4d9d3f38aed8bfbe0b2bcadf66ad82c008476fa62541fa069138e94">
         <source xml:lang="en">Login</source>
@@ -931,7 +967,7 @@ Vraťte se do tohoto chatu a @powerpages vám může pomoci s psaním a úpravou
       </trans-unit>
       <trans-unit id="++CODE++8f10b38db6f69f493504d7eca9d7f6e0c4453855fe741c99a0df61c699ad33f6">
         <source xml:lang="en">Matching Site</source>
-        <target state="new">Matching Site</target>
+        <target state="translated">Odpovídající web</target>
       </trans-unit>
       <trans-unit id="++CODE++8a194d5287e3da019883144787cd5f282753f5ce892d933be0833b3818c25503">
         <source xml:lang="en">Maximum 30 characters allowed</source>
@@ -943,11 +979,11 @@ Vraťte se do tohoto chatu a @powerpages vám může pomoci s psaním a úpravou
       </trans-unit>
       <trans-unit id="++CODE++d39a5fa0fca9df105f95b7dfa9a2705ccddaead33bd3119052baabe6c923a85d">
         <source xml:lang="en">Metadata Diff JSON</source>
-        <target state="new">Metadata Diff JSON</target>
+        <target state="translated">JSON rozdílů metadat</target>
       </trans-unit>
       <trans-unit id="++CODE++7accb685e6522ef72613a3d16ae7f3ce6ee978ac591c512054ec9e6bc2efef00">
         <source xml:lang="en">Metadata Diff Report</source>
-        <target state="new">Metadata Diff Report</target>
+        <target state="translated">Sestava rozdílů metadat</target>
       </trans-unit>
       <trans-unit id="++CODE++b1c8258fb401975727a82d9ce473af0a600f076cc7b73dbd16524e815cf4153d">
         <source xml:lang="en">Microsoft wants your feedback</source>
@@ -956,7 +992,7 @@ Vraťte se do tohoto chatu a @powerpages vám může pomoci s psaním a úpravou
       <trans-unit id="++CODE++8e53dab06e505d52b109c8d60b6a1e1fddfe96194e3f1a44aeabe65f4b3568c4">
         <source xml:lang="en">Missing required field: {0}</source>
         <note>Error when importing a file that is missing a required field.</note>
-        <target state="new">Missing required field: {0}</target>
+        <target state="translated">Chybí povinné pole: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++5813bc61a859f78f4474b9c45e545b7da14fe71acdbb5b7c4cb7010628780513">
         <source xml:lang="en">Missing required site information for reactivation.</source>
@@ -1014,6 +1050,14 @@ ID organizace: {3}</target>
         <source xml:lang="en">No Website Data Found in Current Directory. Please switch to a directory that contains the PAC downloaded website data to continue.</source>
         <target state="translated">V aktuálním adresáři nebyla nalezena žádná data webu. Pokud chcete pokračovat, přepněte do adresáře, který obsahuje stažená data PAC webu.</target>
       </trans-unit>
+      <trans-unit id="++CODE++4e0d6304be5d5157d4b4b95a0bbffe07b9c2a84f6849b3bb0d591e79b864f33c">
+        <source xml:lang="en">No active editor found.</source>
+        <target state="new">No active editor found.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++5fa52f38613f411a293ae2794bdd18faa33ed13bc586c60a8bd774832069c82e">
+        <source xml:lang="en">No active editor. Please open a server logic file.</source>
+        <target state="new">No active editor. Please open a server logic file.</target>
+      </trans-unit>
       <trans-unit id="++CODE++1b03558147265e7c9bd70e6a4abe031ef65dbca05e01d94953e58b86ec82c859">
         <source xml:lang="en">No analysis results found.</source>
         <target state="translated">Nenašly se žádné výsledky analýzy.</target>
@@ -1048,7 +1092,7 @@ ID organizace: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++81ecc0ba0812a908a0b4cc9e87e2a562a6346ee0d40becf34d439d5fb723da7f">
         <source xml:lang="en">No sites found in the selected environment.</source>
-        <target state="new">No sites found in the selected environment.</target>
+        <target state="translated">Ve vybraném prostředí se nenašly žádné weby.</target>
       </trans-unit>
       <trans-unit id="++CODE++abb85d7bb3ea846c90ad6348fd3a1154436cdde8f06db3d86711dd6e23cf1e21">
         <source xml:lang="en">No webpages found</source>
@@ -1085,7 +1129,7 @@ ID organizace: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++dcec6893414c96089c3acbe4d12c9d50233cda7a08fcb4b8cae324a9415198a6">
         <source xml:lang="en">Open Report</source>
-        <target state="new">Open Report</target>
+        <target state="translated">Otevřít sestavu</target>
       </trans-unit>
       <trans-unit id="++CODE++f329c8f717c6c20eb60774d8f9227683661d74ebae48207076be60be8796dd5d">
         <source xml:lang="en">Open Results</source>
@@ -1184,6 +1228,10 @@ ID organizace: {3}</target>
         <source xml:lang="en">Please login to preview the site.</source>
         <target state="translated">Před zobrazením náhledu webu se přihlaste.</target>
       </trans-unit>
+      <trans-unit id="++CODE++2e56799726107b8b44bdcad31ef1ce0515cfacc9372b34946a4257af3bcf2919">
+        <source xml:lang="en">Please open a server logic file (.js) from the server-logics folder.</source>
+        <target state="new">Please open a server logic file (.js) from the server-logics folder.</target>
+      </trans-unit>
       <trans-unit id="++CODE++f413d35f48356c6c13c6c9d8947f011221acb3bea7d0ce74eb2f5ed217f26bad">
         <source xml:lang="en">Please select the folder that contains your compiled output to upload your site.</source>
         <target state="translated">Vyberte složku, která obsahuje zkompilovaný výstup, kam chcete nahrát svůj web.</target>
@@ -1197,9 +1245,13 @@ ID organizace: {3}</target>
         <note>{0} represents the environment name</note>
         <target state="translated">Copilot služby Power Pages je nyní připojen k prostředí: {0}: {1}</target>
       </trans-unit>
+      <trans-unit id="++CODE++f519c6aeba20c1a712f6043bf6eb52bf3bb8834f5f1a6c9ea60244dbbb30453c">
+        <source xml:lang="en">Power Pages Server Logic detected! You can now debug your server logic files with breakpoints and IntelliSense.</source>
+        <target state="new">Power Pages Server Logic detected! You can now debug your server logic files with breakpoints and IntelliSense.</target>
+      </trans-unit>
       <trans-unit id="++CODE++db40be71cd139d96719d08f10c843b8bf1c2a0d3d2da06902109a758a98bc9f9">
         <source xml:lang="en">Power Pages Site Comparison Results</source>
-        <target state="new">Power Pages Site Comparison Results</target>
+        <target state="translated">Výsledky porovnání webu Power Pages</target>
       </trans-unit>
       <trans-unit id="++CODE++04ac907168ac84b45263503d1306565bece49c4ae3e8ef4af310b304f03ab6d4">
         <source xml:lang="en">Power Pages site download completed successfully. Would you like to open the downloaded site folder?</source>
@@ -1211,7 +1263,7 @@ ID organizace: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++8ce54044bb9e895666fd98c1b6e497655a4c2a7239b2187599972e9d81bd0f3e">
         <source xml:lang="en">Power Platform Tools VS Code Extension</source>
-        <target state="new">Power Platform Tools VS Code Extension</target>
+        <target state="translated">Rozšíření VS Code nástrojů Power Platform</target>
       </trans-unit>
       <trans-unit id="++CODE++92c355db79b65ac0ec6050657f427d46214ff364079cc646f7d255dec23586f8">
         <source xml:lang="en">Power Platform Tools: PAC CLI</source>
@@ -1262,11 +1314,11 @@ ID organizace: {3}</target>
       <trans-unit id="++CODE++fdc383411e8354c470e19c960527019a9bf48c61c08a5c3ec3fb8b7b32ccba34">
         <source xml:lang="en">Refreshing comparison for {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show download output"))...</source>
         <note>This is a markdown formatting which must persist across translations.</note>
-        <target state="new">Refreshing comparison for {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show download output"))...</target>
+        <target state="translated">Aktualizuje se porovnání pro {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Zobrazit výstup stahování"))…</target>
       </trans-unit>
       <trans-unit id="++CODE++95e154398a4bc0091aa4d6b607472ac5a89e41fbc84a3a49f823314d6de9eebc">
         <source xml:lang="en">Replace</source>
-        <target state="new">Replace</target>
+        <target state="translated">Nahradit</target>
       </trans-unit>
       <trans-unit id="++CODE++b62120c5416487f4c793d75aee7fea083971e5ac665a3f35767023f408f482e5">
         <source xml:lang="en">Response data is empty</source>
@@ -1275,6 +1327,18 @@ ID organizace: {3}</target>
       <trans-unit id="++CODE++b87504a6b179044cf99d39cf641f47aa5e76c4c5b949413ec33953ec35c10ac4">
         <source xml:lang="en">Results opened in SARIF viewer successfully.</source>
         <target state="translated">Výsledky se úspěšně otevřely v prohlížeči SARIF.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++00d60e31a4e6b8344d4201f25a6a7dee770713107f6d097abb01559d32b17f26">
+        <source xml:lang="en">Run</source>
+        <target state="new">Run</target>
+      </trans-unit>
+      <trans-unit id="++CODE++ea703d2310b31c503c3e81398804a049aa6e65f78dbe7014f8f52dae263dadfb">
+        <source xml:lang="en">Run Server Logic</source>
+        <target state="new">Run Server Logic</target>
+      </trans-unit>
+      <trans-unit id="++CODE++80b0001b823cb916650c75c5c08b3bdf9be4951036ec14ee4086b487125d05c8">
+        <source xml:lang="en">Run this server logic file without debugging</source>
+        <target state="new">Run this server logic file without debugging</target>
       </trans-unit>
       <trans-unit id="++CODE++9eb3810da0fd0dbacf4b6f4d7ad58e6e631ab807c0dd404dcb9f03066da8443b">
         <source xml:lang="en">Running CodeQL analysis...</source>
@@ -1294,11 +1358,11 @@ ID organizace: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++3b90c194a93acd61648464bdc410c9e872fc30596445a619618cf9ee51fe82c0">
         <source xml:lang="en">Save HTML Report</source>
-        <target state="new">Save HTML Report</target>
+        <target state="translated">Uložit sestavu HTML</target>
       </trans-unit>
       <trans-unit id="++CODE++915bcbc369a5a2312efe4634e7330f5820896912ea40d6086089e2edfb7f95d7">
         <source xml:lang="en">Save Report</source>
-        <target state="new">Save Report</target>
+        <target state="translated">Uložit sestavu</target>
       </trans-unit>
       <trans-unit id="++CODE++0134bc37f2fdeb11daa9e760ecee0ef9706989b33f77a38daadb8b7aae685749">
         <source xml:lang="en">Saving your file ...</source>
@@ -1323,7 +1387,7 @@ ID organizace: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++84744ab78214e2fc629e2925963080b5ad6c4ab1db6cce278900c3e6403bbc2f">
         <source xml:lang="en">Select a website to compare with</source>
-        <target state="new">Select a website to compare with</target>
+        <target state="translated">Vyberte web, se kterým chcete provést porovnání.</target>
       </trans-unit>
       <trans-unit id="++CODE++87468e6a845b82466220c11dd0ca315a4389dc1cb8e0ee102035bb4ce5cb7e39">
         <source xml:lang="en">Select an environment</source>
@@ -1353,6 +1417,10 @@ ID organizace: {3}</target>
         <source xml:lang="en">Selection is too large. Try making a shorter selection.</source>
         <target state="translated">Výběr je příliš velký. Zkuste vybrat méně položek.</target>
       </trans-unit>
+      <trans-unit id="++CODE++f460c321b3d56be39d9fae8946e759608e6b8f34c0378aaa91e2996b2bd8f2b5">
+        <source xml:lang="en">Server Logic debugging requires an open workspace.</source>
+        <target state="new">Server Logic debugging requires an open workspace.</target>
+      </trans-unit>
       <trans-unit id="++CODE++142027a259879fdd2b6410360a9cd3798f433c2fc5668bb685dd4ff513072e16">
         <source xml:lang="en">Session Details</source>
         <target state="translated">Podrobnosti o relaci</target>
@@ -1380,7 +1448,7 @@ ID organizace: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++b7cc9930c5fbe6d45071fbce87e513399eda01d1be3cdcaa8c5c1426e98e8066">
         <source xml:lang="en">Site Name:</source>
-        <target state="new">Site Name:</target>
+        <target state="translated">Název webu:</target>
       </trans-unit>
       <trans-unit id="++CODE++4fa72d80ab1b04e31f450bacc89bff526a5e52e3d104d153b3b493b108330b3c">
         <source xml:lang="en">Site download cancelled. Authentication is required to proceed.</source>
@@ -1421,7 +1489,7 @@ ID organizace: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++9363df99329b30b2e856758ea1e1f08e117936f1a8116e29f8d64b4bc62f9ab6">
         <source xml:lang="en">Standard Data Model</source>
-        <target state="new">Standard Data Model</target>
+        <target state="translated">Standardní datový model</target>
       </trans-unit>
       <trans-unit id="++CODE++1cb2204ec480119230ac755787106a1550d9329553d146abd56da1947079d577">
         <source xml:lang="en">Starting CodeQL analysis for: {0}</source>
@@ -1493,7 +1561,7 @@ ID organizace: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++6f309003581fafdd78e247cd0fe8b4b7f57ed89a60325b01e6725e8c078f23de">
         <source xml:lang="en">The website you selected is different from the local site. Are you sure you want to compare with this website?</source>
-        <target state="new">The website you selected is different from the local site. Are you sure you want to compare with this website?</target>
+        <target state="translated">Vybraný web se liší od místního webu. Jste si jisti, že chcete provést porovnání s tímto webem?</target>
       </trans-unit>
       <trans-unit id="++CODE++18f3be2933741b96e56b1e1f70818fcba46ec9c5b3dcd0e28d801eab15791d84">
         <source xml:lang="en">There was a permissions problem with the server</source>
@@ -1509,7 +1577,7 @@ ID organizace: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++bcfc420c0358eb6f248fa6328797cfa38fa121baea6320a623280a0d34eeee75">
         <source xml:lang="en">This file was exported with a newer version of the extension. Please update your extension to import this file.</source>
-        <target state="new">This file was exported with a newer version of the extension. Please update your extension to import this file.</target>
+        <target state="translated">Tento soubor se exportoval s novější verzí rozšíření. Pokud chcete importovat tento soubor, aktualizujte prosím rozšíření.</target>
       </trans-unit>
       <trans-unit id="++CODE++75670337a398f9840d2951dbc6746497caec6da9dd506ecff57ef79d59c6280f">
         <source xml:lang="en">Thumbs Down</source>
@@ -1534,7 +1602,7 @@ ID organizace: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++9ffd094afb84d3a84bbf1b4ec8210ba5344169e9b2726ce366ccf3e231b7e9b7">
         <source xml:lang="en">Total Changes</source>
-        <target state="new">Total Changes</target>
+        <target state="translated">Celkový počet změn</target>
       </trans-unit>
       <trans-unit id="++CODE++4a7c431a6572c68bba17c3a5d858adbf5112462574953baf4d7d2fd0619807fe">
         <source xml:lang="en">Try @powerpages with GitHub Copilot</source>
@@ -1570,19 +1638,19 @@ ID organizace: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++f9a23abc4576c688d711c764a407284b25ce2966126f30d987dc1afaea7b9603">
         <source xml:lang="en">Unable to read file contents</source>
-        <target state="new">Unable to read file contents</target>
+        <target state="translated">Nelze přečíst obsah souboru.</target>
       </trans-unit>
       <trans-unit id="++CODE++36009f87dbdc8f4572776ef202667a9a1b4efe72a00c620b0adac0de2e0fbece">
         <source xml:lang="en">Unable to read local file</source>
-        <target state="new">Unable to read local file</target>
+        <target state="translated">Místní soubor se nedá přečíst.</target>
       </trans-unit>
       <trans-unit id="++CODE++e7120fe32babf1b3300650ac52f6cd3e9853405cd3cd836c798ff8be909bab88">
         <source xml:lang="en">Unable to read one or both files</source>
-        <target state="new">Unable to read one or both files</target>
+        <target state="translated">Nelze přečíst jeden nebo oba soubory.</target>
       </trans-unit>
       <trans-unit id="++CODE++4c21988362b9693a86433c1ba0c1837d2196594dd38ae3dd1e8b5af0df712f5c">
         <source xml:lang="en">Unable to read remote file</source>
-        <target state="new">Unable to read remote file</target>
+        <target state="translated">Vzdálený soubor se nedá přečíst.</target>
       </trans-unit>
       <trans-unit id="++CODE++b6038584b7b1f565be9c9d3f0ac11be70bd2e69e072ead52884ca7338a14ee67">
         <source xml:lang="en">Unique name: {0}</source>
@@ -1591,7 +1659,7 @@ ID organizace: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++b764cdc0eab7137467211272fa539f1260d1bf2e71bcf6ff3bdc960f5c16aa14">
         <source xml:lang="en">Unknown</source>
-        <target state="new">Unknown</target>
+        <target state="translated">Neznámý</target>
       </trans-unit>
       <trans-unit id="++CODE++4b8d64fae5d1cbf5f7324782e9b5c430db7c218771e84b0b402a9a4d0ec4bf05">
         <source xml:lang="en">Unmanaged</source>
@@ -1599,7 +1667,7 @@ ID organizace: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++6af7f93689dd7163536bf6cd39d6c0c70f321dff3d5e661b144b3667f9526977">
         <source xml:lang="en">Unsupported version. This file was created with a newer version of the extension.</source>
-        <target state="new">Unsupported version. This file was created with a newer version of the extension.</target>
+        <target state="translated">Nepodporovaná verze. Tento soubor se vytvořil s novější verzí rozšíření.</target>
       </trans-unit>
       <trans-unit id="++CODE++810c2285d6b0fa110f868e006118426e02a150592009b5f2458e2883d8dcd3c8">
         <source xml:lang="en">Update Extension</source>
@@ -1726,7 +1794,7 @@ ID organizace: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++229b025b2c8158fda1948dc79cdd581547f97bbdbc239f9d89b056e48a397591">
         <source xml:lang="en">Yes, Don't Ask Again</source>
-        <target state="new">Yes, Don't Ask Again</target>
+        <target state="translated">Ano, znovu se neptat</target>
       </trans-unit>
       <trans-unit id="++CODE++5f1325c0fc2f8e2e8732d6545bcc100f0e7e0d8ea1740b2d519fc83c43ae1fc2">
         <source xml:lang="en">You are currently connected to a different environment. Would you like to switch to the required environment?</source>
@@ -1770,7 +1838,7 @@ ID organizace: {3}</target>
       <trans-unit id="++CODE++dcbed1e6ea38a3f7f5e64925ed3898dc74721389792c65218b5216538214e3b7">
         <source xml:lang="en">{0} ({1}) ↔ {2} (Local)</source>
         <note>Comparison label showing remote and local sites. Format: 'Remote (Env) ↔ Local (Local)'.</note>
-        <target state="new">{0} ({1}) ↔ {2} (Local)</target>
+        <target state="translated">{0} ({1}) ↔ {2} (místní)</target>
       </trans-unit>
       <trans-unit id="++CODE++7ec0c807a987e15ebf5bcf7dab23b8fea20b59ed72cae0172465ad0fdd200882">
         <source xml:lang="en">{0} binary file(s) (e.g., images) were skipped as they cannot be displayed in the diff viewer. You can view them individually in the file tree.</source>
@@ -1785,12 +1853,12 @@ ID organizace: {3}</target>
       <trans-unit id="++CODE++d1873d011f27513d3bc27f9a9da5c28141a066578e847d1120ddef316f638ef4">
         <source xml:lang="en">{0} files changed</source>
         <note>Description showing the number of changed files. 'files' is plural.</note>
-        <target state="new">{0} files changed</target>
+        <target state="translated">Počet změněných souborů: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++75a1e748520c8974a0ff5bf44b9d3a54c618fc7422b40e41465de59d8049331d">
         <source xml:lang="en">{0} files changed (Imported {1})</source>
         <note>Description for imported comparison. {0} is file count, {1} is formatted date.</note>
-        <target state="new">{0} files changed (Imported {1})</target>
+        <target state="translated">Počet změněných souborů: {0} (importováno dne {1})</target>
       </trans-unit>
       <trans-unit id="++CODE++21471e6993c28688e252bf884db38022cef15af0126d3d7f68c5e4a6c4dfd9d3">
         <source xml:lang="en">{0}: {1} (Remote ↔ Local)</source>
@@ -1909,7 +1977,7 @@ Další informace najdete v článku [Prevence náhodného přepsání](command:
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.generateHtmlReport.title">
         <source xml:lang="en">Download HTML Report</source>
-        <target state="new">Download HTML Report</target>
+        <target state="translated">Stažení sestavy HTML</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite.title">
         <source xml:lang="en">Download Site</source>
@@ -1929,7 +1997,7 @@ Další informace najdete v článku [Prevence náhodného přepsání](command:
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.export.title">
         <source xml:lang="en">Export Comparison</source>
-        <target state="new">Export Comparison</target>
+        <target state="translated">Exportování porovnání</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.title">
         <source xml:lang="en">File explorer</source>
@@ -1956,7 +2024,7 @@ The eighth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.import.title">
         <source xml:lang="en">Import Comparison</source>
-        <target state="new">Import Comparison</target>
+        <target state="translated">Importování porovnání</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.init.title">
         <source xml:lang="en">Initialize Web Extension</source>
@@ -2090,7 +2158,7 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.resync.title">
         <source xml:lang="en">Refresh Comparison</source>
-        <target state="new">Refresh Comparison</target>
+        <target state="translated">Aktualizace porovnání</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.removeSite.title">
         <source xml:lang="en">Remove Comparison</source>
@@ -2146,7 +2214,7 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.configuration.confirmDifferentWebsiteComparison.description">
         <source xml:lang="en">Show a confirmation dialog when comparing with a different website than the local site. Set to false to suppress this confirmation.</source>
-        <target state="new">Show a confirmation dialog when comparing with a different website than the local site. Set to false to suppress this confirmation.</target>
+        <target state="translated">Umožňuje zobrazit potvrzovací dialog při porovnávání s jiným než místním webem. Pokud chcete toto potvrzení potlačit, nastavte hodnotu false.</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.siteDetails.title">
         <source xml:lang="en">Site Details</source>
