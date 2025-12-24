@@ -607,6 +607,10 @@ export const Constants = {
         ACTIONS_HUB_METADATA_DIFF_RESYNC_COMPLETED: "ActionsHubMetadataDiffResyncCompleted",
         ACTIONS_HUB_METADATA_DIFF_RESYNC_FAILED: "ActionsHubMetadataDiffResyncFailed",
         ACTIONS_HUB_METADATA_DIFF_RESYNC_NO_DIFFERENCES: "ActionsHubMetadataDiffResyncNoDifferences",
+        ACTIONS_HUB_PRE_AUTH_STARTED: "ActionsHubPreAuthStarted",
+        ACTIONS_HUB_PRE_AUTH_COMPLETED: "ActionsHubPreAuthCompleted",
+        ACTIONS_HUB_PRE_AUTH_FAILED: "ActionsHubPreAuthFailed",
+        ACTIONS_HUB_PRE_AUTH_SKIPPED: "ActionsHubPreAuthSkipped",
     },
     StudioEndpoints: {
         TEST: "https://make.test.powerpages.microsoft.com",
