@@ -13,7 +13,7 @@ import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
 import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, COPILOT_NOT_RELEASED_MSG, DISCLAIMER_MESSAGE, INVALID_RESPONSE, LOGIN_BTN_CMD, LOGIN_BTN_TITLE, LOGIN_BTN_TOOLTIP, NO_PROMPT_MESSAGE, PAC_AUTH_INPUT, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, POWERPAGES_COMMANDS, RESPONSE_AWAITED_MSG, RESPONSE_SCENARIOS, SKIP_CODES, STATER_PROMPTS, WELCOME_MESSAGE, WELCOME_PROMPT } from './PowerPagesChatParticipantConstants';
 import { ORG_DETAILS_KEY, handleOrgChangeSuccess, initializeOrgDetails } from '../../utilities/OrgHandlerUtils';
 import { createAndReferenceLocation, getComponentInfo, getEndpoint, provideChatParticipantFollowups, handleChatParticipantFeedback, createErrorResult, createSuccessResult, removeChatVariables, registerButtonCommands } from './PowerPagesChatParticipantUtils';
-import { checkCopilotAvailability, fetchRelatedFiles, getActiveEditorContent } from '../../utilities/Utils';
+import { checkCopilotAvailability, fetchRelatedFiles, getActiveEditorContent, validateAndSanitizeUserInput } from '../../utilities/Utils';
 import { IIntelligenceAPIEndpointInformation } from '../../services/Interfaces';
 import { v4 as uuidv4 } from 'uuid';
 import { orgChangeErrorEvent, orgChangeEvent } from '../../../client/OrgChangeNotifier';
@@ -115,10 +115,10 @@ export class PowerPagesChatParticipant {
                 stream.markdown(COPILOT_NOT_RELEASED_MSG);
                 oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NOT_AVAILABLE_ECS, { sessionId: this.powerPagesAgentSessionId, orgID: this.orgID });
                 return createSuccessResult('', RESPONSE_SCENARIOS.COPILOT_NOT_RELEASED, this.orgID);
-            }            const intelligenceApiAuthResponse = await intelligenceAPIAuthentication(this.powerPagesAgentSessionId, this.orgID, true);
+            } const intelligenceApiAuthResponse = await intelligenceAPIAuthentication(this.powerPagesAgentSessionId, this.orgID, true);
 
             if (!intelligenceApiAuthResponse || !intelligenceApiAuthResponse.accessToken || intelligenceApiAuthResponse.accessToken === '') {
-                
+
                 stream.button({
                     command: LOGIN_BTN_CMD,
                     title: LOGIN_BTN_TITLE,
@@ -152,6 +152,12 @@ export class PowerPagesChatParticipant {
 
             userPrompt = removeChatVariables(userPrompt);
 
+            // Validate and sanitize user input
+            const sanitizedPrompt = validateAndSanitizeUserInput(userPrompt);
+            if (sanitizedPrompt !== null) {
+                userPrompt = sanitizedPrompt;
+            }
+
             oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SUCCESSFUL_PROMPT, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
 
             if (userPrompt === WELCOME_PROMPT) {
@@ -168,7 +174,7 @@ export class PowerPagesChatParticipant {
             const location = activeFileUri ? createAndReferenceLocation(activeFileUri, startLine, endLine) : undefined;
 
             if (request.command) {
-                oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_COMMAND_TRIGGERED, {  commandName: request.command, sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+                oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_COMMAND_TRIGGERED, { commandName: request.command, sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
 
                 const command = commandRegistry.get(request.command);
 

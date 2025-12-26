@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ADX_ENTITYFORM, ADX_ENTITYLIST, AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_IN_POWERPAGES, COPILOT_UNAVAILABLE, CopilotStylePathSegments, EXPLAIN_CODE, GITHUB_COPILOT_CHAT_EXT, PowerPagesParticipantDocLink, PowerPagesParticipantPrompt, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, THUMBS_DOWN, THUMBS_UP, WebViewMessage, sendIconSvg } from "./constants";
 import { IOrgInfo } from './model';
-import { checkCopilotAvailability, escapeDollarSign, getActiveEditorContent, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../utilities/Utils";
+import { checkCopilotAvailability, escapeDollarSign, getActiveEditorContent, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification, validateAndSanitizeUserInput } from "../utilities/Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { ActiveOrgOutput } from "../../client/pac/PacTypes";
 import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotExplainCode, CopilotExplainCodeSize, CopilotNotAvailableECSConfig, CopilotPanelTryGitHubCopilotClicked, VSCodeExtensionGitHubChatPanelOpened, VSCodeExtensionGitHubChatNotFound } from "./telemetry/telemetryConstants";
@@ -91,7 +91,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 const withinTokenLimit = isWithinTokenLimit(selectedCode, 1000);
                 if (commandType === EXPLAIN_CODE) {
                     const tokenSize = encode(selectedCode).length;
-                    sendTelemetryEvent({ eventName: CopilotExplainCodeSize, copilotSessionId: sessionID, orgId: orgID, userId: userID,  codeLineCount: String(selectedCodeLineRange.end - selectedCodeLineRange.start), tokenSize: String(tokenSize) });
+                    sendTelemetryEvent({ eventName: CopilotExplainCodeSize, copilotSessionId: sessionID, orgId: orgID, userId: userID, codeLineCount: String(selectedCodeLineRange.end - selectedCodeLineRange.start), tokenSize: String(tokenSize) });
                     if (withinTokenLimit === false) {
                         return;
                     }
@@ -236,10 +236,26 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     break;
                 }
                 case "newUserPrompt": {
+                    // Validate and sanitize user input
+                    const userPrompts = data.value.userPrompt as UserPrompt[];
+                    if (!userPrompts || userPrompts.length === 0) {
+                        this.sendMessageToWebview({ type: 'enableInput' });
+                        break;
+                    }
+
+                    const sanitizedDisplayText = validateAndSanitizeUserInput(userPrompts[0]?.displayText);
+                    if (sanitizedDisplayText === null) {
+                        this.sendMessageToWebview({ type: 'enableInput' });
+                        break;
+                    }
+
+                    // Update with sanitized text
+                    userPrompts[0].displayText = sanitizedDisplayText;
+
                     sendTelemetryEvent({ eventName: CopilotUserPromptedEvent, copilotSessionId: sessionID, aibEndpoint: this.aibEndpoint ?? '', orgId: orgID, userId: userID, isSuggestedPrompt: String(data.value.isSuggestedPrompt), crossGeoDataMovementEnabledPPACFlag: this.crossGeoDataMovementEnabledPPACFlag }); //TODO: Add active Editor info
                     orgID
                         ? (async () => {
-                            await this.authenticateAndSendAPIRequest(data.value.userPrompt, orgID);
+                            await this.authenticateAndSendAPIRequest(userPrompts, orgID);
                         })()
                         : (() => {
                             this.sendMessageToWebview({ type: 'apiResponse', value: AuthProfileNotFound });
@@ -369,10 +385,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     private async authenticateAndSendAPIRequest(data: UserPrompt[], orgID: string) {
         return intelligenceAPIAuthentication(sessionID, orgID)
             .then(async ({ accessToken, user, userId }) => {
-                if(accessToken === '') {
-                   await authenticateUserInVSCode();
-                   await this.checkAuthentication();
-                } else{
+                if (accessToken === '') {
+                    await authenticateUserInVSCode();
+                    await this.checkAuthentication();
+                } else {
                     intelligenceApiToken = accessToken;
                     userName = getUserName(user);
                     userID = userId;
