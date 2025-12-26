@@ -6,7 +6,8 @@
 import * as vscode from "vscode";
 import { npsAuthentication } from "../../services/AuthenticationProvider";
 import fetch from "node-fetch";
-import { getNonce, validateAndSanitizeUserInput } from "../../utilities/Utils";
+import { getNonce } from "../../utilities/Utils";
+import { validateAndSanitizeUserInput } from "../../utilities/InputValidator";
 import { CopilotNpsAuthenticationCompleted, CopilotUserFeedbackFailureEvent, CopilotUserFeedbackSuccessEvent } from "../telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "../telemetry/copilotTelemetry";
 import { IFeedbackData } from "../model";

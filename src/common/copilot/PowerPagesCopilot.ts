@@ -11,7 +11,8 @@ import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ADX_ENTITYFORM, ADX_ENTITYLIST, AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_IN_POWERPAGES, COPILOT_UNAVAILABLE, CopilotStylePathSegments, EXPLAIN_CODE, GITHUB_COPILOT_CHAT_EXT, PowerPagesParticipantDocLink, PowerPagesParticipantPrompt, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, THUMBS_DOWN, THUMBS_UP, WebViewMessage, sendIconSvg } from "./constants";
 import { IOrgInfo } from './model';
-import { checkCopilotAvailability, escapeDollarSign, getActiveEditorContent, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification, validateAndSanitizeUserInput } from "../utilities/Utils";
+import { checkCopilotAvailability, escapeDollarSign, getActiveEditorContent, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../utilities/Utils";
+import { validateAndSanitizeUserInput } from "../utilities/InputValidator";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { ActiveOrgOutput } from "../../client/pac/PacTypes";
 import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotExplainCode, CopilotExplainCodeSize, CopilotNotAvailableECSConfig, CopilotPanelTryGitHubCopilotClicked, VSCodeExtensionGitHubChatPanelOpened, VSCodeExtensionGitHubChatNotFound } from "./telemetry/telemetryConstants";
