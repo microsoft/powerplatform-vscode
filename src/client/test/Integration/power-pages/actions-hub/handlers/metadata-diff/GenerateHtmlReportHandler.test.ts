@@ -6,7 +6,7 @@
 import * as vscode from "vscode";
 import { expect } from "chai";
 import sinon from "sinon";
-import { generateHtmlReport } from "../../../../../../power-pages/actions-hub/handlers/metadata-diff/GenerateHtmlReportHandler";
+import { generateHtmlReport, getComponentTypeFromPath, getComponentTypeDisplayName } from "../../../../../../power-pages/actions-hub/handlers/metadata-diff/GenerateHtmlReportHandler";
 import { MetadataDiffSiteTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/metadata-diff/MetadataDiffSiteTreeItem";
 import { FileComparisonStatus, IFileComparisonResult, ISiteComparisonResults } from "../../../../../../power-pages/actions-hub/models/IFileComparisonResult";
 import { SiteVisibility } from "../../../../../../power-pages/actions-hub/models/SiteVisibility";
@@ -211,6 +211,97 @@ describe("GenerateHtmlReportHandler", () => {
 
             const traceErrorStub = TelemetryHelper.traceError as sinon.SinonStub;
             expect(traceErrorStub.called).to.be.false;
+        });
+    });
+
+    describe("getComponentTypeFromPath", () => {
+        it("should return web-pages for paths starting with web-pages", () => {
+            expect(getComponentTypeFromPath("web-pages/home/home.html")).to.equal("web-pages");
+            expect(getComponentTypeFromPath("web-pages/about/about.copy.html")).to.equal("web-pages");
+        });
+
+        it("should return content-snippets for paths starting with content-snippets", () => {
+            expect(getComponentTypeFromPath("content-snippets/header/header.html")).to.equal("content-snippets");
+        });
+
+        it("should return web-files for paths starting with web-files", () => {
+            expect(getComponentTypeFromPath("web-files/images/logo.png")).to.equal("web-files");
+        });
+
+        it("should return site-settings for paths starting with site-settings", () => {
+            expect(getComponentTypeFromPath("site-settings/setting.yml")).to.equal("site-settings");
+        });
+
+        it("should return lists for paths starting with lists", () => {
+            expect(getComponentTypeFromPath("lists/contacts/contacts.yml")).to.equal("lists");
+        });
+
+        it("should return weblink-sets for paths starting with weblink-sets", () => {
+            expect(getComponentTypeFromPath("weblink-sets/main-nav/main-nav.yml")).to.equal("weblink-sets");
+        });
+
+        it("should return basic-forms for paths starting with basic-forms", () => {
+            expect(getComponentTypeFromPath("basic-forms/contact-form/contact-form.yml")).to.equal("basic-forms");
+        });
+
+        it("should return advanced-forms for paths starting with advanced-forms", () => {
+            expect(getComponentTypeFromPath("advanced-forms/wizard/wizard.yml")).to.equal("advanced-forms");
+        });
+
+        it("should return table-permissions for paths starting with table-permissions", () => {
+            expect(getComponentTypeFromPath("table-permissions/accounts/accounts.yml")).to.equal("table-permissions");
+        });
+
+        it("should return others for unknown folder types", () => {
+            expect(getComponentTypeFromPath("unknown-folder/file.html")).to.equal("others");
+            expect(getComponentTypeFromPath("file.html")).to.equal("others");
+        });
+
+        it("should handle Windows-style path separators", () => {
+            expect(getComponentTypeFromPath("web-pages\\home\\home.html")).to.equal("web-pages");
+            expect(getComponentTypeFromPath("content-snippets\\header\\header.html")).to.equal("content-snippets");
+        });
+    });
+
+    describe("getComponentTypeDisplayName", () => {
+        it("should return Site Languages for website-languages", () => {
+            expect(getComponentTypeDisplayName("website-languages")).to.equal("Site Languages");
+        });
+
+        it("should return Web Pages for web-pages", () => {
+            expect(getComponentTypeDisplayName("web-pages")).to.equal("Web Pages");
+        });
+
+        it("should return Content Snippets for content-snippets", () => {
+            expect(getComponentTypeDisplayName("content-snippets")).to.equal("Content Snippets");
+        });
+
+        it("should return Web Files for web-files", () => {
+            expect(getComponentTypeDisplayName("web-files")).to.equal("Web Files");
+        });
+
+        it("should return Site Settings for site-settings", () => {
+            expect(getComponentTypeDisplayName("site-settings")).to.equal("Site Settings");
+        });
+
+        it("should return Web Links for weblink-sets", () => {
+            expect(getComponentTypeDisplayName("weblink-sets")).to.equal("Web Links");
+        });
+
+        it("should return Permissions for table-permissions", () => {
+            expect(getComponentTypeDisplayName("table-permissions")).to.equal("Permissions");
+        });
+
+        it("should return Lists for lists", () => {
+            expect(getComponentTypeDisplayName("lists")).to.equal("Lists");
+        });
+
+        it("should return Others for others", () => {
+            expect(getComponentTypeDisplayName("others")).to.equal("Others");
+        });
+
+        it("should return the input for unknown component types", () => {
+            expect(getComponentTypeDisplayName("unknown-type")).to.equal("unknown-type");
         });
     });
 });

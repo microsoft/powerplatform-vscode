@@ -280,8 +280,9 @@ const componentTypeOrder: string[] = [
 
 /**
  * Gets the component type from a file's relative path
+ * @internal Exported for testing
  */
-function getComponentTypeFromPath(relativePath: string): string {
+export function getComponentTypeFromPath(relativePath: string): string {
     // Normalize path separators
     const normalizedPath = relativePath.replace(/\\/g, "/");
     const firstFolder = normalizedPath.split("/")[0];
@@ -296,8 +297,9 @@ function getComponentTypeFromPath(relativePath: string): string {
 
 /**
  * Gets the display name for a component type
+ * @internal Exported for testing
  */
-function getComponentTypeDisplayName(componentType: string): string {
+export function getComponentTypeDisplayName(componentType: string): string {
     return componentTypeDisplayNames[componentType] || componentType;
 }
 
@@ -538,26 +540,46 @@ function generateHtmlContent(
     // Generate "All" tab content first
     const allFileRows = generateFileRowsForGroup(sortedFileContents, "all");
 
-    // Generate tabs HTML - "All" tab first, then component type tabs
+    // Generate tabs HTML - "All" tab first, then all component type tabs (even empty ones)
     const allTabButton = `<button class="tab-button active" onclick="switchTab('all')" data-tab="all">${escapeHtml(Constants.Strings.HTML_REPORT_TAB_ALL)} (${sortedFileContents.length})</button>`;
 
-    const componentTabButtons = Array.from(componentGroups.entries())
-        .map(([key, files]) => {
+    // Generate tabs for ALL component types, not just ones with files
+    const componentTabButtons = componentTypeOrder
+        .filter(key => key !== "others") // Handle "others" separately if it has files
+        .map(key => {
+            const files = componentGroups.get(key) || [];
             const displayName = getComponentTypeDisplayName(key);
-            return `<button class="tab-button" onclick="switchTab('${escapeHtml(key)}')" data-tab="${escapeHtml(key)}">${escapeHtml(displayName)} (${files.length})</button>`;
+            const count = files.length;
+            const disabledClass = count === 0 ? " disabled" : "";
+            const onclickAttr = count === 0 ? "" : `onclick="switchTab('${escapeHtml(key)}')"`;
+            return `<button class="tab-button${disabledClass}" ${onclickAttr} data-tab="${escapeHtml(key)}">${escapeHtml(displayName)} (${count})</button>`;
         }).join("");
 
-    const tabButtons = allTabButton + componentTabButtons;
+    // Add "Others" tab only if there are files in it
+    const othersFiles = componentGroups.get("others") || [];
+    const othersTabButton = othersFiles.length > 0
+        ? `<button class="tab-button" onclick="switchTab('others')" data-tab="others">${escapeHtml(getComponentTypeDisplayName("others"))} (${othersFiles.length})</button>`
+        : "";
+
+    const tabButtons = allTabButton + componentTabButtons + othersTabButton;
 
     const allTabContent = `<div class="tab-content active" id="tab-all">${allFileRows}</div>`;
 
-    const componentTabContents = Array.from(componentGroups.entries())
-        .map(([key, files]) => {
+    // Generate tab content for ALL component types (even empty ones for consistency)
+    const componentTabContents = componentTypeOrder
+        .filter(key => key !== "others")
+        .map(key => {
+            const files = componentGroups.get(key) || [];
             const fileRows = generateFileRowsForGroup(files, key);
             return `<div class="tab-content" id="tab-${escapeHtml(key)}">${fileRows}</div>`;
         }).join("");
 
-    const tabContents = allTabContent + componentTabContents;
+    // Add "Others" tab content only if there are files in it
+    const othersTabContent = othersFiles.length > 0
+        ? `<div class="tab-content" id="tab-others">${generateFileRowsForGroup(othersFiles, "others")}</div>`
+        : "";
+
+    const tabContents = allTabContent + componentTabContents + othersTabContent;
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -985,6 +1007,17 @@ function generateHtmlContent(
             background-color: var(--card-background);
         }
 
+        .tab-button.disabled {
+            color: var(--text-secondary);
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        .tab-button.disabled:hover {
+            color: var(--text-secondary);
+            background-color: transparent;
+        }
+
         .tab-content {
             display: none;
         }
@@ -1016,19 +1049,15 @@ function generateHtmlContent(
         }
 
         function expandAll() {
-            const activeTab = document.querySelector('.tab-content.active');
-            if (activeTab) {
-                activeTab.querySelectorAll('.diff-container').forEach(el => el.style.display = 'block');
-                activeTab.querySelectorAll('.toggle-icon').forEach(el => el.classList.add('expanded'));
-            }
+            // Expand all diffs across all tabs
+            document.querySelectorAll('.diff-container').forEach(el => el.style.display = 'block');
+            document.querySelectorAll('.toggle-icon').forEach(el => el.classList.add('expanded'));
         }
 
         function collapseAll() {
-            const activeTab = document.querySelector('.tab-content.active');
-            if (activeTab) {
-                activeTab.querySelectorAll('.diff-container').forEach(el => el.style.display = 'none');
-                activeTab.querySelectorAll('.toggle-icon').forEach(el => el.classList.remove('expanded'));
-            }
+            // Collapse all diffs across all tabs
+            document.querySelectorAll('.diff-container').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.toggle-icon').forEach(el => el.classList.remove('expanded'));
         }
 
         function switchTab(tabId) {
