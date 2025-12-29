@@ -68,6 +68,9 @@
       <source xml:lang="en">Adding {0} web file(s). Existing files will be skipped</source>
       <note>{0} represents the number of web files</note>
     </trans-unit>
+    <trans-unit id="++CODE++a52ace420f2175d08b1577a1bea5445e36801229c074ef9ed6c55a73401fd9c2">
+      <source xml:lang="en">All</source>
+    </trans-unit>
     <trans-unit id="++CODE++8890e663481705393ed3b1b4642095a11329e21320824ed567e383a12ea888f4">
       <source xml:lang="en">All changed files are binary files (e.g., images) and cannot be displayed in the diff viewer. You can view them individually in the file tree.</source>
     </trans-unit>
@@ -307,6 +310,9 @@ Check the CodeQL extension panel for available queries.</source>
     <trans-unit id="++CODE++92a450b51c228fc0a45836a3cb66a77276511e8b1a48e237c97f27576695288d">
       <source xml:lang="en">Could not locate CodeQL CLI in global storage.</source>
     </trans-unit>
+    <trans-unit id="++CODE++217ec8ef23f31be4473af7c3e69f7965308bd2284d53eba7daf17b791db5fc74">
+      <source xml:lang="en">Created On:</source>
+    </trans-unit>
     <trans-unit id="++CODE++47234b3978427950c2a4ef0161f6dc8484b7faf44b21d30616d5d019eebaafd8">
       <source xml:lang="en">Created PowerPages config file at {0} with default query suite: {1}</source>
     </trans-unit>
@@ -321,6 +327,9 @@ Check the CodeQL extension panel for available queries.</source>
       <source xml:lang="en">Creating {0}...</source>
       <note>{0} will be replaced by the entity type.</note>
     </trans-unit>
+    <trans-unit id="++CODE++dc15ecabf1e2c1c145b8ccbc7ef53c0e9b2a90f18414ba9887c2ae9aaa6575cd">
+      <source xml:lang="en">Creator:</source>
+    </trans-unit>
     <trans-unit id="++CODE++ec8fd606d46114985d2f628dc67992093b8abb32489b3cbbfbb86bba96925943">
       <source xml:lang="en">Creator: {0}</source>
       <note>{0} is the creator</note>
@@ -333,6 +342,9 @@ Check the CodeQL extension panel for available queries.</source>
     </trans-unit>
     <trans-unit id="++CODE++52587c2a224d685113316dc5961aec7749a46dded161bfe07c40b715ca61db29">
       <source xml:lang="en">Current site path not found. Please ensure you have a site folder open.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++ec1f0e40eb1d8b21b1c3e73679727c461ad9922cea5648859e5446ded7f9c97f">
+      <source xml:lang="en">Data Model:</source>
     </trans-unit>
     <trans-unit id="++CODE++e159063579c9e875ce444b930e8feb5d4fc1a93af6acb47d7a5cf9d5c5241153">
       <source xml:lang="en">Data model version: {0}</source>
@@ -806,6 +818,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++80266a1ea7e6671d65c98a0624c254f5b9acfacddd05d69524b7f034eeba3268">
       <source xml:lang="en">No environments found</source>
     </trans-unit>
+    <trans-unit id="++CODE++5f22b9670e54200b4ccdea959012a4670d9346315793eefd80e4290571492262">
+      <source xml:lang="en">No files in this category</source>
+    </trans-unit>
     <trans-unit id="++CODE++e75c23acb3f88e840f326048df92fcfd3350ec3b775a5c51e6ff6754f0f9f7a1">
       <source xml:lang="en">No issues found!</source>
     </trans-unit>
@@ -1093,6 +1108,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++b7cc9930c5fbe6d45071fbce87e513399eda01d1be3cdcaa8c5c1426e98e8066">
       <source xml:lang="en">Site Name:</source>
     </trans-unit>
+    <trans-unit id="++CODE++4b7de12dbef5cc145cf5b8b08743a60d279d6ee27b8b13470e5f06bc21153867">
+      <source xml:lang="en">Site Visibility:</source>
+    </trans-unit>
     <trans-unit id="++CODE++4fa72d80ab1b04e31f450bacc89bff526a5e52e3d104d153b3b493b108330b3c">
       <source xml:lang="en">Site download cancelled. Authentication is required to proceed.</source>
     </trans-unit>
@@ -1320,9 +1338,15 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++a70c63db9e2d7ceb9f17f00065db00262718561d9330fbef203aba4acbf57d7b">
       <source xml:lang="en">Website ID not found. Please ensure you have a valid Power Pages site open.</source>
     </trans-unit>
+    <trans-unit id="++CODE++f61a5b01e081338759cfc22a2b8afcc35ab7a22a36585efe93fc1ac2a5afe124">
+      <source xml:lang="en">Website ID:</source>
+    </trans-unit>
     <trans-unit id="++CODE++d3eaa7bf5377b15781ad4c0f43e4da94b9a2bd485ddbbbe62a2c3d53c5c7fe4a">
       <source xml:lang="en">Website Id: {0}</source>
       <note>{0} is the website ID</note>
+    </trans-unit>
+    <trans-unit id="++CODE++337c1eee64c216207c0df5634e89e0f1216a96d5430e57344a797452d8627757">
+      <source xml:lang="en">Website URL:</source>
     </trans-unit>
     <trans-unit id="++CODE++4f5909ac007d8a897ec18ede71cdf8f6b4af3bbe78bae2f13871d50a3cebb3f6">
       <source xml:lang="en">Website Url: {0}</source>

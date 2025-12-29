@@ -163,9 +163,9 @@ describe("GenerateHtmlReportHandler", () => {
 
         it("should include correct file count in telemetry for multiple files", async () => {
             const mockResults: IFileComparisonResult[] = [
-                { localPath: "/local/file1.html", remotePath: "/remote/file1.html", relativePath: "file1.html", status: FileComparisonStatus.MODIFIED },
-                { localPath: "/local/file2.html", remotePath: "/remote/file2.html", relativePath: "file2.html", status: FileComparisonStatus.ADDED },
-                { localPath: "/local/file3.html", remotePath: "/remote/file3.html", relativePath: "file3.html", status: FileComparisonStatus.DELETED }
+                { localPath: "/local/web-pages/home/home.html", remotePath: "/remote/web-pages/home/home.html", relativePath: "web-pages/home/home.html", status: FileComparisonStatus.MODIFIED },
+                { localPath: "/local/content-snippets/header/header.html", remotePath: "/remote/content-snippets/header/header.html", relativePath: "content-snippets/header/header.html", status: FileComparisonStatus.ADDED },
+                { localPath: "/local/web-files/logo.png", remotePath: "/remote/web-files/logo.png", relativePath: "web-files/logo.png", status: FileComparisonStatus.DELETED }
             ];
             const treeItem = createMockTreeItem(mockResults);
 
@@ -176,6 +176,26 @@ describe("GenerateHtmlReportHandler", () => {
             const traceInfoStub = TelemetryHelper.traceInfo as sinon.SinonStub;
             expect(traceInfoStub.firstCall.args[1]).to.deep.include({
                 fileCount: 3
+            });
+        });
+
+        it("should include correct file count in telemetry for files grouped by component type", async () => {
+            const mockResults: IFileComparisonResult[] = [
+                { localPath: "/local/web-pages/home/home.html", remotePath: "/remote/web-pages/home/home.html", relativePath: "web-pages/home/home.html", status: FileComparisonStatus.MODIFIED },
+                { localPath: "/local/web-pages/about/about.html", remotePath: "/remote/web-pages/about/about.html", relativePath: "web-pages/about/about.html", status: FileComparisonStatus.MODIFIED },
+                { localPath: "/local/content-snippets/header/header.html", remotePath: "/remote/content-snippets/header/header.html", relativePath: "content-snippets/header/header.html", status: FileComparisonStatus.ADDED },
+                { localPath: "/local/site-settings/setting.yml", remotePath: "/remote/site-settings/setting.yml", relativePath: "site-settings/setting.yml", status: FileComparisonStatus.DELETED },
+                { localPath: "/local/lists/contacts/contacts.yml", remotePath: "/remote/lists/contacts/contacts.yml", relativePath: "lists/contacts/contacts.yml", status: FileComparisonStatus.MODIFIED }
+            ];
+            const treeItem = createMockTreeItem(mockResults);
+
+            showSaveDialogStub.resolves(undefined);
+
+            await generateHtmlReport(treeItem);
+
+            const traceInfoStub = TelemetryHelper.traceInfo as sinon.SinonStub;
+            expect(traceInfoStub.firstCall.args[1]).to.deep.include({
+                fileCount: 5
             });
         });
 
