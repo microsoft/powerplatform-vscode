@@ -3,6 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import { SiteVisibility } from "./SiteVisibility";
+
 /**
  * Constants for file comparison status values
  */
@@ -37,4 +39,12 @@ export interface ISiteComparisonResults {
     exportedAt?: string;
     /** The data model version of the site (1 = Standard, 2 = Enhanced) */
     dataModelVersion?: 1 | 2;
+    /** The website URL */
+    websiteUrl?: string;
+    /** The site visibility (public, private, etc.) */
+    siteVisibility?: SiteVisibility;
+    /** The creator of the site */
+    creator?: string;
+    /** ISO 8601 timestamp when the site was created */
+    createdOn?: string;
 }

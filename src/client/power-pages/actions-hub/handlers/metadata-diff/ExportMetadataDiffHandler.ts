@@ -106,6 +106,11 @@ export async function exportMetadataDiff(siteTreeItem: MetadataDiffSiteTreeItem)
                     environmentId: siteTreeItem.environmentId,
                     environmentName: siteTreeItem.environmentName,
                     localSiteName: siteTreeItem.localSiteName,
+                    dataModelVersion: siteTreeItem.dataModelVersion,
+                    websiteUrl: siteTreeItem.websiteUrl,
+                    siteVisibility: siteTreeItem.siteVisibility,
+                    creator: siteTreeItem.creator,
+                    createdOn: siteTreeItem.createdOn,
                     files
                 };
 

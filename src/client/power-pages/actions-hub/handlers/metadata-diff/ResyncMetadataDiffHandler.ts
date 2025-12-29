@@ -110,7 +110,11 @@ export const resyncMetadataDiff = (pacTerminal: PacTerminal, context: vscode.Ext
         Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_RESYNC_NO_DIFFERENCES,
         undefined, // No sub-path filtering for resync
         siteItem.environmentId,
-        dataModelVersion
+        dataModelVersion,
+        siteItem.websiteUrl,
+        siteItem.siteVisibility,
+        siteItem.creator,
+        siteItem.createdOn
     );
 
     if (hasDifferences) {

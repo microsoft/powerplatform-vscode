@@ -6,9 +6,11 @@
 import * as vscode from "vscode";
 import { MetadataDiffSiteTreeItem } from "../../tree-items/metadata-diff/MetadataDiffSiteTreeItem";
 import { IFileComparisonResult, FileComparisonStatus } from "../../models/IFileComparisonResult";
+import { SiteVisibility } from "../../models/SiteVisibility";
 import { Constants } from "../../Constants";
 import { traceInfo, traceError } from "../../TelemetryHelper";
 import { isBinaryFile } from "../../ActionsHubUtils";
+import { WebsiteDataModel } from "../../../../../common/services/Constants";
 
 /**
  * Represents the content of a file comparison
@@ -37,7 +39,13 @@ export async function generateHtmlReport(treeItem: MetadataDiffSiteTreeItem): Pr
         const htmlContent = generateHtmlContent(
             fileContents,
             treeItem.siteName,
-            treeItem.environmentName
+            treeItem.environmentName,
+            treeItem.websiteId,
+            treeItem.dataModelVersion,
+            treeItem.websiteUrl,
+            treeItem.siteVisibility,
+            treeItem.creator,
+            treeItem.createdOn
         );
 
         // Prompt user to save the file
@@ -377,7 +385,13 @@ function computeLCS(arr1: string[], arr2: string[]): string[] {
 function generateHtmlContent(
     fileContents: IFileContentComparison[],
     siteName: string,
-    environmentName: string
+    environmentName: string,
+    websiteId: string,
+    dataModelVersion: (1 | 2) | undefined,
+    websiteUrl?: string,
+    siteVisibility?: SiteVisibility,
+    creator?: string,
+    createdOn?: string
 ): string {
     const generatedDate = formatDateForDisplay(new Date());
     const comparisonResults = fileContents.map(fc => fc.result);
@@ -386,6 +400,9 @@ function generateHtmlContent(
     const addedCount = groupedResults.get(FileComparisonStatus.ADDED)?.length || 0;
     const modifiedCount = groupedResults.get(FileComparisonStatus.MODIFIED)?.length || 0;
     const deletedCount = groupedResults.get(FileComparisonStatus.DELETED)?.length || 0;
+    const dataModelDisplayName = dataModelVersion === 1 ? WebsiteDataModel.Standard : WebsiteDataModel.Enhanced;
+    const visibilityDisplayName = siteVisibility ? siteVisibility.charAt(0).toUpperCase() + siteVisibility.slice(1).toLowerCase() : undefined;
+    const createdOnFormatted = createdOn ? formatDateForDisplay(new Date(createdOn)) : undefined;
 
     // Sort results by path
     const sortedFileContents = [...fileContents].sort((a, b) =>
@@ -849,6 +866,30 @@ function generateHtmlContent(
                     <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_SITE_NAME_LABEL)}</span>
                     <span class="info-value">${escapeHtml(siteName)}</span>
                 </div>
+                <div class="info-item">
+                    <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_WEBSITE_ID_LABEL)}</span>
+                    <span class="info-value">${escapeHtml(websiteId)}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_DATA_MODEL_LABEL)}</span>
+                    <span class="info-value">${escapeHtml(dataModelDisplayName)}</span>
+                </div>${websiteUrl ? `
+                <div class="info-item">
+                    <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_WEBSITE_URL_LABEL)}</span>
+                    <span class="info-value"><a href="${escapeHtml(websiteUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(websiteUrl)}</a></span>
+                </div>` : ""}${visibilityDisplayName ? `
+                <div class="info-item">
+                    <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_SITE_VISIBILITY_LABEL)}</span>
+                    <span class="info-value">${escapeHtml(visibilityDisplayName)}</span>
+                </div>` : ""}${creator ? `
+                <div class="info-item">
+                    <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_CREATOR_LABEL)}</span>
+                    <span class="info-value">${escapeHtml(creator)}</span>
+                </div>` : ""}${createdOnFormatted ? `
+                <div class="info-item">
+                    <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_CREATED_ON_LABEL)}</span>
+                    <span class="info-value">${escapeHtml(createdOnFormatted)}</span>
+                </div>` : ""}
                 <div class="info-item">
                     <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_ENVIRONMENT_LABEL)}</span>
                     <span class="info-value">${escapeHtml(environmentName)}</span>

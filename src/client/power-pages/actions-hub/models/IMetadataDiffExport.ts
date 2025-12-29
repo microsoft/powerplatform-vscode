@@ -3,6 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import { SiteVisibility } from "./SiteVisibility";
 import { FileComparisonStatusType } from "./IFileComparisonResult";
 
 /**
@@ -30,6 +31,16 @@ export interface IMetadataDiffExport {
     environmentName: string;
     /** Name of the local site */
     localSiteName: string;
+    /** Data model version of the site (1 = Standard, 2 = Enhanced) */
+    dataModelVersion?: 1 | 2;
+    /** The website URL */
+    websiteUrl?: string;
+    /** The site visibility (public, private, etc.) */
+    siteVisibility?: SiteVisibility;
+    /** The creator of the site */
+    creator?: string;
+    /** ISO 8601 timestamp when the site was created */
+    createdOn?: string;
     /** Array of file comparison results with content */
     files: IExportableFileComparisonResult[];
 }
