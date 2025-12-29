@@ -12,6 +12,7 @@ import { ActionsHubTreeItem } from "../../../../../../power-pages/actions-hub/tr
 import { IFileComparisonResult, FileComparisonStatus, ISiteComparisonResults } from "../../../../../../power-pages/actions-hub/models/IFileComparisonResult";
 import { Constants } from "../../../../../../power-pages/actions-hub/Constants";
 import MetadataDiffContext, { MetadataDiffViewMode, MetadataDiffSortMode } from "../../../../../../power-pages/actions-hub/MetadataDiffContext";
+import { SiteVisibility } from "../../../../../../power-pages/actions-hub/models/SiteVisibility";
 
 /**
  * Helper function to create ISiteComparisonResults for testing
@@ -24,7 +25,12 @@ function createSiteResults(
     websiteId = "test-website-id",
     environmentId = "test-environment-id",
     isImported = false,
-    exportedAt?: string
+    exportedAt?: string,
+    dataModelVersion: 1 | 2 = 2,
+    websiteUrl = "https://test-site.powerappsportals.com",
+    siteVisibility = SiteVisibility.Public,
+    creator = "test-creator@contoso.com",
+    createdOn = "2024-01-15T10:30:00Z"
 ): ISiteComparisonResults {
     return {
         comparisonResults,
@@ -34,7 +40,12 @@ function createSiteResults(
         websiteId,
         environmentId,
         isImported,
-        exportedAt
+        exportedAt,
+        dataModelVersion,
+        websiteUrl,
+        siteVisibility,
+        creator,
+        createdOn
     };
 }
 
@@ -176,6 +187,56 @@ describe("MetadataDiffSiteTreeItem", () => {
             const treeItem = new MetadataDiffSiteTreeItem(createSiteResults([], "Test Site", "Local Test Site", "Test Environment", "my-website-id", "my-env-id"));
 
             expect(treeItem.environmentId).to.equal("my-env-id");
+        });
+    });
+
+    describe("site details", () => {
+        it("should return the dataModelVersion", () => {
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults([], "Test Site", "Local Test Site", "Test Environment", "web-id", "env-id", false, undefined, 2));
+
+            expect(treeItem.dataModelVersion).to.equal(2);
+        });
+
+        it("should return the websiteUrl", () => {
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults([], "Test Site", "Local Test Site", "Test Environment", "web-id", "env-id", false, undefined, 2, "https://my-site.powerappsportals.com"));
+
+            expect(treeItem.websiteUrl).to.equal("https://my-site.powerappsportals.com");
+        });
+
+        it("should return the siteVisibility", () => {
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults([], "Test Site", "Local Test Site", "Test Environment", "web-id", "env-id", false, undefined, 2, "https://my-site.powerappsportals.com", SiteVisibility.Private));
+
+            expect(treeItem.siteVisibility).to.equal(SiteVisibility.Private);
+        });
+
+        it("should return the creator", () => {
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults([], "Test Site", "Local Test Site", "Test Environment", "web-id", "env-id", false, undefined, 2, "https://my-site.powerappsportals.com", SiteVisibility.Public, "admin@contoso.com"));
+
+            expect(treeItem.creator).to.equal("admin@contoso.com");
+        });
+
+        it("should return the createdOn", () => {
+            const treeItem = new MetadataDiffSiteTreeItem(createSiteResults([], "Test Site", "Local Test Site", "Test Environment", "web-id", "env-id", false, undefined, 2, "https://my-site.powerappsportals.com", SiteVisibility.Public, "admin@contoso.com", "2024-06-01T12:00:00Z"));
+
+            expect(treeItem.createdOn).to.equal("2024-06-01T12:00:00Z");
+        });
+
+        it("should handle undefined optional fields", () => {
+            const results: ISiteComparisonResults = {
+                comparisonResults: [],
+                siteName: "Test Site",
+                localSiteName: "Local Test Site",
+                environmentName: "Test Environment",
+                websiteId: "web-id",
+                environmentId: "env-id"
+            };
+            const treeItem = new MetadataDiffSiteTreeItem(results);
+
+            expect(treeItem.dataModelVersion).to.be.undefined;
+            expect(treeItem.websiteUrl).to.be.undefined;
+            expect(treeItem.siteVisibility).to.be.undefined;
+            expect(treeItem.creator).to.be.undefined;
+            expect(treeItem.createdOn).to.be.undefined;
         });
     });
 

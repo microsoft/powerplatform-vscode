@@ -9,6 +9,7 @@ import sinon from "sinon";
 import { exportMetadataDiff } from "../../../../../../power-pages/actions-hub/handlers/metadata-diff/ExportMetadataDiffHandler";
 import { MetadataDiffSiteTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/metadata-diff/MetadataDiffSiteTreeItem";
 import { FileComparisonStatus, IFileComparisonResult, ISiteComparisonResults } from "../../../../../../power-pages/actions-hub/models/IFileComparisonResult";
+import { SiteVisibility } from "../../../../../../power-pages/actions-hub/models/SiteVisibility";
 import * as TelemetryHelper from "../../../../../../power-pages/actions-hub/TelemetryHelper";
 
 describe("ExportMetadataDiffHandler", () => {
@@ -43,7 +44,12 @@ describe("ExportMetadataDiffHandler", () => {
             localSiteName,
             environmentName,
             websiteId,
-            environmentId
+            environmentId,
+            dataModelVersion: 2,
+            websiteUrl: "https://test-site.powerappsportals.com",
+            siteVisibility: SiteVisibility.Public,
+            creator: "test-creator@contoso.com",
+            createdOn: "2024-01-15T10:30:00Z"
         };
     }
 

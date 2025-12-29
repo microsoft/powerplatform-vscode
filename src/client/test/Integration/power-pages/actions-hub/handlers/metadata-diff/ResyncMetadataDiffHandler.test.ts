@@ -11,6 +11,7 @@ import { Constants } from "../../../../../../power-pages/actions-hub/Constants";
 import { PacTerminal } from "../../../../../../lib/PacTerminal";
 import { MetadataDiffSiteTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/metadata-diff/MetadataDiffSiteTreeItem";
 import { ISiteComparisonResults, FileComparisonStatus } from "../../../../../../power-pages/actions-hub/models/IFileComparisonResult";
+import { SiteVisibility } from "../../../../../../power-pages/actions-hub/models/SiteVisibility";
 import MetadataDiffContext from "../../../../../../power-pages/actions-hub/MetadataDiffContext";
 import * as TelemetryHelper from "../../../../../../power-pages/actions-hub/TelemetryHelper";
 import * as WorkspaceInfoFinderUtil from "../../../../../../../common/utilities/WorkspaceInfoFinderUtil";
@@ -67,6 +68,11 @@ describe("ResyncMetadataDiffHandler", () => {
                 }
             ],
             isImported: false,
+            dataModelVersion: 2,
+            websiteUrl: "https://test-site.powerappsportals.com",
+            siteVisibility: SiteVisibility.Public,
+            creator: "test-creator@contoso.com",
+            createdOn: "2024-01-15T10:30:00Z",
             ...overrides
         };
     }
