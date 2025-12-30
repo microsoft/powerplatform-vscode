@@ -49,6 +49,8 @@
   "microsoft.powerplatform.pages.actionsHub.siteDetails.title": "Detalhes do Site",
   "microsoft.powerplatform.pages.actionsHub.switchEnvironment.title": "Alterar Ambiente",
   "microsoft.powerplatform.pages.actionsHub.title": "AÇÕES DO POWER PAGES",
+  "microsoft.powerplatform.pages.debugServerLogic.title": "Debug Current Server Logic File",
+  "microsoft.powerplatform.pages.runServerLogic.title": "Run Current Server Logic File",
   "pacCLI.authPanel.clearAuthProfile.title": "Limpar Perfis de Autenticação",
   "pacCLI.authPanel.copyUser.title": "Copiar Usuário",
   "pacCLI.authPanel.deleteAuthProfile.title": "Excluir Perfil de Autenticação",

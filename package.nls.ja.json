@@ -49,6 +49,8 @@
   "microsoft.powerplatform.pages.actionsHub.siteDetails.title": "サイトの詳細",
   "microsoft.powerplatform.pages.actionsHub.switchEnvironment.title": "環境の変更",
   "microsoft.powerplatform.pages.actionsHub.title": "POWER PAGES アクション",
+  "microsoft.powerplatform.pages.debugServerLogic.title": "Debug Current Server Logic File",
+  "microsoft.powerplatform.pages.runServerLogic.title": "Run Current Server Logic File",
   "pacCLI.authPanel.clearAuthProfile.title": "認証プロファイルのクリア",
   "pacCLI.authPanel.copyUser.title": "ユーザーのコピー",
   "pacCLI.authPanel.deleteAuthProfile.title": "認証プロファイルの削除",

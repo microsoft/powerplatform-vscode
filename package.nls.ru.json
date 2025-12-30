@@ -49,6 +49,8 @@
   "microsoft.powerplatform.pages.actionsHub.siteDetails.title": "Параметры сайта",
   "microsoft.powerplatform.pages.actionsHub.switchEnvironment.title": "Изменить среду",
   "microsoft.powerplatform.pages.actionsHub.title": "ДЕЙСТВИЯ POWER PAGES",
+  "microsoft.powerplatform.pages.debugServerLogic.title": "Debug Current Server Logic File",
+  "microsoft.powerplatform.pages.runServerLogic.title": "Run Current Server Logic File",
   "pacCLI.authPanel.clearAuthProfile.title": "Удаление профилей проверки подлинности",
   "pacCLI.authPanel.copyUser.title": "Копировать пользователя",
   "pacCLI.authPanel.deleteAuthProfile.title": "Удаление профиля проверки подлинности",

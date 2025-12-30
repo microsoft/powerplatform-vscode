@@ -49,6 +49,8 @@
   "microsoft.powerplatform.pages.actionsHub.siteDetails.title": "사이트 정보",
   "microsoft.powerplatform.pages.actionsHub.switchEnvironment.title": "환경 변경",
   "microsoft.powerplatform.pages.actionsHub.title": "Power Pages 작업",
+  "microsoft.powerplatform.pages.debugServerLogic.title": "Debug Current Server Logic File",
+  "microsoft.powerplatform.pages.runServerLogic.title": "Run Current Server Logic File",
   "pacCLI.authPanel.clearAuthProfile.title": "인증 프로필 지우기",
   "pacCLI.authPanel.copyUser.title": "사용자 복사",
   "pacCLI.authPanel.deleteAuthProfile.title": "인증 프로필 삭제",
