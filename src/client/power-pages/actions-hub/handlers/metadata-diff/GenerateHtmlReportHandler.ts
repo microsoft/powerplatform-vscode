@@ -235,6 +235,107 @@ function groupByStatus(results: IFileComparisonResult[]): Map<string, IFileCompa
 }
 
 /**
+ * Mapping of folder names to display names for component types
+ */
+const componentTypeDisplayNames: Record<string, string> = {
+    "website-languages": "Site Languages",
+    "web-pages": "Web Pages",
+    "content-snippets": "Content Snippets",
+    "web-files": "Web Files",
+    "site-settings": "Site Settings",
+    "weblink-sets": "Web Links",
+    "site-markers": "Site Markers",
+    "basic-forms": "Basic Forms",
+    "advanced-forms": "Advanced Forms",
+    "web-templates": "Web Templates",
+    "page-templates": "Page Templates",
+    "lists": "Lists",
+    "table-permissions": "Permissions",
+    "polls": "Polls",
+    "poll-placements": "Poll Placements",
+    "others": "Others"
+};
+
+/**
+ * Ordered list of component types for consistent tab ordering
+ */
+const componentTypeOrder: string[] = [
+    "website-languages",
+    "web-pages",
+    "content-snippets",
+    "web-files",
+    "site-settings",
+    "weblink-sets",
+    "site-markers",
+    "basic-forms",
+    "advanced-forms",
+    "web-templates",
+    "page-templates",
+    "lists",
+    "table-permissions",
+    "polls",
+    "poll-placements",
+    "others"
+];
+
+/**
+ * Gets the component type from a file's relative path
+ * @internal Exported for testing
+ */
+export function getComponentTypeFromPath(relativePath: string): string {
+    // Normalize path separators
+    const normalizedPath = relativePath.replace(/\\/g, "/");
+    const firstFolder = normalizedPath.split("/")[0];
+
+    // Check if it's a known component type
+    if (componentTypeDisplayNames[firstFolder] && firstFolder !== "others") {
+        return firstFolder;
+    }
+
+    return "others";
+}
+
+/**
+ * Gets the display name for a component type
+ * @internal Exported for testing
+ */
+export function getComponentTypeDisplayName(componentType: string): string {
+    return componentTypeDisplayNames[componentType] || componentType;
+}
+
+/**
+ * Groups file content comparisons by component type
+ */
+function groupByComponentType(fileContents: IFileContentComparison[]): Map<string, IFileContentComparison[]> {
+    const grouped = new Map<string, IFileContentComparison[]>();
+
+    for (const fc of fileContents) {
+        const componentType = getComponentTypeFromPath(fc.result.relativePath);
+        const existing = grouped.get(componentType) || [];
+        existing.push(fc);
+        grouped.set(componentType, existing);
+    }
+
+    // Sort the map by the predefined order
+    const sortedMap = new Map<string, IFileContentComparison[]>();
+    for (const componentType of componentTypeOrder) {
+        const files = grouped.get(componentType);
+        if (files && files.length > 0) {
+            sortedMap.set(componentType, files);
+        }
+    }
+
+    // Add any remaining types that weren't in the predefined order
+    for (const [componentType, files] of grouped.entries()) {
+        if (!sortedMap.has(componentType)) {
+            sortedMap.set(componentType, files);
+        }
+    }
+
+    return sortedMap;
+}
+
+/**
  * Generates a simple line-by-line diff HTML
  */
 function generateDiffHtml(fileContent: IFileContentComparison): string {
@@ -409,22 +510,76 @@ function generateHtmlContent(
         a.result.relativePath.localeCompare(b.result.relativePath)
     );
 
-    const fileRows = sortedFileContents.map((fc, index) => {
-        const result = fc.result;
-        const diffHtml = generateDiffHtml(fc);
+    // Group file contents by component type
+    const componentGroups = groupByComponentType(sortedFileContents);
 
-        return `
-        <div class="file-item">
-            <div class="file-header" onclick="toggleDiff('diff-${index}')">
-                <span class="file-path">${escapeHtml(result.relativePath)}</span>
-                <span class="status-badge ${getStatusClass(result.status)}">${escapeHtml(getStatusText(result.status))}</span>
-                <span class="toggle-icon" id="icon-${index}">▶</span>
-            </div>
-            <div class="diff-container" id="diff-${index}" style="display: none;">
-                ${diffHtml}
-            </div>
-        </div>`;
-    }).join("");
+    // Generate file rows for each group with unique index prefix
+    const generateFileRowsForGroup = (files: IFileContentComparison[], indexPrefix: string): string => {
+        if (files.length === 0) {
+            return `<div class="no-files-message">${escapeHtml(Constants.Strings.HTML_REPORT_NO_FILES_IN_CATEGORY)}</div>`;
+        }
+        return files.map((fc, index) => {
+            const result = fc.result;
+            const diffHtml = generateDiffHtml(fc);
+            const uniqueId = `${indexPrefix}-${index}`;
+
+            return `
+            <div class="file-item">
+                <div class="file-header" onclick="toggleDiff('diff-${uniqueId}')">
+                    <span class="file-path">${escapeHtml(result.relativePath)}</span>
+                    <span class="status-badge ${getStatusClass(result.status)}">${escapeHtml(getStatusText(result.status))}</span>
+                    <span class="toggle-icon" id="icon-${uniqueId}">▶</span>
+                </div>
+                <div class="diff-container" id="diff-${uniqueId}" style="display: none;">
+                    ${diffHtml}
+                </div>
+            </div>`;
+        }).join("");
+    };
+
+    // Generate "All" tab content first
+    const allFileRows = generateFileRowsForGroup(sortedFileContents, "all");
+
+    // Generate tabs HTML - "All" tab first, then all component type tabs (even empty ones)
+    const allTabButton = `<button class="tab-button active" onclick="switchTab('all')" data-tab="all">${escapeHtml(Constants.Strings.HTML_REPORT_TAB_ALL)} (${sortedFileContents.length})</button>`;
+
+    // Generate tabs for ALL component types, not just ones with files
+    const componentTabButtons = componentTypeOrder
+        .filter(key => key !== "others") // Handle "others" separately if it has files
+        .map(key => {
+            const files = componentGroups.get(key) || [];
+            const displayName = getComponentTypeDisplayName(key);
+            const count = files.length;
+            const disabledClass = count === 0 ? " disabled" : "";
+            const onclickAttr = count === 0 ? "" : `onclick="switchTab('${escapeHtml(key)}')"`;
+            return `<button class="tab-button${disabledClass}" ${onclickAttr} data-tab="${escapeHtml(key)}">${escapeHtml(displayName)} (${count})</button>`;
+        }).join("");
+
+    // Add "Others" tab only if there are files in it
+    const othersFiles = componentGroups.get("others") || [];
+    const othersTabButton = othersFiles.length > 0
+        ? `<button class="tab-button" onclick="switchTab('others')" data-tab="others">${escapeHtml(getComponentTypeDisplayName("others"))} (${othersFiles.length})</button>`
+        : "";
+
+    const tabButtons = allTabButton + componentTabButtons + othersTabButton;
+
+    const allTabContent = `<div class="tab-content active" id="tab-all">${allFileRows}</div>`;
+
+    // Generate tab content for ALL component types (even empty ones for consistency)
+    const componentTabContents = componentTypeOrder
+        .filter(key => key !== "others")
+        .map(key => {
+            const files = componentGroups.get(key) || [];
+            const fileRows = generateFileRowsForGroup(files, key);
+            return `<div class="tab-content" id="tab-${escapeHtml(key)}">${fileRows}</div>`;
+        }).join("");
+
+    // Add "Others" tab content only if there are files in it
+    const othersTabContent = othersFiles.length > 0
+        ? `<div class="tab-content" id="tab-others">${generateFileRowsForGroup(othersFiles, "others")}</div>`
+        : "";
+
+    const tabContents = allTabContent + componentTabContents + othersTabContent;
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -805,6 +960,77 @@ function generateHtmlContent(
             .file-header {
                 padding: 10px 12px;
             }
+
+            .tabs-header {
+                flex-wrap: wrap;
+            }
+
+            .tab-button {
+                flex: 1 1 auto;
+                min-width: 80px;
+            }
+        }
+
+        .tabs-container {
+            margin-top: 0;
+        }
+
+        .tabs-header {
+            display: flex;
+            border-bottom: 2px solid var(--border-color);
+            background-color: #faf9f8;
+            padding: 0 20px;
+            gap: 4px;
+        }
+
+        .tab-button {
+            padding: 12px 20px;
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s ease;
+        }
+
+        .tab-button:hover {
+            color: var(--primary-color);
+            background-color: rgba(0, 120, 212, 0.05);
+        }
+
+        .tab-button.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+            background-color: var(--card-background);
+        }
+
+        .tab-button.disabled {
+            color: var(--text-secondary);
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        .tab-button.disabled:hover {
+            color: var(--text-secondary);
+            background-color: transparent;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .no-files-message {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-style: italic;
         }
     </style>
     <script>
@@ -823,13 +1049,28 @@ function generateHtmlContent(
         }
 
         function expandAll() {
+            // Expand all diffs across all tabs
             document.querySelectorAll('.diff-container').forEach(el => el.style.display = 'block');
             document.querySelectorAll('.toggle-icon').forEach(el => el.classList.add('expanded'));
         }
 
         function collapseAll() {
+            // Collapse all diffs across all tabs
             document.querySelectorAll('.diff-container').forEach(el => el.style.display = 'none');
             document.querySelectorAll('.toggle-icon').forEach(el => el.classList.remove('expanded'));
+        }
+
+        function switchTab(tabId) {
+            // Remove active class from all tabs and contents
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Add active class to selected tab and content
+            const selectedButton = document.querySelector('[data-tab="' + tabId + '"]');
+            const selectedContent = document.getElementById('tab-' + tabId);
+
+            if (selectedButton) selectedButton.classList.add('active');
+            if (selectedContent) selectedContent.classList.add('active');
         }
     </script>
 </head>
@@ -909,7 +1150,12 @@ function generateHtmlContent(
                     <button onclick="collapseAll()" class="expand-btn">${escapeHtml(Constants.Strings.HTML_REPORT_COLLAPSE_ALL)}</button>
                 </div>
             </div>
-            ${fileRows}
+            <div class="tabs-container">
+                <div class="tabs-header">
+                    ${tabButtons}
+                </div>
+                ${tabContents}
+            </div>
         </section>
 
         <footer class="footer">
