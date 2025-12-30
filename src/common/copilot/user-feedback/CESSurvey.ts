@@ -7,6 +7,7 @@ import * as vscode from "vscode";
 import { npsAuthentication } from "../../services/AuthenticationProvider";
 import fetch from "node-fetch";
 import { getNonce } from "../../utilities/Utils";
+import { validateAndSanitizeUserInput } from "../../utilities/InputValidator";
 import { CopilotNpsAuthenticationCompleted, CopilotUserFeedbackFailureEvent, CopilotUserFeedbackSuccessEvent } from "../telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "../telemetry/copilotTelemetry";
 import { IFeedbackData } from "../model";
@@ -125,7 +126,14 @@ function initializeFeedbackData(sessionId: string, isWebExtension: boolean, geoN
 }
 
 async function handleFeedbackSubmission(text: string, endpointUrl: string, apiToken: string, feedbackData: IFeedbackData, thumbType: string, sessionID: string) {
-    feedbackData.Feedbacks[0].value = thumbType + " - " + text;
+    const sanitizedText = validateAndSanitizeUserInput(text);
+
+    if (sanitizedText === null) {
+        sendTelemetryEvent({ eventName: CopilotUserFeedbackFailureEvent, feedbackType: thumbType, copilotSessionId: sessionID, error: new Error(ERROR_CONSTANTS.INVALID_FEEDBACK_INPUT) });
+        return;
+    }
+
+    feedbackData.Feedbacks[0].value = thumbType + " - " + sanitizedText;
     try {
         const response = await fetch(endpointUrl, {
             method: 'POST',

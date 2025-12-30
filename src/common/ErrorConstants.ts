@@ -52,5 +52,6 @@ export const ERROR_CONSTANTS = {
     LANGUAGE_CODE_EMPTY: "Language code is empty",
     BULKHEAD_LIMITS_EXCEEDED: "Bulkhead queue limits exceeded",
     NPS_FAILED_AUTH: "Failed to authenticate with NPS",
-    PAC_AUTH_FAILED : "Failed to fetch org details from PAC"
+    PAC_AUTH_FAILED: "Failed to fetch org details from PAC",
+    INVALID_FEEDBACK_INPUT: "Invalid or empty feedback input"
 };
