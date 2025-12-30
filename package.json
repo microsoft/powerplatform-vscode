@@ -407,14 +407,14 @@
       {
         "command": "microsoft.powerplatform.pages.debugServerLogic",
         "category": "Power Pages",
-        "title": "Debug Current Server Logic File",
+        "title": "%microsoft.powerplatform.pages.debugServerLogic.title%",
         "icon": "$(debug-alt)",
         "enablement": "resourcePath =~ /server-logics?[/\\\\]/ && resourceExtname == .js"
       },
       {
         "command": "microsoft.powerplatform.pages.runServerLogic",
         "category": "Power Pages",
-        "title": "Run Server Logic File",
+        "title": "%microsoft.powerplatform.pages.runServerLogic.title%",
         "icon": "$(run)",
         "enablement": "resourcePath =~ /server-logics?[/\\\\]/ && resourceExtname == .js"
       },
@@ -914,6 +914,18 @@
           "group": "0_powerpages-copilot@1"
         }
       ],
+      "editor/title/run": [
+        {
+          "command": "microsoft.powerplatform.pages.runServerLogic",
+          "group": "serverLogic@1",
+          "when": "microsoft.powerplatform.pages.serverLogicDebuggingEnabled && resourcePath =~ /server-logics?[/\\\\]/ && resourceExtname == .js"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.debugServerLogic",
+          "group": "serverLogic@2",
+          "when": "microsoft.powerplatform.pages.serverLogicDebuggingEnabled && resourcePath =~ /server-logics?[/\\\\]/ && resourceExtname == .js"
+        }
+      ],
       "explorer/context": [
         {
           "submenu": "microsoft-powerapps-portals.powerpages",
@@ -958,11 +970,6 @@
           "command": "powerPlatform.previewCurrentActiveUsers",
           "group": "navigation",
           "when": "isWeb && virtualWorkspace"
-        },
-        {
-          "command": "microsoft.powerplatform.pages.debugServerLogic",
-          "group": "navigation",
-          "when": "microsoft.powerplatform.pages.serverLogicDebuggingEnabled && resourcePath =~ /server-logics?[/\\\\]/ && resourceExtname == .js"
         }
       ],
       "commandPalette": [

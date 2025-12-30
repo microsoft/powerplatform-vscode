@@ -22,9 +22,11 @@ export const SERVER_LOGIC_CONFIG_KEYS = {
 
 /**
  * File and folder names used by Server Logic debugger
+ * Note: RUNTIME_LOADER uses .cjs extension to ensure CommonJS compatibility
+ * even when parent package.json has "type": "module"
  */
 export const SERVER_LOGIC_FILES = {
-    RUNTIME_LOADER: 'server-logic-debug-runtime.js',
+    RUNTIME_LOADER: 'server-logic-debug-runtime.cjs',
     SERVER_LOGICS_FOLDER: 'server-logics',
     VSCODE_FOLDER: '.vscode',
     GITIGNORE: '.gitignore'
