@@ -10,6 +10,7 @@ import { traceInfo } from "../../TelemetryHelper";
 import { Constants } from "../../Constants";
 import { FileComparisonStatus } from "../../models/IFileComparisonResult";
 import { isBinaryFile } from "../../ActionsHubUtils";
+import { ReadOnlyContentProvider } from "../../ReadOnlyContentProvider";
 
 /**
  * Opens a single file diff in the VS Code diff editor
@@ -38,25 +39,27 @@ export async function openMetadataDiffFile(fileItem: MetadataDiffFileTreeItem): 
         return;
     }
 
-    // Handle different diff scenarios based on file status
+    // Handle different scenarios based on file status
+    // For added/deleted files, show single file view (like git)
+    // For modified files, show diff with remote as read-only
     if (comparisonResult.status === FileComparisonStatus.DELETED) {
-        // File exists in remote but not locally - show remote on left, empty on right
-        const remoteUri = vscode.Uri.file(comparisonResult.remotePath);
+        // File exists in remote but not locally - show remote file only (read-only)
+        const remoteUri = ReadOnlyContentProvider.createReadOnlyUri(comparisonResult.remotePath);
 
         if (fs.existsSync(comparisonResult.remotePath)) {
-            // Show the remote file only (since local doesn't exist)
-            await vscode.commands.executeCommand("vscode.diff", remoteUri, vscode.Uri.parse("untitled:"), title);
+            await vscode.commands.executeCommand("vscode.open", remoteUri);
         }
     } else if (comparisonResult.status === FileComparisonStatus.ADDED) {
-        // File exists locally but not in remote - show empty on left, local on right
+        // File exists locally but not in remote - show local file only
         const localUri = vscode.Uri.file(comparisonResult.localPath);
 
         if (fs.existsSync(comparisonResult.localPath)) {
-            await vscode.commands.executeCommand("vscode.diff", vscode.Uri.parse("untitled:"), localUri, title);
+            await vscode.commands.executeCommand("vscode.open", localUri);
         }
     } else {
         // Modified - both exist, show standard diff
-        const remoteUri = vscode.Uri.file(comparisonResult.remotePath);
+        // Remote (left side) is read-only, local (right side) is editable
+        const remoteUri = ReadOnlyContentProvider.createReadOnlyUri(comparisonResult.remotePath);
         const localUri = vscode.Uri.file(comparisonResult.localPath);
 
         if (fs.existsSync(comparisonResult.remotePath) && fs.existsSync(comparisonResult.localPath)) {
@@ -73,9 +76,9 @@ export async function openMetadataDiffFile(fileItem: MetadataDiffFileTreeItem): 
  */
 async function openBinaryFile(localPath: string, remotePath: string, status: string): Promise<void> {
     if (status === FileComparisonStatus.DELETED) {
-        // For deleted files, the file only exists in remote
+        // For deleted files, the file only exists in remote (read-only)
         if (fs.existsSync(remotePath)) {
-            await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(remotePath));
+            await vscode.commands.executeCommand("vscode.open", ReadOnlyContentProvider.createReadOnlyUri(remotePath));
         }
     } else if (status === FileComparisonStatus.ADDED) {
         // For added files, open the local version
@@ -84,17 +87,18 @@ async function openBinaryFile(localPath: string, remotePath: string, status: str
         }
     } else {
         // For modified files, open both remote and local side by side for visual comparison
+        // Remote file is read-only
         if (fs.existsSync(remotePath) && fs.existsSync(localPath)) {
-            // Open remote file in the first editor group (left side)
-            await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(remotePath), vscode.ViewColumn.One);
+            // Open remote file in the first editor group (left side) - read-only
+            await vscode.commands.executeCommand("vscode.open", ReadOnlyContentProvider.createReadOnlyUri(remotePath), vscode.ViewColumn.One);
             // Open local file in the second editor group (right side)
             await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(localPath), vscode.ViewColumn.Two);
         } else if (fs.existsSync(localPath)) {
             // Fallback: if only local exists, just open it
             await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(localPath));
         } else if (fs.existsSync(remotePath)) {
-            // Fallback: if only remote exists, just open it
-            await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(remotePath));
+            // Fallback: if only remote exists, just open it (read-only)
+            await vscode.commands.executeCommand("vscode.open", ReadOnlyContentProvider.createReadOnlyUri(remotePath));
         }
     }
 }

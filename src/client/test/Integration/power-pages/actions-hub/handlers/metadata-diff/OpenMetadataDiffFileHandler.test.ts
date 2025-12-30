@@ -10,6 +10,7 @@ import { openMetadataDiffFile } from "../../../../../../power-pages/actions-hub/
 import { MetadataDiffFileTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/metadata-diff/MetadataDiffFileTreeItem";
 import * as TelemetryHelper from "../../../../../../power-pages/actions-hub/TelemetryHelper";
 import { IFileComparisonResult } from "../../../../../../power-pages/actions-hub/models/IFileComparisonResult";
+import { METADATA_DIFF_READONLY_SCHEME } from "../../../../../../power-pages/actions-hub/ReadOnlyContentProvider";
 
 describe("OpenMetadataDiffFileHandler", () => {
     let sandbox: sinon.SinonSandbox;
@@ -74,7 +75,7 @@ describe("OpenMetadataDiffFileHandler", () => {
             }
         });
 
-        it("should use correct URIs for added files (empty left, local right)", async () => {
+        it("should use vscode.open for added files (single file view)", async () => {
             const comparisonResult: IFileComparisonResult = {
                 localPath: "/local/added.txt",
                 remotePath: "/remote/added.txt",
@@ -85,17 +86,23 @@ describe("OpenMetadataDiffFileHandler", () => {
 
             await openMetadataDiffFile(fileItem);
 
-            // For added files, the left side should be untitled (empty)
+            // For added files, should use vscode.open instead of vscode.diff
+            const openCall = executeCommandStub.getCalls().find(
+                call => call.args[0] === "vscode.open"
+            );
             const diffCall = executeCommandStub.getCalls().find(
                 call => call.args[0] === "vscode.diff"
             );
-            if (diffCall) {
-                const leftUri = diffCall.args[1] as vscode.Uri;
-                expect(leftUri.scheme).to.equal("untitled");
+            // If file exists and open was called, verify it's the local file
+            if (openCall) {
+                const uri = openCall.args[1] as vscode.Uri;
+                expect(uri.scheme).to.equal("file");
             }
+            // Should not use diff for added files
+            expect(diffCall).to.be.undefined;
         });
 
-        it("should use correct URIs for deleted files (remote left, empty right)", async () => {
+        it("should use vscode.open for deleted files (single file view, read-only)", async () => {
             const comparisonResult: IFileComparisonResult = {
                 localPath: "/local/deleted.txt",
                 remotePath: "/remote/deleted.txt",
@@ -106,13 +113,42 @@ describe("OpenMetadataDiffFileHandler", () => {
 
             await openMetadataDiffFile(fileItem);
 
-            // For deleted files, the right side should be untitled (empty)
+            // For deleted files, should use vscode.open instead of vscode.diff
+            const openCall = executeCommandStub.getCalls().find(
+                call => call.args[0] === "vscode.open"
+            );
+            const diffCall = executeCommandStub.getCalls().find(
+                call => call.args[0] === "vscode.diff"
+            );
+            // If file exists and open was called, verify it's using the read-only scheme
+            if (openCall) {
+                const uri = openCall.args[1] as vscode.Uri;
+                expect(uri.scheme).to.equal(METADATA_DIFF_READONLY_SCHEME);
+            }
+            // Should not use diff for deleted files
+            expect(diffCall).to.be.undefined;
+        });
+
+        it("should use read-only scheme for remote file in modified diff", async () => {
+            const comparisonResult: IFileComparisonResult = {
+                localPath: "/local/file.txt",
+                remotePath: "/remote/file.txt",
+                relativePath: "file.txt",
+                status: "modified"
+            };
+            const fileItem = new MetadataDiffFileTreeItem(comparisonResult, "Test Site");
+
+            await openMetadataDiffFile(fileItem);
+
+            // For modified files, the left side (remote) should use read-only scheme
             const diffCall = executeCommandStub.getCalls().find(
                 call => call.args[0] === "vscode.diff"
             );
             if (diffCall) {
-                const rightUri = diffCall.args[2] as vscode.Uri;
-                expect(rightUri.scheme).to.equal("untitled");
+                const remoteUri = diffCall.args[1] as vscode.Uri;
+                const localUri = diffCall.args[2] as vscode.Uri;
+                expect(remoteUri.scheme).to.equal(METADATA_DIFF_READONLY_SCHEME);
+                expect(localUri.scheme).to.equal("file");
             }
         });
 
