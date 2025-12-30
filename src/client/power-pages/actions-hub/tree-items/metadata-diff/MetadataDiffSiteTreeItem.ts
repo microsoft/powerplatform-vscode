@@ -10,6 +10,7 @@ import { IFileComparisonResult, FileComparisonStatus, ISiteComparisonResults } f
 import { MetadataDiffFileTreeItem } from "./MetadataDiffFileTreeItem";
 import { MetadataDiffFolderTreeItem } from "./MetadataDiffFolderTreeItem";
 import MetadataDiffContext, { MetadataDiffSortMode } from "../../MetadataDiffContext";
+import { SiteVisibility } from "../../models/SiteVisibility";
 
 /**
  * Tree item representing a single website's metadata diff results.
@@ -25,6 +26,10 @@ export class MetadataDiffSiteTreeItem extends ActionsHubTreeItem {
     private readonly _isImported: boolean;
     private readonly _exportedAt?: string;
     private readonly _dataModelVersion?: 1 | 2;
+    private readonly _websiteUrl?: string;
+    private readonly _siteVisibility?: SiteVisibility;
+    private readonly _creator?: string;
+    private readonly _createdOn?: string;
 
     constructor(siteResults: ISiteComparisonResults) {
         const fileCount = siteResults.comparisonResults.length;
@@ -55,6 +60,10 @@ export class MetadataDiffSiteTreeItem extends ActionsHubTreeItem {
         this._isImported = isImported;
         this._exportedAt = siteResults.exportedAt;
         this._dataModelVersion = siteResults.dataModelVersion;
+        this._websiteUrl = siteResults.websiteUrl;
+        this._siteVisibility = siteResults.siteVisibility;
+        this._creator = siteResults.creator;
+        this._createdOn = siteResults.createdOn;
     }
 
     public getChildren(): ActionsHubTreeItem[] {
@@ -223,5 +232,21 @@ export class MetadataDiffSiteTreeItem extends ActionsHubTreeItem {
 
     public get dataModelVersion(): (1 | 2) | undefined {
         return this._dataModelVersion;
+    }
+
+    public get websiteUrl(): string | undefined {
+        return this._websiteUrl;
+    }
+
+    public get siteVisibility(): SiteVisibility | undefined {
+        return this._siteVisibility;
+    }
+
+    public get creator(): string | undefined {
+        return this._creator;
+    }
+
+    public get createdOn(): string | undefined {
+        return this._createdOn;
     }
 }

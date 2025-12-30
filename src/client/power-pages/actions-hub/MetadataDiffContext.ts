@@ -5,6 +5,7 @@
 
 import * as vscode from "vscode";
 import { IFileComparisonResult, ISiteComparisonResults } from "./models/IFileComparisonResult";
+import { SiteVisibility } from "./models/SiteVisibility";
 
 /**
  * Enum for metadata diff view modes
@@ -162,6 +163,10 @@ class MetadataDiffContextClass {
      * @param isImported Whether this is an imported comparison
      * @param exportedAt ISO 8601 timestamp when the comparison was exported (only for imported comparisons)
      * @param dataModelVersion The data model version of the site (1 = Standard, 2 = Enhanced)
+     * @param websiteUrl The website URL
+     * @param siteVisibility The site visibility (public, private, etc.)
+     * @param creator The creator of the site
+     * @param createdOn ISO 8601 timestamp when the site was created
      */
     public setResults(
         results: IFileComparisonResult[],
@@ -172,7 +177,11 @@ class MetadataDiffContextClass {
         environmentId: string,
         isImported: boolean = false,
         exportedAt?: string,
-        dataModelVersion?: 1 | 2
+        dataModelVersion?: 1 | 2,
+        websiteUrl?: string,
+        siteVisibility?: SiteVisibility,
+        creator?: string,
+        createdOn?: string
     ): void {
         const key = this.getUniqueKey(websiteId, environmentId, isImported);
         if (results.length > 0) {
@@ -185,7 +194,11 @@ class MetadataDiffContextClass {
                 comparisonResults: results,
                 isImported,
                 exportedAt,
-                dataModelVersion
+                dataModelVersion,
+                websiteUrl,
+                siteVisibility,
+                creator,
+                createdOn
             });
         } else {
             // If no results, remove the site from the map

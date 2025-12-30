@@ -12,6 +12,7 @@ import { findPowerPagesSiteFolder, findWebsiteYmlFolder, getWebsiteRecordId } fr
 import { POWERPAGES_SITE_FOLDER } from "../../../../../common/constants";
 import { showProgressWithNotification } from "../../../../../common/utilities/Utils";
 import { FileComparisonStatus, IFileComparisonResult } from "../../models/IFileComparisonResult";
+import { SiteVisibility } from "../../models/SiteVisibility";
 import { getAllFiles } from "../../ActionsHubUtils";
 import MetadataDiffContext from "../../MetadataDiffContext";
 import PacContext from "../../../../pac/PacContext";
@@ -170,6 +171,10 @@ export function prepareSiteStoragePath(storagePath: string, websiteId: string): 
  * @param comparisonSubPath Optional sub-path to filter comparison results to a specific folder
  * @param environmentId Optional environment ID (defaults to current environment if not provided)
  * @param dataModelVersion Optional data model version (1 = Standard, 2 = Enhanced)
+ * @param websiteUrl Optional website URL
+ * @param siteVisibility Optional site visibility
+ * @param creator Optional creator of the site
+ * @param createdOn Optional ISO 8601 timestamp when the site was created
  * @returns True if differences were found, false otherwise
  */
 export async function processComparisonResults(
@@ -184,7 +189,11 @@ export async function processComparisonResults(
     noDifferencesEventName: string,
     comparisonSubPath?: string,
     environmentId?: string,
-    dataModelVersion?: 1 | 2
+    dataModelVersion?: 1 | 2,
+    websiteUrl?: string,
+    siteVisibility?: SiteVisibility,
+    creator?: string,
+    createdOn?: string
 ): Promise<boolean> {
     const comparisonResults = await showProgressWithNotification(
         Constants.Strings.COMPARING_FILES,
@@ -243,7 +252,11 @@ export async function processComparisonResults(
             resolvedEnvironmentId,
             false, // isImported
             undefined, // exportedAt
-            dataModelVersion
+            dataModelVersion,
+            websiteUrl,
+            siteVisibility,
+            creator,
+            createdOn
         );
         return true;
     }

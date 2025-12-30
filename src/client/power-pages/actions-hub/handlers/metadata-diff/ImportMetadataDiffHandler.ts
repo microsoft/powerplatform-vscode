@@ -242,7 +242,12 @@ export async function importMetadataDiff(): Promise<void> {
                     importData.websiteId,
                     importData.environmentId,
                     true, // isImported
-                    importData.exportedAt
+                    importData.exportedAt,
+                    importData.dataModelVersion,
+                    importData.websiteUrl,
+                    importData.siteVisibility,
+                    importData.creator,
+                    importData.createdOn
                 );
 
                 traceInfo(Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_IMPORT_SUCCESS, {
