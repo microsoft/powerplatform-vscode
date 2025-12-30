@@ -24,7 +24,7 @@ export const SERVER_LOGIC_CONFIG_KEYS = {
  * File and folder names used by Server Logic debugger
  */
 export const SERVER_LOGIC_FILES = {
-    RUNTIME_LOADER: 'server-logic-runtime-loader.js',
+    RUNTIME_LOADER: 'server-logic-debug-runtime.js',
     SERVER_LOGICS_FOLDER: 'server-logics',
     VSCODE_FOLDER: '.vscode',
     GITIGNORE: '.gitignore'
