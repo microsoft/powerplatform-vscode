@@ -1496,6 +1496,9 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
     <trans-unit id="pacCLI.envAndSolutionsPanel.copyVersionNumber.title">
       <source xml:lang="en">Copy Version Number</source>
     </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.debugServerLogic.title">
+      <source xml:lang="en">Debug Current Server Logic File</source>
+    </trans-unit>
     <trans-unit id="pacCLI.authPanel.deleteAuthProfile.title">
       <source xml:lang="en">Delete Auth Profile</source>
     </trans-unit>
@@ -1661,6 +1664,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title">
       <source xml:lang="en">Run CodeQL Screening</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.runServerLogic.title">
+      <source xml:lang="en">Run Current Server Logic File</source>
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.saveConflict.title">
       <source xml:lang="en">Save conflict</source>
