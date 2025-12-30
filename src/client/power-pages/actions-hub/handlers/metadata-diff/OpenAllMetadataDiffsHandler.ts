@@ -9,6 +9,7 @@ import { traceInfo } from "../../TelemetryHelper";
 import { Constants } from "../../Constants";
 import { FileComparisonStatus, IFileComparisonResult } from "../../models/IFileComparisonResult";
 import { isBinaryFile } from "../../ActionsHubUtils";
+import { ReadOnlyContentProvider } from "../../ReadOnlyContentProvider";
 
 /**
  * Opens all file diffs in the multi-diff editor for a specific site
@@ -49,9 +50,10 @@ export async function openAllMetadataDiffs(siteItem: MetadataDiffSiteTreeItem): 
     // Show the multi-diff editor only for text files
     if (textFiles.length > 0) {
         // Create resource list for the changes editor
+        // Original (remote) files use a read-only URI scheme to prevent accidental modifications
         const resourceList: [vscode.Uri, vscode.Uri | undefined, vscode.Uri | undefined][] = textFiles.map(result => {
             const labelUri = vscode.Uri.parse(`diff-label:${result.relativePath}`);
-            const originalUri = vscode.Uri.file(result.remotePath);
+            const originalUri = ReadOnlyContentProvider.createReadOnlyUri(result.remotePath);
             const modifiedUri = vscode.Uri.file(result.localPath);
 
             if (result.status === FileComparisonStatus.DELETED) {

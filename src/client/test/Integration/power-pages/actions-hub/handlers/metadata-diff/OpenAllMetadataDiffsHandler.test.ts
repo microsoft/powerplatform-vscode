@@ -11,6 +11,7 @@ import { isBinaryFile } from "../../../../../../power-pages/actions-hub/ActionsH
 import { MetadataDiffSiteTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/metadata-diff/MetadataDiffSiteTreeItem";
 import * as TelemetryHelper from "../../../../../../power-pages/actions-hub/TelemetryHelper";
 import { IFileComparisonResult, ISiteComparisonResults } from "../../../../../../power-pages/actions-hub/models/IFileComparisonResult";
+import { METADATA_DIFF_READONLY_SCHEME } from "../../../../../../power-pages/actions-hub/ReadOnlyContentProvider";
 
 /**
  * Helper function to create ISiteComparisonResults for testing
@@ -318,6 +319,48 @@ describe("OpenAllMetadataDiffsHandler", () => {
                 binaryFilesSkipped: "1",
                 textFilesIncluded: "1"
             });
+        });
+
+        it("should use read-only scheme for original (remote) URIs", async () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/file.txt",
+                    remotePath: "/remote/file.txt",
+                    relativePath: "file.txt",
+                    status: "modified"
+                }
+            ];
+            const siteItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
+
+            await openAllMetadataDiffs(siteItem);
+
+            const resourceList = executeCommandStub.firstCall.args[2];
+            const [, originalUri, modifiedUri] = resourceList[0];
+
+            // Original (remote) file should use read-only scheme
+            expect(originalUri.scheme).to.equal(METADATA_DIFF_READONLY_SCHEME);
+            // Modified (local) file should use regular file scheme
+            expect(modifiedUri.scheme).to.equal("file");
+        });
+
+        it("should use read-only scheme for deleted files original URI", async () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/deleted.txt",
+                    remotePath: "/remote/deleted.txt",
+                    relativePath: "deleted.txt",
+                    status: "deleted"
+                }
+            ];
+            const siteItem = new MetadataDiffSiteTreeItem(createSiteResults(results));
+
+            await openAllMetadataDiffs(siteItem);
+
+            const resourceList = executeCommandStub.firstCall.args[2];
+            const [, originalUri] = resourceList[0];
+
+            // Deleted file's original (remote) URI should use read-only scheme
+            expect(originalUri.scheme).to.equal(METADATA_DIFF_READONLY_SCHEME);
         });
     });
 });
