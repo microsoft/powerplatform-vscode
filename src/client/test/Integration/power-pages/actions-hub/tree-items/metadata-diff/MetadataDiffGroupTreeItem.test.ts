@@ -7,6 +7,7 @@ import * as vscode from "vscode";
 import { expect } from "chai";
 import { MetadataDiffGroupTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/metadata-diff/MetadataDiffGroupTreeItem";
 import { MetadataDiffSiteTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/metadata-diff/MetadataDiffSiteTreeItem";
+import { MetadataDiffWelcomeTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/metadata-diff/MetadataDiffWelcomeTreeItem";
 import { ActionsHubTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
 import { IFileComparisonResult } from "../../../../../../power-pages/actions-hub/models/IFileComparisonResult";
 import { Constants } from "../../../../../../power-pages/actions-hub/Constants";
@@ -59,10 +60,10 @@ describe("MetadataDiffGroupTreeItem", () => {
             expect(treeItem.label).to.equal("Site Comparison");
         });
 
-        it("should have None collapsible state when no results", () => {
+        it("should have expanded collapsible state to show welcome content when no results", () => {
             const treeItem = new MetadataDiffGroupTreeItem();
 
-            expect(treeItem.collapsibleState).to.equal(vscode.TreeItemCollapsibleState.None);
+            expect(treeItem.collapsibleState).to.equal(vscode.TreeItemCollapsibleState.Expanded);
         });
 
         it("should have expanded state when results exist", () => {
@@ -130,12 +131,14 @@ describe("MetadataDiffGroupTreeItem", () => {
     });
 
     describe("getChildren", () => {
-        it("should return empty array when no results", () => {
+        it("should return welcome tree item when no results (FRE scenario)", () => {
             const treeItem = new MetadataDiffGroupTreeItem();
 
             const children = treeItem.getChildren();
 
-            expect(children).to.have.lengthOf(0);
+            // Should return single welcome tree item that has children for subtext
+            expect(children).to.have.lengthOf(1);
+            expect(children[0]).to.be.instanceOf(MetadataDiffWelcomeTreeItem);
         });
 
         it("should return site tree items for each site's results", () => {
