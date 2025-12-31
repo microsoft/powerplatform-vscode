@@ -1411,9 +1411,6 @@
     "utf-8-validate": "^5.0.9"
   },
   "overrides": {
-    "tmp": "^0.2.4",
-    "@octokit/request": "^8.4.1",
-    "@octokit/plugin-paginate-rest": "^9.2.2",
-    "@octokit/request-error": "^5.1.1"
+    "tmp": "^0.2.4"
   }
 }
