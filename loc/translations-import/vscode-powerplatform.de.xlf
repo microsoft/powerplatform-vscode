@@ -91,6 +91,10 @@
         <note>{0} represents the number of web files</note>
         <target state="translated">{0} Webdatei(en) wird/werden hinzugefügt. Vorhandene Dateien werden übersprungen</target>
       </trans-unit>
+      <trans-unit id="++CODE++a52ace420f2175d08b1577a1bea5445e36801229c074ef9ed6c55a73401fd9c2">
+        <source xml:lang="en">All</source>
+        <target state="new">All</target>
+      </trans-unit>
       <trans-unit id="++CODE++8890e663481705393ed3b1b4642095a11329e21320824ed567e383a12ea888f4">
         <source xml:lang="en">All changed files are binary files (e.g., images) and cannot be displayed in the diff viewer. You can view them individually in the file tree.</source>
         <target state="translated">Alle geänderten Dateien sind Binärdateien (z. B. Bilder) und können im Diff-Viewer nicht angezeigt werden. Sie können sie einzeln in der Dateistruktur anzeigen.</target>
@@ -408,6 +412,10 @@ Check the CodeQL extension panel for available queries.</source>
         <source xml:lang="en">Could not locate CodeQL CLI in global storage.</source>
         <target state="translated">Die CodeQL-CLI wurde im globalen Speicher nicht gefunden.</target>
       </trans-unit>
+      <trans-unit id="++CODE++217ec8ef23f31be4473af7c3e69f7965308bd2284d53eba7daf17b791db5fc74">
+        <source xml:lang="en">Created On:</source>
+        <target state="new">Created On:</target>
+      </trans-unit>
       <trans-unit id="++CODE++47234b3978427950c2a4ef0161f6dc8484b7faf44b21d30616d5d019eebaafd8">
         <source xml:lang="en">Created PowerPages config file at {0} with default query suite: {1}</source>
         <target state="translated">PowerPages-Konfigurationsdatei in {0} mit Standardabfragesammlung erstellt: {1}</target>
@@ -426,6 +434,10 @@ Check the CodeQL extension panel for available queries.</source>
         <note>{0} will be replaced by the entity type.</note>
         <target state="translated">"{0}" wird erstellt...</target>
       </trans-unit>
+      <trans-unit id="++CODE++dc15ecabf1e2c1c145b8ccbc7ef53c0e9b2a90f18414ba9887c2ae9aaa6575cd">
+        <source xml:lang="en">Creator:</source>
+        <target state="new">Creator:</target>
+      </trans-unit>
       <trans-unit id="++CODE++ec8fd606d46114985d2f628dc67992093b8abb32489b3cbbfbb86bba96925943">
         <source xml:lang="en">Creator: {0}</source>
         <note>{0} is the creator</note>
@@ -442,6 +454,10 @@ Check the CodeQL extension panel for available queries.</source>
       <trans-unit id="++CODE++52587c2a224d685113316dc5961aec7749a46dded161bfe07c40b715ca61db29">
         <source xml:lang="en">Current site path not found. Please ensure you have a site folder open.</source>
         <target state="translated">Der aktuelle Standortpfad wurde nicht gefunden. Stellen Sie sicher, dass ein Websiteordner geöffnet ist.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++ec1f0e40eb1d8b21b1c3e73679727c461ad9922cea5648859e5446ded7f9c97f">
+        <source xml:lang="en">Data Model:</source>
+        <target state="new">Data Model:</target>
       </trans-unit>
       <trans-unit id="++CODE++e159063579c9e875ce444b930e8feb5d4fc1a93af6acb47d7a5cf9d5c5241153">
         <source xml:lang="en">Data model version: {0}</source>
@@ -1070,6 +1086,10 @@ Organisations-ID: {3}</target>
         <source xml:lang="en">No environments found</source>
         <target state="translated">Keine Umgebungen gefunden</target>
       </trans-unit>
+      <trans-unit id="++CODE++5f22b9670e54200b4ccdea959012a4670d9346315793eefd80e4290571492262">
+        <source xml:lang="en">No files in this category</source>
+        <target state="new">No files in this category</target>
+      </trans-unit>
       <trans-unit id="++CODE++e75c23acb3f88e840f326048df92fcfd3350ec3b775a5c51e6ff6754f0f9f7a1">
         <source xml:lang="en">No issues found!</source>
         <target state="translated">Keine Probleme gefunden!</target>
@@ -1450,6 +1470,10 @@ Organisations-ID: {3}</target>
         <source xml:lang="en">Site Name:</source>
         <target state="translated">Name der Website:</target>
       </trans-unit>
+      <trans-unit id="++CODE++4b7de12dbef5cc145cf5b8b08743a60d279d6ee27b8b13470e5f06bc21153867">
+        <source xml:lang="en">Site Visibility:</source>
+        <target state="new">Site Visibility:</target>
+      </trans-unit>
       <trans-unit id="++CODE++4fa72d80ab1b04e31f450bacc89bff526a5e52e3d104d153b3b493b108330b3c">
         <source xml:lang="en">Site download cancelled. Authentication is required to proceed.</source>
         <target state="translated">Der Download der Website wurde abgebrochen. Zum Fortfahren ist eine Authentifizierung erforderlich.</target>
@@ -1750,10 +1774,18 @@ Organisations-ID: {3}</target>
         <source xml:lang="en">Website ID not found. Please ensure you have a valid Power Pages site open.</source>
         <target state="translated">Website-ID nicht gefunden. Stellen Sie sicher, dass eine gültige Power Pages-Website geöffnet ist.</target>
       </trans-unit>
+      <trans-unit id="++CODE++f61a5b01e081338759cfc22a2b8afcc35ab7a22a36585efe93fc1ac2a5afe124">
+        <source xml:lang="en">Website ID:</source>
+        <target state="new">Website ID:</target>
+      </trans-unit>
       <trans-unit id="++CODE++d3eaa7bf5377b15781ad4c0f43e4da94b9a2bd485ddbbbe62a2c3d53c5c7fe4a">
         <source xml:lang="en">Website Id: {0}</source>
         <note>{0} is the website ID</note>
         <target state="translated">Website-ID: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++337c1eee64c216207c0df5634e89e0f1216a96d5430e57344a797452d8627757">
+        <source xml:lang="en">Website URL:</source>
+        <target state="new">Website URL:</target>
       </trans-unit>
       <trans-unit id="++CODE++4f5909ac007d8a897ec18ede71cdf8f6b4af3bbe78bae2f13871d50a3cebb3f6">
         <source xml:lang="en">Website Url: {0}</source>
@@ -1950,6 +1982,10 @@ Weitere Informationen finden Sie unter [Vermeiden von versehentlichen Überschre
       <trans-unit id="pacCLI.envAndSolutionsPanel.copyVersionNumber.title">
         <source xml:lang="en">Copy Version Number</source>
         <target state="translated">Versionsnummer kopieren</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.debugServerLogic.title">
+        <source xml:lang="en">Debug Current Server Logic File</source>
+        <target state="new">Debug Current Server Logic File</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.deleteAuthProfile.title">
         <source xml:lang="en">Delete Auth Profile</source>
@@ -2175,6 +2211,10 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title">
         <source xml:lang="en">Run CodeQL Screening</source>
         <target state="translated">CodeQL-Prüfung ausführen</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.runServerLogic.title">
+        <source xml:lang="en">Run Current Server Logic File</source>
+        <target state="new">Run Current Server Logic File</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.saveConflict.title">
         <source xml:lang="en">Save conflict</source>

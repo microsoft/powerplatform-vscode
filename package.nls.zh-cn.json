@@ -49,6 +49,8 @@
   "microsoft.powerplatform.pages.actionsHub.siteDetails.title": "站点详细信息",
   "microsoft.powerplatform.pages.actionsHub.switchEnvironment.title": "更改环境",
   "microsoft.powerplatform.pages.actionsHub.title": "POWER PAGES 操作",
+  "microsoft.powerplatform.pages.debugServerLogic.title": "Debug Current Server Logic File",
+  "microsoft.powerplatform.pages.runServerLogic.title": "Run Current Server Logic File",
   "pacCLI.authPanel.clearAuthProfile.title": "清除身份验证配置文件",
   "pacCLI.authPanel.copyUser.title": "复制用户",
   "pacCLI.authPanel.deleteAuthProfile.title": "删除身份验证配置文件",

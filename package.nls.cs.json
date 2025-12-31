@@ -49,6 +49,8 @@
   "microsoft.powerplatform.pages.actionsHub.siteDetails.title": "Podrobnosti o webu",
   "microsoft.powerplatform.pages.actionsHub.switchEnvironment.title": "Změnit prostředí",
   "microsoft.powerplatform.pages.actionsHub.title": "AKCE POWER PAGES",
+  "microsoft.powerplatform.pages.debugServerLogic.title": "Debug Current Server Logic File",
+  "microsoft.powerplatform.pages.runServerLogic.title": "Run Current Server Logic File",
   "pacCLI.authPanel.clearAuthProfile.title": "Vymazat ověřovací profily",
   "pacCLI.authPanel.copyUser.title": "Zkopírovat uživatele",
   "pacCLI.authPanel.deleteAuthProfile.title": "Odstranit ověřovací profil",
