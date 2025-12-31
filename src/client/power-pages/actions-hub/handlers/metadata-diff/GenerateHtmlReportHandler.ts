@@ -38,6 +38,7 @@ export async function generateHtmlReport(treeItem: MetadataDiffSiteTreeItem): Pr
 
         const htmlContent = generateHtmlContent(
             fileContents,
+            treeItem.localSiteName,
             treeItem.siteName,
             treeItem.environmentName,
             treeItem.websiteId,
@@ -485,6 +486,7 @@ function computeLCS(arr1: string[], arr2: string[]): string[] {
  */
 function generateHtmlContent(
     fileContents: IFileContentComparison[],
+    localSiteName: string,
     siteName: string,
     environmentName: string,
     websiteId: string,
@@ -642,6 +644,30 @@ function generateHtmlContent(
             font-size: 14px;
         }
 
+        .header-separator {
+            border: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            margin: 16px 0;
+        }
+
+        .header-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 32px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .header-info-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .header-info-label {
+            font-weight: 600;
+        }
+
         .summary-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -654,20 +680,37 @@ function generateHtmlContent(
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-            text-align: center;
+            text-align: left;
+            border-left: 4px solid transparent;
+        }
+
+        .summary-card.total {
+            border-left-color: var(--primary-color);
+        }
+
+        .summary-card.modified {
+            border-left-color: var(--warning-color);
+        }
+
+        .summary-card.added {
+            border-left-color: var(--success-color);
+        }
+
+        .summary-card.deleted {
+            border-left-color: var(--danger-color);
+        }
+
+        .summary-card .label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
         }
 
         .summary-card .count {
             font-size: 36px;
             font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .summary-card .label {
-            font-size: 14px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .summary-card.total .count {
@@ -688,7 +731,7 @@ function generateHtmlContent(
 
         .info-section {
             background: var(--card-background);
-            padding: 20px;
+            padding: 24px;
             border-radius: 8px;
             margin-bottom: 24px;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
@@ -697,29 +740,66 @@ function generateHtmlContent(
         .info-section h2 {
             font-size: 18px;
             font-weight: 600;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             color: var(--primary-color);
         }
 
-        .info-grid {
+        .comparison-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-column {
+            background: var(--background-color);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .comparison-column h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-color);
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .comparison-column.local h3 {
+            border-bottom-color: var(--success-color);
+        }
+
+        .comparison-column.remote h3 {
+            border-bottom-color: var(--primary-color);
+        }
+
+        .info-grid {
+            display: flex;
+            flex-direction: column;
             gap: 12px;
         }
 
         .info-item {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
         }
 
         .info-label {
             font-weight: 600;
-            min-width: 120px;
+            min-width: 110px;
             color: var(--text-secondary);
+            flex-shrink: 0;
         }
 
         .info-value {
             color: var(--text-color);
+            word-break: break-word;
         }
 
         .files-section {
@@ -1079,65 +1159,86 @@ function generateHtmlContent(
         <header class="header">
             <h1>${escapeHtml(Constants.Strings.HTML_REPORT_TITLE)}</h1>
             <p class="header-subtitle">${escapeHtml(Constants.Strings.HTML_REPORT_SUBTITLE)}</p>
+            <hr class="header-separator" />
+            <div class="header-info">
+                <div class="header-info-item">
+                    <span class="header-info-label"><strong>${escapeHtml(Constants.Strings.HTML_REPORT_GENERATED_LABEL)}</strong></span>
+                    <span>${escapeHtml(generatedDate)}</span>
+                </div>
+            </div>
         </header>
 
         <section class="summary-cards">
             <div class="summary-card total">
-                <div class="count">${comparisonResults.length}</div>
                 <div class="label">${escapeHtml(Constants.Strings.HTML_REPORT_TOTAL_CHANGES)}</div>
-            </div>
-            <div class="summary-card added">
-                <div class="count">${addedCount}</div>
-                <div class="label">${escapeHtml(Constants.Strings.HTML_REPORT_ADDED)}</div>
+                <div class="count">${comparisonResults.length}</div>
             </div>
             <div class="summary-card modified">
-                <div class="count">${modifiedCount}</div>
                 <div class="label">${escapeHtml(Constants.Strings.HTML_REPORT_MODIFIED)}</div>
+                <div class="count">${modifiedCount}</div>
+            </div>
+            <div class="summary-card added">
+                <div class="label">${escapeHtml(Constants.Strings.HTML_REPORT_ADDED)}</div>
+                <div class="count">${addedCount}</div>
             </div>
             <div class="summary-card deleted">
-                <div class="count">${deletedCount}</div>
                 <div class="label">${escapeHtml(Constants.Strings.HTML_REPORT_DELETED)}</div>
+                <div class="count">${deletedCount}</div>
             </div>
         </section>
 
         <section class="info-section">
             <h2>${escapeHtml(Constants.Strings.HTML_REPORT_COMPARISON_DETAILS)}</h2>
-            <div class="info-grid">
-                <div class="info-item">
-                    <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_SITE_NAME_LABEL)}</span>
-                    <span class="info-value">${escapeHtml(siteName)}</span>
+            <div class="comparison-grid">
+                <div class="comparison-column local">
+                    <h3>${escapeHtml(Constants.Strings.HTML_REPORT_LOCAL_SECTION)}</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_SITE_NAME_LABEL)}</span>
+                            <span class="info-value">${escapeHtml(localSiteName)}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_WEBSITE_ID_LABEL)}</span>
+                            <span class="info-value">${escapeHtml(websiteId)}</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="info-item">
-                    <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_WEBSITE_ID_LABEL)}</span>
-                    <span class="info-value">${escapeHtml(websiteId)}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_DATA_MODEL_LABEL)}</span>
-                    <span class="info-value">${escapeHtml(dataModelDisplayName)}</span>
-                </div>${websiteUrl ? `
-                <div class="info-item">
-                    <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_WEBSITE_URL_LABEL)}</span>
-                    <span class="info-value"><a href="${escapeHtml(websiteUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(websiteUrl)}</a></span>
-                </div>` : ""}${visibilityDisplayName ? `
-                <div class="info-item">
-                    <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_SITE_VISIBILITY_LABEL)}</span>
-                    <span class="info-value">${escapeHtml(visibilityDisplayName)}</span>
-                </div>` : ""}${creator ? `
-                <div class="info-item">
-                    <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_CREATOR_LABEL)}</span>
-                    <span class="info-value">${escapeHtml(creator)}</span>
-                </div>` : ""}${createdOnFormatted ? `
-                <div class="info-item">
-                    <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_CREATED_ON_LABEL)}</span>
-                    <span class="info-value">${escapeHtml(createdOnFormatted)}</span>
-                </div>` : ""}
-                <div class="info-item">
-                    <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_ENVIRONMENT_LABEL)}</span>
-                    <span class="info-value">${escapeHtml(environmentName)}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_GENERATED_LABEL)}</span>
-                    <span class="info-value">${escapeHtml(generatedDate)}</span>
+                <div class="comparison-column remote">
+                    <h3>${escapeHtml(Constants.Strings.HTML_REPORT_REMOTE_SECTION)}</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_SITE_NAME_LABEL)}</span>
+                            <span class="info-value">${escapeHtml(siteName)}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_WEBSITE_ID_LABEL)}</span>
+                            <span class="info-value">${escapeHtml(websiteId)}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_ENVIRONMENT_LABEL)}</span>
+                            <span class="info-value">${escapeHtml(environmentName)}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_DATA_MODEL_LABEL)}</span>
+                            <span class="info-value">${escapeHtml(dataModelDisplayName)}</span>
+                        </div>${websiteUrl ? `
+                        <div class="info-item">
+                            <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_WEBSITE_URL_LABEL)}</span>
+                            <span class="info-value"><a href="${escapeHtml(websiteUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(websiteUrl)}</a></span>
+                        </div>` : ""}${visibilityDisplayName ? `
+                        <div class="info-item">
+                            <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_SITE_VISIBILITY_LABEL)}</span>
+                            <span class="info-value">${escapeHtml(visibilityDisplayName)}</span>
+                        </div>` : ""}${creator ? `
+                        <div class="info-item">
+                            <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_CREATOR_LABEL)}</span>
+                            <span class="info-value">${escapeHtml(creator)}</span>
+                        </div>` : ""}${createdOnFormatted ? `
+                        <div class="info-item">
+                            <span class="info-label">${escapeHtml(Constants.Strings.HTML_REPORT_CREATED_ON_LABEL)}</span>
+                            <span class="info-value">${escapeHtml(createdOnFormatted)}</span>
+                        </div>` : ""}
+                    </div>
                 </div>
             </div>
         </section>

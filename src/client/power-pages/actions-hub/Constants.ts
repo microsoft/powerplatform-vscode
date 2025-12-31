@@ -27,6 +27,9 @@ export const Constants = {
         METADATA_DIFF_FOLDER_IMPORTED: "metadataDiffFolderImported",
         METADATA_DIFF_FILE: "metadataDiffFile",
         METADATA_DIFF_FILE_IMPORTED: "metadataDiffFileImported",
+        METADATA_DIFF_WELCOME_WITH_SITE: "metadataDiffWelcomeWithSite",
+        METADATA_DIFF_WELCOME_NO_SITE: "metadataDiffWelcomeNoSite",
+        METADATA_DIFF_WELCOME_DESCRIPTION: "metadataDiffWelcomeDescription",
     },
     Commands: {
         METADATA_DIFF_OPEN_FILE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.openFile",
@@ -37,6 +40,7 @@ export const Constants = {
         METADATA_DIFF_VIEW_AS_LIST: "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsList",
         METADATA_DIFF_DISCARD_FILE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFile",
         METADATA_DIFF_DISCARD_FOLDER: "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFolder",
+        METADATA_DIFF_DISCARD_SITE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardSite",
         METADATA_DIFF_SORT_BY_NAME: "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByName",
         METADATA_DIFF_SORT_BY_PATH: "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByPath",
         METADATA_DIFF_SORT_BY_STATUS: "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByStatus",
@@ -180,12 +184,19 @@ export const Constants = {
         NO_DIFFERENCES_FOUND: vscode.l10n.t("No differences found between the remote site and your local workspace."),
         COMPARING_FILES: vscode.l10n.t("Comparing files..."),
         METADATA_DIFF_GROUP: vscode.l10n.t("Site Comparison"),
+        METADATA_DIFF_WELCOME_DESCRIPTION: vscode.l10n.t("Find differences between your remote site and local workspace"),
+        METADATA_DIFF_WELCOME_TOOLTIP_WITH_SITE: vscode.l10n.t("Click to compare your local site with an environment"),
+        METADATA_DIFF_WELCOME_TOOLTIP_NO_SITE: vscode.l10n.t("Use File → Open Folder to select a folder with a Power Pages site"),
+        METADATA_DIFF_WELCOME_NO_SITE_INSTRUCTION: vscode.l10n.t("Use File → Open Folder to select a folder with a Power Pages site"),
+        METADATA_DIFF_COMPARE_SITE_CTA: vscode.l10n.t("Compare site..."),
         METADATA_DIFF_MODIFIED: vscode.l10n.t("Modified"),
         METADATA_DIFF_ADDED: vscode.l10n.t("Added locally"),
         METADATA_DIFF_DELETED: vscode.l10n.t("Deleted locally"),
         COMPARE_WITH_LOCAL_COMPLETED: vscode.l10n.t("Download is complete. You can now view the report."),
         SELECT_ENVIRONMENT_TO_COMPARE: vscode.l10n.t("Select an environment to compare with"),
         SELECT_WEBSITE_TO_COMPARE: vscode.l10n.t("Select a website to compare with"),
+        COMPARE_SITE_WITH_ENVIRONMENT: vscode.l10n.t("Compare site with environment"),
+        LOADING: vscode.l10n.t("Loading..."),
         NO_SITES_FOUND_IN_ENVIRONMENT: vscode.l10n.t("No sites found in the selected environment."),
         MATCHING_SITE_INDICATOR: vscode.l10n.t("Matching Site"),
         ENHANCED_DATA_MODEL: vscode.l10n.t("Enhanced Data Model"),
@@ -207,13 +218,15 @@ export const Constants = {
         SAVE_HTML_REPORT_TITLE: vscode.l10n.t("Save HTML Report"),
         OPEN_REPORT: vscode.l10n.t("Open Report"),
         // HTML Report labels
-        HTML_REPORT_TITLE: vscode.l10n.t("Metadata Diff Report"),
-        HTML_REPORT_SUBTITLE: vscode.l10n.t("Power Pages Site Comparison Results"),
+        HTML_REPORT_TITLE: vscode.l10n.t("Site Comparison Report"),
+        HTML_REPORT_SUBTITLE: vscode.l10n.t("Power Platform Tools - Site Comparison"),
         HTML_REPORT_TOTAL_CHANGES: vscode.l10n.t("Total Changes"),
-        HTML_REPORT_ADDED: vscode.l10n.t("Added"),
+        HTML_REPORT_ADDED: vscode.l10n.t("Added Locally"),
         HTML_REPORT_MODIFIED: vscode.l10n.t("Modified"),
-        HTML_REPORT_DELETED: vscode.l10n.t("Deleted"),
+        HTML_REPORT_DELETED: vscode.l10n.t("Deleted Locally"),
         HTML_REPORT_COMPARISON_DETAILS: vscode.l10n.t("Comparison Details"),
+        HTML_REPORT_LOCAL_SECTION: vscode.l10n.t("Local"),
+        HTML_REPORT_REMOTE_SECTION: vscode.l10n.t("Remote"),
         HTML_REPORT_SITE_NAME_LABEL: vscode.l10n.t("Site Name:"),
         HTML_REPORT_ENVIRONMENT_LABEL: vscode.l10n.t("Environment:"),
         HTML_REPORT_WEBSITE_ID_LABEL: vscode.l10n.t("Website ID:"),
@@ -223,6 +236,7 @@ export const Constants = {
         HTML_REPORT_CREATOR_LABEL: vscode.l10n.t("Creator:"),
         HTML_REPORT_CREATED_ON_LABEL: vscode.l10n.t("Created On:"),
         HTML_REPORT_GENERATED_LABEL: vscode.l10n.t("Generated:"),
+        HTML_REPORT_TOTAL_FILES_LABEL: vscode.l10n.t("Total Files:"),
         HTML_REPORT_CHANGED_FILES: vscode.l10n.t("Changed Files"),
         HTML_REPORT_CLICK_TO_EXPAND: vscode.l10n.t("(click to expand diff)"),
         HTML_REPORT_EXPAND_ALL: vscode.l10n.t("Expand All"),
@@ -361,6 +375,24 @@ export const Constants = {
                 message: "Successfully discarded local changes to {0} files in '{1}'.",
                 args: [fileCount, folderName],
                 comment: ["Success message after discarding all local changes in a folder."]
+            }),
+        /**
+         * Returns the confirmation message for discarding all local changes in a site
+         */
+        DISCARD_SITE_CHANGES_CONFIRM: (siteName: string, fileCount: number, localPath: string) =>
+            vscode.l10n.t({
+                message: "Are you sure you want to discard all {0} local changes in '{1}'?\n\nLocal path: {2}\n\nThis action cannot be undone.",
+                args: [fileCount, siteName, localPath],
+                comment: ["Confirmation message before discarding all local changes in a site."]
+            }),
+        /**
+         * Returns the success message after discarding all local changes in a site
+         */
+        DISCARD_SITE_CHANGES_SUCCESS: (siteName: string, fileCount: number) =>
+            vscode.l10n.t({
+                message: "Successfully discarded all {0} local changes in '{1}'.",
+                args: [fileCount, siteName],
+                comment: ["Success message after discarding all local changes in a site."]
             }),
         /**
          * Returns the title for comparing all files in a site
@@ -597,6 +629,7 @@ export const Constants = {
         ACTIONS_HUB_METADATA_DIFF_CLEAR: "ActionsHubMetadataDiffClear",
         ACTIONS_HUB_METADATA_DIFF_DISCARD_FILE: "ActionsHubMetadataDiffDiscardFile",
         ACTIONS_HUB_METADATA_DIFF_DISCARD_FOLDER: "ActionsHubMetadataDiffDiscardFolder",
+        ACTIONS_HUB_METADATA_DIFF_DISCARD_SITE: "ActionsHubMetadataDiffDiscardSite",
         ACTIONS_HUB_METADATA_DIFF_VIEW_MODE_CHANGED: "ActionsHubMetadataDiffViewModeChanged",
         ACTIONS_HUB_METADATA_DIFF_SORT_MODE_CHANGED: "ActionsHubMetadataDiffSortModeChanged",
         ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_CALLED: "ActionsHubCompareWithEnvironmentCalled",

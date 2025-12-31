@@ -29,7 +29,7 @@ describe("RemoveSiteHandler", () => {
         MetadataDiffContext.clear();
     });
 
-    function createSiteTreeItem(siteName: string): MetadataDiffSiteTreeItem {
+    function createSiteTreeItem(siteName: string, websiteId: string = "test-website-id", environmentId: string = "test-environment-id"): MetadataDiffSiteTreeItem {
         const results: IFileComparisonResult[] = [
             {
                 localPath: "/local/file.txt",
@@ -43,8 +43,8 @@ describe("RemoveSiteHandler", () => {
             siteName,
             localSiteName: `Local ${siteName}`,
             environmentName: "Test Environment",
-            websiteId: "test-website-id",
-            environmentId: "test-environment-id",
+            websiteId: websiteId,
+            environmentId: environmentId,
             comparisonResults: results
         });
     }
@@ -139,7 +139,7 @@ describe("RemoveSiteHandler", () => {
             ];
             MetadataDiffContext.setResults(results2, "Site 2", "Local Site 2", "Environment 2", "website-id-2", "environment-id-2");
 
-            const siteItem = createSiteTreeItem("Site 1");
+            const siteItem = createSiteTreeItem("Site 1", "website-id-1", "environment-id-1");
             showWarningMessageStub.resolves(Constants.Strings.CLEAR);
 
             await removeSiteComparison(siteItem);

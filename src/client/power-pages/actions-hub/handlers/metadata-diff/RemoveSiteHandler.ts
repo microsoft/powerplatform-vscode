@@ -29,5 +29,5 @@ export async function removeSiteComparison(siteItem: MetadataDiffSiteTreeItem): 
         return;
     }
 
-    MetadataDiffContext.clearSite(siteItem.siteName);
+    MetadataDiffContext.clearSiteByKey(siteItem.websiteId, siteItem.environmentId, siteItem.isImported);
 }

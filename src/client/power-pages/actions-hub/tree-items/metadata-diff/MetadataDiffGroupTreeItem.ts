@@ -8,10 +8,12 @@ import { ActionsHubTreeItem } from "../ActionsHubTreeItem";
 import { Constants } from "../../Constants";
 import MetadataDiffContext from "../../MetadataDiffContext";
 import { MetadataDiffSiteTreeItem } from "./MetadataDiffSiteTreeItem";
+import { MetadataDiffWelcomeTreeItem } from "./MetadataDiffWelcomeTreeItem";
 
 /**
  * Root group tree item for showing metadata diff comparison results.
- * This is always visible under the Tools node and shows site children when comparisons exist.
+ * This is always visible under the Tools node and shows site children when comparisons exist,
+ * or a welcome/FRE item when no comparisons are loaded.
  */
 export class MetadataDiffGroupTreeItem extends ActionsHubTreeItem {
     constructor() {
@@ -19,7 +21,8 @@ export class MetadataDiffGroupTreeItem extends ActionsHubTreeItem {
 
         super(
             Constants.Strings.METADATA_DIFF_GROUP,
-            hasResults ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None,
+            // Always expanded to show either results or welcome content
+            vscode.TreeItemCollapsibleState.Expanded,
             Constants.Icons.METADATA_DIFF_GROUP,
             hasResults ? Constants.ContextValues.METADATA_DIFF_GROUP_WITH_RESULTS : Constants.ContextValues.METADATA_DIFF_GROUP,
             undefined
@@ -34,7 +37,8 @@ export class MetadataDiffGroupTreeItem extends ActionsHubTreeItem {
         const siteResults = MetadataDiffContext.allSiteResults;
 
         if (siteResults.length === 0) {
-            return [];
+            // Show the welcome tree item (with child for subtext) when no comparisons are loaded
+            return [new MetadataDiffWelcomeTreeItem()];
         }
 
         // Create a site tree item for each site's comparison results

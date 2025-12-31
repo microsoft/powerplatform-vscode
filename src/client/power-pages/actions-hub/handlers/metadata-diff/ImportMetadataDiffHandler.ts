@@ -53,16 +53,13 @@ function validateImportData(data: unknown): string | undefined {
         return Constants.Strings.METADATA_DIFF_EXPORT_UNSUPPORTED_VERSION;
     }
 
-    // Check required fields
+    // Check required fields - support both new and legacy field names for backward compatibility
     const requiredFields: (keyof IMetadataDiffExport)[] = [
         "version",
         "extensionVersion",
         "exportedAt",
-        "websiteId",
-        "websiteName",
         "environmentId",
         "environmentName",
-        "localSiteName",
         "files"
     ];
 
@@ -70,6 +67,20 @@ function validateImportData(data: unknown): string | undefined {
         if (importData[field] === undefined || importData[field] === null) {
             return Constants.StringFunctions.METADATA_DIFF_MISSING_REQUIRED_FIELD(field);
         }
+    }
+
+    // Check for website ID - either new format or legacy format
+    const hasNewFormat = importData.localWebsiteId && importData.remoteWebsiteId;
+    const hasLegacyFormat = importData.websiteId;
+    if (!hasNewFormat && !hasLegacyFormat) {
+        return Constants.StringFunctions.METADATA_DIFF_MISSING_REQUIRED_FIELD("localWebsiteId/remoteWebsiteId");
+    }
+
+    // Check for website names - either new format or legacy format
+    const hasNewNameFormat = importData.localWebsiteName && importData.remoteWebsiteName;
+    const hasLegacyNameFormat = importData.websiteName && importData.localSiteName;
+    if (!hasNewNameFormat && !hasLegacyNameFormat) {
+        return Constants.StringFunctions.METADATA_DIFF_MISSING_REQUIRED_FIELD("localWebsiteName/remoteWebsiteName");
     }
 
     // Check that extension version is not newer than current
@@ -153,7 +164,9 @@ export async function importMetadataDiff(): Promise<void> {
         }
 
         // Check if there's already an imported comparison for this site
-        if (MetadataDiffContext.hasImportedComparison(importData.websiteId, importData.environmentId)) {
+        // Support both new and legacy formats
+        const websiteId = importData.remoteWebsiteId || importData.websiteId || "";
+        if (MetadataDiffContext.hasImportedComparison(websiteId, importData.environmentId)) {
             const confirmation = await vscode.window.showWarningMessage(
                 Constants.Strings.METADATA_DIFF_REPLACE_EXISTING_IMPORT,
                 { modal: true },
@@ -184,10 +197,15 @@ export async function importMetadataDiff(): Promise<void> {
                 cancellable: false
             },
             async () => {
+                // Support both new and legacy formats
+                const websiteId = importData.remoteWebsiteId || importData.websiteId || "";
+                const remoteWebsiteName = importData.remoteWebsiteName || importData.websiteName || "";
+                const localWebsiteName = importData.localWebsiteName || importData.localSiteName || "";
+
                 const importedDiffsPath = path.join(
                     extensionContext.globalStorageUri.fsPath,
                     "imported-diffs",
-                    `${importData.websiteId}_${importData.environmentId}`
+                    `${websiteId}_${importData.environmentId}`
                 );
 
                 // Create the directory if it doesn't exist
@@ -236,10 +254,10 @@ export async function importMetadataDiff(): Promise<void> {
                 // Store the results in the context
                 MetadataDiffContext.setResults(
                     comparisonResults,
-                    importData.websiteName,
-                    importData.localSiteName,
+                    remoteWebsiteName,
+                    localWebsiteName,
                     importData.environmentName,
-                    importData.websiteId,
+                    websiteId,
                     importData.environmentId,
                     true, // isImported
                     importData.exportedAt,
@@ -252,15 +270,17 @@ export async function importMetadataDiff(): Promise<void> {
 
                 traceInfo(Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_IMPORT_SUCCESS, {
                     methodName: importMetadataDiff.name,
-                    websiteId: importData.websiteId,
+                    websiteId: websiteId,
                     fileCount: comparisonResults.length.toString()
                 });
             }
         );
 
         // Show success message after progress completes
+        // Support both new and legacy formats for display name
+        const displayName = importData.remoteWebsiteName || importData.websiteName || "";
         vscode.window.showInformationMessage(
-            Constants.StringFunctions.METADATA_DIFF_IMPORT_SUCCESS(importData.websiteName)
+            Constants.StringFunctions.METADATA_DIFF_IMPORT_SUCCESS(displayName)
         );
     } catch (error) {
         traceError(

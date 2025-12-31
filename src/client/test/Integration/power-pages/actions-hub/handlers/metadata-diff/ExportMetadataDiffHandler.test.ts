@@ -190,5 +190,22 @@ describe("ExportMetadataDiffHandler", () => {
 
             expect(traceInfoStub.firstCall.args[1]).to.have.property("fileCount", "2");
         });
+
+        it("should expose localSiteName and siteName properties for export", async () => {
+            const siteResults = createSiteResults(
+                [],
+                "Remote Site Name",
+                "Local Site Name",
+                "Test Environment",
+                "test-website-id",
+                "test-environment-id"
+            );
+            const treeItem = new MetadataDiffSiteTreeItem(siteResults);
+
+            // Verify tree item exposes both local and remote names
+            expect(treeItem.siteName).to.equal("Remote Site Name");
+            expect(treeItem.localSiteName).to.equal("Local Site Name");
+            expect(treeItem.websiteId).to.equal("test-website-id");
+        });
     });
 });

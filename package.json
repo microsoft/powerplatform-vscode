@@ -564,6 +564,12 @@
         "when": "microsoft.powerplatform.pages.metadataDiffEnabled"
       },
       {
+        "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardSite",
+        "title": "%microsoft.powerplatform.pages.actionsHub.metadataDiff.discardSite.title%",
+        "icon": "$(discard)",
+        "when": "microsoft.powerplatform.pages.metadataDiffEnabled"
+      },
+      {
         "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByName",
         "title": "%microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByName.title%",
         "icon": "$(check)",
@@ -596,13 +602,19 @@
       {
         "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.export",
         "title": "%microsoft.powerplatform.pages.actionsHub.metadataDiff.export.title%",
-        "icon": "$(export)",
+        "icon": {
+          "light": "src/client/assets/download-icon/light/download.svg",
+          "dark": "src/client/assets/download-icon/dark/download.svg"
+        },
         "when": "microsoft.powerplatform.pages.metadataDiffEnabled"
       },
       {
         "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.import",
         "title": "%microsoft.powerplatform.pages.actionsHub.metadataDiff.import.title%",
-        "icon": "$(cloud-download)",
+        "icon": {
+          "light": "src/client/assets/upload-icon/light/upload.svg",
+          "dark": "src/client/assets/upload-icon/dark/upload.svg"
+        },
         "when": "microsoft.powerplatform.pages.metadataDiffEnabled"
       },
       {
@@ -1214,6 +1226,10 @@
           "when": "never"
         },
         {
+          "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardSite",
+          "when": "never"
+        },
+        {
           "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByName",
           "when": "never"
         },
@@ -1424,24 +1440,19 @@
           "group": "siteAction@8"
         },
         {
-          "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.openAll",
+          "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.resync",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffSite && microsoft.powerplatform.pages.metadataDiffEnabled",
           "group": "inline@1"
         },
         {
-          "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.resync",
+          "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.export",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffSite && microsoft.powerplatform.pages.metadataDiffEnabled",
           "group": "inline@2"
         },
         {
-          "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.export",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffSite && microsoft.powerplatform.pages.metadataDiffEnabled",
-          "group": "inline@3"
-        },
-        {
           "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.removeSite",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffSite && microsoft.powerplatform.pages.metadataDiffEnabled",
-          "group": "inline@4"
+          "group": "inline@3"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.openAll",
@@ -1464,24 +1475,24 @@
           "group": "siteAction@4"
         },
         {
+          "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardSite",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffSite && microsoft.powerplatform.pages.metadataDiffEnabled",
+          "group": "siteAction@5"
+        },
+        {
           "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.removeSite",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffSite && microsoft.powerplatform.pages.metadataDiffEnabled",
           "group": "zRemoveAction@1"
         },
         {
-          "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.openAll",
+          "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.export",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffSiteImported && microsoft.powerplatform.pages.metadataDiffEnabled",
           "group": "inline@1"
         },
         {
-          "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.export",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffSiteImported && microsoft.powerplatform.pages.metadataDiffEnabled",
-          "group": "inline@2"
-        },
-        {
           "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.removeSite",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == metadataDiffSiteImported && microsoft.powerplatform.pages.metadataDiffEnabled",
-          "group": "inline@3"
+          "group": "inline@2"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.openAll",

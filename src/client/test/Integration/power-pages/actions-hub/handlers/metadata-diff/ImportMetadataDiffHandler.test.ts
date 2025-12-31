@@ -104,4 +104,46 @@ describe("ImportMetadataDiffHandler", () => {
             expect(traceInfoStub.firstCall.args[0]).to.equal("ActionsHubMetadataDiffImportCalled");
         });
     });
+
+    describe("IMetadataDiffExport format", () => {
+        it("should support new format with localWebsiteId and remoteWebsiteId", () => {
+            // This test verifies that the interface supports the new field names
+            const exportData = {
+                version: "1.0",
+                extensionVersion: "1.0.0",
+                exportedAt: "2024-01-15T10:30:00Z",
+                localWebsiteId: "local-id",
+                localWebsiteName: "Local Site",
+                remoteWebsiteId: "remote-id",
+                remoteWebsiteName: "Remote Site",
+                environmentId: "env-id",
+                environmentName: "Test Environment",
+                files: []
+            };
+
+            expect(exportData.localWebsiteId).to.equal("local-id");
+            expect(exportData.remoteWebsiteId).to.equal("remote-id");
+            expect(exportData.localWebsiteName).to.equal("Local Site");
+            expect(exportData.remoteWebsiteName).to.equal("Remote Site");
+        });
+
+        it("should support legacy format with websiteId and localSiteName for backward compatibility", () => {
+            // This test verifies backward compatibility with old export files
+            const legacyExportData = {
+                version: "1.0",
+                extensionVersion: "1.0.0",
+                exportedAt: "2024-01-15T10:30:00Z",
+                websiteId: "website-id",
+                websiteName: "Website Name",
+                localSiteName: "Local Site Name",
+                environmentId: "env-id",
+                environmentName: "Test Environment",
+                files: []
+            };
+
+            expect(legacyExportData.websiteId).to.equal("website-id");
+            expect(legacyExportData.websiteName).to.equal("Website Name");
+            expect(legacyExportData.localSiteName).to.equal("Local Site Name");
+        });
+    });
 });

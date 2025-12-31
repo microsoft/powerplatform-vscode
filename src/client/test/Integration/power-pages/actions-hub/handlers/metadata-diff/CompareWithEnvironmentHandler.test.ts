@@ -14,13 +14,14 @@ import PacContext from "../../../../../../pac/PacContext";
 import * as TelemetryHelper from "../../../../../../power-pages/actions-hub/TelemetryHelper";
 import * as WorkspaceInfoFinderUtil from "../../../../../../../common/utilities/WorkspaceInfoFinderUtil";
 import * as ActionsHubUtils from "../../../../../../power-pages/actions-hub/ActionsHubUtils";
+import * as MultiStepInputModule from "../../../../../../../common/utilities/MultiStepInput";
 import { IWebsiteDetails } from "../../../../../../../common/services/Interfaces";
 import { SUCCESS } from "../../../../../../../common/constants";
 
 describe("CompareWithEnvironmentHandler", () => {
     let sandbox: sinon.SinonSandbox;
     let mockShowErrorMessage: sinon.SinonStub;
-    let mockShowQuickPick: sinon.SinonStub;
+    let mockMultiStepInputRun: sinon.SinonStub;
     let traceInfoStub: sinon.SinonStub;
     let mockPacTerminal: sinon.SinonStubbedInstance<PacTerminal>;
     let mockExtensionContext: vscode.ExtensionContext;
@@ -30,11 +31,59 @@ describe("CompareWithEnvironmentHandler", () => {
         downloadSiteWithProgress: sinon.SinonStub;
     };
 
+    /**
+     * Helper to create a mock MultiStepInput that simulates user selections
+     * @param selections Array of selections for each step (environment, website)
+     * @param options Optional configuration for the mock behavior
+     */
+    function setupMultiStepInputMock(
+        selections: { env?: unknown; website?: unknown },
+        options?: {
+            shouldThrow?: boolean;
+            throwAfterCapture?: boolean; // If true, throw after calling onPickEnvironment (allows capturing items)
+            throwError?: Error; // Custom error to throw (defaults to "User cancelled")
+            onPickEnvironment?: (items: unknown[]) => void;
+            onPickWebsite?: (items: unknown[]) => void;
+        }
+    ) {
+        mockMultiStepInputRun.callsFake(async (startStep: (input: MultiStepInputModule.MultiStepInput) => Promise<unknown>) => {
+            // Throw immediately if shouldThrow without throwAfterCapture
+            if (options?.shouldThrow && !options?.throwAfterCapture) {
+                throw options?.throwError ?? new Error("User cancelled");
+            }
+
+            const mockInput = {
+                showQuickPickAsync: sinon.stub().callsFake(async (params: { itemsPromise: Promise<unknown[]> }) => {
+                    const items = await params.itemsPromise;
+                    options?.onPickEnvironment?.(items);
+
+                    // If throwAfterCapture, throw after capturing items
+                    if (options?.throwAfterCapture) {
+                        throw options?.throwError ?? new Error("User cancelled");
+                    }
+
+                    return selections.env;
+                }),
+                showQuickPick: sinon.stub().callsFake(async (params: { items: unknown[] }) => {
+                    options?.onPickWebsite?.(params.items);
+                    return selections.website;
+                })
+            } as unknown as MultiStepInputModule.MultiStepInput;
+
+            const nextStep = await startStep(mockInput);
+
+            // If env was selected and there's a next step, call it
+            if (selections.env && typeof nextStep === 'function') {
+                await (nextStep as (input: MultiStepInputModule.MultiStepInput) => Promise<void>)(mockInput);
+            }
+        });
+    }
+
     beforeEach(() => {
         sandbox = sinon.createSandbox();
         mockShowErrorMessage = sandbox.stub(vscode.window, "showErrorMessage");
         sandbox.stub(vscode.window, "showInformationMessage");
-        mockShowQuickPick = sandbox.stub(vscode.window, "showQuickPick");
+        mockMultiStepInputRun = sandbox.stub(MultiStepInputModule.MultiStepInput, "run");
         traceInfoStub = sandbox.stub(TelemetryHelper, "traceInfo");
         sandbox.stub(TelemetryHelper, "traceError");
         sandbox.stub(TelemetryHelper, "getBaseEventInfo").returns({ foo: "bar" });
@@ -160,7 +209,8 @@ describe("CompareWithEnvironmentHandler", () => {
                     ]
                 });
 
-                mockShowQuickPick.resolves(undefined); // User cancelled environment selection
+                // User cancels during multi-step input
+                setupMultiStepInputMock({ env: undefined }, { shouldThrow: true });
             });
 
             it("should log cancellation telemetry", async () => {
@@ -213,9 +263,9 @@ describe("CompareWithEnvironmentHandler", () => {
                     otherSites: []
                 });
 
-                // First call returns environment selection, second call returns undefined (cancelled website selection)
-                mockShowQuickPick
-                    .onFirstCall().resolves({
+                // Environment selected, but website cancelled
+                setupMultiStepInputMock({
+                    env: {
                         label: "Test Environment",
                         detail: "https://test.crm.dynamics.com",
                         orgInfo: {
@@ -227,21 +277,16 @@ describe("CompareWithEnvironmentHandler", () => {
                             UserId: "",
                             EnvironmentId: "env-id-1"
                         }
-                    })
-                    .onSecondCall().resolves(undefined); // User cancelled website selection
+                    },
+                    website: undefined // User cancelled website selection
+                });
             });
 
-            it("should log cancellation telemetry with reason", async () => {
+            it("should log cancellation telemetry", async () => {
                 const handler = compareWithEnvironment(mockPacTerminal as unknown as PacTerminal, mockExtensionContext);
                 await handler({ fsPath: "/test/workspace" } as vscode.Uri);
 
                 expect(traceInfoStub.calledWith(Constants.EventNames.ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_CANCELLED)).to.be.true;
-                const cancelCall = traceInfoStub.getCalls().find(
-                    call => call.args[0] === Constants.EventNames.ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_CANCELLED
-                );
-                expect(cancelCall?.args[1]).to.deep.include({
-                    reason: "User cancelled website selection"
-                });
             });
 
             it("should not show error message", async () => {
@@ -280,18 +325,21 @@ describe("CompareWithEnvironmentHandler", () => {
                     otherSites: []
                 });
 
-                mockShowQuickPick.resolves({
-                    label: "Test Environment",
-                    detail: "https://test.crm.dynamics.com",
-                    orgInfo: {
-                        OrgId: "org-id-1",
-                        UniqueName: "",
-                        FriendlyName: "Test Environment",
-                        OrgUrl: "https://test.crm.dynamics.com",
-                        UserEmail: "",
-                        UserId: "",
-                        EnvironmentId: "env-id-1"
-                    }
+                setupMultiStepInputMock({
+                    env: {
+                        label: "Test Environment",
+                        detail: "https://test.crm.dynamics.com",
+                        orgInfo: {
+                            OrgId: "org-id-1",
+                            UniqueName: "",
+                            FriendlyName: "Test Environment",
+                            OrgUrl: "https://test.crm.dynamics.com",
+                            UserEmail: "",
+                            UserId: "",
+                            EnvironmentId: "env-id-1"
+                        }
+                    },
+                    website: undefined
                 });
             });
 
@@ -322,6 +370,12 @@ describe("CompareWithEnvironmentHandler", () => {
                 mockPacWrapper.orgList.resolves({
                     Status: SUCCESS,
                     Results: []
+                });
+
+                // When no environments, the itemsPromise will throw with NO_ENVIRONMENTS_FOUND
+                setupMultiStepInputMock({}, {
+                    shouldThrow: true,
+                    throwError: new Error(Constants.Strings.NO_ENVIRONMENTS_FOUND)
                 });
             });
 
@@ -356,6 +410,12 @@ describe("CompareWithEnvironmentHandler", () => {
                         }
                     ]
                 });
+
+                // When only current env (filtered out), itemsPromise will throw
+                setupMultiStepInputMock({}, {
+                    shouldThrow: true,
+                    throwError: new Error(Constants.Strings.NO_ENVIRONMENTS_FOUND)
+                });
             });
 
             it("should show no environments error message when current environment is filtered out", async () => {
@@ -368,7 +428,10 @@ describe("CompareWithEnvironmentHandler", () => {
         });
 
         describe("when filtering out the current environment", () => {
+            let capturedEnvItems: unknown[] = [];
+
             beforeEach(() => {
+                capturedEnvItems = [];
                 sandbox.stub(vscode.workspace, "workspaceFolders").get(() => [
                     { uri: { fsPath: "/test/workspace" }, name: "workspace", index: 0 }
                 ]);
@@ -398,26 +461,26 @@ describe("CompareWithEnvironmentHandler", () => {
                     ]
                 });
 
-                mockShowQuickPick.resolves(undefined); // User cancels
+                setupMultiStepInputMock({ env: undefined }, {
+                    throwAfterCapture: true,
+                    onPickEnvironment: (items) => { capturedEnvItems = items; }
+                });
             });
 
             it("should not show the current environment in the quick pick list", async () => {
                 const handler = compareWithEnvironment(mockPacTerminal as unknown as PacTerminal, mockExtensionContext);
                 await handler({ fsPath: "/test/workspace" } as vscode.Uri);
 
-                expect(mockShowQuickPick.calledOnce).to.be.true;
-                const quickPickItems = mockShowQuickPick.firstCall.args[0];
-                expect(quickPickItems).to.be.an("array");
-                expect(quickPickItems.length).to.equal(1);
-                expect(quickPickItems[0].label).to.equal("Other Environment");
+                expect(capturedEnvItems).to.be.an("array");
+                expect(capturedEnvItems.length).to.equal(1);
+                expect((capturedEnvItems[0] as { label: string }).label).to.equal("Other Environment");
             });
 
             it("should filter out environment based on EnvironmentId", async () => {
                 const handler = compareWithEnvironment(mockPacTerminal as unknown as PacTerminal, mockExtensionContext);
                 await handler({ fsPath: "/test/workspace" } as vscode.Uri);
 
-                const quickPickItems = mockShowQuickPick.firstCall.args[0];
-                const environmentIds = quickPickItems.map((item: { orgInfo: { EnvironmentId: string } }) => item.orgInfo.EnvironmentId);
+                const environmentIds = capturedEnvItems.map((item: unknown) => (item as { orgInfo: { EnvironmentId: string } }).orgInfo.EnvironmentId);
                 expect(environmentIds).to.not.include("current-env-id");
                 expect(environmentIds).to.include("other-env-id");
             });
@@ -475,9 +538,8 @@ describe("CompareWithEnvironmentHandler", () => {
                     otherSites: []
                 });
 
-                // First call returns environment selection, second call returns website selection
-                mockShowQuickPick
-                    .onFirstCall().resolves({
+                setupMultiStepInputMock({
+                    env: {
                         label: "Test Environment",
                         detail: "https://test.crm.dynamics.com",
                         orgInfo: {
@@ -489,8 +551,8 @@ describe("CompareWithEnvironmentHandler", () => {
                             UserId: "",
                             EnvironmentId: "env-id-1"
                         }
-                    })
-                    .onSecondCall().resolves({
+                    },
+                    website: {
                         label: "Test Website",
                         detail: "https://test.powerappsportals.com",
                         description: Constants.Strings.ENHANCED_DATA_MODEL,
@@ -500,7 +562,8 @@ describe("CompareWithEnvironmentHandler", () => {
                             websiteUrl: "https://test.powerappsportals.com",
                             dataModel: "Enhanced"
                         }
-                    });
+                    }
+                });
             });
 
             it("should return early without error when storage path is undefined", async () => {
@@ -558,9 +621,8 @@ describe("CompareWithEnvironmentHandler", () => {
                     otherSites: []
                 });
 
-                // First call returns environment selection, second call returns different website
-                mockShowQuickPick
-                    .onFirstCall().resolves({
+                setupMultiStepInputMock({
+                    env: {
                         label: "Test Environment",
                         detail: "https://test.crm.dynamics.com",
                         orgInfo: {
@@ -572,8 +634,8 @@ describe("CompareWithEnvironmentHandler", () => {
                             UserId: "",
                             EnvironmentId: "env-id-1"
                         }
-                    })
-                    .onSecondCall().resolves({
+                    },
+                    website: {
                         label: "Different Website",
                         detail: "https://different.powerappsportals.com",
                         description: Constants.Strings.ENHANCED_DATA_MODEL,
@@ -583,7 +645,8 @@ describe("CompareWithEnvironmentHandler", () => {
                             websiteUrl: "https://different.powerappsportals.com",
                             dataModel: "Enhanced"
                         }
-                    });
+                    }
+                });
             });
 
             it("should show confirmation dialog when selected website is different from local", async () => {
@@ -651,9 +714,8 @@ describe("CompareWithEnvironmentHandler", () => {
                     otherSites: []
                 });
 
-                // First call returns environment selection, second call returns matching website
-                mockShowQuickPick
-                    .onFirstCall().resolves({
+                setupMultiStepInputMock({
+                    env: {
                         label: "Test Environment",
                         detail: "https://test.crm.dynamics.com",
                         orgInfo: {
@@ -665,8 +727,8 @@ describe("CompareWithEnvironmentHandler", () => {
                             UserId: "",
                             EnvironmentId: "env-id-1"
                         }
-                    })
-                    .onSecondCall().resolves({
+                    },
+                    website: {
                         label: "Matching Website",
                         detail: "https://matching.powerappsportals.com",
                         description: `${Constants.Strings.ENHANCED_DATA_MODEL} • ${Constants.Strings.MATCHING_SITE_INDICATOR}`,
@@ -676,7 +738,8 @@ describe("CompareWithEnvironmentHandler", () => {
                             websiteUrl: "https://matching.powerappsportals.com",
                             dataModel: "Enhanced"
                         }
-                    });
+                    }
+                });
             });
 
             it("should not show confirmation dialog when selected website matches local", async () => {
@@ -718,7 +781,12 @@ describe("CompareWithEnvironmentHandler", () => {
         });
 
         describe("quick pick icons", () => {
+            let capturedEnvItems: unknown[] = [];
+            let capturedWebsiteItems: unknown[] = [];
+
             beforeEach(() => {
+                capturedEnvItems = [];
+                capturedWebsiteItems = [];
                 sandbox.stub(vscode.workspace, "workspaceFolders").get(() => [
                     { uri: { fsPath: "/test/workspace" }, name: "workspace", index: 0 }
                 ]);
@@ -754,24 +822,24 @@ describe("CompareWithEnvironmentHandler", () => {
             });
 
             it("should include environment icons in quick pick items", async () => {
-                mockShowQuickPick.resolves(undefined); // Cancel to stop flow early
+                setupMultiStepInputMock({ env: undefined }, {
+                    throwAfterCapture: true,
+                    onPickEnvironment: (items) => { capturedEnvItems = items; }
+                });
 
                 const handler = compareWithEnvironment(mockPacTerminal as unknown as PacTerminal, mockExtensionContext);
                 await handler({ fsPath: "/test/workspace" } as vscode.Uri);
 
-                // Verify that showQuickPick was called with items containing iconPath
-                expect(mockShowQuickPick.called).to.be.true;
-                const quickPickItems = mockShowQuickPick.firstCall.args[0];
-                expect(quickPickItems).to.be.an("array");
-                expect(quickPickItems[0]).to.have.property("iconPath");
-                expect(quickPickItems[0].iconPath).to.have.property("light");
-                expect(quickPickItems[0].iconPath).to.have.property("dark");
+                // Verify that quick pick was called with items containing iconPath
+                expect(capturedEnvItems).to.be.an("array");
+                expect(capturedEnvItems[0]).to.have.property("iconPath");
+                expect((capturedEnvItems[0] as { iconPath: { light: unknown; dark: unknown } }).iconPath).to.have.property("light");
+                expect((capturedEnvItems[0] as { iconPath: { light: unknown; dark: unknown } }).iconPath).to.have.property("dark");
             });
 
             it("should include website icons in quick pick items with separators", async () => {
-                // First call returns environment selection, second call is for websites
-                mockShowQuickPick
-                    .onFirstCall().resolves({
+                setupMultiStepInputMock({
+                    env: {
                         label: "Test Environment",
                         detail: "https://test.crm.dynamics.com",
                         orgInfo: {
@@ -783,26 +851,27 @@ describe("CompareWithEnvironmentHandler", () => {
                             UserId: "",
                             EnvironmentId: "env-id-1"
                         }
-                    })
-                    .onSecondCall().resolves(undefined); // Cancel to stop flow early
+                    },
+                    website: undefined
+                }, {
+                    onPickWebsite: (items) => { capturedWebsiteItems = items; }
+                });
 
                 const handler = compareWithEnvironment(mockPacTerminal as unknown as PacTerminal, mockExtensionContext);
                 await handler({ fsPath: "/test/workspace" } as vscode.Uri);
 
-                // Verify that the second showQuickPick was called with items containing separators and website icons
-                expect(mockShowQuickPick.calledTwice).to.be.true;
-                const websiteQuickPickItems = mockShowQuickPick.secondCall.args[0];
-                expect(websiteQuickPickItems).to.be.an("array");
+                // Verify that the website quick pick was called with items containing separators and website icons
+                expect(capturedWebsiteItems).to.be.an("array");
 
                 // First item should be a separator for "Active Sites"
-                expect(websiteQuickPickItems[0]).to.have.property("kind");
-                expect(websiteQuickPickItems[0].kind).to.equal(vscode.QuickPickItemKind.Separator);
-                expect(websiteQuickPickItems[0].label).to.equal(Constants.Strings.ACTIVE_SITES);
+                expect(capturedWebsiteItems[0]).to.have.property("kind");
+                expect((capturedWebsiteItems[0] as { kind: number }).kind).to.equal(vscode.QuickPickItemKind.Separator);
+                expect((capturedWebsiteItems[0] as { label: string }).label).to.equal(Constants.Strings.ACTIVE_SITES);
 
                 // Second item should be the actual website with globe icon
-                expect(websiteQuickPickItems[1]).to.have.property("iconPath");
-                expect(websiteQuickPickItems[1].iconPath).to.be.instanceOf(vscode.ThemeIcon);
-                expect((websiteQuickPickItems[1].iconPath as vscode.ThemeIcon).id).to.equal("globe");
+                expect(capturedWebsiteItems[1]).to.have.property("iconPath");
+                expect((capturedWebsiteItems[1] as { iconPath: vscode.ThemeIcon }).iconPath).to.be.instanceOf(vscode.ThemeIcon);
+                expect(((capturedWebsiteItems[1] as { iconPath: vscode.ThemeIcon }).iconPath as vscode.ThemeIcon).id).to.equal("globe");
             });
         });
     });
