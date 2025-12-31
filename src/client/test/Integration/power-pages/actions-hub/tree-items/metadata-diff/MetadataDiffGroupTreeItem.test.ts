@@ -35,7 +35,7 @@ describe("MetadataDiffGroupTreeItem", () => {
         it("should have the base label when no results", () => {
             const treeItem = new MetadataDiffGroupTreeItem();
 
-            expect(treeItem.label).to.equal("Metadata Diff");
+            expect(treeItem.label).to.equal("Site Comparison");
         });
 
         it("should have the same label even when results exist", () => {
@@ -56,7 +56,7 @@ describe("MetadataDiffGroupTreeItem", () => {
             MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "test-website-id", "test-environment-id");
             const treeItem = new MetadataDiffGroupTreeItem();
 
-            expect(treeItem.label).to.equal("Metadata Diff");
+            expect(treeItem.label).to.equal("Site Comparison");
         });
 
         it("should have None collapsible state when no results", () => {
