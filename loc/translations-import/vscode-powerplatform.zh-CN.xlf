@@ -70,10 +70,6 @@
         <source xml:lang="en">Add content snippet name (name should be unique)</source>
         <target state="translated">添加内容片段名称(名称应是唯一的)</target>
       </trans-unit>
-      <trans-unit id="++CODE++6b02e0d363a4af1c95eef50364bb0202c8b250aa05a48a69e68fd7787b4b0632">
-        <source xml:lang="en">Added</source>
-        <target state="translated">已添加</target>
-      </trans-unit>
       <trans-unit id="++CODE++15593a5b5afa7d2fd80e213e5035a35bb260e4cb5c1b18bca70583b796f11a5c">
         <source xml:lang="en">Added Locally</source>
         <target state="translated">已在本地添加</target>
@@ -93,7 +89,7 @@
       </trans-unit>
       <trans-unit id="++CODE++a52ace420f2175d08b1577a1bea5445e36801229c074ef9ed6c55a73401fd9c2">
         <source xml:lang="en">All</source>
-        <target state="new">All</target>
+        <target state="translated">全部</target>
       </trans-unit>
       <trans-unit id="++CODE++8890e663481705393ed3b1b4642095a11329e21320824ed567e383a12ea888f4">
         <source xml:lang="en">All changed files are binary files (e.g., images) and cannot be displayed in the diff viewer. You can view them individually in the file tree.</source>
@@ -119,6 +115,19 @@
         <source xml:lang="en">Are you sure you want to delete the Auth Profile {0}-{1}?</source>
         <note>{0} is the user name, {1} is the URL of environment of the auth profile</note>
         <target state="translated">是否确定要删除身份验证配置文件 {0}-{1}?</target>
+      </trans-unit>
+      <trans-unit id="++CODE++dac1196b143f32a5c733daa9a35421763d3d78be99ff690819989762a3611da6">
+        <source xml:lang="en">Are you sure you want to discard all {0} local changes in '{1}'?
+
+Local path: {2}
+
+This action cannot be undone.</source>
+        <note>Confirmation message before discarding all local changes in a site.</note>
+        <target state="new">Are you sure you want to discard all {0} local changes in '{1}'?
+
+Local path: {2}
+
+This action cannot be undone.</target>
       </trans-unit>
       <trans-unit id="++CODE++1d9cd153bf20c28e77061a9743a69cc8850f21221a1871f1c13b27e8470a2688">
         <source xml:lang="en">Are you sure you want to discard local changes to '{0}'? This action cannot be undone.</source>
@@ -239,19 +248,19 @@
       </trans-unit>
       <trans-unit id="++CODE++83b12c2216efb4fdc924e1deb5182e905e4926ed0c1c324d467107f46d5a26a9">
         <source xml:lang="en">Clear</source>
-        <target state="new">Clear</target>
+        <target state="translated">清除</target>
       </trans-unit>
       <trans-unit id="++CODE++ddceb7adfdb8816e4747bc48a2221702e830340e5596a701dc0993766eba5e60">
         <source xml:lang="en">Clear All</source>
-        <target state="new">Clear All</target>
+        <target state="translated">全部清除</target>
       </trans-unit>
       <trans-unit id="++CODE++f404fdaebef56580458d681961f3f87aeee6d5b864fa2a5f4e10873a65d81d7a">
         <source xml:lang="en">Clear all results?</source>
-        <target state="new">Clear all results?</target>
+        <target state="translated">清除所有结果?</target>
       </trans-unit>
       <trans-unit id="++CODE++26ed15c8dd832c026cd98c581dcb29966b8181619b4c51247c04eceece2bb8b7">
         <source xml:lang="en">Clear result?</source>
-        <target state="new">Clear result?</target>
+        <target state="translated">清除结果?</target>
       </trans-unit>
       <trans-unit id="++CODE++7aaafd1c6d6875eb1cd67e841f87457e929c922a18fef7c1452c1e1a4c036456">
         <source xml:lang="en">Clearing cache. See [details](https://aka.ms/pages-clear-cache).</source>
@@ -262,6 +271,10 @@ The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).
       <trans-unit id="++CODE++b1ffea87cc95d3bfa308b929bb907b43e7d91be038e706a67142b15c571da334">
         <source xml:lang="en">Click to authenticate with a matching account</source>
         <target state="translated">单击以使用匹配的帐户进行身份验证</target>
+      </trans-unit>
+      <trans-unit id="++CODE++ee9d4bb8e9f94832366fe390fde5efc4b555d1464ef6023d3c0b25de58223bcc">
+        <source xml:lang="en">Click to compare your local site with an environment</source>
+        <target state="new">Click to compare your local site with an environment</target>
       </trans-unit>
       <trans-unit id="++CODE++7d9eb7acb13e24625c404401d8e88b2350e32162455885f18276cf802f7701ed">
         <source xml:lang="en">Close</source>
@@ -369,6 +382,14 @@ Check the CodeQL extension panel for available queries.</source>
         <source xml:lang="en">Command failed with exit code: {0}</source>
         <target state="translated">命令失败，退出代码为: {0}</target>
       </trans-unit>
+      <trans-unit id="++CODE++d73890ab56fd9e1ff5349b7bdb41fe0d848c5960c096b30357e26b912456f21f">
+        <source xml:lang="en">Compare site with environment</source>
+        <target state="new">Compare site with environment</target>
+      </trans-unit>
+      <trans-unit id="++CODE++3c69bfaf47b25fe112854a5ba01f4d882248d17e6e76c7d1b0a9da8dc3a7929a">
+        <source xml:lang="en">Compare site...</source>
+        <target state="new">Compare site...</target>
+      </trans-unit>
       <trans-unit id="++CODE++95de5784f48c7fee97755bb29a90a128546a6a30201be3c73493229230ea7f72">
         <source xml:lang="en">Compare: {0} (Remote ↔ Local)</source>
         <note>Title for the multi-diff editor when comparing all files in a site.</note>
@@ -430,7 +451,7 @@ Check the CodeQL extension panel for available queries.</source>
       </trans-unit>
       <trans-unit id="++CODE++217ec8ef23f31be4473af7c3e69f7965308bd2284d53eba7daf17b791db5fc74">
         <source xml:lang="en">Created On:</source>
-        <target state="new">Created On:</target>
+        <target state="translated">创建时间:</target>
       </trans-unit>
       <trans-unit id="++CODE++47234b3978427950c2a4ef0161f6dc8484b7faf44b21d30616d5d019eebaafd8">
         <source xml:lang="en">Created PowerPages config file at {0} with default query suite: {1}</source>
@@ -452,7 +473,7 @@ Check the CodeQL extension panel for available queries.</source>
       </trans-unit>
       <trans-unit id="++CODE++dc15ecabf1e2c1c145b8ccbc7ef53c0e9b2a90f18414ba9887c2ae9aaa6575cd">
         <source xml:lang="en">Creator:</source>
-        <target state="new">Creator:</target>
+        <target state="translated">创建者:</target>
       </trans-unit>
       <trans-unit id="++CODE++ec8fd606d46114985d2f628dc67992093b8abb32489b3cbbfbb86bba96925943">
         <source xml:lang="en">Creator: {0}</source>
@@ -473,7 +494,7 @@ Check the CodeQL extension panel for available queries.</source>
       </trans-unit>
       <trans-unit id="++CODE++ec1f0e40eb1d8b21b1c3e73679727c461ad9922cea5648859e5446ded7f9c97f">
         <source xml:lang="en">Data Model:</source>
-        <target state="new">Data Model:</target>
+        <target state="translated">数据模型:</target>
       </trans-unit>
       <trans-unit id="++CODE++e159063579c9e875ce444b930e8feb5d4fc1a93af6acb47d7a5cf9d5c5241153">
         <source xml:lang="en">Data model version: {0}</source>
@@ -508,10 +529,6 @@ Check the CodeQL extension panel for available queries.</source>
         <source xml:lang="en">Default Environment: {0}</source>
         <note>The {0} represents profile's resource/environment URL</note>
         <target state="translated">默认环境: {0}</target>
-      </trans-unit>
-      <trans-unit id="++CODE++b48ff39c2e0f5451b9b29b09c2a74d2760db230749ffd48a6e901cc91fef9a8d">
-        <source xml:lang="en">Deleted</source>
-        <target state="translated">已删除</target>
       </trans-unit>
       <trans-unit id="++CODE++bb1de92420a69402b065edb03f642d93984ea080582fb8b1ff49fee3aab7cab1">
         <source xml:lang="en">Deleted Locally</source>
@@ -797,6 +814,10 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
         <source xml:lang="en">File: {0}</source>
         <target state="translated">文件: {0}</target>
       </trans-unit>
+      <trans-unit id="++CODE++cc2cc5f1256a46b0f5c8fc579d2513fdd4a8ae48d288334b5682d88fba9702da">
+        <source xml:lang="en">Find differences between your remote site and local workspace</source>
+        <target state="new">Find differences between your remote site and local workspace</target>
+      </trans-unit>
       <trans-unit id="++CODE++4c152c6eaba506f1e585f1fe8424b694874ccf652f4bdebb5e333ed518e9e428">
         <source xml:lang="en">Found CodeQL CLI at: {0}</source>
         <target state="translated">在以下位置找到了 CodeQL CLI: {0}</target>
@@ -963,6 +984,10 @@ Return to this chat and @powerpages can help you write and edit your website cod
         <source xml:lang="en">Line: {0}</source>
         <target state="translated">行: {0}</target>
       </trans-unit>
+      <trans-unit id="++CODE++47d2a515ef2f05b87d688656286a61e4f743da4b878684c7654969db17711c40">
+        <source xml:lang="en">Loading...</source>
+        <target state="new">Loading...</target>
+      </trans-unit>
       <trans-unit id="++CODE++8c31e6e7223097e2e4847773c47a4efab6aaf79deeecc92a7759891c74976dde">
         <source xml:lang="en">Local</source>
         <target state="translated">本地</target>
@@ -1008,10 +1033,6 @@ Return to this chat and @powerpages can help you write and edit your website cod
       <trans-unit id="++CODE++d39a5fa0fca9df105f95b7dfa9a2705ccddaead33bd3119052baabe6c923a85d">
         <source xml:lang="en">Metadata Diff JSON</source>
         <target state="translated">元数据差异 JSON</target>
-      </trans-unit>
-      <trans-unit id="++CODE++7accb685e6522ef72613a3d16ae7f3ce6ee978ac591c512054ec9e6bc2efef00">
-        <source xml:lang="en">Metadata Diff Report</source>
-        <target state="translated">元数据差异报告</target>
       </trans-unit>
       <trans-unit id="++CODE++b1c8258fb401975727a82d9ce473af0a600f076cc7b73dbd16524e815cf4153d">
         <source xml:lang="en">Microsoft wants your feedback</source>
@@ -1100,7 +1121,7 @@ URL: {1}
       </trans-unit>
       <trans-unit id="++CODE++5f22b9670e54200b4ccdea959012a4670d9346315793eefd80e4290571492262">
         <source xml:lang="en">No files in this category</source>
-        <target state="new">No files in this category</target>
+        <target state="translated">此类别中没有文件</target>
       </trans-unit>
       <trans-unit id="++CODE++e75c23acb3f88e840f326048df92fcfd3350ec3b775a5c51e6ff6754f0f9f7a1">
         <source xml:lang="en">No issues found!</source>
@@ -1281,10 +1302,6 @@ URL: {1}
         <source xml:lang="en">Power Pages Server Logic detected! You can now debug your server logic files with breakpoints and IntelliSense.</source>
         <target state="translated">检测到 Power Pages 服务器逻辑!现在可以使用断点和 IntelliSense 调试服务器逻辑文件。</target>
       </trans-unit>
-      <trans-unit id="++CODE++db40be71cd139d96719d08f10c843b8bf1c2a0d3d2da06902109a758a98bc9f9">
-        <source xml:lang="en">Power Pages Site Comparison Results</source>
-        <target state="translated">Power Pages 网站比较结果</target>
-      </trans-unit>
       <trans-unit id="++CODE++04ac907168ac84b45263503d1306565bece49c4ae3e8ef4af310b304f03ab6d4">
         <source xml:lang="en">Power Pages site download completed successfully. Would you like to open the downloaded site folder?</source>
         <target state="translated">Power Pages 站点下载已成功完成。是否要打开下载的站点文件夹?</target>
@@ -1292,6 +1309,10 @@ URL: {1}
       <trans-unit id="++CODE++cce89cd3a0f118dafd3173f6444abdcd2b9782153af1b6bfa8f63ef3d4b68268">
         <source xml:lang="en">Power Pages studio URL is not available</source>
         <target state="translated">Power Pages 工作室 URL 不可用</target>
+      </trans-unit>
+      <trans-unit id="++CODE++41024d68d0b449f0dfc48541fe0be218aa6acc1cc982ef1a701b759f037fecfa">
+        <source xml:lang="en">Power Platform Tools - Site Comparison</source>
+        <target state="new">Power Platform Tools - Site Comparison</target>
       </trans-unit>
       <trans-unit id="++CODE++8ce54044bb9e895666fd98c1b6e497655a4c2a7239b2187599972e9d81bd0f3e">
         <source xml:lang="en">Power Platform Tools VS Code Extension</source>
@@ -1347,6 +1368,10 @@ URL: {1}
         <source xml:lang="en">Refreshing comparison for {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show download output"))...</source>
         <note>This is a markdown formatting which must persist across translations.</note>
         <target state="translated">正在刷新 {0} 的比较([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show download output"))...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++ffa98e02f7ce33fc935f02b3b668f6ad57661814dade5f41453fbee2b70cdd95">
+        <source xml:lang="en">Remote</source>
+        <target state="new">Remote</target>
       </trans-unit>
       <trans-unit id="++CODE++95e154398a4bc0091aa4d6b607472ac5a89e41fbc84a3a49f823314d6de9eebc">
         <source xml:lang="en">Replace</source>
@@ -1476,7 +1501,11 @@ URL: {1}
       </trans-unit>
       <trans-unit id="++CODE++413f481712d78c8cce54fc6b1ef2da1b4e35e9584c11fcdc51509c19017e2812">
         <source xml:lang="en">Site Comparison</source>
-        <target state="new">Site Comparison</target>
+        <target state="translated">网站比较</target>
+      </trans-unit>
+      <trans-unit id="++CODE++87fa4c14343dbe871004d198588448a3b43c12dae48f8b1cb63d53e8e2687a29">
+        <source xml:lang="en">Site Comparison Report</source>
+        <target state="new">Site Comparison Report</target>
       </trans-unit>
       <trans-unit id="++CODE++524bca0347e50e3801bebf27374124b3babf072729b4da4bcc45ef5c385ee8f4">
         <source xml:lang="en">Site Details</source>
@@ -1488,7 +1517,7 @@ URL: {1}
       </trans-unit>
       <trans-unit id="++CODE++4b7de12dbef5cc145cf5b8b08743a60d279d6ee27b8b13470e5f06bc21153867">
         <source xml:lang="en">Site Visibility:</source>
-        <target state="new">Site Visibility:</target>
+        <target state="translated">站点可见性:</target>
       </trans-unit>
       <trans-unit id="++CODE++4fa72d80ab1b04e31f450bacc89bff526a5e52e3d104d153b3b493b108330b3c">
         <source xml:lang="en">Site download cancelled. Authentication is required to proceed.</source>
@@ -1538,6 +1567,11 @@ URL: {1}
       <trans-unit id="++CODE++155f816c0407310c0dab222493370773e045ee7fe04e6c9a951b07f495531264">
         <source xml:lang="en">Submit</source>
         <target state="translated">提交</target>
+      </trans-unit>
+      <trans-unit id="++CODE++4bcd6903494ba202e376e60698d4f937a3515af0fb4bdcad4875e4f76736b0dd">
+        <source xml:lang="en">Successfully discarded all {0} local changes in '{1}'.</source>
+        <note>Success message after discarding all local changes in a site.</note>
+        <target state="new">Successfully discarded all {0} local changes in '{1}'.</target>
       </trans-unit>
       <trans-unit id="++CODE++9543efee4b5aadd6f27f5d4a06361b18d153aaf0b66e0121622fb9fd3581fdf8">
         <source xml:lang="en">Successfully discarded local changes to '{0}'.</source>
@@ -1621,11 +1655,11 @@ URL: {1}
       </trans-unit>
       <trans-unit id="++CODE++e7de2855a45712e1d967171e4d86f37d4014c2f80a515bc552ed4c4a2984c3e4">
         <source xml:lang="en">This will close all active comparison views. Your local files will not be affected.</source>
-        <target state="new">This will close all active comparison views. Your local files will not be affected.</target>
+        <target state="translated">这将关闭所有活动比较视图。本地文件不会受到影响。</target>
       </trans-unit>
       <trans-unit id="++CODE++f9463baef8e56e06230fca093d61bb43810240340033d21ecf4df81e02579913">
         <source xml:lang="en">This will close the active comparison view. Your local files will not be affected.</source>
-        <target state="new">This will close the active comparison view. Your local files will not be affected.</target>
+        <target state="translated">这将关闭活动比较视图。本地文件不会受到影响。</target>
       </trans-unit>
       <trans-unit id="++CODE++75670337a398f9840d2951dbc6746497caec6da9dd506ecff57ef79d59c6280f">
         <source xml:lang="en">Thumbs Down</source>
@@ -1651,6 +1685,10 @@ URL: {1}
       <trans-unit id="++CODE++9ffd094afb84d3a84bbf1b4ec8210ba5344169e9b2726ce366ccf3e231b7e9b7">
         <source xml:lang="en">Total Changes</source>
         <target state="translated">总更改数</target>
+      </trans-unit>
+      <trans-unit id="++CODE++1ad14134a4f26b4cf2f8e203eb324fab77722a2f5368f489162d3d2319d01060">
+        <source xml:lang="en">Total Files:</source>
+        <target state="new">Total Files:</target>
       </trans-unit>
       <trans-unit id="++CODE++4a7c431a6572c68bba17c3a5d858adbf5112462574953baf4d7d2fd0619807fe">
         <source xml:lang="en">Try @powerpages with GitHub Copilot</source>
@@ -1729,6 +1767,10 @@ URL: {1}
         <source xml:lang="en">Upload failed. Please try again later.</source>
         <target state="translated">上传失败。请稍后重试。</target>
       </trans-unit>
+      <trans-unit id="++CODE++037bfba715811960dfb62b81a99d5002835f73a9c44bdd6661ebc222d8538e2b">
+        <source xml:lang="en">Use File → Open Folder to select a folder with a Power Pages site</source>
+        <target state="new">Use File → Open Folder to select a folder with a Power Pages site</target>
+      </trans-unit>
       <trans-unit id="++CODE++c86daff3d88f7b1f615467872994ef13dcbc1c55e10105d71f398c721650c9c2">
         <source xml:lang="en">Use current site folder</source>
         <target state="translated">使用当前站点文件夹</target>
@@ -1800,7 +1842,7 @@ URL: {1}
       </trans-unit>
       <trans-unit id="++CODE++f61a5b01e081338759cfc22a2b8afcc35ab7a22a36585efe93fc1ac2a5afe124">
         <source xml:lang="en">Website ID:</source>
-        <target state="new">Website ID:</target>
+        <target state="translated">网站 ID:</target>
       </trans-unit>
       <trans-unit id="++CODE++d3eaa7bf5377b15781ad4c0f43e4da94b9a2bd485ddbbbe62a2c3d53c5c7fe4a">
         <source xml:lang="en">Website Id: {0}</source>
@@ -1809,7 +1851,7 @@ URL: {1}
       </trans-unit>
       <trans-unit id="++CODE++337c1eee64c216207c0df5634e89e0f1216a96d5430e57344a797452d8627757">
         <source xml:lang="en">Website URL:</source>
-        <target state="new">Website URL:</target>
+        <target state="translated">网站 URL:</target>
       </trans-unit>
       <trans-unit id="++CODE++4f5909ac007d8a897ec18ede71cdf8f6b4af3bbe78bae2f13871d50a3cebb3f6">
         <source xml:lang="en">Website Url: {0}</source>
@@ -2009,7 +2051,7 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.debugServerLogic.title">
         <source xml:lang="en">Debug Current Server Logic File</source>
-        <target state="new">Debug Current Server Logic File</target>
+        <target state="translated">调试当前服务器逻辑文件</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.deleteAuthProfile.title">
         <source xml:lang="en">Delete Auth Profile</source>
@@ -2018,6 +2060,10 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
       <trans-unit id="pacCLI.disableTelemetry.title">
         <source xml:lang="en">Disable PAC Telemetry</source>
         <target state="translated">禁用 PAC 遥测</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.discardSite.title">
+        <source xml:lang="en">Discard All Local Changes</source>
+        <target state="new">Discard All Local Changes</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFolder.title">
         <source xml:lang="en">Discard All Local Changes</source>
@@ -2053,11 +2099,11 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.generateHtmlReport.title">
         <source xml:lang="en">Export as HTML Report</source>
-        <target state="new">Export as HTML Report</target>
+        <target state="translated">导出为 HTML 报告</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.export.title">
         <source xml:lang="en">Export as JSON</source>
-        <target state="new">Export as JSON</target>
+        <target state="translated">导出为 JSON</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.title">
         <source xml:lang="en">File explorer</source>
@@ -2238,7 +2284,7 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.runServerLogic.title">
         <source xml:lang="en">Run Current Server Logic File</source>
-        <target state="new">Run Current Server Logic File</target>
+        <target state="translated">运行当前服务器逻辑文件</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.saveConflict.title">
         <source xml:lang="en">Save conflict</source>
