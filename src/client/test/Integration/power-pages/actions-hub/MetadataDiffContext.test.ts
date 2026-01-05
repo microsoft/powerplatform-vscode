@@ -560,4 +560,183 @@ describe("MetadataDiffContext", () => {
             expect(MetadataDiffContext.allSiteResults).to.have.lengthOf(2);
         });
     });
+
+    describe("removeFile", () => {
+        it("should remove a single file from comparison results", () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/file1.txt",
+                    remotePath: "/remote/file1.txt",
+                    relativePath: "file1.txt",
+                    status: "modified"
+                },
+                {
+                    localPath: "/local/file2.txt",
+                    remotePath: "/remote/file2.txt",
+                    relativePath: "file2.txt",
+                    status: "added"
+                }
+            ];
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "website-123", "env-456");
+
+            MetadataDiffContext.removeFile("file1.txt", "Test Site");
+
+            expect(MetadataDiffContext.allSiteResults[0].comparisonResults).to.have.lengthOf(1);
+            expect(MetadataDiffContext.allSiteResults[0].comparisonResults[0].relativePath).to.equal("file2.txt");
+        });
+
+        it("should remove site when last file is removed", () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/file.txt",
+                    remotePath: "/remote/file.txt",
+                    relativePath: "file.txt",
+                    status: "modified"
+                }
+            ];
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "website-123", "env-456");
+
+            MetadataDiffContext.removeFile("file.txt", "Test Site");
+
+            expect(MetadataDiffContext.isActive).to.be.false;
+        });
+
+        it("should fire onChanged event when file is removed", () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/file.txt",
+                    remotePath: "/remote/file.txt",
+                    relativePath: "file.txt",
+                    status: "modified"
+                }
+            ];
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "website-123", "env-456");
+
+            const onChangedSpy = sandbox.spy();
+            MetadataDiffContext.onChanged(onChangedSpy);
+
+            MetadataDiffContext.removeFile("file.txt", "Test Site");
+
+            expect(onChangedSpy.calledOnce).to.be.true;
+        });
+    });
+
+    describe("removeFiles", () => {
+        it("should remove multiple files from comparison results in a single operation", () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/file1.txt",
+                    remotePath: "/remote/file1.txt",
+                    relativePath: "file1.txt",
+                    status: "modified"
+                },
+                {
+                    localPath: "/local/file2.txt",
+                    remotePath: "/remote/file2.txt",
+                    relativePath: "file2.txt",
+                    status: "added"
+                },
+                {
+                    localPath: "/local/file3.txt",
+                    remotePath: "/remote/file3.txt",
+                    relativePath: "file3.txt",
+                    status: "deleted"
+                }
+            ];
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "website-123", "env-456");
+
+            MetadataDiffContext.removeFiles(new Set(["file1.txt", "file3.txt"]), "Test Site");
+
+            expect(MetadataDiffContext.allSiteResults[0].comparisonResults).to.have.lengthOf(1);
+            expect(MetadataDiffContext.allSiteResults[0].comparisonResults[0].relativePath).to.equal("file2.txt");
+        });
+
+        it("should remove site when all files are removed", () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/file1.txt",
+                    remotePath: "/remote/file1.txt",
+                    relativePath: "file1.txt",
+                    status: "modified"
+                },
+                {
+                    localPath: "/local/file2.txt",
+                    remotePath: "/remote/file2.txt",
+                    relativePath: "file2.txt",
+                    status: "added"
+                }
+            ];
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "website-123", "env-456");
+
+            MetadataDiffContext.removeFiles(new Set(["file1.txt", "file2.txt"]), "Test Site");
+
+            expect(MetadataDiffContext.isActive).to.be.false;
+        });
+
+        it("should fire onChanged event only once when removing multiple files", () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/file1.txt",
+                    remotePath: "/remote/file1.txt",
+                    relativePath: "file1.txt",
+                    status: "modified"
+                },
+                {
+                    localPath: "/local/file2.txt",
+                    remotePath: "/remote/file2.txt",
+                    relativePath: "file2.txt",
+                    status: "added"
+                },
+                {
+                    localPath: "/local/file3.txt",
+                    remotePath: "/remote/file3.txt",
+                    relativePath: "file3.txt",
+                    status: "deleted"
+                }
+            ];
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "website-123", "env-456");
+
+            const onChangedSpy = sandbox.spy();
+            MetadataDiffContext.onChanged(onChangedSpy);
+
+            MetadataDiffContext.removeFiles(new Set(["file1.txt", "file2.txt", "file3.txt"]), "Test Site");
+
+            expect(onChangedSpy.calledOnce).to.be.true;
+        });
+
+        it("should not fire onChanged event when removing empty set", () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/file.txt",
+                    remotePath: "/remote/file.txt",
+                    relativePath: "file.txt",
+                    status: "modified"
+                }
+            ];
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "website-123", "env-456");
+
+            const onChangedSpy = sandbox.spy();
+            MetadataDiffContext.onChanged(onChangedSpy);
+
+            MetadataDiffContext.removeFiles(new Set(), "Test Site");
+
+            expect(onChangedSpy.called).to.be.false;
+        });
+
+        it("should handle non-existent files gracefully", () => {
+            const results: IFileComparisonResult[] = [
+                {
+                    localPath: "/local/file.txt",
+                    remotePath: "/remote/file.txt",
+                    relativePath: "file.txt",
+                    status: "modified"
+                }
+            ];
+            MetadataDiffContext.setResults(results, "Test Site", "Local Test Site", "Test Environment", "website-123", "env-456");
+
+            MetadataDiffContext.removeFiles(new Set(["nonexistent.txt"]), "Test Site");
+
+            expect(MetadataDiffContext.allSiteResults[0].comparisonResults).to.have.lengthOf(1);
+        });
+    });
 });
