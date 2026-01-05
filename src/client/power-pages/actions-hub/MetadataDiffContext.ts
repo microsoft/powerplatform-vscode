@@ -220,21 +220,6 @@ class MetadataDiffContextClass {
     }
 
     /**
-     * Clear results for a specific site by site name
-     * @deprecated Use clearSiteByKey instead for better precision
-     */
-    public clearSite(siteName: string): void {
-        // Find and remove the site by name (backward compatibility)
-        for (const [key, result] of this._siteResults.entries()) {
-            if (result.siteName === siteName) {
-                this._siteResults.delete(key);
-                break;
-            }
-        }
-        this._onChanged.fire();
-    }
-
-    /**
      * Remove a specific file from the comparison results for a site.
      * If this is the last file in the site, the site is removed entirely.
      * @param relativePath The relative path of the file to remove
@@ -246,6 +231,35 @@ class MetadataDiffContextClass {
             if (siteResult.siteName === siteName) {
                 siteResult.comparisonResults = siteResult.comparisonResults.filter(
                     result => result.relativePath !== relativePath
+                );
+
+                if (siteResult.comparisonResults.length === 0) {
+                    this._siteResults.delete(key);
+                }
+
+                this._onChanged.fire();
+                break;
+            }
+        }
+    }
+
+    /**
+     * Remove multiple files from the comparison results for a site in a single batch operation.
+     * This is more efficient than calling removeFile multiple times as it only triggers one UI refresh.
+     * If all files are removed, the site is removed entirely.
+     * @param relativePaths Set of relative paths of files to remove
+     * @param siteName The name of the site
+     */
+    public removeFiles(relativePaths: Set<string>, siteName: string): void {
+        if (relativePaths.size === 0) {
+            return;
+        }
+
+        // Find the site by name
+        for (const [key, siteResult] of this._siteResults.entries()) {
+            if (siteResult.siteName === siteName) {
+                siteResult.comparisonResults = siteResult.comparisonResults.filter(
+                    result => !relativePaths.has(result.relativePath)
                 );
 
                 if (siteResult.comparisonResults.length === 0) {

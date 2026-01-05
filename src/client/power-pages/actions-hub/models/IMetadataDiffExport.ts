@@ -21,16 +21,24 @@ export interface IMetadataDiffExport {
     extensionVersion: string;
     /** ISO 8601 timestamp when the export was created */
     exportedAt: string;
-    /** ID of the website being compared */
-    websiteId: string;
-    /** Name of the website being compared */
-    websiteName: string;
+    /** ID of the local website */
+    localWebsiteId: string;
+    /** Name of the local website */
+    localWebsiteName: string;
+    /** ID of the remote website */
+    remoteWebsiteId: string;
+    /** Name of the remote website */
+    remoteWebsiteName: string;
     /** ID of the environment */
     environmentId: string;
     /** Name of the environment */
     environmentName: string;
-    /** Name of the local site */
-    localSiteName: string;
+    /** @deprecated Use localWebsiteId instead */
+    websiteId?: string;
+    /** @deprecated Use remoteWebsiteName instead */
+    websiteName?: string;
+    /** @deprecated Use localWebsiteName instead */
+    localSiteName?: string;
     /** Data model version of the site (1 = Standard, 2 = Enhanced) */
     dataModelVersion?: 1 | 2;
     /** The website URL */
