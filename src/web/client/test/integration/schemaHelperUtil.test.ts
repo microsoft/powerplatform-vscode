@@ -53,10 +53,9 @@ describe("schemaHelperUtil", () => {
 
     it("getEntity_withPortalschemav2_shouldReturnEntitiesSchemaMap", () => {
         //Act
-        const schema = "portalschemav2";
         const entity = "webPages";
         const queryParamsMap = new Map<string, string>([
-            [schemaKey.SCHEMA_VERSION, schema],
+            [Constants.queryParameters.ORG_ID, "orgId"],
         ]);
 
         const entityMap = new Map<string, string>([["test", "Entity"]]);
@@ -76,6 +75,8 @@ describe("schemaHelperUtil", () => {
         sinon
             .stub(portalSchemaReader, "getEntitiesSchemaMap")
             .returns(entitiesSchemaMap);
+
+        WebExtensionContext.schema = Constants.portalSchemaVersion.V2;
         WebExtensionContext.setWebExtensionContext("", "", queryParamsMap);
         //Action
         const result = getEntity(entity);
@@ -85,10 +86,9 @@ describe("schemaHelperUtil", () => {
 
     it("getEntity_whenQueryParamsMapIsNotPortalschemav1_shouldReturnEntitiesSchemaMap", () => {
         //Act
-        const schema = "portalschemav1";
         const entity = "webPages";
         const queryParamsMap = new Map<string, string>([
-            [schemaKey.SCHEMA_VERSION, schema],
+            [Constants.queryParameters.ORG_ID, "orgId"],
         ]);
 
         const entityMap = new Map<string, string>([["test", "Entity"]]);
@@ -108,6 +108,8 @@ describe("schemaHelperUtil", () => {
         sinon
             .stub(portalSchemaReader, "getEntitiesSchemaMap")
             .returns(entitiesSchemaMap);
+
+        WebExtensionContext.schema = Constants.portalSchemaVersion.V1;
         WebExtensionContext.setWebExtensionContext("", "", queryParamsMap);
 
         //Action
@@ -119,10 +121,9 @@ describe("schemaHelperUtil", () => {
 
     it("getEntity_whenEntityDoNotMapAndschemaIsportalschemav2_shouldReturnEmptySchema", () => {
         //Act
-        const schema = "portalschemav2";
         const entity = "webPages1";
         const queryParamsMap = new Map<string, string>([
-            [schemaKey.SCHEMA_VERSION, schema],
+            [Constants.queryParameters.ORG_ID, "orgId"],
         ]);
 
         sinon
@@ -136,6 +137,8 @@ describe("schemaHelperUtil", () => {
         sinon
             .stub(portalSchemaReader, "getEntitiesSchemaMap")
             .returns(new Map());
+
+        WebExtensionContext.schema = Constants.portalSchemaVersion.V2;
         WebExtensionContext.setWebExtensionContext("", "", queryParamsMap);
         //Action
         const result = getEntity(entity);
@@ -146,10 +149,9 @@ describe("schemaHelperUtil", () => {
 
     it("getEntity_whenEntityDoNotMapAndschemaIsNotPortalschemav2_shouldReturnEmptySchema", () => {
         //Act
-        const schema = "portalschemav1";
         const entity = "webPages";
         const queryParamsMap = new Map<string, string>([
-            [schemaKey.SCHEMA_VERSION, schema],
+            [Constants.queryParameters.ORG_ID, "orgId"],
         ]);
 
         sinon
@@ -163,6 +165,8 @@ describe("schemaHelperUtil", () => {
         sinon
             .stub(portalSchemaReader, "getEntitiesSchemaMap")
             .returns(new Map());
+
+        WebExtensionContext.schema = Constants.portalSchemaVersion.V1;
         WebExtensionContext.setWebExtensionContext("", "", queryParamsMap);
         //Action
         const result = getEntity(entity);

@@ -5,8 +5,7 @@
 
 import {
     MIMETYPE,
-    httpMethod,
-    queryParameters,
+    httpMethod
 } from "../common/constants";
 import WebExtensionContext from "../WebExtensionContext";
 import {
@@ -93,9 +92,7 @@ export function getRequestURL(
         )
         .replace(
             "{websiteId}",
-            WebExtensionContext.urlParametersMap.get(
-                queryParameters.WEBSITE_ID
-            ) as string
+            WebExtensionContext.websiteId
         )
         .replace("{entityId}", entityId);
 }
@@ -138,9 +135,7 @@ export function getCustomRequestURL(
         )
         .replace(
             "{websiteId}",
-            WebExtensionContext.urlParametersMap.get(
-                queryParameters.WEBSITE_ID
-            ) as string
+            WebExtensionContext.websiteId
         );
 
     return requestUrl;

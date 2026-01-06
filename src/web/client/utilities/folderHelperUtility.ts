@@ -4,10 +4,7 @@
  */
 
 import WebExtensionContext from "../WebExtensionContext";
-import {
-    httpMethod,
-    queryParameters,
-} from "../common/constants";
+import { httpMethod } from "../common/constants";
 import { IEntityRequestUrl } from "../common/interfaces";
 import { conditionalFolderEntities, MultiFileSupportedEntityName, schemaEntityKey, schemaEntityName } from "../schema/constants";
 import { getRequestURL } from "./urlBuilderUtil";
@@ -44,14 +41,10 @@ export function getRequestUrlForEntities(
     entityName?: string
 ): IEntityRequestUrl[] {
     const entityRequestURLs: IEntityRequestUrl[] = [];
-    const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
-        queryParameters.ORG_URL
-    ) as string;
+    const dataverseOrgUrl = WebExtensionContext.orgUrl;
 
-    if (
-        !WebExtensionContext.showMultifileInVSCode ||
-        (entityId && entityName && entityId.length > 0 && entityName.length > 0)
-    ) {
+
+    if (entityId && entityName && entityId.length > 0 && entityName.length > 0) {
         entityName = entityName && entityName.length > 0
             ? entityName
             : WebExtensionContext.defaultEntityType;

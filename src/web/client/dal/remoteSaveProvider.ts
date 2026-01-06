@@ -6,7 +6,7 @@
 import { RequestInit } from "node-fetch";
 import * as vscode from "vscode";
 import { getCommonHeadersForDataverse } from "../../../common/services/AuthenticationProvider";
-import { BAD_REQUEST, MIMETYPE, queryParameters } from "../common/constants";
+import { BAD_REQUEST, MIMETYPE } from "../common/constants";
 import { showErrorDialog } from "../../../common/utilities/errorHandlerUtil";
 import { FileData } from "../context/fileData";
 import { httpMethod, SERVERLOGIC_FILE_EXTENSION } from "../common/constants";
@@ -30,9 +30,7 @@ interface ISaveCallParameters {
 export async function saveData(fileUri: vscode.Uri) {
     const dataMap: Map<string, FileData> =
         WebExtensionContext.fileDataMap.getFileMap;
-    const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
-        queryParameters.ORG_URL
-    ) as string;
+    const dataverseOrgUrl = WebExtensionContext.orgUrl;
     const entityName = dataMap.get(fileUri.fsPath)?.entityName as string;
     const mappedEntity = getEntity(entityName)?.get(
         schemaEntityKey.MAPPING_ENTITY
