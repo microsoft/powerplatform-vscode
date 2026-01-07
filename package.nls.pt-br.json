@@ -31,7 +31,7 @@
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.clear.title": "Limpar comparação",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFile.title": "Descartar as Alterações Locais",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFolder.title": "Descartar Todas as Alterações Locais",
-  "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardSite.title": "Discard All Local Changes",
+  "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardSite.title": "Descartar Todas as Alterações Locais",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.export.title": "Exportar como JSON",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.generateHtmlReport.title": "Exportar como Relatório HTML",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.import.title": "Importar Comparação",
