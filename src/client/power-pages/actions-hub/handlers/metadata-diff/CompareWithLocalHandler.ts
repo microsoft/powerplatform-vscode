@@ -115,7 +115,9 @@ export const compareWithLocal = (pacTerminal: PacTerminal, context: vscode.Exten
         siteTreeItem.siteInfo.siteVisibility,
         siteTreeItem.siteInfo.creator,
         siteTreeItem.siteInfo.createdOn,
-        siteTreeItem.siteInfo.isCodeSite
+        siteTreeItem.siteInfo.isCodeSite,
+        siteResolution.isLocalCodeSite,
+        siteResolution.localCodeSiteRootPath
     );
 
     if (hasDifferences) {

@@ -409,7 +409,9 @@ export const compareWithEnvironment = (pacTerminal: PacTerminal, context: vscode
         websiteDetails.siteVisibility,
         websiteDetails.creator,
         websiteDetails.createdOn,
-        websiteDetails.isCodeSite
+        websiteDetails.isCodeSite,
+        siteResolution.isLocalCodeSite,
+        siteResolution.localCodeSiteRootPath
     );
 
     if (hasDifferences) {
