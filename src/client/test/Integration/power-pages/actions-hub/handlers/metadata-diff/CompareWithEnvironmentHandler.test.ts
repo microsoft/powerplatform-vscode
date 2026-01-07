@@ -15,6 +15,7 @@ import * as TelemetryHelper from "../../../../../../power-pages/actions-hub/Tele
 import * as WorkspaceInfoFinderUtil from "../../../../../../../common/utilities/WorkspaceInfoFinderUtil";
 import * as ActionsHubUtils from "../../../../../../power-pages/actions-hub/ActionsHubUtils";
 import * as MultiStepInputModule from "../../../../../../../common/utilities/MultiStepInput";
+import * as MetadataDiffUtils from "../../../../../../power-pages/actions-hub/handlers/metadata-diff/MetadataDiffUtils";
 import { IWebsiteDetails } from "../../../../../../../common/services/Interfaces";
 import { SUCCESS } from "../../../../../../../common/constants";
 
@@ -884,7 +885,10 @@ describe("CompareWithEnvironmentHandler", () => {
                 ]);
                 sandbox.stub(WorkspaceInfoFinderUtil, "getWebsiteRecordId").returns("test-website-id");
                 sandbox.stub(WorkspaceInfoFinderUtil, "findPowerPagesSiteFolder").returns(null);
-                sandbox.stub(vscode.window, "showWarningMessage").resolves({ title: Constants.Strings.YES } as vscode.MessageItem);
+                sandbox.stub(vscode.window, "showWarningMessage").resolves(Constants.Strings.YES);
+
+                // Stub MetadataDiffUtils functions
+                sandbox.stub(MetadataDiffUtils, "prepareSiteStoragePath").returns("/test/storage/sites-for-comparison");
 
                 mockPacWrapper.orgList.resolves({
                     Status: SUCCESS,

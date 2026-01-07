@@ -334,8 +334,8 @@ describe("ResyncMetadataDiffHandler", () => {
                 sandbox.stub(WorkspaceInfoFinderUtil, "getWebsiteRecordId").returns("test-website-id");
                 sandbox.stub(WorkspaceInfoFinderUtil, "findPowerPagesSiteFolder").returns(null);
 
-                // Stub prepareSiteStoragePath to return a test path
-                sandbox.stub(MetadataDiffUtils, "prepareSiteStoragePath").returns("/test/storage/sites-for-comparison/test-website-id");
+                // Stub prepareSiteStoragePath to return a test path based on websiteId
+                sandbox.stub(MetadataDiffUtils, "prepareSiteStoragePath").callsFake((_storagePath: string, websiteId: string) => `/test/storage/sites-for-comparison/${websiteId}`);
 
                 mockPacWrapper = {
                     downloadSiteWithProgress: sandbox.stub().resolves(true),
