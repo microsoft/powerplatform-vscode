@@ -124,7 +124,7 @@ export async function importMetadataDiff(): Promise<void> {
             filters: {
                 [Constants.Strings.METADATA_DIFF_EXPORT_FILTER_NAME]: ["json"]
             },
-            title: vscode.l10n.t("Import Metadata Diff")
+            title: Constants.Strings.METADATA_DIFF_IMPORT_TITLE
         });
 
         if (!openUris || openUris.length === 0) {

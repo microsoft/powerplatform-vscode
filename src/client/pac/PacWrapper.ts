@@ -324,6 +324,30 @@ export class PacWrapper {
         );
     }
 
+    /**
+     * Downloads a code site with output streamed to a VS Code Output Channel.
+     * This allows the user to see progress in real-time while still awaiting completion.
+     * @param downloadPath Path to download to
+     * @param websiteId Website ID
+     * @param environmentUrl Optional environment URL
+     * @returns Promise that resolves to true if download succeeded, false otherwise
+     */
+    public async downloadCodeSiteWithProgress(
+        downloadPath: string,
+        websiteId: string,
+        environmentUrl?: string
+    ): Promise<boolean> {
+        const pacArguments = ["pages", "download-code-site", "--path", downloadPath, "--webSiteId", websiteId, "--overwrite"];
+
+        if (environmentUrl) {
+            pacArguments.push("--environment", environmentUrl);
+        }
+
+        return this.pacInterop.executeCommandWithProgress(
+            new PacArguments(...pacArguments)
+        );
+    }
+
     public async resetPacProcess(): Promise<void> {
         try {
             await this.pacInterop.exit();

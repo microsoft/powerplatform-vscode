@@ -73,6 +73,7 @@ describe("ResyncMetadataDiffHandler", () => {
             siteVisibility: SiteVisibility.Public,
             creator: "test-creator@contoso.com",
             createdOn: "2024-01-15T10:30:00Z",
+            isCodeSite: false,
             ...overrides
         };
     }
@@ -235,6 +236,7 @@ describe("ResyncMetadataDiffHandler", () => {
         describe("when resync completes with no differences", () => {
             let mockPacWrapper: {
                 downloadSiteWithProgress: sinon.SinonStub;
+                downloadCodeSiteWithProgress: sinon.SinonStub;
             };
             let clearSiteByKeyStub: sinon.SinonStub;
             let processComparisonResultsStub: sinon.SinonStub;
@@ -250,7 +252,8 @@ describe("ResyncMetadataDiffHandler", () => {
                 sandbox.stub(MetadataDiffUtils, "prepareSiteStoragePath").returns("/test/storage/sites-for-comparison/test-website-id");
 
                 mockPacWrapper = {
-                    downloadSiteWithProgress: sandbox.stub().resolves(true)
+                    downloadSiteWithProgress: sandbox.stub().resolves(true),
+                    downloadCodeSiteWithProgress: sandbox.stub().resolves(true)
                 };
                 mockPacTerminal.getWrapper.returns(mockPacWrapper as unknown as ReturnType<PacTerminal["getWrapper"]>);
 
@@ -308,6 +311,7 @@ describe("ResyncMetadataDiffHandler", () => {
         describe("when resync completes with differences", () => {
             let mockPacWrapper: {
                 downloadSiteWithProgress: sinon.SinonStub;
+                downloadCodeSiteWithProgress: sinon.SinonStub;
             };
             let clearSiteByKeyStub: sinon.SinonStub;
             let mockShowInformationMessage: sinon.SinonStub;
@@ -334,7 +338,8 @@ describe("ResyncMetadataDiffHandler", () => {
                 sandbox.stub(MetadataDiffUtils, "prepareSiteStoragePath").returns("/test/storage/sites-for-comparison/test-website-id");
 
                 mockPacWrapper = {
-                    downloadSiteWithProgress: sandbox.stub().resolves(true)
+                    downloadSiteWithProgress: sandbox.stub().resolves(true),
+                    downloadCodeSiteWithProgress: sandbox.stub().resolves(true)
                 };
 
                 mockPacTerminal = sandbox.createStubInstance(PacTerminal);
@@ -363,6 +368,58 @@ describe("ResyncMetadataDiffHandler", () => {
 
                 expect(mockShowInformationMessage.calledOnce).to.be.true;
                 expect(mockShowInformationMessage.firstCall.args[0]).to.equal(Constants.Strings.METADATA_DIFF_RESYNC_COMPLETED);
+            });
+
+            it("should use downloadSiteWithProgress for regular sites", async () => {
+                const siteItem = createMockSiteTreeItem({ isCodeSite: false });
+
+                const handler = resyncMetadataDiff(mockPacTerminal as unknown as PacTerminal, mockExtensionContext);
+                await handler(siteItem);
+
+                expect(mockPacWrapper.downloadSiteWithProgress.calledOnce).to.be.true;
+                expect(mockPacWrapper.downloadCodeSiteWithProgress.called).to.be.false;
+            });
+
+            it("should use downloadCodeSiteWithProgress for code sites", async () => {
+                const siteItem = createMockSiteTreeItem({ isCodeSite: true });
+
+                const handler = resyncMetadataDiff(mockPacTerminal as unknown as PacTerminal, mockExtensionContext);
+                await handler(siteItem);
+
+                expect(mockPacWrapper.downloadCodeSiteWithProgress.calledOnce).to.be.true;
+                expect(mockPacWrapper.downloadSiteWithProgress.called).to.be.false;
+            });
+
+            it("should pass correct arguments to downloadCodeSiteWithProgress for code sites", async () => {
+                const siteItem = createMockSiteTreeItem({
+                    isCodeSite: true,
+                    websiteId: "code-site-id"
+                });
+
+                const handler = resyncMetadataDiff(mockPacTerminal as unknown as PacTerminal, mockExtensionContext);
+                await handler(siteItem);
+
+                expect(mockPacWrapper.downloadCodeSiteWithProgress.calledOnce).to.be.true;
+                const callArgs = mockPacWrapper.downloadCodeSiteWithProgress.firstCall.args;
+                expect(callArgs[0]).to.include("code-site-id"); // storage path includes website id
+                expect(callArgs[1]).to.equal("code-site-id"); // websiteId
+            });
+
+            it("should pass correct arguments to downloadSiteWithProgress for regular sites", async () => {
+                const siteItem = createMockSiteTreeItem({
+                    isCodeSite: false,
+                    websiteId: "regular-site-id",
+                    dataModelVersion: 2
+                });
+
+                const handler = resyncMetadataDiff(mockPacTerminal as unknown as PacTerminal, mockExtensionContext);
+                await handler(siteItem);
+
+                expect(mockPacWrapper.downloadSiteWithProgress.calledOnce).to.be.true;
+                const callArgs = mockPacWrapper.downloadSiteWithProgress.firstCall.args;
+                expect(callArgs[0]).to.include("regular-site-id"); // storage path includes website id
+                expect(callArgs[1]).to.equal("regular-site-id"); // websiteId
+                expect(callArgs[2]).to.equal(2); // dataModelVersion
             });
         });
     });

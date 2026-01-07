@@ -343,15 +343,28 @@ export const compareWithEnvironment = (pacTerminal: PacTerminal, context: vscode
     const pacWrapper = pacTerminal.getWrapper();
 
     const downloadStartTime = Date.now();
-    const success = await showProgressWithNotification(
-        Constants.StringFunctions.DOWNLOADING_SITE_FOR_COMPARISON(websiteDetails.name),
-        async () => pacWrapper.downloadSiteWithProgress(
-            siteStoragePath,
-            websiteDetails!.websiteRecordId,
-            dataModelVersion,
-            selectedEnv.orgInfo.OrgUrl
-        )
-    );
+    let success: boolean;
+
+    if (websiteDetails.isCodeSite) {
+        success = await showProgressWithNotification(
+            Constants.StringFunctions.DOWNLOADING_SITE_FOR_COMPARISON(websiteDetails.name),
+            async () => pacWrapper.downloadCodeSiteWithProgress(
+                siteStoragePath,
+                websiteDetails!.websiteRecordId,
+                selectedEnv.orgInfo.OrgUrl
+            )
+        );
+    } else {
+        success = await showProgressWithNotification(
+            Constants.StringFunctions.DOWNLOADING_SITE_FOR_COMPARISON(websiteDetails.name),
+            async () => pacWrapper.downloadSiteWithProgress(
+                siteStoragePath,
+                websiteDetails!.websiteRecordId,
+                dataModelVersion,
+                selectedEnv.orgInfo.OrgUrl
+            )
+        );
+    }
     const downloadDurationMs = Date.now() - downloadStartTime;
 
     if (!success) {
@@ -395,7 +408,8 @@ export const compareWithEnvironment = (pacTerminal: PacTerminal, context: vscode
         websiteDetails.websiteUrl,
         websiteDetails.siteVisibility,
         websiteDetails.creator,
-        websiteDetails.createdOn
+        websiteDetails.createdOn,
+        websiteDetails.isCodeSite
     );
 
     if (hasDifferences) {

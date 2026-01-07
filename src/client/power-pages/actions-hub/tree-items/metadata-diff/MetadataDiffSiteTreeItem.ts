@@ -30,6 +30,7 @@ export class MetadataDiffSiteTreeItem extends ActionsHubTreeItem {
     private readonly _siteVisibility?: SiteVisibility;
     private readonly _creator?: string;
     private readonly _createdOn?: string;
+    private readonly _isCodeSite?: boolean;
 
     constructor(siteResults: ISiteComparisonResults) {
         const fileCount = siteResults.comparisonResults.length;
@@ -64,6 +65,7 @@ export class MetadataDiffSiteTreeItem extends ActionsHubTreeItem {
         this._siteVisibility = siteResults.siteVisibility;
         this._creator = siteResults.creator;
         this._createdOn = siteResults.createdOn;
+        this._isCodeSite = siteResults.isCodeSite;
     }
 
     public getChildren(): ActionsHubTreeItem[] {
@@ -248,5 +250,9 @@ export class MetadataDiffSiteTreeItem extends ActionsHubTreeItem {
 
     public get createdOn(): string | undefined {
         return this._createdOn;
+    }
+
+    public get isCodeSite(): boolean | undefined {
+        return this._isCodeSite;
     }
 }

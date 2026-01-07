@@ -175,6 +175,7 @@ export function prepareSiteStoragePath(storagePath: string, websiteId: string): 
  * @param siteVisibility Optional site visibility
  * @param creator Optional creator of the site
  * @param createdOn Optional ISO 8601 timestamp when the site was created
+ * @param isCodeSite Optional flag indicating if this is a code site
  * @returns True if differences were found, false otherwise
  */
 export async function processComparisonResults(
@@ -193,7 +194,8 @@ export async function processComparisonResults(
     websiteUrl?: string,
     siteVisibility?: SiteVisibility,
     creator?: string,
-    createdOn?: string
+    createdOn?: string,
+    isCodeSite?: boolean
 ): Promise<boolean> {
     const comparisonResults = await showProgressWithNotification(
         Constants.Strings.COMPARING_FILES,
@@ -256,7 +258,8 @@ export async function processComparisonResults(
             websiteUrl,
             siteVisibility,
             creator,
-            createdOn
+            createdOn,
+            isCodeSite
         );
         return true;
     }

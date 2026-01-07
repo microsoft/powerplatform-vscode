@@ -167,6 +167,7 @@ class MetadataDiffContextClass {
      * @param siteVisibility The site visibility (public, private, etc.)
      * @param creator The creator of the site
      * @param createdOn ISO 8601 timestamp when the site was created
+     * @param isCodeSite Whether this is a code site
      */
     public setResults(
         results: IFileComparisonResult[],
@@ -181,7 +182,8 @@ class MetadataDiffContextClass {
         websiteUrl?: string,
         siteVisibility?: SiteVisibility,
         creator?: string,
-        createdOn?: string
+        createdOn?: string,
+        isCodeSite?: boolean
     ): void {
         const key = this.getUniqueKey(websiteId, environmentId, isImported);
         if (results.length > 0) {
@@ -198,7 +200,8 @@ class MetadataDiffContextClass {
                 websiteUrl,
                 siteVisibility,
                 creator,
-                createdOn
+                createdOn,
+                isCodeSite
             });
         } else {
             // If no results, remove the site from the map
