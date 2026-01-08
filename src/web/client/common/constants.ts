@@ -147,3 +147,4 @@ export const WEB_EXTENSION_COLLABORATION_OPTIONS_CONTACT = "Contact";
 
 //Business logic constants
 export const SERVERLOGICS = "server-logics";
+export const SERVERLOGIC_FILE_EXTENSION = ".serverlogic.customjs.js";

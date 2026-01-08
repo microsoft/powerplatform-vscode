@@ -84,7 +84,7 @@ export function getLastThreePartsOfFileName(string: string): string[] {
 }
 
 export function escapeDollarSign(paragraph: string): string {
-    return paragraph.replace(/\$/g, "\\$");
+    return paragraph.replace(/\\/g, "\\\\").replace(/\$/g, "\\$");
 }
 
 //TODO: Take message as a parameter
@@ -378,7 +378,7 @@ export function getECSOrgLocationValue(clusterName: string, clusterNumber: strin
 
 //API call to get env list for an org
 export async function getEnvList(endpointStamp: ServiceEndpointCategory | undefined): Promise<IEnvInfo[]> {
-    if(!endpointStamp) {
+    if (!endpointStamp) {
         return [];
     }
     const envInfo: IEnvInfo[] = [];
@@ -452,6 +452,6 @@ export function getBAPEndpoint(serviceEndpointStamp: ServiceEndpointCategory): s
 
 export function getWorkspaceFolders(): WorkspaceFolder[] {
     return vscode.workspace.workspaceFolders?.map(
-                (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
-            ) || [];
+        (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
+    ) || [];
 }

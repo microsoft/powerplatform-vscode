@@ -74,6 +74,42 @@ export function getWebsiteRecordId(param: { uri: string }[] | string): string {
     return "";
 }
 
+/**
+ * Gets the website name from the website.yml file in the specified directory
+ * @param workspaceFolderPath The directory path containing website.yml
+ * @returns The website name (adx_name or name field), or empty string if not found
+ */
+export function getWebsiteName(workspaceFolderPath: string): string {
+    try {
+        if (!workspaceFolderPath) {
+            return "";
+        }
+
+        // Check for website.yml directly in the folder first
+        let websiteYmlPath = path.join(workspaceFolderPath, WEBSITE_YML);
+        if (!fs.existsSync(websiteYmlPath)) {
+            // Also check inside the .powerpages-site folder
+            websiteYmlPath = path.join(workspaceFolderPath, POWERPAGES_SITE_FOLDER, WEBSITE_YML);
+        }
+
+        if (fs.existsSync(websiteYmlPath)) {
+            const fileContent = fs.readFileSync(websiteYmlPath, 'utf8');
+            const parsedYaml = parse(fileContent);
+            if (parsedYaml) {
+                // Check for adx_name first, then fallback to name (to support different formats)
+                if (parsedYaml.adx_name) {
+                    return parsedYaml.adx_name;
+                } else if (parsedYaml.name) {
+                    return parsedYaml.name;
+                }
+            }
+        }
+    } catch {
+        // Silently fail and return empty string
+    }
+    return "";
+}
+
 export function findWebsiteYmlFolder(startPath: string): string | null {
     let currentPath = startPath;
     while (currentPath) {

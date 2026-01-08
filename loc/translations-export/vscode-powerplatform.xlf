@@ -4,6 +4,12 @@
     <trans-unit id="++CODE++08833dda22312dacb09f1d185caedf751289ee89a4c75682a09f4a262bf67ac4">
       <source xml:lang="en"> End of Code Block </source>
     </trans-unit>
+    <trans-unit id="++CODE++d9b0470a805c5df4050b3070600c0d2b1d055d406d806105f17ba005ef775b6a">
+      <source xml:lang="en">(click to expand diff)</source>
+    </trans-unit>
+    <trans-unit id="++CODE++32dfcdbc5d61fc73e1012a0b09b6d9121d37e4a5e95726456066acfc313468a1">
+      <source xml:lang="en">1 file changed</source>
+    </trans-unit>
     <trans-unit id="++CODE++29bb69945e50cb632fabf16f3f89a25d813910c19059d8a792f66262a952039d">
       <source xml:lang="en">@PowerPages is not yet available in your region.</source>
     </trans-unit>
@@ -46,12 +52,27 @@
     <trans-unit id="++CODE++b544cb198e99ff113ac41467fc99191f11916287ccdb1ae619dba61dd6bbeff6">
       <source xml:lang="en">Add content snippet name (name should be unique)</source>
     </trans-unit>
+    <trans-unit id="++CODE++15593a5b5afa7d2fd80e213e5035a35bb260e4cb5c1b18bca70583b796f11a5c">
+      <source xml:lang="en">Added Locally</source>
+    </trans-unit>
     <trans-unit id="++CODE++0e24df55d08fd98cf5664002561cf1ab063231df2ec58e3a4ae50c063ba66828">
       <source xml:lang="en">Added default query suite to config: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++466ad00fc6eece4d1ca46baf1d8a6faf8dffc1745c77094b4eb8fd3697fb9a28">
+      <source xml:lang="en">Added locally</source>
     </trans-unit>
     <trans-unit id="++CODE++e7027d80d4c05ae510621f20062db71d499cbd4f8760e3076a3530220fbf0a18">
       <source xml:lang="en">Adding {0} web file(s). Existing files will be skipped</source>
       <note>{0} represents the number of web files</note>
+    </trans-unit>
+    <trans-unit id="++CODE++a52ace420f2175d08b1577a1bea5445e36801229c074ef9ed6c55a73401fd9c2">
+      <source xml:lang="en">All</source>
+    </trans-unit>
+    <trans-unit id="++CODE++8890e663481705393ed3b1b4642095a11329e21320824ed567e383a12ea888f4">
+      <source xml:lang="en">All changed files are binary files (e.g., images) and cannot be displayed in the diff viewer. You can view them individually in the file tree.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++5490d0b16535529301b0cda95abc687e682b2964413863130a9a2debf61c279f">
+      <source xml:lang="en">An imported comparison already exists for this site. Do you want to replace it?</source>
     </trans-unit>
     <trans-unit id="++CODE++c910bd41bbf67f9965a2aabaec8d39b749280ffea62e9708c507374b581a331d">
       <source xml:lang="en">Analysis complete! Results saved to: {0}</source>
@@ -65,6 +86,22 @@
     <trans-unit id="++CODE++b30fa58bd8e7489da154905f0c0d711e956f3841cf86157ca1cdd80d2b5d5499">
       <source xml:lang="en">Are you sure you want to delete the Auth Profile {0}-{1}?</source>
       <note>{0} is the user name, {1} is the URL of environment of the auth profile</note>
+    </trans-unit>
+    <trans-unit id="++CODE++dac1196b143f32a5c733daa9a35421763d3d78be99ff690819989762a3611da6">
+      <source xml:lang="en">Are you sure you want to discard all {0} local changes in '{1}'?
+
+Local path: {2}
+
+This action cannot be undone.</source>
+      <note>Confirmation message before discarding all local changes in a site.</note>
+    </trans-unit>
+    <trans-unit id="++CODE++1d9cd153bf20c28e77061a9743a69cc8850f21221a1871f1c13b27e8470a2688">
+      <source xml:lang="en">Are you sure you want to discard local changes to '{0}'? This action cannot be undone.</source>
+      <note>Confirmation message before discarding local changes to a file.</note>
+    </trans-unit>
+    <trans-unit id="++CODE++2281e368458cc996be41f578298aa205b51f467dd868c44b83560c80340785af">
+      <source xml:lang="en">Are you sure you want to discard local changes to all {0} files in '{1}'? This action cannot be undone.</source>
+      <note>Confirmation message before discarding all local changes in a folder.</note>
     </trans-unit>
     <trans-unit id="++CODE++e149c8c84127919560017a77982c24d21203ea0835f21dc45f34682f5e65840d">
       <source xml:lang="en">Arrow icon</source>
@@ -93,11 +130,20 @@
     <trans-unit id="++CODE++6fab20ee9c8b4cb1fa10d787f3cd4eac13d34d27050fd193162a2399f690f59c">
       <source xml:lang="en">Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?</source>
     </trans-unit>
+    <trans-unit id="++CODE++53459da24b905cc5c62250bc26f29303b6e56df44f7f1e86fc4b6596a4aa67fd">
+      <source xml:lang="en">Binary file - content comparison not available</source>
+    </trans-unit>
+    <trans-unit id="++CODE++c8baac5a74383177a725f6e5cc4254c0cfddfb0ab13f295520b96a30d7c5457e">
+      <source xml:lang="en">Binary file content is not available in imported comparisons. The original file was not included in the export.</source>
+    </trans-unit>
     <trans-unit id="++CODE++c58a6bd402efb06c3e7dfd6d68910412fee2dfc1788ae384dc123089ce912285">
       <source xml:lang="en">Browse...</source>
     </trans-unit>
     <trans-unit id="++CODE++19766ed6ccb2f4a32778eed80d1928d2c87a18d7c275ccb163ec6709d3eb2e27">
       <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="++CODE++2007ab2650ce558e97a30b2aa70e1c881773cf3db7fbd8a430db221b06364579">
+      <source xml:lang="en">Cannot debug: Please open a server logic file (.js) from the server-logics folder.</source>
     </trans-unit>
     <trans-unit id="++CODE++75106b7b8e0c597d51e042edbde3498f813c9cd7bd59759f4dde848abc054e85">
       <source xml:lang="en">Cannot install Power Pages generator. Please install npm and try again.</source>
@@ -110,6 +156,12 @@
     <trans-unit id="++CODE++290dca74b227930960346b4717bc1e072495aaec5ed63a9e293e2ec812fc5332">
       <source xml:lang="en">Cannot install pac CLI: {0}</source>
       <note>{0} represents the error message returned from the exception</note>
+    </trans-unit>
+    <trans-unit id="++CODE++ee3b92bec1620eefaad49e74f1055436ec9353e489407875694d5faf08207fa9">
+      <source xml:lang="en">Cannot refresh an imported comparison. Import a new file or run a new comparison.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++cdf024cea6f90cc5aacbe1c08a6c77b322820dc46ff96b1410e30527d7239c49">
+      <source xml:lang="en">Changed Files</source>
     </trans-unit>
     <trans-unit id="++CODE++b75d741af5a9c59c95a5c7b7d9f654bb93617232db14c8d2671a5c731828782b">
       <source xml:lang="en">Changing environment...</source>
@@ -132,6 +184,18 @@
     <trans-unit id="++CODE++2c8d1f9ca282591926b952dc5949d44df6204f1f0a3f5183bcd5ef7ae5864bad">
       <source xml:lang="en">Choose web template</source>
     </trans-unit>
+    <trans-unit id="++CODE++83b12c2216efb4fdc924e1deb5182e905e4926ed0c1c324d467107f46d5a26a9">
+      <source xml:lang="en">Clear</source>
+    </trans-unit>
+    <trans-unit id="++CODE++ddceb7adfdb8816e4747bc48a2221702e830340e5596a701dc0993766eba5e60">
+      <source xml:lang="en">Clear All</source>
+    </trans-unit>
+    <trans-unit id="++CODE++f404fdaebef56580458d681961f3f87aeee6d5b864fa2a5f4e10873a65d81d7a">
+      <source xml:lang="en">Clear all results?</source>
+    </trans-unit>
+    <trans-unit id="++CODE++26ed15c8dd832c026cd98c581dcb29966b8181619b4c51247c04eceece2bb8b7">
+      <source xml:lang="en">Clear result?</source>
+    </trans-unit>
     <trans-unit id="++CODE++7aaafd1c6d6875eb1cd67e841f87457e929c922a18fef7c1452c1e1a4c036456">
       <source xml:lang="en">Clearing cache. See [details](https://aka.ms/pages-clear-cache).</source>
       <note>This is a markdown formatting which must persist across translations.
@@ -139,6 +203,9 @@ The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).
     </trans-unit>
     <trans-unit id="++CODE++b1ffea87cc95d3bfa308b929bb907b43e7d91be038e706a67142b15c571da334">
       <source xml:lang="en">Click to authenticate with a matching account</source>
+    </trans-unit>
+    <trans-unit id="++CODE++ee9d4bb8e9f94832366fe390fde5efc4b555d1464ef6023d3c0b25de58223bcc">
+      <source xml:lang="en">Click to compare your local site with an environment</source>
     </trans-unit>
     <trans-unit id="++CODE++7d9eb7acb13e24625c404401d8e88b2350e32162455885f18276cf802f7701ed">
       <source xml:lang="en">Close</source>
@@ -161,9 +228,6 @@ The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).
     </trans-unit>
     <trans-unit id="++CODE++51e495f295ba55f724b77298746e3284ff9fc8e1e582828a9a3f4051fc577cb0">
       <source xml:lang="en">Code Block </source>
-    </trans-unit>
-    <trans-unit id="++CODE++876831b143507fffa7cbdec8d0d72b9dc328976180b4206c83331911a27d6740">
-      <source xml:lang="en">CodeQL Analysis</source>
     </trans-unit>
     <trans-unit id="++CODE++67fe2c02a3f3e19ede0f449f4e42c477c8b6a55baee7edb23a1928df18403c07">
       <source xml:lang="en">CodeQL CLI is not installed or not in PATH. Please install the CodeQL extension or add CodeQL CLI to your PATH.</source>
@@ -206,14 +270,47 @@ Check the CodeQL extension panel for available queries.</source>
     <trans-unit id="++CODE++8c7badc0de1c1ad67ea730f2f63caa922024be334866180f5d0e7497b8be1cd1">
       <source xml:lang="en">CodeQL version: {0}</source>
     </trans-unit>
+    <trans-unit id="++CODE++55988e28a4e8720a588c5c53fd47616d929a404d3d2af7e6f8ba313dce6dc3e4">
+      <source xml:lang="en">Collapse All</source>
+    </trans-unit>
     <trans-unit id="++CODE++1fb4405a792e9eb077d2bd96517eca8d81fc43bc251d5589e9d959fd07c8f31d">
       <source xml:lang="en">Command completed successfully (exit code: {0})</source>
+    </trans-unit>
+    <trans-unit id="++CODE++bf281cb4dcfdee3bea566c086c3d77aa9234f6854dfbcbcb25f2bcf19828e9b5">
+      <source xml:lang="en">Command completed successfully.</source>
     </trans-unit>
     <trans-unit id="++CODE++ff61c2f710070e267638038dfbd105cfffe4de4d37580f566f4537b304b6ca84">
       <source xml:lang="en">Command failed with exit code {0}: {1}</source>
     </trans-unit>
     <trans-unit id="++CODE++67a58f1682f864bfa789f056e50bab25181dfcddf455fadaad856c826f852d6a">
       <source xml:lang="en">Command failed with exit code: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++d73890ab56fd9e1ff5349b7bdb41fe0d848c5960c096b30357e26b912456f21f">
+      <source xml:lang="en">Compare site with environment</source>
+    </trans-unit>
+    <trans-unit id="++CODE++3c69bfaf47b25fe112854a5ba01f4d882248d17e6e76c7d1b0a9da8dc3a7929a">
+      <source xml:lang="en">Compare site...</source>
+    </trans-unit>
+    <trans-unit id="++CODE++95de5784f48c7fee97755bb29a90a128546a6a30201be3c73493229230ea7f72">
+      <source xml:lang="en">Compare: {0} (Remote ↔ Local)</source>
+      <note>Title for the multi-diff editor when comparing all files in a site.</note>
+    </trans-unit>
+    <trans-unit id="++CODE++cf8510772ff5dbeb2edc5e7209cc8f47e6c7c79810155260b41c6aec64a9f277">
+      <source xml:lang="en">Comparing files...</source>
+    </trans-unit>
+    <trans-unit id="++CODE++5b79ce1b6eead3275d92572d5997ed876b99fe9d47141f8b785abf94a4ff52c0">
+      <source xml:lang="en">Comparison Details</source>
+    </trans-unit>
+    <trans-unit id="++CODE++6f62222f8fc63948a524a47998f7426ba127721daff7b3830eaeca94ee399557">
+      <source xml:lang="en">Comparison exported successfully to '{0}'.</source>
+      <note>Success message when export is saved. {0} is the file path.</note>
+    </trans-unit>
+    <trans-unit id="++CODE++af71f3c9dcd7adc1f7944d6fc3ca0af422603b9af8eb47c0d4c23cbeb91ea931">
+      <source xml:lang="en">Comparison for '{0}' imported successfully.</source>
+      <note>Success message when import is complete. {0} is the site name.</note>
+    </trans-unit>
+    <trans-unit id="++CODE++9c67b99ff5b13af52ba4fcdf8a23543ece796a42bdca07632507f5ac3ed6d32b">
+      <source xml:lang="en">Comparison has been refreshed with the latest data from the environment.</source>
     </trans-unit>
     <trans-unit id="++CODE++eebdd24a77d9ad32222660c07777163bf5f6732df2b172351f3f8d5783e4f529">
       <source xml:lang="en">Confirm</source>
@@ -239,6 +336,9 @@ Check the CodeQL extension panel for available queries.</source>
     <trans-unit id="++CODE++92a450b51c228fc0a45836a3cb66a77276511e8b1a48e237c97f27576695288d">
       <source xml:lang="en">Could not locate CodeQL CLI in global storage.</source>
     </trans-unit>
+    <trans-unit id="++CODE++217ec8ef23f31be4473af7c3e69f7965308bd2284d53eba7daf17b791db5fc74">
+      <source xml:lang="en">Created On:</source>
+    </trans-unit>
     <trans-unit id="++CODE++47234b3978427950c2a4ef0161f6dc8484b7faf44b21d30616d5d019eebaafd8">
       <source xml:lang="en">Created PowerPages config file at {0} with default query suite: {1}</source>
     </trans-unit>
@@ -253,6 +353,9 @@ Check the CodeQL extension panel for available queries.</source>
       <source xml:lang="en">Creating {0}...</source>
       <note>{0} will be replaced by the entity type.</note>
     </trans-unit>
+    <trans-unit id="++CODE++dc15ecabf1e2c1c145b8ccbc7ef53c0e9b2a90f18414ba9887c2ae9aaa6575cd">
+      <source xml:lang="en">Creator:</source>
+    </trans-unit>
     <trans-unit id="++CODE++ec8fd606d46114985d2f628dc67992093b8abb32489b3cbbfbb86bba96925943">
       <source xml:lang="en">Creator: {0}</source>
       <note>{0} is the creator</note>
@@ -266,6 +369,9 @@ Check the CodeQL extension panel for available queries.</source>
     <trans-unit id="++CODE++52587c2a224d685113316dc5961aec7749a46dded161bfe07c40b715ca61db29">
       <source xml:lang="en">Current site path not found. Please ensure you have a site folder open.</source>
     </trans-unit>
+    <trans-unit id="++CODE++ec1f0e40eb1d8b21b1c3e73679727c461ad9922cea5648859e5446ded7f9c97f">
+      <source xml:lang="en">Data Model:</source>
+    </trans-unit>
     <trans-unit id="++CODE++e159063579c9e875ce444b930e8feb5d4fc1a93af6acb47d7a5cf9d5c5241153">
       <source xml:lang="en">Data model version: {0}</source>
       <note>{0} is the data model version</note>
@@ -273,9 +379,33 @@ Check the CodeQL extension panel for available queries.</source>
     <trans-unit id="++CODE++f88d5f387c99b46f054799a5bc6bac06d5b9f5dfd9eaf95627b5f34b137c7cb2">
       <source xml:lang="en">Database location: {0}</source>
     </trans-unit>
+    <trans-unit id="++CODE++1a03bd2fd107c453f3183e30b9716f82200671e8270fbbefbe602f5a48705527">
+      <source xml:lang="en">Debug</source>
+    </trans-unit>
+    <trans-unit id="++CODE++c290c1e52a812e64e79be343e932a767838b3045abdc429dad559882f68f999d">
+      <source xml:lang="en">Debug Current File</source>
+    </trans-unit>
+    <trans-unit id="++CODE++187bba1fb2a0c6f665f35430ac7e2d820aab5b73b2921b99e26096a92cdf98e4">
+      <source xml:lang="en">Debug Current Server Logic</source>
+    </trans-unit>
+    <trans-unit id="++CODE++136d1125a6f04a9c7c631e9be49bc4fca530e921f2af0fe5e2a9b1d95e0aa6ca">
+      <source xml:lang="en">Debug Power Pages Server Logic</source>
+    </trans-unit>
+    <trans-unit id="++CODE++ff0a1f27b622e2032d9c0df2db5943ac6504497bf01e48c77335b6591f134522">
+      <source xml:lang="en">Debug this server logic file</source>
+    </trans-unit>
     <trans-unit id="++CODE++5bd78fcb75f98d65ab8f89a8f0b6681c25c13308fa8643c44ab459b7783c06c9">
       <source xml:lang="en">Default Environment: {0}</source>
       <note>The {0} represents profile's resource/environment URL</note>
+    </trans-unit>
+    <trans-unit id="++CODE++bb1de92420a69402b065edb03f642d93984ea080582fb8b1ff49fee3aab7cab1">
+      <source xml:lang="en">Deleted Locally</source>
+    </trans-unit>
+    <trans-unit id="++CODE++9a983b9151d6fc6165f094e95ba9ba8cb588b59345cf8956f8fb77ee7ce36be2">
+      <source xml:lang="en">Deleted locally</source>
+    </trans-unit>
+    <trans-unit id="++CODE++e07e053c2e10b3f1b6aef657d937cd91d45df4e40242788d7d621faea3380c27">
+      <source xml:lang="en">Discard Changes</source>
     </trans-unit>
     <trans-unit id="++CODE++21c02244893ddc07c4494a2ac7eb69a143e75d7b49d04f10234a1865c2111310">
       <source xml:lang="en">Dislike something? Tell us more.</source>
@@ -294,6 +424,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++183c7081100618aebb39219dd011d8d9961649aad278be8fe49c0d1a8874684f">
       <source xml:lang="en">Do not show again</source>
     </trans-unit>
+    <trans-unit id="++CODE++1d60d0cdcb5408b8e39ed364f675c9cad8a2f6174a413324d1e34437bd41269b">
+      <source xml:lang="en">Don't Show Again</source>
+    </trans-unit>
     <trans-unit id="++CODE++668c177d38e6f62ffe2ca64e3915151cfcd566204fd4e4b499e7fe237ad63fb1">
       <source xml:lang="en">Download Power Pages Site</source>
     </trans-unit>
@@ -303,8 +436,18 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++7f3601875ec37c14ea70acbdfab60e330eec2f6b65ccad92bee9823a2eb326de">
       <source xml:lang="en">Download failed: {0}</source>
     </trans-unit>
+    <trans-unit id="++CODE++f945885439672eb379c73eb7c9124496311c6ef5b3b04cd23ea0a1c146225b84">
+      <source xml:lang="en">Download is complete. You can now view the report.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++a5a4f0d8975940cbed234f9a5ee740f24e2b82f03a5b13e43f316b8395336e50">
+      <source xml:lang="en">Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel &quot;Show download output&quot;))...</source>
+      <note>This is a markdown formatting which must persist across translations.</note>
+    </trans-unit>
     <trans-unit id="++CODE++ac72407b10d30bf47faf11da09b605a85fc649bd3f2e33acb281655cb9021d9d">
       <source xml:lang="en">Edit the site</source>
+    </trans-unit>
+    <trans-unit id="++CODE++102f547594eb0c68a16e0e5eb6661fa576c7a5fb6ce224ea36194e9fd4f87dac">
+      <source xml:lang="en">Enhanced Data Model</source>
     </trans-unit>
     <trans-unit id="++CODE++0feefedc5916a0c9a464f4ef9f28fab835a23e1d035878f397e38053381aa3fa">
       <source xml:lang="en">Enter Organization ID</source>
@@ -330,6 +473,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     </trans-unit>
     <trans-unit id="++CODE++273ac70fb32a6f135f9998bf3601f83596fccea343ed551d2a405c4958486720">
       <source xml:lang="en">Environment changed successfully.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++340e3fe1f8281d7070af99b12b978e9e1d0ef8e853314ed1b6dc1dcafc8bb8f7">
+      <source xml:lang="en">Environment:</source>
     </trans-unit>
     <trans-unit id="++CODE++239d14b889f5a193581388efd042b82c5cb36e89f15b4141f740ec40d00ea868">
       <source xml:lang="en">Error accessing CodeQL extension: {0}</source>
@@ -364,11 +510,20 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++8a6c3a849390110981cd9588c269ec59444485aed2239ad772afdb0d427523d8">
       <source xml:lang="en">Executing: {0}</source>
     </trans-unit>
+    <trans-unit id="++CODE++9f5b023a413a7d0771cc3fb51b103dc0aaaafe8f7b7c88c7258d43e3bc5b243d">
+      <source xml:lang="en">Expand All</source>
+    </trans-unit>
     <trans-unit id="++CODE++5a2391041cb1f6f5ab0cce07946dbf4222358fbd947768d94ac12ef5329485d3">
       <source xml:lang="en">Explain the following code snippet:</source>
     </trans-unit>
     <trans-unit id="++CODE++f9e17ed11037dab93f8820c30db63b2ff2a045b5761f71818b7291afae60f199">
       <source xml:lang="en">Explain the following code {% include 'Page Copy'%}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++8186dceb4ea80ad0cf6cef1abf996c3564cb3cfaa093e03a31f6ac0cf037696d">
+      <source xml:lang="en">Export Site Comparison</source>
+    </trans-unit>
+    <trans-unit id="++CODE++1f14b9b0b30891bec1ece43097d7ae38a34b666738f9173658022778f5ce3ebf">
+      <source xml:lang="en">Exporting comparison...</source>
     </trans-unit>
     <trans-unit id="++CODE++173848927e1a6ed7f8c52d958d530c9ce90053649c734a3bc20bfb2053d8ef88">
       <source xml:lang="en">Extension installed but API not available yet. Opening as text file...</source>
@@ -383,11 +538,23 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++d41633e985dc5f5045a42992788b803ca24b0b8d8f42d8db8f0ff08807d7299a">
       <source xml:lang="en">Failed to disable PAC telemetry.</source>
     </trans-unit>
+    <trans-unit id="++CODE++bae865c75bb42b029c9b92f7c0abb122a2615c2f0f5a658b1633df8f9e921a16">
+      <source xml:lang="en">Failed to discard local changes: {0}</source>
+      <note>Error message when discarding local changes fails.</note>
+    </trans-unit>
     <trans-unit id="++CODE++95da24b6bc127a935e2e4323fe85d8f46be20c5e8ca5e10c6a134e5a0c6443a2">
       <source xml:lang="en">Failed to enable PAC telemetry.</source>
     </trans-unit>
+    <trans-unit id="++CODE++43dbf70c21c86c0ae92c85969872317a7a1e68ced8adb94059fafd83cac30eb5">
+      <source xml:lang="en">Failed to export comparison: {0}</source>
+      <note>Error message when export fails. {0} is the error message.</note>
+    </trans-unit>
     <trans-unit id="++CODE++83d9d98e86aca9239f8a2635a98356d956268fb41a465fbc039b9ac979c61649">
       <source xml:lang="en">Failed to fetch some files.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++d604dc348b4d883f4a77c906c97d37e94d3f936c4ad815621d988bf5772b4ecb">
+      <source xml:lang="en">Failed to generate HTML report: {0}</source>
+      <note>Error message when HTML report generation fails. {0} is the error message.</note>
     </trans-unit>
     <trans-unit id="++CODE++f4948aad45ee9baaf762fbd640c551dc397190efdd9fb87468b559502ece927c">
       <source xml:lang="en">Failed to generate VS Code Desktop URL: {0}</source>
@@ -403,6 +570,13 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     </trans-unit>
     <trans-unit id="++CODE++fc80bc8b6f74fff75eee85e53e42036bc6069a2fa632337a52789dacf96e9ba9">
       <source xml:lang="en">Failed to handle Power Pages URI: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++01f0b1383686ea2dbed659b38128c80a17f90fd15b9c8636871a01f34fbd0f2c">
+      <source xml:lang="en">Failed to import comparison: {0}</source>
+      <note>Error message when import fails. {0} is the error message.</note>
+    </trans-unit>
+    <trans-unit id="++CODE++7df498affc70b3844ab77806857554f50899316597e96d91097dcefd8e225024">
+      <source xml:lang="en">Failed to initialize Server Logic debugger: {0}</source>
     </trans-unit>
     <trans-unit id="++CODE++9696573fbb3df8812e2d0b83aa3d9077681bf992c9f9514fbbb81fcc7787560d">
       <source xml:lang="en">Failed to install SARIF viewer extension. Opening results as text file.</source>
@@ -422,6 +596,10 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++aac77df347205252b074d45aff7891debdba0ff1466cc0c351416d1662bb71ab">
       <source xml:lang="en">Feedback</source>
     </trans-unit>
+    <trans-unit id="++CODE++1b600fc82f2c98dc384adb9fa255ff5914978d978928c8aa5e56bf5fc64980b2">
+      <source xml:lang="en">Fetching websites from '{0}'...</source>
+      <note>Message shown while fetching websites from an environment. {0} is the environment name.</note>
+    </trans-unit>
     <trans-unit id="++CODE++2a8ddde521f14ecd4a8717f2bcf9a2b021fa38a578518066d2ae32271aa95237">
       <source xml:lang="en">Fetching your file ...</source>
     </trans-unit>
@@ -434,6 +612,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     </trans-unit>
     <trans-unit id="++CODE++12610d51818dd67082559a8f1d9a141559d996fad6fe34aa3dbf70281bea4572">
       <source xml:lang="en">File: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++cc2cc5f1256a46b0f5c8fc579d2513fdd4a8ae48d288334b5682d88fba9702da">
+      <source xml:lang="en">Find differences between your remote site and local workspace</source>
     </trans-unit>
     <trans-unit id="++CODE++4c152c6eaba506f1e585f1fe8424b694874ccf652f4bdebb5e333ed518e9e428">
       <source xml:lang="en">Found CodeQL CLI at: {0}</source>
@@ -457,6 +638,12 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++7184a5edf42e6fc9ef8f53fc1dd73f10b3f6196a23f6d340c4f434e60c366e45">
       <source xml:lang="en">GETTING STARTED</source>
     </trans-unit>
+    <trans-unit id="++CODE++9a0fee38744b1ebd6dee64a438507d597635a5773f9ecea2f587a1b560808d4b">
+      <source xml:lang="en">Generated by</source>
+    </trans-unit>
+    <trans-unit id="++CODE++c7107175191436eb55e7271e43e636b598d8c80cbf2a9a32ac42bc03222f053c">
+      <source xml:lang="en">Generated:</source>
+    </trans-unit>
     <trans-unit id="++CODE++c4c059b39483b39ccf3cb056feaa5e400e252a9c558deecdf8d301c1dac9485b">
       <source xml:lang="en">Generating a new Power Pages site...</source>
     </trans-unit>
@@ -474,6 +661,10 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     </trans-unit>
     <trans-unit id="++CODE++0087988cdb71080f2525354e125366c6db7d85a36f199e2f80d14a44b3fd0340">
       <source xml:lang="en">Getting website endpoint...</source>
+    </trans-unit>
+    <trans-unit id="++CODE++7b9ca5026e65057a17f951928bd53dc4e7724c0850490d6237636e9d568db4b1">
+      <source xml:lang="en">HTML report saved successfully to '{0}'.</source>
+      <note>Success message when HTML report is saved. {0} is the file path.</note>
     </trans-unit>
     <trans-unit id="++CODE++b9f4adbdfa2deef1eaa415a914f63329ee06c604b5a1bf34645175b9e28a9712">
       <source xml:lang="en">Here are a few suggestions to get you started</source>
@@ -495,6 +686,12 @@ Return to this chat and @powerpages can help you write and edit your website cod
     </trans-unit>
     <trans-unit id="++CODE++1d9bc50f05b58d430726840f771cd25056be57873eb33a5d6aeedfff2ca7e2db">
       <source xml:lang="en">Hi! Your Microsoft account doesn’t currently support Copilot. Contact your admin for details.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++533560c3dae9ee0e91fced5b66da418c6b49d7998b03c9cf6ccfa8463a99ddf0">
+      <source xml:lang="en">Import Site Comparison</source>
+    </trans-unit>
+    <trans-unit id="++CODE++721266427f4f6ab7a5409839b7675a73aed355db0e876c0464f100c99c4158f6">
+      <source xml:lang="en">Importing comparison...</source>
     </trans-unit>
     <trans-unit id="++CODE++08295f3385931e35c850b945e2ae04882452c4bf0dd575f70e95aaa6ed00daa9">
       <source xml:lang="en">In your own words, describe what you need. You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.</source>
@@ -525,6 +722,12 @@ Return to this chat and @powerpages can help you write and edit your website cod
       <source xml:lang="en">Instance url: {0}</source>
       <note>{0} is the Instance Url</note>
     </trans-unit>
+    <trans-unit id="++CODE++8e79146ac2ac83ff880a2a3860077ea6cfed5cdcea1ea169fed12fdd03b5360d">
+      <source xml:lang="en">Invalid file format. The file does not contain valid metadata diff data.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++8d8cd546b58d91c300d3149ef40b8d98d3061dc38f15ea937d2ed785a3f25771">
+      <source xml:lang="en">Learn More</source>
+    </trans-unit>
     <trans-unit id="++CODE++c59fe0045151cddc10b8384a437337e86eab905877883c18b53e068a3d36121d">
       <source xml:lang="en">Learn more about Copilot</source>
     </trans-unit>
@@ -536,6 +739,15 @@ Return to this chat and @powerpages can help you write and edit your website cod
     </trans-unit>
     <trans-unit id="++CODE++47dc2e01d9ad434bd03a870bdfd91281bc31d38da2cdc36c0d46a593b1d6d60c">
       <source xml:lang="en">Line: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++47d2a515ef2f05b87d688656286a61e4f743da4b878684c7654969db17711c40">
+      <source xml:lang="en">Loading...</source>
+    </trans-unit>
+    <trans-unit id="++CODE++8c31e6e7223097e2e4847773c47a4efab6aaf79deeecc92a7759891c74976dde">
+      <source xml:lang="en">Local</source>
+    </trans-unit>
+    <trans-unit id="++CODE++dff4c0c879ea2e4011d45f5b3caa7c64d15feac1416a9e90b4ba4723f7cfc6fa">
+      <source xml:lang="en">Local Site</source>
     </trans-unit>
     <trans-unit id="++CODE++9d6322c1f4d9d3f38aed8bfbe0b2bcadf66ad82c008476fa62541fa069138e94">
       <source xml:lang="en">Login</source>
@@ -556,14 +768,24 @@ Return to this chat and @powerpages can help you write and edit your website cod
     <trans-unit id="++CODE++8f2de600bf940a26c63a7ac23984a12ca8970fcf1a85947aa5566c34e23eea07">
       <source xml:lang="en">Managed</source>
     </trans-unit>
+    <trans-unit id="++CODE++8f10b38db6f69f493504d7eca9d7f6e0c4453855fe741c99a0df61c699ad33f6">
+      <source xml:lang="en">Matching Site</source>
+    </trans-unit>
     <trans-unit id="++CODE++8a194d5287e3da019883144787cd5f282753f5ce892d933be0833b3818c25503">
       <source xml:lang="en">Maximum 30 characters allowed</source>
     </trans-unit>
     <trans-unit id="++CODE++b1c8258fb401975727a82d9ce473af0a600f076cc7b73dbd16524e815cf4153d">
       <source xml:lang="en">Microsoft wants your feedback</source>
     </trans-unit>
+    <trans-unit id="++CODE++8e53dab06e505d52b109c8d60b6a1e1fddfe96194e3f1a44aeabe65f4b3568c4">
+      <source xml:lang="en">Missing required field: {0}</source>
+      <note>Error when importing a file that is missing a required field.</note>
+    </trans-unit>
     <trans-unit id="++CODE++5813bc61a859f78f4474b9c45e545b7da14fe71acdbb5b7c4cb7010628780513">
       <source xml:lang="en">Missing required site information for reactivation.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++e8ce5dcaf408935ff76747226d2e8bee4319a2f593c1d7a838115e56183d1f37">
+      <source xml:lang="en">Modified</source>
     </trans-unit>
     <trans-unit id="++CODE++a253ff09c5a8678e1fd1962b2c329245e139e45f9cc6ced4e5d7ad42c4108fc0">
       <source xml:lang="en">NEW</source>
@@ -601,11 +823,23 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++b1061a7adf836619e40617bbbbe42d04a9c167b5756a2b4926c02d88e780a7f9">
       <source xml:lang="en">No Website Data Found in Current Directory. Please switch to a directory that contains the PAC downloaded website data to continue.</source>
     </trans-unit>
+    <trans-unit id="++CODE++4e0d6304be5d5157d4b4b95a0bbffe07b9c2a84f6849b3bb0d591e79b864f33c">
+      <source xml:lang="en">No active editor found.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++5fa52f38613f411a293ae2794bdd18faa33ed13bc586c60a8bd774832069c82e">
+      <source xml:lang="en">No active editor. Please open a server logic file.</source>
+    </trans-unit>
     <trans-unit id="++CODE++1b03558147265e7c9bd70e6a4abe031ef65dbca05e01d94953e58b86ec82c859">
       <source xml:lang="en">No analysis results found.</source>
     </trans-unit>
+    <trans-unit id="++CODE++fe9da58a68fc4d4ac79a76febed4ff3a3ebc116954b5b383578fd1803f2f7268">
+      <source xml:lang="en">No differences found between the remote site and your local workspace.</source>
+    </trans-unit>
     <trans-unit id="++CODE++80266a1ea7e6671d65c98a0624c254f5b9acfacddd05d69524b7f034eeba3268">
       <source xml:lang="en">No environments found</source>
+    </trans-unit>
+    <trans-unit id="++CODE++5f22b9670e54200b4ccdea959012a4670d9346315793eefd80e4290571492262">
+      <source xml:lang="en">No files in this category</source>
     </trans-unit>
     <trans-unit id="++CODE++e75c23acb3f88e840f326048df92fcfd3350ec3b775a5c51e6ff6754f0f9f7a1">
       <source xml:lang="en">No issues found!</source>
@@ -622,11 +856,17 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++b8a162cd305ec78bd85f8e1b5a31a3e2c944fd560aa5f0e17e6b76de4c008e6b">
       <source xml:lang="en">No sites found</source>
     </trans-unit>
+    <trans-unit id="++CODE++81ecc0ba0812a908a0b4cc9e87e2a562a6346ee0d40becf34d439d5fb723da7f">
+      <source xml:lang="en">No sites found in the selected environment.</source>
+    </trans-unit>
     <trans-unit id="++CODE++abb85d7bb3ea846c90ad6348fd3a1154436cdde8f06db3d86711dd6e23cf1e21">
       <source xml:lang="en">No webpages found</source>
     </trans-unit>
     <trans-unit id="++CODE++6da29e062697a9f26659ef14ebda075afe939756af5d8e1d3451eb7d6d6e1a8a">
       <source xml:lang="en">No workspace folder found</source>
+    </trans-unit>
+    <trans-unit id="++CODE++9214ba9d7c0e1e98dc8919cffaa47b39e1444bcb5925a6c7818d11fa11363eb1">
+      <source xml:lang="en">No workspace folder is open. Please open a folder containing your Power Pages site.</source>
     </trans-unit>
     <trans-unit id="++CODE++6c0242ffba2aababcb4e45831de1492e8bccae2cb0f3387dfe9c16620f6928ef">
       <source xml:lang="en">No workspace folder opened. Please open a site folder to preview.</source>
@@ -643,6 +883,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++68b3f4bff6de90aed6e47e72d8b680901da64dff39ed843e9eeed0464020e971">
       <source xml:lang="en">Open Folder</source>
+    </trans-unit>
+    <trans-unit id="++CODE++dcec6893414c96089c3acbe4d12c9d50233cda7a08fcb4b8cae324a9415198a6">
+      <source xml:lang="en">Open Report</source>
     </trans-unit>
     <trans-unit id="++CODE++f329c8f717c6c20eb60774d8f9227683661d74ebae48207076be60be8796dd5d">
       <source xml:lang="en">Open Results</source>
@@ -717,6 +960,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++6355962eca901310bd24d2142605263344a3f09fb4fc30fc0f9dcf4cd56bf534">
       <source xml:lang="en">Please login to preview the site.</source>
     </trans-unit>
+    <trans-unit id="++CODE++2e56799726107b8b44bdcad31ef1ce0515cfacc9372b34946a4257af3bcf2919">
+      <source xml:lang="en">Please open a server logic file (.js) from the server-logics folder.</source>
+    </trans-unit>
     <trans-unit id="++CODE++f413d35f48356c6c13c6c9d8947f011221acb3bea7d0ce74eb2f5ed217f26bad">
       <source xml:lang="en">Please select the folder that contains your compiled output to upload your site.</source>
     </trans-unit>
@@ -727,11 +973,23 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
       <source xml:lang="en">Power Pages Copilot is now connected to the environment: {0} : {1}</source>
       <note>{0} represents the environment name</note>
     </trans-unit>
+    <trans-unit id="++CODE++f519c6aeba20c1a712f6043bf6eb52bf3bb8834f5f1a6c9ea60244dbbb30453c">
+      <source xml:lang="en">Power Pages Server Logic detected! You can now debug your server logic files with breakpoints and IntelliSense.</source>
+    </trans-unit>
     <trans-unit id="++CODE++04ac907168ac84b45263503d1306565bece49c4ae3e8ef4af310b304f03ab6d4">
       <source xml:lang="en">Power Pages site download completed successfully. Would you like to open the downloaded site folder?</source>
     </trans-unit>
     <trans-unit id="++CODE++cce89cd3a0f118dafd3173f6444abdcd2b9782153af1b6bfa8f63ef3d4b68268">
       <source xml:lang="en">Power Pages studio URL is not available</source>
+    </trans-unit>
+    <trans-unit id="++CODE++41024d68d0b449f0dfc48541fe0be218aa6acc1cc982ef1a701b759f037fecfa">
+      <source xml:lang="en">Power Platform Tools - Site Comparison</source>
+    </trans-unit>
+    <trans-unit id="++CODE++8ce54044bb9e895666fd98c1b6e497655a4c2a7239b2187599972e9d81bd0f3e">
+      <source xml:lang="en">Power Platform Tools VS Code Extension</source>
+    </trans-unit>
+    <trans-unit id="++CODE++92c355db79b65ac0ec6050657f427d46214ff364079cc646f7d255dec23586f8">
+      <source xml:lang="en">Power Platform Tools: PAC CLI</source>
     </trans-unit>
     <trans-unit id="++CODE++bf67e1194aabff2106dde73ed7318caf658a4cebe27dbd2d03239a141e16a211">
       <source xml:lang="en">PowerPages config file created successfully: {0}</source>
@@ -765,11 +1023,30 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++6e31aef31ad6cc82d8d8d41fd45043885761a11b9222b1ec7ce9d78a36dd4451">
       <source xml:lang="en">Ready to select download folder</source>
     </trans-unit>
+    <trans-unit id="++CODE++fdc383411e8354c470e19c960527019a9bf48c61c08a5c3ec3fb8b7b32ccba34">
+      <source xml:lang="en">Refreshing comparison for {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel &quot;Show download output&quot;))...</source>
+      <note>This is a markdown formatting which must persist across translations.</note>
+    </trans-unit>
+    <trans-unit id="++CODE++ffa98e02f7ce33fc935f02b3b668f6ad57661814dade5f41453fbee2b70cdd95">
+      <source xml:lang="en">Remote</source>
+    </trans-unit>
+    <trans-unit id="++CODE++95e154398a4bc0091aa4d6b607472ac5a89e41fbc84a3a49f823314d6de9eebc">
+      <source xml:lang="en">Replace</source>
+    </trans-unit>
     <trans-unit id="++CODE++b62120c5416487f4c793d75aee7fea083971e5ac665a3f35767023f408f482e5">
       <source xml:lang="en">Response data is empty</source>
     </trans-unit>
     <trans-unit id="++CODE++b87504a6b179044cf99d39cf641f47aa5e76c4c5b949413ec33953ec35c10ac4">
       <source xml:lang="en">Results opened in SARIF viewer successfully.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++00d60e31a4e6b8344d4201f25a6a7dee770713107f6d097abb01559d32b17f26">
+      <source xml:lang="en">Run</source>
+    </trans-unit>
+    <trans-unit id="++CODE++ea703d2310b31c503c3e81398804a049aa6e65f78dbe7014f8f52dae263dadfb">
+      <source xml:lang="en">Run Server Logic</source>
+    </trans-unit>
+    <trans-unit id="++CODE++80b0001b823cb916650c75c5c08b3bdf9be4951036ec14ee4086b487125d05c8">
+      <source xml:lang="en">Run this server logic file without debugging</source>
     </trans-unit>
     <trans-unit id="++CODE++9eb3810da0fd0dbacf4b6f4d7ad58e6e631ab807c0dd404dcb9f03066da8443b">
       <source xml:lang="en">Running CodeQL analysis...</source>
@@ -782,6 +1059,12 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++ceaca7d5816edb7826d84436807510a3a840ee0808fd62a568e2e1541eae6457">
       <source xml:lang="en">SARIF viewer extension not found.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++3b90c194a93acd61648464bdc410c9e872fc30596445a619618cf9ee51fe82c0">
+      <source xml:lang="en">Save HTML Report</source>
+    </trans-unit>
+    <trans-unit id="++CODE++915bcbc369a5a2312efe4634e7330f5820896912ea40d6086089e2edfb7f95d7">
+      <source xml:lang="en">Save Report</source>
     </trans-unit>
     <trans-unit id="++CODE++0134bc37f2fdeb11daa9e760ecee0ef9706989b33f77a38daadb8b7aae685749">
       <source xml:lang="en">Saving your file ...</source>
@@ -799,8 +1082,14 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++a40f78f3a7f5c5ab1b101e95cdf044552542712fdcf45a83dfea3f455b6f638a">
       <source xml:lang="en">Select Type</source>
     </trans-unit>
+    <trans-unit id="++CODE++84744ab78214e2fc629e2925963080b5ad6c4ab1db6cce278900c3e6403bbc2f">
+      <source xml:lang="en">Select a website to compare with</source>
+    </trans-unit>
     <trans-unit id="++CODE++87468e6a845b82466220c11dd0ca315a4389dc1cb8e0ee102035bb4ce5cb7e39">
       <source xml:lang="en">Select an environment</source>
+    </trans-unit>
+    <trans-unit id="++CODE++fafd4e6859e28fd1f76851b8a08f6d3ccb58402fb65e44f3c342575741b056e6">
+      <source xml:lang="en">Select an environment to compare with</source>
     </trans-unit>
     <trans-unit id="++CODE++58ea04f09a2cbf67d55e70c45a6da4998e72e8e50f91e63862c0d65d14dfb1f5">
       <source xml:lang="en">Select folder for CodeQL database</source>
@@ -817,6 +1106,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++d4e969ee5e3ea8fe5e7f9195be448fd5fd5d2cb6f487929c3e495cbbe7e8f1e8">
       <source xml:lang="en">Selection is too large. Try making a shorter selection.</source>
     </trans-unit>
+    <trans-unit id="++CODE++f460c321b3d56be39d9fae8946e759608e6b8f34c0378aaa91e2996b2bd8f2b5">
+      <source xml:lang="en">Server Logic debugging requires an open workspace.</source>
+    </trans-unit>
     <trans-unit id="++CODE++142027a259879fdd2b6410360a9cd3798f433c2fc5668bb685dd4ff513072e16">
       <source xml:lang="en">Session Details</source>
     </trans-unit>
@@ -824,14 +1116,32 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
       <source xml:lang="en">Session ID: {0}</source>
       <note>{0} is the Session ID</note>
     </trans-unit>
+    <trans-unit id="++CODE++b874846bfcc51aecfc0366c676894ca6aa980e7f8de9a6632bb6ade00b49bc47">
+      <source xml:lang="en">Show Diff</source>
+    </trans-unit>
     <trans-unit id="++CODE++899fb203e6c2faac8093e21a2fa8db0d4b13d16ea5492461d8b72dbcee3ecf2a">
       <source xml:lang="en">Show Output Panel</source>
     </trans-unit>
     <trans-unit id="++CODE++2f65ba5aa38a9acac3a9a9c0a9aeecd7b32796008dc63432bedbe6ef62982558">
       <source xml:lang="en">Sign in to VS Code with PAC CLI account</source>
     </trans-unit>
+    <trans-unit id="++CODE++413f481712d78c8cce54fc6b1ef2da1b4e35e9584c11fcdc51509c19017e2812">
+      <source xml:lang="en">Site Comparison</source>
+    </trans-unit>
+    <trans-unit id="++CODE++a2b2338307fa6b0b6c048393bdf584b2babad14d29f6b741cd2b2e4eaa051353">
+      <source xml:lang="en">Site Comparison JSON</source>
+    </trans-unit>
+    <trans-unit id="++CODE++87fa4c14343dbe871004d198588448a3b43c12dae48f8b1cb63d53e8e2687a29">
+      <source xml:lang="en">Site Comparison Report</source>
+    </trans-unit>
     <trans-unit id="++CODE++524bca0347e50e3801bebf27374124b3babf072729b4da4bcc45ef5c385ee8f4">
       <source xml:lang="en">Site Details</source>
+    </trans-unit>
+    <trans-unit id="++CODE++b7cc9930c5fbe6d45071fbce87e513399eda01d1be3cdcaa8c5c1426e98e8066">
+      <source xml:lang="en">Site Name:</source>
+    </trans-unit>
+    <trans-unit id="++CODE++4b7de12dbef5cc145cf5b8b08743a60d279d6ee27b8b13470e5f06bc21153867">
+      <source xml:lang="en">Site Visibility:</source>
     </trans-unit>
     <trans-unit id="++CODE++4fa72d80ab1b04e31f450bacc89bff526a5e52e3d104d153b3b493b108330b3c">
       <source xml:lang="en">Site download cancelled. Authentication is required to proceed.</source>
@@ -841,6 +1151,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++c0917a71517a4a08ef56adaaec8f79404a4d5cc14afc8d141e9aa6181bee8622">
       <source xml:lang="en">Site download cancelled. No folder selected.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++e14f56f166e3f1c738244eb549eed009edbcede757905ce707cc30dbffd60c8b">
+      <source xml:lang="en">Site download failed. Please try again later.</source>
     </trans-unit>
     <trans-unit id="++CODE++a72357d268bce5e1643bfd74563495784179f75ace0d652db8f808f293586b63">
       <source xml:lang="en">Site management URL not found for the selected site. Please try again after refreshing the environment.</source>
@@ -858,11 +1171,26 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++189f24adc299ea91ceab21d8100a58d89294ed17395c4e4dbc4733c9b92543df">
       <source xml:lang="en">Something went wrong. Don’t worry, you can try again.</source>
     </trans-unit>
+    <trans-unit id="++CODE++9363df99329b30b2e856758ea1e1f08e117936f1a8116e29f8d64b4bc62f9ab6">
+      <source xml:lang="en">Standard Data Model</source>
+    </trans-unit>
     <trans-unit id="++CODE++1cb2204ec480119230ac755787106a1550d9329553d146abd56da1947079d577">
       <source xml:lang="en">Starting CodeQL analysis for: {0}</source>
     </trans-unit>
     <trans-unit id="++CODE++155f816c0407310c0dab222493370773e045ee7fe04e6c9a951b07f495531264">
       <source xml:lang="en">Submit</source>
+    </trans-unit>
+    <trans-unit id="++CODE++4bcd6903494ba202e376e60698d4f937a3515af0fb4bdcad4875e4f76736b0dd">
+      <source xml:lang="en">Successfully discarded all {0} local changes in '{1}'.</source>
+      <note>Success message after discarding all local changes in a site.</note>
+    </trans-unit>
+    <trans-unit id="++CODE++9543efee4b5aadd6f27f5d4a06361b18d153aaf0b66e0121622fb9fd3581fdf8">
+      <source xml:lang="en">Successfully discarded local changes to '{0}'.</source>
+      <note>Success message after discarding local changes to a file.</note>
+    </trans-unit>
+    <trans-unit id="++CODE++52901a0a85676bc5805d19ecfc4921edeff3246e815b0d199dad38874519f160">
+      <source xml:lang="en">Successfully discarded local changes to {0} files in '{1}'.</source>
+      <note>Success message after discarding all local changes in a folder.</note>
     </trans-unit>
     <trans-unit id="++CODE++e3a0cecb7c0c51b4a918164be2e4a75795139fbc652adbed3c6a144cf4adc009">
       <source xml:lang="en">Switching environment...</source>
@@ -899,6 +1227,12 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++51d2fcbba3e5fc15afbd85f1d179e58b9c4328b466cd7872ec77dc0c9cb34afe">
       <source xml:lang="en">The preview shown is for published changes. Please publish any pending changes to see them in the preview.</source>
     </trans-unit>
+    <trans-unit id="++CODE++1f362261e8bb9564245fa7e590732de71b5f6cbb3e9963a8d8573b51ae18cbfe">
+      <source xml:lang="en">The website was not found in the selected environment. Please select a different environment.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++6f309003581fafdd78e247cd0fe8b4b7f57ed89a60325b01e6725e8c078f23de">
+      <source xml:lang="en">The website you selected is different from the local site. Are you sure you want to compare with this website?</source>
+    </trans-unit>
     <trans-unit id="++CODE++18f3be2933741b96e56b1e1f70818fcba46ec9c5b3dcd0e28d801eab15791d84">
       <source xml:lang="en">There was a permissions problem with the server</source>
     </trans-unit>
@@ -907,6 +1241,15 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++37ea190531b914739bf1ff100b3d44579b6d703de0b79b380094714aa3b3c259">
       <source xml:lang="en">There’s a problem on the back end</source>
+    </trans-unit>
+    <trans-unit id="++CODE++bcfc420c0358eb6f248fa6328797cfa38fa121baea6320a623280a0d34eeee75">
+      <source xml:lang="en">This file was exported with a newer version of the extension. Please update your extension to import this file.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++e7de2855a45712e1d967171e4d86f37d4014c2f80a515bc552ed4c4a2984c3e4">
+      <source xml:lang="en">This will close all active comparison views. Your local files will not be affected.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++f9463baef8e56e06230fca093d61bb43810240340033d21ecf4df81e02579913">
+      <source xml:lang="en">This will close the active comparison view. Your local files will not be affected.</source>
     </trans-unit>
     <trans-unit id="++CODE++75670337a398f9840d2951dbc6746497caec6da9dd506ecff57ef79d59c6280f">
       <source xml:lang="en">Thumbs Down</source>
@@ -920,6 +1263,15 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++4f8c4d58a87feaaff06fd5f9cb84370ab4a42220bf1e8cbedbca716f8f21c9ee">
       <source xml:lang="en">To know more, see &lt;a href=&quot;https://go.microsoft.com/fwlink/?linkid=2206366&quot;&gt;Copilot in Power Pages documentation.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++ea93d6a262ecb87a9fa4d09edbd7654c046597936a8e235fc3949eb01775ff99">
+      <source xml:lang="en">Tools</source>
+    </trans-unit>
+    <trans-unit id="++CODE++9ffd094afb84d3a84bbf1b4ec8210ba5344169e9b2726ce366ccf3e231b7e9b7">
+      <source xml:lang="en">Total Changes</source>
+    </trans-unit>
+    <trans-unit id="++CODE++1ad14134a4f26b4cf2f8e203eb324fab77722a2f5368f489162d3d2319d01060">
+      <source xml:lang="en">Total Files:</source>
     </trans-unit>
     <trans-unit id="++CODE++4a7c431a6572c68bba17c3a5d858adbf5112462574953baf4d7d2fd0619807fe">
       <source xml:lang="en">Try @powerpages with GitHub Copilot</source>
@@ -945,12 +1297,30 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++3747890a3bfddec3123ce9a40cdd15f278d1335b382f80beb52bf18101ab02c2">
       <source xml:lang="en">Unable to locate website root folder.</source>
     </trans-unit>
+    <trans-unit id="++CODE++f9a23abc4576c688d711c764a407284b25ce2966126f30d987dc1afaea7b9603">
+      <source xml:lang="en">Unable to read file contents</source>
+    </trans-unit>
+    <trans-unit id="++CODE++36009f87dbdc8f4572776ef202667a9a1b4efe72a00c620b0adac0de2e0fbece">
+      <source xml:lang="en">Unable to read local file</source>
+    </trans-unit>
+    <trans-unit id="++CODE++e7120fe32babf1b3300650ac52f6cd3e9853405cd3cd836c798ff8be909bab88">
+      <source xml:lang="en">Unable to read one or both files</source>
+    </trans-unit>
+    <trans-unit id="++CODE++4c21988362b9693a86433c1ba0c1837d2196594dd38ae3dd1e8b5af0df712f5c">
+      <source xml:lang="en">Unable to read remote file</source>
+    </trans-unit>
     <trans-unit id="++CODE++b6038584b7b1f565be9c9d3f0ac11be70bd2e69e072ead52884ca7338a14ee67">
       <source xml:lang="en">Unique name: {0}</source>
       <note>{0} is the Unique name</note>
     </trans-unit>
+    <trans-unit id="++CODE++b764cdc0eab7137467211272fa539f1260d1bf2e71bcf6ff3bdc960f5c16aa14">
+      <source xml:lang="en">Unknown</source>
+    </trans-unit>
     <trans-unit id="++CODE++4b8d64fae5d1cbf5f7324782e9b5c430db7c218771e84b0b402a9a4d0ec4bf05">
       <source xml:lang="en">Unmanaged</source>
+    </trans-unit>
+    <trans-unit id="++CODE++6af7f93689dd7163536bf6cd39d6c0c70f321dff3d5e661b144b3667f9526977">
+      <source xml:lang="en">Unsupported version. This file was created with a newer version of the extension.</source>
     </trans-unit>
     <trans-unit id="++CODE++810c2285d6b0fa110f868e006118426e02a150592009b5f2458e2883d8dcd3c8">
       <source xml:lang="en">Update Extension</source>
@@ -960,6 +1330,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++8a91e7caf57148c6be78b3986477464b36f0282a9e9a09b635b0db4fe6246132">
       <source xml:lang="en">Upload failed. Please try again later.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++037bfba715811960dfb62b81a99d5002835f73a9c44bdd6661ebc222d8538e2b">
+      <source xml:lang="en">Use File → Open Folder to select a folder with a Power Pages site</source>
     </trans-unit>
     <trans-unit id="++CODE++c86daff3d88f7b1f615467872994ef13dcbc1c55e10105d71f398c721650c9c2">
       <source xml:lang="en">Use current site folder</source>
@@ -1010,9 +1383,18 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++6a9f7c7cbfe7d5ae5e596c92dc8f1e73e79add5f6c7359c5fd0d61a23a66b668">
       <source xml:lang="en">Website ID is required</source>
     </trans-unit>
+    <trans-unit id="++CODE++a70c63db9e2d7ceb9f17f00065db00262718561d9330fbef203aba4acbf57d7b">
+      <source xml:lang="en">Website ID not found. Please ensure you have a valid Power Pages site open.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++f61a5b01e081338759cfc22a2b8afcc35ab7a22a36585efe93fc1ac2a5afe124">
+      <source xml:lang="en">Website ID:</source>
+    </trans-unit>
     <trans-unit id="++CODE++d3eaa7bf5377b15781ad4c0f43e4da94b9a2bd485ddbbbe62a2c3d53c5c7fe4a">
       <source xml:lang="en">Website Id: {0}</source>
       <note>{0} is the website ID</note>
+    </trans-unit>
+    <trans-unit id="++CODE++337c1eee64c216207c0df5634e89e0f1216a96d5430e57344a797452d8627757">
+      <source xml:lang="en">Website URL:</source>
     </trans-unit>
     <trans-unit id="++CODE++4f5909ac007d8a897ec18ede71cdf8f6b4af3bbe78bae2f13871d50a3cebb3f6">
       <source xml:lang="en">Website Url: {0}</source>
@@ -1042,6 +1424,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++85a39ab345d672ff8ca9b9c6876f3adcacf45ee7c1e2dbd2408fd338bd55e07e">
       <source xml:lang="en">Yes</source>
     </trans-unit>
+    <trans-unit id="++CODE++229b025b2c8158fda1948dc79cdd581547f97bbdbc239f9d89b056e48a397591">
+      <source xml:lang="en">Yes, Don't Ask Again</source>
+    </trans-unit>
     <trans-unit id="++CODE++5f1325c0fc2f8e2e8732d6545bcc100f0e7e0d8ea1740b2d519fc83c43ae1fc2">
       <source xml:lang="en">You are currently connected to a different environment. Would you like to switch to the required environment?</source>
     </trans-unit>
@@ -1064,9 +1449,37 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++21c9bbf3ca8756722337933b27566345c8aa2794231295a3ede6204329456931">
       <source xml:lang="en">pac pcf init</source>
     </trans-unit>
+    <trans-unit id="++CODE++1a0339214d26f1499ce28b0304c11fce7c177c9d6df1872ac1e9705760cfdbd8">
+      <source xml:lang="en">{0} ({1} file)</source>
+      <note>This is the site label showing the number of changed files. 'file' is singular.</note>
+    </trans-unit>
+    <trans-unit id="++CODE++baeef25dc2eb180f07d2588035131c67de574a67b5b59941b077d96c5e08ec9e">
+      <source xml:lang="en">{0} ({1} files)</source>
+      <note>This is the site label showing the number of changed files. 'files' is plural.</note>
+    </trans-unit>
+    <trans-unit id="++CODE++dcbed1e6ea38a3f7f5e64925ed3898dc74721389792c65218b5216538214e3b7">
+      <source xml:lang="en">{0} ({1}) ↔ {2} (Local)</source>
+      <note>Comparison label showing remote and local sites. Format: 'Remote (Env) ↔ Local (Local)'.</note>
+    </trans-unit>
+    <trans-unit id="++CODE++7ec0c807a987e15ebf5bcf7dab23b8fea20b59ed72cae0172465ad0fdd200882">
+      <source xml:lang="en">{0} binary file(s) (e.g., images) were skipped as they cannot be displayed in the diff viewer. You can view them individually in the file tree.</source>
+      <note>Message shown when binary files are skipped in the multi-diff view.</note>
+    </trans-unit>
     <trans-unit id="++CODE++48c4c42c9b70ac4687a121f91d8cb9a9063a3b51fbc5eeb68e5edc961ee18482">
       <source xml:lang="en">{0} created!</source>
       <note>{0} will be replaced by the entity type.</note>
+    </trans-unit>
+    <trans-unit id="++CODE++d1873d011f27513d3bc27f9a9da5c28141a066578e847d1120ddef316f638ef4">
+      <source xml:lang="en">{0} files changed</source>
+      <note>Description showing the number of changed files. 'files' is plural.</note>
+    </trans-unit>
+    <trans-unit id="++CODE++75a1e748520c8974a0ff5bf44b9d3a54c618fc7422b40e41465de59d8049331d">
+      <source xml:lang="en">{0} files changed (Imported {1})</source>
+      <note>Description for imported comparison. {0} is file count, {1} is formatted date.</note>
+    </trans-unit>
+    <trans-unit id="++CODE++21471e6993c28688e252bf884db38022cef15af0126d3d7f68c5e4a6c4dfd9d3">
+      <source xml:lang="en">{0}: {1} (Remote ↔ Local)</source>
+      <note>Title for the diff editor when comparing a single file.</note>
     </trans-unit>
   </body></file>
   <file original="package" source-language="en" datatype="plaintext"><body>
@@ -1092,8 +1505,17 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
     <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
       <source xml:lang="en">Clear Auth Profiles</source>
     </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.clear.title">
+      <source xml:lang="en">Clear Comparison</source>
+    </trans-unit>
     <trans-unit id="powerpages.copilotPanel.clearConversation.title">
       <source xml:lang="en">Clear Conversation</source>
+    </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.compareWithEnvironment.title">
+      <source xml:lang="en">Compare with Environment</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.compareWithLocal.title">
+      <source xml:lang="en">Compare with Local</source>
     </trans-unit>
     <trans-unit id="powerpages.copilotPanel.title">
       <source xml:lang="en">Copilot In Power Pages</source>
@@ -1122,11 +1544,23 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
     <trans-unit id="pacCLI.envAndSolutionsPanel.copyVersionNumber.title">
       <source xml:lang="en">Copy Version Number</source>
     </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.debugServerLogic.title">
+      <source xml:lang="en">Debug Current Server Logic File</source>
+    </trans-unit>
     <trans-unit id="pacCLI.authPanel.deleteAuthProfile.title">
       <source xml:lang="en">Delete Auth Profile</source>
     </trans-unit>
     <trans-unit id="pacCLI.disableTelemetry.title">
       <source xml:lang="en">Disable PAC Telemetry</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.discardSite.title">
+      <source xml:lang="en">Discard All Local Changes</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFolder.title">
+      <source xml:lang="en">Discard All Local Changes</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFile.title">
+      <source xml:lang="en">Discard Local Changes</source>
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.description">
       <source xml:lang="en">Discover how you can make complete, modern websites right in Visual Studio Code</source>
@@ -1146,6 +1580,12 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
     <trans-unit id="pacCLI.envAndSolutionsPanel.title">
       <source xml:lang="en">Environments &amp; Solutions</source>
     </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.generateHtmlReport.title">
+      <source xml:lang="en">Export as HTML Report</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.export.title">
+      <source xml:lang="en">Export as JSON</source>
+    </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.title">
       <source xml:lang="en">File explorer</source>
     </trans-unit>
@@ -1160,6 +1600,9 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
       <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-documentation).', keeping brackets and the text in the parentheses unmodified
 The eighth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-open-folder)', keeping brackets and the text in the parentheses unmodified</note>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.import.title">
+      <source xml:lang="en">Import Comparison</source>
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.webExtension.init.title">
       <source xml:lang="en">Initialize Web Extension</source>
@@ -1199,6 +1642,12 @@ The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthPr
  To learn more, visit [Edit Power Pages code in VS Code](command:powerplatform-walkthrough.overview-learn-more).</source>
       <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified</note>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.openAll.title">
+      <source xml:lang="en">Open All Diffs</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.openFile.title">
+      <source xml:lang="en">Open Comparison</source>
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title">
       <source xml:lang="en">Open Containing Folder</source>
@@ -1252,6 +1701,12 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     <trans-unit id="pacCLI.authPanel.refresh.title">
       <source xml:lang="en">Refresh</source>
     </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.resync.title">
+      <source xml:lang="en">Refresh Comparison</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.removeSite.title">
+      <source xml:lang="en">Remove Comparison</source>
+    </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows.title">
       <source xml:lang="en">Reveal in Explorer</source>
     </trans-unit>
@@ -1260,6 +1715,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title">
       <source xml:lang="en">Run CodeQL Screening</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.runServerLogic.title">
+      <source xml:lang="en">Run Current Server Logic File</source>
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.saveConflict.title">
       <source xml:lang="en">Save conflict</source>
@@ -1288,14 +1746,32 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     <trans-unit id="pacCLI.pacSolutionHelp.title">
       <source xml:lang="en">Show PAC Solution Help</source>
     </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.configuration.confirmDifferentWebsiteComparison.description">
+      <source xml:lang="en">Show a confirmation dialog when comparing with a different website than the local site. Set to false to suppress this confirmation.</source>
+    </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.siteDetails.title">
       <source xml:lang="en">Site Details</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByName.title">
+      <source xml:lang="en">Sort by Name</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByPath.title">
+      <source xml:lang="en">Sort by Path</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByStatus.title">
+      <source xml:lang="en">Sort by Status</source>
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.configuration.downloadSite.description">
       <source xml:lang="en">The folder where site will be downloaded when using Power Pages Actions. Leave this empty to ask for a folder every time you download a site.</source>
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite.title">
       <source xml:lang="en">Upload Site</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsList.title">
+      <source xml:lang="en">View as List</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsTree.title">
+      <source xml:lang="en">View as Tree</source>
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.description">
       <source xml:lang="en">Visual Studio Code for Web enables editing and publishing of web pages on your website.

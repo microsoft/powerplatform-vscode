@@ -54,6 +54,7 @@ import { PROVIDER_ID } from "../common/services/Constants";
 import { activateServerApiAutocomplete } from "../common/intellisense";
 import { EnableServerLogicChanges } from "../common/ecs-features/ecsFeatureGates";
 import { setServerApiTelemetryContext } from "../common/intellisense/ServerApiTelemetryContext";
+import { activateServerLogicDebugger } from "../debugger/server-logic/ServerLogicDebugger";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -183,6 +184,9 @@ export async function activate(
     const basicPanels = RegisterBasicPanels(pacWrapper);
     _context.subscriptions.push(...basicPanels);
 
+    // Activate Server Logic debugger (always available, doesn't require authentication)
+    activateServerLogicDebugger(_context);
+
     let copilotNotificationShown = false;
 
     const workspaceFolders = getWorkspaceFolders();
@@ -246,6 +250,7 @@ export async function activate(
                         activateServerApiAutocomplete(_context, [
                             { languageId: 'javascript', triggerCharacters: ['.'] }
                         ]);
+
                         serverApiAutocompleteInitialized = true;
                     }
                 }
@@ -254,6 +259,9 @@ export async function activate(
                 let initContext: object = { ...orgDetails, orgGeo: geoName };
                 if (AadObjectId) {
                     initContext = { ...initContext, AadId: AadObjectId }
+                }
+                if (TenantID) {
+                    initContext = { ...initContext, tenantId: TenantID }
                 }
                 oneDSLoggerWrapper.getLogger().traceInfo(desktopTelemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, initContext);
             }

@@ -15,17 +15,53 @@ export const Constants = {
         INACTIVE_SITE: "inactiveSite",
         OTHER_SITE: "otherSite",
         OTHER_SITES_GROUP: "otherSitesGroup",
+        TOOLS_GROUP: "toolsGroup",
         NO_SITES: "noSites",
         ACCOUNT_MISMATCH: "accountMismatch",
         LOGIN_PROMPT: "loginPrompt",
+        METADATA_DIFF_GROUP: "metadataDiffGroup",
+        METADATA_DIFF_GROUP_WITH_RESULTS: "metadataDiffGroupWithResults",
+        METADATA_DIFF_SITE: "metadataDiffSite",
+        METADATA_DIFF_SITE_IMPORTED: "metadataDiffSiteImported",
+        METADATA_DIFF_FOLDER: "metadataDiffFolder",
+        METADATA_DIFF_FOLDER_IMPORTED: "metadataDiffFolderImported",
+        METADATA_DIFF_FILE: "metadataDiffFile",
+        METADATA_DIFF_FILE_IMPORTED: "metadataDiffFileImported",
+        METADATA_DIFF_WELCOME_WITH_SITE: "metadataDiffWelcomeWithSite",
+        METADATA_DIFF_WELCOME_NO_SITE: "metadataDiffWelcomeNoSite",
+        METADATA_DIFF_WELCOME_DESCRIPTION: "metadataDiffWelcomeDescription",
+    },
+    Commands: {
+        METADATA_DIFF_OPEN_FILE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.openFile",
+        METADATA_DIFF_OPEN_ALL: "microsoft.powerplatform.pages.actionsHub.metadataDiff.openAll",
+        METADATA_DIFF_CLEAR: "microsoft.powerplatform.pages.actionsHub.metadataDiff.clear",
+        METADATA_DIFF_REMOVE_SITE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.removeSite",
+        METADATA_DIFF_VIEW_AS_TREE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsTree",
+        METADATA_DIFF_VIEW_AS_LIST: "microsoft.powerplatform.pages.actionsHub.metadataDiff.viewAsList",
+        METADATA_DIFF_DISCARD_FILE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFile",
+        METADATA_DIFF_DISCARD_FOLDER: "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFolder",
+        METADATA_DIFF_DISCARD_SITE: "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardSite",
+        METADATA_DIFF_SORT_BY_NAME: "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByName",
+        METADATA_DIFF_SORT_BY_PATH: "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByPath",
+        METADATA_DIFF_SORT_BY_STATUS: "microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByStatus",
+        METADATA_DIFF_GENERATE_HTML_REPORT: "microsoft.powerplatform.pages.actionsHub.metadataDiff.generateHtmlReport",
+        METADATA_DIFF_EXPORT: "microsoft.powerplatform.pages.actionsHub.metadataDiff.export",
+        METADATA_DIFF_IMPORT: "microsoft.powerplatform.pages.actionsHub.metadataDiff.import",
+        METADATA_DIFF_RESYNC: "microsoft.powerplatform.pages.actionsHub.metadataDiff.resync",
+        COMPARE_WITH_ENVIRONMENT: "microsoft-powerapps-portals.compareWithEnvironment",
     },
     Icons: {
         SITE: new vscode.ThemeIcon('globe'),
-        SITE_GROUP: new vscode.ThemeIcon('folder'),
-        OTHER_SITES: new vscode.ThemeIcon('archive')
+        IMPORTED_SITE: new vscode.ThemeIcon('cloud-download'),
+        SITE_GROUP: vscode.ThemeIcon.Folder,
+        OTHER_SITES: new vscode.ThemeIcon('archive'),
+        TOOLS: new vscode.ThemeIcon('tools'),
+        METADATA_DIFF_GROUP: new vscode.ThemeIcon('diff'),
+        METADATA_DIFF_FOLDER: vscode.ThemeIcon.Folder,
     },
     Strings: {
         OTHER_SITES: vscode.l10n.t("Other Sites"),
+        TOOLS: vscode.l10n.t("Tools"),
         ACTIVE_SITES: vscode.l10n.t("Active Sites"),
         INACTIVE_SITES: vscode.l10n.t("Inactive Sites"),
         NO_SITES_FOUND: vscode.l10n.t("No sites found"),
@@ -35,6 +71,8 @@ export const Constants = {
         SESSION_DETAILS: vscode.l10n.t("Session Details"),
         CHANGING_ENVIRONMENT: vscode.l10n.t("Changing environment..."),
         CURRENT: vscode.l10n.t("Current"),
+        LOCAL: vscode.l10n.t("Local"),
+        LOCAL_SITE: vscode.l10n.t("Local Site"),
         SITE_MANAGEMENT_URL_NOT_FOUND: vscode.l10n.t("Site management URL not found for the selected site. Please try again after refreshing the environment."),
         SITE_UPLOAD_CONFIRMATION: vscode.l10n.t(`Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?`),
         YES: vscode.l10n.t("Yes"),
@@ -74,7 +112,7 @@ export const Constants = {
         SARIF_VIEWER_NOT_INSTALLED: vscode.l10n.t("The SARIF Viewer extension is recommended for viewing CodeQL results. Would you like to install it now?"),
         SARIF_VIEWER_INSTALL_FAILED: vscode.l10n.t("Failed to install SARIF viewer extension. Opening results as text file."),
         OPEN_AS_TEXT: vscode.l10n.t("Open as Text"),
-        CODEQL_ANALYSIS_CHANNEL_NAME: vscode.l10n.t("CodeQL Analysis"),
+        CODEQL_ANALYSIS_CHANNEL_NAME: "Power Platform Tools: CodeQL Analysis",
         CODEQL_ANALYSIS_STARTING: vscode.l10n.t("Starting CodeQL analysis for: {0}"),
         CODEQL_DATABASE_LOCATION: vscode.l10n.t("Database location: {0}"),
         CODEQL_CREATING_DATABASE: vscode.l10n.t("Creating CodeQL database..."),
@@ -139,7 +177,332 @@ export const Constants = {
         CODEQL_CONFIG_FILE_CREATED_SUCCESSFULLY: vscode.l10n.t("PowerPages config file created successfully: {0}"),
         CODEQL_CONFIG_FILE_CREATE_ERROR: vscode.l10n.t("Error creating config file: {0}"),
         CODEQL_CONFIG_FILE_UPDATED_SUCCESSFULLY: vscode.l10n.t("PowerPages config file updated successfully: {0}"),
-        CODEQL_CONFIG_FILE_UPDATE_ERROR: vscode.l10n.t("Error updating config file: {0}")
+        CODEQL_CONFIG_FILE_UPDATE_ERROR: vscode.l10n.t("Error updating config file: {0}"),
+        NO_WORKSPACE_FOLDER_OPEN: vscode.l10n.t("No workspace folder is open. Please open a folder containing your Power Pages site."),
+        WEBSITE_ID_NOT_FOUND: vscode.l10n.t("Website ID not found. Please ensure you have a valid Power Pages site open."),
+        COMPARE_WITH_LOCAL_SITE_DOWNLOAD_FAILED: vscode.l10n.t("Site download failed. Please try again later."),
+        NO_DIFFERENCES_FOUND: vscode.l10n.t("No differences found between the remote site and your local workspace."),
+        COMPARING_FILES: vscode.l10n.t("Comparing files..."),
+        METADATA_DIFF_GROUP: vscode.l10n.t("Site Comparison"),
+        METADATA_DIFF_WELCOME_DESCRIPTION: vscode.l10n.t("Find differences between your remote site and local workspace"),
+        METADATA_DIFF_WELCOME_TOOLTIP_WITH_SITE: vscode.l10n.t("Click to compare your local site with an environment"),
+        METADATA_DIFF_WELCOME_TOOLTIP_NO_SITE: vscode.l10n.t("Use File → Open Folder to select a folder with a Power Pages site"),
+        METADATA_DIFF_WELCOME_NO_SITE_INSTRUCTION: vscode.l10n.t("Use File → Open Folder to select a folder with a Power Pages site"),
+        METADATA_DIFF_COMPARE_SITE_CTA: vscode.l10n.t("Compare site..."),
+        METADATA_DIFF_MODIFIED: vscode.l10n.t("Modified"),
+        METADATA_DIFF_ADDED: vscode.l10n.t("Added locally"),
+        METADATA_DIFF_DELETED: vscode.l10n.t("Deleted locally"),
+        COMPARE_WITH_LOCAL_COMPLETED: vscode.l10n.t("Download is complete. You can now view the report."),
+        SELECT_ENVIRONMENT_TO_COMPARE: vscode.l10n.t("Select an environment to compare with"),
+        SELECT_WEBSITE_TO_COMPARE: vscode.l10n.t("Select a website to compare with"),
+        COMPARE_SITE_WITH_ENVIRONMENT: vscode.l10n.t("Compare site with environment"),
+        LOADING: vscode.l10n.t("Loading..."),
+        NO_SITES_FOUND_IN_ENVIRONMENT: vscode.l10n.t("No sites found in the selected environment."),
+        MATCHING_SITE_INDICATOR: vscode.l10n.t("Matching Site"),
+        ENHANCED_DATA_MODEL: vscode.l10n.t("Enhanced Data Model"),
+        STANDARD_DATA_MODEL: vscode.l10n.t("Standard Data Model"),
+        DIFFERENT_WEBSITE_CONFIRMATION: vscode.l10n.t("The website you selected is different from the local site. Are you sure you want to compare with this website?"),
+        YES_DONT_ASK_AGAIN: vscode.l10n.t("Yes, Don't Ask Again"),
+        WEBSITE_NOT_FOUND_IN_ENVIRONMENT: vscode.l10n.t("The website was not found in the selected environment. Please select a different environment."),
+        DISCARD_CHANGES: vscode.l10n.t("Discard Changes"),
+        CLEAR_ALL: vscode.l10n.t("Clear All"),
+        CLEAR_ALL_RESULTS_TITLE: vscode.l10n.t("Clear all results?"),
+        CLEAR_ALL_RESULTS_MESSAGE: vscode.l10n.t("This will close all active comparison views. Your local files will not be affected."),
+        CLEAR: vscode.l10n.t("Clear"),
+        CLEAR_RESULT_TITLE: vscode.l10n.t("Clear result?"),
+        CLEAR_RESULT_MESSAGE: vscode.l10n.t("This will close the active comparison view. Your local files will not be affected."),
+        SHOW_DIFF: vscode.l10n.t("Show Diff"),
+        METADATA_DIFF_ONLY_BINARY_FILES: vscode.l10n.t("All changed files are binary files (e.g., images) and cannot be displayed in the diff viewer. You can view them individually in the file tree."),
+        FILE_COUNT_DESCRIPTION_SINGULAR: vscode.l10n.t("1 file changed"),
+        SAVE_REPORT: vscode.l10n.t("Save Report"),
+        SAVE_HTML_REPORT_TITLE: vscode.l10n.t("Save HTML Report"),
+        OPEN_REPORT: vscode.l10n.t("Open Report"),
+        // HTML Report labels
+        HTML_REPORT_TITLE: vscode.l10n.t("Site Comparison Report"),
+        HTML_REPORT_SUBTITLE: vscode.l10n.t("Power Platform Tools - Site Comparison"),
+        HTML_REPORT_TOTAL_CHANGES: vscode.l10n.t("Total Changes"),
+        HTML_REPORT_ADDED: vscode.l10n.t("Added Locally"),
+        HTML_REPORT_MODIFIED: vscode.l10n.t("Modified"),
+        HTML_REPORT_DELETED: vscode.l10n.t("Deleted Locally"),
+        HTML_REPORT_COMPARISON_DETAILS: vscode.l10n.t("Comparison Details"),
+        HTML_REPORT_LOCAL_SECTION: vscode.l10n.t("Local"),
+        HTML_REPORT_REMOTE_SECTION: vscode.l10n.t("Remote"),
+        HTML_REPORT_SITE_NAME_LABEL: vscode.l10n.t("Site Name:"),
+        HTML_REPORT_ENVIRONMENT_LABEL: vscode.l10n.t("Environment:"),
+        HTML_REPORT_WEBSITE_ID_LABEL: vscode.l10n.t("Website ID:"),
+        HTML_REPORT_DATA_MODEL_LABEL: vscode.l10n.t("Data Model:"),
+        HTML_REPORT_WEBSITE_URL_LABEL: vscode.l10n.t("Website URL:"),
+        HTML_REPORT_SITE_VISIBILITY_LABEL: vscode.l10n.t("Site Visibility:"),
+        HTML_REPORT_CREATOR_LABEL: vscode.l10n.t("Creator:"),
+        HTML_REPORT_CREATED_ON_LABEL: vscode.l10n.t("Created On:"),
+        HTML_REPORT_GENERATED_LABEL: vscode.l10n.t("Generated:"),
+        HTML_REPORT_TOTAL_FILES_LABEL: vscode.l10n.t("Total Files:"),
+        HTML_REPORT_CHANGED_FILES: vscode.l10n.t("Changed Files"),
+        HTML_REPORT_CLICK_TO_EXPAND: vscode.l10n.t("(click to expand diff)"),
+        HTML_REPORT_EXPAND_ALL: vscode.l10n.t("Expand All"),
+        HTML_REPORT_COLLAPSE_ALL: vscode.l10n.t("Collapse All"),
+        // HTML Report tab labels
+        HTML_REPORT_TAB_ALL: vscode.l10n.t("All"),
+        HTML_REPORT_NO_FILES_IN_CATEGORY: vscode.l10n.t("No files in this category"),
+        HTML_REPORT_GENERATED_BY: vscode.l10n.t("Generated by"),
+        HTML_REPORT_EXTENSION_NAME: vscode.l10n.t("Power Platform Tools VS Code Extension"),
+        // HTML Report status texts
+        HTML_REPORT_STATUS_MODIFIED: vscode.l10n.t("Modified"),
+        HTML_REPORT_STATUS_ADDED: vscode.l10n.t("Added Locally"),
+        HTML_REPORT_STATUS_DELETED: vscode.l10n.t("Deleted Locally"),
+        HTML_REPORT_STATUS_UNKNOWN: vscode.l10n.t("Unknown"),
+        // HTML Report diff messages
+        HTML_REPORT_BINARY_FILE_MESSAGE: vscode.l10n.t("Binary file - content comparison not available"),
+        HTML_REPORT_UNABLE_TO_READ_CONTENTS: vscode.l10n.t("Unable to read file contents"),
+        HTML_REPORT_UNABLE_TO_READ_LOCAL: vscode.l10n.t("Unable to read local file"),
+        HTML_REPORT_UNABLE_TO_READ_REMOTE: vscode.l10n.t("Unable to read remote file"),
+        HTML_REPORT_UNABLE_TO_READ_BOTH: vscode.l10n.t("Unable to read one or both files"),
+        // Export/Import strings
+        METADATA_DIFF_EXPORT_PROGRESS: vscode.l10n.t("Exporting comparison..."),
+        METADATA_DIFF_EXPORT_TITLE: vscode.l10n.t("Export Site Comparison"),
+        METADATA_DIFF_IMPORT_PROGRESS: vscode.l10n.t("Importing comparison..."),
+        METADATA_DIFF_IMPORT_TITLE: vscode.l10n.t("Import Site Comparison"),
+        METADATA_DIFF_EXPORT_INVALID_FILE: vscode.l10n.t("Invalid file format. The file does not contain valid metadata diff data."),
+        METADATA_DIFF_EXPORT_UNSUPPORTED_VERSION: vscode.l10n.t("Unsupported version. This file was created with a newer version of the extension."),
+        METADATA_DIFF_EXPORT_NEWER_EXTENSION_VERSION: vscode.l10n.t("This file was exported with a newer version of the extension. Please update your extension to import this file."),
+        METADATA_DIFF_EXPORT_FILTER_NAME: vscode.l10n.t("Site Comparison JSON"),
+        METADATA_DIFF_BINARY_FILE_NOT_AVAILABLE: vscode.l10n.t("Binary file content is not available in imported comparisons. The original file was not included in the export."),
+        METADATA_DIFF_REPLACE_EXISTING_IMPORT: vscode.l10n.t("An imported comparison already exists for this site. Do you want to replace it?"),
+        REPLACE: vscode.l10n.t("Replace"),
+        METADATA_DIFF_RESYNC_COMPLETED: vscode.l10n.t("Comparison has been refreshed with the latest data from the environment."),
+        METADATA_DIFF_CANNOT_RESYNC_IMPORTED: vscode.l10n.t("Cannot refresh an imported comparison. Import a new file or run a new comparison."),
+    },
+    /**
+     * Functions that return localized strings with dynamic parameters.
+     * Use these for strings that require runtime values.
+     */
+    StringFunctions: {
+        /**
+         * Returns the fetching websites message with environment name
+         */
+        FETCHING_WEBSITES_FROM_ENVIRONMENT: (environmentName: string) =>
+            vscode.l10n.t({
+                message: "Fetching websites from '{0}'...",
+                args: [environmentName],
+                comment: ["Message shown while fetching websites from an environment. {0} is the environment name."]
+            }),
+        /**
+         * Returns the downloading site message with site name
+         */
+        DOWNLOADING_SITE_FOR_COMPARISON: (siteName: string) =>
+            vscode.l10n.t({
+                message: "Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\"))...",
+                args: [siteName],
+                comment: ["This is a markdown formatting which must persist across translations."]
+            }),
+        /**
+         * Returns the comparison label showing remote and local site without file count
+         * Format: "<Remote Website Name> (Environment Name) <-> <Local Website Name> (Local)"
+         */
+        COMPARISON_LABEL: (remoteSiteName: string, environmentName: string, localSiteName: string) =>
+            vscode.l10n.t({
+                message: "{0} ({1}) ↔ {2} (Local)",
+                args: [remoteSiteName, environmentName, localSiteName],
+                comment: ["Comparison label showing remote and local sites. Format: 'Remote (Env) ↔ Local (Local)'."]
+            }),
+        /**
+         * Returns the file count description (plural: "X files changed")
+         */
+        FILE_COUNT_DESCRIPTION_PLURAL: (fileCount: number) =>
+            vscode.l10n.t({
+                message: "{0} files changed",
+                args: [fileCount],
+                comment: ["Description showing the number of changed files. 'files' is plural."]
+            }),
+        /**
+         * Returns the site label with file count (singular: "1 file")
+         */
+        SITE_WITH_FILE_COUNT_SINGULAR: (siteName: string, fileCount: number) =>
+            vscode.l10n.t({
+                message: "{0} ({1} file)",
+                args: [siteName, fileCount],
+                comment: ["This is the site label showing the number of changed files. 'file' is singular."]
+            }),
+        /**
+         * Returns the site label with file count (plural: "X files")
+         */
+        SITE_WITH_FILE_COUNT_PLURAL: (siteName: string, fileCount: number) =>
+            vscode.l10n.t({
+                message: "{0} ({1} files)",
+                args: [siteName, fileCount],
+                comment: ["This is the site label showing the number of changed files. 'files' is plural."]
+            }),
+        /**
+         * Returns the confirmation message for discarding local changes
+         */
+        DISCARD_LOCAL_CHANGES_CONFIRM: (relativePath: string) =>
+            vscode.l10n.t({
+                message: "Are you sure you want to discard local changes to '{0}'? This action cannot be undone.",
+                args: [relativePath],
+                comment: ["Confirmation message before discarding local changes to a file."]
+            }),
+        /**
+         * Returns the success message after discarding local changes
+         */
+        DISCARD_LOCAL_CHANGES_SUCCESS: (relativePath: string) =>
+            vscode.l10n.t({
+                message: "Successfully discarded local changes to '{0}'.",
+                args: [relativePath],
+                comment: ["Success message after discarding local changes to a file."]
+            }),
+        /**
+         * Returns the error message when discarding local changes fails
+         */
+        DISCARD_LOCAL_CHANGES_FAILED: (errorMessage: string) =>
+            vscode.l10n.t({
+                message: "Failed to discard local changes: {0}",
+                args: [errorMessage],
+                comment: ["Error message when discarding local changes fails."]
+            }),
+        /**
+         * Returns the confirmation message for discarding all local changes in a folder
+         */
+        DISCARD_FOLDER_CHANGES_CONFIRM: (folderName: string, fileCount: number) =>
+            vscode.l10n.t({
+                message: "Are you sure you want to discard local changes to all {0} files in '{1}'? This action cannot be undone.",
+                args: [fileCount, folderName],
+                comment: ["Confirmation message before discarding all local changes in a folder."]
+            }),
+        /**
+         * Returns the success message after discarding all local changes in a folder
+         */
+        DISCARD_FOLDER_CHANGES_SUCCESS: (folderName: string, fileCount: number) =>
+            vscode.l10n.t({
+                message: "Successfully discarded local changes to {0} files in '{1}'.",
+                args: [fileCount, folderName],
+                comment: ["Success message after discarding all local changes in a folder."]
+            }),
+        /**
+         * Returns the confirmation message for discarding all local changes in a site
+         */
+        DISCARD_SITE_CHANGES_CONFIRM: (siteName: string, fileCount: number, localPath: string) =>
+            vscode.l10n.t({
+                message: "Are you sure you want to discard all {0} local changes in '{1}'?\n\nLocal path: {2}\n\nThis action cannot be undone.",
+                args: [fileCount, siteName, localPath],
+                comment: ["Confirmation message before discarding all local changes in a site."]
+            }),
+        /**
+         * Returns the success message after discarding all local changes in a site
+         */
+        DISCARD_SITE_CHANGES_SUCCESS: (siteName: string, fileCount: number) =>
+            vscode.l10n.t({
+                message: "Successfully discarded all {0} local changes in '{1}'.",
+                args: [fileCount, siteName],
+                comment: ["Success message after discarding all local changes in a site."]
+            }),
+        /**
+         * Returns the title for comparing all files in a site
+         */
+        COMPARE_ALL_TITLE: (siteName: string) =>
+            vscode.l10n.t({
+                message: "Compare: {0} (Remote ↔ Local)",
+                args: [siteName],
+                comment: ["Title for the multi-diff editor when comparing all files in a site."]
+            }),
+        /**
+         * Returns the title for comparing a single file
+         */
+        COMPARE_FILE_TITLE: (siteName: string, relativePath: string) =>
+            vscode.l10n.t({
+                message: "{0}: {1} (Remote ↔ Local)",
+                args: [siteName, relativePath],
+                comment: ["Title for the diff editor when comparing a single file."]
+            }),
+        /**
+         * Returns the message for skipped binary files
+         */
+        METADATA_DIFF_BINARY_FILES_SKIPPED: (count: number) =>
+            vscode.l10n.t({
+                message: "{0} binary file(s) (e.g., images) were skipped as they cannot be displayed in the diff viewer. You can view them individually in the file tree.",
+                args: [count],
+                comment: ["Message shown when binary files are skipped in the multi-diff view."]
+            }),
+        /**
+         * Returns the success message when HTML report is saved
+         */
+        HTML_REPORT_SAVED_SUCCESS: (filePath: string) =>
+            vscode.l10n.t({
+                message: "HTML report saved successfully to '{0}'.",
+                args: [filePath],
+                comment: ["Success message when HTML report is saved. {0} is the file path."]
+            }),
+        /**
+         * Returns the error message when HTML report generation fails
+         */
+        HTML_REPORT_GENERATION_FAILED: (errorMessage: string) =>
+            vscode.l10n.t({
+                message: "Failed to generate HTML report: {0}",
+                args: [errorMessage],
+                comment: ["Error message when HTML report generation fails. {0} is the error message."]
+            }),
+        /**
+         * Returns the description for imported comparison showing file count and export date
+         */
+        IMPORTED_COMPARISON_DESCRIPTION: (fileCount: number, formattedDate: string) =>
+            vscode.l10n.t({
+                message: "{0} files changed (Imported {1})",
+                args: [fileCount, formattedDate],
+                comment: ["Description for imported comparison. {0} is file count, {1} is formatted date."]
+            }),
+        /**
+         * Returns the error message when a required field is missing in import
+         */
+        METADATA_DIFF_MISSING_REQUIRED_FIELD: (fieldName: string) =>
+            vscode.l10n.t({
+                message: "Missing required field: {0}",
+                args: [fieldName],
+                comment: ["Error when importing a file that is missing a required field."]
+            }),
+        /**
+         * Returns the success message when export is complete
+         */
+        METADATA_DIFF_EXPORT_SUCCESS: (filePath: string) =>
+            vscode.l10n.t({
+                message: "Comparison exported successfully to '{0}'.",
+                args: [filePath],
+                comment: ["Success message when export is saved. {0} is the file path."]
+            }),
+        /**
+         * Returns the error message when export fails
+         */
+        METADATA_DIFF_EXPORT_FAILED: (errorMessage: string) =>
+            vscode.l10n.t({
+                message: "Failed to export comparison: {0}",
+                args: [errorMessage],
+                comment: ["Error message when export fails. {0} is the error message."]
+            }),
+        /**
+         * Returns the success message when import is complete
+         */
+        METADATA_DIFF_IMPORT_SUCCESS: (siteName: string) =>
+            vscode.l10n.t({
+                message: "Comparison for '{0}' imported successfully.",
+                args: [siteName],
+                comment: ["Success message when import is complete. {0} is the site name."]
+            }),
+        /**
+         * Returns the error message when import fails
+         */
+        METADATA_DIFF_IMPORT_FAILED: (errorMessage: string) =>
+            vscode.l10n.t({
+                message: "Failed to import comparison: {0}",
+                args: [errorMessage],
+                comment: ["Error message when import fails. {0} is the error message."]
+            }),
+        /**
+         * Returns the progress message when resyncing a site comparison
+         */
+        RESYNCING_SITE_COMPARISON: (siteName: string) =>
+            vscode.l10n.t({
+                message: "Refreshing comparison for {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\"))...",
+                args: [siteName],
+                comment: ["This is a markdown formatting which must persist across translations."]
+            }),
     },
     EventNames: {
         ACTIONS_HUB_ENABLED: "ActionsHubEnabled",
@@ -245,7 +608,7 @@ export const Constants = {
         ACTIONS_HUB_CODEQL_SARIF_VIEWER_OPENING_WITH_ISSUES: "ActionsHubCodeQLSarifViewerOpeningWithIssues",
         ACTIONS_HUB_CODEQL_ANALYSIS_CLEAN_RESULTS: "ActionsHubCodeQLAnalysisCleanResults",
         ACTIONS_HUB_CODEQL_FALLBACK_TO_TEXT_EDITOR: "ActionsHubCodeQLFallbackToTextEditor",
-         ACTIONS_HUB_ACCOUNT_MISMATCH_DETECTED: "ActionsHubAccountMismatchDetected",
+        ACTIONS_HUB_ACCOUNT_MISMATCH_DETECTED: "ActionsHubAccountMismatchDetected",
         ACTIONS_HUB_LOGIN_TO_MATCH_CALLED: "ActionsHubLoginToMatchCalled",
         ACTIONS_HUB_LOGIN_TO_MATCH_FAILED: "ActionsHubLoginToMatchFailed",
         ACTIONS_HUB_LOGIN_TO_MATCH_SUCCEEDED: "ActionsHubLoginToMatchSucceeded",
@@ -254,10 +617,49 @@ export const Constants = {
         ACTIONS_HUB_ACCOUNT_CHECK_FAILED: "ActionsHubAccountCheckFailed",
         ACTIONS_HUB_ACCOUNT_MISMATCH_UI_SHOWN: "ActionsHubAccountMismatchUIShown",
         ACTIONS_HUB_ACCOUNT_MATCH_RESOLVED: "ActionsHubAccountMatchResolved",
-        ACTIONS_HUB_LOGIN_PROMPT_CLICKED: "ActionsHubLoginPromptClicked"
-    },
-    FeatureNames: {
-        REFRESH_ENVIRONMENT: "RefreshEnvironment"
+        ACTIONS_HUB_LOGIN_PROMPT_CLICKED: "ActionsHubLoginPromptClicked",
+        ACTIONS_HUB_REACTIVATE_SITE_CALLED: "ActionsHubReactivateSiteCalled",
+        ACTIONS_HUB_COMPARE_WITH_LOCAL_CALLED: "ActionsHubCompareWithLocalCalled",
+        ACTIONS_HUB_COMPARE_WITH_LOCAL_NO_WORKSPACE: "ActionsHubCompareWithLocalNoWorkspace",
+        ACTIONS_HUB_COMPARE_WITH_LOCAL_WEBSITE_ID_NOT_FOUND: "ActionsHubCompareWithLocalWebsiteIdNotFound",
+        ACTIONS_HUB_COMPARE_WITH_LOCAL_DOWNLOAD_FAILED: "ActionsHubCompareWithLocalDownloadFailed",
+        ACTIONS_HUB_COMPARE_WITH_LOCAL_COMPLETED: "ActionsHubCompareWithLocalCompleted",
+        ACTIONS_HUB_COMPARE_WITH_LOCAL_NO_DIFFERENCES: "ActionsHubCompareWithLocalNoDifferences",
+        ACTIONS_HUB_METADATA_DIFF_OPEN_FILE: "ActionsHubMetadataDiffOpenFile",
+        ACTIONS_HUB_METADATA_DIFF_OPEN_ALL: "ActionsHubMetadataDiffOpenAll",
+        ACTIONS_HUB_METADATA_DIFF_CLEAR: "ActionsHubMetadataDiffClear",
+        ACTIONS_HUB_METADATA_DIFF_DISCARD_FILE: "ActionsHubMetadataDiffDiscardFile",
+        ACTIONS_HUB_METADATA_DIFF_DISCARD_FOLDER: "ActionsHubMetadataDiffDiscardFolder",
+        ACTIONS_HUB_METADATA_DIFF_DISCARD_SITE: "ActionsHubMetadataDiffDiscardSite",
+        ACTIONS_HUB_METADATA_DIFF_VIEW_MODE_CHANGED: "ActionsHubMetadataDiffViewModeChanged",
+        ACTIONS_HUB_METADATA_DIFF_SORT_MODE_CHANGED: "ActionsHubMetadataDiffSortModeChanged",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_CALLED: "ActionsHubCompareWithEnvironmentCalled",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_ENVIRONMENT_SELECTED: "ActionsHubCompareWithEnvironmentEnvironmentSelected",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_WEBSITE_SELECTED: "ActionsHubCompareWithEnvironmentWebsiteSelected",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_CANCELLED: "ActionsHubCompareWithEnvironmentCancelled",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_WEBSITE_NOT_FOUND: "ActionsHubCompareWithEnvironmentWebsiteNotFound",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_COMPLETED: "ActionsHubCompareWithEnvironmentCompleted",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_FAILED: "ActionsHubCompareWithEnvironmentFailed",
+        ACTIONS_HUB_COMPARE_WITH_ENVIRONMENT_NO_DIFFERENCES: "ActionsHubCompareWithEnvironmentNoDifferences",
+        ACTIONS_HUB_METADATA_DIFF_SITE_DOWNLOAD_COMPLETED: "ActionsHubMetadataDiffSiteDownloadCompleted",
+        ACTIONS_HUB_METADATA_DIFF_GENERATE_HTML_REPORT_CALLED: "ActionsHubMetadataDiffGenerateHtmlReportCalled",
+        ACTIONS_HUB_METADATA_DIFF_HTML_REPORT_SAVED: "ActionsHubMetadataDiffHtmlReportSaved",
+        ACTIONS_HUB_METADATA_DIFF_HTML_REPORT_FAILED: "ActionsHubMetadataDiffHtmlReportFailed",
+        ACTIONS_HUB_METADATA_DIFF_EXPORT_CALLED: "ActionsHubMetadataDiffExportCalled",
+        ACTIONS_HUB_METADATA_DIFF_EXPORT_CANCELLED: "ActionsHubMetadataDiffExportCancelled",
+        ACTIONS_HUB_METADATA_DIFF_EXPORT_SUCCESS: "ActionsHubMetadataDiffExportSuccess",
+        ACTIONS_HUB_METADATA_DIFF_EXPORT_FAILED: "ActionsHubMetadataDiffExportFailed",
+        ACTIONS_HUB_METADATA_DIFF_IMPORT_CALLED: "ActionsHubMetadataDiffImportCalled",
+        ACTIONS_HUB_METADATA_DIFF_IMPORT_SUCCESS: "ActionsHubMetadataDiffImportSuccess",
+        ACTIONS_HUB_METADATA_DIFF_IMPORT_FAILED: "ActionsHubMetadataDiffImportFailed",
+        ACTIONS_HUB_METADATA_DIFF_RESYNC_CALLED: "ActionsHubMetadataDiffResyncCalled",
+        ACTIONS_HUB_METADATA_DIFF_RESYNC_COMPLETED: "ActionsHubMetadataDiffResyncCompleted",
+        ACTIONS_HUB_METADATA_DIFF_RESYNC_FAILED: "ActionsHubMetadataDiffResyncFailed",
+        ACTIONS_HUB_METADATA_DIFF_RESYNC_NO_DIFFERENCES: "ActionsHubMetadataDiffResyncNoDifferences",
+        ACTIONS_HUB_PRE_AUTH_STARTED: "ActionsHubPreAuthStarted",
+        ACTIONS_HUB_PRE_AUTH_COMPLETED: "ActionsHubPreAuthCompleted",
+        ACTIONS_HUB_PRE_AUTH_FAILED: "ActionsHubPreAuthFailed",
+        ACTIONS_HUB_PRE_AUTH_SKIPPED: "ActionsHubPreAuthSkipped",
     },
     StudioEndpoints: {
         TEST: "https://make.test.powerpages.microsoft.com",
