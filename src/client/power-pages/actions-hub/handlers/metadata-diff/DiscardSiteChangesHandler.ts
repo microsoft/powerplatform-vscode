@@ -32,7 +32,7 @@ export async function discardSiteChanges(siteItem: MetadataDiffSiteTreeItem): Pr
         localSitePath: localSitePath
     });
 
-    const confirmMessage = Constants.StringFunctions.DISCARD_SITE_CHANGES_CONFIRM(siteItem.siteName, fileCount, localSitePath);
+    const confirmMessage = Constants.StringFunctions.DISCARD_SITE_CHANGES_CONFIRM(siteItem.localSiteName, fileCount, localSitePath);
 
     const confirmButton = Constants.Strings.DISCARD_CHANGES;
     const result = await vscode.window.showWarningMessage(confirmMessage, { modal: true }, confirmButton);
@@ -69,7 +69,7 @@ export async function discardSiteChanges(siteItem: MetadataDiffSiteTreeItem): Pr
             );
             await vscode.window.showErrorMessage(errorMessage);
         } else {
-            const successMessage = Constants.StringFunctions.DISCARD_SITE_CHANGES_SUCCESS(siteItem.siteName, successCount);
+            const successMessage = Constants.StringFunctions.DISCARD_SITE_CHANGES_SUCCESS(siteItem.localSiteName, successCount);
             await vscode.window.showInformationMessage(successMessage);
         }
     } catch (error) {

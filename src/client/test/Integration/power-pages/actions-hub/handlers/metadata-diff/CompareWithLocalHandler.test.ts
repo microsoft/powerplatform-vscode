@@ -187,5 +187,61 @@ describe("CompareWithLocalHandler", () => {
                 expect(getWebsiteRecordIdStub.calledTwice).to.be.true;
             });
         });
+
+        describe("code site download behavior", () => {
+            let mockPacWrapper: {
+                downloadSiteWithProgress: sinon.SinonStub;
+                downloadCodeSiteWithProgress: sinon.SinonStub;
+            };
+
+            beforeEach(() => {
+                sandbox.stub(vscode.workspace, "workspaceFolders").get(() => [
+                    { uri: { fsPath: "/test/workspace" }, name: "workspace", index: 0 }
+                ]);
+                sandbox.stub(WorkspaceInfoFinderUtil, "getWebsiteRecordId").returns("test-site-id");
+                sandbox.stub(WorkspaceInfoFinderUtil, "findPowerPagesSiteFolder").returns(null);
+
+                mockPacWrapper = {
+                    downloadSiteWithProgress: sandbox.stub().resolves(false), // Return false to stop after download
+                    downloadCodeSiteWithProgress: sandbox.stub().resolves(false)
+                };
+                mockPacTerminal.getWrapper.returns(mockPacWrapper as unknown as ReturnType<PacTerminal["getWrapper"]>);
+            });
+
+            it("should use downloadSiteWithProgress for regular sites", async () => {
+                const handler = compareWithLocal(mockPacTerminal as unknown as PacTerminal, mockExtensionContext);
+                await handler(createMockSiteTreeItem({ isCodeSite: false }));
+
+                expect(mockPacWrapper.downloadSiteWithProgress.calledOnce).to.be.true;
+                expect(mockPacWrapper.downloadCodeSiteWithProgress.called).to.be.false;
+            });
+
+            it("should use downloadCodeSiteWithProgress for code sites", async () => {
+                const handler = compareWithLocal(mockPacTerminal as unknown as PacTerminal, mockExtensionContext);
+                await handler(createMockSiteTreeItem({ isCodeSite: true }));
+
+                expect(mockPacWrapper.downloadCodeSiteWithProgress.calledOnce).to.be.true;
+                expect(mockPacWrapper.downloadSiteWithProgress.called).to.be.false;
+            });
+
+            it("should pass websiteId to downloadCodeSiteWithProgress for code sites", async () => {
+                const handler = compareWithLocal(mockPacTerminal as unknown as PacTerminal, mockExtensionContext);
+                await handler(createMockSiteTreeItem({ isCodeSite: true, websiteId: "code-site-123" }));
+
+                expect(mockPacWrapper.downloadCodeSiteWithProgress.calledOnce).to.be.true;
+                const callArgs = mockPacWrapper.downloadCodeSiteWithProgress.firstCall.args;
+                expect(callArgs[1]).to.equal("code-site-123"); // websiteId
+            });
+
+            it("should pass websiteId and dataModelVersion to downloadSiteWithProgress for regular sites", async () => {
+                const handler = compareWithLocal(mockPacTerminal as unknown as PacTerminal, mockExtensionContext);
+                await handler(createMockSiteTreeItem({ isCodeSite: false, websiteId: "regular-site-123", dataModelVersion: 2 }));
+
+                expect(mockPacWrapper.downloadSiteWithProgress.calledOnce).to.be.true;
+                const callArgs = mockPacWrapper.downloadSiteWithProgress.firstCall.args;
+                expect(callArgs[1]).to.equal("regular-site-123"); // websiteId
+                expect(callArgs[2]).to.equal(2); // dataModelVersion
+            });
+        });
     });
 });

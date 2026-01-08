@@ -47,4 +47,6 @@ export interface ISiteComparisonResults {
     creator?: string;
     /** ISO 8601 timestamp when the site was created */
     createdOn?: string;
+    /** Whether this is a code site */
+    isCodeSite?: boolean;
 }

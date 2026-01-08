@@ -77,8 +77,8 @@ describe("ImportMetadataDiffHandler", () => {
             await importMetadataDiff();
 
             const openDialogOptions = showOpenDialogStub.firstCall.args[0];
-            expect(openDialogOptions.filters).to.have.property("Metadata Diff JSON");
-            expect(openDialogOptions.filters["Metadata Diff JSON"]).to.include("json");
+            expect(openDialogOptions.filters).to.have.property("Site Comparison JSON");
+            expect(openDialogOptions.filters["Site Comparison JSON"]).to.include("json");
         });
 
         it("should not allow multiple file selection", async () => {

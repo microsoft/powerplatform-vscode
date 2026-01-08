@@ -423,12 +423,13 @@
   "Unable to read remote file": "Unable to read remote file",
   "Unable to read one or both files": "Unable to read one or both files",
   "Exporting comparison...": "Exporting comparison...",
-  "Export Metadata Diff": "Export Metadata Diff",
+  "Export Site Comparison": "Export Site Comparison",
   "Importing comparison...": "Importing comparison...",
+  "Import Site Comparison": "Import Site Comparison",
   "Invalid file format. The file does not contain valid metadata diff data.": "Invalid file format. The file does not contain valid metadata diff data.",
   "Unsupported version. This file was created with a newer version of the extension.": "Unsupported version. This file was created with a newer version of the extension.",
   "This file was exported with a newer version of the extension. Please update your extension to import this file.": "This file was exported with a newer version of the extension. Please update your extension to import this file.",
-  "Metadata Diff JSON": "Metadata Diff JSON",
+  "Site Comparison JSON": "Site Comparison JSON",
   "Binary file content is not available in imported comparisons. The original file was not included in the export.": "Binary file content is not available in imported comparisons. The original file was not included in the export.",
   "An imported comparison already exists for this site. Do you want to replace it?": "An imported comparison already exists for this site. Do you want to replace it?",
   "Replace": "Replace",
@@ -692,7 +693,6 @@
       "{0} is the cluster geo name"
     ]
   },
-  "Import Metadata Diff": "Import Metadata Diff",
   "Power Platform Tools: PAC CLI": "Power Platform Tools: PAC CLI",
   "Command completed successfully.": "Command completed successfully.",
   "PAC Telemetry enabled": "PAC Telemetry enabled",
