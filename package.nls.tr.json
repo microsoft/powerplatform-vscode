@@ -31,7 +31,7 @@
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.clear.title": "Karşılaştırmayı Temizle",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFile.title": "Yerel Değişiklikleri At",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFolder.title": "Tüm Yerel Değişiklikleri At",
-  "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardSite.title": "Discard All Local Changes",
+  "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardSite.title": "Tüm Yerel Değişiklikleri At",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.export.title": "JSON olarak dışarı aktar",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.generateHtmlReport.title": "HTML Raporu olarak dışarı aktar",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.import.title": "Karşılaştırmayı İçeri Aktar",
