@@ -34,7 +34,7 @@ export const {
     description: 'Enable ProDev Copilot',
     fallback: {
         "capiSupportedProDevCopilotGeoList": "us,au,uk,eu,in",
-        "unsupportedProDevCopilotGeoList": "ca",
+        "unsupportedProDevCopilotGeoList": "",
         "capiSupportedProDevCopilotGeoWithCrossGeoDataFlow": "eu,se,ch,fr,de,no"
     },
 });
@@ -118,5 +118,25 @@ export const {
     fallback: {
         enableDuplicateFileHandling: true,
         disallowedDuplicateFileHandlingOrgs: "",
+    }
+});
+
+export const {
+    feature: EnableBlogSupport
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable blog file support in VSCode (web & desktop)',
+    fallback: {
+        enableBlogSupport: false,
+    }
+});
+
+export const {
+    feature: EnableMetadataDiff
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable Metadata Diff comparison in VS Code Desktop',
+    fallback: {
+        enableMetadataDiff: false,
     }
 });

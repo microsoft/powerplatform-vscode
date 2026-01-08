@@ -9,29 +9,32 @@ on:
   workflow_dispatch:
     inputs:
       sourceSpec:
-        description: 'git source spec, e.g. branch, tag or commit id'
+        description: "git source spec, e.g. branch, tag or commit id"
         required: false
-        default: 'origin/main'
+        default: "origin/main"
       targetBranch:
-        description: 'target branch to snapshot the sourceSpec into'
+        description: "target branch to snapshot the sourceSpec into"
         required: false
-        default: 'release/stable'
+        default: "release/stable"
+
+permissions:
+  contents: write
 
 jobs:
   create-snapshot:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-      with:
-        lfs: true
+      - uses: actions/checkout@v3
+        with:
+          lfs: true
 
-    - name: Setup Node.js environment
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
-    - name: run snapshot gulp script
-      run: |
-        npm i
-        node node_modules/gulp/bin/gulp.js snapshot --sourceSpec ${{ github.event.inputs.sourceSpec }} --targetBranch ${{ github.event.inputs.targetBranch }} --repoToken ${{ secrets.GITHUB_TOKEN }}
+      - name: run snapshot gulp script
+        run: |
+          npm i
+          node node_modules/gulp/bin/gulp.js snapshot --sourceSpec ${{ github.event.inputs.sourceSpec }} --targetBranch ${{ github.event.inputs.targetBranch }} --repoToken ${{ secrets.GITHUB_TOKEN }}

@@ -7,71 +7,74 @@ name: PullRequest
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
     branches:
-    - main
-    - 'release/stable'
-    - 'features/PowerPagesAgent'
+      - main
+      - "release/stable"
+      - "features/PowerPagesAgent"
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ windows-latest, macos-latest, ubuntu-latest ]
+        os: [windows-latest, macos-latest, ubuntu-latest]
       fail-fast: false
 
     steps:
-    - uses: actions/checkout@v3
-      with:
-        lfs: true
+      - uses: actions/checkout@v3
+        with:
+          lfs: true
 
-    - name: Setup .NET 9
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '9.0.x'
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9.0.x"
 
-    - name: List installed .NET SDKs
-      run: dotnet --list-sdks
+      - name: List installed .NET SDKs
+        run: dotnet --list-sdks
 
-    - name: Setup Node.js environment
-      uses: actions/setup-node@v3
-      with:
-        node-version: 20
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
 
-    # - name: Install dependencies
-    #   run: npm i -g npm
+      # - name: Install dependencies
+      #   run: npm i -g npm
 
-    - name: Build and unit test
-      run: |
-        npm ci
-        npm run dist
-      env:
-        AZ_DevOps_Read_PAT: ${{ secrets.AZ_DevOps_Read_PAT }}
-
-    - name: Run Debugger integration tests
-      uses: coactions/setup-xvfb@v1
-      with:
+      - name: Build and unit test
         run: |
-         npm run test-integration
+          npm ci
+          npm run dist
+        env:
+          AZ_DevOps_Read_PAT: ${{ secrets.AZ_DevOps_Read_PAT }}
 
-    - name: Run Web integration tests
-      uses: coactions/setup-xvfb@v1
-      with:
-        run: |
-         npm run test-web-integration
+      - name: Run Debugger integration tests
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: |
+            npm run test-integration
 
-    - name: Run Desktop integration tests
-      uses: coactions/setup-xvfb@v1
-      if: matrix.os == 'windows-latest'
-      with:
-        run: |
-         npm run test-desktop-int
+      - name: Run Web integration tests
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: |
+            npm run test-web-integration
 
-    - name: Run Common integration tests
-      uses: coactions/setup-xvfb@v1
-      with:
-        run: |
-         npm run test-common-int
+      - name: Run Desktop integration tests
+        uses: coactions/setup-xvfb@v1
+        if: matrix.os == 'windows-latest'
+        with:
+          run: |
+            npm run test-desktop-int
+
+      - name: Run Common integration tests
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: |
+            npm run test-common-int

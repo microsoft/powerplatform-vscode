@@ -6,13 +6,21 @@
 import * as vscode from "vscode";
 import { ActionsHubTreeItem } from "./tree-items/ActionsHubTreeItem";
 import { OtherSitesGroupTreeItem } from "./tree-items/OtherSitesGroupTreeItem";
+import { ToolsGroupTreeItem } from "./tree-items/ToolsGroupTreeItem";
 import { AccountMismatchTreeItem } from "./tree-items/AccountMismatchTreeItem";
 import { Constants } from "./Constants";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { EnvironmentGroupTreeItem } from "./tree-items/EnvironmentGroupTreeItem";
 import { IEnvironmentInfo } from "./models/IEnvironmentInfo";
 import { PacTerminal } from "../../lib/PacTerminal";
-import { fetchWebsites, openActiveSitesInStudio, openInactiveSitesInStudio, previewSite, createNewAuthProfile, refreshEnvironment, showEnvironmentDetails, switchEnvironment, revealInOS, openSiteManagement, uploadSite, showSiteDetails, downloadSite, openInStudio, reactivateSite, runCodeQLScreening, loginToMatch } from "./ActionsHubCommandHandlers";
+import { runCodeQLScreening } from "./handlers/code-ql/RunCodeQlScreeningHandler";
+import { revealInOS } from "./handlers/RevealInOSHandler";
+import { createNewAuthProfile } from "./handlers/CreateNewAuthProfileHandler";
+import { previewSite } from "./handlers/PreviewSiteHandler";
+import { openActiveSitesInStudio, openInactiveSitesInStudio, openSiteInStudio } from "./handlers/OpenSiteInStudioHandler";
+import { switchEnvironment } from "./handlers/SwitchEnvironmentHandler";
+import { showEnvironmentDetails } from "./handlers/ShowEnvironmentDetailsHandler";
+import { refreshEnvironment } from "./handlers/RefreshEnvironmentHandler";
 import PacContext from "../../pac/PacContext";
 import CurrentSiteContext from "./CurrentSiteContext";
 import { IOtherSiteInfo, IWebsiteDetails } from "../../../common/services/Interfaces";
@@ -21,6 +29,32 @@ import { getBaseEventInfo } from "./TelemetryHelper";
 import { PROVIDER_ID } from "../../../common/services/Constants";
 import { getOIDFromToken } from "../../../common/services/AuthenticationProvider";
 import ArtemisContext from "../../ArtemisContext";
+import { fetchWebsites } from "./ActionsHubUtils";
+import { openSiteManagement } from "./handlers/OpenSiteManagementHandler";
+import { reactivateSite } from "./handlers/ReactivateSiteHandler";
+import { uploadSite } from "./handlers/UploadSiteHandler";
+import { showSiteDetails } from "./handlers/ShowSiteDetailsHandler";
+import { downloadSite } from "./handlers/DownloadSiteHandler";
+import { loginToMatch } from "./handlers/LoginToMatchHandler";
+import { ActionsHub } from "./ActionsHub";
+import { compareWithLocal } from "./handlers/metadata-diff/CompareWithLocalHandler";
+import { compareWithEnvironment } from "./handlers/metadata-diff/CompareWithEnvironmentHandler";
+import MetadataDiffContext from "./MetadataDiffContext";
+import { openMetadataDiffFile } from "./handlers/metadata-diff/OpenMetadataDiffFileHandler";
+import { openAllMetadataDiffs } from "./handlers/metadata-diff/OpenAllMetadataDiffsHandler";
+import { clearMetadataDiff } from "./handlers/metadata-diff/ClearMetadataDiffHandler";
+import { viewAsTree, viewAsList } from "./handlers/metadata-diff/ToggleViewModeHandler";
+import { sortByName, sortByPath, sortByStatus } from "./handlers/metadata-diff/SortModeHandler";
+import { MetadataDiffDecorationProvider } from "./MetadataDiffDecorationProvider";
+import { ReadOnlyContentProvider } from "./ReadOnlyContentProvider";
+import { removeSiteComparison } from "./handlers/metadata-diff/RemoveSiteHandler";
+import { discardLocalChanges } from "./handlers/metadata-diff/DiscardLocalChangesHandler";
+import { discardFolderChanges } from "./handlers/metadata-diff/DiscardFolderChangesHandler";
+import { discardSiteChanges } from "./handlers/metadata-diff/DiscardSiteChangesHandler";
+import { generateHtmlReport } from "./handlers/metadata-diff/GenerateHtmlReportHandler";
+import { exportMetadataDiff } from "./handlers/metadata-diff/ExportMetadataDiffHandler";
+import { importMetadataDiff } from "./handlers/metadata-diff/ImportMetadataDiffHandler";
+import { resyncMetadataDiff } from "./handlers/metadata-diff/ResyncMetadataDiffHandler";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -36,8 +70,13 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
     private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal, isCodeQlScanEnabled: boolean) {
         this._isCodeQlScanEnabled = isCodeQlScanEnabled;
+        this._context = context;
+
+        // Initialize MetadataDiffContext with extension context for state persistence
+        MetadataDiffContext.initialize(context);
+
         this._disposables.push(
-            ...this.registerPanel(this._pacTerminal),
+            ...this.registerPanel(),
 
             PacContext.onChanged(() => {
                 this._loadWebsites = true;
@@ -58,9 +97,11 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                 });
                 this._loadWebsites = true;
                 this.refresh();
-            })
+            }),
+
+            // Subscribe to metadata diff changes to refresh tree when diff results are updated
+            MetadataDiffContext.onChanged(() => this.refresh())
         );
-        this._context = context;
     }
 
     private refresh(): void {
@@ -72,7 +113,12 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
         if (this._loadWebsites) {
             try {
                 vscode.commands.executeCommand('setContext', 'microsoft.powerplatform.pages.actionsHub.loadingWebsites', true);
-                const websites = await fetchWebsites();
+
+                // Pre-authenticate for all required scopes before fetching websites
+                // This prevents multiple simultaneous authentication prompts
+                await this.preAuthenticateForWebsites();
+
+                const websites = await fetchWebsites(PacContext.OrgInfo!, true);
                 this._activeSites = websites.activeSites;
                 this._inactiveSites = websites.inactiveSites;
                 this._otherSites = websites.otherSites;
@@ -87,13 +133,62 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
     private async checkAuthInfo(): Promise<boolean> {
         const authInfo = PacContext.AuthInfo;
-        const session  = await vscode.authentication.getSession(PROVIDER_ID, [], { silent: true });
+        const session = await vscode.authentication.getSession(PROVIDER_ID, [], { silent: true });
 
         if (session && session.accessToken && authInfo && authInfo.OrganizationFriendlyName) {
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * Pre-authenticates for all scopes required to fetch websites.
+     * This ensures we only prompt the user once (if needed) instead of multiple times.
+     * Authenticates sequentially: first for PPAPI (Power Platform API), then for Dataverse.
+     */
+    private async preAuthenticateForWebsites(): Promise<void> {
+        try {
+            const orgInfo = PacContext.OrgInfo;
+            const serviceEndpointStamp = ArtemisContext.ServiceResponse?.stamp;
+
+            if (!orgInfo || !serviceEndpointStamp) {
+                oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_PRE_AUTH_SKIPPED, {
+                    methodName: this.preAuthenticateForWebsites.name,
+                    reason: 'missing_org_or_endpoint',
+                    hasOrgInfo: !!orgInfo,
+                    hasServiceEndpoint: !!serviceEndpointStamp,
+                    ...getBaseEventInfo()
+                });
+                return;
+            }
+
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_PRE_AUTH_STARTED, {
+                methodName: this.preAuthenticateForWebsites.name,
+                ...getBaseEventInfo()
+            });
+
+            // Import authentication functions dynamically to avoid circular dependencies
+            const { powerPlatformAPIAuthentication, dataverseAuthentication } = await import('../../../common/services/AuthenticationProvider');
+
+            // Authenticate sequentially to avoid multiple simultaneous prompts
+            // 1. First authenticate for Power Platform API (needed for getActiveWebsites)
+            await powerPlatformAPIAuthentication(serviceEndpointStamp, false);
+
+            // 2. Then authenticate for Dataverse (needed for getAllWebsites)
+            await dataverseAuthentication(orgInfo.OrgUrl ?? '', false);
+
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_PRE_AUTH_COMPLETED, {
+                methodName: this.preAuthenticateForWebsites.name,
+                ...getBaseEventInfo()
+            });
+        } catch (error) {
+            // Log but don't throw - fetchWebsites will handle authentication errors
+            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_PRE_AUTH_FAILED, error as string, error as Error, {
+                methodName: this.preAuthenticateForWebsites.name,
+                ...getBaseEventInfo()
+            });
+        }
     }
 
     private async checkAccountsMatch(): Promise<boolean> {
@@ -175,7 +270,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
         try {
             const authInfo = PacContext.AuthInfo;
-            if (await this.checkAuthInfo() === true ) {
+            if (await this.checkAuthInfo() === true) {
                 // Check if accounts match before loading websites
                 const accountsMatch = await this.checkAccountsMatch();
                 if (!accountsMatch) {
@@ -195,13 +290,19 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                     currentEnvironmentName: authInfo!.OrganizationFriendlyName //Already checked in checkAuthInfo
                 };
 
-                if(!this._otherSites.length){
-                    return [new EnvironmentGroupTreeItem(currentEnvInfo, this._context, this._activeSites, this._inactiveSites)];
-                }
-                return [
-                    new EnvironmentGroupTreeItem(currentEnvInfo, this._context, this._activeSites, this._inactiveSites),
-                    new OtherSitesGroupTreeItem(this._otherSites)
+                const children: ActionsHubTreeItem[] = [
+                    new EnvironmentGroupTreeItem(currentEnvInfo, this._context, this._activeSites, this._inactiveSites)
                 ];
+
+                // Add other sites group if there are other sites
+                if (this._otherSites.length) {
+                    children.push(new OtherSitesGroupTreeItem(this._otherSites));
+                }
+
+                // Add tools group (contains MetadataDiffGroupTreeItem when feature is enabled)
+                children.push(new ToolsGroupTreeItem());
+
+                return children;
             } else {
                 // Login experience scenario
                 return [];
@@ -216,13 +317,12 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
         this._disposables.forEach(d => d.dispose());
     }
 
-    private registerPanel(pacTerminal: PacTerminal): vscode.Disposable[] {
+    private registerPanel(): vscode.Disposable[] {
         const commands = [
             vscode.window.registerTreeDataProvider("microsoft.powerplatform.pages.actionsHub", this),
 
-            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.refresh", async () => await refreshEnvironment(pacTerminal)),
-
-            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.switchEnvironment", async () => await switchEnvironment(pacTerminal)),
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.refresh", async () => await refreshEnvironment(this._pacTerminal)),
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.switchEnvironment", async () => await switchEnvironment(this._pacTerminal)),
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails", showEnvironmentDetails),
 
@@ -233,7 +333,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.preview", previewSite),
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.newAuthProfile", async () => {
-                await createNewAuthProfile(pacTerminal.getWrapper());
+                await createNewAuthProfile(this._pacTerminal.getWrapper());
             }),
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows", revealInOS),
@@ -248,7 +348,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite", downloadSite),
 
-            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio", openInStudio),
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio", openSiteInStudio),
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite", reactivateSite),
 
@@ -261,6 +361,32 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
         if (this._isCodeQlScanEnabled) {
             commands.push(
                 vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening", runCodeQLScreening)
+            );
+        }
+
+        if (ActionsHub.isMetadataDiffEnabled()) {
+            commands.push(
+                vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.compareWithLocal", compareWithLocal(this._pacTerminal, this._context)),
+                vscode.commands.registerCommand(Constants.Commands.COMPARE_WITH_ENVIRONMENT, compareWithEnvironment(this._pacTerminal, this._context)),
+                vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.showOutputChannel", () => this._pacTerminal.getWrapper().showOutputChannel()),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_OPEN_FILE, openMetadataDiffFile),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_OPEN_ALL, openAllMetadataDiffs),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_CLEAR, clearMetadataDiff),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_REMOVE_SITE, removeSiteComparison),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_VIEW_AS_TREE, viewAsTree),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_VIEW_AS_LIST, viewAsList),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_SORT_BY_NAME, sortByName),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_SORT_BY_PATH, sortByPath),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_SORT_BY_STATUS, sortByStatus),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_DISCARD_FILE, discardLocalChanges),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_DISCARD_FOLDER, discardFolderChanges),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_DISCARD_SITE, discardSiteChanges),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_GENERATE_HTML_REPORT, generateHtmlReport),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_EXPORT, exportMetadataDiff),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_IMPORT, importMetadataDiff),
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_RESYNC, resyncMetadataDiff(this._pacTerminal, this._context)),
+                MetadataDiffDecorationProvider.getInstance().register(),
+                ReadOnlyContentProvider.getInstance().register()
             );
         }
 
