@@ -1,5 +1,10 @@
 # Change Log - Power Platform Extension
 
+## 2.0.113
+- pac CLI 1.52.1, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- Rollout of debugging support for Server Logics (Desktop)
+- Added support for new parameters in Server Logic autocomplete
+
 ## 2.0.111
 - pac CLI 1.51.1, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 
