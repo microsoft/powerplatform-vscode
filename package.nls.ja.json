@@ -31,7 +31,7 @@
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.clear.title": "比較を消去する",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFile.title": "ローカル変更を破棄する",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFolder.title": "すべてのローカル変更を破棄する",
-  "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardSite.title": "Discard All Local Changes",
+  "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardSite.title": "すべてのローカル変更を破棄する",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.export.title": "JSON としてエクスポート",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.generateHtmlReport.title": "HTML レポートとしてエクスポート",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.import.title": "比較のインポート",

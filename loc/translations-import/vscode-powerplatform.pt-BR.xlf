@@ -691,9 +691,9 @@ Tipo: {3}</target>
         <source xml:lang="en">Explain the following code {% include 'Page Copy'%}</source>
         <target state="translated">Explique o seguinte código {% include 'Page Copy'%}</target>
       </trans-unit>
-      <trans-unit id="++CODE++faa8395365de427167672364e213e1f84ea2c3103922d44673f61ed2873f6745">
-        <source xml:lang="en">Export Metadata Diff</source>
-        <target state="translated">Exportar Comparação de Metadados</target>
+      <trans-unit id="++CODE++8186dceb4ea80ad0cf6cef1abf996c3564cb3cfaa093e03a31f6ac0cf037696d">
+        <source xml:lang="en">Export Site Comparison</source>
+        <target state="new">Export Site Comparison</target>
       </trans-unit>
       <trans-unit id="++CODE++1f14b9b0b30891bec1ece43097d7ae38a34b666738f9173658022778f5ce3ebf">
         <source xml:lang="en">Exporting comparison...</source>
@@ -914,9 +914,9 @@ Retorne a este chat e o @powerpages poderá ajudar você a escrever e editar o c
         <source xml:lang="en">Hi! Your Microsoft account doesn’t currently support Copilot. Contact your admin for details.</source>
         <target state="translated">Olá! No momento, sua conta Microsoft não dá suporte ao Copilot. Entre em contato com seu administrador para obter mais detalhes.</target>
       </trans-unit>
-      <trans-unit id="++CODE++fd6f929754f9e7358fbf47dfa5bdb5453b0866d18e8f50b2e915366dc64a1b14">
-        <source xml:lang="en">Import Metadata Diff</source>
-        <target state="translated">Importar Comparação de Metadados</target>
+      <trans-unit id="++CODE++533560c3dae9ee0e91fced5b66da418c6b49d7998b03c9cf6ccfa8463a99ddf0">
+        <source xml:lang="en">Import Site Comparison</source>
+        <target state="new">Import Site Comparison</target>
       </trans-unit>
       <trans-unit id="++CODE++721266427f4f6ab7a5409839b7675a73aed355db0e876c0464f100c99c4158f6">
         <source xml:lang="en">Importing comparison...</source>
@@ -1029,10 +1029,6 @@ Retorne a este chat e o @powerpages poderá ajudar você a escrever e editar o c
       <trans-unit id="++CODE++8a194d5287e3da019883144787cd5f282753f5ce892d933be0833b3818c25503">
         <source xml:lang="en">Maximum 30 characters allowed</source>
         <target state="translated">O máximo permitido são 30 caracteres</target>
-      </trans-unit>
-      <trans-unit id="++CODE++d39a5fa0fca9df105f95b7dfa9a2705ccddaead33bd3119052baabe6c923a85d">
-        <source xml:lang="en">Metadata Diff JSON</source>
-        <target state="translated">Comparação de Metadados JSON</target>
       </trans-unit>
       <trans-unit id="++CODE++b1c8258fb401975727a82d9ce473af0a600f076cc7b73dbd16524e815cf4153d">
         <source xml:lang="en">Microsoft wants your feedback</source>
@@ -1502,6 +1498,10 @@ ID da Organização: {3}</target>
       <trans-unit id="++CODE++413f481712d78c8cce54fc6b1ef2da1b4e35e9584c11fcdc51509c19017e2812">
         <source xml:lang="en">Site Comparison</source>
         <target state="translated">Comparação de Sites</target>
+      </trans-unit>
+      <trans-unit id="++CODE++a2b2338307fa6b0b6c048393bdf584b2babad14d29f6b741cd2b2e4eaa051353">
+        <source xml:lang="en">Site Comparison JSON</source>
+        <target state="new">Site Comparison JSON</target>
       </trans-unit>
       <trans-unit id="++CODE++87fa4c14343dbe871004d198588448a3b43c12dae48f8b1cb63d53e8e2687a29">
         <source xml:lang="en">Site Comparison Report</source>

@@ -31,7 +31,7 @@
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.clear.title": "清除比较",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFile.title": "放弃本地更改",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFolder.title": "放弃所有本地更改",
-  "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardSite.title": "Discard All Local Changes",
+  "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardSite.title": "放弃所有本地更改",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.export.title": "导出为 JSON",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.generateHtmlReport.title": "导出为 HTML 报告",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.import.title": "导入比较",
