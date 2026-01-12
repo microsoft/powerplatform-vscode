@@ -596,7 +596,7 @@ export const portal_schema_V2 = {
                     _fetchQueryParameters:
                         "?$filter=adx_blogid eq {entityId}&$select=adx_name,adx_summary",
                     _multiFileFetchQueryParameters:
-                        "?$filter=_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_summary,adx_blogid&$count=true",
+                        "?$filter=_adx_powerpagesiteid_value eq {websiteId} &$select=adx_name,adx_summary,adx_blogid&$count=true",
                     _attributes: "adx_summary",
                     _attributesExtension: new Map([["adx_summary", "html"]]),
                 },
@@ -614,7 +614,7 @@ export const portal_schema_V2 = {
                     _fetchQueryParameters:
                         "?$filter=adx_blogpostid eq {entityId}&$select=adx_name,adx_copy",
                     _multiFileFetchQueryParameters:
-                        "?$filter=_adx_blogid_value ne null and adx_blogid/_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_copy,adx_blogpostid&$count=true",
+                        "?$filter=_adx_blogid_value ne null and adx_blogid/_adx_powerpagesiteid_value eq {websiteId} &$select=adx_name,adx_copy,adx_blogpostid&$count=true",
                     _attributes: "adx_copy",
                     _attributesExtension: new Map([["adx_copy", "html"]]),
                 },
@@ -632,7 +632,7 @@ export const portal_schema_V2 = {
                     _fetchQueryParameters:
                         "?$filter=adx_ideaid eq {entityId}&$select=adx_name,adx_copy",
                     _multiFileFetchQueryParameters:
-                        "?$filter=_adx_ideaforumid_value ne null and adx_ideaforumId/_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_copy,adx_ideaid&$count=true",
+                        "?$filter=_adx_ideaforumid_value ne null and adx_ideaforumId/_adx_powerpagesiteid_value eq {websiteId} &$select=adx_name,adx_copy,adx_ideaid&$count=true",
                     _attributes: "adx_copy",
                     _attributesExtension: new Map([["adx_copy", "html"]]),
                 },
@@ -650,7 +650,7 @@ export const portal_schema_V2 = {
                     _fetchQueryParameters:
                         "?$filter=adx_ideaforumid eq {entityId}&$select=adx_name,adx_summary",
                     _multiFileFetchQueryParameters:
-                        "?$filter=_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_summary,adx_ideaforumid&$count=true",
+                        "?$filter=_adx_powerpagesiteid_value eq {websiteId} &$select=adx_name,adx_summary,adx_ideaforumid&$count=true",
                     _attributes: "adx_summary",
                     _attributesExtension: new Map([["adx_summary", "html"]]),
                 },
@@ -668,7 +668,7 @@ export const portal_schema_V2 = {
                     _fetchQueryParameters:
                         "?$filter=adx_communityforumannouncementid eq {entityId}&$select=adx_name,adx_content",
                     _multiFileFetchQueryParameters:
-                        "?$filter=_adx_forumid_value ne null and adx_forumid/_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_content,adx_communityforumannouncementid&$count=true",
+                        "?$filter=_adx_forumid_value ne null and adx_forumid/_adx_powerpagesiteid_value eq {websiteId} &$select=adx_name,adx_content,adx_communityforumannouncementid&$count=true",
                     _attributes: "adx_content",
                     _attributesExtension: new Map([["adx_content", "html"]]),
                 },
