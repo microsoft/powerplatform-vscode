@@ -693,7 +693,7 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
       </trans-unit>
       <trans-unit id="++CODE++8186dceb4ea80ad0cf6cef1abf996c3564cb3cfaa093e03a31f6ac0cf037696d">
         <source xml:lang="en">Export Site Comparison</source>
-        <target state="new">Export Site Comparison</target>
+        <target state="translated">导出网站比较</target>
       </trans-unit>
       <trans-unit id="++CODE++1f14b9b0b30891bec1ece43097d7ae38a34b666738f9173658022778f5ce3ebf">
         <source xml:lang="en">Exporting comparison...</source>
@@ -916,7 +916,7 @@ Return to this chat and @powerpages can help you write and edit your website cod
       </trans-unit>
       <trans-unit id="++CODE++533560c3dae9ee0e91fced5b66da418c6b49d7998b03c9cf6ccfa8463a99ddf0">
         <source xml:lang="en">Import Site Comparison</source>
-        <target state="new">Import Site Comparison</target>
+        <target state="translated">导入网站比较</target>
       </trans-unit>
       <trans-unit id="++CODE++721266427f4f6ab7a5409839b7675a73aed355db0e876c0464f100c99c4158f6">
         <source xml:lang="en">Importing comparison...</source>
@@ -1501,7 +1501,7 @@ URL: {1}
       </trans-unit>
       <trans-unit id="++CODE++a2b2338307fa6b0b6c048393bdf584b2babad14d29f6b741cd2b2e4eaa051353">
         <source xml:lang="en">Site Comparison JSON</source>
-        <target state="new">Site Comparison JSON</target>
+        <target state="translated">网站比较 JSON</target>
       </trans-unit>
       <trans-unit id="++CODE++87fa4c14343dbe871004d198588448a3b43c12dae48f8b1cb63d53e8e2687a29">
         <source xml:lang="en">Site Comparison Report</source>
