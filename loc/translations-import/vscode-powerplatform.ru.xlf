@@ -691,9 +691,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
         <source xml:lang="en">Explain the following code {% include 'Page Copy'%}</source>
         <target state="translated">Объясни следующий код: {% include 'Page Copy'%}</target>
       </trans-unit>
-      <trans-unit id="++CODE++faa8395365de427167672364e213e1f84ea2c3103922d44673f61ed2873f6745">
-        <source xml:lang="en">Export Metadata Diff</source>
-        <target state="translated">Экспорт различий в метаданных</target>
+      <trans-unit id="++CODE++8186dceb4ea80ad0cf6cef1abf996c3564cb3cfaa093e03a31f6ac0cf037696d">
+        <source xml:lang="en">Export Site Comparison</source>
+        <target state="translated">Экспорт сравнения сайтов</target>
       </trans-unit>
       <trans-unit id="++CODE++1f14b9b0b30891bec1ece43097d7ae38a34b666738f9173658022778f5ce3ebf">
         <source xml:lang="en">Exporting comparison...</source>
@@ -914,9 +914,9 @@ Return to this chat and @powerpages can help you write and edit your website cod
         <source xml:lang="en">Hi! Your Microsoft account doesn’t currently support Copilot. Contact your admin for details.</source>
         <target state="translated">Здравствуйте! Ваша учетная запись Майкрософт в настоящее время не поддерживает Copilot. Обратитесь за дополнительными сведения к администратору.</target>
       </trans-unit>
-      <trans-unit id="++CODE++fd6f929754f9e7358fbf47dfa5bdb5453b0866d18e8f50b2e915366dc64a1b14">
-        <source xml:lang="en">Import Metadata Diff</source>
-        <target state="translated">Импорт различий в метаданных</target>
+      <trans-unit id="++CODE++533560c3dae9ee0e91fced5b66da418c6b49d7998b03c9cf6ccfa8463a99ddf0">
+        <source xml:lang="en">Import Site Comparison</source>
+        <target state="translated">Импорт сравнения сайтов</target>
       </trans-unit>
       <trans-unit id="++CODE++721266427f4f6ab7a5409839b7675a73aed355db0e876c0464f100c99c4158f6">
         <source xml:lang="en">Importing comparison...</source>
@@ -1029,10 +1029,6 @@ Return to this chat and @powerpages can help you write and edit your website cod
       <trans-unit id="++CODE++8a194d5287e3da019883144787cd5f282753f5ce892d933be0833b3818c25503">
         <source xml:lang="en">Maximum 30 characters allowed</source>
         <target state="translated">Допускается не более 30 знаков</target>
-      </trans-unit>
-      <trans-unit id="++CODE++d39a5fa0fca9df105f95b7dfa9a2705ccddaead33bd3119052baabe6c923a85d">
-        <source xml:lang="en">Metadata Diff JSON</source>
-        <target state="translated">JSON различий в метаданных</target>
       </trans-unit>
       <trans-unit id="++CODE++b1c8258fb401975727a82d9ce473af0a600f076cc7b73dbd16524e815cf4153d">
         <source xml:lang="en">Microsoft wants your feedback</source>
@@ -1503,6 +1499,10 @@ URL-адрес: {1}
         <source xml:lang="en">Site Comparison</source>
         <target state="translated">Сравнение сайтов</target>
       </trans-unit>
+      <trans-unit id="++CODE++a2b2338307fa6b0b6c048393bdf584b2babad14d29f6b741cd2b2e4eaa051353">
+        <source xml:lang="en">Site Comparison JSON</source>
+        <target state="translated">JSON сравнения сайтов</target>
+      </trans-unit>
       <trans-unit id="++CODE++87fa4c14343dbe871004d198588448a3b43c12dae48f8b1cb63d53e8e2687a29">
         <source xml:lang="en">Site Comparison Report</source>
         <target state="translated">Отчет по сравнению сайта</target>
@@ -1709,14 +1709,6 @@ URL-адрес: {1}
       <trans-unit id="++CODE++bd7b156375b48ce5797a3421150e6f5c3b71d3a30f823e957241589aea6236ca">
         <source xml:lang="en">Unable to complete the request</source>
         <target state="translated">Не удается завершить запрос</target>
-      </trans-unit>
-      <trans-unit id="++CODE++825428f802dce30a8443dd17ada4d08aff818700cba857285da17a926c96c8b9">
-        <source xml:lang="en">Unable to fetch environment information</source>
-        <target state="translated">Не удалось получить сведения о среде</target>
-      </trans-unit>
-      <trans-unit id="++CODE++9083a7e873ce09c78f134fb812ce04c4fcb02ace2682c620211eca599cfa78c3">
-        <source xml:lang="en">Unable to fetch website details</source>
-        <target state="translated">Не удалось получить сведения о веб-сайте</target>
       </trans-unit>
       <trans-unit id="++CODE++bab36b47fe2dd4f2f7e8eb486f2e3546e27dc047e69f5b24307bc71e5be2a7cf">
         <source xml:lang="en">Unable to find that app</source>
