@@ -3,9 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { ECSFeaturesClient } from "../../../common/ecs-features/ecsFeatureClient";
-import { EnableBlogSupport } from "../../../common/ecs-features/ecsFeatureGates";
-
 export const portal_schema_V1 = {
     entities: {
         dataSourceProperties: {
@@ -235,10 +232,9 @@ export const portal_schema_V1 = {
                 _attributes: "adx_registerstartupscript",
                 _attributesExtension: new Map([["adx_registerstartupscript", "advancedformstep.customjs.js"]]),
             },
-            ...(ECSFeaturesClient.getConfig(EnableBlogSupport).enableBlogSupport ? [
-                {
-                    relationships: "",
-                    _vscodeentityname: "blogs",
+            {
+                relationships: "",
+                _vscodeentityname: "blogs",
                     _dataverseenityname: "adx_blogs",
                     _displayname: "Blog",
                     _etc: "10061",
@@ -342,7 +338,6 @@ export const portal_schema_V1 = {
                     _attributes: "adx_content",
                     _attributesExtension: new Map([["adx_content", "html"]]),
                 },
-            ] : []),
         ],
         "_xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
     },
@@ -581,10 +576,9 @@ export const portal_schema_V2 = {
                 _attributes: "content.registerstartupscript",
                 _attributesExtension: new Map([["content.registerstartupscript", "advancedformstep.customjs.js"]]),
             },
-            ...(ECSFeaturesClient.getConfig(EnableBlogSupport).enableBlogSupport ? [
-                {
-                    relationships: "",
-                    _vscodeentityname: "blogs",
+            {
+                relationships: "",
+                _vscodeentityname: "blogs",
                     _dataverseenityname: "adx_blogs",
                     _displayname: "Blog",
                     _etc: "10061",
@@ -690,7 +684,6 @@ export const portal_schema_V2 = {
                     _attributes: "adx_content",
                     _attributesExtension: new Map([["adx_content", "html"]]),
                 },
-            ] : []),
         ],
     },
 };
