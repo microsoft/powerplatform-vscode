@@ -218,7 +218,7 @@ describe("ExportMetadataDiffHandler", () => {
             const treeItem = createMockTreeItem(mockResults);
 
             // Stub fs methods
-            const existsSyncStub = sandbox.stub(fs, "existsSync").returns(true);
+            sandbox.stub(fs, "existsSync").returns(true);
             const statSyncStub = sandbox.stub(fs, "statSync").returns({ size: 1024 } as fs.Stats);
             const readFileSyncStub = sandbox.stub(fs, "readFileSync").returns(Buffer.from("test content"));
             sandbox.stub(fs, "writeFileSync");
