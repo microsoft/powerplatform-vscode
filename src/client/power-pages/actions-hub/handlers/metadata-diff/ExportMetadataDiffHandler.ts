@@ -14,6 +14,12 @@ import { getExtensionVersion } from "../../../../../common/utilities/Utils";
 import { FileComparisonStatus } from "../../models/IFileComparisonResult";
 
 /**
+ * Maximum file size in bytes to include content in the export (20MB)
+ * Files larger than this will have null content to prevent memory issues
+ */
+const MAX_FILE_SIZE_FOR_EXPORT = 20 * 1024 * 1024;
+
+/**
  * Exports metadata diff results to a JSON file
  * @param siteTreeItem The site tree item containing the comparison results
  */
@@ -66,13 +72,17 @@ export async function exportMetadataDiff(siteTreeItem: MetadataDiffSiteTreeItem)
                     let localContent: string | null = null;
                     let remoteContent: string | null = null;
 
-                    // Only include content for non-binary files
+                    // Only include content for non-binary files that aren't too large
                     if (!isBinary) {
                         // Read local content for added and modified files
                         if (result.status !== FileComparisonStatus.DELETED && fs.existsSync(result.localPath)) {
                             try {
-                                const content = fs.readFileSync(result.localPath);
-                                localContent = content.toString("base64");
+                                const stats = fs.statSync(result.localPath);
+                                if (stats.size <= MAX_FILE_SIZE_FOR_EXPORT) {
+                                    const content = fs.readFileSync(result.localPath);
+                                    localContent = content.toString("base64");
+                                }
+                                // If file is too large, localContent remains null
                             } catch (e) {
                                 // File not readable, content will be null
                             }
@@ -81,8 +91,12 @@ export async function exportMetadataDiff(siteTreeItem: MetadataDiffSiteTreeItem)
                         // Read remote content for deleted and modified files
                         if (result.status !== FileComparisonStatus.ADDED && fs.existsSync(result.remotePath)) {
                             try {
-                                const content = fs.readFileSync(result.remotePath);
-                                remoteContent = content.toString("base64");
+                                const stats = fs.statSync(result.remotePath);
+                                if (stats.size <= MAX_FILE_SIZE_FOR_EXPORT) {
+                                    const content = fs.readFileSync(result.remotePath);
+                                    remoteContent = content.toString("base64");
+                                }
+                                // If file is too large, remoteContent remains null
                             } catch (e) {
                                 // File not readable, content will be null
                             }

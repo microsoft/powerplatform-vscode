@@ -77,6 +77,11 @@ await pacWrapper.executeCommand(['solution', 'list']);
 - Use JSDoc style comments for functions, interfaces, enums, and classes
 - Include parameter descriptions and return types
 
+### Workflow
+
+- Use async/await for asynchronous code
+- When modifying any localization strings, run `npm run translations-export` to ensure updates are captured.
+
 ## Testing Patterns
 
 ### Framework Usage

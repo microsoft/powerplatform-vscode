@@ -257,6 +257,12 @@ export const Constants = {
         HTML_REPORT_UNABLE_TO_READ_LOCAL: vscode.l10n.t("Unable to read local file"),
         HTML_REPORT_UNABLE_TO_READ_REMOTE: vscode.l10n.t("Unable to read remote file"),
         HTML_REPORT_UNABLE_TO_READ_BOTH: vscode.l10n.t("Unable to read one or both files"),
+        HTML_REPORT_FILE_TOO_LARGE_MESSAGE: vscode.l10n.t("File is too large to display diff (exceeds 5MB)"),
+        HTML_REPORT_LARGE_FILE_MESSAGE: vscode.l10n.t("File is too large for detailed diff comparison"),
+        HTML_REPORT_REMOTE_LINES: vscode.l10n.t("Remote"),
+        HTML_REPORT_LOCAL_LINES: vscode.l10n.t("Local"),
+        HTML_REPORT_LINES: vscode.l10n.t("lines"),
+        HTML_REPORT_LINE_DIFFERENCE: vscode.l10n.t("Difference"),
         // Export/Import strings
         METADATA_DIFF_EXPORT_PROGRESS: vscode.l10n.t("Exporting comparison..."),
         METADATA_DIFF_EXPORT_TITLE: vscode.l10n.t("Export Site Comparison"),
