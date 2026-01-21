@@ -3,8 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { ECSFeaturesClient } from "../../../common/ecs-features/ecsFeatureClient";
-import { EnableBlogSupport } from "../../../common/ecs-features/ecsFeatureGates";
 
 export const portal_schema_V1 = {
     entities: {
