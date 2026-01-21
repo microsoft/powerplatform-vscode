@@ -1856,6 +1856,7 @@
     "@octokit/request": "^8.4.1",
     "@octokit/plugin-paginate-rest": "^9.2.2",
     "@octokit/request-error": "^5.1.1",
-    "qs": "^6.14.1"
+    "qs": "^6.14.1",
+    "tar": "^7.5.3"
   }
 }

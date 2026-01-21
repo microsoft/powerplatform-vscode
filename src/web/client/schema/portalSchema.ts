@@ -235,10 +235,9 @@ export const portal_schema_V1 = {
                 _attributes: "adx_registerstartupscript",
                 _attributesExtension: new Map([["adx_registerstartupscript", "advancedformstep.customjs.js"]]),
             },
-            ...(ECSFeaturesClient.getConfig(EnableBlogSupport).enableBlogSupport ? [
-                {
-                    relationships: "",
-                    _vscodeentityname: "blogs",
+            {
+                relationships: "",
+                _vscodeentityname: "blogs",
                     _dataverseenityname: "adx_blogs",
                     _displayname: "Blog",
                     _etc: "10061",
@@ -338,11 +337,10 @@ export const portal_schema_V1 = {
                     _fetchQueryParameters:
                         "?$filter=adx_communityforumpostid eq {entityId}&$select=adx_name,adx_content",
                     _multiFileFetchQueryParameters:
-                        "?$filter=_adx_forumthreadid_value ne null &$select=adx_name,adx_content,adx_communityforumpostid&$count=true",
+                        "?$filter=_adx_forumthreadid_value ne null and adx_forumthreadid/adx_forumid/_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_content,adx_communityforumpostid&$count=true",
                     _attributes: "adx_content",
                     _attributesExtension: new Map([["adx_content", "html"]]),
                 },
-            ] : []),
         ],
         "_xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
     },
@@ -581,10 +579,9 @@ export const portal_schema_V2 = {
                 _attributes: "content.registerstartupscript",
                 _attributesExtension: new Map([["content.registerstartupscript", "advancedformstep.customjs.js"]]),
             },
-            ...(ECSFeaturesClient.getConfig(EnableBlogSupport).enableBlogSupport ? [
-                {
-                    relationships: "",
-                    _vscodeentityname: "blogs",
+            {
+                relationships: "",
+                _vscodeentityname: "blogs",
                     _dataverseenityname: "adx_blogs",
                     _displayname: "Blog",
                     _etc: "10061",
@@ -686,11 +683,10 @@ export const portal_schema_V2 = {
                     _fetchQueryParameters:
                         "?$filter=adx_communityforumpostid eq {entityId}&$select=adx_name,adx_content",
                     _multiFileFetchQueryParameters:
-                        "?$filter=_adx_forumthreadid_value ne null &$select=adx_name,adx_content,adx_communityforumpostid&$count=true",
+                        "?$filter=_adx_forumthreadid_value ne null and adx_forumthreadid/adx_forumid/_adx_powerpagesiteid_value eq {websiteId} &$select=adx_name,adx_content,adx_communityforumpostid&$count=true",
                     _attributes: "adx_content",
                     _attributesExtension: new Map([["adx_content", "html"]]),
                 },
-            ] : []),
         ],
     },
 };
