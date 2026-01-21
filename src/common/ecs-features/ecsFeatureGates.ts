@@ -137,6 +137,6 @@ export const {
     teamName: PowerPagesClientName,
     description: 'Enable Metadata Diff comparison in VS Code Desktop',
     fallback: {
-        enableMetadataDiff: false,
+        enableMetadataDiff: true,
     }
 });

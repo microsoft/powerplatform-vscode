@@ -13,6 +13,18 @@ import { isBinaryFile } from "../../ActionsHubUtils";
 import { WebsiteDataModel } from "../../../../../common/services/Constants";
 
 /**
+ * Maximum file size in bytes to include content in the report (5MB)
+ * Files larger than this will be marked as too large to diff
+ */
+const MAX_FILE_SIZE_FOR_DIFF = 5 * 1024 * 1024;
+
+/**
+ * Maximum number of lines to process in the LCS diff algorithm
+ * Files with more lines will use a simplified diff display
+ */
+const MAX_LINES_FOR_LCS_DIFF = 20000;
+
+/**
  * Represents the content of a file comparison
  */
 interface IFileContentComparison {
@@ -20,6 +32,7 @@ interface IFileContentComparison {
     localContent: string | null;
     remoteContent: string | null;
     isBinary: boolean;
+    isTooLarge: boolean;
 }
 
 /**
@@ -133,8 +146,21 @@ function formatDateForDisplay(date: Date): string {
 }
 
 /**
+ * Checks if a file is too large to include in the diff report
+ */
+async function isFileTooLarge(filePath: string): Promise<boolean> {
+    try {
+        const uri = vscode.Uri.file(filePath);
+        const stat = await vscode.workspace.fs.stat(uri);
+        return stat.size > MAX_FILE_SIZE_FOR_DIFF;
+    } catch {
+        return false; // If we can't stat, let it try to read
+    }
+}
+
+/**
  * Reads file contents for all comparison results
- * Skips binary files and handles missing files gracefully
+ * Skips binary files, large files, and handles missing files gracefully
  */
 async function readFileContents(comparisonResults: IFileComparisonResult[]): Promise<IFileContentComparison[]> {
     const fileContents: IFileContentComparison[] = [];
@@ -147,7 +173,30 @@ async function readFileContents(comparisonResults: IFileComparisonResult[]): Pro
                 result,
                 localContent: null,
                 remoteContent: null,
-                isBinary: true
+                isBinary: true,
+                isTooLarge: false
+            });
+            continue;
+        }
+
+        // Check if files are too large
+        let localTooLarge = false;
+        let remoteTooLarge = false;
+
+        if (result.status !== FileComparisonStatus.DELETED) {
+            localTooLarge = await isFileTooLarge(result.localPath);
+        }
+        if (result.status !== FileComparisonStatus.ADDED) {
+            remoteTooLarge = await isFileTooLarge(result.remotePath);
+        }
+
+        if (localTooLarge || remoteTooLarge) {
+            fileContents.push({
+                result,
+                localContent: null,
+                remoteContent: null,
+                isBinary: false,
+                isTooLarge: true
             });
             continue;
         }
@@ -181,7 +230,8 @@ async function readFileContents(comparisonResults: IFileComparisonResult[]): Pro
             result,
             localContent,
             remoteContent,
-            isBinary: false
+            isBinary: false,
+            isTooLarge: false
         });
     }
 
@@ -344,6 +394,10 @@ function generateDiffHtml(fileContent: IFileContentComparison): string {
         return `<div class="diff-binary">${escapeHtml(Constants.Strings.HTML_REPORT_BINARY_FILE_MESSAGE)}</div>`;
     }
 
+    if (fileContent.isTooLarge) {
+        return `<div class="diff-binary">${escapeHtml(Constants.Strings.HTML_REPORT_FILE_TOO_LARGE_MESSAGE)}</div>`;
+    }
+
     const { localContent, remoteContent, result } = fileContent;
 
     // Handle cases where content couldn't be read
@@ -385,12 +439,39 @@ function generateDiffHtml(fileContent: IFileContentComparison): string {
 }
 
 /**
+ * Generates a summary diff display for very large files
+ * Shows basic statistics instead of full line-by-line diff
+ */
+function generateLargeFileDiffSummary(oldLines: string[], newLines: string[]): string {
+    const oldLineCount = oldLines.length;
+    const newLineCount = newLines.length;
+    const lineDiff = newLineCount - oldLineCount;
+    const lineDiffText = lineDiff > 0 ? `+${lineDiff}` : lineDiff.toString();
+
+    const summaryHtml = `
+        <div class="diff-binary">
+            <p><strong>${escapeHtml(Constants.Strings.HTML_REPORT_LARGE_FILE_MESSAGE)}</strong></p>
+            <p>${escapeHtml(Constants.Strings.HTML_REPORT_REMOTE_LINES)}: ${oldLineCount} ${escapeHtml(Constants.Strings.HTML_REPORT_LINES)}</p>
+            <p>${escapeHtml(Constants.Strings.HTML_REPORT_LOCAL_LINES)}: ${newLineCount} ${escapeHtml(Constants.Strings.HTML_REPORT_LINES)}</p>
+            <p>${escapeHtml(Constants.Strings.HTML_REPORT_LINE_DIFFERENCE)}: ${lineDiffText} ${escapeHtml(Constants.Strings.HTML_REPORT_LINES)}</p>
+        </div>`;
+
+    return summaryHtml;
+}
+
+/**
  * Computes a simple line-by-line diff between two texts
  * Uses a basic longest common subsequence approach
+ * Falls back to a simpler display for very large files
  */
 function computeSimpleDiff(oldText: string, newText: string): string {
     const oldLines = oldText.split("\n");
     const newLines = newText.split("\n");
+
+    // For very large files, skip the LCS algorithm and show a summary
+    if (oldLines.length > MAX_LINES_FOR_LCS_DIFF || newLines.length > MAX_LINES_FOR_LCS_DIFF) {
+        return generateLargeFileDiffSummary(oldLines, newLines);
+    }
 
     // Simple diff using LCS
     const lcs = computeLCS(oldLines, newLines);
