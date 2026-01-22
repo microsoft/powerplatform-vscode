@@ -16,7 +16,7 @@ export const URI_HANDLER_STRINGS = {
         ORG_URL_REQUIRED: vscode.l10n.t("Organization URL is required"),
         AUTH_FAILED: vscode.l10n.t("Authentication failed after user initiated auth"),
         USER_CANCELLED_AUTH: vscode.l10n.t("User cancelled authentication"),
-        ENV_SWITCH_FAILED: vscode.l10n.t("Failed to switch to required environment"),
+        ENV_SWITCH_FAILED: vscode.l10n.t("Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command."),
         USER_CANCELLED_ENV_SWITCH: vscode.l10n.t("User cancelled environment switch"),
         USER_CANCELLED_FOLDER_SELECTION: vscode.l10n.t("User cancelled folder selection"),
         DOWNLOAD_FAILED: vscode.l10n.t("Download failed: {0}")

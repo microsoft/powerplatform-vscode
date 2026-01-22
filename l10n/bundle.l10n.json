@@ -124,7 +124,7 @@
   "Organization URL is required": "Organization URL is required",
   "Authentication failed after user initiated auth": "Authentication failed after user initiated auth",
   "User cancelled authentication": "User cancelled authentication",
-  "Failed to switch to required environment": "Failed to switch to required environment",
+  "Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.": "Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.",
   "User cancelled environment switch": "User cancelled environment switch",
   "User cancelled folder selection": "User cancelled folder selection",
   "Download failed: {0}": "Download failed: {0}",
