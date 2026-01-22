@@ -538,6 +538,10 @@ Recherchez les requêtes disponibles dans le panneau d’extension CodeQL.</targ
         <source xml:lang="en">Deleted locally</source>
         <target state="translated">Supprimé localement</target>
       </trans-unit>
+      <trans-unit id="++CODE++4d280a451d04b7a51a7e302e0222ad77bb1e531f922b6193be115358256c245f">
+        <source xml:lang="en">Difference</source>
+        <target state="new">Difference</target>
+      </trans-unit>
       <trans-unit id="++CODE++e07e053c2e10b3f1b6aef657d937cd91d45df4e40242788d7d621faea3380c27">
         <source xml:lang="en">Discard Changes</source>
         <target state="translated">Ignorer les modifications</target>
@@ -800,6 +804,14 @@ Type : {3}</target>
       <trans-unit id="++CODE++2a8ddde521f14ecd4a8717f2bcf9a2b021fa38a578518066d2ae32271aa95237">
         <source xml:lang="en">Fetching your file ...</source>
         <target state="translated">Récupération de votre fichier en cours...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++8e76f8a5d51c8a06c8aa71cf5fbce0108993ed2becb686cbde33372fd00b555d">
+        <source xml:lang="en">File is too large for detailed diff comparison</source>
+        <target state="new">File is too large for detailed diff comparison</target>
+      </trans-unit>
+      <trans-unit id="++CODE++7701aaed77c66a5f257cce47adf0e5a1082304a7a6cc6e803aacc2c9882b2cfc">
+        <source xml:lang="en">File is too large to display diff (exceeds 5MB)</source>
+        <target state="new">File is too large to display diff (exceeds 5MB)</target>
       </trans-unit>
       <trans-unit id="++CODE++7b351789f09522eb21ab2637f1b063ff2a41451a7130138b41f142a6fe5d249e">
         <source xml:lang="en">File might be referenced by name {0} here.</source>
@@ -1918,6 +1930,10 @@ ID d’organisation : {3}</target>
         <source xml:lang="en">dotnet sdk 6.0 or greater must be installed</source>
         <note>Do not translate 'dotnet' or 'sdk'</note>
         <target state="translated">la version du kit de développement logiciel (sdk) dotnet sdk 6.0 ou supérieure doit être installé</target>
+      </trans-unit>
+      <trans-unit id="++CODE++5ea44c3961f16643e614435496b16115aa6d75458b5cc3fd5398aae291f3126b">
+        <source xml:lang="en">lines</source>
+        <target state="new">lines</target>
       </trans-unit>
       <trans-unit id="++CODE++21c9bbf3ca8756722337933b27566345c8aa2794231295a3ede6204329456931">
         <source xml:lang="en">pac pcf init</source>

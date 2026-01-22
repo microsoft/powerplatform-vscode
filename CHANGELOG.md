@@ -1,5 +1,8 @@
 # Change Log - Power Platform Extension
 
+## 2.0.118
+- Bug Fix
+
 ## 2.0.116
 - pac CLI 1.52.1, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 - Rollout of debugging support for Server Logics (Desktop)([Server logic](https://learn.microsoft.com/en-us/power-pages/configure/server-logic-overview))
