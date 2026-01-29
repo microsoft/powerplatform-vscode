@@ -106,3 +106,35 @@ Fix Dependabot security vulnerability in <package-name>
 - **Check for multiple alerts** - sometimes one update fixes multiple vulnerabilities
 - **Document workarounds** - if you use overrides, add a comment explaining why
 - For this codebase, run `npm run build` which uses gulp to build the extension
+
+## Critical: Never Manually Edit package-lock.json Integrity Hashes
+
+**Never manually edit integrity hashes in `package-lock.json`.** These are SHA-512 checksums of the actual tarball content from the npm registry. If you manually change them, CI builds will fail with `EINTEGRITY` errors.
+
+### Why This Happens
+
+When npm resolves a cached version that satisfies the constraint, it won't automatically update to a newer version even after changing `package.json`. Manually editing the lock file with an incorrect hash causes:
+
+```
+npm error code EINTEGRITY
+npm error sha512-<expected>== integrity checksum failed when using sha512: wanted sha512-<expected>== but got sha512-<actual>==
+```
+
+### Correct Approach to Force Version Updates
+
+Instead of manual edits, use one of these methods:
+
+```bash
+# Option 1: Clean install (recommended)
+rm -rf node_modules
+rm package-lock.json
+npm install
+
+# Option 2: Update specific package
+npm update <package-name>
+
+# Option 3: Force reinstall specific package
+npm install <package-name>@<version> --save
+```
+
+These commands let npm fetch the tarball and compute the correct integrity hash automatically.
