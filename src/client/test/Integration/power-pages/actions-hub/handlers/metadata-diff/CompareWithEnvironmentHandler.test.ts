@@ -1060,6 +1060,186 @@ describe("CompareWithEnvironmentHandler", () => {
                 expect(callArgs[1]).to.equal("code-website-id"); // websiteId
                 expect(callArgs[2]).to.equal("https://test.crm.dynamics.com"); // environmentUrl
             });
+
+            it("should pass includeEntities for selective download when comparing a specific folder with Standard model", async () => {
+                // Mock resolveSiteFromWorkspace to return a comparisonSubPath
+                sandbox.stub(MetadataDiffUtils, "resolveSiteFromWorkspace").returns({
+                    siteId: "test-site-id",
+                    localSitePath: "/test/workspace/site",
+                    comparisonSubPath: "web-pages/home",
+                    isLocalCodeSite: false
+                });
+
+                sandbox.stub(ActionsHubUtils, "fetchWebsites").resolves({
+                    activeSites: [
+                        {
+                            name: "Regular Website",
+                            websiteRecordId: "regular-website-id",
+                            websiteUrl: "https://regular.powerappsportals.com",
+                            dataModel: "Standard", // Standard model supports selective download
+                            isCodeSite: false
+                        }
+                    ] as unknown as IWebsiteDetails[],
+                    inactiveSites: [],
+                    otherSites: []
+                });
+
+                setupMultiStepInputMock({
+                    env: {
+                        label: "Test Environment",
+                        detail: "https://test.crm.dynamics.com",
+                        orgInfo: {
+                            OrgId: "org-id-1",
+                            UniqueName: "testorg",
+                            FriendlyName: "Test Environment",
+                            OrgUrl: "https://test.crm.dynamics.com",
+                            UserEmail: "",
+                            UserId: "",
+                            EnvironmentId: "env-id-1"
+                        }
+                    },
+                    website: {
+                        label: "Regular Website",
+                        detail: "https://regular.powerappsportals.com",
+                        description: Constants.Strings.STANDARD_DATA_MODEL,
+                        websiteDetails: {
+                            name: "Regular Website",
+                            websiteRecordId: "regular-website-id",
+                            websiteUrl: "https://regular.powerappsportals.com",
+                            dataModel: "Standard",
+                            isCodeSite: false
+                        }
+                    }
+                });
+
+                const handler = compareWithEnvironment(mockPacTerminal as unknown as PacTerminal, mockExtensionContext);
+                await handler({ fsPath: "/test/workspace/site/web-pages/home" } as vscode.Uri);
+
+                expect(mockPacWrapper.downloadSiteWithProgress.calledOnce).to.be.true;
+                const callArgs = mockPacWrapper.downloadSiteWithProgress.firstCall.args;
+                expect(callArgs[1]).to.equal("regular-website-id"); // websiteId
+                expect(callArgs[2]).to.equal(1); // dataModelVersion = 1 for Standard
+                expect(callArgs[3]).to.equal("https://test.crm.dynamics.com"); // environmentUrl
+                expect(callArgs[4]).to.deep.equal(["adx_webpage"]); // includeEntities for web-pages folder
+            });
+
+            it("should not pass includeEntities for Enhanced model (not yet supported)", async () => {
+                // Mock resolveSiteFromWorkspace to return a comparisonSubPath
+                sandbox.stub(MetadataDiffUtils, "resolveSiteFromWorkspace").returns({
+                    siteId: "test-site-id",
+                    localSitePath: "/test/workspace/site",
+                    comparisonSubPath: "web-pages/home",
+                    isLocalCodeSite: false
+                });
+
+                sandbox.stub(ActionsHubUtils, "fetchWebsites").resolves({
+                    activeSites: [
+                        {
+                            name: "Enhanced Website",
+                            websiteRecordId: "enhanced-website-id",
+                            websiteUrl: "https://enhanced.powerappsportals.com",
+                            dataModel: "Enhanced", // Enhanced model does not support selective download yet
+                            isCodeSite: false
+                        }
+                    ] as unknown as IWebsiteDetails[],
+                    inactiveSites: [],
+                    otherSites: []
+                });
+
+                setupMultiStepInputMock({
+                    env: {
+                        label: "Test Environment",
+                        detail: "https://test.crm.dynamics.com",
+                        orgInfo: {
+                            OrgId: "org-id-1",
+                            UniqueName: "testorg",
+                            FriendlyName: "Test Environment",
+                            OrgUrl: "https://test.crm.dynamics.com",
+                            UserEmail: "",
+                            UserId: "",
+                            EnvironmentId: "env-id-1"
+                        }
+                    },
+                    website: {
+                        label: "Enhanced Website",
+                        detail: "https://enhanced.powerappsportals.com",
+                        description: Constants.Strings.ENHANCED_DATA_MODEL,
+                        websiteDetails: {
+                            name: "Enhanced Website",
+                            websiteRecordId: "enhanced-website-id",
+                            websiteUrl: "https://enhanced.powerappsportals.com",
+                            dataModel: "Enhanced",
+                            isCodeSite: false
+                        }
+                    }
+                });
+
+                const handler = compareWithEnvironment(mockPacTerminal as unknown as PacTerminal, mockExtensionContext);
+                await handler({ fsPath: "/test/workspace/site/web-pages/home" } as vscode.Uri);
+
+                expect(mockPacWrapper.downloadSiteWithProgress.calledOnce).to.be.true;
+                const callArgs = mockPacWrapper.downloadSiteWithProgress.firstCall.args;
+                expect(callArgs[4]).to.be.undefined; // includeEntities should be undefined for Enhanced model
+            });
+
+            it("should not pass includeEntities when comparing entire site (no comparisonSubPath)", async () => {
+                // Mock resolveSiteFromWorkspace to return no comparisonSubPath
+                sandbox.stub(MetadataDiffUtils, "resolveSiteFromWorkspace").returns({
+                    siteId: "test-site-id",
+                    localSitePath: "/test/workspace/site",
+                    comparisonSubPath: "", // Empty means entire site
+                    isLocalCodeSite: false
+                });
+
+                sandbox.stub(ActionsHubUtils, "fetchWebsites").resolves({
+                    activeSites: [
+                        {
+                            name: "Regular Website",
+                            websiteRecordId: "regular-website-id",
+                            websiteUrl: "https://regular.powerappsportals.com",
+                            dataModel: "Standard",
+                            isCodeSite: false
+                        }
+                    ] as unknown as IWebsiteDetails[],
+                    inactiveSites: [],
+                    otherSites: []
+                });
+
+                setupMultiStepInputMock({
+                    env: {
+                        label: "Test Environment",
+                        detail: "https://test.crm.dynamics.com",
+                        orgInfo: {
+                            OrgId: "org-id-1",
+                            UniqueName: "testorg",
+                            FriendlyName: "Test Environment",
+                            OrgUrl: "https://test.crm.dynamics.com",
+                            UserEmail: "",
+                            UserId: "",
+                            EnvironmentId: "env-id-1"
+                        }
+                    },
+                    website: {
+                        label: "Regular Website",
+                        detail: "https://regular.powerappsportals.com",
+                        description: Constants.Strings.STANDARD_DATA_MODEL,
+                        websiteDetails: {
+                            name: "Regular Website",
+                            websiteRecordId: "regular-website-id",
+                            websiteUrl: "https://regular.powerappsportals.com",
+                            dataModel: "Standard",
+                            isCodeSite: false
+                        }
+                    }
+                });
+
+                const handler = compareWithEnvironment(mockPacTerminal as unknown as PacTerminal, mockExtensionContext);
+                await handler({ fsPath: "/test/workspace/site" } as vscode.Uri);
+
+                expect(mockPacWrapper.downloadSiteWithProgress.calledOnce).to.be.true;
+                const callArgs = mockPacWrapper.downloadSiteWithProgress.firstCall.args;
+                expect(callArgs[4]).to.be.undefined; // includeEntities should be undefined for full site comparison
+            });
         });
     });
 });
