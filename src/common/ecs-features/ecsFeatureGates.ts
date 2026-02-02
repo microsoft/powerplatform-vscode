@@ -127,7 +127,7 @@ export const {
     teamName: PowerPagesClientName,
     description: 'Enable blog file support in VSCode (web & desktop)',
     fallback: {
-        enableBlogSupport: false,
+        enableBlogSupport: true,
     }
 });
 
