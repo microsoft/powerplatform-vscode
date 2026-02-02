@@ -784,9 +784,9 @@ Typ: {3}</target>
         <source xml:lang="en">Failed to open in VS Code Desktop: {0}</source>
         <target state="translated">Nepodařilo se otevřít ve VS Code pro desktop: {0}</target>
       </trans-unit>
-      <trans-unit id="++CODE++3ae8538d5c7a65434c88e17ef8360aa3eb2c80dd577f3daad2d41d58d83353c9">
-        <source xml:lang="en">Failed to switch to required environment</source>
-        <target state="translated">Nepovedlo se přepnout do požadovaného prostředí.</target>
+      <trans-unit id="++CODE++ab47a93b0690e3553f60a7e1bd45df0a5e0ebf49f7f3c150d38f347699892163">
+        <source xml:lang="en">Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.</source>
+        <target state="new">Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.</target>
       </trans-unit>
       <trans-unit id="++CODE++a9e36b880dd45b64ae5601865540605296febf9bd855fc46d9c35c2c2ed9a7f2">
         <source xml:lang="en">Feature is not enabled for this geo.</source>

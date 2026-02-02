@@ -180,7 +180,7 @@
   "Failed to install SARIF viewer extension. Opening results as text file.": "無法安裝 SARIF 檢視器延伸模組。正在以文字檔開啟結果。",
   "Failed to install SARIF viewer extension: {0}": "無法安裝 SARIF 檢視器延伸模組: {0}",
   "Failed to open in VS Code Desktop: {0}": "無法在 VS Code 桌面版中開啟: {0}",
-  "Failed to switch to required environment": "無法切換至所需的環境",
+  "Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.": "Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.",
   "Feature is not enabled for this geo.": "未為此地區啟用功能。",
   "Feedback": "意見反應",
   "Fetching websites from '{0}'.../Message shown while fetching websites from an environment. {0} is the environment name.": "正在從 '{0}' 擷取網站...",
