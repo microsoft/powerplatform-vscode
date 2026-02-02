@@ -180,7 +180,7 @@
   "Failed to install SARIF viewer extension. Opening results as text file.": "SARIF görüntüleyici uzantısı yüklenemedi. Sonuçlar metin dosyası olarak açılıyor.",
   "Failed to install SARIF viewer extension: {0}": "SARIF görüntüleyici uzantısı yüklenemedi: {0}",
   "Failed to open in VS Code Desktop: {0}": "VS Code Desktop'ta açılamadı: {0}",
-  "Failed to switch to required environment": "Gerekli ortama geçilemedi",
+  "Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.": "Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.",
   "Feature is not enabled for this geo.": "Özellik bu coğrafya için etkin değil.",
   "Feedback": "Geri bildirim",
   "Fetching websites from '{0}'.../Message shown while fetching websites from an environment. {0} is the environment name.": "'{0}' ortamından web siteleri getiriliyor...",

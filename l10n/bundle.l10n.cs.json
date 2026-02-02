@@ -180,7 +180,7 @@
   "Failed to install SARIF viewer extension. Opening results as text file.": "Nepovedlo se nainstalovat rozšíření prohlížeče SARIF. Otevírání výsledků jako textového souboru",
   "Failed to install SARIF viewer extension: {0}": "Nepovedlo se nainstalovat rozšíření prohlížeče SARIF: {0}",
   "Failed to open in VS Code Desktop: {0}": "Nepodařilo se otevřít ve VS Code pro desktop: {0}",
-  "Failed to switch to required environment": "Nepovedlo se přepnout do požadovaného prostředí.",
+  "Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.": "Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.",
   "Feature is not enabled for this geo.": "Funkce není v této geografické oblasti povolena.",
   "Feedback": "Názory",
   "Fetching websites from '{0}'.../Message shown while fetching websites from an environment. {0} is the environment name.": "Načítání webů z {0}…",
