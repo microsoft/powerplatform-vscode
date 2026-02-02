@@ -885,7 +885,7 @@ describe("CompareWithEnvironmentHandler", () => {
                 ]);
                 sandbox.stub(WorkspaceInfoFinderUtil, "getWebsiteRecordId").returns("test-website-id");
                 sandbox.stub(WorkspaceInfoFinderUtil, "findPowerPagesSiteFolder").returns(null);
-                sandbox.stub(vscode.window, "showWarningMessage").resolves(Constants.Strings.YES);
+                sandbox.stub(vscode.window, "showWarningMessage").resolves(Constants.Strings.YES as unknown as vscode.MessageItem);
 
                 // Stub MetadataDiffUtils functions
                 sandbox.stub(MetadataDiffUtils, "prepareSiteStoragePath").returns("/test/storage/sites-for-comparison");
