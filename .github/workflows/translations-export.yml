@@ -1,0 +1,67 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# Workflow to ensure translation export files are up to date on PRs
+
+name: Translations Export
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  translations-export:
+    name: Export Translations
+    runs-on: windows-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Generate GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: 2740120
+          private-key: ${{ secrets.POWER_PAGES_PUBLIC_GITHUB_APP_PRIVATE_KEY }}
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Translations Export
+        run: npm run translations-export
+
+      - name: Check for Changes
+        id: check-changes
+        run: |
+          git add -A
+          if (git diff --cached --quiet) {
+            echo "has_changes=false" >> $env:GITHUB_OUTPUT
+          } else {
+            echo "has_changes=true" >> $env:GITHUB_OUTPUT
+          }
+
+      - name: Commit and Push Changes
+        if: steps.check-changes.outputs.has_changes == 'true'
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -m "Automated translations export from CI"
+          git push
