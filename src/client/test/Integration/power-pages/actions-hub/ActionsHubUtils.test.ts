@@ -9,7 +9,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import { fetchWebsites, findOtherSites, createKnownSiteIdsSet, getAllFiles, isBinaryFile } from '../../../../power-pages/actions-hub/ActionsHubUtils';
+import { fetchWebsites, findOtherSites, createKnownSiteIdsSet, getAllFiles, isBinaryFile, getTopLevelFolder, getEntitiesToInclude, supportsSelectiveDownload, getSupportedFolders } from '../../../../power-pages/actions-hub/ActionsHubUtils';
 import { Constants } from '../../../../power-pages/actions-hub/Constants';
 import { WebsiteDataModel, ServiceEndpointCategory } from '../../../../../common/services/Constants';
 import { IWebsiteDetails, IArtemisAPIOrgResponse } from '../../../../../common/services/Interfaces';
@@ -459,6 +459,179 @@ describe('ActionsHubUtils', () => {
                 expect(isBinaryFile("folder\\subfolder\\image.png")).to.be.true;
                 expect(isBinaryFile("C:\\Users\\test\\image.jpg")).to.be.true;
             });
+        });
+    });
+});
+
+/**
+ * Folder Entity Mapping tests - in a separate describe block to avoid
+ * unnecessary sandbox creation/destruction cycles that can affect other tests.
+ * These are pure function tests that don't require mocking.
+ */
+describe('FolderEntityMapping', () => {
+    describe('getTopLevelFolder', () => {
+        it('should return undefined for empty string', () => {
+            expect(getTopLevelFolder("")).to.be.undefined;
+        });
+
+        it('should return the folder name for a simple path', () => {
+            expect(getTopLevelFolder("web-pages")).to.equal("web-pages");
+        });
+
+        it('should return the first segment for a nested path', () => {
+            expect(getTopLevelFolder("web-pages/home")).to.equal("web-pages");
+        });
+
+        it('should return the first segment for a deeply nested path', () => {
+            expect(getTopLevelFolder("web-pages/home/content-pages/about")).to.equal("web-pages");
+        });
+
+        it('should handle Windows-style path separators', () => {
+            expect(getTopLevelFolder("web-pages\\home\\content")).to.equal("web-pages");
+        });
+
+        it('should handle mixed path separators', () => {
+            expect(getTopLevelFolder("web-pages\\home/content")).to.equal("web-pages");
+        });
+    });
+
+    describe('getEntitiesToInclude', () => {
+        describe('Standard (ADX) data model', () => {
+            it('should return undefined for empty sub-path', () => {
+                expect(getEntitiesToInclude("", 1)).to.be.undefined;
+            });
+
+            it('should return undefined for undefined sub-path', () => {
+                expect(getEntitiesToInclude(undefined, 1)).to.be.undefined;
+            });
+
+            it('should return adx_webpage for web-pages folder', () => {
+                const result = getEntitiesToInclude("web-pages", 1);
+                expect(result).to.deep.equal(["adx_webpage"]);
+            });
+
+            it('should return adx_webpage for nested web-pages path', () => {
+                const result = getEntitiesToInclude("web-pages/home/content-pages", 1);
+                expect(result).to.deep.equal(["adx_webpage"]);
+            });
+
+            it('should return adx_webfile and annotation for web-files folder', () => {
+                const result = getEntitiesToInclude("web-files", 1);
+                expect(result).to.deep.equal(["adx_webfile", "annotation"]);
+            });
+
+            it('should return adx_webtemplate for web-templates folder', () => {
+                const result = getEntitiesToInclude("web-templates", 1);
+                expect(result).to.deep.equal(["adx_webtemplate"]);
+            });
+
+            it('should return adx_contentsnippet for content-snippets folder', () => {
+                const result = getEntitiesToInclude("content-snippets", 1);
+                expect(result).to.deep.equal(["adx_contentsnippet"]);
+            });
+
+            it('should return multiple entities for basic-forms folder', () => {
+                const result = getEntitiesToInclude("basic-forms", 1);
+                expect(result).to.deep.equal(["adx_entityform", "adx_entityformmetadata"]);
+            });
+
+            it('should return multiple entities for advanced-forms folder', () => {
+                const result = getEntitiesToInclude("advanced-forms", 1);
+                expect(result).to.deep.equal(["adx_webform", "adx_webformstep", "adx_webformmetadata"]);
+            });
+
+            it('should return multiple entities for weblink-sets folder', () => {
+                const result = getEntitiesToInclude("weblink-sets", 1);
+                expect(result).to.deep.equal(["adx_weblinkset", "adx_weblink"]);
+            });
+
+            it('should return adx_entitylist for lists folder', () => {
+                const result = getEntitiesToInclude("lists", 1);
+                expect(result).to.deep.equal(["adx_entitylist"]);
+            });
+
+            it('should return adx_sitesetting for site-settings folder', () => {
+                const result = getEntitiesToInclude("site-settings", 1);
+                expect(result).to.deep.equal(["adx_sitesetting"]);
+            });
+
+            it('should return adx_webrole for web-roles folder', () => {
+                const result = getEntitiesToInclude("web-roles", 1);
+                expect(result).to.deep.equal(["adx_webrole"]);
+            });
+
+            it('should return adx_entitypermission for table-permissions folder', () => {
+                const result = getEntitiesToInclude("table-permissions", 1);
+                expect(result).to.deep.equal(["adx_entitypermission"]);
+            });
+
+            it('should return undefined for unknown folder', () => {
+                expect(getEntitiesToInclude("unknown-folder", 1)).to.be.undefined;
+            });
+
+            it('should be case-insensitive for folder names', () => {
+                expect(getEntitiesToInclude("Web-Pages", 1)).to.deep.equal(["adx_webpage"]);
+                expect(getEntitiesToInclude("WEB-PAGES", 1)).to.deep.equal(["adx_webpage"]);
+            });
+        });
+
+        describe('Enhanced (Core) data model', () => {
+            it('should return undefined for any folder (not yet supported)', () => {
+                expect(getEntitiesToInclude("web-pages", 2)).to.be.undefined;
+                expect(getEntitiesToInclude("web-templates", 2)).to.be.undefined;
+                expect(getEntitiesToInclude("content-snippets", 2)).to.be.undefined;
+            });
+
+            it('should return undefined for empty sub-path', () => {
+                expect(getEntitiesToInclude("", 2)).to.be.undefined;
+            });
+        });
+    });
+
+    describe('supportsSelectiveDownload', () => {
+        it('should return true for supported folders in Standard model', () => {
+            expect(supportsSelectiveDownload("web-pages", 1)).to.be.true;
+            expect(supportsSelectiveDownload("web-templates", 1)).to.be.true;
+            expect(supportsSelectiveDownload("basic-forms", 1)).to.be.true;
+        });
+
+        it('should return false for unsupported folders', () => {
+            expect(supportsSelectiveDownload("unknown-folder", 1)).to.be.false;
+        });
+
+        it('should return false for empty path', () => {
+            expect(supportsSelectiveDownload("", 1)).to.be.false;
+            expect(supportsSelectiveDownload(undefined, 1)).to.be.false;
+        });
+
+        it('should return false for Enhanced model (not yet supported)', () => {
+            expect(supportsSelectiveDownload("web-pages", 2)).to.be.false;
+            expect(supportsSelectiveDownload("web-templates", 2)).to.be.false;
+        });
+    });
+
+    describe('getSupportedFolders', () => {
+        it('should return all supported folders for Standard model', () => {
+            const folders = getSupportedFolders(1);
+
+            expect(folders).to.be.an("array");
+            expect(folders.length).to.be.greaterThan(0);
+
+            // Verify some known folders are included
+            expect(folders).to.include("web-pages");
+            expect(folders).to.include("web-templates");
+            expect(folders).to.include("content-snippets");
+            expect(folders).to.include("basic-forms");
+            expect(folders).to.include("advanced-forms");
+            expect(folders).to.include("weblink-sets");
+            expect(folders).to.include("lists");
+            expect(folders).to.include("site-settings");
+        });
+
+        it('should return empty array for Enhanced model (not yet supported)', () => {
+            const folders = getSupportedFolders(2);
+            expect(folders).to.be.an("array");
+            expect(folders.length).to.equal(0);
         });
     });
 });

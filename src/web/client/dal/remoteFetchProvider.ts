@@ -422,6 +422,12 @@ async function processDataAndCreateFile(
     }    // Create folder directory if needed
     let finalFilePathInPortalFS = filePathInPortalFS;
     if (exportType && exportType === folderExportType.SubFolders) {
+        // For entities whose top-level folder is created lazily, ensure that folder exists
+        // before creating record-level subfolders (e.g. blogposts/{postName}/...)
+        if (conditionalFolderEntities.includes(entityName as schemaEntityName)) {
+            await portalsFS.createDirectory(vscode.Uri.parse(filePathInPortalFS, true));
+        }
+
         finalFilePathInPortalFS = `${filePathInPortalFS}${getSanitizedFileName(actualFolderName)}/`;
         await portalsFS.createDirectory(
             vscode.Uri.parse(finalFilePathInPortalFS, true)
