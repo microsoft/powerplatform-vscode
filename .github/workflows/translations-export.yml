@@ -1,16 +1,19 @@
-name: Localization Update
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# Workflow to ensure translation export files are up to date on PRs
+
+name: Translations Export
 
 on:
   pull_request:
     branches:
       - main
-    paths:
-      - 'loc/translations-import/**'
-  workflow_dispatch:  # Add this for manual testing
+  workflow_dispatch:
 
 jobs:
-  update-localization:
-    name: Update Localization Files
+  translations-export:
+    name: Export Translations
     runs-on: windows-latest
     permissions:
       contents: write
@@ -40,16 +43,25 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Run Translations Import
-        run: npm run translations-import
+      - name: Run Translations Export
+        run: npm run translations-export
 
-      - name: Add Changes
-        run: git add -A
+      - name: Check for Changes
+        id: check-changes
+        run: |
+          git add -A
+          if (git diff --cached --quiet) {
+            echo "has_changes=false" >> $env:GITHUB_OUTPUT
+          } else {
+            echo "has_changes=true" >> $env:GITHUB_OUTPUT
+          }
+
       - name: Commit and Push Changes
+        if: steps.check-changes.outputs.has_changes == 'true'
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git commit -m "Automated localization update from CI" -a
+          git commit -m "Automated translations export from CI"
           git push

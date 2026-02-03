@@ -276,3 +276,149 @@ export function getAllFiles(dir: string, baseDir: string = dir): Map<string, str
 
     return files;
 }
+
+/**
+ * Mapping of folder names to entity names for the Standard (ADX) data model.
+ * Some folders require multiple entities due to parent-child relationships.
+ * Key: folder name (lowercase), Value: array of entity names to include
+ *
+ * Based on the PAC CLI schema (CDSStarterPortal.xml) which defines the foldername attribute
+ * for each entity.
+ */
+const FOLDER_TO_ENTITIES_ADX: ReadonlyMap<string, readonly string[]> = new Map([
+    // Core content
+    ["web-pages", ["adx_webpage"]],
+    ["web-files", ["adx_webfile", "annotation"]], // annotation stores file content
+    ["web-templates", ["adx_webtemplate"]],
+    ["content-snippets", ["adx_contentsnippet"]],
+    ["page-templates", ["adx_pagetemplate"]],
+
+    // Navigation
+    ["weblink-sets", ["adx_weblinkset", "adx_weblink"]],
+    ["sitemarkers", ["adx_sitemarker"]],
+
+    // Forms and lists
+    ["basic-forms", ["adx_entityform", "adx_entityformmetadata"]],
+    ["advanced-forms", ["adx_webform", "adx_webformstep", "adx_webformmetadata"]],
+    ["lists", ["adx_entitylist"]],
+
+    // Configuration
+    ["site-settings", ["adx_sitesetting"]],
+    ["publishing-states", ["adx_publishingstate"]],
+    ["site-languages", ["adx_websitelanguage"]],
+
+    // Security
+    ["web-roles", ["adx_webrole"]],
+    ["webpage-rules", ["adx_webpageaccesscontrolrule"]],
+    ["website-accesss", ["adx_websiteaccess"]], // Note: typo in original schema (accesss)
+    ["table-permissions", ["adx_entitypermission"]],
+    ["column-permission-profiles", ["adx_columnpermissionprofile", "adx_columnpermission"]],
+
+    // Advanced features
+    ["polls", ["adx_poll", "adx_polloption"]],
+    ["poll-placements", ["adx_pollplacement"]],
+    ["blogs", ["adx_blog", "adx_blogpost"]],
+    ["forums", ["adx_communityforum", "adx_communityforumaccesspermission", "adx_forumthreadtype"]],
+    ["bot-consumers", ["adx_botconsumer"]],
+    ["cloud-flow-consumer", ["adx_cloudflowconsumer"]],
+
+    // Modern components
+    ["ux-components", ["mspp_uxcomponent"]],
+    ["server-logics", ["adx_serverlogic"]],
+    ["source-files", ["adx_sourcefile"]],
+
+    // Redirects and shortcuts
+    ["redirects", ["adx_redirect"]],
+    ["shortcuts", ["adx_shortcut"]],
+
+    // Ads
+    ["ads", ["adx_ad"]],
+    ["ad-placements", ["adx_adplacement"]],
+]);
+
+/**
+ * Extracts the top-level folder name from a comparison sub-path.
+ * @param comparisonSubPath The relative path from site root (e.g., "web-pages/home" or "web-pages")
+ * @returns The top-level folder name (e.g., "web-pages") or undefined if path is empty
+ */
+export function getTopLevelFolder(comparisonSubPath: string): string | undefined {
+    if (!comparisonSubPath) {
+        return undefined;
+    }
+
+    // Normalize path separators and get the first segment
+    const normalizedPath = comparisonSubPath.replace(/\\/g, "/");
+    const firstSegment = normalizedPath.split("/")[0];
+
+    return firstSegment || undefined;
+}
+
+/**
+ * Gets the entity names to include for a selective download based on the folder being compared.
+ * Only applicable for Standard (ADX) data model.
+ *
+ * @param comparisonSubPath The relative path from site root to the folder being compared
+ * @param dataModelVersion The data model version (1 = Standard, 2 = Enhanced)
+ * @returns Array of entity names to include, or undefined if full download is needed
+ */
+export function getEntitiesToInclude(
+    comparisonSubPath: string | undefined,
+    dataModelVersion: 1 | 2
+): string[] | undefined {
+    // If no sub-path specified, download everything
+    if (!comparisonSubPath) {
+        return undefined;
+    }
+
+    const topLevelFolder = getTopLevelFolder(comparisonSubPath);
+    if (!topLevelFolder) {
+        return undefined;
+    }
+
+    const folderLower = topLevelFolder.toLowerCase();
+
+    if (dataModelVersion === 1) {
+        // Standard (ADX) model - use entity-based filtering
+        const entities = FOLDER_TO_ENTITIES_ADX.get(folderLower);
+        if (entities && entities.length > 0) {
+            return [...entities];
+        }
+    }
+    // Enhanced (Core) model - entity filtering is limited
+    // The Enhanced model uses powerpagecomponent for most content,
+    // and PAC CLI doesn't support filtering by component type.
+    // For now, return undefined to download full site for Enhanced model.
+
+    // Unknown folder or no mapping - download full site
+    return undefined;
+}
+
+/**
+ * Checks if a folder path supports selective download optimization.
+ * This can be used to show UI hints about optimization availability.
+ *
+ * @param comparisonSubPath The relative path from site root
+ * @param dataModelVersion The data model version (1 = Standard, 2 = Enhanced)
+ * @returns True if selective download is supported for this path
+ */
+export function supportsSelectiveDownload(
+    comparisonSubPath: string | undefined,
+    dataModelVersion: 1 | 2
+): boolean {
+    return getEntitiesToInclude(comparisonSubPath, dataModelVersion) !== undefined;
+}
+
+/**
+ * Gets all known folder names that support selective download.
+ * Useful for documentation and testing.
+ *
+ * @param dataModelVersion The data model version (1 = Standard, 2 = Enhanced)
+ * @returns Array of folder names that support selective download
+ */
+export function getSupportedFolders(dataModelVersion: 1 | 2): string[] {
+    if (dataModelVersion === 1) {
+        return Array.from(FOLDER_TO_ENTITIES_ADX.keys());
+    }
+    // Enhanced model doesn't support selective download yet
+    return [];
+}

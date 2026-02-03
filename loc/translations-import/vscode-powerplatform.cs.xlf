@@ -538,6 +538,10 @@ Dostupné dotazy najdete na panelu rozšíření CodeQL.</target>
         <source xml:lang="en">Deleted locally</source>
         <target state="translated">Smazáno místně</target>
       </trans-unit>
+      <trans-unit id="++CODE++4d280a451d04b7a51a7e302e0222ad77bb1e531f922b6193be115358256c245f">
+        <source xml:lang="en">Difference</source>
+        <target state="translated">Rozdíl</target>
+      </trans-unit>
       <trans-unit id="++CODE++e07e053c2e10b3f1b6aef657d937cd91d45df4e40242788d7d621faea3380c27">
         <source xml:lang="en">Discard Changes</source>
         <target state="translated">Zahodit změny</target>
@@ -780,9 +784,9 @@ Typ: {3}</target>
         <source xml:lang="en">Failed to open in VS Code Desktop: {0}</source>
         <target state="translated">Nepodařilo se otevřít ve VS Code pro desktop: {0}</target>
       </trans-unit>
-      <trans-unit id="++CODE++3ae8538d5c7a65434c88e17ef8360aa3eb2c80dd577f3daad2d41d58d83353c9">
-        <source xml:lang="en">Failed to switch to required environment</source>
-        <target state="translated">Nepovedlo se přepnout do požadovaného prostředí.</target>
+      <trans-unit id="++CODE++ab47a93b0690e3553f60a7e1bd45df0a5e0ebf49f7f3c150d38f347699892163">
+        <source xml:lang="en">Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.</source>
+        <target state="new">Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.</target>
       </trans-unit>
       <trans-unit id="++CODE++a9e36b880dd45b64ae5601865540605296febf9bd855fc46d9c35c2c2ed9a7f2">
         <source xml:lang="en">Feature is not enabled for this geo.</source>
@@ -800,6 +804,14 @@ Typ: {3}</target>
       <trans-unit id="++CODE++2a8ddde521f14ecd4a8717f2bcf9a2b021fa38a578518066d2ae32271aa95237">
         <source xml:lang="en">Fetching your file ...</source>
         <target state="translated">Načítá se soubor...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++8e76f8a5d51c8a06c8aa71cf5fbce0108993ed2becb686cbde33372fd00b555d">
+        <source xml:lang="en">File is too large for detailed diff comparison</source>
+        <target state="translated">Soubor je příliš velký na podrobné porovnání rozdílů.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++7701aaed77c66a5f257cce47adf0e5a1082304a7a6cc6e803aacc2c9882b2cfc">
+        <source xml:lang="en">File is too large to display diff (exceeds 5MB)</source>
+        <target state="translated">Soubor je příliš velký na zobrazení rozdílů (přesahuje 5 MB).</target>
       </trans-unit>
       <trans-unit id="++CODE++7b351789f09522eb21ab2637f1b063ff2a41451a7130138b41f142a6fe5d249e">
         <source xml:lang="en">File might be referenced by name {0} here.</source>
@@ -1918,6 +1930,10 @@ ID organizace: {3}</target>
         <source xml:lang="en">dotnet sdk 6.0 or greater must be installed</source>
         <note>Do not translate 'dotnet' or 'sdk'</note>
         <target state="translated">Musí být nainstalována sada dotnet sdk 6.0 nebo vyšší.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++5ea44c3961f16643e614435496b16115aa6d75458b5cc3fd5398aae291f3126b">
+        <source xml:lang="en">lines</source>
+        <target state="translated">řádky</target>
       </trans-unit>
       <trans-unit id="++CODE++21c9bbf3ca8756722337933b27566345c8aa2794231295a3ede6204329456931">
         <source xml:lang="en">pac pcf init</source>

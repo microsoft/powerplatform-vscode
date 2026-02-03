@@ -278,13 +278,16 @@ export const portal_schema_V1 = {
                     _primarynamefield: "adx_name",
                     _disableplugins: "true",
                     _foldername: "blog-posts",
-                    _exporttype: "SingleFolder",
+                    _exporttype: "SubFolders",
                     _fetchQueryParameters:
-                        "?$filter=adx_blogpostid eq {entityId}&$select=adx_name,adx_copy",
+                        "?$filter=adx_blogpostid eq {entityId}&$select=adx_name,adx_copy,adx_summary",
                     _multiFileFetchQueryParameters:
-                        "?$filter=_adx_blogid_value ne null and adx_blogid/_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_copy,adx_blogpostid&$count=true",
-                    _attributes: "adx_copy",
-                    _attributesExtension: new Map([["adx_copy", "html"]]),
+                        "?$filter=_adx_blogid_value ne null and adx_blogid/_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_copy,adx_summary,adx_blogpostid&$count=true",
+                    _attributes: "adx_copy,adx_summary",
+                    _attributesExtension: new Map([
+                        ["adx_copy", "copy.html"],
+                        ["adx_summary", "summary.html"],
+                    ]),
                 },
                 {
                     relationships: "",                    _vscodeentityname: "ideaforums",
@@ -605,13 +608,16 @@ export const portal_schema_V2 = {
                     _primarynamefield: "adx_name",
                     _disableplugins: "true",
                     _foldername: "blog-posts",
-                    _exporttype: "SingleFolder",
+                    _exporttype: "SubFolders",
                     _fetchQueryParameters:
-                        "?$filter=adx_blogpostid eq {entityId}&$select=adx_name,adx_copy",
+                        "?$filter=adx_blogpostid eq {entityId}&$select=adx_name,adx_copy,adx_summary",
                     _multiFileFetchQueryParameters:
-                        "?$filter=_adx_blogid_value ne null and adx_blogid/_adx_powerpagesiteid_value eq {websiteId} &$select=adx_name,adx_copy,adx_blogpostid&$count=true",
-                    _attributes: "adx_copy",
-                    _attributesExtension: new Map([["adx_copy", "html"]]),
+                        "?$filter=_adx_blogid_value ne null and adx_blogid/_adx_powerpagesiteid_value eq {websiteId} &$select=adx_name,adx_copy,adx_summary,adx_blogpostid&$count=true",
+                    _attributes: "adx_copy,adx_summary",
+                    _attributesExtension: new Map([
+                        ["adx_copy", "copy.html"],
+                        ["adx_summary", "summary.html"],
+                    ]),
                 },
                 {
                     relationships: "",
