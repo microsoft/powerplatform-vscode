@@ -24,6 +24,10 @@ export const MAX_CONCURRENT_REQUEST_COUNT = 50;
 export const MAX_CONCURRENT_REQUEST_QUEUE_COUNT = 6000;
 
 // Retry policy constants for concurrency handler
+/**
+ * Maximum number of total attempts for retry policy (1 initial + 1 retry).
+ * In cockatiel's retry policy, maxAttempts represents total attempts, not retries.
+ */
 export const RETRY_MAX_ATTEMPTS = 2;
 export const RETRY_INITIAL_DELAY_MS = 2000;
 export const RETRY_MAX_DELAY_MS = 8000;

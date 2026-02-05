@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { BulkheadRejectedError, bulkhead, retry, handleAll, ExponentialBackoff, wrap } from 'cockatiel';
+import { BulkheadRejectedError, bulkhead, retry, handleWhen, ExponentialBackoff, wrap } from 'cockatiel';
 import fetch, { RequestInfo, RequestInit } from "node-fetch";
 import {
     MAX_CONCURRENT_REQUEST_COUNT,
@@ -19,13 +19,16 @@ import { ERROR_CONSTANTS } from '../../../common/ErrorConstants';
 export class ConcurrencyHandler {
     private _bulkhead = bulkhead(MAX_CONCURRENT_REQUEST_COUNT, MAX_CONCURRENT_REQUEST_QUEUE_COUNT);
 
-    private _retryPolicy = retry(handleAll, {
-        maxAttempts: RETRY_MAX_ATTEMPTS,
-        backoff: new ExponentialBackoff({
-            initialDelay: RETRY_INITIAL_DELAY_MS,
-            maxDelay: RETRY_MAX_DELAY_MS
-        })
-    });
+    private _retryPolicy = retry(
+        handleWhen((err) => !(err instanceof BulkheadRejectedError)),
+        {
+            maxAttempts: RETRY_MAX_ATTEMPTS,
+            backoff: new ExponentialBackoff({
+                initialDelay: RETRY_INITIAL_DELAY_MS,
+                maxDelay: RETRY_MAX_DELAY_MS
+            })
+        }
+    );
 
     private _wrappedPolicy = wrap(this._retryPolicy, this._bulkhead);
 
