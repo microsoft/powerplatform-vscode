@@ -657,6 +657,15 @@ async function fetchMappingEntityContent(
         return Constants.NO_CONTENT;
     }
 
+    // Gracefully handle 404 for webfiles (deleted/moved files)
+    if (!response.ok && response.status === 404 && entity === schemaEntityName.WEBFILES) {
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            webExtensionTelemetryEventNames.WEB_EXTENSION_WEBFILE_NOT_FOUND,
+            { entityId, entity }
+        );
+        return Constants.NO_CONTENT;
+    }
+
     if (!response.ok) {
         WebExtensionContext.telemetry.sendAPIFailureTelemetry(
             requestUrl,
