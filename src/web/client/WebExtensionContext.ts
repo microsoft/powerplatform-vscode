@@ -35,6 +35,7 @@ import { QuickPickProvider } from "./webViews/QuickPickProvider";
 import { UserCollaborationProvider } from "./webViews/userCollaborationProvider";
 import { GraphClientService } from "./services/graphClientService";
 import { ServiceEndpointCategory } from "../../common/services/Constants";
+import { createHttpResponseError } from "./utilities/errorHandlerUtil";
 
 export interface IWebExtensionContext {
     // From portalSchema properties
@@ -576,7 +577,7 @@ class WebExtensionContext implements IWebExtensionContext {
                 headers: getCommonHeadersForDataverse(accessToken),
             });
             if (!response?.ok) {
-                throw new Error(JSON.stringify(response));
+                throw await createHttpResponseError(response);
             }
             this.telemetry.sendAPISuccessTelemetry(
                 requestUrl,
@@ -642,7 +643,7 @@ class WebExtensionContext implements IWebExtensionContext {
                 headers: getCommonHeadersForDataverse(accessToken),
             });
             if (!response?.ok) {
-                throw new Error(JSON.stringify(response));
+                throw await createHttpResponseError(response);
             }
             this.telemetry.sendAPISuccessTelemetry(
                 requestUrl,
@@ -705,7 +706,7 @@ class WebExtensionContext implements IWebExtensionContext {
             });
 
             if (!response?.ok) {
-                throw new Error(JSON.stringify(response));
+                throw await createHttpResponseError(response);
             }
             this.telemetry.sendAPISuccessTelemetry(
                 requestUrl,

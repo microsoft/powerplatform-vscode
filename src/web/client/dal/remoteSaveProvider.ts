@@ -21,6 +21,7 @@ import { IAttributePath } from "../common/interfaces";
 import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 import { MultiFileSupportedEntityName, schemaEntityKey } from "../schema/constants";
 import { getEntityMappingEntityId } from "../utilities/fileAndEntityUtil";
+import { createHttpResponseError, isHttpResponseError } from "../utilities/errorHandlerUtil";
 
 interface ISaveCallParameters {
     requestInit: RequestInit;
@@ -190,7 +191,7 @@ async function saveDataToDataverse(
             );
 
             if (!response.ok) {
-                throw new Error(JSON.stringify(response));
+                throw await createHttpResponseError(response);
             }
 
             WebExtensionContext.telemetry.sendAPISuccessTelemetry(
@@ -203,23 +204,25 @@ async function saveDataToDataverse(
                 fileExtensionType
             );
         } catch (error) {
-            const authError = (error as Error)?.message;
-            if ((error as Response)?.status > 0) {
+            const errorMessage = (error as Error)?.message;
+            if (isHttpResponseError(error) && error.httpDetails) {
+                // HTTP error - use API failure telemetry with status code
                 WebExtensionContext.telemetry.sendAPIFailureTelemetry(
                     saveCallParameters.requestUrl,
                     entityName,
                     httpMethod.PATCH,
                     new Date().getTime() - requestSentAtTime,
                     saveDataToDataverse.name,
-                    authError,
+                    errorMessage,
                     fileExtensionType,
-                    (error as Response)?.status as unknown as string
+                    error.httpDetails.statusCode.toString()
                 );
             } else {
+                // System error (network failure, timeout, etc.)
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     webExtensionTelemetryEventNames.WEB_EXTENSION_SAVE_DATA_TO_DATAVERSE_API_ERROR,
                     saveDataToDataverse.name,
-                    (error as Error)?.message,
+                    errorMessage,
                     error as Error
                 );
             }

@@ -8,6 +8,7 @@ import WebExtensionContext from "../WebExtensionContext";
 import { getCommonHeaders, graphClientAuthentication } from "../../../common/services/AuthenticationProvider";
 import * as Constants from "../common/constants";
 import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
+import { createHttpResponseError, isHttpResponseError } from "../utilities/errorHandlerUtil";
 
 export class GraphClientService {
     private _graphToken: string;
@@ -85,7 +86,7 @@ export class GraphClientService {
                 );
 
             if (!response.ok) {
-                throw new Error(JSON.stringify(response));
+                throw await createHttpResponseError(response);
             }
 
             WebExtensionContext.telemetry.sendAPISuccessTelemetry(
@@ -99,7 +100,8 @@ export class GraphClientService {
             return await response.json();
         } catch (error) {
             const errorMsg = (error as Error)?.message;
-            if ((error as Response)?.status > 0) {
+            if (isHttpResponseError(error) && error.httpDetails) {
+                // HTTP error - use API failure telemetry with status code
                 WebExtensionContext.telemetry.sendAPIFailureTelemetry(
                     requestUrl.href,
                     service,
@@ -108,9 +110,10 @@ export class GraphClientService {
                     this.requestGraphClient.name,
                     errorMsg,
                     "",
-                    (error as Response)?.status.toString()
+                    error.httpDetails.statusCode.toString()
                 );
             } else {
+                // System error (network failure, timeout, etc.)
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     webExtensionTelemetryEventNames.WEB_EXTENSION_GET_FROM_GRAPH_CLIENT_FAILED,
                     this.requestGraphClient.name,
