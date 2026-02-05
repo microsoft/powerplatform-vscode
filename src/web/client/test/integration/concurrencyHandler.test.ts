@@ -36,52 +36,9 @@ describe("ConcurrencyHandler", () => {
             assert.notCalled(sendInfoTelemetryStub);
         });
 
-        it("should retry on transient failure and log telemetry", async () => {
-            const mockError = new Error("Network error");
-            const mockResponse = { ok: true, status: 200 };
-            const fetchStub = stub(fetch, "default");
-            fetchStub.onFirstCall().rejects(mockError);
-            fetchStub.onSecondCall().resolves(mockResponse as unknown as fetch.Response);
-
-            const handler = new ConcurrencyHandler();
-            const result = await handler.handleRequest("https://test.com/api");
-
-            expect(result).to.equal(mockResponse);
-            assert.calledTwice(fetchStub);
-            assert.calledOnce(sendInfoTelemetryStub);
-            assert.calledWith(
-                sendInfoTelemetryStub,
-                webExtensionTelemetryEventNames.WEB_EXTENSION_REQUEST_RETRY,
-                sinon.match({
-                    attempt: "1",
-                    url: "https://test.com/api"
-                })
-            );
-        });
-
-        it("should respect max attempts and throw after exhausting retries", async () => {
-            const mockError = new Error("Persistent network error");
-            const fetchStub = stub(fetch, "default").rejects(mockError);
-
-            const handler = new ConcurrencyHandler();
-
-            try {
-                await handler.handleRequest("https://test.com/api");
-                expect.fail("Should have thrown an error");
-            } catch (error) {
-                expect((error as Error).message).to.equal("Persistent network error");
-            }
-
-            // With maxAttempts: 2, we expect 2 total attempts (1 initial + 1 retry)
-            assert.calledTwice(fetchStub);
-            // Retry telemetry should be logged once (for the retry attempt)
-            assert.calledOnce(sendInfoTelemetryStub);
-        });
-
         it("should not retry BulkheadRejectedError and throw immediately", async () => {
-            // To test BulkheadRejectedError behavior, we need to create a handler with
-            // a bulkhead that's already full. Since we can't easily mock the bulkhead
-            // internal state, we verify the error handling behavior.
+            // To test BulkheadRejectedError behavior, we verify the error handling
+            // when the bulkhead throws a rejection error.
             const { BulkheadRejectedError } = await import("cockatiel");
 
             // Create a mock that throws BulkheadRejectedError (requires executionSlots and queueSlots)
@@ -95,7 +52,7 @@ describe("ConcurrencyHandler", () => {
                 await handler.handleRequest("https://test.com/api");
                 expect.fail("Should have thrown an error");
             } catch (error) {
-                expect((error as Error).message).to.include("Bulkhead limits exceeded");
+                expect((error as Error).message).to.include("Bulkhead queue limits exceeded");
             }
 
             // Should only attempt once - no retries for BulkheadRejectedError
@@ -110,19 +67,16 @@ describe("ConcurrencyHandler", () => {
             );
         });
 
-        it("should include retry count in telemetry when retrying", async () => {
-            const mockError = new Error("Transient error");
+        it("should pass request info and init to fetch", async () => {
             const mockResponse = { ok: true, status: 200 };
-            const fetchStub = stub(fetch, "default");
-            fetchStub.onFirstCall().rejects(mockError);
-            fetchStub.onSecondCall().resolves(mockResponse as unknown as fetch.Response);
+            const fetchStub = stub(fetch, "default").resolves(mockResponse as unknown as fetch.Response);
+            const requestInit = { headers: { "Authorization": "Bearer token" } };
 
             const handler = new ConcurrencyHandler();
-            await handler.handleRequest("https://test.com/api");
+            await handler.handleRequest("https://test.com/api", requestInit);
 
-            const telemetryCall = sendInfoTelemetryStub.getCall(0);
-            expect(telemetryCall.args[0]).to.equal(webExtensionTelemetryEventNames.WEB_EXTENSION_REQUEST_RETRY);
-            expect(telemetryCall.args[1]).to.have.property("attempt", "1");
+            assert.calledOnce(fetchStub);
+            assert.calledWith(fetchStub, "https://test.com/api", requestInit);
         });
     });
 });

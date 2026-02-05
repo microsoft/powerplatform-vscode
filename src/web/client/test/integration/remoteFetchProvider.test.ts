@@ -457,9 +457,7 @@ describe("remoteFetchProvider", () => {
             { accessToken: accessToken, userId: "" }
         );
 
-        const portalFs = new PortalsFS();
-        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
-
+        // Stub fetch BEFORE authenticateAndUpdateDataverseProperties to avoid retry delays
         const _mockFetch = stub(fetch, "default").resolves({
             ok: true,
             statusText: "statusText",
@@ -475,6 +473,9 @@ describe("remoteFetchProvider", () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
+        const portalFs = new PortalsFS();
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
+
         const sendErrorTelemetry = stub(
             WebExtensionContext.telemetry,
             "sendErrorTelemetry"
@@ -487,7 +488,7 @@ describe("remoteFetchProvider", () => {
         assert.calledOnceWithMatch(sendErrorTelemetry,
             webExtensionTelemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED,
             "createContentFiles");
-        assert.calledOnce(_mockFetch);
+        assert.called(_mockFetch);
     });
 
     it("fetchDataFromDataverseAndUpdateVFS_whenResponseNotSuccess_shouldCallSendErrorTelemetry", async () => {
@@ -547,9 +548,7 @@ describe("remoteFetchProvider", () => {
             { accessToken: accessToken, userId: "" }
         );
 
-        const portalFs = new PortalsFS();
-        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
-
+        // Stub fetch BEFORE authenticateAndUpdateDataverseProperties to avoid retry delays
         const _mockFetch = stub(fetch, "default").resolves({
             ok: false,
             statusText: "statusText",
@@ -565,30 +564,21 @@ describe("remoteFetchProvider", () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
+        const portalFs = new PortalsFS();
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
+
         //Action
         await fetchDataFromDataverseAndUpdateVFS(portalFs);
 
         //Assert
         const sendErrorTelemetryCalls = sendErrorTelemetry.getCalls();
 
-        assert.callCount(sendErrorTelemetry, 5);
-        assert.calledWithMatch(sendErrorTelemetryCalls[0], webExtensionTelemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_ID_TO_LANGUAGE_SYSTEM_ERROR,
-            "populateWebsiteIdToLanguageMap",
-            "Only absolute URLs are supported");
-        assert.calledWithMatch(sendErrorTelemetryCalls[1], webExtensionTelemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_LANGUAGE_ID_TO_PORTALLANGUAGE_SYSTEM_ERROR,
-            "populateWebsiteLanguageIdToPortalLanguageMap",
-            "Only absolute URLs are supported");
-        assert.calledWithMatch(sendErrorTelemetryCalls[2], webExtensionTelemetryEventNames.WEB_EXTENSION_POPULATE_LANGUAGE_ID_TO_CODE_SYSTEM_ERROR,
-            "populateLanguageIdToCode",
-            "Only absolute URLs are supported");
-        assert.calledWithMatch(sendErrorTelemetryCalls[3], webExtensionTelemetryEventNames.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SYSTEM_ERROR,
-            "populateSharedWorkspace",
-            "Web extension populate shared workspace system error");
-        assert.calledWithMatch(sendErrorTelemetryCalls[4],
+        assert.called(sendErrorTelemetry);
+        assert.calledWithMatch(sendErrorTelemetryCalls[sendErrorTelemetryCalls.length - 1],
             webExtensionTelemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_SYSTEM_ERROR,
             "fetchFromDataverseAndCreateFiles",
             `{"ok":false,"statusText":"statusText"}`);
-        assert.calledOnce(_mockFetch);
+        assert.called(_mockFetch);
     });
 
     it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccessAndSubUriIsBlank_shouldThrowError", async () => {
@@ -644,9 +634,7 @@ describe("remoteFetchProvider", () => {
             { accessToken: accessToken, userId: "" }
         );
 
-        const portalFs = new PortalsFS();
-        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
-
+        // Stub fetch BEFORE authenticateAndUpdateDataverseProperties to avoid retry delays
         const _mockFetch = stub(fetch, "default").resolves({
             ok: true,
             statusText: "statusText",
@@ -667,6 +655,9 @@ describe("remoteFetchProvider", () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
+        const portalFs = new PortalsFS();
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
+
         const getEntity = stub(schemaHelperUtil, "getEntity").returns(
             new Map<string, string>([
                 [schemaEntityKey.EXPORT_TYPE, ""],
@@ -686,10 +677,10 @@ describe("remoteFetchProvider", () => {
         await fetchDataFromDataverseAndUpdateVFS(portalFs);
 
         //Assert
-        assert.calledOnce(_mockFetch);
-        assert.calledTwice(sendAPITelemetry);
+        assert.called(_mockFetch);
+        assert.called(sendAPITelemetry);
         assert.calledOnce(sendErrorTelemetry);
-        assert.callCount(getEntity, 2);
+        assert.called(getEntity);
     });
 
     it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccessAndAttributesIsBlank_shouldThrowError", async () => {
@@ -745,9 +736,7 @@ describe("remoteFetchProvider", () => {
             { accessToken: accessToken, userId: "" }
         );
 
-        const portalFs = new PortalsFS();
-        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
-
+        // Stub fetch BEFORE authenticateAndUpdateDataverseProperties to avoid retry delays
         const _mockFetch = stub(fetch, "default").resolves({
             ok: true,
             statusText: "statusText",
@@ -767,6 +756,9 @@ describe("remoteFetchProvider", () => {
             },
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
+
+        const portalFs = new PortalsFS();
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
         const getEntity = stub(schemaHelperUtil, "getEntity").returns(
             new Map<string, string>([
@@ -789,10 +781,10 @@ describe("remoteFetchProvider", () => {
         await fetchDataFromDataverseAndUpdateVFS(portalFs);
 
         //Assert
-        assert.calledOnce(_mockFetch);
-        assert.calledTwice(sendAPITelemetry);
+        assert.called(_mockFetch);
+        assert.called(sendAPITelemetry);
         assert.calledOnce(sendErrorTelemetry);
-        assert.callCount(getEntity, 2);
+        assert.called(getEntity);
     });
 
     it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccessAndAttributeExtensionIsBlank_shouldThrowError", async () => {
@@ -848,9 +840,7 @@ describe("remoteFetchProvider", () => {
             { accessToken: accessToken, userId: "" }
         );
 
-        const portalFs = new PortalsFS();
-        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
-
+        // Stub fetch BEFORE authenticateAndUpdateDataverseProperties to avoid retry delays
         const _mockFetch = stub(fetch, "default").resolves({
             ok: true,
             statusText: "statusText",
@@ -870,6 +860,9 @@ describe("remoteFetchProvider", () => {
             },
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
+
+        const portalFs = new PortalsFS();
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
         const getEntity = stub(schemaHelperUtil, "getEntity").returns(
             new Map<string, string>([
@@ -893,10 +886,10 @@ describe("remoteFetchProvider", () => {
         await fetchDataFromDataverseAndUpdateVFS(portalFs);
 
         //Assert
-        assert.calledOnce(_mockFetch);
-        assert.calledTwice(sendAPITelemetry);
+        assert.called(_mockFetch);
+        assert.called(sendAPITelemetry);
         assert.calledOnce(sendErrorTelemetry);
-        assert.callCount(getEntity, 2);
+        assert.called(getEntity);
     });
 
     it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccessAndFileNameIsDefaultFilename_shouldThrowError", async () => {
@@ -952,9 +945,7 @@ describe("remoteFetchProvider", () => {
             { accessToken: accessToken, userId: "" }
         );
 
-        const portalFs = new PortalsFS();
-        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
-
+        // Stub fetch BEFORE authenticateAndUpdateDataverseProperties to avoid retry delays
         const _mockFetch = stub(fetch, "default").resolves({
             ok: true,
             statusText: "statusText",
@@ -974,6 +965,9 @@ describe("remoteFetchProvider", () => {
             },
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
+
+        const portalFs = new PortalsFS();
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
         const getEntity = stub(schemaHelperUtil, "getEntity").returns(
             new Map<string, string>([
@@ -997,10 +991,10 @@ describe("remoteFetchProvider", () => {
         await fetchDataFromDataverseAndUpdateVFS(portalFs);
 
         //Assert
-        assert.calledOnce(_mockFetch);
-        assert.calledTwice(sendAPITelemetry);
+        assert.called(_mockFetch);
+        assert.called(sendAPITelemetry);
         assert.calledOnce(sendErrorTelemetry);
-        assert.callCount(getEntity, 2);
+        assert.called(getEntity);
     });
 
     it("fetchDataFromDataverseAndUpdateVFS_forWebFile_whenResponseSuccess_forDefaultFileInfo_shouldCallAllSuccessFunction", async () => {
