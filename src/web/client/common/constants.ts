@@ -21,7 +21,12 @@ export const ODATA_NEXT_LINK = "@odata.nextLink";
 export const ODATA_COUNT = "@odata.count";
 export const MAX_ENTITY_FETCH_COUNT = 100;
 export const MAX_CONCURRENT_REQUEST_COUNT = 50;
-export const MAX_CONCURRENT_REQUEST_QUEUE_COUNT = 1000;
+export const MAX_CONCURRENT_REQUEST_QUEUE_COUNT = 6000;
+
+// Retry policy constants for concurrency handler
+export const RETRY_MAX_ATTEMPTS = 2;
+export const RETRY_INITIAL_DELAY_MS = 2000;
+export const RETRY_MAX_DELAY_MS = 8000;
 export const BACK_TO_STUDIO_URL_TEMPLATE = "https://make{.region}.powerpages.microsoft.com/e/{environmentId}/sites/{webSiteId}/pages";
 export const STUDIO_PROD_REGION = "prod";
 export const ARTEMIS_RESPONSE_FAILED = "Artemis response failed";
