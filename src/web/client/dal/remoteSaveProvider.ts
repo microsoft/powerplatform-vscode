@@ -227,7 +227,10 @@ async function saveDataToDataverse(
                 );
             }
 
-            if (typeof error === "string" && error.includes("Unauthorized")) {
+            // Check for authorization failure (401) or "Unauthorized" in error message
+            const isUnauthorized = (isHttpResponseError(error) && error.httpDetails?.statusCode === 401) ||
+                errorMessage.includes("Unauthorized");
+            if (isUnauthorized) {
                 showErrorDialog(
                     vscode.l10n.t(
                         "Authorization Failed. Please run again to authorize it"
@@ -238,7 +241,7 @@ async function saveDataToDataverse(
                 );
             } else {
                 showErrorDialog(
-                    vscode.l10n.t("There’s a problem on the back end"),
+                    vscode.l10n.t("There's a problem on the back end"),
                     vscode.l10n.t("Try again")
                 );
             }
