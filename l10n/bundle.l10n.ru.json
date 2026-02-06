@@ -180,7 +180,7 @@
   "Failed to install SARIF viewer extension. Opening results as text file.": "Не удалось установить расширение средства просмотра SARIF. Открытие результатов в виде текстового файла.",
   "Failed to install SARIF viewer extension: {0}": "Не удалось установить расширение средства просмотра SARIF: {0}",
   "Failed to open in VS Code Desktop: {0}": "Не удалось открыть в классическом приложении VS Code: {0}",
-  "Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.": "Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.",
+  "Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.": "Не удалось переключиться на нужную среду. Войдите с учетной записью, у которой есть доступ к целевой среде, используя команду \"pac auth create\".",
   "Feature is not enabled for this geo.": "Функция не включена для этого региона.",
   "Feedback": "Отзыв",
   "Fetching websites from '{0}'.../Message shown while fetching websites from an environment. {0} is the environment name.": "Получение веб-сайтов из \"{0}\"...",

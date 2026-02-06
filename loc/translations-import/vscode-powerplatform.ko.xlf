@@ -786,7 +786,7 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
       </trans-unit>
       <trans-unit id="++CODE++ab47a93b0690e3553f60a7e1bd45df0a5e0ebf49f7f3c150d38f347699892163">
         <source xml:lang="en">Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.</source>
-        <target state="new">Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.</target>
+        <target state="translated">필요한 환경으로 전환하지 못했습니다. 'pac auth create' 명령을 사용하여 대상 환경에 액세스할 수 있는 계정으로 로그인하세요.</target>
       </trans-unit>
       <trans-unit id="++CODE++a9e36b880dd45b64ae5601865540605296febf9bd855fc46d9c35c2c2ed9a7f2">
         <source xml:lang="en">Feature is not enabled for this geo.</source>
