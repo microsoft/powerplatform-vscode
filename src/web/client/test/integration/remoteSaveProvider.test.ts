@@ -227,10 +227,14 @@ describe("remoteSaveProvider", () => {
     it("saveData_shouldErrorOnDataverseSaveCall_whenFetchReturnsNotOKAndStatusCodeIs304AndIsWebFileV2IsFalse", async () => {
         //Act
         const fileUri: vscode.Uri = { fsPath: "testuri" } as vscode.Uri;
+        const mockResponseBody = JSON.stringify({ error: "Unauthorized" });
         const _mockFetch = stub(fetch, "default").resolves({
             ok: false,
             statusText: "Unauthorized",
             status: 403,
+            url: "https://orgedfe4d6c.crm10.dynamics.com",
+            clone: function() { return this; },
+            text: () => Promise.resolve(mockResponseBody),
             json: () => {
                 return new Promise((resolve) => {
                     return resolve({ value: "value" });
@@ -264,9 +268,9 @@ describe("remoteSaveProvider", () => {
             "pdf"
         );
 
-        const sendErrorTelemetry = stub(
+        const sendAPIFailureTelemetry = stub(
             WebExtensionContext.telemetry,
-            "sendErrorTelemetry"
+            "sendAPIFailureTelemetry"
         );
 
         const showErrorDialog = stub(errorHandler, "showErrorDialog");
@@ -297,12 +301,13 @@ describe("remoteSaveProvider", () => {
             assert.calledOnce(getColumnContent);
             assert.calledOnce(isWebFileV2);
             assert.calledOnce(vscodeParse);
-            assert.calledOnce(sendErrorTelemetry);
+            // HTTP errors now go through sendAPIFailureTelemetry with status code
+            assert.calledOnce(sendAPIFailureTelemetry);
             assert.calledOnce(showErrorDialog);
             const showErrorDialogCalls = showErrorDialog.getCalls()[0];
             expect(
                 showErrorDialogCalls.args[0],
-                "There’s a problem on the back end"
+                "There's a problem on the back end"
             );
             expect(showErrorDialogCalls.args[1], "Try again");
         }

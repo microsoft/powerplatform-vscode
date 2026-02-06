@@ -550,9 +550,18 @@ describe("remoteFetchProvider", () => {
         const portalFs = new PortalsFS();
         await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
+        const mockResponseBody = JSON.stringify({
+            "@odata.count": 0,
+            "@Microsoft.Dynamics.CRM.totalrecordcount": 0,
+            "value": [],
+        });
         const _mockFetch = stub(fetch, "default").resolves({
             ok: false,
-            statusText: "statusText",
+            status: 500,
+            statusText: "Internal Server Error",
+            url: "https://test.crm.dynamics.com/api/data/v9.2/webpages",
+            clone: function() { return this; },
+            text: () => Promise.resolve(mockResponseBody),
             json: () => {
                 return new Promise((resolve) => {
                     return resolve({
@@ -565,13 +574,18 @@ describe("remoteFetchProvider", () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
+        const sendAPIFailureTelemetry = stub(
+            WebExtensionContext.telemetry,
+            "sendAPIFailureTelemetry"
+        );
+
         //Action
         await fetchDataFromDataverseAndUpdateVFS(portalFs);
 
         //Assert
         const sendErrorTelemetryCalls = sendErrorTelemetry.getCalls();
 
-        assert.callCount(sendErrorTelemetry, 5);
+        assert.callCount(sendErrorTelemetry, 4);
         assert.calledWithMatch(sendErrorTelemetryCalls[0], webExtensionTelemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_ID_TO_LANGUAGE_SYSTEM_ERROR,
             "populateWebsiteIdToLanguageMap",
             "Only absolute URLs are supported");
@@ -584,10 +598,8 @@ describe("remoteFetchProvider", () => {
         assert.calledWithMatch(sendErrorTelemetryCalls[3], webExtensionTelemetryEventNames.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SYSTEM_ERROR,
             "populateSharedWorkspace",
             "Web extension populate shared workspace system error");
-        assert.calledWithMatch(sendErrorTelemetryCalls[4],
-            webExtensionTelemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_SYSTEM_ERROR,
-            "fetchFromDataverseAndCreateFiles",
-            `{"ok":false,"statusText":"statusText"}`);
+        // HTTP errors now go through sendAPIFailureTelemetry with status code
+        assert.calledOnce(sendAPIFailureTelemetry);
         assert.calledOnce(_mockFetch);
     });
 
