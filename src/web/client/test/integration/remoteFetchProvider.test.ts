@@ -491,7 +491,7 @@ describe("remoteFetchProvider", () => {
         assert.called(_mockFetch);
     });
 
-    it("fetchDataFromDataverseAndUpdateVFS_whenResponseNotSuccess_shouldCallSendErrorTelemetry", async () => {
+    it("fetchDataFromDataverseAndUpdateVFS_whenResponseNotSuccess_shouldCallSendAPIFailureTelemetry", async () => {
         //Act
         const entityName = "webpages";
         const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
@@ -510,9 +510,9 @@ describe("remoteFetchProvider", () => {
             entityId,
             queryParamsMap
         );
-        const sendErrorTelemetry = stub(
+        const sendAPIFailureTelemetry = stub(
             WebExtensionContext.telemetry,
-            "sendErrorTelemetry"
+            "sendAPIFailureTelemetry"
         );
 
         const languageIdCodeMap = new Map<string, string>([["1033", "en-US"]]);
@@ -548,6 +548,7 @@ describe("remoteFetchProvider", () => {
             { accessToken: accessToken, userId: "" }
         );
 
+        const mockResponseBody = "Internal Server Error";
         // Stub fetch BEFORE authenticateAndUpdateDataverseProperties to avoid retry delays
         const _mockFetch = stub(fetch, "default").resolves({
             ok: false,
@@ -575,13 +576,16 @@ describe("remoteFetchProvider", () => {
         await fetchDataFromDataverseAndUpdateVFS(portalFs);
 
         //Assert
-        const sendErrorTelemetryCalls = sendErrorTelemetry.getCalls();
-
-        assert.called(sendErrorTelemetry);
-        assert.calledWithMatch(sendErrorTelemetryCalls[sendErrorTelemetryCalls.length - 1],
-            webExtensionTelemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_SYSTEM_ERROR,
+        assert.called(sendAPIFailureTelemetry);
+        assert.calledWithMatch(sendAPIFailureTelemetry,
+            sinon.match.string,
+            entityName,
+            Constants.httpMethod.GET,
+            sinon.match.number,
             "fetchFromDataverseAndCreateFiles",
-            `{"ok":false,"statusText":"statusText"}`);
+            sinon.match.string,
+            '',
+            "500");
         assert.called(_mockFetch);
     });
 

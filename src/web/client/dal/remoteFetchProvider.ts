@@ -679,7 +679,7 @@ async function fetchMappingEntityContent(
             fetchMappingEntityContent.name,
             httpError.message,
             '',
-            httpError.httpDetails.statusCode.toString()
+            httpError.httpDetails?.statusCode.toString() ?? ''
         );
         throw httpError;
     }
