@@ -219,7 +219,7 @@ export class PreviewSite {
         );
     }
 
-    public static async clearCache(websiteUrl: string | undefined): Promise<void> {
+    public static async clearCache(websiteUrl: string | undefined, progressTitle?: string): Promise<void> {
         if (!websiteUrl) {
             return;
         }
@@ -233,9 +233,11 @@ export class PreviewSite {
         const requestUrl = `${websiteUrl.endsWith('/') ? websiteUrl : websiteUrl.concat('/')}_services/cache/config`;
 
         await showProgressWithNotification(
-            Messages.INITIALIZING_PREVIEW,
+            progressTitle ?? Messages.INITIALIZING_PREVIEW,
             async (progress) => {
-                progress.report({ message: Messages.CLEARING_CACHE });
+                if (!progressTitle) {
+                    progress.report({ message: Messages.CLEARING_CACHE });
+                }
 
                 const authResponse = await dataverseAuthentication(orgDetails.OrgUrl);
 

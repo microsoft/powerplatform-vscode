@@ -17,6 +17,7 @@ import { runCodeQLScreening } from "./handlers/code-ql/RunCodeQlScreeningHandler
 import { revealInOS } from "./handlers/RevealInOSHandler";
 import { createNewAuthProfile } from "./handlers/CreateNewAuthProfileHandler";
 import { previewSite } from "./handlers/PreviewSiteHandler";
+import { clearCache } from "./handlers/ClearCacheHandler";
 import { openActiveSitesInStudio, openInactiveSitesInStudio, openSiteInStudio } from "./handlers/OpenSiteInStudioHandler";
 import { switchEnvironment } from "./handlers/SwitchEnvironmentHandler";
 import { showEnvironmentDetails } from "./handlers/ShowEnvironmentDetailsHandler";
@@ -331,6 +332,8 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.openInactiveSitesInStudio", openInactiveSitesInStudio),
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.preview", previewSite),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.clearCache", clearCache),
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.newAuthProfile", async () => {
                 await createNewAuthProfile(this._pacTerminal.getWrapper());

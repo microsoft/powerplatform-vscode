@@ -465,6 +465,10 @@
         "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.previewSite.title%"
       },
       {
+        "command": "microsoft.powerplatform.pages.actionsHub.activeSite.clearCache",
+        "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.clearCache.title%"
+      },
+      {
         "command": "microsoft.powerplatform.pages.actionsHub.newAuthProfile",
         "title": "%microsoft.powerplatform.pages.actionsHub.login.title%"
       },
@@ -1154,6 +1158,10 @@
           "when": "never"
         },
         {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.clearCache",
+          "when": "never"
+        },
+        {
           "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows",
           "when": "never"
         },
@@ -1381,6 +1389,11 @@
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.activeSite.preview",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite)",
+          "group": "siteAction@1"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.clearCache",
           "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite)",
           "group": "siteAction@1"
         },

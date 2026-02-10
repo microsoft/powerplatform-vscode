@@ -28,6 +28,7 @@ export const Messages = {
             "The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).', keeping brackets and the text in the parentheses unmodified"
         ]
     }),
+    CLEARING_SITE_CACHE: vscode.l10n.t("Clearing site cache"),
     AUTHENTICATING: vscode.l10n.t("Authenticating..."),
     UNABLE_TO_CLEAR_CACHE: vscode.l10n.t("Unable to clear cache"),
     PREVIEW_WARNING: vscode.l10n.t("Your preview isn't updated. Please upload your site to see the latest changes."),

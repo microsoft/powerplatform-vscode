@@ -31,6 +31,7 @@ import * as SwitchEnvironmentHandler from "../../../../power-pages/actions-hub/h
 import * as ShowEnvironmentDetailsHandler from "../../../../power-pages/actions-hub/handlers/ShowEnvironmentDetailsHandler";
 import * as OpenSiteInStudioHandler from "../../../../power-pages/actions-hub/handlers/OpenSiteInStudioHandler";
 import * as PreviewSiteHandler from "../../../../power-pages/actions-hub/handlers/PreviewSiteHandler";
+import * as ClearCacheHandler from "../../../../power-pages/actions-hub/handlers/ClearCacheHandler";
 import * as CreateNewAuthProfileHandler from "../../../../power-pages/actions-hub/handlers/CreateNewAuthProfileHandler";
 import * as RevealInOSHandler from "../../../../power-pages/actions-hub/handlers/RevealInOSHandler";
 import * as OpenSiteManagementHandler from "../../../../power-pages/actions-hub/handlers/OpenSiteManagementHandler";
@@ -190,6 +191,18 @@ describe("ActionsHubTreeDataProvider", () => {
             expect(mockCommandHandler.calledOnce).to.be.true;
         });
 
+        it("should register clearCache command", async () => {
+            const mockCommandHandler = sinon.stub(ClearCacheHandler, 'clearCache');
+            mockCommandHandler.resolves();
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            actionsHubTreeDataProvider["registerPanel"]();
+
+            expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.activeSite.clearCache")).to.be.true;
+
+            await registerCommandStub.getCall(6).args[1]();
+            expect(mockCommandHandler.calledOnce).to.be.true;
+        });
+
         it("should register newAuthProfile command", async () => {
             const mockCommandHandler = sinon.stub(CreateNewAuthProfileHandler, 'createNewAuthProfile');
             mockCommandHandler.resolves();
@@ -198,7 +211,7 @@ describe("ActionsHubTreeDataProvider", () => {
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.newAuthProfile")).to.be.true;
 
-            await registerCommandStub.getCall(6).args[1]();
+            await registerCommandStub.getCall(7).args[1]();
             expect(mockCommandHandler.calledOnce).to.be.true;
         });
 
@@ -212,9 +225,9 @@ describe("ActionsHubTreeDataProvider", () => {
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac")).to.be.true;
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux")).to.be.true;
 
-            await registerCommandStub.getCall(7).args[1]();
             await registerCommandStub.getCall(8).args[1]();
             await registerCommandStub.getCall(9).args[1]();
+            await registerCommandStub.getCall(10).args[1]();
             expect(mockCommandHandler.calledThrice).to.be.true;
         });
 
@@ -226,7 +239,7 @@ describe("ActionsHubTreeDataProvider", () => {
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement")).to.be.true;
 
-            await registerCommandStub.getCall(10).args[1]();
+            await registerCommandStub.getCall(11).args[1]();
             expect(mockCommandHandler.calledOnce).to.be.true;
         });
 
@@ -239,7 +252,7 @@ describe("ActionsHubTreeDataProvider", () => {
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite")).to.be.true;
 
-            await registerCommandStub.getCall(11).args[1]();
+            await registerCommandStub.getCall(12).args[1]();
             expect(mockCommandHandler.calledOnce).to.be.true;
         });
 
@@ -251,7 +264,7 @@ describe("ActionsHubTreeDataProvider", () => {
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.siteDetails")).to.be.true;
 
-            await registerCommandStub.getCall(12).args[1]();
+            await registerCommandStub.getCall(13).args[1]();
             expect(mockCommandHandler.calledOnce).to.be.true;
         });
 
@@ -263,7 +276,7 @@ describe("ActionsHubTreeDataProvider", () => {
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite")).to.be.true;
 
-            await registerCommandStub.getCall(13).args[1]();
+            await registerCommandStub.getCall(14).args[1]();
             expect(mockCommandHandler.calledOnce).to.be.true;
         });
 
@@ -275,7 +288,7 @@ describe("ActionsHubTreeDataProvider", () => {
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio")).to.be.true;
 
-            await registerCommandStub.getCall(14).args[1]();
+            await registerCommandStub.getCall(15).args[1]();
             expect(mockCommandHandler.calledOnce).to.be.true;
         });
 
