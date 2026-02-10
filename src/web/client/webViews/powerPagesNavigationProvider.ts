@@ -12,6 +12,7 @@ import { webExtensionTelemetryEventNames } from '../../../common/OneDSLoggerTele
 import { PowerPagesNavigationConstants } from './constants/powerPagesNavigationConstants';
 import { EnableOpenInDesktop } from '../../../common/ecs-features/ecsFeatureGates';
 import { ECSFeaturesClient } from '../../../common/ecs-features/ecsFeatureClient';
+import { formatHttpErrorMessage } from '../utilities/errorHandlerUtil';
 
 export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<PowerPagesNode> {
 
@@ -138,7 +139,7 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
                         httpMethod.DELETE,
                         new Date().getTime() - requestSentAtTime,
                         this.previewPowerPageSite.name,
-                        JSON.stringify(response),
+                        formatHttpErrorMessage({ statusCode: response.status, statusText: response.statusText }),
                         '',
                         response?.status.toString()
                     );

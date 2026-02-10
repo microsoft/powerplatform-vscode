@@ -615,9 +615,14 @@ describe("WebExtensionContext", () => {
             "getPortalLanguageIdToLcidMap"
         ).returns(portalLanguageIdCodeMap);
 
+        const mockResponseBody = JSON.stringify({ value: "value" });
         const _mockFetch = stub(fetch, "default").resolves({
             ok: false,
-            statusText: "statusText",
+            status: 500,
+            statusText: "Internal Server Error",
+            url: "https://test.crm.dynamics.com",
+            clone: function() { return this; },
+            text: () => Promise.resolve(mockResponseBody),
             json: () => {
                 return new Promise((resolve) => {
                     return resolve({ value: "value" });
