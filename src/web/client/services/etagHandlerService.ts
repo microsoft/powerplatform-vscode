@@ -20,6 +20,7 @@ import {
 } from "../utilities/fileAndEntityUtil";
 import { getRequestURL } from "../utilities/urlBuilderUtil";
 import WebExtensionContext from "../WebExtensionContext";
+import { createHttpResponseError, isHttpResponseError } from "../utilities/errorHandlerUtil";
 
 export class EtagHandlerService {
     public static async getLatestFileContentAndUpdateMetadata(
@@ -109,7 +110,7 @@ export class EtagHandlerService {
                     this.getLatestFileContentAndUpdateMetadata.name,
                     response.statusText
                 );
-                throw new Error(JSON.stringify(response));
+                throw await createHttpResponseError(response);
             }
 
             WebExtensionContext.telemetry.sendAPISuccessTelemetry(
@@ -120,23 +121,25 @@ export class EtagHandlerService {
                 this.getLatestFileContentAndUpdateMetadata.name
             );
         } catch (error) {
-            if ((error as Response)?.status > 0) {
-                const authError = (error as Error)?.message;
+            const errorMessage = (error as Error)?.message;
+            if (isHttpResponseError(error) && error.httpDetails) {
+                // HTTP error - use API failure telemetry with status code
                 WebExtensionContext.telemetry.sendAPIFailureTelemetry(
                     requestUrl,
                     entityName,
                     httpMethod.GET,
                     new Date().getTime() - requestSentAtTime,
                     this.getLatestFileContentAndUpdateMetadata.name,
-                    authError,
+                    errorMessage,
                     '',
-                    (error as Response)?.status.toString()
+                    error.httpDetails.statusCode.toString()
                 );
             } else {
+                // System error (network failure, timeout, etc.)
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     webExtensionTelemetryEventNames.WEB_EXTENSION_ETAG_HANDLER_SERVICE_ERROR,
                     this.getLatestFileContentAndUpdateMetadata.name,
-                    (error as Error)?.message
+                    errorMessage
                 );
             }
         }
@@ -192,7 +195,7 @@ export class EtagHandlerService {
                     this.updateFileEtag.name,
                     response.statusText
                 );
-                throw new Error(JSON.stringify(response));
+                throw await createHttpResponseError(response);
             }
 
             WebExtensionContext.telemetry.sendAPISuccessTelemetry(
@@ -203,23 +206,25 @@ export class EtagHandlerService {
                 this.updateFileEtag.name
             );
         } catch (error) {
-            if ((error as Response)?.status > 0) {
-                const authError = (error as Error)?.message;
+            const errorMessage = (error as Error)?.message;
+            if (isHttpResponseError(error) && error.httpDetails) {
+                // HTTP error - use API failure telemetry with status code
                 WebExtensionContext.telemetry.sendAPIFailureTelemetry(
                     requestUrl,
                     entityName,
                     httpMethod.GET,
                     new Date().getTime() - requestSentAtTime,
                     this.updateFileEtag.name,
-                    authError,
+                    errorMessage,
                     '',
-                    (error as Response)?.status.toString()
+                    error.httpDetails.statusCode.toString()
                 );
             } else {
+                // System error (network failure, timeout, etc.)
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     webExtensionTelemetryEventNames.WEB_EXTENSION_ETAG_HANDLER_SERVICE_ERROR,
                     this.updateFileEtag.name,
-                    (error as Error)?.message,
+                    errorMessage,
                     error as Error
                 );
             }
