@@ -388,7 +388,7 @@
   "The website you selected is different from the local site. Are you sure you want to compare with this website?": "Выбранный веб-сайт отличается от локального. Действительно сравнить с этим веб-сайтом?",
   "There was a permissions problem with the server": "Возникла проблема с разрешениями на сервере",
   "There was a problem opening the workspace": "При открытии рабочей области возникла проблема",
-  "There’s a problem on the back end": "Возникла проблема на серверной стороне",
+  "There's a problem on the back end": "There's a problem on the back end",
   "This file was exported with a newer version of the extension. Please update your extension to import this file.": "Этот файл был экспортирован в более новой версии расширения. Обновите расширение для импорта этого файла.",
   "This will close all active comparison views. Your local files will not be affected.": "Это закроет все активные представления сравнения. Локальные файлы не будут затронуты.",
   "This will close the active comparison view. Your local files will not be affected.": "Это закроет активное представление сравнения. Локальные файлы не будут затронуты.",
