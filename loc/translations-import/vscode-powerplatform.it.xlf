@@ -786,7 +786,7 @@ Tipo: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++ab47a93b0690e3553f60a7e1bd45df0a5e0ebf49f7f3c150d38f347699892163">
         <source xml:lang="en">Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.</source>
-        <target state="new">Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.</target>
+        <target state="translated">Non è possibile passare all'ambiente richiesto. Accedi con un account che abbia accesso all'ambiente di destinazione usando il comando "pac auth create".</target>
       </trans-unit>
       <trans-unit id="++CODE++a9e36b880dd45b64ae5601865540605296febf9bd855fc46d9c35c2c2ed9a7f2">
         <source xml:lang="en">Feature is not enabled for this geo.</source>
