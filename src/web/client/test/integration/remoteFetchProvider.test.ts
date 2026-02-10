@@ -551,7 +551,11 @@ describe("remoteFetchProvider", () => {
         // Stub fetch BEFORE authenticateAndUpdateDataverseProperties to avoid retry delays
         const _mockFetch = stub(fetch, "default").resolves({
             ok: false,
-            statusText: "statusText",
+            status: 500,
+            statusText: "Internal Server Error",
+            url: "https://test.crm.dynamics.com/api/data/v9.2/webpages",
+            clone: function() { return this; },
+            text: () => Promise.resolve(mockResponseBody),
             json: () => {
                 return new Promise((resolve) => {
                     return resolve({

@@ -180,7 +180,7 @@
   "Failed to install SARIF viewer extension. Opening results as text file.": "SARIF 뷰어 확장을 설치하지 못했습니다. 결과를 텍스트 파일로 여는 중입니다.",
   "Failed to install SARIF viewer extension: {0}": "SARIF 뷰어 확장을 설치하지 못함: {0}",
   "Failed to open in VS Code Desktop: {0}": "VS Code Desktop에서 열지 못함: {0}",
-  "Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.": "Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.",
+  "Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.": "필요한 환경으로 전환하지 못했습니다. 'pac auth create' 명령을 사용하여 대상 환경에 액세스할 수 있는 계정으로 로그인하세요.",
   "Feature is not enabled for this geo.": "기능이 이 지역에 대해 기능을 사용할 수 없습니다.",
   "Feedback": "피드백",
   "Fetching websites from '{0}'.../Message shown while fetching websites from an environment. {0} is the environment name.": "'{0}'에서 웹 사이트를 가져오는 중...",
