@@ -50,11 +50,13 @@ jobs:
         id: check-changes
         run: |
           git add -A
-          if (git diff --cached --quiet) {
+          git diff --cached --quiet
+          if ($LASTEXITCODE -eq 0) {
             echo "has_changes=false" >> $env:GITHUB_OUTPUT
           } else {
             echo "has_changes=true" >> $env:GITHUB_OUTPUT
           }
+          exit 0
 
       - name: Commit and Push Changes
         if: steps.check-changes.outputs.has_changes == 'true'
