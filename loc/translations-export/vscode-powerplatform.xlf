@@ -139,6 +139,9 @@ This action cannot be undone.</source>
     <trans-unit id="++CODE++c58a6bd402efb06c3e7dfd6d68910412fee2dfc1788ae384dc123089ce912285">
       <source xml:lang="en">Browse...</source>
     </trans-unit>
+    <trans-unit id="++CODE++247d271e2121710dd2598a46ae738f9b3a4dcbf202008084a7dab89c326a926f">
+      <source xml:lang="en">Cache cleared successfully.</source>
+    </trans-unit>
     <trans-unit id="++CODE++19766ed6ccb2f4a32778eed80d1928d2c87a18d7c275ccb163ec6709d3eb2e27">
       <source xml:lang="en">Cancel</source>
     </trans-unit>
@@ -200,6 +203,9 @@ This action cannot be undone.</source>
       <source xml:lang="en">Clearing cache. See [details](https://aka.ms/pages-clear-cache).</source>
       <note>This is a markdown formatting which must persist across translations.
 The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).', keeping brackets and the text in the parentheses unmodified</note>
+    </trans-unit>
+    <trans-unit id="++CODE++6271dce343e23a6cdf46ec57f1cedcaa2e960e26c3a09c146d67b590f968ea4c">
+      <source xml:lang="en">Clearing site cache</source>
     </trans-unit>
     <trans-unit id="++CODE++b1ffea87cc95d3bfa308b929bb907b43e7d91be038e706a67142b15c571da334">
       <source xml:lang="en">Click to authenticate with a matching account</source>
@@ -1516,6 +1522,9 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
       <source xml:lang="en">Clear Auth Profiles</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.clearCache.title">
+      <source xml:lang="en">Clear Cache</source>
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.clear.title">
       <source xml:lang="en">Clear Comparison</source>

@@ -190,6 +190,7 @@
       "The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).', keeping brackets and the text in the parentheses unmodified"
     ]
   },
+  "Clearing site cache": "Clearing site cache",
   "Unable to clear cache": "Unable to clear cache",
   "Your preview isn't updated. Please upload your site to see the latest changes.": "Your preview isn't updated. Please upload your site to see the latest changes.",
   "Upload changes": "Upload changes",
@@ -279,6 +280,7 @@
   "Sign in to VS Code with PAC CLI account": "Sign in to VS Code with PAC CLI account",
   "Click to authenticate with a matching account": "Click to authenticate with a matching account",
   "Authentication failed. Please try again.": "Authentication failed. Please try again.",
+  "Cache cleared successfully.": "Cache cleared successfully.",
   "The CodeQL extension is required to run this command. Do you want to install it now?": "The CodeQL extension is required to run this command. Do you want to install it now?",
   "CodeQL screening started. Creating database and analyzing": "CodeQL screening started. Creating database and analyzing",
   "CodeQL database created successfully. You can now run queries from the CodeQL extension.": "CodeQL database created successfully. You can now run queries from the CodeQL extension.",
