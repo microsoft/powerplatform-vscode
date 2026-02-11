@@ -761,7 +761,8 @@ export async function preprocessData(
                     const errorMsg = (error as Error)?.message;
                     WebExtensionContext.telemetry.sendErrorTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_WEBFORM_STEPS_FAILED,
                         preprocessData.name,
-                        errorMsg);
+                        errorMsg,
+                        error as Error);
                 }
             });
             WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_SUCCESS, { entityType: entityType });
