@@ -656,7 +656,17 @@ async function fetchMappingEntityContent(
         headers: getCommonHeadersForDataverse(accessToken),
     });
 
-    if(entity === schemaEntityName.SERVERLOGICS && !response.ok) {
+    // Gracefully handle 404 for optional entities (deleted/moved files or missing server logic)
+    const notFoundTelemetryMap = new Map<string, string>([
+        [schemaEntityName.WEBFILES, webExtensionTelemetryEventNames.WEB_EXTENSION_WEBFILE_NOT_FOUND],
+        [schemaEntityName.SERVERLOGICS, webExtensionTelemetryEventNames.WEB_EXTENSION_SERVERLOGIC_NOT_FOUND],
+    ]);
+
+    if (!response.ok && response.status === 404 && notFoundTelemetryMap.has(entity)) {
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            notFoundTelemetryMap.get(entity) as string,
+            { entityId, entity }
+        );
         return Constants.NO_CONTENT;
     }
 
@@ -670,7 +680,7 @@ async function fetchMappingEntityContent(
             fetchMappingEntityContent.name,
             httpError.message,
             '',
-            httpError.httpDetails.statusCode.toString()
+            httpError.httpDetails?.statusCode.toString() ?? ''
         );
         throw httpError;
     }
