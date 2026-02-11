@@ -105,11 +105,6 @@ export class EtagHandlerService {
                     webExtensionTelemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_SAME
                 );
             } else {
-                WebExtensionContext.telemetry.sendErrorTelemetry(
-                    webExtensionTelemetryEventNames.WEB_EXTENSION_ETAG_HANDLER_SERVICE_API_ERROR,
-                    this.getLatestFileContentAndUpdateMetadata.name,
-                    response.statusText
-                );
                 throw await createHttpResponseError(response);
             }
 
@@ -139,7 +134,8 @@ export class EtagHandlerService {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     webExtensionTelemetryEventNames.WEB_EXTENSION_ETAG_HANDLER_SERVICE_ERROR,
                     this.getLatestFileContentAndUpdateMetadata.name,
-                    errorMessage
+                    errorMessage,
+                    error as Error
                 );
             }
         }
@@ -190,11 +186,6 @@ export class EtagHandlerService {
                     result[ODATA_ETAG]
                 );
             } else {
-                WebExtensionContext.telemetry.sendErrorTelemetry(
-                    webExtensionTelemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_UNEXPECTED_RESPONSE,
-                    this.updateFileEtag.name,
-                    response.statusText
-                );
                 throw await createHttpResponseError(response);
             }
 
