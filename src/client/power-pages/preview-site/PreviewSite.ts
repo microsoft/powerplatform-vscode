@@ -261,7 +261,6 @@ export class PreviewSite {
                 }
             }
         );
-
     }
 
     private static async handleEmptyWebsiteUrl(): Promise<boolean> {
