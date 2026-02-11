@@ -139,9 +139,6 @@ This action cannot be undone.</source>
     <trans-unit id="++CODE++c58a6bd402efb06c3e7dfd6d68910412fee2dfc1788ae384dc123089ce912285">
       <source xml:lang="en">Browse...</source>
     </trans-unit>
-    <trans-unit id="++CODE++247d271e2121710dd2598a46ae738f9b3a4dcbf202008084a7dab89c326a926f">
-      <source xml:lang="en">Cache cleared successfully.</source>
-    </trans-unit>
     <trans-unit id="++CODE++19766ed6ccb2f4a32778eed80d1928d2c87a18d7c275ccb163ec6709d3eb2e27">
       <source xml:lang="en">Cancel</source>
     </trans-unit>
@@ -1158,6 +1155,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++4b7de12dbef5cc145cf5b8b08743a60d279d6ee27b8b13470e5f06bc21153867">
       <source xml:lang="en">Site Visibility:</source>
     </trans-unit>
+    <trans-unit id="++CODE++6b2b5e2be588a8269780bdd235ec660be752694b76eae4990935a9e3ba706649">
+      <source xml:lang="en">Site cache cleared successfully.</source>
+    </trans-unit>
     <trans-unit id="++CODE++4fa72d80ab1b04e31f450bacc89bff526a5e52e3d104d153b3b493b108330b3c">
       <source xml:lang="en">Site download cancelled. Authentication is required to proceed.</source>
     </trans-unit>
@@ -1523,14 +1523,14 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
     <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
       <source xml:lang="en">Clear Auth Profiles</source>
     </trans-unit>
-    <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.clearCache.title">
-      <source xml:lang="en">Clear Cache</source>
-    </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.clear.title">
       <source xml:lang="en">Clear Comparison</source>
     </trans-unit>
     <trans-unit id="powerpages.copilotPanel.clearConversation.title">
       <source xml:lang="en">Clear Conversation</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.clearCache.title">
+      <source xml:lang="en">Clear Site Cache</source>
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.compareWithEnvironment.title">
       <source xml:lang="en">Compare with Environment</source>
