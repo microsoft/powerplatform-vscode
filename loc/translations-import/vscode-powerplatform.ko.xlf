@@ -1657,9 +1657,9 @@ URL: {1}
         <source xml:lang="en">There was a problem opening the workspace</source>
         <target state="translated">작업 영역을 여는 중 문제가 발생했습니다</target>
       </trans-unit>
-      <trans-unit id="++CODE++37ea190531b914739bf1ff100b3d44579b6d703de0b79b380094714aa3b3c259">
-        <source xml:lang="en">There’s a problem on the back end</source>
-        <target state="translated">백 엔드에 문제가 있습니다.</target>
+      <trans-unit id="++CODE++0bd7e288337919a633d6237e1c6f79e721699cc0cf3dc0204279215c4f8591c8">
+        <source xml:lang="en">There's a problem on the back end</source>
+        <target state="new">There's a problem on the back end</target>
       </trans-unit>
       <trans-unit id="++CODE++bcfc420c0358eb6f248fa6328797cfa38fa121baea6320a623280a0d34eeee75">
         <source xml:lang="en">This file was exported with a newer version of the extension. Please update your extension to import this file.</source>
@@ -1916,7 +1916,7 @@ URL: {1}
       </trans-unit>
       <trans-unit id="++CODE++beb45bfdd4c3f6da9bb3687e4d9275790d086c1dffaec84839fa9ec9ce4e9ee2">
         <source xml:lang="en">You can use this in &lt;a href="#" id="github-copilot-link"&gt;GitHub Copilot with @powerpages&lt;/a&gt; and leverage best of both world.</source>
-        <target state="translated">@powerpages로 &lt;a href="#" id="github-copilot-link"&gt;에서 GitHub Copilot 이 기능을 사용하고&lt;/a&gt; 두 세계에서 가장 최고를 활용할 수 있습니다.</target>
+        <target state="translated">&lt;a href="#" id="github-copilot-link"&gt;@powerpages와 함께 GitHub Copilot&lt;/a&gt;에서 이 기능을 사용하면 두 가지 장점을 가장 잘 활용할 수 있습니다.</target>
       </trans-unit>
       <trans-unit id="++CODE++87eb9aa1f1ac1b6b141aedc4c21a9cb7cf786453c529babe30c8760072bb34d6">
         <source xml:lang="en">You need to authenticate with Power Platform to download the site. Would you like to authenticate now?</source>

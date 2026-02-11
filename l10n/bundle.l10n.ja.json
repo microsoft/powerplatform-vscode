@@ -388,7 +388,7 @@
   "The website you selected is different from the local site. Are you sure you want to compare with this website?": "選択した Web サイトがローカル サイトとは異なります。この Web サイトと比較しますか?",
   "There was a permissions problem with the server": "サーバーのアクセス許可に関する問題が発生しました",
   "There was a problem opening the workspace": "ワークスペースを開くときに問題が発生しました",
-  "There’s a problem on the back end": "バック エンドに問題が発生しています",
+  "There's a problem on the back end": "There's a problem on the back end",
   "This file was exported with a newer version of the extension. Please update your extension to import this file.": "このファイルは、新しいバージョンの拡張機能を使用してエクスポートされました。このファイルをインポートするには、拡張機能を更新してください。",
   "This will close all active comparison views. Your local files will not be affected.": "これを行うと、すべてのアクティブな比較ビューが閉じます。お持ちのローカル ファイルには影響しません。",
   "This will close the active comparison view. Your local files will not be affected.": "これを行うと、アクティブな比較ビューが閉じます。お持ちのローカル ファイルには影響しません。",
