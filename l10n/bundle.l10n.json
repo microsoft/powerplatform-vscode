@@ -280,7 +280,7 @@
   "Sign in to VS Code with PAC CLI account": "Sign in to VS Code with PAC CLI account",
   "Click to authenticate with a matching account": "Click to authenticate with a matching account",
   "Authentication failed. Please try again.": "Authentication failed. Please try again.",
-  "Cache cleared successfully.": "Cache cleared successfully.",
+  "Site cache cleared successfully.": "Site cache cleared successfully.",
   "The CodeQL extension is required to run this command. Do you want to install it now?": "The CodeQL extension is required to run this command. Do you want to install it now?",
   "CodeQL screening started. Creating database and analyzing": "CodeQL screening started. Creating database and analyzing",
   "CodeQL database created successfully. You can now run queries from the CodeQL extension.": "CodeQL database created successfully. You can now run queries from the CodeQL extension.",

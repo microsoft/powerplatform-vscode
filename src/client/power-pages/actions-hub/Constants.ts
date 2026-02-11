@@ -103,7 +103,7 @@ export const Constants = {
         // CodeQL
         INSTALL: vscode.l10n.t("Install"),
         CANCEL: vscode.l10n.t("Cancel"),
-        CLEAR_CACHE_SUCCESS: vscode.l10n.t("Cache cleared successfully."),
+        CLEAR_CACHE_SUCCESS: vscode.l10n.t("Site cache cleared successfully."),
         CODEQL_EXTENSION_NOT_INSTALLED: vscode.l10n.t("The CodeQL extension is required to run this command. Do you want to install it now?"),
         CODEQL_SCREENING_STARTED: vscode.l10n.t("CodeQL screening started. Creating database and analyzing"),
         CODEQL_DATABASE_CREATED: vscode.l10n.t("CodeQL database created successfully. You can now run queries from the CodeQL extension."),
