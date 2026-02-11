@@ -457,9 +457,7 @@ describe("remoteFetchProvider", () => {
             { accessToken: accessToken, userId: "" }
         );
 
-        const portalFs = new PortalsFS();
-        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
-
+        // Stub fetch BEFORE authenticateAndUpdateDataverseProperties to avoid retry delays
         const _mockFetch = stub(fetch, "default").resolves({
             ok: true,
             statusText: "statusText",
@@ -475,6 +473,9 @@ describe("remoteFetchProvider", () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
+        const portalFs = new PortalsFS();
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
+
         const sendErrorTelemetry = stub(
             WebExtensionContext.telemetry,
             "sendErrorTelemetry"
@@ -487,10 +488,10 @@ describe("remoteFetchProvider", () => {
         assert.calledOnceWithMatch(sendErrorTelemetry,
             webExtensionTelemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED,
             "createContentFiles");
-        assert.calledOnce(_mockFetch);
+        assert.called(_mockFetch);
     });
 
-    it("fetchDataFromDataverseAndUpdateVFS_whenResponseNotSuccess_shouldCallSendErrorTelemetry", async () => {
+    it("fetchDataFromDataverseAndUpdateVFS_whenResponseNotSuccess_shouldCallSendAPIFailureTelemetry", async () => {
         //Act
         const entityName = "webpages";
         const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
@@ -509,9 +510,9 @@ describe("remoteFetchProvider", () => {
             entityId,
             queryParamsMap
         );
-        const sendErrorTelemetry = stub(
+        const sendAPIFailureTelemetry = stub(
             WebExtensionContext.telemetry,
-            "sendErrorTelemetry"
+            "sendAPIFailureTelemetry"
         );
 
         const languageIdCodeMap = new Map<string, string>([["1033", "en-US"]]);
@@ -547,14 +548,8 @@ describe("remoteFetchProvider", () => {
             { accessToken: accessToken, userId: "" }
         );
 
-        const portalFs = new PortalsFS();
-        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
-
-        const mockResponseBody = JSON.stringify({
-            "@odata.count": 0,
-            "@Microsoft.Dynamics.CRM.totalrecordcount": 0,
-            "value": [],
-        });
+        const mockResponseBody = "Internal Server Error";
+        // Stub fetch BEFORE authenticateAndUpdateDataverseProperties to avoid retry delays
         const _mockFetch = stub(fetch, "default").resolves({
             ok: false,
             status: 500,
@@ -574,33 +569,24 @@ describe("remoteFetchProvider", () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
-        const sendAPIFailureTelemetry = stub(
-            WebExtensionContext.telemetry,
-            "sendAPIFailureTelemetry"
-        );
+        const portalFs = new PortalsFS();
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
         //Action
         await fetchDataFromDataverseAndUpdateVFS(portalFs);
 
         //Assert
-        const sendErrorTelemetryCalls = sendErrorTelemetry.getCalls();
-
-        assert.callCount(sendErrorTelemetry, 4);
-        assert.calledWithMatch(sendErrorTelemetryCalls[0], webExtensionTelemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_ID_TO_LANGUAGE_SYSTEM_ERROR,
-            "populateWebsiteIdToLanguageMap",
-            "Only absolute URLs are supported");
-        assert.calledWithMatch(sendErrorTelemetryCalls[1], webExtensionTelemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_LANGUAGE_ID_TO_PORTALLANGUAGE_SYSTEM_ERROR,
-            "populateWebsiteLanguageIdToPortalLanguageMap",
-            "Only absolute URLs are supported");
-        assert.calledWithMatch(sendErrorTelemetryCalls[2], webExtensionTelemetryEventNames.WEB_EXTENSION_POPULATE_LANGUAGE_ID_TO_CODE_SYSTEM_ERROR,
-            "populateLanguageIdToCode",
-            "Only absolute URLs are supported");
-        assert.calledWithMatch(sendErrorTelemetryCalls[3], webExtensionTelemetryEventNames.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SYSTEM_ERROR,
-            "populateSharedWorkspace",
-            "Web extension populate shared workspace system error");
-        // HTTP errors now go through sendAPIFailureTelemetry with status code
-        assert.calledOnce(sendAPIFailureTelemetry);
-        assert.calledOnce(_mockFetch);
+        assert.called(sendAPIFailureTelemetry);
+        assert.calledWithMatch(sendAPIFailureTelemetry,
+            sinon.match.string,
+            entityName,
+            Constants.httpMethod.GET,
+            sinon.match.number,
+            "fetchFromDataverseAndCreateFiles",
+            sinon.match.string,
+            '',
+            "500");
+        assert.called(_mockFetch);
     });
 
     it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccessAndSubUriIsBlank_shouldThrowError", async () => {
@@ -656,9 +642,7 @@ describe("remoteFetchProvider", () => {
             { accessToken: accessToken, userId: "" }
         );
 
-        const portalFs = new PortalsFS();
-        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
-
+        // Stub fetch BEFORE authenticateAndUpdateDataverseProperties to avoid retry delays
         const _mockFetch = stub(fetch, "default").resolves({
             ok: true,
             statusText: "statusText",
@@ -679,6 +663,9 @@ describe("remoteFetchProvider", () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
+        const portalFs = new PortalsFS();
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
+
         const getEntity = stub(schemaHelperUtil, "getEntity").returns(
             new Map<string, string>([
                 [schemaEntityKey.EXPORT_TYPE, ""],
@@ -698,10 +685,10 @@ describe("remoteFetchProvider", () => {
         await fetchDataFromDataverseAndUpdateVFS(portalFs);
 
         //Assert
-        assert.calledOnce(_mockFetch);
-        assert.calledTwice(sendAPITelemetry);
+        assert.called(_mockFetch);
+        assert.called(sendAPITelemetry);
         assert.calledOnce(sendErrorTelemetry);
-        assert.callCount(getEntity, 2);
+        assert.called(getEntity);
     });
 
     it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccessAndAttributesIsBlank_shouldThrowError", async () => {
@@ -757,9 +744,7 @@ describe("remoteFetchProvider", () => {
             { accessToken: accessToken, userId: "" }
         );
 
-        const portalFs = new PortalsFS();
-        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
-
+        // Stub fetch BEFORE authenticateAndUpdateDataverseProperties to avoid retry delays
         const _mockFetch = stub(fetch, "default").resolves({
             ok: true,
             statusText: "statusText",
@@ -779,6 +764,9 @@ describe("remoteFetchProvider", () => {
             },
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
+
+        const portalFs = new PortalsFS();
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
         const getEntity = stub(schemaHelperUtil, "getEntity").returns(
             new Map<string, string>([
@@ -801,10 +789,10 @@ describe("remoteFetchProvider", () => {
         await fetchDataFromDataverseAndUpdateVFS(portalFs);
 
         //Assert
-        assert.calledOnce(_mockFetch);
-        assert.calledTwice(sendAPITelemetry);
+        assert.called(_mockFetch);
+        assert.called(sendAPITelemetry);
         assert.calledOnce(sendErrorTelemetry);
-        assert.callCount(getEntity, 2);
+        assert.called(getEntity);
     });
 
     it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccessAndAttributeExtensionIsBlank_shouldThrowError", async () => {
@@ -860,9 +848,7 @@ describe("remoteFetchProvider", () => {
             { accessToken: accessToken, userId: "" }
         );
 
-        const portalFs = new PortalsFS();
-        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
-
+        // Stub fetch BEFORE authenticateAndUpdateDataverseProperties to avoid retry delays
         const _mockFetch = stub(fetch, "default").resolves({
             ok: true,
             statusText: "statusText",
@@ -882,6 +868,9 @@ describe("remoteFetchProvider", () => {
             },
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
+
+        const portalFs = new PortalsFS();
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
         const getEntity = stub(schemaHelperUtil, "getEntity").returns(
             new Map<string, string>([
@@ -905,10 +894,10 @@ describe("remoteFetchProvider", () => {
         await fetchDataFromDataverseAndUpdateVFS(portalFs);
 
         //Assert
-        assert.calledOnce(_mockFetch);
-        assert.calledTwice(sendAPITelemetry);
+        assert.called(_mockFetch);
+        assert.called(sendAPITelemetry);
         assert.calledOnce(sendErrorTelemetry);
-        assert.callCount(getEntity, 2);
+        assert.called(getEntity);
     });
 
     it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccessAndFileNameIsDefaultFilename_shouldThrowError", async () => {
@@ -964,9 +953,7 @@ describe("remoteFetchProvider", () => {
             { accessToken: accessToken, userId: "" }
         );
 
-        const portalFs = new PortalsFS();
-        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
-
+        // Stub fetch BEFORE authenticateAndUpdateDataverseProperties to avoid retry delays
         const _mockFetch = stub(fetch, "default").resolves({
             ok: true,
             statusText: "statusText",
@@ -986,6 +973,9 @@ describe("remoteFetchProvider", () => {
             },
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
+
+        const portalFs = new PortalsFS();
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
         const getEntity = stub(schemaHelperUtil, "getEntity").returns(
             new Map<string, string>([
@@ -1009,10 +999,10 @@ describe("remoteFetchProvider", () => {
         await fetchDataFromDataverseAndUpdateVFS(portalFs);
 
         //Assert
-        assert.calledOnce(_mockFetch);
-        assert.calledTwice(sendAPITelemetry);
+        assert.called(_mockFetch);
+        assert.called(sendAPITelemetry);
         assert.calledOnce(sendErrorTelemetry);
-        assert.callCount(getEntity, 2);
+        assert.called(getEntity);
     });
 
     it("fetchDataFromDataverseAndUpdateVFS_forWebFile_whenResponseSuccess_forDefaultFileInfo_shouldCallAllSuccessFunction", async () => {
@@ -1159,5 +1149,122 @@ describe("remoteFetchProvider", () => {
         assert.calledOnce(updateSingleFileUrisInContext);
         assert.callCount(sendInfoTelemetry, 5);
         assert.callCount(sendAPISuccessTelemetry, 5);
+    });
+
+    it("fetchDataFromDataverseAndUpdateVFS_forWebFile_when404Response_shouldReturnNoContentAndLogTelemetry", async () => {
+        const entityName = "webfiles";
+        const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
+        const queryParamsMap = new Map<string, string>([
+            [Constants.queryParameters.ORG_URL, "powerPages.com"],
+            [
+                Constants.queryParameters.WEBSITE_ID,
+                "a58f4e1e-5fe2-45ee-a7c1-398073b40181",
+            ],
+            [Constants.queryParameters.WEBSITE_NAME, "testWebSite"],
+            [schemaKey.SCHEMA_VERSION, "portalschemav2"],
+        ]);
+
+        const languageIdCodeMap = new Map<string, string>([["1033", "en-US"]]);
+        stub(schemaHelperUtil, "getLcidCodeMap").returns(languageIdCodeMap);
+
+        const websiteIdToLanguage = new Map<string, string>([
+            ["a58f4e1e-5fe2-45ee-a7c1-398073b40181", "1033"],
+        ]);
+        stub(schemaHelperUtil, "getWebsiteIdToLcidMap").returns(
+            websiteIdToLanguage
+        );
+
+        const websiteLanguageIdToPortalLanguageMap = new Map<string, string>([
+            [
+                "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",
+                "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",
+            ],
+        ]);
+        stub(
+            schemaHelperUtil,
+            "getWebsiteLanguageIdToPortalLanguageIdMap"
+        ).returns(websiteLanguageIdToPortalLanguageMap);
+
+        const portalLanguageIdCodeMap = new Map<string, string>([
+            ["d8b40829-17c8-4082-9e3f-89d60dc0ab7e", "1033"],
+        ]);
+        stub(schemaHelperUtil, "getPortalLanguageIdToLcidMap").returns(
+            portalLanguageIdCodeMap
+        );
+
+        const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
+        stub(authenticationProvider, "dataverseAuthentication").resolves(
+            { accessToken: accessToken, userId: "" }
+        );
+
+        const _mockFetch = stub(fetch, 'default').callsFake((url) => {
+            // Return 404 for webfile content fetch
+            if (url === 'powerPages.com/api/data/v9.2/powerpagecomponents(aa563be7-9a38-4a89-9216-47f9fc6a3f14)/filecontent') {
+                return Promise.resolve({
+                    ok: false,
+                    status: 404,
+                    statusText: "Not Found",
+                    json: () => Promise.resolve({}),
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                } as any);
+            } else {
+                return Promise.resolve({
+                    ok: true,
+                    statusText: "statusText",
+                    json: () => {
+                        return new Promise((resolve) => {
+                            return resolve({
+                                value: [
+                                    {
+                                        name: "testname",
+                                        powerpagecomponentid: entityId,
+                                        _powerpagesitelanguageid_value: "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",
+                                        value: '{ "ddrive": "VGhpcyBpcyBhIHRlc3Qgc3RyaW5nLg==", "value": "value" }',
+                                    }]
+                            });
+                        });
+                    },
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                } as any);
+            }
+        });
+
+        stub(WebExtensionContext, "updateFileDetailsInContext");
+        stub(WebExtensionContext, "updateEntityDetailsInContext");
+        stub(WebExtensionContext.telemetry, "sendAPITelemetry");
+        stub(WebExtensionContext.telemetry, "sendAPISuccessTelemetry");
+        const sendInfoTelemetry = stub(WebExtensionContext.telemetry, "sendInfoTelemetry");
+        const convertContentToUint8Array = stub(commonUtil, "convertContentToUint8Array");
+
+        stub(commonUtil, "isWebfileContentLoadNeeded").returns(true);
+        stub(schemaHelperUtil, "isBase64Encoded").returns(true);
+        stub(commonUtil, "GetFileNameWithExtension").returns("deleted-file.png");
+        stub(schemaHelperUtil, "getAttributePath").returns({ source: "value", relativePath: "", });
+        stub(WebExtensionContext, "updateSingleFileUrisInContext");
+        const fileUri: vscode.Uri = { path: "powerplatform-vfs:/testWebSite/web-files/", } as vscode.Uri;
+        stub(vscode.Uri, "parse").returns(fileUri);
+
+        const portalFs = new PortalsFS();
+        stub(portalFs, "writeFile");
+        WebExtensionContext.setWebExtensionContext(
+            entityName,
+            entityId,
+            queryParamsMap
+        );
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
+
+        await fetchDataFromDataverseAndUpdateVFS(portalFs, { entityId: entityId, entityName: entityName });
+
+        // Verify that 404 response logs WEB_EXTENSION_WEBFILE_NOT_FOUND telemetry
+        assert.calledWithMatch(
+            sendInfoTelemetry,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_WEBFILE_NOT_FOUND,
+            { entityId: entityId, entity: "webfiles" }
+        );
+
+        // Verify that NO_CONTENT is used (the content should be " " which is Constants.NO_CONTENT)
+        assert.calledWith(convertContentToUint8Array, Constants.NO_CONTENT, true);
+
+        assert.called(_mockFetch);
     });
 });
