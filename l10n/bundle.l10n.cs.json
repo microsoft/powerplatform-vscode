@@ -388,7 +388,7 @@
   "The website you selected is different from the local site. Are you sure you want to compare with this website?": "Vybraný web se liší od místního webu. Jste si jisti, že chcete provést porovnání s tímto webem?",
   "There was a permissions problem with the server": "Na serveru došlo k problému s oprávněními.",
   "There was a problem opening the workspace": "Při otevírání pracovního prostoru se vyskytl problém.",
-  "There’s a problem on the back end": "U back-endu se vyskytl problém.",
+  "There's a problem on the back end": "There's a problem on the back end",
   "This file was exported with a newer version of the extension. Please update your extension to import this file.": "Tento soubor se exportoval s novější verzí rozšíření. Pokud chcete importovat tento soubor, aktualizujte prosím rozšíření.",
   "This will close all active comparison views. Your local files will not be affected.": "Tím se zavřou všechna aktivní zobrazení porovnání. Na vaše místní soubory to nebude mít vliv.",
   "This will close the active comparison view. Your local files will not be affected.": "Tím se zavře aktivní zobrazení porovnání. Na vaše místní soubory to nebude mít vliv.",

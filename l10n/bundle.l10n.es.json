@@ -388,7 +388,7 @@
   "The website you selected is different from the local site. Are you sure you want to compare with this website?": "El sitio web seleccionado es diferente del sitio local. ¿Está seguro de que desea compararlo con este sitio web?",
   "There was a permissions problem with the server": "Se produjo un problema de permisos con el servidor",
   "There was a problem opening the workspace": "Hubo un problema al abrir el área de trabajo",
-  "There’s a problem on the back end": "Hay un problema en el back-end",
+  "There's a problem on the back end": "There's a problem on the back end",
   "This file was exported with a newer version of the extension. Please update your extension to import this file.": "Este archivo se exportó con una versión más reciente de la extensión. Actualice la extensión para importar este archivo.",
   "This will close all active comparison views. Your local files will not be affected.": "Esto cerrará todas las vistas de comparación activas. Los archivos locales no se verán afectados.",
   "This will close the active comparison view. Your local files will not be affected.": "Esto cerrará la vista de comparación activa. Los archivos locales no se verán afectados.",

@@ -388,7 +388,7 @@
   "The website you selected is different from the local site. Are you sure you want to compare with this website?": "您選取的網站與本機網站不同。您確定要與此網站比較嗎?",
   "There was a permissions problem with the server": "伺服器發生權限問題",
   "There was a problem opening the workspace": "開啟工作區時發生問題",
-  "There’s a problem on the back end": "後端發生問題",
+  "There's a problem on the back end": "There's a problem on the back end",
   "This file was exported with a newer version of the extension. Please update your extension to import this file.": "此檔案已使用較新版本的延伸模組匯出。請更新您的延伸模組以匯入此檔案。",
   "This will close all active comparison views. Your local files will not be affected.": "這會關閉所有使用中比較檢視。您的本機檔案不會受到影響。",
   "This will close the active comparison view. Your local files will not be affected.": "這將關閉使用中的比較檢視。您的本機檔案不會受到影響。",
