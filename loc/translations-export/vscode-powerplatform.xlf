@@ -1248,8 +1248,17 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++51cb4178967d50f62f3e41976c0063aa5f9ab3d1be4cef3a820e59e4baa7a069">
       <source xml:lang="en">There was a problem opening the workspace</source>
     </trans-unit>
-    <trans-unit id="++CODE++37ea190531b914739bf1ff100b3d44579b6d703de0b79b380094714aa3b3c259">
-      <source xml:lang="en">There’s a problem on the back end</source>
+    <trans-unit id="++CODE++0bd7e288337919a633d6237e1c6f79e721699cc0cf3dc0204279215c4f8591c8">
+      <source xml:lang="en">There's a problem on the back end</source>
+    </trans-unit>
+    <trans-unit id="++CODE++bcfc420c0358eb6f248fa6328797cfa38fa121baea6320a623280a0d34eeee75">
+      <source xml:lang="en">This file was exported with a newer version of the extension. Please update your extension to import this file.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++e7de2855a45712e1d967171e4d86f37d4014c2f80a515bc552ed4c4a2984c3e4">
+      <source xml:lang="en">This will close all active comparison views. Your local files will not be affected.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++f9463baef8e56e06230fca093d61bb43810240340033d21ecf4df81e02579913">
+      <source xml:lang="en">This will close the active comparison view. Your local files will not be affected.</source>
     </trans-unit>
     <trans-unit id="++CODE++bcfc420c0358eb6f248fa6328797cfa38fa121baea6320a623280a0d34eeee75">
       <source xml:lang="en">This file was exported with a newer version of the extension. Please update your extension to import this file.</source>

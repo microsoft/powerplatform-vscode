@@ -28,3 +28,4 @@ l10n/package.nls.*.json
 
 # Local Claude settings
 .claude/*.local.*
+.claude/skills/kusto-kpi-query/

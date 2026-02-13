@@ -786,7 +786,7 @@ Tipo: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++ab47a93b0690e3553f60a7e1bd45df0a5e0ebf49f7f3c150d38f347699892163">
         <source xml:lang="en">Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.</source>
-        <target state="new">Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.</target>
+        <target state="translated">Non è possibile passare all'ambiente richiesto. Accedi con un account che abbia accesso all'ambiente di destinazione usando il comando "pac auth create".</target>
       </trans-unit>
       <trans-unit id="++CODE++a9e36b880dd45b64ae5601865540605296febf9bd855fc46d9c35c2c2ed9a7f2">
         <source xml:lang="en">Feature is not enabled for this geo.</source>
@@ -1657,9 +1657,9 @@ ID organizzazione: {3}</target>
         <source xml:lang="en">There was a problem opening the workspace</source>
         <target state="translated">Si è verificato un problema durante l'apertura dell'area di lavoro</target>
       </trans-unit>
-      <trans-unit id="++CODE++37ea190531b914739bf1ff100b3d44579b6d703de0b79b380094714aa3b3c259">
-        <source xml:lang="en">There’s a problem on the back end</source>
-        <target state="translated">Si è verificato un problema nel back-end</target>
+      <trans-unit id="++CODE++0bd7e288337919a633d6237e1c6f79e721699cc0cf3dc0204279215c4f8591c8">
+        <source xml:lang="en">There's a problem on the back end</source>
+        <target state="new">There's a problem on the back end</target>
       </trans-unit>
       <trans-unit id="++CODE++bcfc420c0358eb6f248fa6328797cfa38fa121baea6320a623280a0d34eeee75">
         <source xml:lang="en">This file was exported with a newer version of the extension. Please update your extension to import this file.</source>
