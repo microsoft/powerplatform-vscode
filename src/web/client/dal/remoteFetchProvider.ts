@@ -35,6 +35,7 @@ import { IAttributePath, IFileInfo } from "../common/interfaces";
 import { portal_schema_V2 } from "../schema/portalSchema";
 import { ERROR_CONSTANTS } from "../../../common/ErrorConstants";
 import { showErrorDialog } from "../../../common/utilities/errorHandlerUtil";
+import { createHttpResponseError, isHttpResponseError } from "../utilities/errorHandlerUtil";
 import { EnableServerLogicChanges, EnableDuplicateFileHandling, EnableBlogSupport } from "../../../common/ecs-features/ecsFeatureGates";
 import { ECSFeaturesClient } from "../../../common/ecs-features/ecsFeatureClient";
 
@@ -138,7 +139,7 @@ async function fetchFromDataverseAndCreateFiles(
 
             if (!response.ok) {
                 makeRequestCall = false;
-                throw new Error(JSON.stringify(response));
+                throw await createHttpResponseError(response);
             }
 
             const result = await response.json();
@@ -181,7 +182,8 @@ async function fetchFromDataverseAndCreateFiles(
             makeRequestCall = false;
             const errorMsg = (error as Error)?.message;
             console.error(vscode.l10n.t("Failed to fetch some files."));
-            if ((error as Response)?.status > 0) {
+            if (isHttpResponseError(error) && error.httpDetails) {
+                // HTTP error - use API failure telemetry with status code
                 WebExtensionContext.telemetry.sendAPIFailureTelemetry(
                     requestUrl,
                     entityName,
@@ -190,13 +192,14 @@ async function fetchFromDataverseAndCreateFiles(
                     fetchFromDataverseAndCreateFiles.name,
                     errorMsg,
                     '',
-                    (error as Response)?.status.toString()
+                    error.httpDetails.statusCode.toString()
                 );
             } else {
+                // System error (network failure, timeout, etc.)
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     webExtensionTelemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_SYSTEM_ERROR,
                     fetchFromDataverseAndCreateFiles.name,
-                    (error as Error)?.message,
+                    errorMsg,
                     error as Error
                 );
             }
@@ -653,22 +656,33 @@ async function fetchMappingEntityContent(
         headers: getCommonHeadersForDataverse(accessToken),
     });
 
-    if(entity === schemaEntityName.SERVERLOGICS && !response.ok) {
+    // Gracefully handle 404 for optional entities (deleted/moved files or missing server logic)
+    const notFoundTelemetryMap = new Map<string, string>([
+        [schemaEntityName.WEBFILES, webExtensionTelemetryEventNames.WEB_EXTENSION_WEBFILE_NOT_FOUND],
+        [schemaEntityName.SERVERLOGICS, webExtensionTelemetryEventNames.WEB_EXTENSION_SERVERLOGIC_NOT_FOUND],
+    ]);
+
+    if (!response.ok && response.status === 404 && notFoundTelemetryMap.has(entity)) {
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            notFoundTelemetryMap.get(entity) as string,
+            { entityId, entity }
+        );
         return Constants.NO_CONTENT;
     }
 
     if (!response.ok) {
+        const httpError = await createHttpResponseError(response);
         WebExtensionContext.telemetry.sendAPIFailureTelemetry(
             requestUrl,
             entity,
             Constants.httpMethod.GET,
             new Date().getTime() - requestSentAtTime,
             fetchMappingEntityContent.name,
-            JSON.stringify(response),
+            httpError.message,
             '',
-            response?.status.toString()
+            httpError.httpDetails?.statusCode.toString() ?? ''
         );
-        throw new Error(response.statusText);
+        throw httpError;
     }
 
     WebExtensionContext.telemetry.sendAPISuccessTelemetry(
@@ -747,7 +761,8 @@ export async function preprocessData(
                     const errorMsg = (error as Error)?.message;
                     WebExtensionContext.telemetry.sendErrorTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_WEBFORM_STEPS_FAILED,
                         preprocessData.name,
-                        errorMsg);
+                        errorMsg,
+                        error as Error);
                 }
             });
             WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_SUCCESS, { entityType: entityType });

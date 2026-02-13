@@ -35,6 +35,7 @@ import { QuickPickProvider } from "./webViews/QuickPickProvider";
 import { UserCollaborationProvider } from "./webViews/userCollaborationProvider";
 import { GraphClientService } from "./services/graphClientService";
 import { ServiceEndpointCategory } from "../../common/services/Constants";
+import { createHttpResponseError, isHttpResponseError } from "./utilities/errorHandlerUtil";
 
 export interface IWebExtensionContext {
     // From portalSchema properties
@@ -576,7 +577,7 @@ class WebExtensionContext implements IWebExtensionContext {
                 headers: getCommonHeadersForDataverse(accessToken),
             });
             if (!response?.ok) {
-                throw new Error(JSON.stringify(response));
+                throw await createHttpResponseError(response);
             }
             this.telemetry.sendAPISuccessTelemetry(
                 requestUrl,
@@ -592,8 +593,8 @@ class WebExtensionContext implements IWebExtensionContext {
                 schema
             );
         } catch (error) {
-            if ((error as Response)?.status > 0) {
-                const errorMsg = (error as Error)?.message;
+            const errorMsg = (error as Error)?.message;
+            if (isHttpResponseError(error) && error.httpDetails) {
                 this.telemetry.sendAPIFailureTelemetry(
                     requestUrl,
                     languageEntityName,
@@ -602,13 +603,13 @@ class WebExtensionContext implements IWebExtensionContext {
                     this.populateLanguageIdToCode.name,
                     errorMsg,
                     '',
-                    (error as Response)?.status.toString(),
+                    error.httpDetails.statusCode.toString(),
                 );
             } else {
                 this.telemetry.sendErrorTelemetry(
                     webExtensionTelemetryEventNames.WEB_EXTENSION_POPULATE_LANGUAGE_ID_TO_CODE_SYSTEM_ERROR,
                     this.populateLanguageIdToCode.name,
-                    (error as Error)?.message,
+                    errorMsg,
                     error as Error
                 );
             }
@@ -642,7 +643,7 @@ class WebExtensionContext implements IWebExtensionContext {
                 headers: getCommonHeadersForDataverse(accessToken),
             });
             if (!response?.ok) {
-                throw new Error(JSON.stringify(response));
+                throw await createHttpResponseError(response);
             }
             this.telemetry.sendAPISuccessTelemetry(
                 requestUrl,
@@ -655,8 +656,8 @@ class WebExtensionContext implements IWebExtensionContext {
             this._websiteLanguageIdToPortalLanguageMap =
                 getWebsiteLanguageIdToPortalLanguageIdMap(result, schema);
         } catch (error) {
-            if ((error as Response)?.status > 0) {
-                const errorMsg = (error as Error)?.message;
+            const errorMsg = (error as Error)?.message;
+            if (isHttpResponseError(error) && error.httpDetails) {
                 this.telemetry.sendAPIFailureTelemetry(
                     requestUrl,
                     languageEntityName,
@@ -665,13 +666,13 @@ class WebExtensionContext implements IWebExtensionContext {
                     this.populateWebsiteLanguageIdToPortalLanguageMap.name,
                     errorMsg,
                     '',
-                    (error as Response)?.status.toString()
+                    error.httpDetails.statusCode.toString()
                 );
             } else {
                 this.telemetry.sendErrorTelemetry(
                     webExtensionTelemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_LANGUAGE_ID_TO_PORTALLANGUAGE_SYSTEM_ERROR,
                     this.populateWebsiteLanguageIdToPortalLanguageMap.name,
-                    (error as Error)?.message,
+                    errorMsg,
                     error as Error
                 );
             }
@@ -705,7 +706,7 @@ class WebExtensionContext implements IWebExtensionContext {
             });
 
             if (!response?.ok) {
-                throw new Error(JSON.stringify(response));
+                throw await createHttpResponseError(response);
             }
             this.telemetry.sendAPISuccessTelemetry(
                 requestUrl,
@@ -717,8 +718,8 @@ class WebExtensionContext implements IWebExtensionContext {
             const result = await response?.json();
             this._websiteIdToLanguage = getWebsiteIdToLcidMap(result, schema);
         } catch (error) {
-            if ((error as Response)?.status > 0) {
-                const errorMsg = (error as Error)?.message;
+            const errorMsg = (error as Error)?.message;
+            if (isHttpResponseError(error) && error.httpDetails) {
                 this.telemetry.sendAPIFailureTelemetry(
                     requestUrl,
                     websiteEntityName,
@@ -727,13 +728,13 @@ class WebExtensionContext implements IWebExtensionContext {
                     this.populateWebsiteIdToLanguageMap.name,
                     errorMsg,
                     '',
-                    (error as Response)?.status.toString()
+                    error.httpDetails.statusCode.toString()
                 );
             } else {
                 this.telemetry.sendErrorTelemetry(
                     webExtensionTelemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_ID_TO_LANGUAGE_SYSTEM_ERROR,
                     this.populateWebsiteIdToLanguageMap.name,
-                    (error as Error)?.message,
+                    errorMsg,
                     error as Error
                 );
             }

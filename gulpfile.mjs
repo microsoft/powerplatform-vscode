@@ -352,7 +352,7 @@ async function snapshot() {
     }
 }
 
-const cliVersion = '2.1.2';
+const cliVersion = '2.2.1';
 
 const recompile = gulp.series(
     clean,
