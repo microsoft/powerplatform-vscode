@@ -445,7 +445,7 @@ describe("remoteFetchProvider", () => {
             Constants.httpMethod.GET
         );
 
-        // parse is called multiple times: once for setWebExtensionContext, once for createDirectory, and 3 times for writeFile
+        // parse is called for setWebExtensionContext, createDirectory, writeFile updates, and context update
         assert.callCount(parse, 5);
         assert.callCount(createDirectory, 1);
         const createDirectoryCalls = createDirectory.getCalls();
@@ -579,9 +579,10 @@ describe("remoteFetchProvider", () => {
         );
 
         const portalFs = new PortalsFS();
+        stub(WebExtensionContext, "authenticateAndUpdateDataverseProperties").resolves();
         await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
-        const _mockFetch = stub(fetch, "default").resolves({
+        const _mockFetch = stub(WebExtensionContext.concurrencyHandler, "handleRequest").resolves({
             ok: true,
             statusText: "statusText",
             json: () => {
@@ -596,16 +597,13 @@ describe("remoteFetchProvider", () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
-        const portalFs = new PortalsFS();
-        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
-
         const sendErrorTelemetry = stub(
             WebExtensionContext.telemetry,
             "sendErrorTelemetry"
         );
 
         //Action
-        await fetchDataFromDataverseAndUpdateVFS(portalFs);
+        await fetchDataFromDataverseAndUpdateVFS(portalFs, { entityId: entityId, entityName: entityName });
 
         //Assert
         assert.calledOnceWithMatch(sendErrorTelemetry,
@@ -687,9 +685,11 @@ describe("remoteFetchProvider", () => {
         );
 
         const portalFs = new PortalsFS();
+        stub(WebExtensionContext, "authenticateAndUpdateDataverseProperties").resolves();
         await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
-        const _mockFetch = stub(fetch, "default").resolves({
+        const mockResponseBody = "Internal Server Error";
+        const _mockFetch = stub(WebExtensionContext.concurrencyHandler, "handleRequest").resolves({
             ok: false,
             status: 500,
             statusText: "Internal Server Error",
@@ -708,11 +708,8 @@ describe("remoteFetchProvider", () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
-        const portalFs = new PortalsFS();
-        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
-
         //Action
-        await fetchDataFromDataverseAndUpdateVFS(portalFs);
+        await fetchDataFromDataverseAndUpdateVFS(portalFs, { entityId: entityId, entityName: entityName });
 
         //Assert
         assert.called(sendAPIFailureTelemetry);
@@ -797,9 +794,10 @@ describe("remoteFetchProvider", () => {
         );
 
         const portalFs = new PortalsFS();
+        stub(WebExtensionContext, "authenticateAndUpdateDataverseProperties").resolves();
         await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
-        const _mockFetch = stub(fetch, "default").resolves({
+        const _mockFetch = stub(WebExtensionContext.concurrencyHandler, "handleRequest").resolves({
             ok: true,
             statusText: "statusText",
             json: () => {
@@ -819,9 +817,6 @@ describe("remoteFetchProvider", () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
-        const portalFs = new PortalsFS();
-        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
-
         const getEntity = stub(schemaHelperUtil, "getEntity").returns(
             new Map<string, string>([
                 [schemaEntityKey.EXPORT_TYPE, ""],
@@ -838,7 +833,7 @@ describe("remoteFetchProvider", () => {
             "sendAPITelemetry"
         );
         //Action
-        await fetchDataFromDataverseAndUpdateVFS(portalFs);
+        await fetchDataFromDataverseAndUpdateVFS(portalFs, { entityId: entityId, entityName: entityName });
 
         //Assert
         assert.called(_mockFetch);
@@ -916,9 +911,10 @@ describe("remoteFetchProvider", () => {
         );
 
         const portalFs = new PortalsFS();
+        stub(WebExtensionContext, "authenticateAndUpdateDataverseProperties").resolves();
         await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
-        const _mockFetch = stub(fetch, "default").resolves({
+        const _mockFetch = stub(WebExtensionContext.concurrencyHandler, "handleRequest").resolves({
             ok: true,
             statusText: "statusText",
             json: () => {
@@ -938,9 +934,6 @@ describe("remoteFetchProvider", () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
-        const portalFs = new PortalsFS();
-        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
-
         const getEntity = stub(schemaHelperUtil, "getEntity").returns(
             new Map<string, string>([
                 [schemaEntityKey.EXPORT_TYPE, ""],
@@ -959,7 +952,7 @@ describe("remoteFetchProvider", () => {
         );
 
         //Action
-        await fetchDataFromDataverseAndUpdateVFS(portalFs);
+        await fetchDataFromDataverseAndUpdateVFS(portalFs, { entityId: entityId, entityName: entityName });
 
         //Assert
         assert.called(_mockFetch);
@@ -1037,9 +1030,10 @@ describe("remoteFetchProvider", () => {
         );
 
         const portalFs = new PortalsFS();
+        stub(WebExtensionContext, "authenticateAndUpdateDataverseProperties").resolves();
         await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
-        const _mockFetch = stub(fetch, "default").resolves({
+        const _mockFetch = stub(WebExtensionContext.concurrencyHandler, "handleRequest").resolves({
             ok: true,
             statusText: "statusText",
             json: () => {
@@ -1058,9 +1052,6 @@ describe("remoteFetchProvider", () => {
             },
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
-
-        const portalFs = new PortalsFS();
-        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
         const getEntity = stub(schemaHelperUtil, "getEntity").returns(
             new Map<string, string>([
@@ -1081,7 +1072,7 @@ describe("remoteFetchProvider", () => {
         );
 
         //Action
-        await fetchDataFromDataverseAndUpdateVFS(portalFs);
+        await fetchDataFromDataverseAndUpdateVFS(portalFs, { entityId: entityId, entityName: entityName });
 
         //Assert
         assert.called(_mockFetch);
@@ -1159,9 +1150,10 @@ describe("remoteFetchProvider", () => {
         );
 
         const portalFs = new PortalsFS();
+        stub(WebExtensionContext, "authenticateAndUpdateDataverseProperties").resolves();
         await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
-        const _mockFetch = stub(fetch, "default").resolves({
+        const _mockFetch = stub(WebExtensionContext.concurrencyHandler, "handleRequest").resolves({
             ok: true,
             statusText: "statusText",
             json: () => {
@@ -1180,9 +1172,6 @@ describe("remoteFetchProvider", () => {
             },
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
-
-        const portalFs = new PortalsFS();
-        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
         const getEntity = stub(schemaHelperUtil, "getEntity").returns(
             new Map<string, string>([
@@ -1203,7 +1192,7 @@ describe("remoteFetchProvider", () => {
         );
 
         //Action
-        await fetchDataFromDataverseAndUpdateVFS(portalFs);
+        await fetchDataFromDataverseAndUpdateVFS(portalFs, { entityId: entityId, entityName: entityName });
 
         //Assert
         assert.called(_mockFetch);
@@ -1388,13 +1377,21 @@ describe("remoteFetchProvider", () => {
         const entityName = "webfiles";
         const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
         const queryParamsMap = new Map<string, string>([
-            [Constants.queryParameters.ORG_URL, "powerPages.com"],
+            [queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"],
+            [queryParameters.PORTAL_ID, "36429b2e-8b29-4020-8493-bd5e277444d8"],
             [
-                Constants.queryParameters.WEBSITE_ID,
-                "a58f4e1e-5fe2-45ee-a7c1-398073b40181",
+                queryParameters.REFERRER_SESSION_ID,
+                "4269b44f-8085-4001-88fe-3f30f1194c6f",
             ],
-            [Constants.queryParameters.WEBSITE_NAME, "testWebSite"],
-            [schemaKey.SCHEMA_VERSION, "portalschemav2"],
+            [queryParameters.REFERRER, "yes"],
+            [queryParameters.GEO, "US"],
+            [queryParameters.ENV_ID, "c4dc3686-1e6b-e428-b886-16cd0b9f4918"],
+            [queryParameters.ENTITY, "webfiles"],
+            [
+                queryParameters.ENTITY_ID,
+                "e5dce21c-f85f-4849-b699-920c0fad5fbf",
+            ],
+            [queryParameters.REFERRER_SOURCE, "test"]
         ]);
 
         const languageIdCodeMap = new Map<string, string>([["1033", "en-US"]]);
@@ -1430,7 +1427,7 @@ describe("remoteFetchProvider", () => {
             { accessToken: accessToken, userId: "" }
         );
 
-        const _mockFetch = stub(fetch, 'default').callsFake((url) => {
+        const _mockFetch = stub(WebExtensionContext.concurrencyHandler, 'handleRequest').callsFake((url) => {
             // Return 404 for webfile content fetch
             if (url === 'powerPages.com/api/data/v9.2/powerpagecomponents(aa563be7-9a38-4a89-9216-47f9fc6a3f14)/filecontent') {
                 return Promise.resolve({
@@ -1479,6 +1476,12 @@ describe("remoteFetchProvider", () => {
 
         const portalFs = new PortalsFS();
         stub(portalFs, "writeFile");
+        WebExtensionContext.websiteName = "testWebSite";
+        WebExtensionContext.websiteId = "36429b2e-8b29-4020-8493-bd5e277444d8";
+        WebExtensionContext.organizationId = "e5dce21c-f85f-4849-b699-920c0fad5fbf";
+        WebExtensionContext.environmentId = "c4dc3686-1e6b-e428-b886-16cd0b9f4918";
+        WebExtensionContext.schema = Constants.portalSchemaVersion.V2;
+        WebExtensionContext.orgUrl = "powerPages.com";
         WebExtensionContext.setWebExtensionContext(
             entityName,
             entityId,
