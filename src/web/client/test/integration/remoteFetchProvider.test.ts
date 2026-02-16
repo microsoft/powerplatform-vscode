@@ -1462,7 +1462,7 @@ describe("remoteFetchProvider", () => {
 
         stub(WebExtensionContext.telemetry, "sendAPITelemetry");
         const sendInfoTelemetry = stub(WebExtensionContext.telemetry, "sendInfoTelemetry");
-        const sendErrorTelemetry = stub(WebExtensionContext.telemetry, "sendErrorTelemetry");
+        stub(WebExtensionContext.telemetry, "sendErrorTelemetry");
 
         const portalFs = new PortalsFS();
         stub(portalFs, "writeFile");
