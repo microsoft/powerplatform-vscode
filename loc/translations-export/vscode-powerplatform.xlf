@@ -1260,15 +1260,6 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++f9463baef8e56e06230fca093d61bb43810240340033d21ecf4df81e02579913">
       <source xml:lang="en">This will close the active comparison view. Your local files will not be affected.</source>
     </trans-unit>
-    <trans-unit id="++CODE++bcfc420c0358eb6f248fa6328797cfa38fa121baea6320a623280a0d34eeee75">
-      <source xml:lang="en">This file was exported with a newer version of the extension. Please update your extension to import this file.</source>
-    </trans-unit>
-    <trans-unit id="++CODE++e7de2855a45712e1d967171e4d86f37d4014c2f80a515bc552ed4c4a2984c3e4">
-      <source xml:lang="en">This will close all active comparison views. Your local files will not be affected.</source>
-    </trans-unit>
-    <trans-unit id="++CODE++f9463baef8e56e06230fca093d61bb43810240340033d21ecf4df81e02579913">
-      <source xml:lang="en">This will close the active comparison view. Your local files will not be affected.</source>
-    </trans-unit>
     <trans-unit id="++CODE++75670337a398f9840d2951dbc6746497caec6da9dd506ecff57ef79d59c6280f">
       <source xml:lang="en">Thumbs Down</source>
     </trans-unit>
