@@ -13,6 +13,7 @@ import { SUCCESS } from "../../../../../common/constants";
 import { OrgInfo } from "../../../../pac/PacTypes";
 import { IWebsiteDetails } from "../../../../../common/services/Interfaces";
 import { resolveSiteFromWorkspace, prepareSiteStoragePath, processComparisonResults } from "./MetadataDiffUtils";
+import { getEntitiesToInclude } from "../../ActionsHubUtils";
 import { getWebsiteName } from "../../../../../common/utilities/WorkspaceInfoFinderUtil";
 import { fetchWebsites } from "../../ActionsHubUtils";
 import { MultiStepInput } from "../../../../../common/utilities/MultiStepInput";
@@ -339,19 +340,38 @@ export const compareWithEnvironment = (pacTerminal: PacTerminal, context: vscode
     // Determine data model version
     const dataModelVersion = websiteDetails.dataModel === "Enhanced" ? 2 : 1;
 
+    // Get entities to include for selective download optimization
+    // This reduces download time when comparing a specific folder
+    const includeEntities = getEntitiesToInclude(siteResolution.comparisonSubPath, dataModelVersion);
+
     const siteStoragePath = prepareSiteStoragePath(storagePath, websiteDetails.websiteRecordId);
     const pacWrapper = pacTerminal.getWrapper();
 
     const downloadStartTime = Date.now();
-    const success = await showProgressWithNotification(
-        Constants.StringFunctions.DOWNLOADING_SITE_FOR_COMPARISON(websiteDetails.name),
-        async () => pacWrapper.downloadSiteWithProgress(
-            siteStoragePath,
-            websiteDetails!.websiteRecordId,
-            dataModelVersion,
-            selectedEnv.orgInfo.OrgUrl
-        )
-    );
+    let success: boolean;
+
+    if (websiteDetails.isCodeSite) {
+        // Code sites don't support selective entity download
+        success = await showProgressWithNotification(
+            Constants.StringFunctions.DOWNLOADING_SITE_FOR_COMPARISON(websiteDetails.name),
+            async () => pacWrapper.downloadCodeSiteWithProgress(
+                siteStoragePath,
+                websiteDetails!.websiteRecordId,
+                selectedEnv.orgInfo.OrgUrl
+            )
+        );
+    } else {
+        success = await showProgressWithNotification(
+            Constants.StringFunctions.DOWNLOADING_SITE_FOR_COMPARISON(websiteDetails.name),
+            async () => pacWrapper.downloadSiteWithProgress(
+                siteStoragePath,
+                websiteDetails!.websiteRecordId,
+                dataModelVersion,
+                selectedEnv.orgInfo.OrgUrl,
+                includeEntities
+            )
+        );
+    }
     const downloadDurationMs = Date.now() - downloadStartTime;
 
     if (!success) {
@@ -373,7 +393,9 @@ export const compareWithEnvironment = (pacTerminal: PacTerminal, context: vscode
         siteId: websiteDetails.websiteRecordId,
         environmentId: selectedEnv.orgInfo.EnvironmentId,
         dataModelVersion: dataModelVersion,
-        downloadDurationMs: downloadDurationMs
+        downloadDurationMs: downloadDurationMs,
+        selectiveDownload: includeEntities ? "true" : "false",
+        includedEntities: includeEntities?.join(",") || "all"
     });
 
     // Get local site name from website.yml
@@ -395,7 +417,10 @@ export const compareWithEnvironment = (pacTerminal: PacTerminal, context: vscode
         websiteDetails.websiteUrl,
         websiteDetails.siteVisibility,
         websiteDetails.creator,
-        websiteDetails.createdOn
+        websiteDetails.createdOn,
+        websiteDetails.isCodeSite,
+        siteResolution.isLocalCodeSite,
+        siteResolution.localCodeSiteRootPath
     );
 
     if (hasDifferences) {

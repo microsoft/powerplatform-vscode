@@ -124,7 +124,7 @@ export async function importMetadataDiff(): Promise<void> {
             filters: {
                 [Constants.Strings.METADATA_DIFF_EXPORT_FILTER_NAME]: ["json"]
             },
-            title: vscode.l10n.t("Import Metadata Diff")
+            title: Constants.Strings.METADATA_DIFF_IMPORT_TITLE
         });
 
         if (!openUris || openUris.length === 0) {
@@ -208,10 +208,11 @@ export async function importMetadataDiff(): Promise<void> {
                     `${websiteId}_${importData.environmentId}`
                 );
 
-                // Create the directory if it doesn't exist
-                if (!fs.existsSync(importedDiffsPath)) {
-                    fs.mkdirSync(importedDiffsPath, { recursive: true });
+                // Clean up and recreate the directory to avoid stale data conflicts
+                if (fs.existsSync(importedDiffsPath)) {
+                    fs.rmSync(importedDiffsPath, { recursive: true });
                 }
+                fs.mkdirSync(importedDiffsPath, { recursive: true });
 
                 // Write the file contents to the storage
                 const comparisonResults: IFileComparisonResult[] = [];
@@ -234,12 +235,20 @@ export async function importMetadataDiff(): Promise<void> {
                     // Write local content if available
                     if (file.localContent) {
                         const content = Buffer.from(file.localContent, "base64");
+                        // Remove existing directory at target path if present (can happen if file ordering creates directory first)
+                        if (fs.existsSync(localPath) && fs.statSync(localPath).isDirectory()) {
+                            fs.rmSync(localPath, { recursive: true });
+                        }
                         fs.writeFileSync(localPath, content);
                     }
 
                     // Write remote content if available
                     if (file.remoteContent) {
                         const content = Buffer.from(file.remoteContent, "base64");
+                        // Remove existing directory at target path if present (can happen if file ordering creates directory first)
+                        if (fs.existsSync(remotePath) && fs.statSync(remotePath).isDirectory()) {
+                            fs.rmSync(remotePath, { recursive: true });
+                        }
                         fs.writeFileSync(remotePath, content);
                     }
 

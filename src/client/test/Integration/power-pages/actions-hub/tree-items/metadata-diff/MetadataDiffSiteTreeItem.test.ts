@@ -30,7 +30,8 @@ function createSiteResults(
     websiteUrl = "https://test-site.powerappsportals.com",
     siteVisibility = SiteVisibility.Public,
     creator = "test-creator@contoso.com",
-    createdOn = "2024-01-15T10:30:00Z"
+    createdOn = "2024-01-15T10:30:00Z",
+    isCodeSite = false
 ): ISiteComparisonResults {
     return {
         comparisonResults,
@@ -45,7 +46,8 @@ function createSiteResults(
         websiteUrl,
         siteVisibility,
         creator,
-        createdOn
+        createdOn,
+        isCodeSite
     };
 }
 

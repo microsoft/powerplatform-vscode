@@ -35,8 +35,20 @@ import { IAttributePath, IFileInfo } from "../common/interfaces";
 import { portal_schema_V2 } from "../schema/portalSchema";
 import { ERROR_CONSTANTS } from "../../../common/ErrorConstants";
 import { showErrorDialog } from "../../../common/utilities/errorHandlerUtil";
+import { createHttpResponseError, isHttpResponseError } from "../utilities/errorHandlerUtil";
 import { EnableServerLogicChanges, EnableDuplicateFileHandling, EnableBlogSupport } from "../../../common/ecs-features/ecsFeatureGates";
 import { ECSFeaturesClient } from "../../../common/ecs-features/ecsFeatureClient";
+
+/**
+ * Interface to hold feature flag values fetched once at the start of the fetch operation.
+ * This avoids redundant ECSFeaturesClient.getConfig calls for each file.
+ */
+interface IFeatureFlags {
+    enableServerLogicChanges: boolean;
+    enableDuplicateFileHandling: boolean;
+    disallowedDuplicateFileHandlingOrgs: string;
+    enableBlogSupport: boolean;
+}
 
 export async function fetchDataFromDataverseAndUpdateVFS(
     portalFs: PortalsFS,
@@ -49,10 +61,20 @@ export async function fetchDataFromDataverseAndUpdateVFS(
         const entityRequestURLs = getRequestUrlForEntities(defaultFileInfo?.entityId, defaultFileInfo?.entityName);
         const dataverseOrgUrl = WebExtensionContext.orgUrl;
         const { enableServerLogicChanges } = ECSFeaturesClient.getConfig(EnableServerLogicChanges);
+        const { enableDuplicateFileHandling, disallowedDuplicateFileHandlingOrgs } = ECSFeaturesClient.getConfig(EnableDuplicateFileHandling);
+        const { enableBlogSupport } = ECSFeaturesClient.getConfig(EnableBlogSupport);
+
+        const featureFlags: IFeatureFlags = {
+            enableServerLogicChanges,
+            enableDuplicateFileHandling,
+            disallowedDuplicateFileHandlingOrgs: disallowedDuplicateFileHandlingOrgs ?? '',
+            enableBlogSupport,
+        };
+
         await Promise.all(entityRequestURLs.map(async (entity) => {
             const startTime = new Date().getTime();
-            if(entity.entityName != schemaEntityName.SERVERLOGICS || enableServerLogicChanges) {
-                await fetchFromDataverseAndCreateFiles(entity.entityName, entity.requestUrl, dataverseOrgUrl, portalFs, defaultFileInfo);
+            if(entity.entityName != schemaEntityName.SERVERLOGICS || featureFlags.enableServerLogicChanges) {
+                await fetchFromDataverseAndCreateFiles(entity.entityName, entity.requestUrl, dataverseOrgUrl, portalFs, defaultFileInfo, featureFlags);
 
                 if (defaultFileInfo === undefined) { // This will be undefined for bulk entity load
                     WebExtensionContext.telemetry.sendInfoTelemetry(
@@ -83,6 +105,7 @@ async function fetchFromDataverseAndCreateFiles(
     dataverseOrgUrl?: string,
     portalFs?: PortalsFS,
     defaultFileInfo?: IFileInfo,
+    featureFlags?: IFeatureFlags,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> {
     let requestSentAtTime = new Date().getTime();
@@ -112,7 +135,7 @@ async function fetchFromDataverseAndCreateFiles(
 
             if (!response.ok) {
                 makeRequestCall = false;
-                throw new Error(JSON.stringify(response));
+                throw await createHttpResponseError(response);
             }
 
             const result = await response.json();
@@ -146,7 +169,8 @@ async function fetchFromDataverseAndCreateFiles(
                         portalFs,
                         dataverseOrgUrl,
                         undefined,
-                        defaultFileInfo
+                        defaultFileInfo,
+                        featureFlags
                     );
                 }
             }
@@ -154,7 +178,8 @@ async function fetchFromDataverseAndCreateFiles(
             makeRequestCall = false;
             const errorMsg = (error as Error)?.message;
             console.error(vscode.l10n.t("Failed to fetch some files."));
-            if ((error as Response)?.status > 0) {
+            if (isHttpResponseError(error) && error.httpDetails) {
+                // HTTP error - use API failure telemetry with status code
                 WebExtensionContext.telemetry.sendAPIFailureTelemetry(
                     requestUrl,
                     entityName,
@@ -163,13 +188,14 @@ async function fetchFromDataverseAndCreateFiles(
                     fetchFromDataverseAndCreateFiles.name,
                     errorMsg,
                     '',
-                    (error as Response)?.status.toString()
+                    error.httpDetails.statusCode.toString()
                 );
             } else {
+                // System error (network failure, timeout, etc.)
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     webExtensionTelemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_SYSTEM_ERROR,
                     fetchFromDataverseAndCreateFiles.name,
-                    (error as Error)?.message,
+                    errorMsg,
                     error as Error
                 );
             }
@@ -197,6 +223,7 @@ async function createContentFiles(
     dataverseOrgUrl: string,
     filePathInPortalFS?: string,
     defaultFileInfo?: IFileInfo,
+    featureFlags?: IFeatureFlags,
 ) {
     let fileName = "";
     try {
@@ -294,7 +321,8 @@ async function createContentFiles(
             defaultFileInfo,
             rootWebPageIdAttribute,
             exportType,
-            folderName)
+            folderName,
+            featureFlags)
 
     } catch (error) {
         const errorMsg = (error as Error)?.message;
@@ -324,7 +352,8 @@ async function processDataAndCreateFile(
     defaultFileInfo?: IFileInfo,
     rootWebPageIdAttribute?: string,
     exportType?: string,
-    originalFolderName?: string
+    originalFolderName?: string,
+    featureFlags?: IFeatureFlags,
 ) {
     const attributeExtensionMap = attributeExtension as unknown as Map<
         string,
@@ -341,14 +370,12 @@ async function processDataAndCreateFile(
 
     // Handle webpage folder organization by root webpage ID
     let actualFolderName = originalFolderName || fileName;
-    if (entityName === schemaEntityName.WEBPAGES) {
-        const { enableDuplicateFileHandling, disallowedDuplicateFileHandlingOrgs } = ECSFeaturesClient.getConfig(EnableDuplicateFileHandling);
-
+    if (entityName === schemaEntityName.WEBPAGES && featureFlags) {
         // Check if feature is enabled and current org is not in the disable list
-        const isOrgDisabled = disallowedDuplicateFileHandlingOrgs &&
-            disallowedDuplicateFileHandlingOrgs.split(',').map(org => org.trim()).includes(WebExtensionContext.organizationId);
+        const isOrgDisabled = featureFlags.disallowedDuplicateFileHandlingOrgs &&
+            featureFlags.disallowedDuplicateFileHandlingOrgs.split(',').map(org => org.trim()).includes(WebExtensionContext.organizationId);
 
-        if (enableDuplicateFileHandling && !isOrgDisabled) {
+        if (featureFlags.enableDuplicateFileHandling && !isOrgDisabled) {
             const webpageNames = WebExtensionContext.getWebpageNames();
 
             const effectiveRootWebPageId = rootWebPageId || WEBPAGE_FOLDER_CONSTANTS.NO_ROOT_PLACEHOLDER;
@@ -393,6 +420,12 @@ async function processDataAndCreateFile(
     }    // Create folder directory if needed
     let finalFilePathInPortalFS = filePathInPortalFS;
     if (exportType && exportType === folderExportType.SubFolders) {
+        // For entities whose top-level folder is created lazily, ensure that folder exists
+        // before creating record-level subfolders (e.g. blogposts/{postName}/...)
+        if (conditionalFolderEntities.includes(entityName as schemaEntityName)) {
+            await portalsFS.createDirectory(vscode.Uri.parse(filePathInPortalFS, true));
+        }
+
         finalFilePathInPortalFS = `${filePathInPortalFS}${getSanitizedFileName(actualFolderName)}/`;
         await portalsFS.createDirectory(
             vscode.Uri.parse(finalFilePathInPortalFS, true)
@@ -417,7 +450,8 @@ async function processDataAndCreateFile(
                     expandedContent,
                     portalsFS,
                     dataverseOrgUrl,
-                    finalFilePathInPortalFS);
+                    finalFilePathInPortalFS,
+                    featureFlags);
             }
         }
         else {
@@ -450,6 +484,7 @@ async function processDataAndCreateFile(
                     dataverseOrgUrl,
                     portalsFS,
                     rootWebPageId,
+                    featureFlags,
                 );
             }
         }
@@ -495,7 +530,8 @@ async function processExpandedData(
     result: any,
     portalFs: PortalsFS,
     dataverseOrgUrl: string,
-    filePathInPortalFS: string
+    filePathInPortalFS: string,
+    featureFlags?: IFeatureFlags,
 ) {
     // Load the content of the expanded entity
     for (let counter = 0; counter < result.length; counter++) {
@@ -504,7 +540,9 @@ async function processExpandedData(
             getEntityNameForExpandedEntityContent(entityName),
             portalFs,
             dataverseOrgUrl,
-            filePathInPortalFS
+            filePathInPortalFS,
+            undefined,
+            featureFlags
         );
     }
 }
@@ -521,7 +559,8 @@ async function createFile(
     entityId: string,
     dataverseOrgUrl: string,
     portalsFS: PortalsFS,
-    rootWebPageId?: string
+    rootWebPageId?: string,
+    featureFlags?: IFeatureFlags,
 ) {
     const base64Encoded: boolean = isBase64Encoded(
         entityName,
@@ -574,6 +613,7 @@ async function createFile(
         mappingEntityId,
         entityMetadata,
         rootWebPageId,
+        featureFlags,
     );
 }
 
@@ -611,22 +651,33 @@ async function fetchMappingEntityContent(
         headers: getCommonHeadersForDataverse(accessToken),
     });
 
-    if(entity === schemaEntityName.SERVERLOGICS && !response.ok) {
+    // Gracefully handle 404 for optional entities (deleted/moved files or missing server logic)
+    const notFoundTelemetryMap = new Map<string, string>([
+        [schemaEntityName.WEBFILES, webExtensionTelemetryEventNames.WEB_EXTENSION_WEBFILE_NOT_FOUND],
+        [schemaEntityName.SERVERLOGICS, webExtensionTelemetryEventNames.WEB_EXTENSION_SERVERLOGIC_NOT_FOUND],
+    ]);
+
+    if (!response.ok && response.status === 404 && notFoundTelemetryMap.has(entity)) {
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            notFoundTelemetryMap.get(entity) as string,
+            { entityId, entity }
+        );
         return Constants.NO_CONTENT;
     }
 
     if (!response.ok) {
+        const httpError = await createHttpResponseError(response);
         WebExtensionContext.telemetry.sendAPIFailureTelemetry(
             requestUrl,
             entity,
             Constants.httpMethod.GET,
             new Date().getTime() - requestSentAtTime,
             fetchMappingEntityContent.name,
-            JSON.stringify(response),
+            httpError.message,
             '',
-            response?.status.toString()
+            httpError.httpDetails?.statusCode.toString() ?? ''
         );
-        throw new Error(response.statusText);
+        throw httpError;
     }
 
     WebExtensionContext.telemetry.sendAPISuccessTelemetry(
@@ -700,7 +751,8 @@ export async function preprocessData(
                     const errorMsg = (error as Error)?.message;
                     WebExtensionContext.telemetry.sendErrorTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_WEBFORM_STEPS_FAILED,
                         preprocessData.name,
-                        errorMsg);
+                        errorMsg,
+                        error as Error);
                 }
             });
             WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_SUCCESS, { entityType: entityType });
@@ -736,6 +788,7 @@ async function createVirtualFile(
     mappingEntityId?: string,
     entityMetadata?: SchemaEntityMetadata,
     rootWebPageId?: string,
+    featureFlags?: IFeatureFlags,
 ) {
     // Maintain file information in context
     await WebExtensionContext.updateFileDetailsInContext(
@@ -754,10 +807,9 @@ async function createVirtualFile(
 
     const fileUriParsed = vscode.Uri.parse(fileUri);
 
-    const { enableBlogSupport } = ECSFeaturesClient.getConfig(EnableBlogSupport);
     // Ensure parent directory exists before writing file for conditional entities
     // This enables lazy folder creation for blogs, ideas, ideaforums, forum announcements, and forum posts
-    if (enableBlogSupport && conditionalFolderEntities.includes(entityName as schemaEntityName)) {
+    if (featureFlags?.enableBlogSupport && conditionalFolderEntities.includes(entityName as schemaEntityName)) {
         const parentDirPath = fileUriParsed.path.substring(0, fileUriParsed.path.lastIndexOf('/'));
         const parentDirUri = fileUriParsed.with({ path: parentDirPath });
 

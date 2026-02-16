@@ -117,7 +117,7 @@ export const {
     teamName: PowerPagesClientName,
     description: 'Enable blog file support in VSCode (web & desktop)',
     fallback: {
-        enableBlogSupport: false,
+        enableBlogSupport: true,
     }
 });
 
@@ -127,6 +127,6 @@ export const {
     teamName: PowerPagesClientName,
     description: 'Enable Metadata Diff comparison in VS Code Desktop',
     fallback: {
-        enableMetadataDiff: false,
+        enableMetadataDiff: true,
     }
 });

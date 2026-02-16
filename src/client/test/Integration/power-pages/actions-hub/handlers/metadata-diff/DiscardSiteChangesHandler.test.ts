@@ -92,6 +92,8 @@ describe("DiscardSiteChangesHandler", () => {
 
             expect(discardSingleFileStub.callCount).to.equal(2);
             expect(showInformationMessageStub.calledOnce).to.be.true;
+            const successMessage = showInformationMessageStub.firstCall.args[0];
+            expect(successMessage).to.equal(Constants.StringFunctions.DISCARD_SITE_CHANGES_SUCCESS("Local Test Site", 2));
         });
 
         it("should not discard when user cancels", async () => {
@@ -131,13 +133,15 @@ describe("DiscardSiteChangesHandler", () => {
             });
         });
 
-        it("should show confirmation dialog with correct message", async () => {
+        it("should show confirmation dialog with correct message using local site name", async () => {
             const siteItem = createSiteTreeItem("Test Site");
             showWarningMessageStub.resolves(undefined);
 
             await discardSiteChanges(siteItem);
 
             expect(showWarningMessageStub.calledOnce).to.be.true;
+            const confirmMessage = showWarningMessageStub.firstCall.args[0];
+            expect(confirmMessage).to.equal(Constants.StringFunctions.DISCARD_SITE_CHANGES_CONFIRM("Local Test Site", 3, "/local"));
             expect(showWarningMessageStub.firstCall.args[1]).to.deep.equal({ modal: true });
             expect(showWarningMessageStub.firstCall.args[2]).to.equal(Constants.Strings.DISCARD_CHANGES);
         });

@@ -305,15 +305,46 @@ export class PacWrapper {
      * @param downloadPath Path to download to
      * @param websiteId Website ID
      * @param dataModelVersion Data model version (1 or 2)
+     * @param environmentUrl Optional environment URL for cross-environment downloads
+     * @param includeEntities Optional array of entity names to include for selective download
      * @returns Promise that resolves to true if download succeeded, false otherwise
      */
     public async downloadSiteWithProgress(
         downloadPath: string,
         websiteId: string,
         dataModelVersion: 1 | 2,
-        environmentUrl?: string
+        environmentUrl?: string,
+        includeEntities?: string[]
     ): Promise<boolean> {
         const pacArguments = ["pages", "download", "--path", downloadPath, "--webSiteId", websiteId, "--modelVersion", dataModelVersion.toString(), "--overwrite"];
+
+        if (environmentUrl) {
+            pacArguments.push("--environment", environmentUrl);
+        }
+
+        if (includeEntities && includeEntities.length > 0) {
+            pacArguments.push("--includeEntities", includeEntities.join(","));
+        }
+
+        return this.pacInterop.executeCommandWithProgress(
+            new PacArguments(...pacArguments)
+        );
+    }
+
+    /**
+     * Downloads a code site with output streamed to a VS Code Output Channel.
+     * This allows the user to see progress in real-time while still awaiting completion.
+     * @param downloadPath Path to download to
+     * @param websiteId Website ID
+     * @param environmentUrl Optional environment URL
+     * @returns Promise that resolves to true if download succeeded, false otherwise
+     */
+    public async downloadCodeSiteWithProgress(
+        downloadPath: string,
+        websiteId: string,
+        environmentUrl?: string
+    ): Promise<boolean> {
+        const pacArguments = ["pages", "download-code-site", "--path", downloadPath, "--webSiteId", websiteId, "--overwrite"];
 
         if (environmentUrl) {
             pacArguments.push("--environment", environmentUrl);

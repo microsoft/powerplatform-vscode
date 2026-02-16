@@ -67,14 +67,26 @@ export const resyncMetadataDiff = (pacTerminal: PacTerminal, context: vscode.Ext
     const dataModelVersion: 1 | 2 = siteItem.dataModelVersion ?? 1;
 
     const downloadStartTime = Date.now();
-    const success = await showProgressWithNotification(
-        Constants.StringFunctions.RESYNCING_SITE_COMPARISON(siteItem.siteName),
-        async () => pacWrapper.downloadSiteWithProgress(
-            siteStoragePath,
-            siteItem.websiteId,
-            dataModelVersion
-        )
-    );
+    let success: boolean;
+
+    if (siteItem.isCodeSite) {
+        success = await showProgressWithNotification(
+            Constants.StringFunctions.RESYNCING_SITE_COMPARISON(siteItem.siteName),
+            async () => pacWrapper.downloadCodeSiteWithProgress(
+                siteStoragePath,
+                siteItem.websiteId
+            )
+        );
+    } else {
+        success = await showProgressWithNotification(
+            Constants.StringFunctions.RESYNCING_SITE_COMPARISON(siteItem.siteName),
+            async () => pacWrapper.downloadSiteWithProgress(
+                siteStoragePath,
+                siteItem.websiteId,
+                dataModelVersion
+            )
+        );
+    }
     const downloadDurationMs = Date.now() - downloadStartTime;
 
     if (!success) {
@@ -114,7 +126,8 @@ export const resyncMetadataDiff = (pacTerminal: PacTerminal, context: vscode.Ext
         siteItem.websiteUrl,
         siteItem.siteVisibility,
         siteItem.creator,
-        siteItem.createdOn
+        siteItem.createdOn,
+        siteItem.isCodeSite
     );
 
     if (hasDifferences) {

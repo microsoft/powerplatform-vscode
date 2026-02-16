@@ -608,9 +608,14 @@ describe("WebExtensionContext", () => {
             "getPortalLanguageIdToLcidMap"
         ).returns(portalLanguageIdCodeMap);
 
+        const mockResponseBody = JSON.stringify({ value: "value" });
         const _mockFetch = stub(fetch, "default").resolves({
             ok: false,
-            statusText: "statusText",
+            status: 500,
+            statusText: "Internal Server Error",
+            url: "https://test.crm.dynamics.com",
+            clone: function() { return this; },
+            text: () => Promise.resolve(mockResponseBody),
             json: () => {
                 return new Promise((resolve) => {
                     return resolve({ value: "value" });
@@ -703,7 +708,8 @@ describe("WebExtensionContext", () => {
             "getCustomRequestURL"
         ).returns(requestUrl);
 
-        const _mockFetch = stub(fetch, "default").throws();
+        // Stub concurrencyHandler.handleRequest instead of fetch to avoid retry delays
+        const _mockHandleRequest = stub(WebExtensionContext.concurrencyHandler, "handleRequest").rejects(new Error("Test error"));
         const languageIdCodeMap = new Map<string, string>([["1033", "en-US"]]);
         stub(schemaHelperUtil, "getLcidCodeMap").returns(languageIdCodeMap);
 
@@ -751,20 +757,20 @@ describe("WebExtensionContext", () => {
         expect(WebExtensionContext.dataverseAccessToken).eq(accessToken);
 
         assert.calledOnceWithExactly(dataverseAuthentication, ORG_URL, true);
-        //#region  Fetch
+        //#region  handleRequest calls (via concurrencyHandler)
         const header = getCommonHeadersForDataverse(accessToken);
-        assert.calledThrice(_mockFetch);
-        const firstFetchCall = _mockFetch.getCalls()[0];
-        expect(firstFetchCall.args[0], requestUrl);
-        expect(firstFetchCall.args[1]?.headers).deep.eq(header);
+        assert.calledThrice(_mockHandleRequest);
+        const firstHandleRequestCall = _mockHandleRequest.getCalls()[0];
+        expect(firstHandleRequestCall.args[0], requestUrl);
+        expect(firstHandleRequestCall.args[1]?.headers).deep.eq(header);
 
-        const secondFetchCall = _mockFetch.getCalls()[1];
-        expect(secondFetchCall.args[0], requestUrl);
-        expect(secondFetchCall.args[1]?.headers).deep.eq(header);
+        const secondHandleRequestCall = _mockHandleRequest.getCalls()[1];
+        expect(secondHandleRequestCall.args[0], requestUrl);
+        expect(secondHandleRequestCall.args[1]?.headers).deep.eq(header);
 
-        const thirdFetchCall = _mockFetch.getCalls()[2];
-        expect(thirdFetchCall.args[0], requestUrl);
-        expect(thirdFetchCall.args[1]?.headers).deep.eq(header);
+        const thirdHandleRequestCall = _mockHandleRequest.getCalls()[2];
+        expect(thirdHandleRequestCall.args[0], requestUrl);
+        expect(thirdHandleRequestCall.args[1]?.headers).deep.eq(header);
 
         //#endregion
 

@@ -123,11 +123,11 @@ Local path: {2}
 
 This action cannot be undone.</source>
         <note>Confirmation message before discarding all local changes in a site.</note>
-        <target state="new">Are you sure you want to discard all {0} local changes in '{1}'?
+        <target state="translated">¿Está seguro de que desea descartar todos los {0} cambios locales en "{1}"?
 
-Local path: {2}
+Ruta de acceso local: {2}
 
-This action cannot be undone.</target>
+Esta acción no se puede deshacer.</target>
       </trans-unit>
       <trans-unit id="++CODE++1d9cd153bf20c28e77061a9743a69cc8850f21221a1871f1c13b27e8470a2688">
         <source xml:lang="en">Are you sure you want to discard local changes to '{0}'? This action cannot be undone.</source>
@@ -274,7 +274,7 @@ The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).
       </trans-unit>
       <trans-unit id="++CODE++ee9d4bb8e9f94832366fe390fde5efc4b555d1464ef6023d3c0b25de58223bcc">
         <source xml:lang="en">Click to compare your local site with an environment</source>
-        <target state="new">Click to compare your local site with an environment</target>
+        <target state="translated">Haga clic para comparar el sitio local con un entorno</target>
       </trans-unit>
       <trans-unit id="++CODE++7d9eb7acb13e24625c404401d8e88b2350e32162455885f18276cf802f7701ed">
         <source xml:lang="en">Close</source>
@@ -384,11 +384,11 @@ Consulte el panel de la extensión CodeQL para ver las consultas disponibles.</t
       </trans-unit>
       <trans-unit id="++CODE++d73890ab56fd9e1ff5349b7bdb41fe0d848c5960c096b30357e26b912456f21f">
         <source xml:lang="en">Compare site with environment</source>
-        <target state="new">Compare site with environment</target>
+        <target state="translated">Comparar con el entorno</target>
       </trans-unit>
       <trans-unit id="++CODE++3c69bfaf47b25fe112854a5ba01f4d882248d17e6e76c7d1b0a9da8dc3a7929a">
         <source xml:lang="en">Compare site...</source>
-        <target state="new">Compare site...</target>
+        <target state="translated">Comparar sitio...</target>
       </trans-unit>
       <trans-unit id="++CODE++95de5784f48c7fee97755bb29a90a128546a6a30201be3c73493229230ea7f72">
         <source xml:lang="en">Compare: {0} (Remote ↔ Local)</source>
@@ -537,6 +537,10 @@ Consulte el panel de la extensión CodeQL para ver las consultas disponibles.</t
       <trans-unit id="++CODE++9a983b9151d6fc6165f094e95ba9ba8cb588b59345cf8956f8fb77ee7ce36be2">
         <source xml:lang="en">Deleted locally</source>
         <target state="translated">Eliminado localmente</target>
+      </trans-unit>
+      <trans-unit id="++CODE++4d280a451d04b7a51a7e302e0222ad77bb1e531f922b6193be115358256c245f">
+        <source xml:lang="en">Difference</source>
+        <target state="translated">Diferencia</target>
       </trans-unit>
       <trans-unit id="++CODE++e07e053c2e10b3f1b6aef657d937cd91d45df4e40242788d7d621faea3380c27">
         <source xml:lang="en">Discard Changes</source>
@@ -691,9 +695,9 @@ Tipo: {3}</target>
         <source xml:lang="en">Explain the following code {% include 'Page Copy'%}</source>
         <target state="translated">Explicar el siguiente código {% include 'Page Copy'%}</target>
       </trans-unit>
-      <trans-unit id="++CODE++faa8395365de427167672364e213e1f84ea2c3103922d44673f61ed2873f6745">
-        <source xml:lang="en">Export Metadata Diff</source>
-        <target state="translated">Exportar diferencias de metadatos</target>
+      <trans-unit id="++CODE++8186dceb4ea80ad0cf6cef1abf996c3564cb3cfaa093e03a31f6ac0cf037696d">
+        <source xml:lang="en">Export Site Comparison</source>
+        <target state="translated">Exportar comparación de sitios</target>
       </trans-unit>
       <trans-unit id="++CODE++1f14b9b0b30891bec1ece43097d7ae38a34b666738f9173658022778f5ce3ebf">
         <source xml:lang="en">Exporting comparison...</source>
@@ -780,9 +784,9 @@ Tipo: {3}</target>
         <source xml:lang="en">Failed to open in VS Code Desktop: {0}</source>
         <target state="translated">No se pudo abrir en VS Code Desktop: {0}</target>
       </trans-unit>
-      <trans-unit id="++CODE++3ae8538d5c7a65434c88e17ef8360aa3eb2c80dd577f3daad2d41d58d83353c9">
-        <source xml:lang="en">Failed to switch to required environment</source>
-        <target state="translated">No se pudo cambiar al entorno requerido</target>
+      <trans-unit id="++CODE++ab47a93b0690e3553f60a7e1bd45df0a5e0ebf49f7f3c150d38f347699892163">
+        <source xml:lang="en">Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.</source>
+        <target state="translated">No se pudo cambiar al entorno requerido. Inicie sesión con una cuenta que tenga acceso al entorno de destino usando el comando "pac auth create".</target>
       </trans-unit>
       <trans-unit id="++CODE++a9e36b880dd45b64ae5601865540605296febf9bd855fc46d9c35c2c2ed9a7f2">
         <source xml:lang="en">Feature is not enabled for this geo.</source>
@@ -801,6 +805,14 @@ Tipo: {3}</target>
         <source xml:lang="en">Fetching your file ...</source>
         <target state="translated">Capturando su archivo...</target>
       </trans-unit>
+      <trans-unit id="++CODE++8e76f8a5d51c8a06c8aa71cf5fbce0108993ed2becb686cbde33372fd00b555d">
+        <source xml:lang="en">File is too large for detailed diff comparison</source>
+        <target state="translated">El archivo es demasiado grande para la comparación detallada de diferencias</target>
+      </trans-unit>
+      <trans-unit id="++CODE++7701aaed77c66a5f257cce47adf0e5a1082304a7a6cc6e803aacc2c9882b2cfc">
+        <source xml:lang="en">File is too large to display diff (exceeds 5MB)</source>
+        <target state="translated">El archivo es demasiado grande para mostrar la diferencia (supera los 5 MB)</target>
+      </trans-unit>
       <trans-unit id="++CODE++7b351789f09522eb21ab2637f1b063ff2a41451a7130138b41f142a6fe5d249e">
         <source xml:lang="en">File might be referenced by name {0} here.</source>
         <note>{0} represents the name of the file</note>
@@ -816,7 +828,7 @@ Tipo: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++cc2cc5f1256a46b0f5c8fc579d2513fdd4a8ae48d288334b5682d88fba9702da">
         <source xml:lang="en">Find differences between your remote site and local workspace</source>
-        <target state="new">Find differences between your remote site and local workspace</target>
+        <target state="translated">Encuentre las diferencias entre el sitio remoto y el área de trabajo local</target>
       </trans-unit>
       <trans-unit id="++CODE++4c152c6eaba506f1e585f1fe8424b694874ccf652f4bdebb5e333ed518e9e428">
         <source xml:lang="en">Found CodeQL CLI at: {0}</source>
@@ -914,9 +926,9 @@ Vuelve a este chat y @powerpages puede ayudarle a escribir y editar el código d
         <source xml:lang="en">Hi! Your Microsoft account doesn’t currently support Copilot. Contact your admin for details.</source>
         <target state="translated">Hola: Su cuenta de Microsoft no es compatible actualmente con Copilot. Póngase en contacto con su administrador para obtener más información.</target>
       </trans-unit>
-      <trans-unit id="++CODE++fd6f929754f9e7358fbf47dfa5bdb5453b0866d18e8f50b2e915366dc64a1b14">
-        <source xml:lang="en">Import Metadata Diff</source>
-        <target state="translated">Importar diferencias de metadatos</target>
+      <trans-unit id="++CODE++533560c3dae9ee0e91fced5b66da418c6b49d7998b03c9cf6ccfa8463a99ddf0">
+        <source xml:lang="en">Import Site Comparison</source>
+        <target state="translated">Importar comparación de sitios</target>
       </trans-unit>
       <trans-unit id="++CODE++721266427f4f6ab7a5409839b7675a73aed355db0e876c0464f100c99c4158f6">
         <source xml:lang="en">Importing comparison...</source>
@@ -986,7 +998,7 @@ Vuelve a este chat y @powerpages puede ayudarle a escribir y editar el código d
       </trans-unit>
       <trans-unit id="++CODE++47d2a515ef2f05b87d688656286a61e4f743da4b878684c7654969db17711c40">
         <source xml:lang="en">Loading...</source>
-        <target state="new">Loading...</target>
+        <target state="translated">Cargando...</target>
       </trans-unit>
       <trans-unit id="++CODE++8c31e6e7223097e2e4847773c47a4efab6aaf79deeecc92a7759891c74976dde">
         <source xml:lang="en">Local</source>
@@ -1029,10 +1041,6 @@ Vuelve a este chat y @powerpages puede ayudarle a escribir y editar el código d
       <trans-unit id="++CODE++8a194d5287e3da019883144787cd5f282753f5ce892d933be0833b3818c25503">
         <source xml:lang="en">Maximum 30 characters allowed</source>
         <target state="translated">Se permite un máximo de 30 caracteres</target>
-      </trans-unit>
-      <trans-unit id="++CODE++d39a5fa0fca9df105f95b7dfa9a2705ccddaead33bd3119052baabe6c923a85d">
-        <source xml:lang="en">Metadata Diff JSON</source>
-        <target state="translated">JSON de diferencias de metadatos</target>
       </trans-unit>
       <trans-unit id="++CODE++b1c8258fb401975727a82d9ce473af0a600f076cc7b73dbd16524e815cf4153d">
         <source xml:lang="en">Microsoft wants your feedback</source>
@@ -1312,7 +1320,7 @@ Id. de organización: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++41024d68d0b449f0dfc48541fe0be218aa6acc1cc982ef1a701b759f037fecfa">
         <source xml:lang="en">Power Platform Tools - Site Comparison</source>
-        <target state="new">Power Platform Tools - Site Comparison</target>
+        <target state="translated">Herramientas de Power Platform: comparación de sitios</target>
       </trans-unit>
       <trans-unit id="++CODE++8ce54044bb9e895666fd98c1b6e497655a4c2a7239b2187599972e9d81bd0f3e">
         <source xml:lang="en">Power Platform Tools VS Code Extension</source>
@@ -1371,7 +1379,7 @@ Id. de organización: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++ffa98e02f7ce33fc935f02b3b668f6ad57661814dade5f41453fbee2b70cdd95">
         <source xml:lang="en">Remote</source>
-        <target state="new">Remote</target>
+        <target state="translated">Remoto</target>
       </trans-unit>
       <trans-unit id="++CODE++95e154398a4bc0091aa4d6b607472ac5a89e41fbc84a3a49f823314d6de9eebc">
         <source xml:lang="en">Replace</source>
@@ -1503,9 +1511,13 @@ Id. de organización: {3}</target>
         <source xml:lang="en">Site Comparison</source>
         <target state="translated">Comparación de sitios</target>
       </trans-unit>
+      <trans-unit id="++CODE++a2b2338307fa6b0b6c048393bdf584b2babad14d29f6b741cd2b2e4eaa051353">
+        <source xml:lang="en">Site Comparison JSON</source>
+        <target state="translated">JSON de comparación de sitios</target>
+      </trans-unit>
       <trans-unit id="++CODE++87fa4c14343dbe871004d198588448a3b43c12dae48f8b1cb63d53e8e2687a29">
         <source xml:lang="en">Site Comparison Report</source>
-        <target state="new">Site Comparison Report</target>
+        <target state="translated">Informe de comparación de sitios</target>
       </trans-unit>
       <trans-unit id="++CODE++524bca0347e50e3801bebf27374124b3babf072729b4da4bcc45ef5c385ee8f4">
         <source xml:lang="en">Site Details</source>
@@ -1571,7 +1583,7 @@ Id. de organización: {3}</target>
       <trans-unit id="++CODE++4bcd6903494ba202e376e60698d4f937a3515af0fb4bdcad4875e4f76736b0dd">
         <source xml:lang="en">Successfully discarded all {0} local changes in '{1}'.</source>
         <note>Success message after discarding all local changes in a site.</note>
-        <target state="new">Successfully discarded all {0} local changes in '{1}'.</target>
+        <target state="translated">Se descartaron correctamente todos los {0} cambios locales en "{1}".</target>
       </trans-unit>
       <trans-unit id="++CODE++9543efee4b5aadd6f27f5d4a06361b18d153aaf0b66e0121622fb9fd3581fdf8">
         <source xml:lang="en">Successfully discarded local changes to '{0}'.</source>
@@ -1645,9 +1657,9 @@ Id. de organización: {3}</target>
         <source xml:lang="en">There was a problem opening the workspace</source>
         <target state="translated">Hubo un problema al abrir el área de trabajo</target>
       </trans-unit>
-      <trans-unit id="++CODE++37ea190531b914739bf1ff100b3d44579b6d703de0b79b380094714aa3b3c259">
-        <source xml:lang="en">There’s a problem on the back end</source>
-        <target state="translated">Hay un problema en el back-end</target>
+      <trans-unit id="++CODE++0bd7e288337919a633d6237e1c6f79e721699cc0cf3dc0204279215c4f8591c8">
+        <source xml:lang="en">There's a problem on the back end</source>
+        <target state="new">There's a problem on the back end</target>
       </trans-unit>
       <trans-unit id="++CODE++bcfc420c0358eb6f248fa6328797cfa38fa121baea6320a623280a0d34eeee75">
         <source xml:lang="en">This file was exported with a newer version of the extension. Please update your extension to import this file.</source>
@@ -1688,7 +1700,7 @@ Id. de organización: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++1ad14134a4f26b4cf2f8e203eb324fab77722a2f5368f489162d3d2319d01060">
         <source xml:lang="en">Total Files:</source>
-        <target state="new">Total Files:</target>
+        <target state="translated">Total de archivos:</target>
       </trans-unit>
       <trans-unit id="++CODE++4a7c431a6572c68bba17c3a5d858adbf5112462574953baf4d7d2fd0619807fe">
         <source xml:lang="en">Try @powerpages with GitHub Copilot</source>
@@ -1769,7 +1781,7 @@ Id. de organización: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++037bfba715811960dfb62b81a99d5002835f73a9c44bdd6661ebc222d8538e2b">
         <source xml:lang="en">Use File → Open Folder to select a folder with a Power Pages site</source>
-        <target state="new">Use File → Open Folder to select a folder with a Power Pages site</target>
+        <target state="translated">Usar archivo → Abrir carpeta para seleccionar una carpeta con un sitio de Power Pages</target>
       </trans-unit>
       <trans-unit id="++CODE++c86daff3d88f7b1f615467872994ef13dcbc1c55e10105d71f398c721650c9c2">
         <source xml:lang="en">Use current site folder</source>
@@ -1919,6 +1931,10 @@ Id. de organización: {3}</target>
         <note>Do not translate 'dotnet' or 'sdk'</note>
         <target state="translated">debe estar instalado dotnet sdk 6.0 o una versión posterior</target>
       </trans-unit>
+      <trans-unit id="++CODE++5ea44c3961f16643e614435496b16115aa6d75458b5cc3fd5398aae291f3126b">
+        <source xml:lang="en">lines</source>
+        <target state="translated">líneas</target>
+      </trans-unit>
       <trans-unit id="++CODE++21c9bbf3ca8756722337933b27566345c8aa2794231295a3ede6204329456931">
         <source xml:lang="en">pac pcf init</source>
         <target state="translated">pac pcf init</target>
@@ -2063,7 +2079,7 @@ Para obtener más información, visite [Evitar sobrescritura accidental](command
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.discardSite.title">
         <source xml:lang="en">Discard All Local Changes</source>
-        <target state="new">Discard All Local Changes</target>
+        <target state="translated">Descartar todos los cambios locales</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFolder.title">
         <source xml:lang="en">Discard All Local Changes</source>

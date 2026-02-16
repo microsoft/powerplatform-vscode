@@ -1,8 +1,3 @@
----
-applyTo: "src/client/**"
-description: Desktop Extension Setup and Contribution Instructions
----
-
 # VS Code Desktop Extension
 
 ## 1. Project Overview

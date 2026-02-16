@@ -1,8 +1,3 @@
----
-applyTo: "src/web/**"
-description: Web Extension Setup and Contribution Instructions
----
-
 # Web Extension Instructions
 
 This document provides setup, architecture, coding, and testing instructions for the web extension located in `src/web`. It is designed to help both humans and AI agents contribute effectively.

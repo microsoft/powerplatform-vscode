@@ -1,5 +1,19 @@
 # Change Log - Power Platform Extension
 
+## 2.0.131
+- pac CLI 2.2.1, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+
+## 2.0.128
+- pac CLI 2.1.2, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- Bug Fixes and enhancements
+
+## 2.0.116
+- pac CLI 1.52.1, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- Rollout of debugging support for Server Logics (Desktop)([Server logic](https://learn.microsoft.com/en-us/power-pages/configure/server-logic-overview))
+- Introducing 'Tools' section in Power Pages Actions (Desktop)
+- Added 'Site Comparison' tool in Power Pages Actions (Desktop)
+- Added support for new parameters in Server Logic autocomplete
+
 ## 2.0.111
 - pac CLI 1.51.1, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 

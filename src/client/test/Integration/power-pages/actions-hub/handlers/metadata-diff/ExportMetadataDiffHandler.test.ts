@@ -100,8 +100,8 @@ describe("ExportMetadataDiffHandler", () => {
             await exportMetadataDiff(treeItem);
 
             const saveDialogOptions = showSaveDialogStub.firstCall.args[0];
-            expect(saveDialogOptions.filters).to.have.property("Metadata Diff JSON");
-            expect(saveDialogOptions.filters["Metadata Diff JSON"]).to.include("json");
+            expect(saveDialogOptions.filters).to.have.property("Site Comparison JSON");
+            expect(saveDialogOptions.filters["Site Comparison JSON"]).to.include("json");
         });
 
         it("should use site name in default file name", async () => {

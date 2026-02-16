@@ -31,7 +31,7 @@
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.clear.title": "비교 내용 지우기",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFile.title": "로컬 변경 내용 취소",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardFolder.title": "모든 로컬 변경 내용 취소",
-  "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardSite.title": "Discard All Local Changes",
+  "microsoft.powerplatform.pages.actionsHub.metadataDiff.discardSite.title": "모든 로컬 변경 내용 취소",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.export.title": "JSON으로 내보내기",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.generateHtmlReport.title": "HTML 보고서로 내보내기",
   "microsoft.powerplatform.pages.actionsHub.metadataDiff.import.title": "비교 가져오기",

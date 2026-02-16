@@ -1,10 +1,12 @@
-# Instructions
+# Agents Instructions
+
+## General Guidelines
+
+Always read memory bank information from [memory-bank/Agents.md](memory-bank/Agents.md)
 
 ## Architecture Overview
 
 This is the **Power Platform VS Code extension** that provides tooling for creating, building, and deploying Power Platform solutions, packages, and portals. It integrates the Power Platform CLI (pac) directly into VS Code.
-
-Always refer to [memory-bank.instructions.md](instructions/memory-bank.instructions.md) for the latest architecture and coding guidelines.
 
 ### Key Components
 
@@ -74,6 +76,11 @@ await pacWrapper.executeCommand(['solution', 'list']);
 
 - Use JSDoc style comments for functions, interfaces, enums, and classes
 - Include parameter descriptions and return types
+
+### Workflow
+
+- Use async/await for asynchronous code
+- When modifying any localization strings, run `npm run translations-export` to ensure updates are captured.
 
 ## Testing Patterns
 
