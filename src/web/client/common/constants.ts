@@ -88,6 +88,7 @@ export enum initializationEntityName {
 export enum queryParameters {
     ORG_ID = "organizationid",
     PORTAL_ID = "websitepreviewid",
+    WEBSITE_ID = "websiteid",
     ENV_ID = "envid",
     REFERRER_SESSION_ID = "referrersessionid",
     REFERRER = "referrer",

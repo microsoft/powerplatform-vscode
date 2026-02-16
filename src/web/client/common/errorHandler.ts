@@ -46,15 +46,15 @@ export function checkMandatoryQueryParameters(
     ) {
         case "portal": {
             const orgId = queryParamsMap?.get(queryParameters.ORG_ID);
-            const portalId = queryParamsMap?.get(queryParameters.PORTAL_ID);
+            const websiteId = queryParamsMap?.get(queryParameters.WEBSITE_ID);
             const envId = queryParamsMap?.get(queryParameters.ENV_ID);
-            if (orgId && portalId && envId) {
+            if (orgId && websiteId && envId) {
                 return true;
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     webExtensionTelemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING,
                     checkMandatoryQueryParameters.name,
-                    `orgId:${orgId}, portalId:${portalId}, envId:${envId}`
+                    `orgId:${orgId}, websiteId:${websiteId}, envId:${envId}`
                 );
                 showErrorDialog(
                     vscode.l10n.t("There was a problem opening the workspace"),

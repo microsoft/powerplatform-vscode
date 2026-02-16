@@ -45,6 +45,7 @@ import { activateServerApiAutocomplete } from "../../common/intellisense";
 import { EnableServerLogicChanges } from "../../common/ecs-features/ecsFeatureGates";
 import { setServerApiTelemetryContext } from "../../common/intellisense/ServerApiTelemetryContext";
 import { PPAPIService } from "../../common/services/PPAPIService";
+import { IWebsiteDetails } from "../../common/services/Interfaces";
 import { SiteVisibility } from "../../client/power-pages/actions-hub/models/SiteVisibility";
 import { WebsiteDataModel } from "../../common/services/Constants";
 
@@ -722,9 +723,19 @@ async function initializeWebsiteDetails(queryParamsMap: Map<string, string>) {
             title: vscode.l10n.t("Fetching website details ..."),
         },
         async () => {
-            const portalId = queryParamsMap.get(queryParameters.PORTAL_ID) as string;
+            const portalId = queryParamsMap.get(queryParameters.PORTAL_ID);
+            const websiteId = queryParamsMap.get(queryParameters.WEBSITE_ID) as string;
             const envId = queryParamsMap.get(queryParameters.ENV_ID)?.split("/")?.pop() as string;
-            const websiteDetails = await PPAPIService.getWebsiteDetailsById(WebExtensionContext.serviceEndpointCategory, envId, portalId);
+
+            let websiteDetails: IWebsiteDetails | null = null;
+
+            if (portalId) {
+                // If portalId is provided, fetch directly by preview id
+                websiteDetails = await PPAPIService.getWebsiteDetailsById(WebExtensionContext.serviceEndpointCategory, envId, portalId);
+            } else {
+                // Derive portalId by matching websiteRecordId from all websites
+                websiteDetails = await resolveWebsiteDetailsByRecordId(envId, websiteId);
+            }
 
             if (!websiteDetails) {
                 showErrorDialog(
@@ -743,9 +754,42 @@ async function initializeWebsiteDetails(queryParamsMap: Map<string, string>) {
             WebExtensionContext.orgUrl = websiteDetails?.dataverseInstanceUrl?.replace(/\/$/, '') ?? "";
             WebExtensionContext.websiteName = websiteDetails?.name ?? "";
             WebExtensionContext.organizationId = websiteDetails?.dataverseOrganizationId ?? "";
+
+            // Update portalId in the query params map so downstream consumers have it
+            if (!portalId && websiteDetails.id) {
+                queryParamsMap.set(queryParameters.PORTAL_ID, websiteDetails.id);
+            }
         }
     );
 
     return isSuccess;
 
+}
+
+async function resolveWebsiteDetailsByRecordId(envId: string, websiteRecordId: string): Promise<IWebsiteDetails | null> {
+    const allWebsites = await PPAPIService.getAllWebsiteDetails(WebExtensionContext.serviceEndpointCategory, envId);
+    const matchingWebsites = allWebsites.filter((website) => website.websiteRecordId === websiteRecordId);
+
+    if (matchingWebsites.length === 0) {
+        return null;
+    }
+
+    if (matchingWebsites.length === 1) {
+        return matchingWebsites[0];
+    }
+
+    // Multiple websites found with same websiteRecordId — let the user choose
+    const quickPickItems = matchingWebsites.map((website) => ({
+        label: website.name,
+        description: website.id ?? "",
+        detail: website.websiteUrl,
+        website,
+    }));
+
+    const selected = await vscode.window.showQuickPick(quickPickItems, {
+        placeHolder: vscode.l10n.t("Multiple websites found. Please select one."),
+        ignoreFocusOut: true,
+    });
+
+    return selected?.website ?? null;
 }

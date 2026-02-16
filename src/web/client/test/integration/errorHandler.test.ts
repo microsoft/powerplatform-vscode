@@ -65,7 +65,26 @@ describe("errorHandler", () => {
         const queryParamsMap = new Map<string, string>([
             [queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"],
             [queryParameters.ENV_ID, "2e23a54a-d9c1-4e5e-bb18-86a69841ad43"],
-            [queryParameters.PORTAL_ID, "c913e4ab-bdbc-4a53-beb5-f2650cc8e3c4"]
+            [queryParameters.WEBSITE_ID, "a1b2c3d4-e5f6-7890-abcd-ef1234567890"]
+        ]);
+
+        //Action
+        const result = checkMandatoryParameters(
+            appName,
+            queryParamsMap
+        );
+
+        //Assert
+        expect(result).true;
+    });
+
+    it("checkMandatoryParameters_whenPortalIdIsMissingButWebsiteIdIsPresent_shouldReturnTrue", () => {
+        //Act
+        const appName = "portal";
+        const queryParamsMap = new Map<string, string>([
+            [queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"],
+            [queryParameters.ENV_ID, "2e23a54a-d9c1-4e5e-bb18-86a69841ad43"],
+            [queryParameters.WEBSITE_ID, "a1b2c3d4-e5f6-7890-abcd-ef1234567890"]
         ]);
 
         //Action
@@ -85,7 +104,7 @@ describe("errorHandler", () => {
         const queryParamsMap = new Map<string, string>([
             [queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"],
             [queryParameters.ENV_ID, "2e23a54a-d9c1-4e5e-bb18-86a69841ad43"],
-            [queryParameters.PORTAL_ID, "c913e4ab-bdbc-4a53-beb5-f2650cc8e3c4"]
+            [queryParameters.WEBSITE_ID, "a1b2c3d4-e5f6-7890-abcd-ef1234567890"]
         ]);
         //Action
         const result = checkMandatoryParameters(
@@ -106,7 +125,7 @@ describe("errorHandler", () => {
         const queryParamsMap = new Map<string, string>([
             [queryParameters.ORG_ID, ""],
             [queryParameters.ENV_ID, "2e23a54a-d9c1-4e5e-bb18-86a69841ad43"],
-            [queryParameters.PORTAL_ID, "c913e4ab-bdbc-4a53-beb5-f2650cc8e3c4"]
+            [queryParameters.WEBSITE_ID, "a1b2c3d4-e5f6-7890-abcd-ef1234567890"]
         ]);
         //Action
         const result = checkMandatoryParameters(
@@ -123,7 +142,7 @@ describe("errorHandler", () => {
         const queryParamsMap = new Map<string, string>([
             [queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"],
             [queryParameters.ENV_ID, ""],
-            [queryParameters.PORTAL_ID, "c913e4ab-bdbc-4a53-beb5-f2650cc8e3c4"]
+            [queryParameters.WEBSITE_ID, "a1b2c3d4-e5f6-7890-abcd-ef1234567890"]
         ]);
 
         //Action
@@ -136,13 +155,13 @@ describe("errorHandler", () => {
         expect(result).false;
     });
 
-    it("checkMandatoryParameters_whenPortalIdIsBlank_shouldReturnFalse", () => {
+    it("checkMandatoryParameters_whenWebsiteIdIsBlank_shouldReturnFalse", () => {
         //Act
         const appName = "portal";
         const queryParamsMap = new Map<string, string>([
             [queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"],
             [queryParameters.ENV_ID, "2e23a54a-d9c1-4e5e-bb18-86a69841ad43"],
-            [queryParameters.PORTAL_ID, ""]
+            [queryParameters.WEBSITE_ID, ""]
         ]);
 
         //Action
@@ -184,7 +203,7 @@ describe("errorHandler", () => {
         const queryParamsMap = new Map<string, string>([
             [queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"],
             [queryParameters.ENV_ID, "2e23a54a-d9c1-4e5e-bb18-86a69841ad43"],
-            [queryParameters.PORTAL_ID, "c913e4ab-bdbc-4a53-beb5-f2650cc8e3c4"]
+            [queryParameters.WEBSITE_ID, "a1b2c3d4-e5f6-7890-abcd-ef1234567890"]
         ]);
         //Action
         const result = checkMandatoryQueryParameters(appName, queryParamsMap);
