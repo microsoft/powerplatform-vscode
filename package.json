@@ -1805,7 +1805,7 @@
     "ts-loader": "^9.2.8",
     "ts-node": "^10.7.0",
     "typescript": "^5.9.2",
-    "webpack": "^5.94.0",
+    "webpack": "^5.104.1",
     "webpack-cli": "^4.7.0",
     "webpack-stream": "^7.0.0",
     "yargs": "^16.2.0"
