@@ -23,19 +23,30 @@ export abstract class ECSFeaturesClient {
                 method: 'GET'
             });
             if (!response.ok) {
-                throw new Error('Request failed');
+                throw new Error(`Request failed with status ${response.status} ${response.statusText}`);
             }
-            const result = await response.json();
+
+            let result;
+            try {
+                result = await response.json();
+            } catch {
+                throw new Error(`JSON parse failed, status: ${response.status}`);
+            }
+
+            const clientConfig = result[clientName];
+            if (!clientConfig) {
+                throw new Error(`Config not found for client '${clientName}'`);
+            }
 
             // Initialize ECS config
-            this._ecsConfig = result[clientName];
+            this._ecsConfig = clientConfig;
 
             // capture telemetry
             oneDSLoggerWrapper.getLogger().traceInfo(ECSConfigSuccessfulInit, { clientName: clientName, configFlagCount: Object.keys(this._ecsConfig).length.toString() });
         } catch (error) {
-            const message = (error as Error)?.message;
+            const safeError = error instanceof Error ? error : new Error(String(error));
             // Log error
-            oneDSLoggerWrapper.getLogger().traceError(ECSConfigFailedInit, message, error as Error);
+            oneDSLoggerWrapper.getLogger().traceError(ECSConfigFailedInit, safeError.message, safeError, { clientName });
         }
     }
 
