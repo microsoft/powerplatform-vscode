@@ -4,9 +4,14 @@
  */
 
 import { expect } from 'chai';
+import * as vscode from 'vscode';
 import { PreviewSite } from '../../../../power-pages/preview-site/PreviewSite';
 import { ECSFeaturesClient } from '../../../../../common/ecs-features/ecsFeatureClient';
 import { EnableSiteRuntimePreview } from '../../../../../common/ecs-features/ecsFeatureGates';
+import { oneDSLoggerWrapper } from '../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
+import { Events } from '../../../../power-pages/preview-site/Constants';
+import ArtemisContext from '../../../../ArtemisContext';
+import PacContext from '../../../../pac/PacContext';
 import * as sinon from 'sinon';
 
 describe('PreviewSite', () => {
@@ -65,6 +70,79 @@ describe('PreviewSite', () => {
 
             // Assert
             expect(result).to.be.false;
+        });
+    });
+
+    describe('initialize', () => {
+        let mockLogger: { traceError: sinon.SinonStub; traceInfo: sinon.SinonStub; traceWarning: sinon.SinonStub; featureUsage: sinon.SinonStub };
+
+        beforeEach(() => {
+            PreviewSite['_isInitialized'] = false;
+
+            mockLogger = {
+                traceError: sandbox.stub(),
+                traceInfo: sandbox.stub(),
+                traceWarning: sandbox.stub(),
+                featureUsage: sandbox.stub()
+            };
+            sandbox.stub(oneDSLoggerWrapper, 'getLogger').returns(mockLogger);
+        });
+
+        it('should include initPhase in error telemetry when initialization fails during ECS check', async () => {
+            sandbox.stub(ECSFeaturesClient, 'getConfig').throws(new Error('ECS unavailable'));
+
+            const mockContext = { subscriptions: [] } as unknown as import('vscode').ExtensionContext;
+            const mockWorkspaceFolders = [{ uri: 'test/path', name: 'test', index: 0 }];
+            const mockPacTerminal = {} as unknown as import('../../../../lib/PacTerminal').PacTerminal;
+
+            await PreviewSite.initialize(mockContext, mockWorkspaceFolders, mockPacTerminal);
+
+            expect(mockLogger.traceError.calledOnce).to.be.true;
+            const [eventName, message, error, eventInfo] = mockLogger.traceError.firstCall.args;
+            expect(eventName).to.equal(Events.PREVIEW_SITE_INITIALIZATION_FAILED);
+            expect(message).to.equal('ECS unavailable');
+            expect(error).to.be.instanceOf(Error);
+            expect(eventInfo).to.deep.equal({ initPhase: 'checkECSConfig' });
+        });
+
+        it('should wrap non-Error exceptions with Error and include initPhase', async () => {
+            sandbox.stub(ECSFeaturesClient, 'getConfig').throws('string error');
+
+            const mockContext = { subscriptions: [] } as unknown as import('vscode').ExtensionContext;
+            const mockWorkspaceFolders = [{ uri: 'test/path', name: 'test', index: 0 }];
+            const mockPacTerminal = {} as unknown as import('../../../../lib/PacTerminal').PacTerminal;
+
+            await PreviewSite.initialize(mockContext, mockWorkspaceFolders, mockPacTerminal);
+
+            expect(mockLogger.traceError.calledOnce).to.be.true;
+            const [, , error, eventInfo] = mockLogger.traceError.firstCall.args;
+            expect(error).to.be.instanceOf(Error);
+            expect(eventInfo).to.have.property('initPhase');
+        });
+
+        it('should report loadSiteDetails phase when loadSiteDetails fails', async () => {
+            sandbox.stub(ECSFeaturesClient, 'getConfig').returns({ enableSiteRuntimePreview: true });
+            sandbox.stub(ArtemisContext, 'ServiceResponse').get(() => ({ stamp: 'test', response: {} }));
+            sandbox.stub(PacContext, 'OrgInfo').get(() => ({ OrgId: 'test' }));
+            sandbox.stub(PacContext, 'onChanged');
+            sandbox.stub(vscode.commands, 'registerCommand').returns({ dispose: () => { /* noop */ } });
+
+            const mockSubscriptions: unknown[] = [];
+            const mockContext = {
+                subscriptions: {
+                    push: (...items: unknown[]) => mockSubscriptions.push(...items)
+                }
+            } as unknown as import('vscode').ExtensionContext;
+            const mockWorkspaceFolders = [{ uri: 'test/path', name: 'test', index: 0 }];
+            const mockPacTerminal = {} as unknown as import('../../../../lib/PacTerminal').PacTerminal;
+
+            sandbox.stub(PreviewSite, 'loadSiteDetails').rejects(new Error('load failed'));
+
+            await PreviewSite.initialize(mockContext, mockWorkspaceFolders, mockPacTerminal);
+
+            expect(mockLogger.traceError.calledOnce).to.be.true;
+            const [, , , eventInfo] = mockLogger.traceError.firstCall.args;
+            expect(eventInfo).to.deep.equal({ initPhase: 'loadSiteDetails' });
         });
     });
 
