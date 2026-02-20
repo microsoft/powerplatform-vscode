@@ -137,6 +137,19 @@ async function fetchFromDataverseAndCreateFiles(
                 },
             });
 
+            // Gracefully handle 400/404 for optional entities (blogs, forums, ideas)
+            // These entities may not be provisioned for all sites
+            if (!response.ok
+                && (response.status === 404 || response.status === 400)
+                && conditionalFolderEntities.includes(entityName as schemaEntityName)) {
+                makeRequestCall = false;
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_OPTIONAL_ENTITY_NOT_FOUND,
+                    { entityName, status: response.status.toString() }
+                );
+                break;
+            }
+
             if (!response.ok) {
                 makeRequestCall = false;
                 throw await createHttpResponseError(response);

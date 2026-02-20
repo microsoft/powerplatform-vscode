@@ -180,14 +180,32 @@ export function getFieldsToUpdate(fileEntityType: Constants.PowerPagesEntityType
     return fieldsToUpdate;
 }
 
+const EXCLUDED_BINARY_EXTENSIONS = [
+    // Images
+    '*.png', '*.jpg', '*.jpeg', '*.gif', '*.ico', '*.bmp', '*.tiff', '*.webp', '*.svg',
+    // Video
+    '*.mp4',
+    // Fonts
+    '*.woff', '*.woff2', '*.ttf', '*.eot', '*.otf',
+    // Compiled binaries
+    '*.dll', '*.exe', '*.bin', '*.so', '*.obj', '*.pdb',
+    // Archives
+    '*.zip', '*.tar', '*.gz', '*.7z',
+    // Documents
+    '*.pdf',
+    // Source maps
+    '*.map',
+];
+
 export function getExcludedFileGlobPattern(fileNameArray: string[]): vscode.GlobPattern {
-    let pattern = `**/{*.png,*.jpg,*.jpeg,*.gif,*.mp4,.portalconfig**}`;
+    const exclusions = [...EXCLUDED_BINARY_EXTENSIONS, '.portalconfig**'];
 
     if (fileNameArray.length > 0) {
         fileNameArray.forEach((name, index) => fileNameArray[index] = name.concat('.*'));
-        pattern = `**/{*.png,*.jpg,*.jpeg,*.gif,*.mp4,.portalconfig**,${fileNameArray.join(',')}}`;
+        exclusions.push(...fileNameArray);
     }
-    return pattern;
+
+    return `**/{${exclusions.join(',')}}`;
 }
 
 export function getRegExPattern(fileNameArray: string[]): RegExp[] {

@@ -139,5 +139,6 @@ export enum webExtensionTelemetryEventNames {
     WEB_EXTENSION_DUPLICATE_FOLDER_NAME_CREATED = "WebExtensionDuplicateFolderNameCreated",
     WEB_EXTENSION_REQUEST_RETRY = "WebExtensionRequestRetry",
     WEB_EXTENSION_WEBFILE_NOT_FOUND = "WebExtensionWebfileNotFound",
-    WEB_EXTENSION_SERVERLOGIC_NOT_FOUND = "WebExtensionServerlogicNotFound"
+    WEB_EXTENSION_SERVERLOGIC_NOT_FOUND = "WebExtensionServerlogicNotFound",
+    WEB_EXTENSION_OPTIONAL_ENTITY_NOT_FOUND = "WebExtensionOptionalEntityNotFound"
 }

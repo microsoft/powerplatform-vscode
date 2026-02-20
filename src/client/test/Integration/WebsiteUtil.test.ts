@@ -426,6 +426,109 @@ describe("WebsiteUtil", () => {
             expect(mockLogger.traceError.calledOnce).to.be.true;
         });
 
+        it("should handle 404 for app modules gracefully", async () => {
+            sandbox.stub(AuthenticationProvider, "dataverseAuthentication").resolves(mockAuthResponse);
+
+            fetchStub.reset();
+
+            fetchStub.onFirstCall().resolves({
+                ok: true,
+                json: () => Promise.resolve({ value: mockAdxWebsiteRecords })
+            } as Response);
+
+            fetchStub.onSecondCall().resolves({
+                ok: true,
+                json: () => Promise.resolve({ value: mockPowerPagesSiteRecords })
+            } as Response);
+
+            // App modules returns 404
+            fetchStub.onThirdCall().resolves({
+                ok: false,
+                status: 404
+            } as Response);
+
+            fetchStub.onCall(3).resolves({
+                ok: true,
+                json: () => Promise.resolve({ value: mockPowerPagesSiteSettings })
+            } as Response);
+
+            const result = await getAllWebsites(mockOrgDetails);
+
+            expect(result).to.be.an("array");
+            expect(result.length).to.equal(2);
+            // No traceError for 404
+            expect(mockLogger.traceError.called).to.be.false;
+        });
+
+        it("should handle 404 for site settings gracefully", async () => {
+            sandbox.stub(AuthenticationProvider, "dataverseAuthentication").resolves(mockAuthResponse);
+
+            fetchStub.reset();
+
+            fetchStub.onFirstCall().resolves({
+                ok: true,
+                json: () => Promise.resolve({ value: mockAdxWebsiteRecords })
+            } as Response);
+
+            fetchStub.onSecondCall().resolves({
+                ok: true,
+                json: () => Promise.resolve({ value: mockPowerPagesSiteRecords })
+            } as Response);
+
+            fetchStub.onThirdCall().resolves({
+                ok: true,
+                json: () => Promise.resolve({ value: mockAppModules })
+            } as Response);
+
+            // Site settings returns 404
+            fetchStub.onCall(3).resolves({
+                ok: false,
+                status: 404
+            } as Response);
+
+            const result = await getAllWebsites(mockOrgDetails);
+
+            expect(result).to.be.an("array");
+            expect(result.length).to.equal(2);
+            // No traceError for 404
+            expect(mockLogger.traceError.called).to.be.false;
+        });
+
+        it("should handle JSON parse failure gracefully", async () => {
+            sandbox.stub(AuthenticationProvider, "dataverseAuthentication").resolves(mockAuthResponse);
+
+            fetchStub.reset();
+
+            // ADX returns unparseable JSON
+            fetchStub.onFirstCall().resolves({
+                ok: true,
+                status: 200,
+                json: () => Promise.reject(new TypeError("invalid json"))
+            } as unknown as Response);
+
+            fetchStub.onSecondCall().resolves({
+                ok: true,
+                json: () => Promise.resolve({ value: mockPowerPagesSiteRecords })
+            } as Response);
+
+            fetchStub.onThirdCall().resolves({
+                ok: true,
+                json: () => Promise.resolve({ value: mockAppModules })
+            } as Response);
+
+            fetchStub.onCall(3).resolves({
+                ok: true,
+                json: () => Promise.resolve({ value: mockPowerPagesSiteSettings })
+            } as Response);
+
+            const result = await getAllWebsites(mockOrgDetails);
+
+            expect(result).to.be.an("array");
+            expect(result.length).to.equal(1);
+            expect(result[0].name).to.equal("Power Pages Site 1");
+            expect(mockLogger.traceError.calledOnce).to.be.true;
+        });
+
         it("should handle empty responses from all APIs gracefully", async () => {
             // Arrange
             sandbox.stub(AuthenticationProvider, "dataverseAuthentication").resolves(mockAuthResponse);

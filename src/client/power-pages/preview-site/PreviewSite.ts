@@ -49,6 +49,7 @@ export class PreviewSite {
         }
 
         PreviewSite._pacTerminal = pacTerminal;
+        let initPhase = 'checkECSConfig';
 
         try {
             const isSiteRuntimePreviewEnabled = PreviewSite.isSiteRuntimePreviewEnabled();
@@ -61,8 +62,10 @@ export class PreviewSite {
             const orgDetails = PacContext.OrgInfo;
 
             if (artemisResponse && orgDetails && isSiteRuntimePreviewEnabled) {
+                initPhase = 'registerOrgChangeCallback';
                 PacContext.onChanged(async () => await PreviewSite.loadSiteDetails(workspaceFolders));
 
+                initPhase = 'registerPreviewCommand';
                 context.subscriptions.push(
                     vscode.commands.registerCommand(
                         SITE_PREVIEW_COMMAND_ID,
@@ -70,7 +73,10 @@ export class PreviewSite {
                     )
                 );
 
+                initPhase = 'loadSiteDetails';
                 await PreviewSite.loadSiteDetails(workspaceFolders);
+
+                initPhase = 'setContextFlag';
                 await vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.siteRuntimePreviewEnabled", true);
             }
 
@@ -79,8 +85,8 @@ export class PreviewSite {
                 isEnabled: isSiteRuntimePreviewEnabled.toString()
             });
         } catch (exception) {
-            const exceptionError = exception as Error;
-            oneDSLoggerWrapper.getLogger().traceError(Events.PREVIEW_SITE_INITIALIZATION_FAILED, exceptionError.message, exceptionError);
+            const error = exception instanceof Error ? exception : new Error(String(exception));
+            oneDSLoggerWrapper.getLogger().traceError(Events.PREVIEW_SITE_INITIALIZATION_FAILED, error.message, error, { initPhase });
         }
     }
 
