@@ -69,7 +69,7 @@ const webConfig = {
     entry: {
         'extension': './src/web/client/extension.ts',
         'test/unit/extension': './src/web/client/test/unit/extension.test.ts',
-        'client/test/integration/index': './src/client/test/Integration/index.ts',
+        'client/test/integration/index': './src/client/test/integration/index.ts',
         'test/integration/index': './src/web/client/test/integration/index.ts',
     },
     output: {
