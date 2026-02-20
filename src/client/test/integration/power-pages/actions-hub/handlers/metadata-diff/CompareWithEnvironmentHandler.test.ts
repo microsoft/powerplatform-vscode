@@ -689,6 +689,7 @@ describe("CompareWithEnvironmentHandler", () => {
                 sandbox.stub(WorkspaceInfoFinderUtil, "getWebsiteRecordId").returns("matching-website-id");
                 sandbox.stub(WorkspaceInfoFinderUtil, "findPowerPagesSiteFolder").returns(null);
                 mockShowWarningMessage = sandbox.stub(vscode.window, "showWarningMessage");
+                sandbox.stub(MetadataDiffUtils, "prepareSiteStoragePath").returns("/test/storage/sites-for-comparison");
 
                 mockPacWrapper.orgList.resolves({
                     Status: SUCCESS,

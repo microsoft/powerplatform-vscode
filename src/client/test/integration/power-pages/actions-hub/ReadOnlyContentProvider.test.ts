@@ -32,7 +32,10 @@ describe("ReadOnlyContentProvider", () => {
             expect(uri.fsPath).to.include("file.txt");
         });
 
-        it("should handle Windows paths correctly", () => {
+        it("should handle Windows paths correctly", function () {
+            if (process.platform !== "win32") {
+                this.skip(); // Windows drive letter path conversion only works on Windows
+            }
             const filePath = "C:\\Users\\test\\file.txt";
             const uri = ReadOnlyContentProvider.createReadOnlyUri(filePath);
 

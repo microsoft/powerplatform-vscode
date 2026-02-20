@@ -256,7 +256,7 @@ src/server/test/          # Language server tests
 ### 2. Integration Testing
 
 ```text
-src/client/test/Integration/  # End-to-end scenarios
+src/client/test/integration/  # End-to-end scenarios
 ```
 
 ### 3. Web Extension Testing

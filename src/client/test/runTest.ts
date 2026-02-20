@@ -23,7 +23,8 @@ async function main() {
         await runTests({
           //  version: 'insiders',
             extensionDevelopmentPath,
-            extensionTestsPath
+            extensionTestsPath,
+            launchArgs: ['--no-sandbox', '--disable-gpu']
         });
     } catch (err) {
         console.error("Failed to run tests");
