@@ -16,6 +16,7 @@ import { SiteVisibility } from "../../../../../../power-pages/actions-hub/models
 import MetadataDiffContext from "../../../../../../power-pages/actions-hub/MetadataDiffContext";
 import * as TelemetryHelper from "../../../../../../power-pages/actions-hub/TelemetryHelper";
 import * as WorkspaceInfoFinderUtil from "../../../../../../../common/utilities/WorkspaceInfoFinderUtil";
+import * as MetadataDiffUtils from "../../../../../../power-pages/actions-hub/handlers/metadata-diff/MetadataDiffUtils";
 
 describe("CompareWithLocalHandler", () => {
     let sandbox: sinon.SinonSandbox;
@@ -200,6 +201,7 @@ describe("CompareWithLocalHandler", () => {
                 ]);
                 sandbox.stub(WorkspaceInfoFinderUtil, "getWebsiteRecordId").returns("test-site-id");
                 sandbox.stub(WorkspaceInfoFinderUtil, "findPowerPagesSiteFolder").returns(null);
+                sandbox.stub(MetadataDiffUtils, "prepareSiteStoragePath").returns("/test/storage/sites-for-comparison");
 
                 mockPacWrapper = {
                     downloadSiteWithProgress: sandbox.stub().resolves(false), // Return false to stop after download
