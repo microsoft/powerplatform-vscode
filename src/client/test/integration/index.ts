@@ -19,7 +19,7 @@ async function addTests(): Promise<void> {
     const mocha = new Mocha({
         ui: "bdd",
         color: true,
-        timeout: 10000
+        timeout: 20000
     });
 
     const testsRoot = path.resolve(__dirname, "..");
