@@ -1860,6 +1860,8 @@
     "qs": "^6.14.2",
     "tar": "^7.5.7",
     "lodash": "^4.17.23",
-    "minimatch": "^10.2.1"
+    "@types/minimatch": {
+      "minimatch": "^10.2.1"
+    }
   }
 }
