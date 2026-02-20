@@ -58,6 +58,7 @@ import { ActionsHub } from "../../../../power-pages/actions-hub/ActionsHub";
 import ArtemisContext from "../../../../ArtemisContext";
 import { ServiceEndpointCategory } from "../../../../../common/services/Constants";
 import { IArtemisAPIOrgResponse } from "../../../../../common/services/Interfaces";
+import { ReadOnlyContentProvider } from "../../../../power-pages/actions-hub/ReadOnlyContentProvider";
 
 // Add global type declaration for ArtemisContext
 describe("ActionsHubTreeDataProvider", () => {
@@ -89,6 +90,7 @@ describe("ActionsHubTreeDataProvider", () => {
 
     beforeEach(() => {
         registerCommandStub = sinon.stub(vscode.commands, "registerCommand");
+        sinon.stub(ReadOnlyContentProvider.prototype, "register").returns(new vscode.Disposable(() => { /* no-op */ }));
         context = {
             extensionUri: vscode.Uri.parse("https://localhost:3000"),
             globalState: {
