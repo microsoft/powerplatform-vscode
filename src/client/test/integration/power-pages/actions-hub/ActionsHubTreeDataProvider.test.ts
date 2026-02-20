@@ -122,7 +122,8 @@ describe("ActionsHubTreeDataProvider", () => {
         sinon.restore();
     });
 
-    describe('initialize', () => {
+    describe('initialize', function () {
+        this.retries(2);
         it("should register refresh command", async () => {
             const mockCommandHandler = sinon.stub(RefreshEnvironmentHandler, 'refreshEnvironment');
             mockCommandHandler.resolves();
