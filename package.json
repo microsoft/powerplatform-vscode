@@ -1805,7 +1805,7 @@
     "ts-loader": "^9.2.8",
     "ts-node": "^10.7.0",
     "typescript": "^5.9.2",
-    "webpack": "^5.94.0",
+    "webpack": "^5.104.1",
     "webpack-cli": "^4.7.0",
     "webpack-stream": "^7.0.0",
     "yargs": "^16.2.0"
@@ -1852,12 +1852,20 @@
     "utf-8-validate": "^5.0.9"
   },
   "overrides": {
+    "axios": "^1.13.5",
     "tmp": "^0.2.4",
     "@octokit/request": "^8.4.1",
     "@octokit/plugin-paginate-rest": "^9.2.2",
     "@octokit/request-error": "^5.1.1",
-    "qs": "^6.14.1",
-    "tar": "^7.5.7",
-    "lodash": "^4.17.23"
+    "qs": "^6.14.2",
+    "tar": "^7.5.8",
+    "lodash": "^4.17.23",
+    "worker-loader": {
+      "schema-utils": "^4.3.3"
+    },
+    "@types/minimatch": {
+      "minimatch": "^10.2.1"
+    }
   }
 }
+
