@@ -135,7 +135,8 @@ export async function getAllWebsites(orgDetails: OrgInfo): Promise<IWebsiteDetai
         });
     }
     catch (error) {
-        oneDSLoggerWrapper.getLogger().traceError(GET_ALL_WEBSITES_FAILED, GET_ALL_WEBSITES_FAILED, error as Error);
+        const safeError = error instanceof Error ? error : new Error(String(error));
+        oneDSLoggerWrapper.getLogger().traceError(GET_ALL_WEBSITES_FAILED, safeError.message, safeError);
     }
     return websites;
 }
@@ -146,8 +147,7 @@ async function getAdxWebsiteRecords(orgUrl: string, token: string) {
         const response = await callApi(dataverseUrl, token);
 
         if (response.ok) {
-            // TODO: perform response format validation
-            const data = await response.json() as { value: AdxWebsiteRecords[] };
+            const data = await safeResponseJson<{ value: AdxWebsiteRecords[] }>(response);
             return data.value;
         }
 
@@ -155,7 +155,8 @@ async function getAdxWebsiteRecords(orgUrl: string, token: string) {
             throw new Error(`Failed to fetch ADX website records. Status: ${response.status}`);
         }
     } catch (error) {
-        oneDSLoggerWrapper.getLogger().traceError(ADX_WEBSITE_RECORDS_FETCH_FAILED, ADX_WEBSITE_RECORDS_FETCH_FAILED, error as Error);
+        const safeError = error instanceof Error ? error : new Error(String(error));
+        oneDSLoggerWrapper.getLogger().traceError(ADX_WEBSITE_RECORDS_FETCH_FAILED, safeError.message, safeError);
     }
 
     return [];
@@ -167,7 +168,7 @@ async function getPowerPagesSiteRecords(orgUrl: string, token: string) {
         const response = await callApi(dataverseUrl, token);
 
         if (response.ok) {
-            const data = await response.json() as { value: PowerPagesSiteRecords[] };
+            const data = await safeResponseJson<{ value: PowerPagesSiteRecords[] }>(response);
 
             // Extract website_language from the content field if it exists
             return (data?.value ?? []).map(record => {
@@ -178,10 +179,11 @@ async function getPowerPagesSiteRecords(orgUrl: string, token: string) {
                         const contentJson = JSON.parse(record.content);
                         websiteLanguage = contentJson.website_language || null;
                     } catch (error) {
+                        const safeError = error instanceof Error ? error : new Error(String(error));
                         oneDSLoggerWrapper.getLogger().traceError(
                             POWERPAGES_SITE_RECORDS_CONTENT_PARSE_FAILED,
                             `Failed to parse content field for record ${record.powerpagesiteid}`,
-                            error as Error
+                            safeError
                         );
                     }
                 }
@@ -197,7 +199,8 @@ async function getPowerPagesSiteRecords(orgUrl: string, token: string) {
             throw new Error(`Failed to fetch PowerPages site records. Status: ${response.status}`);
         }
     } catch (error) {
-        oneDSLoggerWrapper.getLogger().traceError(POWERPAGES_SITE_RECORDS_FETCH_FAILED, POWERPAGES_SITE_RECORDS_FETCH_FAILED, error as Error);
+        const safeError = error instanceof Error ? error : new Error(String(error));
+        oneDSLoggerWrapper.getLogger().traceError(POWERPAGES_SITE_RECORDS_FETCH_FAILED, safeError.message, safeError);
     }
 
     return [];
@@ -217,11 +220,16 @@ async function getAllPowerPagesSiteSettings(orgUrl: string, token: string) {
         const response = await callApi(dataverseUrl, token);
 
         if (response.ok) {
-            const data = await response.json() as { value: PowerPagesSiteSettings[] };
+            const data = await safeResponseJson<{ value: PowerPagesSiteSettings[] }>(response);
             return data.value;
         }
+
+        if (response.status !== 404) {
+            throw new Error(`Failed to fetch site settings. Status: ${response.status}`);
+        }
     } catch (error) {
-        oneDSLoggerWrapper.getLogger().traceError(POWERPAGES_SITE_SETTINGS_FETCH_FAILED, POWERPAGES_SITE_SETTINGS_FETCH_FAILED, error as Error);
+        const safeError = error instanceof Error ? error : new Error(String(error));
+        oneDSLoggerWrapper.getLogger().traceError(POWERPAGES_SITE_SETTINGS_FETCH_FAILED, safeError.message, safeError);
     }
 
     return [];
@@ -233,16 +241,26 @@ async function getAppModules(orgUrl: string, accessToken: string) {
         const response = await callApi(dataverseUrl, accessToken);
 
         if (response.ok) {
-            const data = await response.json() as { value: AppModule[] };
+            const data = await safeResponseJson<{ value: AppModule[] }>(response);
             return data.value;
         }
 
-        throw new Error(`Failed to fetch app modules. Status: ${response.status}`);
+        if (response.status !== 404) {
+            throw new Error(`Failed to fetch app modules. Status: ${response.status}`);
+        }
     } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        oneDSLoggerWrapper.getLogger().traceError(APP_MODULES_FETCH_FAILED, errorMessage, error as Error);
+        const safeError = error instanceof Error ? error : new Error(String(error));
+        oneDSLoggerWrapper.getLogger().traceError(APP_MODULES_FETCH_FAILED, safeError.message, safeError);
     }
     return [];
+}
+
+async function safeResponseJson<T>(response: Response): Promise<T> {
+    try {
+        return await response.json() as T;
+    } catch {
+        throw new Error(`JSON parse failed, status: ${response.status}`);
+    }
 }
 
 async function callApi(url: string, token: string) {

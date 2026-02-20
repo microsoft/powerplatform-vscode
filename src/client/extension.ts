@@ -63,6 +63,8 @@ let yamlServerRunning = false;
 let copilotPanelsRegistered = false;
 let copilotPanelsDisposable: vscode.Disposable[] = [];
 let serverApiAutocompleteInitialized = false;
+let lastSessionChangeAuthTime = 0;
+const SESSION_CHANGE_AUTH_COOLDOWN_MS = 5000;
 
 export async function activate(
     context: vscode.ExtensionContext
@@ -76,9 +78,16 @@ export async function activate(
         "pac.userId": readUserSettings().uniqueId
     });
 
+    // Cooldown prevents a tight retry loop: failed auth can trigger another session change,
+    // which re-invokes authenticateUserInVSCode, causing runaway error telemetry.
     _context.subscriptions.push(
         vscode.authentication.onDidChangeSessions(async (event) => {
             if (event.provider.id === PROVIDER_ID) {
+                const now = Date.now();
+                if (now - lastSessionChangeAuthTime < SESSION_CHANGE_AUTH_COOLDOWN_MS) {
+                    return;
+                }
+                lastSessionChangeAuthTime = now;
                 await authenticateUserInVSCode(true);
             }
         })

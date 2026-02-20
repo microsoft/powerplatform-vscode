@@ -1503,4 +1503,215 @@ describe("remoteFetchProvider", () => {
 
         assert.called(_mockFetch);
     });
+
+    it("fetchDataFromDataverseAndUpdateVFS_forOptionalEntity_when404Response_shouldHandleGracefully", async () => {
+        const entityName = "blogs";
+        const entityId = "bb663ce7-9a38-4a89-9216-47f9fc6a3f15";
+        const queryParamsMap = new Map<string, string>([
+            [Constants.queryParameters.ORG_URL, "powerPages.com"],
+            [
+                Constants.queryParameters.WEBSITE_ID,
+                "a58f4e1e-5fe2-45ee-a7c1-398073b40181",
+            ],
+            [Constants.queryParameters.WEBSITE_NAME, "testWebSite"],
+            [schemaKey.SCHEMA_VERSION, "portalschemav2"],
+        ]);
+
+        const languageIdCodeMap = new Map<string, string>([["1033", "en-US"]]);
+        stub(schemaHelperUtil, "getLcidCodeMap").returns(languageIdCodeMap);
+
+        const websiteIdToLanguage = new Map<string, string>([
+            ["a58f4e1e-5fe2-45ee-a7c1-398073b40181", "1033"],
+        ]);
+        stub(schemaHelperUtil, "getWebsiteIdToLcidMap").returns(websiteIdToLanguage);
+
+        const websiteLanguageIdToPortalLanguageMap = new Map<string, string>([
+            ["d8b40829-17c8-4082-9e3f-89d60dc0ab7e", "d8b40829-17c8-4082-9e3f-89d60dc0ab7e"],
+        ]);
+        stub(schemaHelperUtil, "getWebsiteLanguageIdToPortalLanguageIdMap").returns(websiteLanguageIdToPortalLanguageMap);
+
+        const portalLanguageIdCodeMap = new Map<string, string>([
+            ["d8b40829-17c8-4082-9e3f-89d60dc0ab7e", "1033"],
+        ]);
+        stub(schemaHelperUtil, "getPortalLanguageIdToLcidMap").returns(portalLanguageIdCodeMap);
+
+        stub(authenticationProvider, "dataverseAuthentication").resolves(
+            { accessToken: "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d", userId: "" }
+        );
+
+        const _mockFetch = stub(fetch, 'default').callsFake(() => {
+            return Promise.resolve({
+                ok: false,
+                status: 404,
+                statusText: "Not Found",
+                json: () => Promise.resolve({}),
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            } as any);
+        });
+
+        stub(WebExtensionContext.telemetry, "sendAPITelemetry");
+        const sendInfoTelemetry = stub(WebExtensionContext.telemetry, "sendInfoTelemetry");
+        const sendErrorTelemetry = stub(WebExtensionContext.telemetry, "sendErrorTelemetry");
+        const sendAPIFailureTelemetry = stub(WebExtensionContext.telemetry, "sendAPIFailureTelemetry");
+
+        const portalFs = new PortalsFS();
+        stub(portalFs, "writeFile");
+        WebExtensionContext.setWebExtensionContext(entityName, entityId, queryParamsMap);
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
+
+        // Reset telemetry stub history to clear calls from auth setup (populateSharedWorkspace)
+        sendErrorTelemetry.resetHistory();
+        sendInfoTelemetry.resetHistory();
+        sendAPIFailureTelemetry.resetHistory();
+
+        await fetchDataFromDataverseAndUpdateVFS(portalFs, { entityId: entityId, entityName: entityName });
+
+        assert.calledWithMatch(
+            sendInfoTelemetry,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_OPTIONAL_ENTITY_NOT_FOUND,
+            { entityName: "blogs", status: "404" }
+        );
+        assert.notCalled(sendErrorTelemetry);
+        assert.notCalled(sendAPIFailureTelemetry);
+        assert.called(_mockFetch);
+    });
+
+    it("fetchDataFromDataverseAndUpdateVFS_forOptionalEntity_when400Response_shouldHandleGracefully", async () => {
+        const entityName = "blogs";
+        const entityId = "bb663ce7-9a38-4a89-9216-47f9fc6a3f15";
+        const queryParamsMap = new Map<string, string>([
+            [Constants.queryParameters.ORG_URL, "powerPages.com"],
+            [
+                Constants.queryParameters.WEBSITE_ID,
+                "a58f4e1e-5fe2-45ee-a7c1-398073b40181",
+            ],
+            [Constants.queryParameters.WEBSITE_NAME, "testWebSite"],
+            [schemaKey.SCHEMA_VERSION, "portalschemav2"],
+        ]);
+
+        const languageIdCodeMap = new Map<string, string>([["1033", "en-US"]]);
+        stub(schemaHelperUtil, "getLcidCodeMap").returns(languageIdCodeMap);
+
+        const websiteIdToLanguage = new Map<string, string>([
+            ["a58f4e1e-5fe2-45ee-a7c1-398073b40181", "1033"],
+        ]);
+        stub(schemaHelperUtil, "getWebsiteIdToLcidMap").returns(websiteIdToLanguage);
+
+        const websiteLanguageIdToPortalLanguageMap = new Map<string, string>([
+            ["d8b40829-17c8-4082-9e3f-89d60dc0ab7e", "d8b40829-17c8-4082-9e3f-89d60dc0ab7e"],
+        ]);
+        stub(schemaHelperUtil, "getWebsiteLanguageIdToPortalLanguageIdMap").returns(websiteLanguageIdToPortalLanguageMap);
+
+        const portalLanguageIdCodeMap = new Map<string, string>([
+            ["d8b40829-17c8-4082-9e3f-89d60dc0ab7e", "1033"],
+        ]);
+        stub(schemaHelperUtil, "getPortalLanguageIdToLcidMap").returns(portalLanguageIdCodeMap);
+
+        stub(authenticationProvider, "dataverseAuthentication").resolves(
+            { accessToken: "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d", userId: "" }
+        );
+
+        const _mockFetch = stub(fetch, 'default').callsFake(() => {
+            return Promise.resolve({
+                ok: false,
+                status: 400,
+                statusText: "Bad Request",
+                json: () => Promise.resolve({}),
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            } as any);
+        });
+
+        stub(WebExtensionContext.telemetry, "sendAPITelemetry");
+        const sendInfoTelemetry = stub(WebExtensionContext.telemetry, "sendInfoTelemetry");
+        const sendErrorTelemetry = stub(WebExtensionContext.telemetry, "sendErrorTelemetry");
+        const sendAPIFailureTelemetry = stub(WebExtensionContext.telemetry, "sendAPIFailureTelemetry");
+
+        const portalFs = new PortalsFS();
+        stub(portalFs, "writeFile");
+        WebExtensionContext.setWebExtensionContext(entityName, entityId, queryParamsMap);
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
+
+        // Reset telemetry stub history to clear calls from auth setup (populateSharedWorkspace)
+        sendErrorTelemetry.resetHistory();
+        sendInfoTelemetry.resetHistory();
+        sendAPIFailureTelemetry.resetHistory();
+
+        await fetchDataFromDataverseAndUpdateVFS(portalFs, { entityId: entityId, entityName: entityName });
+
+        assert.calledWithMatch(
+            sendInfoTelemetry,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_OPTIONAL_ENTITY_NOT_FOUND,
+            { entityName: "blogs", status: "400" }
+        );
+        assert.notCalled(sendErrorTelemetry);
+        assert.notCalled(sendAPIFailureTelemetry);
+        assert.called(_mockFetch);
+    });
+
+    it("fetchDataFromDataverseAndUpdateVFS_forCoreEntity_when404Response_shouldThrowError", async () => {
+        const entityName = "webpages";
+        const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
+        const queryParamsMap = new Map<string, string>([
+            [Constants.queryParameters.ORG_URL, "powerPages.com"],
+            [
+                Constants.queryParameters.WEBSITE_ID,
+                "a58f4e1e-5fe2-45ee-a7c1-398073b40181",
+            ],
+            [Constants.queryParameters.WEBSITE_NAME, "testWebSite"],
+            [schemaKey.SCHEMA_VERSION, "portalschemav2"],
+        ]);
+
+        const languageIdCodeMap = new Map<string, string>([["1033", "en-US"]]);
+        stub(schemaHelperUtil, "getLcidCodeMap").returns(languageIdCodeMap);
+
+        const websiteIdToLanguage = new Map<string, string>([
+            ["a58f4e1e-5fe2-45ee-a7c1-398073b40181", "1033"],
+        ]);
+        stub(schemaHelperUtil, "getWebsiteIdToLcidMap").returns(websiteIdToLanguage);
+
+        const websiteLanguageIdToPortalLanguageMap = new Map<string, string>([
+            ["d8b40829-17c8-4082-9e3f-89d60dc0ab7e", "d8b40829-17c8-4082-9e3f-89d60dc0ab7e"],
+        ]);
+        stub(schemaHelperUtil, "getWebsiteLanguageIdToPortalLanguageIdMap").returns(websiteLanguageIdToPortalLanguageMap);
+
+        const portalLanguageIdCodeMap = new Map<string, string>([
+            ["d8b40829-17c8-4082-9e3f-89d60dc0ab7e", "1033"],
+        ]);
+        stub(schemaHelperUtil, "getPortalLanguageIdToLcidMap").returns(portalLanguageIdCodeMap);
+
+        stub(authenticationProvider, "dataverseAuthentication").resolves(
+            { accessToken: "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d", userId: "" }
+        );
+
+        const _mockFetch = stub(fetch, 'default').callsFake(() => {
+            return Promise.resolve({
+                ok: false,
+                status: 404,
+                statusText: "Not Found",
+                url: "powerPages.com/api/data/v9.2/powerpagecomponents",
+                json: () => Promise.resolve({}),
+                clone: function() { return this; },
+                text: () => Promise.resolve("Not Found"),
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            } as any);
+        });
+
+        stub(WebExtensionContext.telemetry, "sendAPITelemetry");
+        const sendInfoTelemetry = stub(WebExtensionContext.telemetry, "sendInfoTelemetry");
+        stub(WebExtensionContext.telemetry, "sendErrorTelemetry");
+
+        const portalFs = new PortalsFS();
+        stub(portalFs, "writeFile");
+        WebExtensionContext.setWebExtensionContext(entityName, entityId, queryParamsMap);
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
+
+        await fetchDataFromDataverseAndUpdateVFS(portalFs, { entityId: entityId, entityName: entityName });
+
+        // For core entities, 404 should NOT be handled gracefully - error telemetry should be sent
+        const optionalEntityCalls = sendInfoTelemetry.getCalls().filter(
+            (call) => call.args[0] === webExtensionTelemetryEventNames.WEB_EXTENSION_OPTIONAL_ENTITY_NOT_FOUND
+        );
+        expect(optionalEntityCalls.length).to.equal(0);
+        assert.called(_mockFetch);
+    });
 });
