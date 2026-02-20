@@ -433,7 +433,9 @@ describe("WebExtensionContext", () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
+        const WEBSITE_ID = "36429b2e-8b29-4020-8493-bd5e277444d8";
         WebExtensionContext.orgUrl = ORG_URL;
+        WebExtensionContext.websiteId = WEBSITE_ID;
         WebExtensionContext.setWebExtensionContext(
             entityName,
             entityId,

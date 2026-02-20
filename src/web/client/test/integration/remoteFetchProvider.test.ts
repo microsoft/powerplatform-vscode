@@ -1508,14 +1508,17 @@ describe("remoteFetchProvider", () => {
         const entityName = "blogs";
         const entityId = "bb663ce7-9a38-4a89-9216-47f9fc6a3f15";
         const queryParamsMap = new Map<string, string>([
-            [Constants.queryParameters.ORG_URL, "powerPages.com"],
+            [queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"],
             [
-                Constants.queryParameters.WEBSITE_ID,
+                queryParameters.WEBSITE_ID,
                 "a58f4e1e-5fe2-45ee-a7c1-398073b40181",
             ],
-            [Constants.queryParameters.WEBSITE_NAME, "testWebSite"],
-            [schemaKey.SCHEMA_VERSION, "portalschemav2"],
+            [queryParameters.ENV_ID, "c4dc3686-1e6b-e428-b886-16cd0b9f4918"],
         ]);
+
+        WebExtensionContext.orgUrl = "powerPages.com";
+        WebExtensionContext.websiteName = "testWebSite";
+        WebExtensionContext.schema = Constants.portalSchemaVersion.V2;
 
         const languageIdCodeMap = new Map<string, string>([["1033", "en-US"]]);
         stub(schemaHelperUtil, "getLcidCodeMap").returns(languageIdCodeMap);
@@ -1539,23 +1542,38 @@ describe("remoteFetchProvider", () => {
             { accessToken: "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d", userId: "" }
         );
 
-        const _mockFetch = stub(fetch, 'default').callsFake(() => {
-            return Promise.resolve({
-                ok: false,
-                status: 404,
-                statusText: "Not Found",
-                json: () => Promise.resolve({}),
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            } as any);
-        });
+        const _mockFetch = stub(WebExtensionContext.concurrencyHandler, 'handleRequest').resolves({
+            ok: false,
+            status: 404,
+            statusText: "Not Found",
+            json: () => Promise.resolve({}),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any);
 
         stub(WebExtensionContext.telemetry, "sendAPITelemetry");
         const sendInfoTelemetry = stub(WebExtensionContext.telemetry, "sendInfoTelemetry");
         const sendErrorTelemetry = stub(WebExtensionContext.telemetry, "sendErrorTelemetry");
         const sendAPIFailureTelemetry = stub(WebExtensionContext.telemetry, "sendAPIFailureTelemetry");
 
+        const webpageNamesSet = new Set<string>();
+        stub(WebExtensionContext, "getWebpageNames").returns(webpageNamesSet);
+
+        stub(ECSFeaturesClient, "getConfig").returns({
+            enableDuplicateFileHandling: false,
+            disallowedDuplicateFileHandlingOrgs: "",
+            enableServerLogicChanges: false,
+            enableBlogSupport: true,
+        });
+
+        stub(folderHelperUtility, "getRequestUrlForEntities").returns([
+            { entityName: entityName, requestUrl: "make.powerpages.com" }
+        ]);
+
         const portalFs = new PortalsFS();
         stub(portalFs, "writeFile");
+        WebExtensionContext.websiteId = "a58f4e1e-5fe2-45ee-a7c1-398073b40181";
+        WebExtensionContext.organizationId = "e5dce21c-f85f-4849-b699-920c0fad5fbf";
+        WebExtensionContext.environmentId = "c4dc3686-1e6b-e428-b886-16cd0b9f4918";
         WebExtensionContext.setWebExtensionContext(entityName, entityId, queryParamsMap);
         await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
@@ -1580,14 +1598,17 @@ describe("remoteFetchProvider", () => {
         const entityName = "blogs";
         const entityId = "bb663ce7-9a38-4a89-9216-47f9fc6a3f15";
         const queryParamsMap = new Map<string, string>([
-            [Constants.queryParameters.ORG_URL, "powerPages.com"],
+            [queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"],
             [
-                Constants.queryParameters.WEBSITE_ID,
+                queryParameters.WEBSITE_ID,
                 "a58f4e1e-5fe2-45ee-a7c1-398073b40181",
             ],
-            [Constants.queryParameters.WEBSITE_NAME, "testWebSite"],
-            [schemaKey.SCHEMA_VERSION, "portalschemav2"],
+            [queryParameters.ENV_ID, "c4dc3686-1e6b-e428-b886-16cd0b9f4918"],
         ]);
+
+        WebExtensionContext.orgUrl = "powerPages.com";
+        WebExtensionContext.websiteName = "testWebSite";
+        WebExtensionContext.schema = Constants.portalSchemaVersion.V2;
 
         const languageIdCodeMap = new Map<string, string>([["1033", "en-US"]]);
         stub(schemaHelperUtil, "getLcidCodeMap").returns(languageIdCodeMap);
@@ -1611,23 +1632,38 @@ describe("remoteFetchProvider", () => {
             { accessToken: "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d", userId: "" }
         );
 
-        const _mockFetch = stub(fetch, 'default').callsFake(() => {
-            return Promise.resolve({
-                ok: false,
-                status: 400,
-                statusText: "Bad Request",
-                json: () => Promise.resolve({}),
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            } as any);
-        });
+        const _mockFetch = stub(WebExtensionContext.concurrencyHandler, 'handleRequest').resolves({
+            ok: false,
+            status: 400,
+            statusText: "Bad Request",
+            json: () => Promise.resolve({}),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any);
 
         stub(WebExtensionContext.telemetry, "sendAPITelemetry");
         const sendInfoTelemetry = stub(WebExtensionContext.telemetry, "sendInfoTelemetry");
         const sendErrorTelemetry = stub(WebExtensionContext.telemetry, "sendErrorTelemetry");
         const sendAPIFailureTelemetry = stub(WebExtensionContext.telemetry, "sendAPIFailureTelemetry");
 
+        const webpageNamesSet = new Set<string>();
+        stub(WebExtensionContext, "getWebpageNames").returns(webpageNamesSet);
+
+        stub(ECSFeaturesClient, "getConfig").returns({
+            enableDuplicateFileHandling: false,
+            disallowedDuplicateFileHandlingOrgs: "",
+            enableServerLogicChanges: false,
+            enableBlogSupport: true,
+        });
+
+        stub(folderHelperUtility, "getRequestUrlForEntities").returns([
+            { entityName: entityName, requestUrl: "make.powerpages.com" }
+        ]);
+
         const portalFs = new PortalsFS();
         stub(portalFs, "writeFile");
+        WebExtensionContext.websiteId = "a58f4e1e-5fe2-45ee-a7c1-398073b40181";
+        WebExtensionContext.organizationId = "e5dce21c-f85f-4849-b699-920c0fad5fbf";
+        WebExtensionContext.environmentId = "c4dc3686-1e6b-e428-b886-16cd0b9f4918";
         WebExtensionContext.setWebExtensionContext(entityName, entityId, queryParamsMap);
         await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
@@ -1652,14 +1688,17 @@ describe("remoteFetchProvider", () => {
         const entityName = "webpages";
         const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
         const queryParamsMap = new Map<string, string>([
-            [Constants.queryParameters.ORG_URL, "powerPages.com"],
+            [queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"],
             [
-                Constants.queryParameters.WEBSITE_ID,
+                queryParameters.WEBSITE_ID,
                 "a58f4e1e-5fe2-45ee-a7c1-398073b40181",
             ],
-            [Constants.queryParameters.WEBSITE_NAME, "testWebSite"],
-            [schemaKey.SCHEMA_VERSION, "portalschemav2"],
+            [queryParameters.ENV_ID, "c4dc3686-1e6b-e428-b886-16cd0b9f4918"],
         ]);
+
+        WebExtensionContext.orgUrl = "powerPages.com";
+        WebExtensionContext.websiteName = "testWebSite";
+        WebExtensionContext.schema = Constants.portalSchemaVersion.V2;
 
         const languageIdCodeMap = new Map<string, string>([["1033", "en-US"]]);
         stub(schemaHelperUtil, "getLcidCodeMap").returns(languageIdCodeMap);
@@ -1683,25 +1722,41 @@ describe("remoteFetchProvider", () => {
             { accessToken: "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d", userId: "" }
         );
 
-        const _mockFetch = stub(fetch, 'default').callsFake(() => {
-            return Promise.resolve({
-                ok: false,
-                status: 404,
-                statusText: "Not Found",
-                url: "powerPages.com/api/data/v9.2/powerpagecomponents",
-                json: () => Promise.resolve({}),
-                clone: function() { return this; },
-                text: () => Promise.resolve("Not Found"),
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            } as any);
-        });
+        const _mockFetch = stub(WebExtensionContext.concurrencyHandler, 'handleRequest').resolves({
+            ok: false,
+            status: 404,
+            statusText: "Not Found",
+            url: "powerPages.com/api/data/v9.2/powerpagecomponents",
+            json: () => Promise.resolve({}),
+            clone: function() { return this; },
+            text: () => Promise.resolve("Not Found"),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any);
 
         stub(WebExtensionContext.telemetry, "sendAPITelemetry");
         const sendInfoTelemetry = stub(WebExtensionContext.telemetry, "sendInfoTelemetry");
         stub(WebExtensionContext.telemetry, "sendErrorTelemetry");
+        stub(WebExtensionContext.telemetry, "sendAPIFailureTelemetry");
+
+        const webpageNamesSet = new Set<string>();
+        stub(WebExtensionContext, "getWebpageNames").returns(webpageNamesSet);
+
+        stub(ECSFeaturesClient, "getConfig").returns({
+            enableDuplicateFileHandling: false,
+            disallowedDuplicateFileHandlingOrgs: "",
+            enableServerLogicChanges: false,
+            enableBlogSupport: true,
+        });
+
+        stub(folderHelperUtility, "getRequestUrlForEntities").returns([
+            { entityName: entityName, requestUrl: "make.powerpages.com" }
+        ]);
 
         const portalFs = new PortalsFS();
         stub(portalFs, "writeFile");
+        WebExtensionContext.websiteId = "a58f4e1e-5fe2-45ee-a7c1-398073b40181";
+        WebExtensionContext.organizationId = "e5dce21c-f85f-4849-b699-920c0fad5fbf";
+        WebExtensionContext.environmentId = "c4dc3686-1e6b-e428-b886-16cd0b9f4918";
         WebExtensionContext.setWebExtensionContext(entityName, entityId, queryParamsMap);
         await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
