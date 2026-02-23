@@ -796,6 +796,14 @@ Typ: {3}</target>
         <source xml:lang="en">Feedback</source>
         <target state="translated">Feedback</target>
       </trans-unit>
+      <trans-unit id="++CODE++6625a35e6dacf5200897a3c37d9d601d529b759031fa6c2684a9e7491afaf82c">
+        <source xml:lang="en">Fetching environment information ...</source>
+        <target state="new">Fetching environment information ...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++558c0e8512ccb47e170851ab1dc541283c7e53179581db1e69ece6c9b5fb8719">
+        <source xml:lang="en">Fetching website details ...</source>
+        <target state="new">Fetching website details ...</target>
+      </trans-unit>
       <trans-unit id="++CODE++1b600fc82f2c98dc384adb9fa255ff5914978d978928c8aa5e56bf5fc64980b2">
         <source xml:lang="en">Fetching websites from '{0}'...</source>
         <note>Message shown while fetching websites from an environment. {0} is the environment name.</note>
@@ -1058,6 +1066,10 @@ Kehren Sie zu diesem Chat zurück, und @powerpages unterstützt Sie beim Schreib
       <trans-unit id="++CODE++e8ce5dcaf408935ff76747226d2e8bee4319a2f593c1d7a838115e56183d1f37">
         <source xml:lang="en">Modified</source>
         <target state="translated">Geändert</target>
+      </trans-unit>
+      <trans-unit id="++CODE++0516c7a52473008fcb8090b8654caa0f680697bf92bb7b41dc4eb2eb1516fe29">
+        <source xml:lang="en">Multiple websites found. Please select one.</source>
+        <target state="new">Multiple websites found. Please select one.</target>
       </trans-unit>
       <trans-unit id="++CODE++a253ff09c5a8678e1fd1962b2c329245e139e45f9cc6ced4e5d7ad42c4108fc0">
         <source xml:lang="en">NEW</source>
@@ -1659,7 +1671,7 @@ Organisations-ID: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++0bd7e288337919a633d6237e1c6f79e721699cc0cf3dc0204279215c4f8591c8">
         <source xml:lang="en">There's a problem on the back end</source>
-        <target state="new">There's a problem on the back end</target>
+        <target state="translated">Problem mit Back-End</target>
       </trans-unit>
       <trans-unit id="++CODE++bcfc420c0358eb6f248fa6328797cfa38fa121baea6320a623280a0d34eeee75">
         <source xml:lang="en">This file was exported with a newer version of the extension. Please update your extension to import this file.</source>
@@ -1721,6 +1733,14 @@ Organisations-ID: {3}</target>
       <trans-unit id="++CODE++bd7b156375b48ce5797a3421150e6f5c3b71d3a30f823e957241589aea6236ca">
         <source xml:lang="en">Unable to complete the request</source>
         <target state="translated">Die Anforderung kann nicht fertig gestellt werden</target>
+      </trans-unit>
+      <trans-unit id="++CODE++825428f802dce30a8443dd17ada4d08aff818700cba857285da17a926c96c8b9">
+        <source xml:lang="en">Unable to fetch environment information</source>
+        <target state="new">Unable to fetch environment information</target>
+      </trans-unit>
+      <trans-unit id="++CODE++9083a7e873ce09c78f134fb812ce04c4fcb02ace2682c620211eca599cfa78c3">
+        <source xml:lang="en">Unable to fetch website details</source>
+        <target state="new">Unable to fetch website details</target>
       </trans-unit>
       <trans-unit id="++CODE++bab36b47fe2dd4f2f7e8eb486f2e3546e27dc047e69f5b24307bc71e5be2a7cf">
         <source xml:lang="en">Unable to find that app</source>
