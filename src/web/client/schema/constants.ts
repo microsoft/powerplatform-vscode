@@ -122,4 +122,5 @@ export const conditionalFolderEntities = [
     schemaEntityName.IDEAFORUMS,
     schemaEntityName.FORUMANNOUNCEMENTS,
     schemaEntityName.FORUMPOSTS,
+    schemaEntityName.SERVERLOGICS,
 ];
