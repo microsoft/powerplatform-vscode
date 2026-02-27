@@ -114,6 +114,29 @@ export async function activate(
 
     await authenticateUserInVSCode(); //Authentication for extension
 
+    vscode.window.registerUriHandler({
+        handleUri(uri:vscode.Uri) {
+            const params = uri.query.split('&'); //'vscode://microsoft-IsvExpTools.powerplatform-vscode?org&siteid'
+            let org = '';
+            let siteid = '';
+            params.forEach(param => {
+                const pair = param.split('=');
+                switch (pair[0]){
+                    case 'org':{
+                        org = pair[1];
+                        break;
+                    }
+                    case 'siteid':{
+                        siteid = pair[1];
+                        break;
+                    }
+                }
+            });
+            vscode.commands.executeCommand("pacCLI.pacAuthCreate", org);
+            vscode.commands.executeCommand("pacCLI.pacPaportalDownload", siteid);
+        }
+    })
+
     // portal web view panel
     _context.subscriptions.push(
         vscode.commands.registerCommand(
