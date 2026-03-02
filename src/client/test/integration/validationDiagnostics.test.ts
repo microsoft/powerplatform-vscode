@@ -30,7 +30,7 @@ describe("validationDiagnostics", () => {
             "src",
             "client",
             "test",
-            "Integration",
+            "integration",
             "MockValidationDiagnosticsTextDoc.txt"
         );
 
@@ -57,7 +57,7 @@ describe("validationDiagnostics", () => {
             "src",
             "client",
             "test",
-            "Integration",
+            "integration",
             "MockValidationDiagnosticsTextDoc.txt"
         );
 
@@ -84,7 +84,7 @@ describe("validationDiagnostics", () => {
             "src",
             "client",
             "test",
-            "Integration",
+            "integration",
             "MockValidationDiagnosticsTextDoc.txt"
         );
 
@@ -130,7 +130,7 @@ describe("validationDiagnostics", () => {
             "src",
             "client",
             "test",
-            "Integration",
+            "integration",
             "MockValidationDiagnosticsTextDoc.txt"
         );
 

@@ -729,7 +729,10 @@ describe("commonUtility", () => {
         expect(result).deep.eq(expectResult);
     });
 
-    it("getDeletePathUris_whenUriIsValidAndFilePropertiesHavingFileName_shouldReturnVscode.UriArrayWithData", () => {
+    it("getDeletePathUris_whenUriIsValidAndFilePropertiesHavingFileName_shouldReturnVscode.UriArrayWithData", function () {
+        if (process.platform !== "win32") {
+            this.skip(); // Backslash path separator behavior only applies on Windows
+        }
         //Act
         const uriPath = "\\web-pages\\.webfile.yml";
         const fileEntityType = Constants.PowerPagesEntityType.WEBFILES;
@@ -821,7 +824,10 @@ describe("commonUtility", () => {
         ]);
     });
 
-    it("getDeletePathUris_whenFsPathDontHavewebfile.yml_shouldReturnVscode.UriArrayWithData", () => {
+    it("getDeletePathUris_whenFsPathDontHavewebfile.yml_shouldReturnVscode.UriArrayWithData", function () {
+        if (process.platform !== "win32") {
+            this.skip(); // Backslash path separator behavior only applies on Windows
+        }
         //Act
         const uriPath = "\\web-pages\\.webfil";
         const fileEntityType = Constants.PowerPagesEntityType.WEBFILES;

@@ -9,7 +9,6 @@ import {
     BASE_64,
     CO_PRESENCE_FEATURE_SETTING_NAME,
     DATA,
-    MULTI_FILE_FEATURE_SETTING_NAME,
     STUDIO_PROD_REGION,
     VERSION_CONTROL_FOR_WEB_EXTENSION_SETTING_NAME,
     portalSchemaVersion,
@@ -129,24 +128,6 @@ export function isVersionControlEnabled() {
     return isVersionControlEnabled as boolean;
 }
 
-export function isMultifileEnabled() {
-    const isMultifileEnabled = vscode.workspace
-        .getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME)
-        .get(MULTI_FILE_FEATURE_SETTING_NAME);
-
-    if (!isMultifileEnabled) {
-        WebExtensionContext.telemetry.sendInfoTelemetry(
-            webExtensionTelemetryEventNames.WEB_EXTENSION_MULTI_FILE_FEATURE_FLAG_DISABLED
-        );
-    }
-    else {
-        WebExtensionContext.telemetry.sendInfoTelemetry(
-            webExtensionTelemetryEventNames.WEB_EXTENSION_MULTI_FILE_FEATURE_FLAG_ENABLED
-        );
-    }
-
-    return isMultifileEnabled as boolean;
-}
 
 export function isCoPresenceEnabled() {
     const isCoPresenceEnabled = vscode.workspace
@@ -219,11 +200,11 @@ export function isWebfileContentLoadNeeded(fileName: string, fsPath: string): bo
 }
 
 export function isPortalVersionV1(): boolean {
-    return WebExtensionContext.currentSchemaVersion.toLowerCase() === portalSchemaVersion.V1;
+    return WebExtensionContext.schema?.toLowerCase() === portalSchemaVersion.V1;
 }
 
 export function isPortalVersionV2(): boolean {
-    return WebExtensionContext.currentSchemaVersion.toLowerCase() === portalSchemaVersion.V2;
+    return WebExtensionContext.schema?.toLowerCase() === portalSchemaVersion.V2;
 }
 
 export function getWorkSpaceName(websiteId: string): string {
@@ -240,18 +221,16 @@ export function getEnvironmentIdFromUrl() {
 }
 
 export function getBackToStudioURL() {
-    const region = WebExtensionContext.urlParametersMap.get(queryParameters.REGION) as string;
-
     if (isStringUndefinedOrEmpty(getEnvironmentIdFromUrl()) ||
-        isStringUndefinedOrEmpty(WebExtensionContext.urlParametersMap.get(queryParameters.REGION)) ||
-        isStringUndefinedOrEmpty(WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_ID))) {
+        isStringUndefinedOrEmpty(WebExtensionContext.region) ||
+        isStringUndefinedOrEmpty(WebExtensionContext.websiteId)) {
         return undefined;
     }
 
     return BACK_TO_STUDIO_URL_TEMPLATE
         .replace("{environmentId}", getEnvironmentIdFromUrl())
-        .replace("{.region}", region.toLowerCase() === STUDIO_PROD_REGION ? "" : `.${WebExtensionContext.urlParametersMap.get(queryParameters.REGION) as string}`)
-        .replace("{webSiteId}", WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_ID) as string);
+        .replace("{.region}", WebExtensionContext.region.toLowerCase() === STUDIO_PROD_REGION ? "" : `.${WebExtensionContext.region}`)
+        .replace("{webSiteId}", WebExtensionContext.websiteId);
 }
 
 export function getSupportedImageFileExtensionsForEdit() {

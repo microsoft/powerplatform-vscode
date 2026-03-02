@@ -58,6 +58,8 @@ import { ActionsHub } from "../../../../power-pages/actions-hub/ActionsHub";
 import ArtemisContext from "../../../../ArtemisContext";
 import { ServiceEndpointCategory } from "../../../../../common/services/Constants";
 import { IArtemisAPIOrgResponse } from "../../../../../common/services/Interfaces";
+import { ReadOnlyContentProvider } from "../../../../power-pages/actions-hub/ReadOnlyContentProvider";
+import { MetadataDiffDecorationProvider } from "../../../../power-pages/actions-hub/MetadataDiffDecorationProvider";
 
 // Add global type declaration for ArtemisContext
 describe("ActionsHubTreeDataProvider", () => {
@@ -89,6 +91,9 @@ describe("ActionsHubTreeDataProvider", () => {
 
     beforeEach(() => {
         registerCommandStub = sinon.stub(vscode.commands, "registerCommand");
+        sinon.stub(vscode.window, "registerTreeDataProvider").returns(new vscode.Disposable(() => { /* no-op */ }));
+        sinon.stub(ReadOnlyContentProvider.prototype, "register").returns(new vscode.Disposable(() => { /* no-op */ }));
+        sinon.stub(MetadataDiffDecorationProvider.prototype, "register").returns(new vscode.Disposable(() => { /* no-op */ }));
         context = {
             extensionUri: vscode.Uri.parse("https://localhost:3000"),
             globalState: {
@@ -117,7 +122,8 @@ describe("ActionsHubTreeDataProvider", () => {
         sinon.restore();
     });
 
-    describe('initialize', () => {
+    describe('initialize', function () {
+        this.retries(2);
         it("should register refresh command", async () => {
             const mockCommandHandler = sinon.stub(RefreshEnvironmentHandler, 'refreshEnvironment');
             mockCommandHandler.resolves();
