@@ -324,7 +324,6 @@
                 messageIndex++;
 
                 const apiResponseElement = parseCodeBlocks(apiResponse);
-                apiResponseElement.setAttribute("aria-live", "assertive"); // Add aria-live attribute to response
                 messageElement.appendChild(apiResponseElement);
 
                 // Create screen reader friendly version
@@ -350,7 +349,7 @@
         };
     }
 
-        function setWelcomeScreen() {
+    function setWelcomeScreen() {
         const messageWrapper = document.createElement("div");
         messageWrapper.classList.add("message-wrapper");
 
