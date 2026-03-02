@@ -109,7 +109,7 @@ export class AuthTreeView implements vscode.TreeDataProvider<AuthProfileTreeItem
                 const confirm = vscode.l10n.t("Confirm");
                 const confirmResult = await vscode.window.showWarningMessage(
                     vscode.l10n.t({ message: "Are you sure you want to delete the Auth Profile {0}-{1}?",
-                        args: [item.model.UserDisplayName, item.model.ActiveOrganization?.Item2],
+                        args: [item.model.UserDisplayName, item.model.ActiveOrganization?.Item2 ?? ""],
                         comment: ["{0} is the user name, {1} is the URL of environment of the auth profile"] }),
                     confirm,
                     vscode.l10n.t("Cancel"));
