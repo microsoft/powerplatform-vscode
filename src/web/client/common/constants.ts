@@ -5,7 +5,6 @@
 
 // Default and constants
 export const PORTAL_LANGUAGE_DEFAULT = "1033";
-export const PORTALS_FOLDER_NAME_DEFAULT = "site";
 export const PORTALS_URI_SCHEME = "powerplatform-vfs";
 export const DEFAULT_LANGUAGE_CODE = " ";
 export const NO_CONTENT = " ";
@@ -59,9 +58,6 @@ export const ALL_APPLICATION_MIME_TYPE = 'application/';
 export const VERSION_CONTROL_FOR_WEB_EXTENSION_SETTING_NAME =
     "enableVersionControl";
 
-// Multi-file feature constants
-export const MULTI_FILE_FEATURE_SETTING_NAME = "enableMultiFileFeature";
-
 // Co-presence feature constants
 export const CO_PRESENCE_FEATURE_SETTING_NAME = "enableCoPresenceFeature";
 
@@ -91,25 +87,17 @@ export enum initializationEntityName {
 // Query parameters passed in url to vscode extension
 export enum queryParameters {
     ORG_ID = "organizationid",
-    TENANT_ID = "tenantid",
     PORTAL_ID = "websitepreviewid",
     WEBSITE_ID = "websiteid",
-    SCHEMA = "schema",
-    DATA_SOURCE = "datasource",
+    ENV_ID = "envid",
     REFERRER_SESSION_ID = "referrersessionid",
     REFERRER = "referrer",
-    SITE_VISIBILITY = "sitevisibility",
-    WEBSITE_NAME = "websitename",
-    ORG_URL = "orgurl",
-    REGION = "region",
-    ENV_ID = "envid",
-    GEO = "geo", // User geo location
-    ENABLE_MULTIFILE = "enablemultifile",
+    REFERRER_SOURCE = "referrersource",
     ENTITY = "entity",
     ENTITY_ID = "entityid",
-    REFERRER_SOURCE = "referrersource",
     SKU = "sku",
-    SOURCE_ATTRIBUTE = "source_attribute"
+    SOURCE_ATTRIBUTE = "source_attribute",
+    GEO = "geo", // User geo location
 }
 
 export enum sourceAttribute {
