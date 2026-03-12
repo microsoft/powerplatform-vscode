@@ -120,3 +120,4 @@ npm run test-web-integration  # Web integration tests
 - Use `oneDSLoggerWrapper` for all telemetry events
 - Events defined in `src/common/OneDSLoggerTelemetry/telemetryConstants.ts`
 - Separate telemetry for desktop vs web experiences
+
