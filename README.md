@@ -1,110 +1,108 @@
-# Power Platform Extension
+# Power Platform Tools for VS Code
 
 [![PullRequest](https://github.com/microsoft/powerplatform-vscode/workflows/PullRequest/badge.svg)](https://github.com/microsoft/powerplatform-vscode/actions?query=workflow%3APullRequest)
 [![Official Build](https://dev.azure.com/dynamicscrm/OneCRM/_apis/build/status/DPX-Tools/powerplatform-vscode%20Official%20Build?branchName=release/stable)](https://dev.azure.com/dynamicscrm/OneCRM/_build/latest?definitionId=12152)
 
-The Power Platform extension makes it easy to manage Power Platform environments and allows the
-developer to create, build and deploy Power Platform solutions, packages and portals.
+The **Power Platform Tools** extension brings the full Power Platform development experience into VS Code. Create, build, and deploy Power Platform solutions, packages, and Power Pages sites — with the Power Platform CLI (pac) integrated directly into your terminal.
 
-Installing this extension will also make the latest Power Platform CLI (aka pac) available in your VSCode terminal.
+## Features
+
+### Power Platform CLI (pac)
+
+Installing this extension automatically provides the latest Power Platform CLI in your VS Code terminal. Use it to manage authentication, solutions, environments, PCF controls, packages, and more.
 
 ![VSCode Terminal with pac CLI](https://github.com/microsoft/powerplatform-vscode/blob/main/src/client/assets/pac-CLI-in-terminal.png?raw=true)
 
-## "Power Platform CLI Exposed" Series
+### Authentication & Environment Management
 
-[Daniel Laskewitz](https://github.com/Laskewitz) talks with members of our team about PAC CLI, Solutions, Power Pages, Data & Tool, Pipelines, and PCF
+- **Auth Panel** — Create, select, and manage authentication profiles for your Power Platform environments directly from the Activity Bar.
+- **Environment & Solutions Panel** — Browse connected environments, view installed solutions, and quickly copy environment details (URL, IDs, version numbers).
 
-[![Power Platform CLI Exposed](https://img.youtube.com/vi/NkoWGF8a4aQ/0.jpg)](https://www.youtube.com/playlist?list=PLlrxD0HtieHhEdLHxQOU96ySSZpMCyAxf)
+### Power Pages Development
 
-[Power Platform CLI Exposed](https://www.youtube.com/playlist?list=PLlrxD0HtieHhEdLHxQOU96ySSZpMCyAxf)
+- **Actions Hub** — A centralized tree view for managing Power Pages sites: download, upload, preview, and open sites in Power Pages Studio.
+- **Site Comparison** — Compare local site files against the cloud environment with a full metadata diff view (tree or list), including HTML report generation and import/export.
+- **File Creation Wizards** — Scaffold new webpages, web templates, content snippets, page templates, and web files from the command palette.
+- **Bootstrap Diff** — Identify differences between your portal templates and the latest bootstrap updates.
+- **Server Logic Debugging** — Debug and run Power Pages server logic files with mock SDK and custom mock data support.
+- **CodeQL Security Screening** — Run CodeQL security analysis on your Power Pages sites directly from the Actions Hub.
+
+### Copilot for Power Pages
+
+An integrated VS Code chat participant (`@powerpages`) that helps you write code by describing your expected behavior in natural language. Generate JavaScript for form validation, Web API queries, Liquid templates, and more.
+
+### PCF Control Debugging
+
+Debug Power Apps component framework (PCF) controls with a built-in debugger that launches an Edge browser session connected to your Dataverse environment. Supports custom launch configurations, full-screen rendering mode, and browser profile management.
+
+### Language Server Support
+
+- **HTML/Liquid Language Server** — IntelliSense, autocompletion, and diagnostics for Liquid template files used in Power Pages.
+- **YAML Language Server** — Schema validation and editing support for Power Platform YAML files.
+- **Liquid Snippets** — Code snippets for common Liquid template patterns.
+
+### VS Code for Web
+
+The extension supports VS Code for the Web with a tailored experience including a Power Pages file explorer, real-time collaboration view (see who's editing the site), and a getting-started walkthrough.
 
 ## Requirements
 
-- VSCode >= 1.73.0
-- Windows: .NET 4.8
-- macOS/Linux/WSL: [.NET 6.0+ SDK](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
+- VS Code **1.91.0** or later
+- [.NET 6.0+ SDK](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) (used to install the pac CLI as a dotnet tool)
 
 ## Getting Started
 
-Open the VS Code Terminal (Terminal | New Terminal) and type in:
+1. Install the extension from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=microsoft-IsvExpTools.powerplatform-vscode).
+2. Open the **Power Platform** panel in the Activity Bar.
+3. Create an authentication profile to connect to your environment.
+4. Open the VS Code terminal and start using `pac`:
 
-```bash
-> pac
-Microsoft PowerPlatform CLI
-
-Usage: pac [admin] [application] [auth] [canvas] [help] [org] [package] [paportal] [pcf] [plugin] [solution] [telemetry]
-
-  admin                       Work with your PowerPlatform Admin Account
-  application                 Commands for listing and installing available DataVerse applications from AppSource
-  auth                        Manage how you authenticate to various services
-  canvas                      Operating with Power Apps .msapp files
-  help                        Show help for the Microsoft PowerPlatform CLI
-  org                         Work with your Dataverse Organization
-  package                     Commands for working with Dataverse package projects
-  paportal                    Commands for working with PowerApps portal website
-  pcf                         Commands for working with PowerApps component framework projects
-  plugin                      Commands for working with Dataverse plugin class library
-  solution                    Commands for working with Dataverse solution projects
-  telemetry                   Manage telemetry settings
+```
+pac help
 ```
 
-The pac CLI will show you the available command nouns with a short description. To get detailed help for each noun, use the built-int help screens for each command, e.g.:
+Use the built-in help for any command group:
 
-```bash
-> pac solution help
-Microsoft PowerApps CLI
-
-Usage: pac solution [init] [add-reference] [list] [delete] [online-version] [version] [import] [export] [clone] [publish] [upgrade] [add-license] [check] [create-settings] [pack] [unpack]
-
-  init                        Initializes a directory with a new Dataverse solution project
-  add-reference               Adds a reference from the project in the current directory to the project at 'path'
-  list                        List all Solutions from the current Dataverse Organization
-  delete                      Delete Dataverse Solution from the current Dataverse Environment
-  online-version              Sets version for solution loaded in Dataverse environment.
-  version                     Update build or revision version for solution
-  import                      Import the Dataverse Solution into the current Dataverse Environment
-  export                      Export a Dataverse Solution from the current Dataverse Environment
-  clone                       Create a solution project based on an existing solution in your Organization
-  publish                     Publishes all customizations
-  upgrade                     Option to stage the Dataverse solution for upgrade
-  add-license                 Add license and plan info to solution
-  check                       Upload a Dataverse Solution project to run against the PowerApps Checker Service
-  create-settings             Create a settings file from solution zip or solution folder.
-  pack                        Package solution components on local filesystem into solution.zip (SolutionPackager)
-  unpack                      Extract solution components from solution.zip onto local filesystem (SolutionPackager)
+```
+pac solution help
+pac power-pages help
+pac auth help
 ```
 
-To then view all solutions installed in the selected environment:
+## Extension Pack
 
-```bash
-> pac solution list
-Connected to...vscode-test
-Listing all Solutions from the current Dataverse Organization...
+This extension bundles the following extensions:
 
- Index      Unique Name                                        Friendly Name                                                Version
+- [CodeQL](https://marketplace.visualstudio.com/items?itemName=github.vscode-codeql) — Security analysis for Power Pages sites
+- [SARIF Viewer](https://marketplace.visualstudio.com/items?itemName=ms-sarifvscode.sarif-viewer) — View CodeQL and other analysis results
 
+## Configuration
 
- [1]        Cr4323c                                            Common Data Services Default Solution                        1.0.0.0
-```
+Key settings (available under `powerPlatform.*` in VS Code settings):
+
+| Setting | Description |
+|---|---|
+| `powerPlatform.auth.cloud` | Target cloud environment (Public, USGov, USGovHigh, USGovDoD, China) |
+| `powerPlatform.experimental.copilotEnabled` | Enable/disable Copilot for Power Pages (default: true) |
+| `powerPlatform.experimental.enablePcfDebuggingFeatures` | Enable PCF debugging capabilities |
+| `powerPlatform.experimental.defaultUrl` | Default PowerApps instance URL for debugging |
+| `powerPlatform.experimental.browserFlavor` | Edge browser version for PCF debugging (Stable, Beta, Dev, Canary) |
 
 ## Feedback & Questions
 
-Please use the issues tracker in the home repo: <https://github.com/microsoft/powerplatform-vscode/issues>
+Please file issues on the [GitHub issue tracker](https://github.com/microsoft/powerplatform-vscode/issues).
 
 ## Contributing
 
-This project will welcome contributions in the near future. At this stage, we're not ready for contributions,
-but do welcome your suggestions via this repository's issue tracker.
-
-See details in [CONTRIBUTING](CONTRIBUTING.md)
+Contributions and suggestions are welcome. Most contributions require you to agree to a Contributor License Agreement (CLA). See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions and details.
 
 ### Code of Conduct
 
-See details in [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md)
+See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 
-### Security issues
+### Security
 
-Please report any security concerns or issues as described in [SECURITY](SECURITY.md) document.
+Please report security concerns as described in [SECURITY.md](SECURITY.md).
 
 ## Trademarks
 
