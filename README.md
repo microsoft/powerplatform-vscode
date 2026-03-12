@@ -57,13 +57,13 @@ The extension supports VS Code for the Web with a tailored experience including 
 3. Create an authentication profile to connect to your environment.
 4. Open the VS Code terminal and start using `pac`:
 
-```
+```bash
 pac help
 ```
 
 Use the built-in help for any command group:
 
-```
+```bash
 pac solution help
 pac power-pages help
 pac auth help
@@ -78,52 +78,11 @@ This extension bundles the following extensions:
 
 ## Configuration
 
-All settings are available under `powerPlatform.*` in VS Code settings.
+This extension contributes settings under `powerPlatform.*`. The most commonly needed setting is:
 
-### General
+- **`powerPlatform.auth.cloud`** — Select your Azure cloud for authentication (`Public`, `USGov`, `USGovHigh`, `USGovDoD`, `China`). Defaults to `Public`.
 
-| Setting | Type | Default | Description |
-|---|---|---|---|
-| `powerPlatform.auth.cloud` | `string` | `Public` | Azure cloud to use for authentication. Options: `Public`, `USGov`, `USGovHigh`, `USGovDoD`, `China` |
-| `powerPlatform.generatorInstalled` | `boolean` | `false` | Whether the generator installation is complete |
-| `powerPlatform.experimental.disableActivityBarPanels` | `boolean` | `false` | Disable the Power Platform activity bar panels |
-| `powerPlatform.experimental.enableTelemetry` | `boolean` | `true` | Enable custom telemetry for Power Pages |
-
-### Copilot
-
-| Setting | Type | Default | Description |
-|---|---|---|---|
-| `powerPlatform.experimental.copilotEnabled` | `boolean` | `true` | Enable Copilot for Power Pages (desktop) |
-| `powerPlatform.experimental.enableWebCopilot` | `boolean` | `true` | Enable Copilot for Power Pages (web) |
-
-### PCF Debugging
-
-| Setting | Type | Default | Description |
-|---|---|---|---|
-| `powerPlatform.experimental.enablePcfDebuggingFeatures` | `boolean` | `false` | Enable debugger features for PCF controls |
-| `powerPlatform.experimental.defaultUrl` | `string` | `""` | URL to your PowerApps instance where the PCF control is located. Overrides `url` in launch.json |
-| `powerPlatform.experimental.port` | `number` | `9222` | Port to search for remote debuggable instances |
-| `powerPlatform.experimental.webRoot` | `string` | `""` | Absolute path to the webserver root. Supports `${workspaceFolder}`. Overrides `webRoot` in launch.json |
-| `powerPlatform.experimental.appId` | `string` | `00000000-...` | Model-driven app ID hosting the PCF control. Only required for full-screen controls. Overrides `appId` in launch.json |
-| `powerPlatform.experimental.userDataDir` | `string` | `""` | Custom Edge user profile path. Ignored if `useDefaultUserDataProfile` is true |
-| `powerPlatform.experimental.useDefaultUserDataProfile` | `boolean` | `false` | Use your default browser profile for debugging instead of a temporary one |
-| `powerPlatform.experimental.browserFlavor` | `string` | `Default` | Edge browser version: `Default`, `Stable`, `Beta`, `Dev`, `Canary` |
-| `powerPlatform.experimental.browserArgs` | `array` | `[]` | Custom Edge launch arguments (requires restarting VS Code) |
-
-### Power Pages
-
-| Setting | Type | Default | Description |
-|---|---|---|---|
-| `powerPlatform.pages.downloadSiteFolder` | `string` | `""` | Folder path for downloading Power Pages sites |
-| `powerPlatform.pages.confirmDifferentWebsiteComparison` | `boolean` | `true` | Prompt for confirmation when comparing a different website |
-
-### Web Extension
-
-| Setting | Type | Default | Description |
-|---|---|---|---|
-| `powerPlatform.experimental.enableVersionControl` | `boolean` | `true` | Enable version control on file save (web only) |
-| `powerPlatform.experimental.enableMultiFileFeature` | `boolean` | `true` | Enable multiple file view (web only) |
-| `powerPlatform.experimental.enableCoPresenceFeature` | `boolean` | `true` | Enable co-presence / collaboration view (web only) |
+To browse all available settings, open VS Code Settings and filter by `@ext:microsoft-IsvExpTools.powerplatform-vscode`.
 
 ## Feedback & Questions
 
