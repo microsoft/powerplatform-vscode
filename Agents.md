@@ -120,3 +120,8 @@ npm run test-web-integration  # Web integration tests
 - Use `oneDSLoggerWrapper` for all telemetry events
 - Events defined in `src/common/OneDSLoggerTelemetry/telemetryConstants.ts`
 - Separate telemetry for desktop vs web experiences
+
+### README Maintenance
+
+- When adding, removing, or modifying a setting in the `configuration.properties` section of `package.json`, update the corresponding settings table in `README.md` under the **Configuration** section to keep it in sync.
+- Settings in the README are grouped by category: General, Copilot, PCF Debugging, Power Pages, and Web Extension. Place new settings in the appropriate group.
