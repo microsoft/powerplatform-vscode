@@ -8,6 +8,17 @@ body:
       value: |
         Thank you for reporting an issue! Please fill out the information below to help us investigate.
 
+  - type: dropdown
+    id: related-to-code-apps
+    attributes:
+      label: Is this bug related to Code Apps?
+      description: "If your bug is related to Code Apps, please report it at https://github.com/microsoft/PowerAppsCodeApps/ instead."
+      options:
+        - "No"
+        - "Yes - I will create the issue at https://github.com/microsoft/PowerAppsCodeApps/ instead"
+    validations:
+      required: true
+
   - type: textarea
     id: description
     attributes:
