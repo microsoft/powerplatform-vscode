@@ -1864,6 +1864,10 @@
     "minimatch": "^10.2.3",
     "serialize-javascript": "^7.0.3",
     "diff": "^8.0.3",
+    "undici": "^7.24.0",
+    "release-it": {
+      "undici": "^6.24.0"
+    },
     "@vscode/vsce": {
       "minimatch": "3.1.5"
     },
