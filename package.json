@@ -1876,6 +1876,7 @@
     },
     "@types/minimatch": {
       "minimatch": "^10.2.3"
-    }
+    },
+    "picomatch@2": "^2.3.2"
   }
 }
