@@ -46,7 +46,7 @@ export enum schemaEntityName {
     WEBFILES = "webfiles",
     WEBPAGES = "webpages",
     WEBTEMPLATES = "webtemplates",
-    SERVERLOGICS = "serverlogics",
+    SERVERLOGIC = "serverlogic",
     CONTENTSNIPPETS = "contentsnippet",
     LISTS = "lists",
     BASICFORMS = "basicforms",
@@ -63,7 +63,7 @@ export enum schemaEntityName {
 export enum MultiFileSupportedEntityName {
     WEBFILES = "webfiles",
     WEBPAGES = "webpages",
-    SERVERLOGICS = "serverlogics",
+    SERVERLOGIC = "serverlogic",
     WEBTEMPLATES = "webtemplates",
     CONTENTSNIPPETS = "contentsnippet",
     LISTS = "lists",
@@ -122,5 +122,5 @@ export const conditionalFolderEntities = [
     schemaEntityName.IDEAFORUMS,
     schemaEntityName.FORUMANNOUNCEMENTS,
     schemaEntityName.FORUMPOSTS,
-    schemaEntityName.SERVERLOGICS,
+    schemaEntityName.SERVERLOGIC,
 ];

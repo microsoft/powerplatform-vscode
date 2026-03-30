@@ -109,14 +109,14 @@ export const portal_schema_V1 = {
             },
             {
                 relationships: "",
-                _vscodeentityname: "serverlogics",
+                _vscodeentityname: "serverlogic",
                 _dataverseenityname: "adx_serverlogics",
                 _displayname: "Server Logic",
                 _etc: "11398",
                 _primaryidfield: "adx_serverlogicid",
                 _primarynamefield: "adx_name",
                 _disableplugins: "true",
-                _foldername: "server-logics",
+                _foldername: "server-logic",
                 _exporttype: "SingleFolder",
                 _fetchQueryParameters:
                     "?$filter=adx_serverlogicid eq {entityId} &$select=adx_name",
@@ -450,7 +450,7 @@ export const portal_schema_V2 = {
             },
             {
                 relationships: "",
-                _vscodeentityname: "serverlogics",
+                _vscodeentityname: "serverlogic",
                 _dataverseenityname: "powerpagecomponents",
                 _displayname: "Server Logic",
                 _etc: "10271",
@@ -458,7 +458,7 @@ export const portal_schema_V2 = {
                 _primarynamefield: "name",
                 _disableplugins: "false",
                 _exporttype: "SingleFolder",
-                _foldername: "server-logics",
+                _foldername: "server-logic",
                 _fetchQueryParameters:
                     "?$filter=powerpagecomponentid eq {entityId}&$select=name",
                 _multiFileFetchQueryParameters:

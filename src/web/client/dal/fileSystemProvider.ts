@@ -10,7 +10,7 @@ import {
     PORTALS_URI_SCHEME,
     queryParameters,
     REFERRER,
-    SERVERLOGICS,
+    SERVERLOGIC,
 } from "../common/constants";
 import WebExtensionContext from "../WebExtensionContext";
 import { fetchDataFromDataverseAndUpdateVFS } from "./remoteFetchProvider";
@@ -234,7 +234,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
             const dirname = uri.with({ path: path.posix.dirname(uri.path) });
             const parent = await this._lookupAsDirectory(dirname, false);
 
-            if (basename === SERVERLOGICS && !enableServerLogicChanges) {
+            if (basename === SERVERLOGIC && !enableServerLogicChanges) {
                 return; // Do not create the directory if the server logic is disabled
             }
 
