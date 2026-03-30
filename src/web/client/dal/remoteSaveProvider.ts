@@ -92,7 +92,7 @@ async function getSaveParameters(
         );
         if (webFileV2) {
             let fileName = fileDataMap.get(fileUri.fsPath)?.fileName as string;
-            if (entityName === MultiFileSupportedEntityName.SERVERLOGIC && fileName && !fileName.endsWith('.sl')) {
+            if (entityName === MultiFileSupportedEntityName.SERVERLOGICS && fileName && !fileName.endsWith('.sl')) {
                 // Handle filenames like test.serverlogic.customjs.js -> extract base name (test) and append .sl
                 let baseName = fileName;
                 // Remove .serverlogic.customjs.js if present
@@ -168,7 +168,7 @@ async function saveDataToDataverse(
         let fileExtensionType = fileDataMap.get(
             fileUri.fsPath
         )?.entityFileExtensionType;
-        if(entityName == MultiFileSupportedEntityName.SERVERLOGIC ) {
+        if(entityName == MultiFileSupportedEntityName.SERVERLOGICS ) {
             fileExtensionType = 'sl';
         }
 

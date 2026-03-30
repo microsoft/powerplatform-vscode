@@ -73,7 +73,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
 
         await Promise.all(entityRequestURLs.map(async (entity) => {
             const startTime = new Date().getTime();
-            if(entity.entityName != schemaEntityName.SERVERLOGIC || featureFlags.enableServerLogicChanges) {
+            if(entity.entityName != schemaEntityName.SERVERLOGICS || featureFlags.enableServerLogicChanges) {
                 await fetchFromDataverseAndCreateFiles(entity.entityName, entity.requestUrl, dataverseOrgUrl, portalFs, defaultFileInfo, featureFlags);
 
                 if (defaultFileInfo === undefined) { // This will be undefined for bulk entity load
@@ -470,8 +470,8 @@ async function processDataAndCreateFile(
         else {
             let fileCreationValid = true;
             let fileNameWithExtension = GetFileNameWithExtension(entityName, fileName, languageCode, fileExtension);
-            if (entityName === schemaEntityName.SERVERLOGIC) {
-                // Modify filename for serverlogic: test.js -> test.serverlogic.customjs.js
+            if (entityName === schemaEntityName.SERVERLOGICS) {
+                // Modify filename for serverlogics: test.js -> test.serverlogics.customjs.js
                 if (fileNameWithExtension.endsWith('.js')) {
                     const baseName = fileNameWithExtension.slice(0, -3); // Remove .js
                     fileNameWithExtension = `${baseName}${Constants.SERVERLOGIC_FILE_EXTENSION}`;
@@ -667,7 +667,7 @@ async function fetchMappingEntityContent(
     // Gracefully handle 404 for optional entities (deleted/moved files or missing server logic)
     const notFoundTelemetryMap = new Map<string, string>([
         [schemaEntityName.WEBFILES, webExtensionTelemetryEventNames.WEB_EXTENSION_WEBFILE_NOT_FOUND],
-        [schemaEntityName.SERVERLOGIC, webExtensionTelemetryEventNames.WEB_EXTENSION_SERVERLOGIC_NOT_FOUND],
+        [schemaEntityName.SERVERLOGICS, webExtensionTelemetryEventNames.WEB_EXTENSION_SERVERLOGIC_NOT_FOUND],
     ]);
 
     if (!response.ok && response.status === 404 && notFoundTelemetryMap.has(entity)) {
@@ -704,7 +704,7 @@ async function fetchMappingEntityContent(
     const result = await response.json();
     const data = result.value ?? result;
 
-    if(entity === schemaEntityName.SERVERLOGIC) {
+    if(entity === schemaEntityName.SERVERLOGICS) {
         return data || Constants.NO_CONTENT;
     }
     if (isPortalVersionV1() && result[Constants.ODATA_COUNT] > 0 && data.length > 0) {
