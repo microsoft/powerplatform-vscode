@@ -8,12 +8,13 @@ import { expect } from "chai";
 import {
     dataverseAuthentication,
     getCommonHeaders,
+    npsAuthentication,
 } from "../../../../common/services/AuthenticationProvider";
 import vscode from "vscode";
 import * as errorHandler from "../../../../common/utilities/errorHandlerUtil";
 import { oneDSLoggerWrapper } from "../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import * as copilotTelemetry from "../../../../common/copilot/telemetry/copilotTelemetry";
-import { VSCODE_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED } from "../../../../common/services/TelemetryConstants";
+import { VSCODE_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED, VSCODE_EXTENSION_NPS_AUTHENTICATION_FAILED } from "../../../../common/services/TelemetryConstants";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let traceError: any
@@ -121,5 +122,42 @@ describe("Authentication Provider", () => {
         sinon.assert.calledOnce(_mockgetSession);
         expect(result.accessToken).empty;
         expect(result.userId).empty;
+    });
+
+    it("npsAuthentication_whenSilentOnlyAndNoSession_shouldNotShowErrorDialog", async () => {
+        const _mockgetSession = sinon
+            .stub(await vscode.authentication, "getSession")
+            .resolves(undefined);
+
+        const showErrorDialog = sinon.spy(errorHandler, "showErrorDialog");
+        const sendTelemetryEvent = sinon.spy(copilotTelemetry, "sendTelemetryEvent");
+
+        const result = await npsAuthentication("https://microsoft.onmicrosoft.com/cessurvey/user", true);
+
+        sinon.assert.calledOnce(_mockgetSession);
+        sinon.assert.notCalled(showErrorDialog);
+        sinon.assert.calledTwice(sendTelemetryEvent);
+        expect(result).empty;
+    });
+
+    it("npsAuthentication_whenAadsts500014_shouldSuppressErrorDialog", async () => {
+        const errorMessage = "AADSTS500014: The service principal for resource 'https://microsoft.onmicrosoft.com/cessurvey' is disabled.";
+        const _mockgetSession = sinon
+            .stub(await vscode.authentication, "getSession")
+            .throws(new Error(errorMessage));
+
+        const showErrorDialog = sinon.spy(errorHandler, "showErrorDialog");
+        const sendTelemetryEvent = sinon.spy(copilotTelemetry, "sendTelemetryEvent");
+
+        const result = await npsAuthentication("https://microsoft.onmicrosoft.com/cessurvey/user");
+
+        sinon.assert.calledOnce(_mockgetSession);
+        sinon.assert.notCalled(showErrorDialog);
+        sinon.assert.calledTwice(sendTelemetryEvent);
+        sinon.assert.calledWith(sendTelemetryEvent, {
+            eventName: VSCODE_EXTENSION_NPS_AUTHENTICATION_FAILED,
+            errorMsg: errorMessage
+        });
+        expect(result).empty;
     });
 });
