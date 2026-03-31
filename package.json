@@ -26,7 +26,8 @@
     "test-web-integration": "node node_modules/gulp/bin/gulp.js testWebInt",
     "test-desktop-int": "node node_modules/gulp/bin/gulp.js testDesktopInt",
     "coverage": "nyc npm run test",
-    "test-common-int": "node node_modules/gulp/bin/gulp.js testCommonInt"
+    "test-common-int": "node node_modules/gulp/bin/gulp.js testCommonInt",
+    "test-e2e": "npx playwright test --config=src/e2e/playwright.config.ts"
   },
   "nyc": {
     "extends": "@istanbuljs/nyc-config-typescript",
@@ -1750,6 +1751,7 @@
     "@istanbuljs/nyc-config-typescript": "1.0.2",
     "@microsoft/1ds-core-js": "4.0.5",
     "@microsoft/1ds-post-js": "4.0.5",
+    "@playwright/test": "^1.58.2",
     "@types/chai": "^4.2.14",
     "@types/command-exists": "^1.2.0",
     "@types/debug": "^4.1.9",
