@@ -1827,7 +1827,7 @@
     "gpt-tokenizer": "^2.1.1",
     "gulp": "^5.0.0",
     "https-browserify": "^1.0.0",
-    "liquidjs": "^10.2.0",
+    "liquidjs": "^10.25.0",
     "n-readlines": "^1.0.1",
     "puppeteer-core": "^22.13.1",
     "recursive-readdir": "^2.2.3",
@@ -1839,7 +1839,7 @@
     "vscode-languageserver": "^7.0.0",
     "vscode-languageserver-textdocument": "^1.0.1",
     "worker-loader": "^3.0.8",
-    "yaml": "^2.7.0"
+    "yaml": "^2.8.3"
   },
   "__metadata": {
     "id": "b8680bb6-eaa9-481a-ae0b-83574fa58620",
@@ -1852,7 +1852,7 @@
     "utf-8-validate": "^5.0.9"
   },
   "overrides": {
-    "axios": "^1.13.5",
+    "axios": "1.13.5",
     "tmp": "^0.2.4",
     "@octokit/request": "^8.4.1",
     "@octokit/plugin-paginate-rest": "^9.2.2",
@@ -1864,6 +1864,10 @@
     "minimatch": "^10.2.3",
     "serialize-javascript": "^7.0.3",
     "diff": "^8.0.3",
+    "undici": "^7.24.0",
+    "release-it": {
+      "undici": "^6.24.0"
+    },
     "@vscode/vsce": {
       "minimatch": "3.1.5"
     },
@@ -1872,7 +1876,9 @@
     },
     "@types/minimatch": {
       "minimatch": "^10.2.3"
-    }
+    },
+    "picomatch@2": "^2.3.2",
+    "picomatch@4": "^4.0.4",
+    "flatted": "^3.4.2"
   }
 }
-
