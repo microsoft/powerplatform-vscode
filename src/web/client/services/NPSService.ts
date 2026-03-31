@@ -66,10 +66,17 @@ export class NPSService {
         try {
 
             const baseApiUrl = this.getNpsSurveyEndpoint();
-            const accessToken: string = await npsAuthentication(SurveyConstants.AUTHORIZATION_ENDPOINT);
+            const accessToken: string = await npsAuthentication(SurveyConstants.AUTHORIZATION_ENDPOINT, true);
 
             if (accessToken) {
                 WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_NPS_AUTHENTICATION_COMPLETED);
+            } else {
+                WebExtensionContext.telemetry.sendErrorTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_NPS_AUTHENTICATION_FAILED,
+                    this.setEligibility.name,
+                    "CES survey authentication failed or unavailable"
+                );
+                return;
             }
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any

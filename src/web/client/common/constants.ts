@@ -143,5 +143,5 @@ export const WEB_EXTENSION_QUICK_PICK_PLACEHOLDER = "Search for people";
 export const WEB_EXTENSION_COLLABORATION_OPTIONS_CONTACT = "Contact";
 
 //Business logic constants
-export const SERVERLOGICS = "server-logics";
+export const SERVERLOGICS = "server-logic";
 export const SERVERLOGIC_FILE_EXTENSION = ".serverlogic.customjs.js";
