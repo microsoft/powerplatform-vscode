@@ -172,7 +172,8 @@ export async function dataverseAuthentication(
 }
 
 export async function npsAuthentication(
-    cesSurveyAuthorizationEndpoint: string
+    cesSurveyAuthorizationEndpoint: string,
+    silentOnly = false
 ): Promise<string> {
     let accessToken = "";
     sendTelemetryEvent(
@@ -184,7 +185,7 @@ export async function npsAuthentication(
             [cesSurveyAuthorizationEndpoint, SCOPE_OPTION_OFFLINE_ACCESS],
             { silent: true }
         );
-        if (!session) {
+        if (!session && !silentOnly) {
             session = await vscode.authentication.getSession(
                 PROVIDER_ID,
                 [cesSurveyAuthorizationEndpoint, SCOPE_OPTION_OFFLINE_ACCESS],
@@ -199,16 +200,20 @@ export async function npsAuthentication(
             { eventName: VSCODE_EXTENSION_NPS_AUTHENTICATION_COMPLETED }
         );
     } catch (error) {
-        showErrorDialog(
-            vscode.l10n.t(
-                "Authorization Failed. Please run again to authorize it"
-            ),
-            vscode.l10n.t("There was a permissions problem with the server")
-        );
+        const errorMessage = (error as Error).message ?? "";
+        const isCesSurveyServicePrincipalDisabledError = errorMessage.includes("AADSTS500014");
+        if (!silentOnly && !isCesSurveyServicePrincipalDisabledError) {
+            showErrorDialog(
+                vscode.l10n.t(
+                    "Authorization Failed. Please run again to authorize it"
+                ),
+                vscode.l10n.t("There was a permissions problem with the server")
+            );
+        }
         sendTelemetryEvent(
             {
                 eventName: VSCODE_EXTENSION_NPS_AUTHENTICATION_FAILED,
-                errorMsg: (error as Error).message
+                errorMsg: errorMessage
             }
         );
     }

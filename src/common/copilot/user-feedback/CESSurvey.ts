@@ -24,6 +24,15 @@ export async function CESUserFeedback(context: vscode.ExtensionContext, sessionI
         feedbackPanel.dispose();
     }
 
+    const apiToken: string = await npsAuthentication(SurveyConstants.AUTHORIZATION_ENDPOINT, true);
+
+    if (!apiToken) {
+        sendTelemetryEvent({ eventName: CopilotUserFeedbackFailureEvent, feedbackType: thumbType, copilotSessionId: sessionId, error: new Error(ERROR_CONSTANTS.NPS_FAILED_AUTH) });
+        return;
+    }
+
+    sendTelemetryEvent({ eventName: CopilotNpsAuthenticationCompleted, feedbackType: thumbType, copilotSessionId: sessionId });
+
     feedbackPanel = createFeedbackPanel(context);
 
     feedbackPanel.webview.postMessage({ type: "thumbType", value: thumbType });
@@ -35,14 +44,6 @@ export async function CESUserFeedback(context: vscode.ExtensionContext, sessionI
     feedbackPanel.webview.html = getWebviewContent(feedbackCssUri, feedbackJsUri, nonce, webview);
 
     const feedbackData = initializeFeedbackData(sessionId, vscode.env.uiKind === vscode.UIKind.Web, geoName, messageScenario, tenantId);
-
-    const apiToken: string = await npsAuthentication(SurveyConstants.AUTHORIZATION_ENDPOINT);
-
-    if (apiToken) {
-        sendTelemetryEvent({ eventName: CopilotNpsAuthenticationCompleted, feedbackType: thumbType, copilotSessionId: sessionId });
-    } else {
-        sendTelemetryEvent({ eventName: CopilotUserFeedbackFailureEvent, feedbackType: thumbType, copilotSessionId: sessionId, error: new Error(ERROR_CONSTANTS.NPS_FAILED_AUTH) });
-    }
 
     const endpointUrl = useEUEndpoint(geoName) ? `https://europe.ces.microsoftcloud.com/api/v1/portalsdesigner/Surveys/powerpageschatgpt/Feedbacks?userId=${userID}` :
         `https://world.ces.microsoftcloud.com/api/v1/portalsdesigner/Surveys/powerpageschatgpt/Feedbacks?userId=${userID}`;
