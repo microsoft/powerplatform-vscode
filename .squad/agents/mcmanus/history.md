@@ -21,3 +21,7 @@
 - **P0 Fix 2 (URL param casing):** Changed `buildVSCodeWebUrl()` to emit lowercase query param keys (`organizationid`, `websiteid`, etc.) matching the `queryParameters` enum in `src/web/client/common/constants.ts`. The extension lowercases keys at parse time (extension.ts line 90), but matching casing at the source removes any risk from intermediate URL consumers.
 - **P0 Fix 3 (vacuous assertion):** Changed `expect(count).toBeGreaterThanOrEqual(0)` → `toBeGreaterThan(0)` in navigation.spec.ts, and reordered so the explorer viewlet visibility check runs first.
 - **Auth error handling (P1):** Improved the fixture's auth catch block to only swallow timeout errors, re-throwing unexpected failures like network or credential errors.
+
+### 2026-04-02 — Fenster P1 E2E StorageState Caching
+
+Fenster added storageState caching to e2e fixture — auth state saved to `.auth/storageState.json` (gitignored), reused on subsequent test runs, force re-auth via `PP_FORCE_REAUTH=1` environment variable. Reduces auth popup flow overhead in local and CI runs.

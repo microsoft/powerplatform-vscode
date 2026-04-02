@@ -40,3 +40,7 @@ Keaton approved e2e review with adjustments — POM downgraded to minor (prematu
 ### 2026-04-02 — McManus P0 Completion
 
 McManus completed P0 fixes: 13 waitForTimeout replaced with condition-based waits, URL casing aligned to enum (camelCase → lowercase), vacuous assertion fixed (`>=0` → `>0`), auth error handling improved (discriminates timeout errors from real failures). TypeScript compiles clean. Tests ready for e2e run.
+
+### 2026-04-02 — Fenster P1 E2E Completion
+
+Fenster completed P1 fixes: leaf-node detection uses `.monaco-tl-twistie.collapsible` CSS filter (stable VS Code DOM marker), replacing brittle aria-expanded null check. Added storageState caching — auth state persisted to `.auth/storageState.json` (gitignored), reused on subsequent runs, force re-auth via `PP_FORCE_REAUTH=1`. TypeScript compiles clean.
