@@ -36,17 +36,5 @@ src/e2e/.env
 src/e2e/.auth/
 playwright-report/
 test-results/
-# Squad: ignore runtime state (logs, inbox, sessions)
-.squad/orchestration-log/
-.squad/log/
-.squad/decisions/inbox/
-.squad/sessions/
-# Squad: SubSquad activation file (local to this machine)
-.squad-workstream
 
-# Squad-related local files
-.copilot/
-.github/agents/
-.github/workflows/squad-*.yml
-.github/workflows/sync-squad-labels.yml
 .omc/
