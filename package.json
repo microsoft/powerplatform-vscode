@@ -1820,7 +1820,7 @@
     "@types/jwt-decode": "2.2.0",
     "@types/node-fetch": "^2.6.2",
     "@vscode/extension-telemetry": "^0.6.2",
-    "@xmldom/xmldom": "^0.8.10",
+    "@xmldom/xmldom": "^0.8.12",
     "cockatiel": "^3.1.1",
     "command-exists": "^1.2.9",
     "find-process": "^1.4.7",
