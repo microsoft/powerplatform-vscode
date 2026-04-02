@@ -20,6 +20,8 @@ export const Selectors = {
     // File explorer tree
     treeRow: '.monaco-list-row',
     treeRowLabel: '.monaco-icon-label',
+    // Twistie with 'collapsible' class indicates a folder; absence indicates a leaf (file)
+    treeRowCollapsibleTwistie: '.monaco-tl-twistie.collapsible',
 
     // Notifications and dialogs
     notificationsToasts: '.notifications-toasts',

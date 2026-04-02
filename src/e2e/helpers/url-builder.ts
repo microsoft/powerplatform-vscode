@@ -57,28 +57,30 @@ export function buildVSCodeWebUrl(config: TestSiteConfig): string {
     const baseUrl = 'https://insiders.vscode.dev/power/portal/webpages';
     const entityPath = config.entityId ? `/${config.entityId}` : '';
 
+    // Keys must be lowercase to match the queryParameters enum and the
+    // extension's key-lowercasing parse logic (see extension.ts line 90).
     const params = new URLSearchParams({
-        dataSource: 'Dataverse',
-        orgUrl: config.orgUrl,
+        datasource: 'Dataverse',
+        orgurl: config.orgUrl,
         schema: 'PortalSchemaV2',
-        websiteId: config.websiteId,
-        websiteName: config.websiteName ?? 'Test Site',
-        websitePreviewId: config.websitePreviewId,
+        websiteid: config.websiteId,
+        websitename: config.websiteName ?? 'Test Site',
+        websitepreviewid: config.websitePreviewId,
         referrer: 'PowerPagesHome',
-        organizationId: config.organizationId,
-        tenantId: config.tenantId,
-        siteVisibility: config.siteVisibility ?? 'public',
+        organizationid: config.organizationId,
+        tenantid: config.tenantId,
+        sitevisibility: config.siteVisibility ?? 'public',
         region: config.region ?? 'test',
-        envId: config.envId,
+        envid: config.envId,
         geo: config.geo ?? 'WUS',
-        enableMultifile: 'true',
-        referrerSource: 'SiteDetailCard',
-        orgGeo: config.orgGeo ?? 'US',
+        enablemultifile: 'true',
+        referrersource: 'SiteDetailCard',
+        orggeo: config.orgGeo ?? 'US',
         sku: config.sku ?? 'Production',
     });
 
     if (config.websitePreviewUrl) {
-        params.set('websitePreviewUrl', config.websitePreviewUrl);
+        params.set('websitepreviewurl', config.websitePreviewUrl);
     }
 
     return `${baseUrl}${entityPath}?${params.toString()}`;

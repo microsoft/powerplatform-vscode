@@ -6,6 +6,27 @@
 import { test as base, Page, BrowserContext } from '@playwright/test';
 import { Selectors } from '../helpers/selectors';
 import { buildVSCodeWebUrl, getTestSiteConfigFromEnv } from '../helpers/url-builder';
+import * as path from 'path';
+import * as fs from 'fs';
+
+/**
+ * Path to cached auth state. Matches the path used in playwright.config.ts.
+ * When present, the browser context is pre-loaded with saved cookies/localStorage,
+ * so the Microsoft login dialog is typically skipped.
+ */
+const AUTH_STATE_DIR = path.resolve(__dirname, '..', '.auth');
+const AUTH_STATE_PATH = path.join(AUTH_STATE_DIR, 'storageState.json');
+
+function hasValidStorageState(): boolean {
+    return fs.existsSync(AUTH_STATE_PATH) && !process.env.PP_FORCE_REAUTH;
+}
+
+async function saveStorageState(context: BrowserContext): Promise<void> {
+    if (!fs.existsSync(AUTH_STATE_DIR)) {
+        fs.mkdirSync(AUTH_STATE_DIR, { recursive: true });
+    }
+    await context.storageState({ path: AUTH_STATE_PATH });
+}
 
 /**
  * Custom Playwright fixture that provides an authenticated VS Code Web page
@@ -38,8 +59,8 @@ export const test = base.extend<{ vsCodeWeb: Page }>({
         // Handle "You are editing a live, public site" confirmation dialog
         await handleEditSiteDialog(page);
 
-        // Give the extension time to activate and fetch site data
-        await page.waitForTimeout(15000);
+        // Wait for extension to activate and site data to load — look for tree items or file explorer
+        await page.waitForSelector(`${Selectors.powerPagesFileExplorer}, ${Selectors.treeRow}`, { timeout: 60000 });
 
         await use(page);
     },
@@ -55,9 +76,12 @@ async function handleAuthFlow(page: Page, context: BrowserContext): Promise<void
 
     try {
         // Step 1: Wait for "wants to sign in using Microsoft" dialog and click Allow
-        // This triggers the login popup
+        // This triggers the login popup.
+        // When storageState is loaded the dialog usually does not appear;
+        // use a shorter timeout to avoid waiting unnecessarily.
+        const authTimeout = hasValidStorageState() ? 5000 : 20000;
         const allowButton = page.getByRole('button', { name: 'Allow' });
-        await allowButton.waitFor({ timeout: 20000 });
+        await allowButton.waitFor({ timeout: authTimeout });
 
         // Set up popup listener BEFORE clicking Allow
         const popupPromise = context.waitForEvent('page', { timeout: 30000 });
@@ -70,8 +94,17 @@ async function handleAuthFlow(page: Page, context: BrowserContext): Promise<void
 
         // Wait for popup to close after successful login
         await popup.waitForEvent('close', { timeout: 30000 }).catch(() => { /* already closed */ });
-    } catch {
-        // Auth dialog may not appear if already authenticated
+
+        // Cache auth state for subsequent runs
+        await saveStorageState(context);
+    } catch (error: unknown) {
+        // Auth dialog may not appear if already authenticated.
+        // Only swallow timeout errors from waiting for the Allow button;
+        // re-throw unexpected failures (network, credential, popup errors).
+        const isTimeout = error instanceof Error && error.message.includes('Timeout');
+        if (!isTimeout) {
+            throw error;
+        }
     }
 }
 

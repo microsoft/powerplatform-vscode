@@ -18,27 +18,18 @@ test.describe('File Operations', () => {
         const webPagesFolder = explorer.locator(Selectors.treeRowLabel, { hasText: 'Web Pages' });
         if (await webPagesFolder.isVisible()) {
             await webPagesFolder.dblclick();
-            // Wait for children to load
-            await vsCodeWeb.waitForTimeout(3000);
+            // Wait for child tree nodes to appear after expanding
+            await expect(explorer.locator(Selectors.treeRow).nth(1)).toBeVisible({ timeout: 10000 });
         }
 
-        // Click the first available file (leaf node) in the tree
-        const fileNodes = explorer.locator(`${Selectors.treeRow}[aria-level]`);
-        const fileCount = await fileNodes.count();
-
-        // Find a file node (not a folder) and click it
-        for (let i = 0; i < fileCount && i < 20; i++) {
-            const node = fileNodes.nth(i);
-            const isExpanded = await node.getAttribute('aria-expanded');
-            // Leaf nodes don't have aria-expanded attribute
-            if (isExpanded === null) {
-                await node.click();
-                break;
-            }
-        }
-
-        // Wait for editor to open
-        await vsCodeWeb.waitForTimeout(3000);
+        // Click the first available file (leaf node) in the tree.
+        // Leaf nodes are tree rows that lack a collapsible twistie (folders have one).
+        const leafNodes = explorer.locator(`${Selectors.treeRow}[aria-level]`).filter({
+            hasNot: vsCodeWeb.locator(Selectors.treeRowCollapsibleTwistie),
+        });
+        const firstFile = leafNodes.first();
+        await expect(firstFile).toBeVisible({ timeout: 10000 });
+        await firstFile.click();
 
         // Verify an editor tab appeared
         const editorTabs = vsCodeWeb.locator(Selectors.tabLabel);

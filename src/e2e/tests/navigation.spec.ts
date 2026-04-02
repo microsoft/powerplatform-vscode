@@ -8,16 +8,14 @@ import { Selectors } from '../helpers/selectors';
 
 test.describe('Power Pages Navigation', () => {
     test('should render Power Pages file explorer view', async ({ vsCodeWeb }) => {
-        // The Power Pages file explorer should be registered
-        const powerPagesExplorer = vsCodeWeb.locator(Selectors.powerPagesFileExplorer);
-
-        // It may be in a collapsed panel — check if it exists in the DOM
-        const count = await powerPagesExplorer.count();
-        expect(count).toBeGreaterThanOrEqual(0);
-
-        // If not visible, check that the explorer viewlet has content
+        // The explorer viewlet should be visible after load
         const explorer = vsCodeWeb.locator(Selectors.explorerViewlet);
         await expect(explorer).toBeVisible({ timeout: 30000 });
+
+        // The Power Pages file explorer should be registered and present in the DOM
+        const powerPagesExplorer = vsCodeWeb.locator(Selectors.powerPagesFileExplorer);
+        const count = await powerPagesExplorer.count();
+        expect(count).toBeGreaterThan(0);
     });
 
     test('should not show any notification errors after load', async ({ vsCodeWeb }) => {

@@ -26,6 +26,14 @@ if (fs.existsSync(envPath)) {
     }
 }
 
+/**
+ * Path to cached auth state. Saved after first successful login and
+ * reused on subsequent runs to skip the Microsoft login flow.
+ * Delete this file or set PP_FORCE_REAUTH=1 to force a fresh login.
+ */
+const AUTH_STATE_PATH = path.resolve(__dirname, '.auth', 'storageState.json');
+const useStorageState = fs.existsSync(AUTH_STATE_PATH) && !process.env.PP_FORCE_REAUTH;
+
 export default defineConfig({
     testDir: './tests',
     timeout: 120000,
@@ -46,6 +54,7 @@ export default defineConfig({
         trace: 'retain-on-failure',
         screenshot: 'only-on-failure',
         video: 'retain-on-failure',
+        storageState: useStorageState ? AUTH_STATE_PATH : undefined,
         ...devices['Desktop Chrome'],
     },
     projects: [
