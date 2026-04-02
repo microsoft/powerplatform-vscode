@@ -32,3 +32,7 @@
 - **Credential handling:** `.env` file is gitignored but `.env.example` documents real field names; no secret scanning gate
 - **Coverage:** Only Power Pages web extension smoke/sanity level. No error-path, no command-palette, no language-server, no auth-failure tests
 - **No page-object model:** All DOM interactions inline in specs — will not scale
+
+### 2026-04-02 — Keaton Lead Review
+
+Keaton approved e2e review with adjustments — POM downgraded to minor (premature for 5 specs), serial marker dismissed (config handles it). P0: waitForTimeout, URL casing, vacuous assertion. P1: auth errors, leaf-node detection, storageState. URL casing is worse than initially reported — test sends camelCase, enum is lowercase, URLSearchParams is case-sensitive; likely causes production query failures.

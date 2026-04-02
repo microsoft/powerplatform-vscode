@@ -15,3 +15,12 @@
 ## Learnings
 
 <!-- Append new learnings below. Each entry is something lasting about the project. -->
+
+### 2026-04-02 — E2E Test Architecture Review
+- E2E tests live in `src/e2e/` using Playwright, targeting VS Code Web at `insiders.vscode.dev`
+- Config enforces serial execution globally (`fullyParallel: false`, `workers: 1`) — per-describe serial markers are unnecessary
+- `queryParameters` enum in `src/web/client/common/constants.ts` uses all-lowercase keys; URL builder in `src/e2e/helpers/url-builder.ts` uses camelCase — confirmed casing mismatch
+- Production code reads params via `queryParamsMap.get(queryParameters.X)` (lowercase) — test URLs must match
+- Auth fixture at `src/e2e/fixtures/vscode-web.fixture.ts` has a catch-all `catch {}` that swallows real auth failures
+- `Selectors` object in `src/e2e/helpers/selectors.ts` provides centralized selector constants — adequate for current scale but not a full POM
+- 13 `waitForTimeout()` calls across fixture + specs — primary flakiness risk
