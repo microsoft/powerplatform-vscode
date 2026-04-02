@@ -14,18 +14,24 @@ import * as fs from 'fs';
  * When present, the browser context is pre-loaded with saved cookies/localStorage,
  * so the Microsoft login dialog is typically skipped.
  */
-const AUTH_STATE_DIR = path.resolve(__dirname, '..', '.auth');
-const AUTH_STATE_PATH = path.join(AUTH_STATE_DIR, 'storageState.json');
+export function getAuthStateDir(): string {
+    return path.resolve(__dirname, '..', '.auth');
+}
+
+export function getAuthStatePath(): string {
+    return path.join(getAuthStateDir(), 'storageState.json');
+}
 
 function hasValidStorageState(): boolean {
-    return fs.existsSync(AUTH_STATE_PATH) && !process.env.PP_FORCE_REAUTH;
+    return fs.existsSync(getAuthStatePath()) && !process.env.PP_FORCE_REAUTH;
 }
 
 async function saveStorageState(context: BrowserContext): Promise<void> {
-    if (!fs.existsSync(AUTH_STATE_DIR)) {
-        fs.mkdirSync(AUTH_STATE_DIR, { recursive: true });
+    const authStateDir = getAuthStateDir();
+    if (!fs.existsSync(authStateDir)) {
+        fs.mkdirSync(authStateDir, { recursive: true });
     }
-    await context.storageState({ path: AUTH_STATE_PATH });
+    await context.storageState({ path: getAuthStatePath() });
 }
 
 /**
