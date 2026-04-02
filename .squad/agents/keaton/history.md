@@ -24,3 +24,7 @@
 - Auth fixture at `src/e2e/fixtures/vscode-web.fixture.ts` has a catch-all `catch {}` that swallows real auth failures
 - `Selectors` object in `src/e2e/helpers/selectors.ts` provides centralized selector constants — adequate for current scale but not a full POM
 - 13 `waitForTimeout()` calls across fixture + specs — primary flakiness risk
+
+### 2026-04-02 — McManus P0 Completion
+
+McManus completed all P0 items from e2e review. Ready for P1: 13 waitForTimeout replaced, URL casing aligned, vacuous assertion fixed, auth error handling improved. Next: leaf-node detection pattern, storageState caching (assign to Fenster).

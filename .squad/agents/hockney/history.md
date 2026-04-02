@@ -36,3 +36,7 @@
 ### 2026-04-02 — Keaton Lead Review
 
 Keaton approved e2e review with adjustments — POM downgraded to minor (premature for 5 specs), serial marker dismissed (config handles it). P0: waitForTimeout, URL casing, vacuous assertion. P1: auth errors, leaf-node detection, storageState. URL casing is worse than initially reported — test sends camelCase, enum is lowercase, URLSearchParams is case-sensitive; likely causes production query failures.
+
+### 2026-04-02 — McManus P0 Completion
+
+McManus completed P0 fixes: 13 waitForTimeout replaced with condition-based waits, URL casing aligned to enum (camelCase → lowercase), vacuous assertion fixed (`>=0` → `>0`), auth error handling improved (discriminates timeout errors from real failures). TypeScript compiles clean. Tests ready for e2e run.
