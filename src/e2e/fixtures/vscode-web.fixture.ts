@@ -5,7 +5,7 @@
 
 import { test as base, Page, BrowserContext } from '@playwright/test';
 import { Selectors } from '../helpers/selectors';
-import { buildVSCodeWebUrl, getTestSiteConfigFromEnv } from '../helpers/url-builder';
+import { getTestSiteUrl } from '../helpers/url-builder';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -41,8 +41,7 @@ async function saveStorageState(context: BrowserContext): Promise<void> {
 
 export const test = base.extend<{ vsCodeWeb: Page }>({
     vsCodeWeb: async ({ context, page }, use) => {
-        const config = getTestSiteConfigFromEnv();
-        const url = buildVSCodeWebUrl(config);
+        const url = getTestSiteUrl();
 
         // Navigate to VS Code Web with test site params
         await page.goto(url, { waitUntil: 'domcontentloaded' });
