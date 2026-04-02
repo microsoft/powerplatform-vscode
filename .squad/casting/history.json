@@ -1,0 +1,17 @@
+{
+  "assignments": [
+    {
+      "assignment_id": "powerplatform-vscode-001",
+      "universe": "the-usual-suspects",
+      "created_at": "2026-04-02T07:00:53Z",
+      "agents": [
+        { "name": "Keaton", "role": "Lead" },
+        { "name": "McManus", "role": "Extension Dev" },
+        { "name": "Fenster", "role": "Server Dev" },
+        { "name": "Redfoot", "role": "Designer" },
+        { "name": "Hockney", "role": "Tester" }
+      ],
+      "reason": "The Usual Suspects — 5 agents fits the universe capacity. Team-dynamic resonance for a collaborative dev tools project."
+    }
+  ]
+}

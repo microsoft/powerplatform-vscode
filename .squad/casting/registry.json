@@ -1,0 +1,44 @@
+{
+  "agents": [
+    {
+      "persistent_name": "Keaton",
+      "universe": "the-usual-suspects",
+      "role": "Lead",
+      "created_at": "2026-04-02T07:00:53Z",
+      "legacy_named": false,
+      "status": "active"
+    },
+    {
+      "persistent_name": "McManus",
+      "universe": "the-usual-suspects",
+      "role": "Extension Dev",
+      "created_at": "2026-04-02T07:00:53Z",
+      "legacy_named": false,
+      "status": "active"
+    },
+    {
+      "persistent_name": "Fenster",
+      "universe": "the-usual-suspects",
+      "role": "Server Dev",
+      "created_at": "2026-04-02T07:00:53Z",
+      "legacy_named": false,
+      "status": "active"
+    },
+    {
+      "persistent_name": "Redfoot",
+      "universe": "the-usual-suspects",
+      "role": "Designer",
+      "created_at": "2026-04-02T07:00:53Z",
+      "legacy_named": false,
+      "status": "active"
+    },
+    {
+      "persistent_name": "Hockney",
+      "universe": "the-usual-suspects",
+      "role": "Tester",
+      "created_at": "2026-04-02T07:00:53Z",
+      "legacy_named": false,
+      "status": "active"
+    }
+  ]
+}
