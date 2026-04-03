@@ -43,6 +43,7 @@ async function saveStorageState(context: BrowserContext): Promise<void> {
  * 2. Click "Allow" to open the Microsoft login popup
  * 3. Fill in credentials in the popup
  * 4. Popup closes, extension activates with auth
+ * 5. (Optional) "Select an account" quick pick appears — select the first account
  */
 
 export const test = base.extend<{ vsCodeWeb: Page }>({
@@ -57,6 +58,9 @@ export const test = base.extend<{ vsCodeWeb: Page }>({
 
         // Handle the "wants to sign in" dialog and subsequent login popup
         await handleAuthFlow(page, context);
+
+        // Handle "Select an account for Power Platform Tools" quick pick
+        await handleAccountPicker(page);
 
         // Wait for status bar to indicate VS Code is ready
         await page.waitForSelector(Selectors.statusBar, { timeout: 60000 });
@@ -110,6 +114,22 @@ async function handleAuthFlow(page: Page, context: BrowserContext): Promise<void
         if (!isTimeout) {
             throw error;
         }
+    }
+}
+
+async function handleAccountPicker(page: Page): Promise<void> {
+    try {
+        // When cached storage state is loaded, VS Code may show a quick pick
+        // asking "Select an account for 'Power Platform Tools'" instead of
+        // the Allow dialog. Click the first account option to proceed.
+        const quickInput = page.locator(Selectors.quickInput);
+        await quickInput.waitFor({ timeout: 10000 });
+
+        const accountOption = quickInput.locator('.quick-input-list .monaco-list-row').first();
+        await accountOption.waitFor({ timeout: 5000 });
+        await accountOption.click();
+    } catch {
+        // Account picker may not appear if auth completed without it
     }
 }
 
