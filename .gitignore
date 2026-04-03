@@ -29,3 +29,10 @@ l10n/package.nls.*.json
 # Local Claude settings
 .claude/*.local.*
 .claude/skills/kusto-kpi-query/
+
+# E2E test environment config and outputs
+.env
+src/e2e/.env
+src/e2e/.auth/
+playwright-report/
+test-results/
