@@ -68,8 +68,8 @@ export const test = base.extend<{ vsCodeWeb: Page }>({
         // Handle "You are editing a live, public site" confirmation dialog
         await handleEditSiteDialog(page);
 
-        // Wait for extension to activate and site data to load — look for tree items or file explorer
-        await page.waitForSelector(`${Selectors.powerPagesFileExplorer}, ${Selectors.treeRow}`, { timeout: 60000 });
+        // Wait for extension to activate and site data to load — look for tree items in the explorer
+        await page.waitForSelector(Selectors.treeRow, { timeout: 60000 });
 
         await use(page);
     },

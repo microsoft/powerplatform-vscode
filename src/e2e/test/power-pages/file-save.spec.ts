@@ -10,14 +10,16 @@ test.describe('File Save Operations', () => {
     test('should edit and revert a Home page HTML file', async ({ vsCodeWeb }) => {
         const explorer = vsCodeWeb.locator(Selectors.explorerViewlet);
 
-        // Expand web-pages folder (double-click to toggle expand)
+        // Expand web-pages folder if not already expanded
         const webPagesFolder = explorer.locator(Selectors.treeRowLabel, { hasText: 'web-pages' });
         await expect(webPagesFolder).toBeVisible({ timeout: 60000 });
-        await webPagesFolder.dblclick();
-        // Wait for child nodes to appear after expanding web-pages folder
+
         const homeFolder = explorer.locator(Selectors.treeRowLabel, { hasText: /^Home$/ });
-        await expect(homeFolder).toBeVisible({ timeout: 15000 });
-        await homeFolder.dblclick();
+        if (!await homeFolder.isVisible()) {
+            await webPagesFolder.dblclick({ force: true });
+            await expect(homeFolder).toBeVisible({ timeout: 15000 });
+        }
+        await homeFolder.dblclick({ force: true });
 
         // Click the Home.en-US.webpage.copy.html file
         const homeHtmlFile = explorer.locator(Selectors.treeRowLabel, { hasText: 'Home.en-US.webpage.copy.html' });
