@@ -35,7 +35,7 @@ const AUTH_STATE_PATH = path.resolve(__dirname, '.auth', 'storageState.json');
 const useStorageState = fs.existsSync(AUTH_STATE_PATH) && !process.env.PP_FORCE_REAUTH;
 
 export default defineConfig({
-    testDir: './tests',
+    testDir: './test',
     timeout: 120000,
     expect: {
         timeout: 30000,

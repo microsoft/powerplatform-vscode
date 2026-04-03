@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { test, expect } from '../fixtures/vscode-web.fixture';
-import { Selectors } from '../helpers/selectors';
+import { test, expect } from '../../fixtures/vscode-web.fixture';
+import { Selectors } from '../../helpers/selectors';
 
 test.describe('File Save Operations', () => {
     test('should edit and revert a Home page HTML file', async ({ vsCodeWeb }) => {

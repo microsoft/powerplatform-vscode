@@ -1,9 +1,9 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 #
-# E2E Sanity Tests for VS Code Web extension
+# E2E Web Sanity Tests for VS Code Web extension
 # Runs against a real Power Platform test environment
-name: E2E Sanity Tests
+name: E2E Web Sanity Tests
 
 on:
   schedule:

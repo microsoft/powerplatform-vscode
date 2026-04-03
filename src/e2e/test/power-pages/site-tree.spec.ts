@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { test, expect } from '../fixtures/vscode-web.fixture';
-import { Selectors } from '../helpers/selectors';
+import { test, expect } from '../../fixtures/vscode-web.fixture';
+import { Selectors } from '../../helpers/selectors';
 
 test.describe('Site File Tree', () => {
     test('should display the file explorer with site files', async ({ vsCodeWeb }) => {

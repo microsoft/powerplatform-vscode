@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { test, expect } from '../fixtures/vscode-web.fixture';
-import { Selectors } from '../helpers/selectors';
+import { test, expect } from '../../fixtures/vscode-web.fixture';
+import { Selectors } from '../../helpers/selectors';
 
 test.describe('File Operations', () => {
     test('should open a file from the tree and display content in editor', async ({ vsCodeWeb }) => {
