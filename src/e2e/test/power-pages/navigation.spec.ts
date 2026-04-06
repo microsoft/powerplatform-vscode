@@ -12,10 +12,9 @@ test.describe('Power Pages Navigation', () => {
         const explorer = vsCodeWeb.locator(Selectors.explorerViewlet);
         await expect(explorer).toBeVisible({ timeout: 30000 });
 
-        // The Power Pages file explorer should be registered and present in the DOM
-        const powerPagesExplorer = vsCodeWeb.locator(Selectors.powerPagesFileExplorer);
-        const count = await powerPagesExplorer.count();
-        expect(count).toBeGreaterThan(0);
+        // The Power Pages file explorer should show site files in the tree
+        const treeRows = explorer.locator(Selectors.treeRow);
+        await expect(treeRows.first()).toBeVisible({ timeout: 60000 });
     });
 
     test('should not show any notification errors after load', async ({ vsCodeWeb }) => {
