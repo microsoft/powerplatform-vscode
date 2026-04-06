@@ -1862,7 +1862,7 @@
     "qs": "^6.14.2",
     "tar": "^7.5.10",
     "@tootallnate/once": "^3.0.1",
-    "lodash": "^4.17.23",
+    "lodash": "^4.18.0",
     "minimatch": "^10.2.3",
     "serialize-javascript": "^7.0.3",
     "diff": "^8.0.3",
@@ -1881,6 +1881,7 @@
     },
     "picomatch@2": "^2.3.2",
     "picomatch@4": "^4.0.4",
-    "flatted": "^3.4.2"
+    "flatted": "^3.4.2",
+    "defu": "^6.1.5"
   }
 }
