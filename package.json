@@ -26,7 +26,8 @@
     "test-web-integration": "node node_modules/gulp/bin/gulp.js testWebInt",
     "test-desktop-int": "node node_modules/gulp/bin/gulp.js testDesktopInt",
     "coverage": "nyc npm run test",
-    "test-common-int": "node node_modules/gulp/bin/gulp.js testCommonInt"
+    "test-common-int": "node node_modules/gulp/bin/gulp.js testCommonInt",
+    "test-e2e": "npx playwright test --config=src/e2e/playwright.config.ts"
   },
   "nyc": {
     "extends": "@istanbuljs/nyc-config-typescript",
@@ -1750,6 +1751,7 @@
     "@istanbuljs/nyc-config-typescript": "1.0.2",
     "@microsoft/1ds-core-js": "4.0.5",
     "@microsoft/1ds-post-js": "4.0.5",
+    "@playwright/test": "^1.58.2",
     "@types/chai": "^4.2.14",
     "@types/command-exists": "^1.2.0",
     "@types/debug": "^4.1.9",
@@ -1818,7 +1820,7 @@
     "@types/jwt-decode": "2.2.0",
     "@types/node-fetch": "^2.6.2",
     "@vscode/extension-telemetry": "^0.6.2",
-    "@xmldom/xmldom": "^0.8.10",
+    "@xmldom/xmldom": "^0.8.12",
     "cockatiel": "^3.1.1",
     "command-exists": "^1.2.9",
     "find-process": "^1.4.7",
@@ -1860,7 +1862,7 @@
     "qs": "^6.14.2",
     "tar": "^7.5.10",
     "@tootallnate/once": "^3.0.1",
-    "lodash": "^4.17.23",
+    "lodash": "^4.18.0",
     "minimatch": "^10.2.3",
     "serialize-javascript": "^7.0.3",
     "diff": "^8.0.3",
@@ -1879,6 +1881,7 @@
     },
     "picomatch@2": "^2.3.2",
     "picomatch@4": "^4.0.4",
-    "flatted": "^3.4.2"
+    "flatted": "^3.4.2",
+    "defu": "^6.1.5"
   }
 }
