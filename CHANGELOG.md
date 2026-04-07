@@ -1,6 +1,6 @@
 # Change Log - Power Platform Extension
 
-## 2.0.137
+## 2.0.139
 - pac CLI 2.5.1, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 - Bug Fixes and enhancements
 
