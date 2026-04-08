@@ -84,16 +84,26 @@ export const syncAuthFromPacCli = async (pacWrapper: PacWrapper): Promise<boolea
                     if (pacActiveOrg && pacActiveOrg.Status === SUCCESS) {
                         orgInfo = extractOrgInfo(pacActiveOrg.Results);
                     }
-                } catch {
-                    // Org info fetch failed, continue with auth info only
+                } catch (error) {
+                    // Org info fetch failed, log for diagnostics but continue with auth info only
+                    traceInfo(Constants.EventNames.ACTIONS_HUB_AUTH_SYNCED_FROM_PAC_CLI, {
+                        methodName: syncAuthFromPacCli.name,
+                        orgFetchFailed: true,
+                        errorMessage: error instanceof Error ? error.message : String(error)
+                    });
                 }
                 PacContext.setContext(authInfo, orgInfo);
                 traceInfo(Constants.EventNames.ACTIONS_HUB_AUTH_SYNCED_FROM_PAC_CLI, { methodName: syncAuthFromPacCli.name });
                 return true;
             }
         }
-    } catch {
-        // PAC CLI auth not available, continue with auth profile creation flow
+    } catch (error) {
+        // PAC CLI auth not available, log for diagnostics and continue with auth profile creation flow
+        traceInfo(Constants.EventNames.ACTIONS_HUB_AUTH_SYNCED_FROM_PAC_CLI, {
+            methodName: syncAuthFromPacCli.name,
+            pacAuthCheckFailed: true,
+            errorMessage: error instanceof Error ? error.message : String(error)
+        });
     }
     return false;
 };
