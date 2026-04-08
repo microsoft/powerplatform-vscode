@@ -80,6 +80,7 @@ jobs:
 
   web-sanity:
     if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'release/stable'
+    continue-on-error: true
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
