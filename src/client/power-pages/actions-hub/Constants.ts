@@ -535,6 +535,7 @@ export const Constants = {
         ACTIONS_HUB_PREVIEW_SITE_FAILED: "ActionsHubPreviewSiteFailed",
         ACTIONS_HUB_CREATE_AUTH_PROFILE_CALLED: "ActionsHubCreateAuthProfileCalled",
         ACTIONS_HUB_CREATE_AUTH_PROFILE_FAILED: "ActionsHubCreateAuthProfileFailed",
+        ACTIONS_HUB_AUTH_SYNCED_FROM_PAC_CLI: "ActionsHubAuthSyncedFromPacCli",
         ACTIONS_HUB_FETCH_WEBSITES_CALLED: "ActionsHubFetchWebsitesCalled",
         ACTIONS_HUB_FETCH_WEBSITES_FAILED: "ActionsHubFetchWebsitesFailed",
         ACTIONS_HUB_REVEAL_IN_OS_CALLED: "ActionsHubRevealInOSCalled",
