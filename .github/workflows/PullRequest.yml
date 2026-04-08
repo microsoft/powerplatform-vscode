@@ -79,7 +79,7 @@ jobs:
             npm run test-common-int
 
   web-sanity:
-    if: github.event_name == 'pull_request' && github.base_ref == 'release/stable'
+    if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'release/stable'
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
