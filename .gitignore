@@ -1,6 +1,7 @@
 node_modules/
 out/
 dist/
+.squad/
 /coverage/
 /package
 /package/
@@ -35,4 +36,5 @@ l10n/package.nls.*.json
 src/e2e/.env
 src/e2e/.auth/
 playwright-report/
+playwright-report-web-sanity/
 test-results/
