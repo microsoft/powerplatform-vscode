@@ -5,28 +5,12 @@
 
 import { defineConfig, devices } from '@playwright/test';
 import * as path from 'path';
-import * as fs from 'fs';
+import dotenv from 'dotenv';
 
 const extensionRootPath = path.resolve(__dirname, '..', '..');
 
 // Load .env file from the sibling e2e directory (shared credentials)
-const envPath = path.resolve(__dirname, '..', 'e2e', '.env');
-if (fs.existsSync(envPath)) {
-    const envContent = fs.readFileSync(envPath, 'utf-8');
-    for (const line of envContent.split('\n')) {
-        const trimmed = line.trim();
-        if (trimmed && !trimmed.startsWith('#')) {
-            const eqIndex = trimmed.indexOf('=');
-            if (eqIndex > 0) {
-                const key = trimmed.substring(0, eqIndex).trim();
-                const value = trimmed.substring(eqIndex + 1).trim();
-                if (!process.env[key]) {
-                    process.env[key] = value;
-                }
-            }
-        }
-    }
-}
+dotenv.config({ path: path.resolve(__dirname, '..', 'e2e', '.env') });
 
 /**
  * E2E Web Sanity tests for PR checks targeting release/stable.
