@@ -6,7 +6,9 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
+import * as os from 'os';
 import * as fs from 'fs-extra';
+import path from 'path';
 import { cloneSite } from '../../../../../power-pages/actions-hub/handlers/CloneSiteHandler';
 import { Constants } from '../../../../../power-pages/actions-hub/Constants';
 import { PacTerminal } from '../../../../../lib/PacTerminal';
@@ -29,20 +31,18 @@ describe('CloneSiteHandler', () => {
         uploadCodeSiteWithProgress: sinon.SinonStub;
     };
     let executeCommandStub: sinon.SinonStub;
-    let readdirSyncStub: sinon.SinonStub;
 
-    const mockDirEntry = (name: string) => ({
-        name,
-        isDirectory: () => true,
-        isFile: () => false,
-        isBlockDevice: () => false,
-        isCharacterDevice: () => false,
-        isSymbolicLink: () => false,
-        isFIFO: () => false,
-        isSocket: () => false,
-        path: '',
-        parentPath: '',
-    } as unknown as fs.Dirent);
+    /**
+     * Simulates what the PAC CLI download/clone commands do:
+     * create a site subfolder inside the target directory.
+     */
+    const simulateSiteSubfolderCreation = (stub: sinon.SinonStub) => {
+        stub.callsFake((...args: string[]) => {
+            const targetDir = args[0];
+            fs.ensureDirSync(path.join(targetDir, 'test-site'));
+            return Promise.resolve(true);
+        });
+    };
 
     beforeEach(() => {
         sandbox = sinon.createSandbox();
@@ -54,11 +54,6 @@ describe('CloneSiteHandler', () => {
 
         executeCommandStub = sandbox.stub(vscode.commands, 'executeCommand').resolves();
 
-        // Stub fs-extra operations
-        sandbox.stub(fs, 'ensureDirSync');
-        readdirSyncStub = sandbox.stub(fs, 'readdirSync').returns([mockDirEntry('test-site')]);
-        sandbox.stub(fs, 'remove').resolves();
-
         mockPacTerminal = sandbox.createStubInstance(PacTerminal);
 
         mockPacWrapper = {
@@ -68,11 +63,27 @@ describe('CloneSiteHandler', () => {
             uploadSiteWithProgress: sandbox.stub().resolves(true),
             uploadCodeSiteWithProgress: sandbox.stub().resolves(true),
         };
+
+        // Simulate site subfolder creation for download and clone
+        simulateSiteSubfolderCreation(mockPacWrapper.downloadSiteWithProgress);
+        simulateSiteSubfolderCreation(mockPacWrapper.downloadCodeSiteWithProgress);
+        mockPacWrapper.cloneSiteWithProgress.callsFake((_src: string, outputDir: string) => {
+            fs.ensureDirSync(path.join(outputDir, 'test-site-clone'));
+            return Promise.resolve(true);
+        });
+
         mockPacTerminal.getWrapper.returns(mockPacWrapper as unknown as ReturnType<PacTerminal['getWrapper']>);
     });
 
     afterEach(() => {
         sandbox.restore();
+
+        // Clean up any leftover temp dirs
+        const tmpDir = os.tmpdir();
+        const entries = fs.readdirSync(tmpDir).filter(e => e.startsWith('pp-clone-'));
+        for (const entry of entries) {
+            fs.removeSync(path.join(tmpDir, entry));
+        }
     });
 
     function createMockSiteTreeItem(overrides: Partial<IWebsiteInfo> = {}): SiteTreeItem {
@@ -182,7 +193,7 @@ describe('CloneSiteHandler', () => {
                 expect(mockPacWrapper.uploadCodeSiteWithProgress.called).to.be.false;
             });
 
-            it('should use temp directories and find site subfolder for clone and upload', async () => {
+            it('should pass discovered site subfolder paths to clone and upload', async () => {
                 sandbox.stub(vscode.window, 'showInputBox').resolves('Copy of Test Site');
 
                 const handler = cloneSite(mockPacTerminal as unknown as PacTerminal);
@@ -193,12 +204,10 @@ describe('CloneSiteHandler', () => {
                 const cloneOutputPath = mockPacWrapper.cloneSiteWithProgress.firstCall.args[1] as string;
                 const uploadPath = mockPacWrapper.uploadSiteWithProgress.firstCall.args[0] as string;
 
-                // Clone source should be inside the download path (the site subfolder)
-                expect(cloneSourcePath).to.include(downloadPath);
-                expect(cloneSourcePath).to.include('test-site');
-                // Upload path should be inside the clone output (the cloned site subfolder)
-                expect(uploadPath).to.include(cloneOutputPath);
-                expect(uploadPath).to.include('test-site');
+                // Clone source should point to the site subfolder inside the download dir
+                expect(cloneSourcePath).to.equal(path.join(downloadPath, 'test-site'));
+                // Upload path should point to the site subfolder inside the clone output dir
+                expect(uploadPath).to.equal(path.join(cloneOutputPath, 'test-site-clone'));
                 // Paths should be in temp directory
                 expect(downloadPath).to.include('pp-clone-');
             });
@@ -227,8 +236,8 @@ describe('CloneSiteHandler', () => {
                 sandbox.stub(vscode.window, 'showInputBox').resolves('Clone Name');
                 const mockShowErrorMessage = sandbox.stub(vscode.window, 'showErrorMessage');
 
-                // Return empty directory - no site subfolder
-                readdirSyncStub.returns([]);
+                // Override download to NOT create a subfolder
+                mockPacWrapper.downloadSiteWithProgress.callsFake(() => Promise.resolve(true));
 
                 const handler = cloneSite(mockPacTerminal as unknown as PacTerminal);
                 await handler(createMockSiteTreeItem());
@@ -246,7 +255,7 @@ describe('CloneSiteHandler', () => {
                 sandbox.stub(vscode.window, 'showInputBox').resolves('Clone Name');
                 const mockShowErrorMessage = sandbox.stub(vscode.window, 'showErrorMessage');
 
-                mockPacWrapper.downloadSiteWithProgress.resolves(false);
+                mockPacWrapper.downloadSiteWithProgress.callsFake(() => Promise.resolve(false));
 
                 const handler = cloneSite(mockPacTerminal as unknown as PacTerminal);
                 await handler(createMockSiteTreeItem());
@@ -264,7 +273,7 @@ describe('CloneSiteHandler', () => {
                 sandbox.stub(vscode.window, 'showInputBox').resolves('Clone Name');
                 const mockShowErrorMessage = sandbox.stub(vscode.window, 'showErrorMessage');
 
-                mockPacWrapper.cloneSiteWithProgress.resolves(false);
+                mockPacWrapper.cloneSiteWithProgress.callsFake(() => Promise.resolve(false));
 
                 const handler = cloneSite(mockPacTerminal as unknown as PacTerminal);
                 await handler(createMockSiteTreeItem());
@@ -300,7 +309,7 @@ describe('CloneSiteHandler', () => {
             it('should catch the error and log telemetry', async () => {
                 sandbox.stub(vscode.window, 'showInputBox').resolves('Clone Name');
 
-                mockPacWrapper.downloadSiteWithProgress.throws(new Error('Unexpected error'));
+                mockPacWrapper.downloadSiteWithProgress.callsFake(() => { throw new Error('Unexpected error'); });
 
                 const handler = cloneSite(mockPacTerminal as unknown as PacTerminal);
                 await handler(createMockSiteTreeItem());
