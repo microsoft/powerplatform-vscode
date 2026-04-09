@@ -207,6 +207,10 @@ The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).
     <trans-unit id="++CODE++ee9d4bb8e9f94832366fe390fde5efc4b555d1464ef6023d3c0b25de58223bcc">
       <source xml:lang="en">Click to compare your local site with an environment</source>
     </trans-unit>
+    <trans-unit id="++CODE++f4dc565bb17826694eb9fcd99f8648b28f0846a0c284cd4e58b9edf54e10c0b8">
+      <source xml:lang="en">Cloning {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel &quot;Show output&quot;))...</source>
+      <note>This is a markdown formatting which must persist across translations.</note>
+    </trans-unit>
     <trans-unit id="++CODE++7d9eb7acb13e24625c404401d8e88b2350e32162455885f18276cf802f7701ed">
       <source xml:lang="en">Close</source>
     </trans-unit>
@@ -442,6 +446,10 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++f945885439672eb379c73eb7c9124496311c6ef5b3b04cd23ea0a1c146225b84">
       <source xml:lang="en">Download is complete. You can now view the report.</source>
     </trans-unit>
+    <trans-unit id="++CODE++fffbb03cf1a55ff063135b76fbde5be6bda25b0dde1bbfb1e88e2c90e7a49db5">
+      <source xml:lang="en">Downloading {0} for cloning ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel &quot;Show output&quot;))...</source>
+      <note>This is a markdown formatting which must persist across translations.</note>
+    </trans-unit>
     <trans-unit id="++CODE++a5a4f0d8975940cbed234f9a5ee740f24e2b82f03a5b13e43f316b8395336e50">
       <source xml:lang="en">Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel &quot;Show download output&quot;))...</source>
       <note>This is a markdown formatting which must persist across translations.</note>
@@ -454,6 +462,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     </trans-unit>
     <trans-unit id="++CODE++0feefedc5916a0c9a464f4ef9f28fab835a23e1d035878f397e38053381aa3fa">
       <source xml:lang="en">Enter Organization ID</source>
+    </trans-unit>
+    <trans-unit id="++CODE++d836838411c4fbaf037387dcc5cd69d7561889fa19ff57ab5beed63fd3b4dd95">
+      <source xml:lang="en">Enter a name for the cloned site</source>
     </trans-unit>
     <trans-unit id="++CODE++80ccd89cd4c287f3ca9f3693982e8034544fefeba563c974f93482158e8f0737">
       <source xml:lang="en">Enter name</source>
@@ -531,6 +542,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++173848927e1a6ed7f8c52d958d530c9ce90053649c734a3bc20bfb2053d8ef88">
       <source xml:lang="en">Extension installed but API not available yet. Opening as text file...</source>
     </trans-unit>
+    <trans-unit id="++CODE++dd232d4c74c0af69397e14b1ec1ca9b8991ea5fddf84628b30fb3d14903ca0af">
+      <source xml:lang="en">Failed to clone the site. Please try again.</source>
+    </trans-unit>
     <trans-unit id="++CODE++b985f1515c42b4b5b0c11a3d7b3286fc9d66997d476668ab1f93a4a11499fef5">
       <source xml:lang="en">Failed to create a new Power Pages site. Please try again.</source>
     </trans-unit>
@@ -544,6 +558,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++bae865c75bb42b029c9b92f7c0abb122a2615c2f0f5a658b1633df8f9e921a16">
       <source xml:lang="en">Failed to discard local changes: {0}</source>
       <note>Error message when discarding local changes fails.</note>
+    </trans-unit>
+    <trans-unit id="++CODE++fa196d33b3dc02fd079f73a579a26ddd67d29fe175695b13b8a76a599319a96f">
+      <source xml:lang="en">Failed to download the site for cloning. Please try again.</source>
     </trans-unit>
     <trans-unit id="++CODE++95da24b6bc127a935e2e4323fe85d8f46be20c5e8ca5e10c6a134e5a0c6443a2">
       <source xml:lang="en">Failed to enable PAC telemetry.</source>
@@ -592,6 +609,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     </trans-unit>
     <trans-unit id="++CODE++ab47a93b0690e3553f60a7e1bd45df0a5e0ebf49f7f3c150d38f347699892163">
       <source xml:lang="en">Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++75528796fc394144a63eaa990d8dbf68c8ddbfd71ba7ddbe9b8f73852ad83165">
+      <source xml:lang="en">Failed to upload the cloned site. Please try again.</source>
     </trans-unit>
     <trans-unit id="++CODE++a9e36b880dd45b64ae5601865540605296febf9bd855fc46d9c35c2c2ed9a7f2">
       <source xml:lang="en">Feature is not enabled for this geo.</source>
@@ -1118,6 +1138,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++26297069e403c73e147151f2964757b7e9149762cf3a8e04ffd833907fb979e4">
       <source xml:lang="en">Select the folder that will contain your project root for your site</source>
     </trans-unit>
+    <trans-unit id="++CODE++9fc56c58d29393edcaf6a4e4f67ecb745e161900259f4fc9ac10386dfbf20ba6">
+      <source xml:lang="en">Select the folder where the cloned site content will be saved</source>
+    </trans-unit>
     <trans-unit id="++CODE++4d6f03fa73020c945e651c34d40c5529f3477ac02df254c1764a68d576575e14">
       <source xml:lang="en">Selection is empty.</source>
     </trans-unit>
@@ -1161,6 +1184,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++4b7de12dbef5cc145cf5b8b08743a60d279d6ee27b8b13470e5f06bc21153867">
       <source xml:lang="en">Site Visibility:</source>
     </trans-unit>
+    <trans-unit id="++CODE++71e1fa4c68253a5585e75524dada5f31033093e4951035be5c7c7a400bd03246">
+      <source xml:lang="en">Site cloned and uploaded successfully.</source>
+    </trans-unit>
     <trans-unit id="++CODE++4fa72d80ab1b04e31f450bacc89bff526a5e52e3d104d153b3b493b108330b3c">
       <source xml:lang="en">Site download cancelled. Authentication is required to proceed.</source>
     </trans-unit>
@@ -1175,6 +1201,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++a72357d268bce5e1643bfd74563495784179f75ace0d652db8f808f293586b63">
       <source xml:lang="en">Site management URL not found for the selected site. Please try again after refreshing the environment.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++656563f7404a65eba76106cce83519f640802c30345ee7650ea517993f833904">
+      <source xml:lang="en">Site name cannot be empty.</source>
     </trans-unit>
     <trans-unit id="++CODE++f7094162bd4c4b59aa706387714347223e1569c79c5b37eb19ac754a33a0fdd0">
       <source xml:lang="en">Site runtime preview feature is not enabled.</source>
@@ -1354,6 +1383,10 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++8a91e7caf57148c6be78b3986477464b36f0282a9e9a09b635b0db4fe6246132">
       <source xml:lang="en">Upload failed. Please try again later.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++3e92a050764a35e5cd81e04d745b698f7a42759d6729256791f7740fee62f6a9">
+      <source xml:lang="en">Uploading cloned site {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel &quot;Show output&quot;))...</source>
+      <note>This is a markdown formatting which must persist across translations.</note>
     </trans-unit>
     <trans-unit id="++CODE++037bfba715811960dfb62b81a99d5002835f73a9c44bdd6661ebc222d8538e2b">
       <source xml:lang="en">Use File → Open Folder to select a folder with a Power Pages site</source>
@@ -1537,6 +1570,9 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
     </trans-unit>
     <trans-unit id="powerpages.copilotPanel.clearConversation.title">
       <source xml:lang="en">Clear Conversation</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.site.cloneSite.title">
+      <source xml:lang="en">Clone Site</source>
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.compareWithEnvironment.title">
       <source xml:lang="en">Compare with Environment</source>

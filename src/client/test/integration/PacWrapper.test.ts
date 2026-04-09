@@ -4,6 +4,7 @@
  */
 
 import { expect } from "chai";
+import * as sinon from "sinon";
 import { IPacInterop, IPacWrapperContext, PacArguments, PacWrapper } from "../../pac/PacWrapper";
 
 class MockContext implements IPacWrapperContext {
@@ -60,5 +61,64 @@ describe('PacWrapper', () => {
         expect(result.Information.length > 0);
         expect(result.Results && result.Results.length === 1 && result.Results[0].UserDisplayName === "bob@contoso.com").to.be.true;
         expect(result.Results[0].ActiveOrganization?.Item2 === "https://contoso-mock.crmtest.dynamics.com").to.be.true;
+    });
+
+    describe('cloneSiteWithProgress', () => {
+        it('should pass correct arguments to executeCommandWithProgress', async () => {
+            const interop = new MockPacInterop();
+            const executeSpy = sinon.spy(interop, 'executeCommandWithProgress');
+            const wrapper = new PacWrapper(new MockContext, interop);
+
+            const result = await wrapper.cloneSiteWithProgress('/source/path', '/output/dir', 'My Clone');
+
+            expect(result).to.be.true;
+            expect(executeSpy.calledOnce).to.be.true;
+            const args = executeSpy.firstCall.args[0].Arguments;
+            expect(args).to.deep.equal([
+                'pages', 'clone',
+                '--path', '/source/path',
+                '--outputDirectory', '/output/dir',
+                '--name', 'My Clone',
+                '--overwrite'
+            ]);
+        });
+    });
+
+    describe('uploadSiteWithProgress', () => {
+        it('should pass correct arguments to executeCommandWithProgress', async () => {
+            const interop = new MockPacInterop();
+            const executeSpy = sinon.spy(interop, 'executeCommandWithProgress');
+            const wrapper = new PacWrapper(new MockContext, interop);
+
+            const result = await wrapper.uploadSiteWithProgress('/upload/path', '2');
+
+            expect(result).to.be.true;
+            expect(executeSpy.calledOnce).to.be.true;
+            const args = executeSpy.firstCall.args[0].Arguments;
+            expect(args).to.deep.equal([
+                'pages', 'upload',
+                '--path', '/upload/path',
+                '--modelVersion', '2'
+            ]);
+        });
+    });
+
+    describe('uploadCodeSiteWithProgress', () => {
+        it('should pass correct arguments to executeCommandWithProgress', async () => {
+            const interop = new MockPacInterop();
+            const executeSpy = sinon.spy(interop, 'executeCommandWithProgress');
+            const wrapper = new PacWrapper(new MockContext, interop);
+
+            const result = await wrapper.uploadCodeSiteWithProgress('/root/path', 'My Code Site');
+
+            expect(result).to.be.true;
+            expect(executeSpy.calledOnce).to.be.true;
+            const args = executeSpy.firstCall.args[0].Arguments;
+            expect(args).to.deep.equal([
+                'pages', 'upload-code-site',
+                '--rootPath', '/root/path',
+                '--siteName', 'My Code Site'
+            ]);
+        });
     });
 });

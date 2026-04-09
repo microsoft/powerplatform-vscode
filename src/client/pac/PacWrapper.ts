@@ -355,6 +355,59 @@ export class PacWrapper {
         );
     }
 
+    /**
+     * Clones a site with output streamed to a VS Code Output Channel.
+     * @param sourcePath Path of the website content to clone
+     * @param outputDirectory Path where the cloned content will be saved
+     * @param name Name for the cloned site
+     * @returns Promise that resolves to true if clone succeeded, false otherwise
+     */
+    public async cloneSiteWithProgress(
+        sourcePath: string,
+        outputDirectory: string,
+        name: string
+    ): Promise<boolean> {
+        const pacArguments = ["pages", "clone", "--path", sourcePath, "--outputDirectory", outputDirectory, "--name", name, "--overwrite"];
+
+        return this.pacInterop.executeCommandWithProgress(
+            new PacArguments(...pacArguments)
+        );
+    }
+
+    /**
+     * Uploads a site with output streamed to a VS Code Output Channel.
+     * @param uploadPath Path from where the site content is uploaded
+     * @param modelVersion Data model version
+     * @returns Promise that resolves to true if upload succeeded, false otherwise
+     */
+    public async uploadSiteWithProgress(
+        uploadPath: string,
+        modelVersion: string
+    ): Promise<boolean> {
+        const pacArguments = ["pages", "upload", "--path", uploadPath, "--modelVersion", modelVersion];
+
+        return this.pacInterop.executeCommandWithProgress(
+            new PacArguments(...pacArguments)
+        );
+    }
+
+    /**
+     * Uploads a code site with output streamed to a VS Code Output Channel.
+     * @param rootPath Root source folder of the code site
+     * @param siteName Name of the site
+     * @returns Promise that resolves to true if upload succeeded, false otherwise
+     */
+    public async uploadCodeSiteWithProgress(
+        rootPath: string,
+        siteName: string
+    ): Promise<boolean> {
+        const pacArguments = ["pages", "upload-code-site", "--rootPath", rootPath, "--siteName", siteName];
+
+        return this.pacInterop.executeCommandWithProgress(
+            new PacArguments(...pacArguments)
+        );
+    }
+
     public async resetPacProcess(): Promise<void> {
         try {
             await this.pacInterop.exit();
