@@ -77,3 +77,52 @@ jobs:
         with:
           run: |
             npm run test-common-int
+
+  web-sanity:
+    if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'release/stable'
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Build extension
+        run: npm run dist
+
+      - name: Run E2E web sanity tests
+        run: npm run test-e2e-web-sanity
+        env:
+          CI: true
+          PP_TEST_VSCODE_URL: ${{ secrets.PP_TEST_VSCODE_URL }}
+          PP_TEST_USERNAME: ${{ secrets.PP_TEST_USERNAME }}
+          PP_TEST_PASSWORD: ${{ secrets.PP_TEST_PASSWORD }}
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-web-sanity
+          path: playwright-report-web-sanity/
+          retention-days: 7
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: web-sanity-test-results
+          path: test-results/web-sanity-results.xml
+          retention-days: 7
