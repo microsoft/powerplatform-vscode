@@ -1138,9 +1138,6 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++26297069e403c73e147151f2964757b7e9149762cf3a8e04ffd833907fb979e4">
       <source xml:lang="en">Select the folder that will contain your project root for your site</source>
     </trans-unit>
-    <trans-unit id="++CODE++9fc56c58d29393edcaf6a4e4f67ecb745e161900259f4fc9ac10386dfbf20ba6">
-      <source xml:lang="en">Select the folder where the cloned site content will be saved</source>
-    </trans-unit>
     <trans-unit id="++CODE++4d6f03fa73020c945e651c34d40c5529f3477ac02df254c1764a68d576575e14">
       <source xml:lang="en">Selection is empty.</source>
     </trans-unit>
