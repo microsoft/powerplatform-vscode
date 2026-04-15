@@ -4,13 +4,14 @@
  */
 
 import sinon, { stub, assert } from "sinon";
-import { queryParameters } from "../../common/constants";
+import { portalSchemaVersion, queryParameters } from "../../common/constants";
 import { sanitizeURL } from "../../utilities/urlBuilderUtil";
 import { webExtensionTelemetryEventNames } from "../../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 import { WebExtensionTelemetry } from "../../telemetry/webExtensionTelemetry";
 import * as commonUtil from "../../utilities/commonUtil";
 import { expect } from "chai";
 import { oneDSLoggerWrapper } from "../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import WebExtensionContext from "../../WebExtensionContext";
 
 describe("webExtensionTelemetry", () => {
     let traceInfoStub: sinon.SinonStub;
@@ -86,6 +87,10 @@ describe("webExtensionTelemetry", () => {
 
     it("sendExtensionInitQueryParametersTelemetry_whenQueryParamHaveAllTheKey_shouldCallSendTelemetryEventWithValidData", () => {
         //Act
+        WebExtensionContext.tenantId = "a1103406-182b-4498-80f0-e1a5d92e9f82";
+        WebExtensionContext.websiteId = "783ee9d0-4199-4e5a-aece-ea87b9d83f77";
+        WebExtensionContext.schema = portalSchemaVersion.V2;
+
         const queryParamsMap = new Map<string, string>([
             [queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"],
             [queryParameters.PORTAL_ID, "36429b2e-8b29-4020-8493-bd5e277444d8"],
@@ -106,7 +111,10 @@ describe("webExtensionTelemetry", () => {
 
         const properties = {
             orgId: queryParamsMap.get(queryParameters.ORG_ID),
+            tenantId: "a1103406-182b-4498-80f0-e1a5d92e9f82",
+            websiteId: "783ee9d0-4199-4e5a-aece-ea87b9d83f77",
             portalId: queryParamsMap.get(queryParameters.PORTAL_ID),
+            schema: portalSchemaVersion.V2,
             referrerSessionId: queryParamsMap.get(
                 queryParameters.REFERRER_SESSION_ID
             ),
@@ -139,11 +147,18 @@ describe("webExtensionTelemetry", () => {
 
     it("sendExtensionInitQueryParametersTelemetry_whenQueryParamsMapIsEmpty_shouldNotThrowException", () => {
         //Act
+        WebExtensionContext.tenantId = "";
+        WebExtensionContext.websiteId = "";
+        WebExtensionContext.schema = undefined;
+
         const queryParamsMap = new Map<string, string>([]);
 
         const properties = {
             orgId: queryParamsMap.get(queryParameters.ORG_ID),
+            tenantId: "",
+            websiteId: "",
             portalId: queryParamsMap.get(queryParameters.PORTAL_ID),
+            schema: undefined,
             referrerSessionId: queryParamsMap.get(
                 queryParameters.REFERRER_SESSION_ID
             ),
