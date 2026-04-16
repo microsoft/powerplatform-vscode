@@ -9,6 +9,7 @@ import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTele
 import { IPortalWebExtensionInitQueryParametersTelemetryData, IWebExtensionAPITelemetryData, IWebExtensionExceptionTelemetryData, IWebExtensionInitPathTelemetryData, IWebExtensionPerfTelemetryData } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryInterface";
 import { getEnvironmentIdFromUrl, isNullOrUndefined } from '../utilities/commonUtil';
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import WebExtensionContext from "../WebExtensionContext";
 
 export class WebExtensionTelemetry {
 
@@ -33,7 +34,10 @@ export class WebExtensionTelemetry {
             eventName: webExtensionTelemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS,
             properties: {
                 orgId: queryParamsMap.get(queryParameters.ORG_ID),
+                tenantId: WebExtensionContext.tenantId,
+                websiteId: WebExtensionContext.websiteId,
                 portalId: queryParamsMap.get(queryParameters.PORTAL_ID),
+                schema: WebExtensionContext.schema,
                 referrerSessionId: queryParamsMap.get(queryParameters.REFERRER_SESSION_ID),
                 referrer: queryParamsMap.get(queryParameters.REFERRER),
                 geo: queryParamsMap.get(queryParameters.GEO),
