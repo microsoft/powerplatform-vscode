@@ -1,0 +1,201 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# Dependabot Auto-fix
+# ------------------------------------------------------------------------
+# Runs the `fix-dependabot-alerts` skill via GitHub Copilot CLI on a weekly
+# schedule (and on-demand). Copilot enumerates open Dependabot alerts,
+# applies fixes following `.claude/skills/fix-dependabot-alerts/SKILL.md`,
+# runs the build + tests, and opens a single consolidated PR.
+#
+# Required secrets
+# ------------------------------------------------------------------------
+#   POWER_PAGES_PUBLIC_GITHUB_APP_PRIVATE_KEY
+#     Private key of the existing GitHub App (app-id 2740120) that is
+#     already used by loc-update.yml / translations-export.yml. The App
+#     installation on this repo must have:
+#       - Contents: Read/Write
+#       - Pull requests: Read/Write
+#     Commits and the PR are authored as github-actions[bot] via this App.
+#
+#   COPILOT_CLI_PAT
+#     Fine-grained PAT from a user with a Copilot license. Needed because
+#     GitHub App tokens cannot authenticate Copilot CLI (Copilot licenses
+#     are per-user). Required permissions:
+#       - Account: Copilot Requests: Read
+#       - Repository: Dependabot alerts: Read (so `gh api .../dependabot/alerts` works)
+#     The org-level "Copilot CLI" policy must be enabled for this user.
+# ------------------------------------------------------------------------
+
+name: Dependabot Auto-fix
+
+on:
+  schedule:
+    # Weekly, Mondays 06:00 UTC
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dependabot-autofix
+  cancel-in-progress: false
+
+jobs:
+  autofix:
+    name: Copilot CLI Dependabot Auto-fix
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Generate GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: 2740120
+          private-key: ${{ secrets.POWER_PAGES_PUBLIC_GITHUB_APP_PRIVATE_KEY }}
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install GitHub Copilot CLI
+        run: npm install -g @github/copilot
+
+      - name: Configure git identity
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Create working branch
+        id: branch
+        run: |
+          BRANCH="copilot/dependabot-autofix-${{ github.run_id }}"
+          git checkout -b "$BRANCH"
+          echo "name=$BRANCH" >> "$GITHUB_OUTPUT"
+
+      - name: Run Copilot CLI (fix-dependabot-alerts)
+        id: copilot
+        timeout-minutes: 30
+        env:
+          # Copilot CLI auth + Dependabot alerts read. Redacted from logs.
+          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_CLI_PAT }}
+          # App token used by `gh pr create` and `git push` so the PR
+          # and commits are authored by github-actions[bot].
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ steps.branch.outputs.name }}
+        run: |
+          set -euo pipefail
+
+          # Inline the skill so behavior is identical even if Copilot CLI
+          # on the runner does not auto-load .claude/skills/.
+          SKILL_BODY="$(cat .claude/skills/fix-dependabot-alerts/SKILL.md)"
+
+          PROMPT=$(cat <<PROMPT_EOF
+          You are running inside a GitHub Actions job. Follow the skill
+          below to fix ALL currently open Dependabot alerts for the
+          repository \`${REPO}\` in a SINGLE consolidated pull request.
+
+          Environment already set up for you:
+            - Repository is checked out at the current working directory.
+            - A working branch named \`${BRANCH}\` is already created and checked out.
+            - \`npm ci\` has already installed dependencies.
+            - \`git\` is configured as github-actions[bot].
+            - \`COPILOT_GITHUB_TOKEN\` is available for \`gh api\` calls that read
+              Dependabot alerts (e.g. \`gh api repos/${REPO}/dependabot/alerts\`).
+            - \`GH_TOKEN\` is a GitHub App token with Contents and Pull requests
+              write access. Use it (it is already in env) for \`git push\` and
+              \`gh pr create\`.
+
+          Mandatory rules:
+            1. Use \`gh api repos/${REPO}/dependabot/alerts --paginate --jq '.[] | select(.state=="open")'\`
+               to enumerate open alerts. Authenticate that call with
+               \`GH_TOKEN=\$COPILOT_GITHUB_TOKEN gh api ...\` since the App token
+               typically cannot read Dependabot alerts.
+            2. If there are ZERO open alerts, do not commit, do not push,
+               do not open a PR. Print "NO_OPEN_ALERTS" and exit.
+            3. Apply fixes for ALL open alerts on branch \`${BRANCH}\`
+               following Steps 1-6 of the skill. Produce one logical commit
+               (or several, your choice) on that branch only.
+            4. Run \`npm run build\` AND \`npm test\`. If either fails after
+               your fixes, DO NOT push and DO NOT open a PR. Print
+               "BUILD_OR_TEST_FAILED" and exit non-zero.
+            5. When build and tests pass:
+                 - \`git push -u origin ${BRANCH}\` (uses \$GH_TOKEN).
+                 - \`gh pr create --base main --head ${BRANCH} \\\\
+                       --title "chore(deps): auto-fix Dependabot alerts" \\\\
+                       --body "<summary of alerts addressed, per-package old→new versions, CVE IDs, and any overrides added>"\`.
+                 - Print the PR URL.
+            6. Never manually edit integrity hashes in package-lock.json
+               (see skill). Use \`npm install\`, \`npm update\`, or a clean
+               reinstall to let npm compute them.
+            7. Never use \`--allow-all\` semantics; stick to the tools you
+               already have permission to use.
+
+          ----- SKILL START -----
+          ${SKILL_BODY}
+          ----- SKILL END -----
+          PROMPT_EOF
+          )
+
+          copilot \
+            -p "$PROMPT" \
+            --model claude-sonnet-4.6 \
+            -s \
+            --no-ask-user \
+            --allow-tool 'shell(npm:*), shell(npx:*), shell(gh:*), shell(git:*), shell(node:*), write, read' \
+            --secret-env-vars 'COPILOT_CLI_PAT' \
+            --share ./copilot-session.md \
+            | tee copilot-output.txt
+
+      - name: Summarize run
+        if: always()
+        run: |
+          {
+            echo "## Dependabot Auto-fix"
+            echo ""
+            echo "- Branch: \`${{ steps.branch.outputs.name }}\`"
+            if [ -f copilot-output.txt ]; then
+              if grep -q "NO_OPEN_ALERTS" copilot-output.txt; then
+                echo "- Result: no open Dependabot alerts; no PR opened."
+              elif grep -q "BUILD_OR_TEST_FAILED" copilot-output.txt; then
+                echo "- Result: build or tests failed after fixes; no PR opened."
+              else
+                PR_URL=$(grep -Eo 'https://github.com/[^ ]+/pull/[0-9]+' copilot-output.txt | head -n1 || true)
+                if [ -n "$PR_URL" ]; then
+                  echo "- PR: $PR_URL"
+                else
+                  echo "- Result: see Copilot session transcript artifact."
+                fi
+              fi
+            else
+              echo "- Result: Copilot step did not produce output."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Copilot session transcript
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: copilot-session-${{ github.run_id }}
+          path: |
+            copilot-session.md
+            copilot-output.txt
+          retention-days: 14
+          if-no-files-found: ignore
