@@ -1839,7 +1839,7 @@
     "stream-http": "^3.2.0",
     "tty-browserify": "^0.0.1",
     "unzip-stream": "^0.3.2",
-    "uuid": "^14.0.0",
+    "uuid": "14.0.0",
     "vscode-languageclient": "^7.0.0",
     "vscode-languageserver": "^7.0.0",
     "vscode-languageserver-textdocument": "^1.0.1",
@@ -1875,7 +1875,8 @@
       "undici": "^6.24.0"
     },
     "@vscode/vsce": {
-      "minimatch": "3.1.5"
+      "minimatch": "3.1.5",
+      "brace-expansion": "1.1.13"
     },
     "worker-loader": {
       "schema-utils": "^4.3.3"
@@ -1887,6 +1888,8 @@
     "picomatch@4": "^4.0.4",
     "flatted": "^3.4.2",
     "defu": "^6.1.5",
-    "follow-redirects": "1.16.0"
+    "follow-redirects": "1.16.0",
+    "path-to-regexp@>=8.0.0 <8.4.0": "8.4.0",
+    "uuid": "14.0.0"
   }
 }
