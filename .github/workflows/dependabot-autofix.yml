@@ -10,21 +10,28 @@
 #
 # Required secrets
 # ------------------------------------------------------------------------
-#   POWER_PAGES_PUBLIC_GITHUB_APP_PRIVATE_KEY
-#     Private key of the existing GitHub App (app-id 2740120) that is
-#     already used by loc-update.yml / translations-export.yml. The App
-#     installation on this repo must have:
-#       - Contents: Read/Write
-#       - Pull requests: Read/Write
-#     Commits and the PR are authored as github-actions[bot] via this App.
-#
 #   COPILOT_CLI_PAT
-#     Fine-grained PAT from a user with a Copilot license. Needed because
-#     GitHub App tokens cannot authenticate Copilot CLI (Copilot licenses
-#     are per-user). Required permissions:
-#       - Account: Copilot Requests: Read
-#       - Repository: Dependabot alerts: Read (so `gh api .../dependabot/alerts` works)
-#     The org-level "Copilot CLI" policy must be enabled for this user.
+#     Fine-grained PAT owned by a Copilot-licensed user who has signed the
+#     Microsoft CLA. The PAT is used for:
+#       - Authenticating GitHub Copilot CLI (via COPILOT_GITHUB_TOKEN).
+#       - Reading Dependabot alerts (`gh api .../dependabot/alerts`).
+#       - Pushing the auto-fix branch (`git push`).
+#       - Opening the PR (`gh pr create`).
+#     Using a PAT (not a GitHub App token) for `gh pr create` is intentional:
+#     Microsoft's CLA bot keys off the PR author identity. When an App opens
+#     the PR, the bot refuses to evaluate CLA and the check stays pending.
+#     With a human PAT owner, the PR author is a CLA-signed human and the
+#     check passes immediately.
+#
+#     Required PAT permissions (fine-grained, scoped to this repo):
+#       Account:
+#         - Copilot Requests: Read
+#       Repository:
+#         - Metadata: Read (implicit)
+#         - Contents: Read and write
+#         - Pull requests: Read and write
+#         - Dependabot alerts: Read
+#     The org-level "Copilot CLI" policy must be enabled for the PAT owner.
 # ------------------------------------------------------------------------
 
 name: Dependabot Auto-fix
@@ -47,23 +54,13 @@ jobs:
     name: Copilot CLI Dependabot Auto-fix
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    permissions:
-      contents: write
-      pull-requests: write
 
     steps:
-      - name: Generate GitHub App Token
-        id: app-token
-        uses: actions/create-github-app-token@v1
-        with:
-          app-id: 2740120
-          private-key: ${{ secrets.POWER_PAGES_PUBLIC_GITHUB_APP_PRIVATE_KEY }}
-
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ steps.app-token.outputs.token }}
+          token: ${{ secrets.COPILOT_CLI_PAT }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -77,10 +74,24 @@ jobs:
       - name: Install GitHub Copilot CLI
         run: npm install -g @github/copilot
 
+      - name: Resolve PAT owner identity
+        id: pat-identity
+        env:
+          GH_TOKEN: ${{ secrets.COPILOT_CLI_PAT }}
+        run: |
+          set -euo pipefail
+          LOGIN=$(gh api user --jq .login)
+          # Prefer the GitHub no-reply email so pushes work even if the
+          # user keeps their real email private.
+          USER_ID=$(gh api user --jq .id)
+          EMAIL="${USER_ID}+${LOGIN}@users.noreply.github.com"
+          echo "login=$LOGIN" >> "$GITHUB_OUTPUT"
+          echo "email=$EMAIL" >> "$GITHUB_OUTPUT"
+
       - name: Configure git identity
         run: |
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name  "${{ steps.pat-identity.outputs.login }}"
+          git config --local user.email "${{ steps.pat-identity.outputs.email }}"
 
       - name: Create working branch
         id: branch
@@ -95,11 +106,13 @@ jobs:
         env:
           # Copilot CLI auth + Dependabot alerts read. Redacted from logs.
           COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_CLI_PAT }}
-          # App token used by `gh pr create` and `git push` so the PR
-          # and commits are authored by github-actions[bot].
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          # Same PAT is used for `git push` and `gh pr create` so the PR
+          # author is a CLA-signed human (Microsoft's CLA bot refuses to
+          # evaluate PRs whose author is a GitHub App / bot).
+          GH_TOKEN: ${{ secrets.COPILOT_CLI_PAT }}
           REPO: ${{ github.repository }}
           BRANCH: ${{ steps.branch.outputs.name }}
+          PAT_LOGIN: ${{ steps.pat-identity.outputs.login }}
         run: |
           set -euo pipefail
 
@@ -116,28 +129,30 @@ jobs:
             - Repository is checked out at the current working directory.
             - A working branch named \`${BRANCH}\` is already created and checked out.
             - \`npm ci\` has already installed dependencies.
-            - \`git\` is configured as github-actions[bot].
-            - \`COPILOT_GITHUB_TOKEN\` is available for \`gh api\` calls that read
-              Dependabot alerts (e.g. \`gh api repos/${REPO}/dependabot/alerts\`).
-            - \`GH_TOKEN\` is a GitHub App token with Contents and Pull requests
-              write access. Use it (it is already in env) for \`git push\` and
-              \`gh pr create\`.
+            - \`git\` is configured as \`${PAT_LOGIN}\` (the PAT owner). Do not
+              change the git user identity, and do not add any
+              \`Co-authored-by:\` trailer — extra identities on a commit cause
+              Microsoft's CLA bot to block the PR.
+            - \`COPILOT_GITHUB_TOKEN\` and \`GH_TOKEN\` are both set to the same
+              PAT. That PAT has Contents/Pull requests/Dependabot alerts read
+              and write as needed. Use \`gh\` and \`git\` normally — they will
+              authenticate automatically via \`GH_TOKEN\`.
 
           Mandatory rules:
             1. Use \`gh api repos/${REPO}/dependabot/alerts --paginate --jq '.[] | select(.state=="open")'\`
-               to enumerate open alerts. Authenticate that call with
-               \`GH_TOKEN=\$COPILOT_GITHUB_TOKEN gh api ...\` since the App token
-               typically cannot read Dependabot alerts.
+               to enumerate open alerts. The default \`GH_TOKEN\` already has
+               Dependabot-alerts:read; no token override is required.
             2. If there are ZERO open alerts, do not commit, do not push,
                do not open a PR. Print "NO_OPEN_ALERTS" and exit.
             3. Apply fixes for ALL open alerts on branch \`${BRANCH}\`
                following Steps 1-6 of the skill. Produce one logical commit
-               (or several, your choice) on that branch only.
+               (or several, your choice) on that branch only. Do NOT add any
+               \`Co-authored-by:\` trailers.
             4. Run \`npm run build\` AND \`npm test\`. If either fails after
                your fixes, DO NOT push and DO NOT open a PR. Print
                "BUILD_OR_TEST_FAILED" and exit non-zero.
             5. When build and tests pass:
-                 - \`git push -u origin ${BRANCH}\` (uses \$GH_TOKEN).
+                 - \`git push -u origin ${BRANCH}\`.
                  - \`gh pr create --base main --head ${BRANCH} \\\\
                        --title "chore(deps): auto-fix Dependabot alerts" \\\\
                        --body "<summary of alerts addressed, per-package old→new versions, CVE IDs, and any overrides added>"\`.
