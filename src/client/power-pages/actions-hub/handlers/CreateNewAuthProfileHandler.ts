@@ -8,6 +8,7 @@ import { authenticateUserInVSCode } from "../../../../common/services/Authentica
 import { createAuthProfileExp } from "../../../../common/utilities/PacAuthUtil";
 import PacContext from "../../../pac/PacContext";
 import { PacWrapper } from "../../../pac/PacWrapper";
+import { extractAuthInfo, extractOrgInfo } from "../../commonUtility";
 import { Constants } from "../Constants";
 import { traceError, traceInfo } from "../TelemetryHelper";
 
@@ -18,6 +19,12 @@ export const createNewAuthProfile = async (pacWrapper: PacWrapper): Promise<void
 
         // if orgUrl is present then directly authenticate in VS Code
         if (orgUrl) {
+            await authenticateUserInVSCode();
+            return;
+        }
+
+        // PacContext may not be populated yet - check PAC CLI directly for active auth
+        if (await syncAuthFromPacCli(pacWrapper)) {
             await authenticateUserInVSCode();
             return;
         }
@@ -57,4 +64,46 @@ export const createNewAuthProfile = async (pacWrapper: PacWrapper): Promise<void
             { methodName: createNewAuthProfile.name }
         );
     }
+};
+
+/**
+ * Checks PAC CLI for an active auth profile and syncs it to PacContext.
+ * This handles the case where the user has already authenticated via PAC CLI
+ * but PacContext has not yet been populated (e.g., file watcher hasn't fired).
+ * @returns true if a valid PAC CLI auth profile was found and synced, false otherwise.
+ */
+export const syncAuthFromPacCli = async (pacWrapper: PacWrapper): Promise<boolean> => {
+    try {
+        const pacActiveAuth = await pacWrapper.activeAuth();
+        if (pacActiveAuth && pacActiveAuth.Status === SUCCESS) {
+            const authInfo = extractAuthInfo(pacActiveAuth.Results);
+            if (authInfo.OrganizationFriendlyName) {
+                let orgInfo = null;
+                try {
+                    const pacActiveOrg = await pacWrapper.activeOrg();
+                    if (pacActiveOrg && pacActiveOrg.Status === SUCCESS) {
+                        orgInfo = extractOrgInfo(pacActiveOrg.Results);
+                    }
+                } catch (error) {
+                    // Org info fetch failed, log for diagnostics but continue with auth info only
+                    traceInfo(Constants.EventNames.ACTIONS_HUB_AUTH_SYNCED_FROM_PAC_CLI, {
+                        methodName: syncAuthFromPacCli.name,
+                        orgFetchFailed: true,
+                        errorMessage: error instanceof Error ? error.message : String(error)
+                    });
+                }
+                PacContext.setContext(authInfo, orgInfo);
+                traceInfo(Constants.EventNames.ACTIONS_HUB_AUTH_SYNCED_FROM_PAC_CLI, { methodName: syncAuthFromPacCli.name });
+                return true;
+            }
+        }
+    } catch (error) {
+        // PAC CLI auth not available, log for diagnostics and continue with auth profile creation flow
+        traceInfo(Constants.EventNames.ACTIONS_HUB_AUTH_SYNCED_FROM_PAC_CLI, {
+            methodName: syncAuthFromPacCli.name,
+            pacAuthCheckFailed: true,
+            errorMessage: error instanceof Error ? error.message : String(error)
+        });
+    }
+    return false;
 };
