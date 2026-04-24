@@ -1857,6 +1857,7 @@
     "utf-8-validate": "^5.0.9"
   },
   "overrides": {
+    "uuid": "$uuid",
     "axios": "1.15.0",
     "basic-ftp": "^5.3.0",
     "tmp": "^0.2.4",
