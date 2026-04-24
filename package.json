@@ -1875,7 +1875,8 @@
       "undici": "^6.24.0"
     },
     "@vscode/vsce": {
-      "minimatch": "3.1.5"
+      "minimatch": "3.1.5",
+      "brace-expansion": "^1.1.13"
     },
     "worker-loader": {
       "schema-utils": "^4.3.3"
@@ -1887,6 +1888,10 @@
     "picomatch@4": "^4.0.4",
     "flatted": "^3.4.2",
     "defu": "^6.1.5",
-    "follow-redirects": "1.16.0"
+    "follow-redirects": "1.16.0",
+    "@vscode/test-web": {
+      "path-to-regexp": "^8.4.0"
+    },
+    "uuid": "^14.0.0"
   }
 }
