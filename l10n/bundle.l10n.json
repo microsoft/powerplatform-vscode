@@ -444,6 +444,12 @@
   "Replace": "Replace",
   "Comparison has been refreshed with the latest data from the environment.": "Comparison has been refreshed with the latest data from the environment.",
   "Cannot refresh an imported comparison. Import a new file or run a new comparison.": "Cannot refresh an imported comparison. Import a new file or run a new comparison.",
+  "Enter a name for the cloned site": "Enter a name for the cloned site",
+  "Site name cannot be empty.": "Site name cannot be empty.",
+  "Failed to download the site for cloning. Please try again.": "Failed to download the site for cloning. Please try again.",
+  "Failed to clone the site. Please try again.": "Failed to clone the site. Please try again.",
+  "Failed to upload the cloned site. Please try again.": "Failed to upload the cloned site. Please try again.",
+  "Site cloned and uploaded successfully.": "Site cloned and uploaded successfully.",
   "Fetching websites from '{0}'.../Message shown while fetching websites from an environment. {0} is the environment name.": {
     "message": "Fetching websites from '{0}'...",
     "comment": [
@@ -590,6 +596,24 @@
   },
   "Refreshing comparison for {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\")).../This is a markdown formatting which must persist across translations.": {
     "message": "Refreshing comparison for {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\"))...",
+    "comment": [
+      "This is a markdown formatting which must persist across translations."
+    ]
+  },
+  "Cloning {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\")).../This is a markdown formatting which must persist across translations.": {
+    "message": "Cloning {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\"))...",
+    "comment": [
+      "This is a markdown formatting which must persist across translations."
+    ]
+  },
+  "Downloading {0} for cloning ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\")).../This is a markdown formatting which must persist across translations.": {
+    "message": "Downloading {0} for cloning ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\"))...",
+    "comment": [
+      "This is a markdown formatting which must persist across translations."
+    ]
+  },
+  "Uploading cloned site {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\")).../This is a markdown formatting which must persist across translations.": {
+    "message": "Uploading cloned site {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\"))...",
     "comment": [
       "This is a markdown formatting which must persist across translations."
     ]
