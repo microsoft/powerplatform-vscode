@@ -227,7 +227,7 @@ jobs:
             -s \
             --no-ask-user \
             --allow-tool 'shell(npm:*), shell(npx:*), shell(gh:*), shell(git:*), shell(node:*), write, read' \
-            --secret-env-vars 'COPILOT_CLI_PAT' \
+            --secret-env-vars 'COPILOT_GITHUB_TOKEN,GH_TOKEN' \
             --share ./copilot-session.md \
             | tee copilot-output.txt
 
