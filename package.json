@@ -1870,6 +1870,7 @@
     "utf-8-validate": "^5.0.9"
   },
   "overrides": {
+    "uuid": "$uuid",
     "axios": "1.15.0",
     "basic-ftp": "^5.3.0",
     "tmp": "^0.2.4",
@@ -1888,7 +1889,11 @@
       "undici": "^6.24.0"
     },
     "@vscode/vsce": {
-      "minimatch": "3.1.5"
+      "minimatch": "3.1.5",
+      "brace-expansion": "^1.1.13"
+    },
+    "@koa/router": {
+      "path-to-regexp": "^8.4.0"
     },
     "worker-loader": {
       "schema-utils": "^4.3.3"
