@@ -93,11 +93,8 @@ jobs:
         id: copilot
         timeout-minutes: 30
         env:
-          # Copilot CLI auth. Copilot CLI consumes this reserved variable and
-          # does not expose it to shell tools.
+          # Copilot CLI auth + Dependabot alerts read before invoking Copilot.
           COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_CLI_PAT }}
-          # Same PAT, available to shell tools for Dependabot alerts reads.
-          COPILOT_CLI_PAT: ${{ secrets.COPILOT_CLI_PAT }}
           # App token used by `gh pr create` and `git push` so the PR
           # and commits are authored by github-actions[bot].
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
@@ -106,14 +103,21 @@ jobs:
         run: |
           set -euo pipefail
 
-          if [ -z "${COPILOT_CLI_PAT:-}" ]; then
+          if [ -z "${COPILOT_GITHUB_TOKEN:-}" ]; then
             echo "COPILOT_CLI_PAT secret is not configured or is unavailable to this workflow."
             exit 1
           fi
 
-          GH_TOKEN="$COPILOT_CLI_PAT" gh api \
-            "repos/${REPO}/dependabot/alerts?state=open&per_page=1" \
-            --jq 'length' >/dev/null
+          GH_TOKEN="$COPILOT_GITHUB_TOKEN" gh api \
+            "repos/${REPO}/dependabot/alerts?state=open&per_page=100" \
+            --paginate \
+            --jq '.[] | {number, ghsa: .security_advisory.ghsa_id, pkg: .dependency.package.name, ecosystem: .dependency.package.ecosystem, severity: .security_vulnerability.severity, scope: .dependency.scope, manifest: .dependency.manifest_path, summary: .security_advisory.summary, vulnerable: .security_vulnerability.vulnerable_version_range, patched: .security_vulnerability.first_patched_version.identifier}' \
+            > alerts.json
+
+          if [ ! -s alerts.json ]; then
+            echo "NO_OPEN_ALERTS" | tee copilot-output.txt
+            exit 0
+          fi
 
           # Inline the skill so behavior is identical even if Copilot CLI
           # on the runner does not auto-load .claude/skills/.
@@ -129,9 +133,8 @@ jobs:
             - A working branch named \`${BRANCH}\` is already created and checked out.
             - \`npm ci\` has already installed dependencies.
             - \`git\` is configured as github-actions[bot].
-            - \`COPILOT_CLI_PAT\` is available for \`gh api\` calls that read
-              Dependabot alerts (e.g. \`gh api repos/${REPO}/dependabot/alerts\`).
-            - \`COPILOT_GITHUB_TOKEN\` is set for Copilot CLI authentication.
+            - \`alerts.json\` was generated from \`gh api repos/${REPO}/dependabot/alerts?state=open\`
+              before Copilot was invoked. Use it as the source of truth.
             - \`GH_TOKEN\` is a GitHub App token with Contents and Pull requests
               write access. Use it (it is already in env) for \`git push\` and
               \`gh pr create\`.
@@ -139,12 +142,7 @@ jobs:
           Mandatory rules:
 
             1. ALERT ENUMERATION — source of truth.
-               Run exactly:
-                 GH_TOKEN=\$COPILOT_CLI_PAT gh api \\\\
-                   "repos/${REPO}/dependabot/alerts?state=open&per_page=100" \\\\
-                   --paginate \\\\
-                   --jq '.[] | {number, ghsa: .security_advisory.ghsa_id, pkg: .dependency.package.name, ecosystem: .dependency.package.ecosystem, severity: .security_vulnerability.severity, scope: .dependency.scope, manifest: .dependency.manifest_path, summary: .security_advisory.summary, vulnerable: .security_vulnerability.vulnerable_version_range, patched: .security_vulnerability.first_patched_version.identifier}' \\\\
-                   > alerts.json
+               Read \`alerts.json\`, which was generated before Copilot was invoked.
                The PR description and the count of "alerts fixed" MUST
                be built one-to-one from \`alerts.json\`. Do NOT count
                transitive-path occurrences of the same alert number as
@@ -240,7 +238,7 @@ jobs:
             -s \
             --no-ask-user \
             --allow-tool 'shell(npm:*), shell(npx:*), shell(gh:*), shell(git:*), shell(node:*), write, read' \
-            --secret-env-vars 'COPILOT_CLI_PAT,GH_TOKEN' \
+            --secret-env-vars 'GH_TOKEN' \
             --share ./copilot-session.md \
             | tee copilot-output.txt
 
