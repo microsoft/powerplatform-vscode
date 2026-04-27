@@ -1832,7 +1832,7 @@
     "gpt-tokenizer": "^2.1.1",
     "gulp": "^5.0.0",
     "https-browserify": "^1.0.0",
-    "liquidjs": "^10.25.5",
+    "liquidjs": "^10.25.7",
     "n-readlines": "^1.0.1",
     "puppeteer-core": "^22.13.1",
     "recursive-readdir": "^2.2.3",
