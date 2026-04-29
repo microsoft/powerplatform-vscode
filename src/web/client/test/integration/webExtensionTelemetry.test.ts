@@ -280,7 +280,8 @@ describe("webExtensionTelemetry", () => {
             entityFileExtensionType: entityFileExtensionType,
             methodName: "sendAPITelemetry_whenErrorMessageIsPassed_shouldCallSendTelemetryException",
             isSuccessful: "true",
-            status: "200"
+            status: "200",
+            errorMessage: errorMessage
         };
 
         //Action
