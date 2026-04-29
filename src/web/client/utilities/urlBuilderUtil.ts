@@ -22,6 +22,7 @@ import { getAttributePath, getEntity, getEntityFetchQuery } from "./schemaHelper
 import { getWorkSpaceName } from "./commonUtil";
 import * as Constants from "../common/constants";
 import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
+import { createHttpResponseError, isHttpResponseError } from "./errorHandlerUtil";
 
 export const getParameterizedRequestUrlTemplate = (
     useSingleEntityUrl: boolean
@@ -309,7 +310,7 @@ export async function getOrCreateSharedWorkspace(config: any) {
         )
 
         if (!createWorkspaceResponse.ok) {
-            throw new Error(JSON.stringify(createWorkspaceResponse));
+            throw await createHttpResponseError(createWorkspaceResponse);
         }
 
         WebExtensionContext.telemetry.sendAPISuccessTelemetry(
@@ -323,22 +324,22 @@ export async function getOrCreateSharedWorkspace(config: any) {
         return await createWorkspaceResponse.json();
     } catch (error) {
         const errorMsg = (error as Error)?.message;
-        if ((error as Response)?.status > 0) {
+        if (isHttpResponseError(error) && error.httpDetails) {
             WebExtensionContext.telemetry.sendAPIFailureTelemetry(
                 requestUrl.href,
                 config.entityName,
-                Constants.httpMethod.GET,
+                Constants.httpMethod.POST,
                 new Date().getTime() - requestSentAtTime,
                 getOrCreateSharedWorkspace.name,
                 errorMsg,
                 '',
-                (error as Response)?.status.toString()
+                error.httpDetails.statusCode.toString()
             );
         } else {
             WebExtensionContext.telemetry.sendErrorTelemetry(
                 webExtensionTelemetryEventNames.WEB_EXTENSION_FETCH_GET_OR_CREATE_SHARED_WORK_SPACE_ERROR,
                 getOrCreateSharedWorkspace.name,
-                Constants.WEB_EXTENSION_FETCH_GET_OR_CREATE_SHARED_WORK_SPACE_ERROR,
+                errorMsg,
                 error as Error
             );
         }
