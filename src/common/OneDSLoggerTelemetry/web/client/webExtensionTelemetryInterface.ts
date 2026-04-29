@@ -45,6 +45,7 @@ export interface IWebExtensionAPITelemetryData extends IWebExtensionTelemetryDat
         'isSuccessful'?: string;
         'status'?: string;
         'methodName'?: string;
+        'errorMessage'?: string;
     },
     measurements: {
         'durationInMillis': number;

@@ -95,17 +95,25 @@ export class WebExtensionTelemetry {
 
         eventName = eventName ?? webExtensionTelemetryEventNames.WEB_EXTENSION_API_REQUEST;
 
+        const properties: IWebExtensionAPITelemetryData['properties'] = {
+            url: sanitizeURL(URL),
+            entity: entity,
+            httpMethod: httpMethod,
+            entityFileExtensionType: entityFileExtensionType,
+            isSuccessful: (isSuccessful === undefined) ? "" : (isSuccessful ? "true" : "false"),
+            status: status,
+            methodName: methodName
+        };
+        if (errorMessage) {
+            // Defensive truncation: formatHttpErrorMessage already caps at 500, but
+            // other callers may pass raw error.message of unbounded length.
+            properties.errorMessage = errorMessage.length > 500
+                ? errorMessage.substring(0, 500) + "..."
+                : errorMessage;
+        }
         const telemetryData: IWebExtensionAPITelemetryData = {
             eventName: eventName,
-            properties: {
-                url: sanitizeURL(URL),
-                entity: entity,
-                httpMethod: httpMethod,
-                entityFileExtensionType: entityFileExtensionType,
-                isSuccessful: (isSuccessful === undefined) ? "" : (isSuccessful ? "true" : "false"),
-                status: status,
-                methodName: methodName
-            },
+            properties: properties,
             measurements: {
                 durationInMillis: (duration) ? duration : 0
             }
