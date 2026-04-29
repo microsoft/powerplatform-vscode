@@ -28,6 +28,16 @@ interface ISaveCallParameters {
     requestUrl: string;
 }
 
+// Tracks fsPaths that have already triggered the get-save-parameters error
+// dialog/telemetry in this session. Subsequent failures for the same fsPath
+// are silenced to avoid 4.6x dialog/telemetry spam per session.
+const failedSaveParameterPaths = new Set<string>();
+
+// Test-only export to reset the dedup set between cases.
+export function _resetFailedSaveParameterPaths() {
+    failedSaveParameterPaths.clear();
+}
+
 export async function saveData(fileUri: vscode.Uri) {
     const dataMap: Map<string, FileData> =
         WebExtensionContext.fileDataMap.getFileMap;
@@ -112,11 +122,14 @@ async function getSaveParameters(
             attributePath.source,
             requestUrl
         );
-    } else {
+    } else if (!failedSaveParameterPaths.has(fileUri.fsPath)) {
+        failedSaveParameterPaths.add(fileUri.fsPath);
+        const errorMessage = `${BAD_REQUEST}: missing attributePath for entity '${entityName ?? "unknown"}' at '${fileUri.fsPath}'`;
         WebExtensionContext.telemetry.sendErrorTelemetry(
             webExtensionTelemetryEventNames.WEB_EXTENSION_GET_SAVE_PARAMETERS_ERROR,
             getSaveParameters.name,
-            BAD_REQUEST
+            errorMessage,
+            new Error(errorMessage)
         ); // no API request is made in this case since we do not know in which column should we save the value
         showErrorDialog(
             vscode.l10n.t("Unable to complete the request"),
