@@ -38,6 +38,7 @@ import * as UploadSiteHandler from "../../../../power-pages/actions-hub/handlers
 import * as ShowSiteDetailsHandler from "../../../../power-pages/actions-hub/handlers/ShowSiteDetailsHandler";
 import * as DownloadSiteHandler from "../../../../power-pages/actions-hub/handlers/DownloadSiteHandler";
 import * as LoginToMatchHandler from "../../../../power-pages/actions-hub/handlers/LoginToMatchHandler";
+import * as CloneSiteHandler from "../../../../power-pages/actions-hub/handlers/CloneSiteHandler";
 import * as RunCodeQLScreeningHandler from "../../../../power-pages/actions-hub/handlers/code-ql/RunCodeQlScreeningHandler";
 import * as SortModeHandler from "../../../../power-pages/actions-hub/handlers/metadata-diff/SortModeHandler";
 import * as ToggleViewModeHandler from "../../../../power-pages/actions-hub/handlers/metadata-diff/ToggleViewModeHandler";
@@ -283,6 +284,15 @@ describe("ActionsHubTreeDataProvider", () => {
 
             await registerCommandStub.getCall(14).args[1]();
             expect(mockCommandHandler.calledOnce).to.be.true;
+        });
+
+        it("should register cloneSite command", async () => {
+            const mockCloneHandler = sinon.stub();
+            sinon.stub(CloneSiteHandler, 'cloneSite').returns(mockCloneHandler);
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
+            actionsHubTreeDataProvider["registerPanel"]();
+
+            expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.site.cloneSite")).to.be.true;
         });
 
         it("should register loginToMatch command", async () => {

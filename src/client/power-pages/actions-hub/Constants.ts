@@ -277,6 +277,12 @@ export const Constants = {
         REPLACE: vscode.l10n.t("Replace"),
         METADATA_DIFF_RESYNC_COMPLETED: vscode.l10n.t("Comparison has been refreshed with the latest data from the environment."),
         METADATA_DIFF_CANNOT_RESYNC_IMPORTED: vscode.l10n.t("Cannot refresh an imported comparison. Import a new file or run a new comparison."),
+        CLONE_SITE_NAME_PROMPT: vscode.l10n.t("Enter a name for the cloned site"),
+        CLONE_SITE_NAME_VALIDATION: vscode.l10n.t("Site name cannot be empty."),
+        CLONE_SITE_DOWNLOAD_FAILED: vscode.l10n.t("Failed to download the site for cloning. Please try again."),
+        CLONE_SITE_FAILED: vscode.l10n.t("Failed to clone the site. Please try again."),
+        UPLOAD_CLONED_SITE_FAILED: vscode.l10n.t("Failed to upload the cloned site. Please try again."),
+        CLONE_SITE_SUCCESS: vscode.l10n.t("Site cloned and uploaded successfully."),
     },
     /**
      * Functions that return localized strings with dynamic parameters.
@@ -509,6 +515,33 @@ export const Constants = {
                 args: [siteName],
                 comment: ["This is a markdown formatting which must persist across translations."]
             }),
+        /**
+         * Returns the progress message when cloning a site
+         */
+        CLONING_SITE: (siteName: string) =>
+            vscode.l10n.t({
+                message: "Cloning {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\"))...",
+                args: [siteName],
+                comment: ["This is a markdown formatting which must persist across translations."]
+            }),
+        /**
+         * Returns the progress message when downloading a site for cloning
+         */
+        DOWNLOADING_SITE_FOR_CLONE: (siteName: string) =>
+            vscode.l10n.t({
+                message: "Downloading {0} for cloning ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\"))...",
+                args: [siteName],
+                comment: ["This is a markdown formatting which must persist across translations."]
+            }),
+        /**
+         * Returns the progress message when uploading a cloned site
+         */
+        UPLOADING_CLONED_SITE: (siteName: string) =>
+            vscode.l10n.t({
+                message: "Uploading cloned site {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\"))...",
+                args: [siteName],
+                comment: ["This is a markdown formatting which must persist across translations."]
+            }),
     },
     EventNames: {
         ACTIONS_HUB_ENABLED: "ActionsHubEnabled",
@@ -666,6 +699,14 @@ export const Constants = {
         ACTIONS_HUB_PRE_AUTH_COMPLETED: "ActionsHubPreAuthCompleted",
         ACTIONS_HUB_PRE_AUTH_FAILED: "ActionsHubPreAuthFailed",
         ACTIONS_HUB_PRE_AUTH_SKIPPED: "ActionsHubPreAuthSkipped",
+        ACTIONS_HUB_CLONE_SITE_CALLED: "ActionsHubCloneSiteCalled",
+        ACTIONS_HUB_CLONE_SITE_DOWNLOAD_TRIGGERED: "ActionsHubCloneSiteDownloadTriggered",
+        ACTIONS_HUB_CLONE_SITE_DOWNLOAD_FAILED: "ActionsHubCloneSiteDownloadFailed",
+        ACTIONS_HUB_CLONE_SITE_PAC_TRIGGERED: "ActionsHubCloneSitePacTriggered",
+        ACTIONS_HUB_CLONE_SITE_FAILED: "ActionsHubCloneSiteFailed",
+        ACTIONS_HUB_CLONE_SITE_COMPLETED: "ActionsHubCloneSiteCompleted",
+        ACTIONS_HUB_UPLOAD_CLONED_SITE_PAC_TRIGGERED: "ActionsHubUploadClonedSitePacTriggered",
+        ACTIONS_HUB_UPLOAD_CLONED_SITE_FAILED: "ActionsHubUploadClonedSiteFailed",
     },
     StudioEndpoints: {
         TEST: "https://make.test.powerpages.microsoft.com",
