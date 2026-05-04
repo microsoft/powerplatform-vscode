@@ -515,7 +515,8 @@ describe("webExtensionTelemetry", () => {
             entityFileExtensionType: entityFileExtensionType,
             isSuccessful: "false",
             status: "200",
-            methodName: "sendAPIFailureTelemetry_withErrorMessage_shouldCallSendTelemetryException"
+            methodName: "sendAPIFailureTelemetry_withErrorMessage_shouldCallSendTelemetryException",
+            errorMessage: errorMessage
         };
 
         const measurements = {
