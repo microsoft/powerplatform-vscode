@@ -6,7 +6,7 @@
 import vscode from "vscode";
 import * as fetch from "node-fetch";
 import sinon, { stub, assert } from "sinon";
-import { saveData } from "../../dal/remoteSaveProvider";
+import { saveData, _resetFailedSaveParameterPaths } from "../../dal/remoteSaveProvider";
 import * as schemaHelperUtil from "../../utilities/schemaHelperUtil";
 import WebExtensionContext from "../../../client/WebExtensionContext";
 import { expect } from "chai";
@@ -20,6 +20,7 @@ import * as errorHandler from "../../../../common/utilities/errorHandlerUtil";
 describe("remoteSaveProvider", () => {
     afterEach(() => {
         sinon.restore();
+        _resetFailedSaveParameterPaths();
     });
     it("saveData_whenFetchRetrnsOKAndIsWebFileV2IsFalse_shouldCallAllSuccessTelemetryMethods", async () => {
         //Act
@@ -149,13 +150,55 @@ describe("remoteSaveProvider", () => {
         );
         assert.calledOnce(showErrorDialog);
         assert.calledOnce(sendErrorTelemetry);
-        assert.calledOnceWithExactly(
-            sendErrorTelemetry,
-            webExtensionTelemetryEventNames.WEB_EXTENSION_GET_SAVE_PARAMETERS_ERROR,
-            "getSaveParameters",
-            BAD_REQUEST
+        const sendErrorTelemetryCall = sendErrorTelemetry.getCalls()[0];
+        expect(sendErrorTelemetryCall.args[0]).eq(
+            webExtensionTelemetryEventNames.WEB_EXTENSION_GET_SAVE_PARAMETERS_ERROR
+        );
+        expect(sendErrorTelemetryCall.args[1]).eq("getSaveParameters");
+        expect(sendErrorTelemetryCall.args[2] as string).contains(BAD_REQUEST);
+        expect(sendErrorTelemetryCall.args[2] as string).contains("missing attributePath");
+        expect(sendErrorTelemetryCall.args[3]).instanceOf(Error);
+        expect((sendErrorTelemetryCall.args[3] as Error).message).eq(
+            sendErrorTelemetryCall.args[2] as string
         );
         assert.calledOnce(vscodeParse);
+    });
+
+    it("saveData_whenAttributePathIsNullAndCalledMultipleTimes_shouldShowDialogAndSendTelemetryOnlyOnce", async () => {
+        const fileUri: vscode.Uri = { fsPath: "dedupuri" } as vscode.Uri;
+
+        stub(vscode.Uri, "parse").returns({
+            fsPath: "dedupuri",
+        } as vscode.Uri);
+        stub(schemaHelperUtil, "isWebFileV2").returns(false);
+        WebExtensionContext.fileDataMap.setEntity(
+            "",
+            "",
+            "entityName",
+            "",
+            "",
+            "",
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            null as any,
+            true,
+            "pdf"
+        );
+
+        stub(urlBuilderUtil, "getRequestURL").returns(
+            "https://orgedfe4d6c.crm10.dynamics.com"
+        );
+        const sendErrorTelemetry = stub(
+            WebExtensionContext.telemetry,
+            "sendErrorTelemetry"
+        );
+        const showErrorDialog = stub(errorHandler, "showErrorDialog");
+
+        await saveData(fileUri);
+        await saveData(fileUri);
+        await saveData(fileUri);
+
+        assert.calledOnce(showErrorDialog);
+        assert.calledOnce(sendErrorTelemetry);
     });
 
     it("saveData_shouldCallAllSuccessTelemetryMethods_whenFetchReturnsNotOKAndIsWebFileV2IsFalse", async () => {
