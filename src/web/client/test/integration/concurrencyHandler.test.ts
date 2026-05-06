@@ -57,14 +57,15 @@ describe("ConcurrencyHandler", () => {
 
             // Should only attempt once - no retries for BulkheadRejectedError
             assert.calledOnce(fetchStub);
-            // Should log error telemetry for bulkhead rejection
+            // Should log error telemetry for bulkhead rejection with an Error
+            // object so executionSlots/retryCount actually land in the payload.
             assert.calledOnce(sendErrorTelemetryStub);
-            assert.calledWith(
-                sendErrorTelemetryStub,
-                webExtensionTelemetryEventNames.WEB_EXTENSION_BULKHEAD_QUEUE_FULL,
-                "handleRequest",
-                sinon.match.string
-            );
+            const call = sendErrorTelemetryStub.getCalls()[0];
+            expect(call.args[0]).to.equal(webExtensionTelemetryEventNames.WEB_EXTENSION_BULKHEAD_QUEUE_FULL);
+            expect(call.args[1]).to.equal("handleRequest");
+            expect(call.args[2]).to.match(/executionSlots:.*retryCount:/);
+            expect(call.args[3]).to.be.instanceOf(Error);
+            expect((call.args[3] as Error).message).to.equal(call.args[2] as string);
         });
 
         it("should pass request info and init to fetch", async () => {

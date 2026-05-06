@@ -51,10 +51,16 @@ export class ConcurrencyHandler {
             });
         } catch (e) {
             if (e instanceof BulkheadRejectedError) {
+                // Pass an Error object so sendErrorTelemetry actually persists
+                // executionSlots/retryCount into the event payload — without it,
+                // the telemetry layer drops the message string entirely and the
+                // event lands in Kusto with only {eventName, methodName}.
+                const msg = `executionSlots: ${this._bulkhead.executionSlots}, retryCount: ${retryCount}`;
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     webExtensionTelemetryEventNames.WEB_EXTENSION_BULKHEAD_QUEUE_FULL,
                     this.handleRequest.name,
-                    `executionSlots: ${this._bulkhead.executionSlots}, retryCount: ${retryCount}`,
+                    msg,
+                    new Error(msg)
                 );
                 throw new Error(ERROR_CONSTANTS.BULKHEAD_LIMITS_EXCEEDED);
             } else {
