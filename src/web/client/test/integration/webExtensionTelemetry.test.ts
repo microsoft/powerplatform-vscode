@@ -280,7 +280,8 @@ describe("webExtensionTelemetry", () => {
             entityFileExtensionType: entityFileExtensionType,
             methodName: "sendAPITelemetry_whenErrorMessageIsPassed_shouldCallSendTelemetryException",
             isSuccessful: "true",
-            status: "200"
+            status: "200",
+            errorMessage: errorMessage
         };
 
         //Action
@@ -514,7 +515,8 @@ describe("webExtensionTelemetry", () => {
             entityFileExtensionType: entityFileExtensionType,
             isSuccessful: "false",
             status: "200",
-            methodName: "sendAPIFailureTelemetry_withErrorMessage_shouldCallSendTelemetryException"
+            methodName: "sendAPIFailureTelemetry_withErrorMessage_shouldCallSendTelemetryException",
+            errorMessage: errorMessage
         };
 
         const measurements = {
