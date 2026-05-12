@@ -444,6 +444,31 @@
   "Replace": "Replace",
   "Comparison has been refreshed with the latest data from the environment.": "Comparison has been refreshed with the latest data from the environment.",
   "Cannot refresh an imported comparison. Import a new file or run a new comparison.": "Cannot refresh an imported comparison. Import a new file or run a new comparison.",
+  "Enter a name for the cloned site": "Enter a name for the cloned site",
+  "Site name cannot be empty.": "Site name cannot be empty.",
+  "Failed to download the site for cloning. Please try again.": "Failed to download the site for cloning. Please try again.",
+  "Failed to clone the site. Please try again.": "Failed to clone the site. Please try again.",
+  "Failed to upload the cloned site. Please try again.": "Failed to upload the cloned site. Please try again.",
+  "Clone site operation was cancelled.": "Clone site operation was cancelled.",
+  "Downloading site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\")).../This is a markdown formatting which must persist across translations.": {
+    "message": "Downloading site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\"))...",
+    "comment": [
+      "This is a markdown formatting which must persist across translations."
+    ]
+  },
+  "Cloning site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\")).../This is a markdown formatting which must persist across translations.": {
+    "message": "Cloning site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\"))...",
+    "comment": [
+      "This is a markdown formatting which must persist across translations."
+    ]
+  },
+  "Uploading site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\")).../This is a markdown formatting which must persist across translations.": {
+    "message": "Uploading site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\"))...",
+    "comment": [
+      "This is a markdown formatting which must persist across translations."
+    ]
+  },
+  "Show Details": "Show Details",
   "Fetching websites from '{0}'.../Message shown while fetching websites from an environment. {0} is the environment name.": {
     "message": "Fetching websites from '{0}'...",
     "comment": [
@@ -594,6 +619,24 @@
       "This is a markdown formatting which must persist across translations."
     ]
   },
+  "Uploading site to '{0}' environment ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\")).../Progress step shown while uploading a cloned Power Pages site. {0} is the target environment name. The markdown formatting must persist across translations.": {
+    "message": "Uploading site to '{0}' environment ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\"))...",
+    "comment": [
+      "Progress step shown while uploading a cloned Power Pages site. {0} is the target environment name. The markdown formatting must persist across translations."
+    ]
+  },
+  "Clone site: {0}/{0} is the source site name being cloned.": {
+    "message": "Clone site: {0}",
+    "comment": [
+      "{0} is the source site name being cloned."
+    ]
+  },
+  "Site '{0}' cloned and uploaded successfully./Shown after a Power Pages site is successfully cloned and uploaded. {0} is the name of the newly cloned site.": {
+    "message": "Site '{0}' cloned and uploaded successfully.",
+    "comment": [
+      "Shown after a Power Pages site is successfully cloned and uploaded. {0} is the name of the newly cloned site."
+    ]
+  },
   "Friendly name: {0}/{0} is the website name": {
     "message": "Friendly name: {0}",
     "comment": [
@@ -703,6 +746,8 @@
     ]
   },
   "Power Platform Tools: PAC CLI": "Power Platform Tools: PAC CLI",
+  "Command cancelled before start.": "Command cancelled before start.",
+  "Command cancelled.": "Command cancelled.",
   "Command completed successfully.": "Command completed successfully.",
   "PAC Telemetry enabled": "PAC Telemetry enabled",
   "Failed to enable PAC telemetry.": "Failed to enable PAC telemetry.",

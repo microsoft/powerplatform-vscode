@@ -106,16 +106,16 @@ export async function showInputBoxAndGetOrgUrl() {
     });
 }
 
-export async function showProgressWithNotification<T>(title: string, task: (progress: Progress<{
+export async function showProgressWithNotification<T>(title: string, cancellable: boolean, task: (progress: Progress<{
     message?: string;
     increment?: number;
-}>) => Promise<T>): Promise<T> {
+}>, token: vscode.CancellationToken) => Promise<T>): Promise<T> {
     return await vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
         title: title,
-        cancellable: false
-    }, async (progress) => {
-        return await task(progress);
+        cancellable: cancellable
+    }, async (progress, token) => {
+        return await task(progress, token);
     });
 }
 

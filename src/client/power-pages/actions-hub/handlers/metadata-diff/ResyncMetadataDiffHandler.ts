@@ -72,6 +72,7 @@ export const resyncMetadataDiff = (pacTerminal: PacTerminal, context: vscode.Ext
     if (siteItem.isCodeSite) {
         success = await showProgressWithNotification(
             Constants.StringFunctions.RESYNCING_SITE_COMPARISON(siteItem.siteName),
+            false,
             async () => pacWrapper.downloadCodeSiteWithProgress(
                 siteStoragePath,
                 siteItem.websiteId
@@ -80,6 +81,7 @@ export const resyncMetadataDiff = (pacTerminal: PacTerminal, context: vscode.Ext
     } else {
         success = await showProgressWithNotification(
             Constants.StringFunctions.RESYNCING_SITE_COMPARISON(siteItem.siteName),
+            false,
             async () => pacWrapper.downloadSiteWithProgress(
                 siteStoragePath,
                 siteItem.websiteId,
