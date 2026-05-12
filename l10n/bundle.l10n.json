@@ -200,9 +200,6 @@
   "Upload changes": "Upload changes",
   "The preview shown is for published changes. Please publish any pending changes to see them in the preview.": "The preview shown is for published changes. Please publish any pending changes to see them in the preview.",
   "Please login to preview the site.": "Please login to preview the site.",
-  "Enter the name of the web template": "Enter the name of the web template",
-  "Please enter a name for the web template.": "Please enter a name for the web template.",
-  "A webtemplate with the same name already exists. Please enter a different name.": "A webtemplate with the same name already exists. Please enter a different name.",
   "No page templates found": "No page templates found",
   "No webpages found": "No webpages found",
   "New Webpage": "New Webpage",
@@ -222,6 +219,9 @@
     ]
   },
   "Webfile(s) added successfully": "Webfile(s) added successfully",
+  "Enter the name of the web template": "Enter the name of the web template",
+  "Please enter a name for the web template.": "Please enter a name for the web template.",
+  "A webtemplate with the same name already exists. Please enter a different name.": "A webtemplate with the same name already exists. Please enter a different name.",
   "Page Template name cannot be empty.": "Page Template name cannot be empty.",
   "New Page Template": "New Page Template",
   "Choose web template": "Choose web template",
@@ -449,7 +449,26 @@
   "Failed to download the site for cloning. Please try again.": "Failed to download the site for cloning. Please try again.",
   "Failed to clone the site. Please try again.": "Failed to clone the site. Please try again.",
   "Failed to upload the cloned site. Please try again.": "Failed to upload the cloned site. Please try again.",
-  "Site cloned and uploaded successfully.": "Site cloned and uploaded successfully.",
+  "Clone site operation was cancelled.": "Clone site operation was cancelled.",
+  "Downloading site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\")).../This is a markdown formatting which must persist across translations.": {
+    "message": "Downloading site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\"))...",
+    "comment": [
+      "This is a markdown formatting which must persist across translations."
+    ]
+  },
+  "Cloning site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\")).../This is a markdown formatting which must persist across translations.": {
+    "message": "Cloning site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\"))...",
+    "comment": [
+      "This is a markdown formatting which must persist across translations."
+    ]
+  },
+  "Uploading site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\")).../This is a markdown formatting which must persist across translations.": {
+    "message": "Uploading site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\"))...",
+    "comment": [
+      "This is a markdown formatting which must persist across translations."
+    ]
+  },
+  "Show Details": "Show Details",
   "Fetching websites from '{0}'.../Message shown while fetching websites from an environment. {0} is the environment name.": {
     "message": "Fetching websites from '{0}'...",
     "comment": [
@@ -600,22 +619,22 @@
       "This is a markdown formatting which must persist across translations."
     ]
   },
-  "Cloning {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\")).../This is a markdown formatting which must persist across translations.": {
-    "message": "Cloning {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\"))...",
+  "Uploading site to '{0}' environment ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\")).../Progress step shown while uploading a cloned Power Pages site. {0} is the target environment name. The markdown formatting must persist across translations.": {
+    "message": "Uploading site to '{0}' environment ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\"))...",
     "comment": [
-      "This is a markdown formatting which must persist across translations."
+      "Progress step shown while uploading a cloned Power Pages site. {0} is the target environment name. The markdown formatting must persist across translations."
     ]
   },
-  "Downloading {0} for cloning ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\")).../This is a markdown formatting which must persist across translations.": {
-    "message": "Downloading {0} for cloning ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\"))...",
+  "Clone site: {0}/{0} is the source site name being cloned.": {
+    "message": "Clone site: {0}",
     "comment": [
-      "This is a markdown formatting which must persist across translations."
+      "{0} is the source site name being cloned."
     ]
   },
-  "Uploading cloned site {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\")).../This is a markdown formatting which must persist across translations.": {
-    "message": "Uploading cloned site {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\"))...",
+  "Site '{0}' cloned and uploaded successfully./Shown after a Power Pages site is successfully cloned and uploaded. {0} is the name of the newly cloned site.": {
+    "message": "Site '{0}' cloned and uploaded successfully.",
     "comment": [
-      "This is a markdown formatting which must persist across translations."
+      "Shown after a Power Pages site is successfully cloned and uploaded. {0} is the name of the newly cloned site."
     ]
   },
   "Friendly name: {0}/{0} is the website name": {
@@ -727,6 +746,8 @@
     ]
   },
   "Power Platform Tools: PAC CLI": "Power Platform Tools: PAC CLI",
+  "Command cancelled before start.": "Command cancelled before start.",
+  "Command cancelled.": "Command cancelled.",
   "Command completed successfully.": "Command completed successfully.",
   "PAC Telemetry enabled": "PAC Telemetry enabled",
   "Failed to enable PAC telemetry.": "Failed to enable PAC telemetry.",

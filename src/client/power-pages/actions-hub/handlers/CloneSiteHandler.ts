@@ -13,6 +13,8 @@ import { SiteTreeItem } from "../tree-items/SiteTreeItem";
 import { traceError, traceInfo } from "../TelemetryHelper";
 import { showProgressWithNotification } from "../../../../common/utilities/Utils";
 import { PacWrapper } from "../../../pac/PacWrapper";
+import { POWERPAGES_SITE_FOLDER, WEBSITE_YML } from "../../../../common/constants";
+import PacContext from "../../../pac/PacContext";
 import { v4 } from "uuid";
 
 /**
@@ -31,47 +33,112 @@ const createTempDirectories = (): { basePath: string; downloadPath: string; outp
 };
 
 /**
- * Finds the site content folder created by the download command.
- * The download command creates a subfolder named after the site inside the download path.
+ * Checks whether a directory looks like a Power Pages site root.
+ *
+ * A non-code site root contains `website.yml` directly.
+ * A code site root contains `.powerpages-site/website.yml`.
  */
-const findDownloadedSitePath = (downloadPath: string): string | undefined => {
-    const entries = fs.readdirSync(downloadPath, { withFileTypes: true });
-    const siteFolder = entries.find(entry => entry.isDirectory());
-    return siteFolder ? path.join(downloadPath, siteFolder.name) : undefined;
+const containsSiteRoot = (dirPath: string): boolean => {
+    return fs.existsSync(path.join(dirPath, WEBSITE_YML)) ||
+        fs.existsSync(path.join(dirPath, POWERPAGES_SITE_FOLDER, WEBSITE_YML));
 };
 
 /**
- * Downloads the site using the appropriate method based on site type.
+ * Finds the site content path produced by the pac CLI download/clone commands.
+ *
+ * The pac CLI produces one of these layouts inside the target directory:
+ *  - `pac pages download` (any site type): a single visible subfolder named
+ *    after the site, containing `website.yml` (or `.powerpages-site/website.yml`
+ *    for code sites).
+ *  - `pac pages clone` of a code site: a single visible subfolder containing
+ *    `.powerpages-site/website.yml`.
+ *  - `pac pages clone` of a non-code site: `website.yml` placed directly in
+ *    the output directory alongside several visible content subfolders such
+ *    as `basic-forms/`, `web-pages/`, `web-templates/`, `webfiles/`, and a
+ *    hidden `.portalconfig/` folder. None of those subfolders is the site
+ *    root — the output directory itself is.
+ *
+ * Detection is strictly marker-based: we look for `website.yml` (or
+ * `.powerpages-site/website.yml`) at the root first, then in each visible
+ * child folder. If no marker is found the result is `undefined`, which the
+ * caller surfaces as a clear download/clone failure rather than handing
+ * the upload step a wrong path.
  */
-const downloadSite = async (
-    pacWrapper: PacWrapper,
-    siteTreeItem: SiteTreeItem,
-    downloadPath: string
-): Promise<boolean> => {
-    if (siteTreeItem.siteInfo.isCodeSite) {
-        return await showProgressWithNotification(
-            Constants.StringFunctions.DOWNLOADING_SITE_FOR_CLONE(siteTreeItem.siteInfo.name),
-            async () => pacWrapper.downloadCodeSiteWithProgress(
-                downloadPath,
-                siteTreeItem.siteInfo.websiteId
-            )
-        );
+const findDownloadedSitePath = (rootPath: string): string | undefined => {
+    if (!fs.existsSync(rootPath)) {
+        return undefined;
     }
 
-    return await showProgressWithNotification(
-        Constants.StringFunctions.DOWNLOADING_SITE_FOR_CLONE(siteTreeItem.siteInfo.name),
-        async () => pacWrapper.downloadSiteWithProgress(
-            downloadPath,
-            siteTreeItem.siteInfo.websiteId,
-            siteTreeItem.siteInfo.dataModelVersion
-        )
-    );
+    if (containsSiteRoot(rootPath)) {
+        return rootPath;
+    }
+
+    const entries = fs.readdirSync(rootPath, { withFileTypes: true });
+
+    for (const entry of entries) {
+        if (!entry.isDirectory() || entry.name.startsWith(".")) {
+            continue;
+        }
+        const childPath = path.join(rootPath, entry.name);
+        if (containsSiteRoot(childPath)) {
+            return childPath;
+        }
+    }
+
+    return undefined;
+};
+
+/**
+ * Shows an error message with a "Show Details" action that opens the PAC CLI
+ * output channel, mirroring the inline `details` link used in progress notifications.
+ * Fire-and-forget so the caller isn't blocked waiting for the user to dismiss the toast.
+ */
+const showErrorWithDetails = (pacWrapper: PacWrapper, message: string): void => {
+    const showDetails = Constants.Strings.SHOW_DETAILS;
+    void vscode.window.showErrorMessage(message, showDetails).then((selection) => {
+        if (selection === showDetails) {
+            pacWrapper.showOutputChannel();
+        }
+    });
+};
+
+/**
+ * Outcome of the clone pipeline executed inside the single progress notification.
+ * Telemetry and the failure toast are emitted by the caller after the progress
+ * notification closes, so they don't visually overlap with the spinner.
+ */
+type CloneStepResult =
+    | { kind: "ok" }
+    | { kind: "cancelled" }
+    | { kind: "download-failed"; reason: string }
+    | { kind: "clone-failed"; reason: string }
+    | { kind: "upload-failed"; reason: string };
+
+/**
+ * Builds the progress step message used while uploading the cloned site.
+ * Falls back to a generic "Uploading site..." when the environment friendly
+ * name is missing, to avoid rendering an empty `'' environment` placeholder.
+ */
+const buildUploadingMessage = (environmentName: string): string => {
+    const trimmed = environmentName.trim();
+    return trimmed
+        ? Constants.StringFunctions.UPLOADING_CLONED_SITE_TO_ENV(trimmed)
+        : Constants.Strings.CLONE_SITE_UPLOADING;
 };
 
 /**
  * Clones a Power Pages site by downloading it to a temp location, cloning, and uploading.
  * The only user input required is the name for the cloned site.
- * Runs three PAC CLI commands sequentially with progress: download, clone, and upload.
+ *
+ * The full pipeline (download → clone → upload) runs inside a single VS Code
+ * progress notification titled "Clone site: {siteName}". Step transitions are
+ * surfaced via `progress.report({ message })`. The notification is cancellable —
+ * clicking Cancel kills the running `pac` child process, skips remaining steps,
+ * fires a cancellation telemetry event, and shows an info toast (no error).
+ *
+ * The progress callback returns a {@link CloneStepResult}; success/failure
+ * handling, telemetry, and the follow-up toast happen after the notification
+ * closes so they don't visually collide with the spinner.
  */
 export const cloneSite = (pacTerminal: PacTerminal) => async (siteTreeItem: SiteTreeItem): Promise<void> => {
     traceInfo(
@@ -100,108 +167,145 @@ export const cloneSite = (pacTerminal: PacTerminal) => async (siteTreeItem: Site
         tempBasePath = basePath;
 
         const pacWrapper = pacTerminal.getWrapper();
+        const environmentName = PacContext.AuthInfo?.OrganizationFriendlyName ?? "";
 
-        // Step 1: Download the site to a temp location
-        traceInfo(
-            Constants.EventNames.ACTIONS_HUB_CLONE_SITE_DOWNLOAD_TRIGGERED,
-            {
-                methodName: cloneSite.name,
-                siteId: siteTreeItem.siteInfo.websiteId,
-                dataModelVersion: siteTreeItem.siteInfo.dataModelVersion
+        const result = await showProgressWithNotification<CloneStepResult>(
+            Constants.StringFunctions.CLONE_SITE_PROGRESS_TITLE(siteTreeItem.siteInfo.name),
+            true,
+            async (progress, token) => {
+                if (token.isCancellationRequested) {
+                    return { kind: "cancelled" };
+                }
+
+                // Step 1: Download the site to a temp location
+                progress.report({ message: Constants.Strings.CLONE_SITE_DOWNLOADING });
+                traceInfo(
+                    Constants.EventNames.ACTIONS_HUB_CLONE_SITE_DOWNLOAD_TRIGGERED,
+                    {
+                        methodName: cloneSite.name,
+                        siteId: siteTreeItem.siteInfo.websiteId,
+                        dataModelVersion: siteTreeItem.siteInfo.dataModelVersion
+                    }
+                );
+
+                const downloadSuccess = siteTreeItem.siteInfo.isCodeSite
+                    ? await pacWrapper.downloadCodeSiteWithProgress(
+                        downloadPath,
+                        siteTreeItem.siteInfo.websiteId,
+                        undefined,
+                        token
+                    )
+                    : await pacWrapper.downloadSiteWithProgress(
+                        downloadPath,
+                        siteTreeItem.siteInfo.websiteId,
+                        siteTreeItem.siteInfo.dataModelVersion,
+                        undefined,
+                        undefined,
+                        token
+                    );
+
+                if (token.isCancellationRequested) {
+                    return { kind: "cancelled" };
+                }
+
+                if (!downloadSuccess) {
+                    return { kind: "download-failed", reason: "Download operation failed during clone" };
+                }
+
+                const sitePath = findDownloadedSitePath(downloadPath);
+                if (!sitePath) {
+                    return { kind: "download-failed", reason: "Downloaded site folder not found" };
+                }
+
+                // Step 2: Clone the downloaded site
+                progress.report({ message: Constants.Strings.CLONE_SITE_CLONING });
+                traceInfo(
+                    Constants.EventNames.ACTIONS_HUB_CLONE_SITE_PAC_TRIGGERED,
+                    {
+                        methodName: cloneSite.name,
+                        siteId: siteTreeItem.siteInfo.websiteId,
+                    }
+                );
+
+                const cloneSuccess = await pacWrapper.cloneSiteWithProgress(sitePath, outputPath, cloneName, token);
+
+                if (token.isCancellationRequested) {
+                    return { kind: "cancelled" };
+                }
+
+                if (!cloneSuccess) {
+                    return { kind: "clone-failed", reason: "Clone operation failed" };
+                }
+
+                const clonedSitePath = findDownloadedSitePath(outputPath);
+                if (!clonedSitePath) {
+                    return { kind: "clone-failed", reason: "Cloned site folder not found" };
+                }
+
+                // Step 3: Upload the cloned site
+                progress.report({ message: buildUploadingMessage(environmentName) });
+                traceInfo(
+                    Constants.EventNames.ACTIONS_HUB_UPLOAD_CLONED_SITE_PAC_TRIGGERED,
+                    {
+                        methodName: cloneSite.name,
+                        siteId: siteTreeItem.siteInfo.websiteId,
+                        dataModelVersion: siteTreeItem.siteInfo.dataModelVersion
+                    }
+                );
+
+                const uploadSuccess = siteTreeItem.siteInfo.isCodeSite
+                    ? await pacWrapper.uploadCodeSiteWithProgress(clonedSitePath, cloneName, token)
+                    : await pacWrapper.uploadSiteWithProgress(clonedSitePath, siteTreeItem.siteInfo.dataModelVersion.toString(), token);
+
+                if (token.isCancellationRequested) {
+                    return { kind: "cancelled" };
+                }
+
+                if (!uploadSuccess) {
+                    return { kind: "upload-failed", reason: "Upload of cloned site failed" };
+                }
+
+                return { kind: "ok" };
             }
         );
 
-        const downloadSuccess = await downloadSite(pacWrapper, siteTreeItem, downloadPath);
+        if (result.kind === "cancelled") {
+            traceInfo(
+                Constants.EventNames.ACTIONS_HUB_CLONE_SITE_CANCELLED,
+                { methodName: cloneSite.name, siteId: siteTreeItem.siteInfo.websiteId }
+            );
+            // Fire-and-forget so the cancellation toast doesn't block cleanup.
+            void vscode.window.showInformationMessage(Constants.Strings.CLONE_SITE_CANCELLED);
+            return;
+        }
 
-        if (!downloadSuccess) {
+        if (result.kind === "download-failed") {
             traceError(
                 Constants.EventNames.ACTIONS_HUB_CLONE_SITE_DOWNLOAD_FAILED,
-                new Error("Download operation failed during clone"),
+                new Error(result.reason),
                 { methodName: cloneSite.name, siteId: siteTreeItem.siteInfo.websiteId }
             );
-            await vscode.window.showErrorMessage(Constants.Strings.CLONE_SITE_DOWNLOAD_FAILED);
+            showErrorWithDetails(pacWrapper, Constants.Strings.CLONE_SITE_DOWNLOAD_FAILED);
             return;
         }
 
-        // Find the site folder created by the download
-        const sitePath = findDownloadedSitePath(downloadPath);
-        if (!sitePath) {
-            traceError(
-                Constants.EventNames.ACTIONS_HUB_CLONE_SITE_DOWNLOAD_FAILED,
-                new Error("Downloaded site folder not found"),
-                { methodName: cloneSite.name, siteId: siteTreeItem.siteInfo.websiteId }
-            );
-            await vscode.window.showErrorMessage(Constants.Strings.CLONE_SITE_DOWNLOAD_FAILED);
-            return;
-        }
-
-        // Step 2: Clone the downloaded site
-        traceInfo(
-            Constants.EventNames.ACTIONS_HUB_CLONE_SITE_PAC_TRIGGERED,
-            {
-                methodName: cloneSite.name,
-                siteId: siteTreeItem.siteInfo.websiteId,
-            }
-        );
-
-        const cloneSuccess = await showProgressWithNotification(
-            Constants.StringFunctions.CLONING_SITE(siteTreeItem.siteInfo.name),
-            async () => pacWrapper.cloneSiteWithProgress(sitePath, outputPath, cloneName)
-        );
-
-        if (!cloneSuccess) {
+        if (result.kind === "clone-failed") {
             traceError(
                 Constants.EventNames.ACTIONS_HUB_CLONE_SITE_FAILED,
-                new Error("Clone operation failed"),
+                new Error(result.reason),
                 { methodName: cloneSite.name, siteId: siteTreeItem.siteInfo.websiteId }
             );
-            await vscode.window.showErrorMessage(Constants.Strings.CLONE_SITE_FAILED);
+            showErrorWithDetails(pacWrapper, Constants.Strings.CLONE_SITE_FAILED);
             return;
         }
 
-        // Find the cloned site folder created by the clone command
-        const clonedSitePath = findDownloadedSitePath(outputPath);
-        if (!clonedSitePath) {
-            traceError(
-                Constants.EventNames.ACTIONS_HUB_CLONE_SITE_FAILED,
-                new Error("Cloned site folder not found"),
-                { methodName: cloneSite.name, siteId: siteTreeItem.siteInfo.websiteId }
-            );
-            await vscode.window.showErrorMessage(Constants.Strings.CLONE_SITE_FAILED);
-            return;
-        }
-
-        // Step 3: Upload the cloned site
-        traceInfo(
-            Constants.EventNames.ACTIONS_HUB_UPLOAD_CLONED_SITE_PAC_TRIGGERED,
-            {
-                methodName: cloneSite.name,
-                siteId: siteTreeItem.siteInfo.websiteId,
-                dataModelVersion: siteTreeItem.siteInfo.dataModelVersion
-            }
-        );
-
-        let uploadSuccess: boolean;
-
-        if (siteTreeItem.siteInfo.isCodeSite) {
-            uploadSuccess = await showProgressWithNotification(
-                Constants.StringFunctions.UPLOADING_CLONED_SITE(cloneName),
-                async () => pacWrapper.uploadCodeSiteWithProgress(clonedSitePath, cloneName)
-            );
-        } else {
-            uploadSuccess = await showProgressWithNotification(
-                Constants.StringFunctions.UPLOADING_CLONED_SITE(cloneName),
-                async () => pacWrapper.uploadSiteWithProgress(clonedSitePath, siteTreeItem.siteInfo.dataModelVersion.toString())
-            );
-        }
-
-        if (!uploadSuccess) {
+        if (result.kind === "upload-failed") {
             traceError(
                 Constants.EventNames.ACTIONS_HUB_UPLOAD_CLONED_SITE_FAILED,
-                new Error("Upload of cloned site failed"),
+                new Error(result.reason),
                 { methodName: cloneSite.name, siteId: siteTreeItem.siteInfo.websiteId }
             );
-            await vscode.window.showErrorMessage(Constants.Strings.UPLOAD_CLONED_SITE_FAILED);
+            showErrorWithDetails(pacWrapper, Constants.Strings.UPLOAD_CLONED_SITE_FAILED);
             return;
         }
 
@@ -213,10 +317,13 @@ export const cloneSite = (pacTerminal: PacTerminal) => async (siteTreeItem: Site
             }
         );
 
-        await vscode.window.showInformationMessage(Constants.Strings.CLONE_SITE_SUCCESS);
-
-        // Refresh the Actions Hub tree to show the newly cloned site
+        // Refresh the Actions Hub tree to show the newly cloned site.
+        // This must run before showing the success message because awaiting
+        // showInformationMessage blocks until the notification is dismissed.
         await vscode.commands.executeCommand("microsoft.powerplatform.pages.actionsHub.refresh");
+
+        // Fire-and-forget the success notification so it doesn't block subsequent work.
+        void vscode.window.showInformationMessage(Constants.StringFunctions.CLONE_SITE_SUCCESS(cloneName));
     } catch (error) {
         traceError(
             Constants.EventNames.ACTIONS_HUB_CLONE_SITE_FAILED,

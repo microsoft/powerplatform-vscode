@@ -48,11 +48,14 @@ describe('RunCodeQlScreeningHandler', () => {
             mockShowWarningMessage = sandbox.stub(vscode.window, 'showWarningMessage');
             mockGetExtension = sandbox.stub(vscode.extensions, 'getExtension');
             mockExecuteCommand = sandbox.stub(vscode.commands, 'executeCommand');
-            mockShowProgressNotification = sandbox.stub(Utils, 'showProgressWithNotification').callsFake(async (title: string, task: (progress: vscode.Progress<{
+            mockShowProgressNotification = sandbox.stub(Utils, 'showProgressWithNotification').callsFake(async (title: string, _cancellable: boolean, task: (progress: vscode.Progress<{
                 message?: string;
                 increment?: number;
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            }>) => Promise<any>) => await task({} as unknown as vscode.Progress<{ message?: string; increment?: number }>));
+            }>, token: vscode.CancellationToken) => Promise<any>) => await task(
+                {} as unknown as vscode.Progress<{ message?: string; increment?: number }>,
+                { isCancellationRequested: false, onCancellationRequested: () => ({ dispose: () => { /* noop */ } }) } as unknown as vscode.CancellationToken
+            ));
 
             // Mock CodeQLAction constructor and methods
             mockCodeQLAction = {

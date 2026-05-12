@@ -23,7 +23,7 @@ export interface IPacWrapperContext {
 
 export interface IPacInterop {
     executeCommand(args: PacArguments): Promise<string>;
-    executeCommandWithProgress(args: PacArguments): Promise<boolean>;
+    executeCommandWithProgress(args: PacArguments, cancellationToken?: vscode.CancellationToken): Promise<boolean>;
     exit(): void;
     showOutputChannel(): void;
 }
@@ -132,13 +132,29 @@ export class PacInterop implements IPacInterop {
     /**
      * Executes a PAC command with output streamed to a VS Code Output Channel.
      * This allows the user to see progress in real-time while still awaiting completion.
+     *
+     * When a {@link vscode.CancellationToken} is supplied and fires, the spawned
+     * `pac` child process is killed and the returned promise resolves to `false`.
+     * The promise is only resolved from the `close`/`error` handlers (never from
+     * the cancellation callback itself), so callers can safely run cleanup code
+     * — for example deleting temp directories — after the promise resolves
+     * without racing the still-exiting child process.
+     *
      * @param args The PAC command arguments
-     * @returns Promise that resolves to true if command succeeded, false otherwise
+     * @param cancellationToken Optional token used to abort the running command
+     * @returns Promise that resolves to true if command succeeded, false on failure or cancellation
      */
-    public async executeCommandWithProgress(args: PacArguments): Promise<boolean> {
+    public async executeCommandWithProgress(args: PacArguments, cancellationToken?: vscode.CancellationToken): Promise<boolean> {
         const command = `pac ${args.Arguments.join(" ")}`;
 
         this.outputChannel.info(vscode.l10n.t("Executing: {0}", command));
+
+        // Honor a token that is already cancelled before we spawn — avoids
+        // launching a process the caller doesn't actually want.
+        if (cancellationToken?.isCancellationRequested) {
+            this.outputChannel.info(vscode.l10n.t("Command cancelled before start."));
+            return false;
+        }
 
         return new Promise((resolve) => {
             const env: NodeJS.ProcessEnv = { ...process.env, 'PP_TOOLS_AUTOMATION_AGENT': this.context.automationAgent };
@@ -158,6 +174,35 @@ export class PacInterop implements IPacInterop {
                 stdio: ['pipe', 'pipe', 'pipe']
             });
 
+            // Track cancellation + completion separately so the close/error
+            // handlers can produce the right message and we never resolve twice.
+            // The `pac` subcommands invoked through this method (pages
+            // download/clone/upload/...) run as a single .NET process and do
+            // not spawn child processes, so killing the direct PID is enough
+            // on both Windows and Unix.
+            let settled = false;
+            let cancelled = false;
+            const finalize = (result: boolean) => {
+                if (settled) {
+                    return;
+                }
+                settled = true;
+                cancellationListener?.dispose();
+                resolve(result);
+            };
+
+            const cancellationListener = cancellationToken?.onCancellationRequested(() => {
+                if (settled) {
+                    return;
+                }
+                cancelled = true;
+                try {
+                    proc.kill();
+                } catch {
+                    // Process may already have exited; close handler will run finalize.
+                }
+            });
+
             proc.stdout?.on('data', (data: Buffer) => {
                 const output = data.toString().trim();
                 if (output) {
@@ -173,18 +218,23 @@ export class PacInterop implements IPacInterop {
             });
 
             proc.on('close', (code: number) => {
+                if (cancelled) {
+                    this.outputChannel.info(vscode.l10n.t("Command cancelled."));
+                    finalize(false);
+                    return;
+                }
                 if (code === 0) {
                     this.outputChannel.info(vscode.l10n.t("Command completed successfully."));
-                    resolve(true);
+                    finalize(true);
                 } else {
                     this.outputChannel.error(vscode.l10n.t("Command failed with exit code: {0}", code.toString()));
-                    resolve(false);
+                    finalize(false);
                 }
             });
 
             proc.on('error', (error: Error) => {
                 this.outputChannel.error(vscode.l10n.t("Process error: {0}", error.message));
-                resolve(false);
+                finalize(false);
             });
         });
     }
@@ -314,7 +364,8 @@ export class PacWrapper {
         websiteId: string,
         dataModelVersion: 1 | 2,
         environmentUrl?: string,
-        includeEntities?: string[]
+        includeEntities?: string[],
+        cancellationToken?: vscode.CancellationToken
     ): Promise<boolean> {
         const pacArguments = ["pages", "download", "--path", downloadPath, "--webSiteId", websiteId, "--modelVersion", dataModelVersion.toString(), "--overwrite"];
 
@@ -327,7 +378,8 @@ export class PacWrapper {
         }
 
         return this.pacInterop.executeCommandWithProgress(
-            new PacArguments(...pacArguments)
+            new PacArguments(...pacArguments),
+            cancellationToken
         );
     }
 
@@ -342,7 +394,8 @@ export class PacWrapper {
     public async downloadCodeSiteWithProgress(
         downloadPath: string,
         websiteId: string,
-        environmentUrl?: string
+        environmentUrl?: string,
+        cancellationToken?: vscode.CancellationToken
     ): Promise<boolean> {
         const pacArguments = ["pages", "download-code-site", "--path", downloadPath, "--webSiteId", websiteId, "--overwrite"];
 
@@ -351,7 +404,8 @@ export class PacWrapper {
         }
 
         return this.pacInterop.executeCommandWithProgress(
-            new PacArguments(...pacArguments)
+            new PacArguments(...pacArguments),
+            cancellationToken
         );
     }
 
@@ -365,12 +419,14 @@ export class PacWrapper {
     public async cloneSiteWithProgress(
         sourcePath: string,
         outputDirectory: string,
-        name: string
+        name: string,
+        cancellationToken?: vscode.CancellationToken
     ): Promise<boolean> {
         const pacArguments = ["pages", "clone", "--path", sourcePath, "--outputDirectory", outputDirectory, "--name", name, "--overwrite"];
 
         return this.pacInterop.executeCommandWithProgress(
-            new PacArguments(...pacArguments)
+            new PacArguments(...pacArguments),
+            cancellationToken
         );
     }
 
@@ -382,12 +438,14 @@ export class PacWrapper {
      */
     public async uploadSiteWithProgress(
         uploadPath: string,
-        modelVersion: string
+        modelVersion: string,
+        cancellationToken?: vscode.CancellationToken
     ): Promise<boolean> {
         const pacArguments = ["pages", "upload", "--path", uploadPath, "--modelVersion", modelVersion];
 
         return this.pacInterop.executeCommandWithProgress(
-            new PacArguments(...pacArguments)
+            new PacArguments(...pacArguments),
+            cancellationToken
         );
     }
 
@@ -399,12 +457,14 @@ export class PacWrapper {
      */
     public async uploadCodeSiteWithProgress(
         rootPath: string,
-        siteName: string
+        siteName: string,
+        cancellationToken?: vscode.CancellationToken
     ): Promise<boolean> {
         const pacArguments = ["pages", "upload-code-site", "--rootPath", rootPath, "--siteName", siteName];
 
         return this.pacInterop.executeCommandWithProgress(
-            new PacArguments(...pacArguments)
+            new PacArguments(...pacArguments),
+            cancellationToken
         );
     }
 

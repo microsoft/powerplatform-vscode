@@ -5,6 +5,7 @@
 
 import { expect } from "chai";
 import * as sinon from "sinon";
+import * as vscode from "vscode";
 import { IPacInterop, IPacWrapperContext, PacArguments, PacWrapper } from "../../pac/PacWrapper";
 
 class MockContext implements IPacWrapperContext {
@@ -24,7 +25,7 @@ class MockPacInterop implements IPacInterop {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public async executeCommandWithProgress(args: PacArguments): Promise<boolean> {
+    public async executeCommandWithProgress(args: PacArguments, cancellationToken?: vscode.CancellationToken): Promise<boolean> {
         return this.executeCommandWithProgressReturnValue;
     }
 

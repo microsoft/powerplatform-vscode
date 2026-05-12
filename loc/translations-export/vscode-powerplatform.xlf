@@ -207,8 +207,15 @@ The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).
     <trans-unit id="++CODE++ee9d4bb8e9f94832366fe390fde5efc4b555d1464ef6023d3c0b25de58223bcc">
       <source xml:lang="en">Click to compare your local site with an environment</source>
     </trans-unit>
-    <trans-unit id="++CODE++f4dc565bb17826694eb9fcd99f8648b28f0846a0c284cd4e58b9edf54e10c0b8">
-      <source xml:lang="en">Cloning {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel &quot;Show output&quot;))...</source>
+    <trans-unit id="++CODE++4b1ae6bccb093928e855eacab16ac93a836c4b20fc7a5f20ac89b18bb37fc631">
+      <source xml:lang="en">Clone site operation was cancelled.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++d2201cc8d5c82105c7229f5b76b6b7203fdba3fdf9e2b26d2feeeddd83471b2b">
+      <source xml:lang="en">Clone site: {0}</source>
+      <note>{0} is the source site name being cloned.</note>
+    </trans-unit>
+    <trans-unit id="++CODE++53ad2aa1718ebe7e0d2059930bface27750effcfab0603a00d67384b8e373af2">
+      <source xml:lang="en">Cloning site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel &quot;Show output&quot;))...</source>
       <note>This is a markdown formatting which must persist across translations.</note>
     </trans-unit>
     <trans-unit id="++CODE++7d9eb7acb13e24625c404401d8e88b2350e32162455885f18276cf802f7701ed">
@@ -276,6 +283,12 @@ Check the CodeQL extension panel for available queries.</source>
     </trans-unit>
     <trans-unit id="++CODE++55988e28a4e8720a588c5c53fd47616d929a404d3d2af7e6f8ba313dce6dc3e4">
       <source xml:lang="en">Collapse All</source>
+    </trans-unit>
+    <trans-unit id="++CODE++22111a035515fb81f145b68ef772080487d23fee7e699bf7ea9a6ae748883936">
+      <source xml:lang="en">Command cancelled before start.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++4482caab76c70b9f064cda7fe290884623c91fb1bfa1c402c404a4018115b2dd">
+      <source xml:lang="en">Command cancelled.</source>
     </trans-unit>
     <trans-unit id="++CODE++1fb4405a792e9eb077d2bd96517eca8d81fc43bc251d5589e9d959fd07c8f31d">
       <source xml:lang="en">Command completed successfully (exit code: {0})</source>
@@ -446,8 +459,8 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++f945885439672eb379c73eb7c9124496311c6ef5b3b04cd23ea0a1c146225b84">
       <source xml:lang="en">Download is complete. You can now view the report.</source>
     </trans-unit>
-    <trans-unit id="++CODE++fffbb03cf1a55ff063135b76fbde5be6bda25b0dde1bbfb1e88e2c90e7a49db5">
-      <source xml:lang="en">Downloading {0} for cloning ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel &quot;Show output&quot;))...</source>
+    <trans-unit id="++CODE++93ca8a73b9dd7ac7d502cfa38ff9fea7a998bd3afbf37c12dfe57bf1fee9a8f1">
+      <source xml:lang="en">Downloading site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel &quot;Show output&quot;))...</source>
       <note>This is a markdown formatting which must persist across translations.</note>
     </trans-unit>
     <trans-unit id="++CODE++a5a4f0d8975940cbed234f9a5ee740f24e2b82f03a5b13e43f316b8395336e50">
@@ -1154,6 +1167,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
       <source xml:lang="en">Session ID: {0}</source>
       <note>{0} is the Session ID</note>
     </trans-unit>
+    <trans-unit id="++CODE++a525be98c4abc148f352c9f9069ef7adf9dccd3047d6d92cfd49282d7ac71ba4">
+      <source xml:lang="en">Show Details</source>
+    </trans-unit>
     <trans-unit id="++CODE++b874846bfcc51aecfc0366c676894ca6aa980e7f8de9a6632bb6ade00b49bc47">
       <source xml:lang="en">Show Diff</source>
     </trans-unit>
@@ -1162,6 +1178,10 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++2f65ba5aa38a9acac3a9a9c0a9aeecd7b32796008dc63432bedbe6ef62982558">
       <source xml:lang="en">Sign in to VS Code with PAC CLI account</source>
+    </trans-unit>
+    <trans-unit id="++CODE++dc0613d28f94bf678558a9c94ea3be0fcc680181b4132b9a7d01d2ea5d558700">
+      <source xml:lang="en">Site '{0}' cloned and uploaded successfully.</source>
+      <note>Shown after a Power Pages site is successfully cloned and uploaded. {0} is the name of the newly cloned site.</note>
     </trans-unit>
     <trans-unit id="++CODE++413f481712d78c8cce54fc6b1ef2da1b4e35e9584c11fcdc51509c19017e2812">
       <source xml:lang="en">Site Comparison</source>
@@ -1180,9 +1200,6 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++4b7de12dbef5cc145cf5b8b08743a60d279d6ee27b8b13470e5f06bc21153867">
       <source xml:lang="en">Site Visibility:</source>
-    </trans-unit>
-    <trans-unit id="++CODE++71e1fa4c68253a5585e75524dada5f31033093e4951035be5c7c7a400bd03246">
-      <source xml:lang="en">Site cloned and uploaded successfully.</source>
     </trans-unit>
     <trans-unit id="++CODE++4fa72d80ab1b04e31f450bacc89bff526a5e52e3d104d153b3b493b108330b3c">
       <source xml:lang="en">Site download cancelled. Authentication is required to proceed.</source>
@@ -1381,9 +1398,13 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++8a91e7caf57148c6be78b3986477464b36f0282a9e9a09b635b0db4fe6246132">
       <source xml:lang="en">Upload failed. Please try again later.</source>
     </trans-unit>
-    <trans-unit id="++CODE++3e92a050764a35e5cd81e04d745b698f7a42759d6729256791f7740fee62f6a9">
-      <source xml:lang="en">Uploading cloned site {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel &quot;Show output&quot;))...</source>
+    <trans-unit id="++CODE++920e379f234bd08346445db66f6a8eafc99b8b453405c8ffa02abbaba57b6a46">
+      <source xml:lang="en">Uploading site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel &quot;Show output&quot;))...</source>
       <note>This is a markdown formatting which must persist across translations.</note>
+    </trans-unit>
+    <trans-unit id="++CODE++a9616a6573ea58ef45f46299887395ee6b3b36585c482f982718e15dc718de78">
+      <source xml:lang="en">Uploading site to '{0}' environment ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel &quot;Show output&quot;))...</source>
+      <note>Progress step shown while uploading a cloned Power Pages site. {0} is the target environment name. The markdown formatting must persist across translations.</note>
     </trans-unit>
     <trans-unit id="++CODE++037bfba715811960dfb62b81a99d5002835f73a9c44bdd6661ebc222d8538e2b">
       <source xml:lang="en">Use File → Open Folder to select a folder with a Power Pages site</source>

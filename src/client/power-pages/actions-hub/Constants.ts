@@ -282,7 +282,20 @@ export const Constants = {
         CLONE_SITE_DOWNLOAD_FAILED: vscode.l10n.t("Failed to download the site for cloning. Please try again."),
         CLONE_SITE_FAILED: vscode.l10n.t("Failed to clone the site. Please try again."),
         UPLOAD_CLONED_SITE_FAILED: vscode.l10n.t("Failed to upload the cloned site. Please try again."),
-        CLONE_SITE_SUCCESS: vscode.l10n.t("Site cloned and uploaded successfully."),
+        CLONE_SITE_CANCELLED: vscode.l10n.t("Clone site operation was cancelled."),
+        CLONE_SITE_DOWNLOADING: vscode.l10n.t({
+            message: "Downloading site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\"))...",
+            comment: ["This is a markdown formatting which must persist across translations."]
+        }),
+        CLONE_SITE_CLONING: vscode.l10n.t({
+            message: "Cloning site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\"))...",
+            comment: ["This is a markdown formatting which must persist across translations."]
+        }),
+        CLONE_SITE_UPLOADING: vscode.l10n.t({
+            message: "Uploading site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\"))...",
+            comment: ["This is a markdown formatting which must persist across translations."]
+        }),
+        SHOW_DETAILS: vscode.l10n.t("Show Details"),
     },
     /**
      * Functions that return localized strings with dynamic parameters.
@@ -516,31 +529,34 @@ export const Constants = {
                 comment: ["This is a markdown formatting which must persist across translations."]
             }),
         /**
-         * Returns the progress message when cloning a site
+         * Returns the progress message when uploading the cloned site to a target environment.
+         * Used as the step message in the single Clone Site progress notification.
          */
-        CLONING_SITE: (siteName: string) =>
+        UPLOADING_CLONED_SITE_TO_ENV: (environmentName: string) =>
             vscode.l10n.t({
-                message: "Cloning {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\"))...",
-                args: [siteName],
-                comment: ["This is a markdown formatting which must persist across translations."]
+                message: "Uploading site to '{0}' environment ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\"))...",
+                args: [environmentName],
+                comment: ["Progress step shown while uploading a cloned Power Pages site. {0} is the target environment name. The markdown formatting must persist across translations."]
             }),
         /**
-         * Returns the progress message when downloading a site for cloning
+         * Returns the progress notification title for the Clone Site operation.
+         * The persistent title shown across all steps (downloading, cloning, uploading).
          */
-        DOWNLOADING_SITE_FOR_CLONE: (siteName: string) =>
+        CLONE_SITE_PROGRESS_TITLE: (siteName: string) =>
             vscode.l10n.t({
-                message: "Downloading {0} for cloning ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\"))...",
+                message: "Clone site: {0}",
                 args: [siteName],
-                comment: ["This is a markdown formatting which must persist across translations."]
+                comment: ["{0} is the source site name being cloned."]
             }),
         /**
-         * Returns the progress message when uploading a cloned site
+         * Returns the success notification shown after the clone pipeline completes.
+         * {0} is the name the user picked for the new cloned site.
          */
-        UPLOADING_CLONED_SITE: (siteName: string) =>
+        CLONE_SITE_SUCCESS: (cloneName: string) =>
             vscode.l10n.t({
-                message: "Uploading cloned site {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show output\"))...",
-                args: [siteName],
-                comment: ["This is a markdown formatting which must persist across translations."]
+                message: "Site '{0}' cloned and uploaded successfully.",
+                args: [cloneName],
+                comment: ["Shown after a Power Pages site is successfully cloned and uploaded. {0} is the name of the newly cloned site."]
             }),
     },
     EventNames: {
@@ -705,6 +721,7 @@ export const Constants = {
         ACTIONS_HUB_CLONE_SITE_PAC_TRIGGERED: "ActionsHubCloneSitePacTriggered",
         ACTIONS_HUB_CLONE_SITE_FAILED: "ActionsHubCloneSiteFailed",
         ACTIONS_HUB_CLONE_SITE_COMPLETED: "ActionsHubCloneSiteCompleted",
+        ACTIONS_HUB_CLONE_SITE_CANCELLED: "ActionsHubCloneSiteCancelled",
         ACTIONS_HUB_UPLOAD_CLONED_SITE_PAC_TRIGGERED: "ActionsHubUploadClonedSitePacTriggered",
         ACTIONS_HUB_UPLOAD_CLONED_SITE_FAILED: "ActionsHubUploadClonedSiteFailed",
     },

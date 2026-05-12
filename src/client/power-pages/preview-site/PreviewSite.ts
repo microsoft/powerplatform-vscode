@@ -140,6 +140,7 @@ export class PreviewSite {
 
         await showProgressWithNotification(
             Messages.OPENING_SITE_PREVIEW,
+            false,
             async () => {
                 PreviewSite.closeExistingPreview();
                 await vscode.commands.executeCommand('vscode-edge-devtools.launch', { launchUrl: webSitePreviewURL });
@@ -240,6 +241,7 @@ export class PreviewSite {
 
         await showProgressWithNotification(
             Messages.INITIALIZING_PREVIEW,
+            false,
             async (progress) => {
                 progress.report({ message: Messages.CLEARING_CACHE });
 
@@ -282,6 +284,7 @@ export class PreviewSite {
 
             await showProgressWithNotification(
                 Messages.INITIALIZING_PREVIEW,
+                false,
                 async (progress) => {
                     progress.report({ message: Messages.GETTING_REGION_INFORMATION });
 
