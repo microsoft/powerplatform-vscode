@@ -59,7 +59,7 @@ export type OrgListOutput = {
         Id: string
     },
     EnvironmentUrl: string,
-    IsActive: boolean,
+    IsActive?: boolean,
     UniqueName: string
 }
 
