@@ -22,7 +22,8 @@ export function RegisterBasicPanels(pacWrapper: PacWrapper): vscode.Disposable[]
         () => pacWrapper.orgList(),
         (environmentUrl) => pacWrapper.solutionListFromEnvironment(environmentUrl),
         authPanel.onDidChangeTreeData,
-        pacWrapper);
+        pacWrapper,
+        () => pacWrapper.activeOrg());
 
     return [authPanel, envAndSolutionPanel];
 }

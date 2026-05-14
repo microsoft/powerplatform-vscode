@@ -4,8 +4,10 @@
  */
 
 import * as vscode from 'vscode';
-import { OrgListOutput, PacOrgListOutput, PacSolutionListOutput, SolutionListing } from '../pac/PacTypes';
+import { oneDSLoggerWrapper } from '../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
+import { ActiveOrgOutput, OrgListOutput, PacOrgListOutput, PacOrgWhoOutput, PacSolutionListOutput, SolutionListing } from '../pac/PacTypes';
 import { PacWrapper } from '../pac/PacWrapper';
+import { getActiveOrgFromOutput, isActiveEnvironment } from './EnvironmentSelection';
 
 export class EnvAndSolutionTreeView implements vscode.TreeDataProvider<EnvOrSolutionTreeItem>, vscode.Disposable {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -17,7 +19,8 @@ export class EnvAndSolutionTreeView implements vscode.TreeDataProvider<EnvOrSolu
         public readonly envDataSource: () => Promise<PacOrgListOutput>,
         public readonly solutionDataSource: (environmentUrl: string) => Promise<PacSolutionListOutput>,
         authChanged: vscode.Event<unknown>,
-        pacWrapper: PacWrapper){
+        pacWrapper: PacWrapper,
+        private readonly activeOrgDataSource?: () => Promise<PacOrgWhoOutput>){
 
         this._disposables.push(...this.registerPanel(pacWrapper),
             authChanged(() => this.refresh()));
@@ -53,9 +56,13 @@ export class EnvAndSolutionTreeView implements vscode.TreeDataProvider<EnvOrSolu
     public async getChildren(element?: EnvOrSolutionTreeItem): Promise<EnvOrSolutionTreeItem[]> {
         if (!element) {
             // root
-            const envOutput = await this.envDataSource();
+            const [envOutput, activeOrgOutput] = await Promise.all([
+                this.envDataSource(),
+                this.getActiveOrgOutput()
+            ]);
             if (envOutput && envOutput.Status === "Success" && envOutput.Results) {
-                return envOutput.Results.map(item => new EnvOrSolutionTreeItem(item))
+                const activeOrg = getActiveOrgFromOutput(activeOrgOutput);
+                return envOutput.Results.map(item => new EnvOrSolutionTreeItem(item, activeOrg))
             } else {
                 return [];
             }
@@ -104,10 +111,24 @@ export class EnvAndSolutionTreeView implements vscode.TreeDataProvider<EnvOrSolu
             })
         ];
     }
+
+    private async getActiveOrgOutput(): Promise<PacOrgWhoOutput | undefined> {
+        if (!this.activeOrgDataSource) {
+            return undefined;
+        }
+
+        try {
+            return await this.activeOrgDataSource();
+        } catch (error) {
+            const exceptionError = error instanceof Error ? error : new Error(String(error));
+            oneDSLoggerWrapper.getLogger().traceError('EnvAndSolutionActiveOrgLoadFailed', exceptionError.message, exceptionError);
+            return undefined;
+        }
+    }
 }
 
 class EnvOrSolutionTreeItem extends vscode.TreeItem {
-    constructor(public readonly model: OrgListOutput | SolutionListing){
+    constructor(public readonly model: OrgListOutput | SolutionListing, activeOrg?: ActiveOrgOutput){
         super(EnvOrSolutionTreeItem.createLabel(model), EnvOrSolutionTreeItem.setCollapsibleState(model));
         if ("SolutionUniqueName" in model) {
             this.contextValue = "SOLUTION";
@@ -145,7 +166,7 @@ class EnvOrSolutionTreeItem extends vscode.TreeItem {
                     ]
                 }
             );
-            if (model.IsActive) {
+            if (isActiveEnvironment(model, activeOrg)) {
                 this.iconPath = new vscode.ThemeIcon("star-full");
             }
         }
