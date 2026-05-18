@@ -278,17 +278,17 @@ The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).
       </trans-unit>
       <trans-unit id="++CODE++4b1ae6bccb093928e855eacab16ac93a836c4b20fc7a5f20ac89b18bb37fc631">
         <source xml:lang="en">Clone site operation was cancelled.</source>
-        <target state="new">Clone site operation was cancelled.</target>
+        <target state="translated">Operace klonování webu byla zrušena.</target>
       </trans-unit>
       <trans-unit id="++CODE++d2201cc8d5c82105c7229f5b76b6b7203fdba3fdf9e2b26d2feeeddd83471b2b">
         <source xml:lang="en">Clone site: {0}</source>
         <note>{0} is the source site name being cloned.</note>
-        <target state="new">Clone site: {0}</target>
+        <target state="translated">Klonovat web: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++53ad2aa1718ebe7e0d2059930bface27750effcfab0603a00d67384b8e373af2">
         <source xml:lang="en">Cloning site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show output"))...</source>
         <note>This is a markdown formatting which must persist across translations.</note>
-        <target state="new">Cloning site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show output"))...</target>
+        <target state="translated">Klonování webu ([podrobnosti](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Zobrazit výstup"))...</target>
       </trans-unit>
       <trans-unit id="++CODE++7d9eb7acb13e24625c404401d8e88b2350e32162455885f18276cf802f7701ed">
         <source xml:lang="en">Close</source>
@@ -382,11 +382,11 @@ Dostupné dotazy najdete na panelu rozšíření CodeQL.</target>
       </trans-unit>
       <trans-unit id="++CODE++22111a035515fb81f145b68ef772080487d23fee7e699bf7ea9a6ae748883936">
         <source xml:lang="en">Command cancelled before start.</source>
-        <target state="new">Command cancelled before start.</target>
+        <target state="translated">Příkaz byl před spuštěním zrušen.</target>
       </trans-unit>
       <trans-unit id="++CODE++4482caab76c70b9f064cda7fe290884623c91fb1bfa1c402c404a4018115b2dd">
         <source xml:lang="en">Command cancelled.</source>
-        <target state="new">Command cancelled.</target>
+        <target state="translated">Příkaz byl zrušen.</target>
       </trans-unit>
       <trans-unit id="++CODE++1fb4405a792e9eb077d2bd96517eca8d81fc43bc251d5589e9d959fd07c8f31d">
         <source xml:lang="en">Command completed successfully (exit code: {0})</source>
@@ -614,7 +614,7 @@ Typ: {3}</target>
       <trans-unit id="++CODE++93ca8a73b9dd7ac7d502cfa38ff9fea7a998bd3afbf37c12dfe57bf1fee9a8f1">
         <source xml:lang="en">Downloading site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show output"))...</source>
         <note>This is a markdown formatting which must persist across translations.</note>
-        <target state="new">Downloading site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show output"))...</target>
+        <target state="translated">Stahování webu ([podrobnosti](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Zobrazit výstup"))...</target>
       </trans-unit>
       <trans-unit id="++CODE++a5a4f0d8975940cbed234f9a5ee740f24e2b82f03a5b13e43f316b8395336e50">
         <source xml:lang="en">Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show download output"))...</source>
@@ -635,7 +635,7 @@ Typ: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++d836838411c4fbaf037387dcc5cd69d7561889fa19ff57ab5beed63fd3b4dd95">
         <source xml:lang="en">Enter a name for the cloned site</source>
-        <target state="new">Enter a name for the cloned site</target>
+        <target state="translated">Zadejte název klonovaného webu</target>
       </trans-unit>
       <trans-unit id="++CODE++80ccd89cd4c287f3ca9f3693982e8034544fefeba563c974f93482158e8f0737">
         <source xml:lang="en">Enter name</source>
@@ -740,7 +740,7 @@ Typ: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++dd232d4c74c0af69397e14b1ec1ca9b8991ea5fddf84628b30fb3d14903ca0af">
         <source xml:lang="en">Failed to clone the site. Please try again.</source>
-        <target state="new">Failed to clone the site. Please try again.</target>
+        <target state="translated">Klonování webu se nezdařilo. Zkuste to znovu.</target>
       </trans-unit>
       <trans-unit id="++CODE++b985f1515c42b4b5b0c11a3d7b3286fc9d66997d476668ab1f93a4a11499fef5">
         <source xml:lang="en">Failed to create a new Power Pages site. Please try again.</source>
@@ -762,7 +762,7 @@ Typ: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++fa196d33b3dc02fd079f73a579a26ddd67d29fe175695b13b8a76a599319a96f">
         <source xml:lang="en">Failed to download the site for cloning. Please try again.</source>
-        <target state="new">Failed to download the site for cloning. Please try again.</target>
+        <target state="translated">Nepodařilo se stáhnout web pro klonování. Zkuste to znovu.</target>
       </trans-unit>
       <trans-unit id="++CODE++95da24b6bc127a935e2e4323fe85d8f46be20c5e8ca5e10c6a134e5a0c6443a2">
         <source xml:lang="en">Failed to enable PAC telemetry.</source>
@@ -829,7 +829,7 @@ Typ: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++75528796fc394144a63eaa990d8dbf68c8ddbfd71ba7ddbe9b8f73852ad83165">
         <source xml:lang="en">Failed to upload the cloned site. Please try again.</source>
-        <target state="new">Failed to upload the cloned site. Please try again.</target>
+        <target state="translated">Klonovaný web se nepodařilo nahrát. Zkuste to znovu.</target>
       </trans-unit>
       <trans-unit id="++CODE++a9e36b880dd45b64ae5601865540605296febf9bd855fc46d9c35c2c2ed9a7f2">
         <source xml:lang="en">Feature is not enabled for this geo.</source>
@@ -1552,7 +1552,7 @@ ID organizace: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++a525be98c4abc148f352c9f9069ef7adf9dccd3047d6d92cfd49282d7ac71ba4">
         <source xml:lang="en">Show Details</source>
-        <target state="new">Show Details</target>
+        <target state="translated">Zobrazit podrobnosti</target>
       </trans-unit>
       <trans-unit id="++CODE++b874846bfcc51aecfc0366c676894ca6aa980e7f8de9a6632bb6ade00b49bc47">
         <source xml:lang="en">Show Diff</source>
@@ -1569,7 +1569,7 @@ ID organizace: {3}</target>
       <trans-unit id="++CODE++dc0613d28f94bf678558a9c94ea3be0fcc680181b4132b9a7d01d2ea5d558700">
         <source xml:lang="en">Site '{0}' cloned and uploaded successfully.</source>
         <note>Shown after a Power Pages site is successfully cloned and uploaded. {0} is the name of the newly cloned site.</note>
-        <target state="new">Site '{0}' cloned and uploaded successfully.</target>
+        <target state="translated">Web {0} byl úspěšně naklonován a nahrán.</target>
       </trans-unit>
       <trans-unit id="++CODE++413f481712d78c8cce54fc6b1ef2da1b4e35e9584c11fcdc51509c19017e2812">
         <source xml:lang="en">Site Comparison</source>
@@ -1617,7 +1617,7 @@ ID organizace: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++656563f7404a65eba76106cce83519f640802c30345ee7650ea517993f833904">
         <source xml:lang="en">Site name cannot be empty.</source>
-        <target state="new">Site name cannot be empty.</target>
+        <target state="translated">Název webu nemůže být prázdný.</target>
       </trans-unit>
       <trans-unit id="++CODE++f7094162bd4c4b59aa706387714347223e1569c79c5b37eb19ac754a33a0fdd0">
         <source xml:lang="en">Site runtime preview feature is not enabled.</source>
@@ -1858,12 +1858,12 @@ ID organizace: {3}</target>
       <trans-unit id="++CODE++920e379f234bd08346445db66f6a8eafc99b8b453405c8ffa02abbaba57b6a46">
         <source xml:lang="en">Uploading site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show output"))...</source>
         <note>This is a markdown formatting which must persist across translations.</note>
-        <target state="new">Uploading site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show output"))...</target>
+        <target state="translated">Nahrávání webu ([podrobnosti](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Zobrazit výstup"))...</target>
       </trans-unit>
       <trans-unit id="++CODE++a9616a6573ea58ef45f46299887395ee6b3b36585c482f982718e15dc718de78">
         <source xml:lang="en">Uploading site to '{0}' environment ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show output"))...</source>
         <note>Progress step shown while uploading a cloned Power Pages site. {0} is the target environment name. The markdown formatting must persist across translations.</note>
-        <target state="new">Uploading site to '{0}' environment ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show output"))...</target>
+        <target state="translated">Nahrávání webu do prostředí {0}([podrobnosti](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Zobrazit výstup"))...</target>
       </trans-unit>
       <trans-unit id="++CODE++037bfba715811960dfb62b81a99d5002835f73a9c44bdd6661ebc222d8538e2b">
         <source xml:lang="en">Use File → Open Folder to select a folder with a Power Pages site</source>
@@ -2109,7 +2109,7 @@ Další informace najdete v článku [Prevence náhodného přepsání](command:
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.actionsHub.site.cloneSite.title">
         <source xml:lang="en">Clone Site</source>
-        <target state="new">Clone Site</target>
+        <target state="translated">Klonovat web</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.compareWithEnvironment.title">
         <source xml:lang="en">Compare with Environment</source>
