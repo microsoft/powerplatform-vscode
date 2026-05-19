@@ -1908,6 +1908,7 @@
     "picomatch@4": "^4.0.4",
     "flatted": "^3.4.2",
     "defu": "^6.1.5",
-    "follow-redirects": "1.16.0"
+    "follow-redirects": "1.16.0",
+    "ws": "^8.20.1"
   }
 }
