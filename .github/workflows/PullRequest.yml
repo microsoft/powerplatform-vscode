@@ -27,12 +27,12 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
         with:
           lfs: true
 
       - name: Setup .NET 9
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: "9.0.x"
 
@@ -40,7 +40,7 @@ jobs:
         run: dotnet --list-sdks
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
           node-version: 20
 
@@ -54,29 +54,41 @@ jobs:
         env:
           AZ_DevOps_Read_PAT: ${{ secrets.AZ_DevOps_Read_PAT }}
 
+      - name: Install xvfb
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y xvfb x11-xserver-utils
+
       - name: Run Debugger integration tests
-        uses: coactions/setup-xvfb@v1
-        with:
-          run: |
-            npm run test-integration
+        if: runner.os == 'Linux'
+        run: xvfb-run --auto-servernum npm run test-integration
+
+      - name: Run Debugger integration tests
+        if: runner.os != 'Linux'
+        run: npm run test-integration
 
       - name: Run Web integration tests
-        uses: coactions/setup-xvfb@v1
-        with:
-          run: |
-            npm run test-web-integration
+        if: runner.os == 'Linux'
+        run: xvfb-run --auto-servernum npm run test-web-integration
+
+      - name: Run Web integration tests
+        if: runner.os != 'Linux'
+        run: npm run test-web-integration
 
       - name: Run Desktop integration tests
-        uses: coactions/setup-xvfb@v1
-        with:
-          run: |
-            npm run test-desktop-int
+        if: runner.os == 'Linux'
+        run: xvfb-run --auto-servernum npm run test-desktop-int
+
+      - name: Run Desktop integration tests
+        if: runner.os != 'Linux'
+        run: npm run test-desktop-int
 
       - name: Run Common integration tests
-        uses: coactions/setup-xvfb@v1
-        with:
-          run: |
-            npm run test-common-int
+        if: runner.os == 'Linux'
+        run: xvfb-run --auto-servernum npm run test-common-int
+
+      - name: Run Common integration tests
+        if: runner.os != 'Linux'
+        run: npm run test-common-int
 
   web-sanity:
     if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'release/stable'
@@ -85,12 +97,12 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           lfs: true
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20
 
@@ -112,7 +124,7 @@ jobs:
           PP_TEST_PASSWORD: ${{ secrets.PP_TEST_PASSWORD }}
 
       - name: Upload Playwright report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: playwright-report-web-sanity
@@ -120,7 +132,7 @@ jobs:
           retention-days: 7
 
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: web-sanity-test-results
