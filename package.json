@@ -1877,12 +1877,13 @@
     "@octokit/request": "^8.4.1",
     "@octokit/plugin-paginate-rest": "^9.2.2",
     "@octokit/request-error": "^5.1.1",
-    "@nevware21/ts-utils": "^0.14.0",
-    "qs": "^6.15.2",
+    "qs": "6.15.2",
+    "@nevware21/ts-utils": "0.14.0",
     "tar": "^7.5.10",
     "@tootallnate/once": "^3.0.1",
     "lodash": "^4.18.0",
     "minimatch": "^10.2.3",
+    "brace-expansion": "5.0.6",
     "serialize-javascript": "^7.0.3",
     "diff": "^8.0.3",
     "undici": "^7.24.0",
@@ -1906,6 +1907,7 @@
     "picomatch@4": "^4.0.4",
     "flatted": "^3.4.2",
     "defu": "^6.1.5",
-    "follow-redirects": "1.16.0"
+    "follow-redirects": "1.16.0",
+    "ws": "^8.20.1"
   }
 }
