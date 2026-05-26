@@ -1763,8 +1763,6 @@
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "1.0.2",
-    "@microsoft/1ds-core-js": "4.0.5",
-    "@microsoft/1ds-post-js": "4.0.5",
     "@playwright/test": "^1.58.2",
     "@types/chai": "^4.2.14",
     "@types/command-exists": "^1.2.0",
@@ -1829,9 +1827,9 @@
     "yargs": "^16.2.0"
   },
   "dependencies": {
-    "@fluidframework/azure-client": "^2.31.1",
-    "@microsoft/1ds-core-js": "4.0.5",
-    "@microsoft/1ds-post-js": "4.0.5",
+    "@fluidframework/azure-client": "^2.101.1",
+    "@microsoft/1ds-core-js": "^4.4.1",
+    "@microsoft/1ds-post-js": "^4.4.1",
     "@microsoft/generator-powerpages": "^1.39.3",
     "@types/jwt-decode": "2.2.0",
     "@types/node-fetch": "^2.6.2",
@@ -1840,7 +1838,7 @@
     "cockatiel": "^3.1.1",
     "command-exists": "^1.2.9",
     "find-process": "^1.4.7",
-    "fluid-framework": "^2.31.1",
+    "fluid-framework": "^2.101.1",
     "glob": "^7.1.7",
     "gpt-tokenizer": "^2.1.1",
     "gulp": "^5.0.0",
