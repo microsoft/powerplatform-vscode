@@ -253,6 +253,7 @@ export const compareWithEnvironment = (pacTerminal: PacTerminal, context: vscode
 
         await showProgressWithNotification(
             Constants.StringFunctions.FETCHING_WEBSITES_FROM_ENVIRONMENT(selectedEnv.label),
+            false,
             async () => {
                 const result = await fetchWebsites(selectedEnv.orgInfo, false);
                 activeSites = result.activeSites;
@@ -354,6 +355,7 @@ export const compareWithEnvironment = (pacTerminal: PacTerminal, context: vscode
         // Code sites don't support selective entity download
         success = await showProgressWithNotification(
             Constants.StringFunctions.DOWNLOADING_SITE_FOR_COMPARISON(websiteDetails.name),
+            false,
             async () => pacWrapper.downloadCodeSiteWithProgress(
                 siteStoragePath,
                 websiteDetails!.websiteRecordId,
@@ -363,6 +365,7 @@ export const compareWithEnvironment = (pacTerminal: PacTerminal, context: vscode
     } else {
         success = await showProgressWithNotification(
             Constants.StringFunctions.DOWNLOADING_SITE_FOR_COMPARISON(websiteDetails.name),
+            false,
             async () => pacWrapper.downloadSiteWithProgress(
                 siteStoragePath,
                 websiteDetails!.websiteRecordId,

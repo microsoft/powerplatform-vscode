@@ -55,6 +55,7 @@ export const compareWithLocal = (pacTerminal: PacTerminal, context: vscode.Exten
     if (siteTreeItem.siteInfo.isCodeSite) {
         success = await showProgressWithNotification(
             Constants.StringFunctions.DOWNLOADING_SITE_FOR_COMPARISON(siteTreeItem.siteInfo.name),
+            false,
             async () => pacWrapper.downloadCodeSiteWithProgress(
                 siteStoragePath,
                 siteTreeItem.siteInfo.websiteId
@@ -63,6 +64,7 @@ export const compareWithLocal = (pacTerminal: PacTerminal, context: vscode.Exten
     } else {
         success = await showProgressWithNotification(
             Constants.StringFunctions.DOWNLOADING_SITE_FOR_COMPARISON(siteTreeItem.siteInfo.name),
+            false,
             async () => pacWrapper.downloadSiteWithProgress(
                 siteStoragePath,
                 siteTreeItem.siteInfo.websiteId,

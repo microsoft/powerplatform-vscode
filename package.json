@@ -507,6 +507,10 @@
         "title": "%microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite.title%"
       },
       {
+        "command": "microsoft.powerplatform.pages.actionsHub.site.cloneSite",
+        "title": "%microsoft.powerplatform.pages.actionsHub.site.cloneSite.title%"
+      },
+      {
         "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening",
         "category": "Power Pages",
         "title": "%microsoft.powerplatform.pages.actionsHub.currentActiveSite.runCodeQLScreening.title%",
@@ -1192,6 +1196,10 @@
           "when": "never"
         },
         {
+          "command": "microsoft.powerplatform.pages.actionsHub.site.cloneSite",
+          "when": "never"
+        },
+        {
           "command": "microsoft.powerplatform.pages.actionsHub.activeSite.compareWithLocal",
           "when": "never"
         },
@@ -1440,6 +1448,11 @@
           "command": "microsoft.powerplatform.pages.actionsHub.activeSite.compareWithLocal",
           "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite || viewItem == inactiveSite) &&microsoft.powerplatform.pages.metadataDiffEnabled",
           "group": "siteAction@8"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.site.cloneSite",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite || viewItem == inactiveSite)",
+          "group": "siteAction@9"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.metadataDiff.resync",
@@ -1750,8 +1763,6 @@
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "1.0.2",
-    "@microsoft/1ds-core-js": "4.0.5",
-    "@microsoft/1ds-post-js": "4.0.5",
     "@playwright/test": "^1.58.2",
     "@types/chai": "^4.2.14",
     "@types/command-exists": "^1.2.0",
@@ -1816,9 +1827,9 @@
     "yargs": "^16.2.0"
   },
   "dependencies": {
-    "@fluidframework/azure-client": "^2.31.1",
-    "@microsoft/1ds-core-js": "4.0.5",
-    "@microsoft/1ds-post-js": "4.0.5",
+    "@fluidframework/azure-client": "^2.101.1",
+    "@microsoft/1ds-core-js": "^4.4.1",
+    "@microsoft/1ds-post-js": "^4.4.1",
     "@microsoft/generator-powerpages": "^1.39.3",
     "@types/jwt-decode": "2.2.0",
     "@types/node-fetch": "^2.6.2",
@@ -1827,12 +1838,12 @@
     "cockatiel": "^3.1.1",
     "command-exists": "^1.2.9",
     "find-process": "^1.4.7",
-    "fluid-framework": "^2.31.1",
+    "fluid-framework": "^2.101.1",
     "glob": "^7.1.7",
     "gpt-tokenizer": "^2.1.1",
     "gulp": "^5.0.0",
     "https-browserify": "^1.0.0",
-    "liquidjs": "^10.25.7",
+    "liquidjs": "10.26.0",
     "n-readlines": "^1.0.1",
     "puppeteer-core": "^22.13.1",
     "recursive-readdir": "^2.2.3",
@@ -1858,17 +1869,21 @@
   },
   "overrides": {
     "uuid": "$uuid",
-    "axios": "1.15.0",
-    "basic-ftp": "^5.3.0",
-    "tmp": "^0.2.4",
+    "axios": "1.16.0",
+    "basic-ftp": "5.3.1",
+    "fast-uri": "3.1.2",
+    "ip-address": "10.1.1",
+    "tmp": "0.2.6",
     "@octokit/request": "^8.4.1",
     "@octokit/plugin-paginate-rest": "^9.2.2",
     "@octokit/request-error": "^5.1.1",
-    "qs": "^6.14.2",
+    "qs": "6.15.2",
+    "@nevware21/ts-utils": "0.14.0",
     "tar": "^7.5.10",
     "@tootallnate/once": "^3.0.1",
     "lodash": "^4.18.0",
     "minimatch": "^10.2.3",
+    "brace-expansion": "5.0.6",
     "serialize-javascript": "^7.0.3",
     "diff": "^8.0.3",
     "undici": "^7.24.0",
@@ -1892,6 +1907,7 @@
     "picomatch@4": "^4.0.4",
     "flatted": "^3.4.2",
     "defu": "^6.1.5",
-    "follow-redirects": "1.16.0"
+    "follow-redirects": "1.16.0",
+    "ws": "^8.20.1"
   }
 }

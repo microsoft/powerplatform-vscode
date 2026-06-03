@@ -38,3 +38,6 @@ src/e2e/.auth/
 playwright-report/
 playwright-report-web-sanity/
 test-results/
+
+# macOS metadata
+.DS_Store

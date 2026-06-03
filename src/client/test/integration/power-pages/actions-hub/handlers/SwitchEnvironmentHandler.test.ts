@@ -92,11 +92,14 @@ describe('SwitchEnvironmentHandler', () => {
             mockPacContext = sinon.stub(PacContext, 'AuthInfo').get(() => ({
                 OrganizationFriendlyName: 'Dev Environment'
             }));
-            mockShowProgressNotification = sinon.stub(Utils, 'showProgressWithNotification').callsFake(async (title: string, task: (progress: vscode.Progress<{
+            mockShowProgressNotification = sinon.stub(Utils, 'showProgressWithNotification').callsFake(async (title: string, _cancellable: boolean, task: (progress: vscode.Progress<{
                 message?: string;
                 increment?: number;
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            }>) => Promise<any>) => await task({} as unknown as vscode.Progress<{ message?: string; increment?: number }>));
+            }>, token: vscode.CancellationToken) => Promise<any>) => await task(
+                {} as unknown as vscode.Progress<{ message?: string; increment?: number }>,
+                { isCancellationRequested: false, onCancellationRequested: () => ({ dispose: () => { /* noop */ } }) } as unknown as vscode.CancellationToken
+            ));
         });
 
         afterEach(() => {

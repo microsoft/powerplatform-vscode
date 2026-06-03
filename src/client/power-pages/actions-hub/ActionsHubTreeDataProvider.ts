@@ -35,6 +35,7 @@ import { reactivateSite } from "./handlers/ReactivateSiteHandler";
 import { uploadSite } from "./handlers/UploadSiteHandler";
 import { showSiteDetails } from "./handlers/ShowSiteDetailsHandler";
 import { downloadSite } from "./handlers/DownloadSiteHandler";
+import { cloneSite } from "./handlers/CloneSiteHandler";
 import { loginToMatch } from "./handlers/LoginToMatchHandler";
 import { ActionsHub } from "./ActionsHub";
 import { compareWithLocal } from "./handlers/metadata-diff/CompareWithLocalHandler";
@@ -351,6 +352,8 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio", openSiteInStudio),
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.inactiveSite.reactivateSite", reactivateSite),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.site.cloneSite", cloneSite(this._pacTerminal)),
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.loginToMatch", () => {
                 const serviceEndpointStamp = ArtemisContext.ServiceResponse?.stamp;

@@ -358,7 +358,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
                 return;
             }
-            const pacAuthCreateOutput = await showProgressWithNotification(AUTH_CREATE_MESSAGE, async () => { return await this._pacWrapper?.authCreateNewAuthProfileForOrg(userOrgUrl) });
+            const pacAuthCreateOutput = await showProgressWithNotification(AUTH_CREATE_MESSAGE, false, async () => { return await this._pacWrapper?.authCreateNewAuthProfileForOrg(userOrgUrl) });
             pacAuthCreateOutput && pacAuthCreateOutput.Status === SUCCESS
                 ? (await authenticateUserInVSCode(),
                     intelligenceAPIAuthentication(sessionID, orgID).then(({ accessToken, user, userId }) =>
