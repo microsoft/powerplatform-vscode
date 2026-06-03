@@ -618,6 +618,7 @@ export async function processComparisonResults(
 ): Promise<boolean> {
     const comparisonResults = await showProgressWithNotification(
         Constants.Strings.COMPARING_FILES,
+        false,
         async () => {
             // Find the actual downloaded site folder (name is not deterministic)
             const downloadedFolders = fs.readdirSync(siteStoragePath, { withFileTypes: true })

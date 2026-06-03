@@ -21,7 +21,7 @@ import { showInputBoxAndGetOrgUrl, showProgressWithNotification } from "./Utils"
          return;
      }
 
-     const pacAuthCreateOutput = await showProgressWithNotification(vscode.l10n.t(AUTH_CREATE_MESSAGE), async () => { return await pacWrapper?.authCreateNewAuthProfileForOrg(userOrgUrl) });
+     const pacAuthCreateOutput = await showProgressWithNotification(vscode.l10n.t(AUTH_CREATE_MESSAGE), false, async () => { return await pacWrapper?.authCreateNewAuthProfileForOrg(userOrgUrl) });
      if (pacAuthCreateOutput && pacAuthCreateOutput.Status !== SUCCESS) {
          vscode.window.showErrorMessage(AUTH_CREATE_FAILED);
          return;

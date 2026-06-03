@@ -44,7 +44,7 @@ export const switchEnvironment = async (pacTerminal: PacTerminal) => {
             );
 
             if (selectedEnv && selectedEnv.label !== authInfo.OrganizationFriendlyName) {
-                await showProgressWithNotification(Constants.Strings.CHANGING_ENVIRONMENT, async () => await pacWrapper.orgSelect(selectedEnv.detail));
+                await showProgressWithNotification(Constants.Strings.CHANGING_ENVIRONMENT, false, async () => await pacWrapper.orgSelect(selectedEnv.detail));
                 await vscode.window.showInformationMessage(Constants.Strings.ENVIRONMENT_CHANGED_SUCCESSFULLY);
             } else {
                 traceInfo(Constants.EventNames.ACTIONS_HUB_SWITCH_ENVIRONMENT_CANCELLED, { methodName: switchEnvironment.name });

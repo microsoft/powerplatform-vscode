@@ -137,6 +137,7 @@ export const runCodeQLScreening = async (siteTreeItem?: SiteTreeItem) => {
         try {
             const analysisResults = await showProgressWithNotification(
                 Constants.Strings.CODEQL_SCREENING_STARTED,
+                false,
                 async () => {
                     // Use a custom method that allows specifying the database location
                     return await codeQLAction.executeCodeQLAnalysisWithCustomPath(sitePath, databaseLocation, powerPagesSiteFolderExists);
