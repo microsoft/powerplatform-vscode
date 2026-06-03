@@ -1,5 +1,10 @@
 # Change Log - Power Platform Extension
 
+## 2.0.144
+- pac CLI 2.8.1, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- Added 'Clone Site' feature to Power Pages Actions (Desktop)
+- Bug Fixes and enhancements
+
 ## 2.0.143
 - pac CLI 2.7.4, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 - Bug Fixes and enhancements
