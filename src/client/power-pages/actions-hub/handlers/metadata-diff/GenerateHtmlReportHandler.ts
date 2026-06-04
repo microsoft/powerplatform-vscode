@@ -11,6 +11,7 @@ import { Constants } from "../../Constants";
 import { traceInfo, traceError } from "../../TelemetryHelper";
 import { isBinaryFile } from "../../ActionsHubUtils";
 import { WebsiteDataModel } from "../../../../../common/services/Constants";
+import { POWERPAGES_SITE_FOLDER } from "../../../../../common/constants";
 
 /**
  * Maximum file size in bytes to include content in the report (5MB)
@@ -307,6 +308,10 @@ const componentTypeDisplayNames: Record<string, string> = {
     "others": "Others"
 };
 
+const componentTypeAliases: Record<string, string> = {
+    "site-languages": "website-languages"
+};
+
 /**
  * Ordered list of component types for consistent tab ordering
  */
@@ -336,11 +341,13 @@ const componentTypeOrder: string[] = [
 export function getComponentTypeFromPath(relativePath: string): string {
     // Normalize path separators
     const normalizedPath = relativePath.replace(/\\/g, "/");
-    const firstFolder = normalizedPath.split("/")[0];
+    const pathSegments = normalizedPath.split("/").filter(Boolean);
+    const firstFolder = pathSegments[0] === POWERPAGES_SITE_FOLDER ? pathSegments[1] : pathSegments[0];
+    const componentType = componentTypeAliases[firstFolder] || firstFolder;
 
     // Check if it's a known component type
-    if (componentTypeDisplayNames[firstFolder] && firstFolder !== "others") {
-        return firstFolder;
+    if (componentTypeDisplayNames[componentType] && componentType !== "others") {
+        return componentType;
     }
 
     return "others";
