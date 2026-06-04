@@ -261,6 +261,16 @@ describe("GenerateHtmlReportHandler", () => {
             expect(getComponentTypeFromPath("web-pages\\home\\home.html")).to.equal("web-pages");
             expect(getComponentTypeFromPath("content-snippets\\header\\header.html")).to.equal("content-snippets");
         });
+
+        it("should ignore .powerpages-site prefix when determining component type", () => {
+            expect(getComponentTypeFromPath(".powerpages-site/web-pages/home/home.html")).to.equal("web-pages");
+            expect(getComponentTypeFromPath(".powerpages-site\\content-snippets\\header\\header.html")).to.equal("content-snippets");
+        });
+
+        it("should map site-languages folder to the Site Languages tab", () => {
+            expect(getComponentTypeFromPath("site-languages/English.websitelanguage.yml")).to.equal("website-languages");
+            expect(getComponentTypeFromPath(".powerpages-site/site-languages/English.websitelanguage.yml")).to.equal("website-languages");
+        });
     });
 
     describe("getComponentTypeDisplayName", () => {
