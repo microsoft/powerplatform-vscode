@@ -24,6 +24,18 @@ dotenv.config({ path: path.resolve(__dirname, '..', 'e2e', '.env') });
  *   PP_TEST_USERNAME    — Microsoft account username
  *   PP_TEST_PASSWORD    — Microsoft account password
  */
+/**
+ * The auth fixture types the test username/password into the Microsoft login
+ * form, and the test navigates to a private site URL. Playwright traces record
+ * fill() action values and full network traffic, while videos/screenshots
+ * capture the typed values. To avoid persisting these into CI artifacts, all
+ * capture is disabled when running in CI; it stays on locally for debugging.
+ */
+const isCI = !!process.env.CI;
+const traceMode = isCI ? 'off' : 'retain-on-failure';
+const videoMode = isCI ? 'off' : 'retain-on-failure';
+const screenshotMode = isCI ? 'off' : 'only-on-failure';
+
 export default defineConfig({
     testDir: './test',
     timeout: 300000,
@@ -41,9 +53,9 @@ export default defineConfig({
     ],
     use: {
         actionTimeout: 30000,
-        trace: 'retain-on-failure',
-        screenshot: 'only-on-failure',
-        video: 'retain-on-failure',
+        trace: traceMode,
+        screenshot: screenshotMode,
+        video: videoMode,
         ...devices['Desktop Chrome'],
     },
     projects: [

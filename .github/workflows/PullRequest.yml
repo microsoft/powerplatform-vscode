@@ -123,18 +123,9 @@ jobs:
           PP_TEST_USERNAME: ${{ secrets.PP_TEST_USERNAME }}
           PP_TEST_PASSWORD: ${{ secrets.PP_TEST_PASSWORD }}
 
-      - name: Upload Playwright report
-        uses: actions/upload-artifact@v7
-        if: always()
-        with:
-          name: playwright-report-web-sanity
-          path: playwright-report-web-sanity/
-          retention-days: 7
-
-      - name: Upload test results
-        uses: actions/upload-artifact@v7
-        if: always()
-        with:
-          name: web-sanity-test-results
-          path: test-results/web-sanity-results.xml
-          retention-days: 7
+      # Test artifacts are intentionally not uploaded from this job.
+      # Playwright reports/traces/videos/screenshots can capture the values that
+      # are typed into the login form and the navigated site URL, and uploaded
+      # artifacts are not masked by GitHub. Trace/video/screenshot capture is
+      # also disabled in CI in the Playwright config. Test results remain visible
+      # in the step logs above via the Playwright "list" reporter.
