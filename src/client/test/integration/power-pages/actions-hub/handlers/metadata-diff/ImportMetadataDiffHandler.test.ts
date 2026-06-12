@@ -4,6 +4,7 @@
  */
 
 import * as vscode from "vscode";
+import * as fs from "fs";
 import { expect } from "chai";
 import sinon from "sinon";
 import * as TelemetryHelper from "../../../../../../power-pages/actions-hub/TelemetryHelper";
@@ -102,6 +103,67 @@ describe("ImportMetadataDiffHandler", () => {
 
             expect(traceInfoStub.called).to.be.true;
             expect(traceInfoStub.firstCall.args[0]).to.equal("ActionsHubMetadataDiffImportCalled");
+        });
+    });
+
+    describe("importMetadataDiff with a pre-supplied URI", () => {
+        it("should skip the open dialog when a URI is supplied", async () => {
+            const existsSyncStub = sandbox.stub(fs, "existsSync").returns(true);
+            // Short-circuit the read so we don't run the full import flow.
+            sandbox.stub(fs, "readFileSync").throws(new Error("stop after dialog check"));
+
+            const { importMetadataDiff } = await import("../../../../../../power-pages/actions-hub/handlers/metadata-diff/ImportMetadataDiffHandler");
+
+            await importMetadataDiff(vscode.Uri.file("/tmp/diff.json"));
+
+            expect(showOpenDialogStub.called).to.be.false;
+            expect(existsSyncStub.called).to.be.true;
+        });
+
+        it("should show an error when the supplied file does not exist", async () => {
+            sandbox.stub(fs, "existsSync").returns(false);
+
+            const { importMetadataDiff } = await import("../../../../../../power-pages/actions-hub/handlers/metadata-diff/ImportMetadataDiffHandler");
+
+            await importMetadataDiff(vscode.Uri.file("/tmp/missing.json"));
+
+            expect(showOpenDialogStub.called).to.be.false;
+            expect(showErrorMessageStub.calledOnce).to.be.true;
+            expect(showErrorMessageStub.firstCall.args[0]).to.match(/not found/i);
+        });
+
+        it("should show an error when the supplied file is not a .json file", async () => {
+            sandbox.stub(fs, "existsSync").returns(true);
+
+            const { importMetadataDiff } = await import("../../../../../../power-pages/actions-hub/handlers/metadata-diff/ImportMetadataDiffHandler");
+
+            await importMetadataDiff(vscode.Uri.file("/tmp/diff.txt"));
+
+            expect(showOpenDialogStub.called).to.be.false;
+            expect(showErrorMessageStub.calledOnce).to.be.true;
+            expect(showErrorMessageStub.firstCall.args[0]).to.match(/\.json/i);
+        });
+
+        it("should record the URI handler source in telemetry", async () => {
+            const traceInfoStub = TelemetryHelper.traceInfo as sinon.SinonStub;
+            sandbox.stub(fs, "existsSync").returns(false);
+
+            const { importMetadataDiff } = await import("../../../../../../power-pages/actions-hub/handlers/metadata-diff/ImportMetadataDiffHandler");
+
+            await importMetadataDiff(vscode.Uri.file("/tmp/missing.json"));
+
+            expect(traceInfoStub.firstCall.args[0]).to.equal("ActionsHubMetadataDiffImportCalled");
+            expect(traceInfoStub.firstCall.args[1]).to.include({ source: "uri_handler" });
+        });
+
+        it("should still open the dialog when no URI is supplied", async () => {
+            showOpenDialogStub.resolves(undefined);
+
+            const { importMetadataDiff } = await import("../../../../../../power-pages/actions-hub/handlers/metadata-diff/ImportMetadataDiffHandler");
+
+            await importMetadataDiff();
+
+            expect(showOpenDialogStub.calledOnce).to.be.true;
         });
     });
 

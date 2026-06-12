@@ -16,5 +16,6 @@ export enum uriHandlerTelemetryEventNames {
     URI_HANDLER_DOWNLOAD_STARTED = "UriHandlerDownloadStarted",
     URI_HANDLER_DOWNLOAD_COMPLETED = "UriHandlerDownloadCompleted",
     URI_HANDLER_FOLDER_OPENED = "UriHandlerFolderOpened",
-    URI_HANDLER_PCF_INIT_TRIGGERED = "UriHandlerPcfInitTriggered"
+    URI_HANDLER_PCF_INIT_TRIGGERED = "UriHandlerPcfInitTriggered",
+    URI_HANDLER_METADATA_DIFF_IMPORT_TRIGGERED = "UriHandlerMetadataDiffImportTriggered"
 }

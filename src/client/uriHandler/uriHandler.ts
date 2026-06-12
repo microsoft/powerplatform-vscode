@@ -6,10 +6,12 @@
 import * as vscode from "vscode";
 import { PacWrapper } from "../pac/PacWrapper";
 import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
-import { UriPath } from "./constants/uriConstants";
+import { UriPath, URI_CONSTANTS } from "./constants/uriConstants";
 import { URI_HANDLER_STRINGS } from "./constants/uriStrings";
 import { uriHandlerTelemetryEventNames } from "./telemetry/uriHandlerTelemetryEvents";
 import { UriHandlerUtils, UriParameters } from "./utils/uriHandlerUtils";
+import { resolveMetadataDiffImportFilePath } from "./utils/metadataDiffImportValidation";
+import { importMetadataDiff } from "../power-pages/actions-hub/handlers/metadata-diff/ImportMetadataDiffHandler";
 
 export function RegisterUriHandler(pacWrapper: PacWrapper): vscode.Disposable {
     const uriHandler = new UriHandler(pacWrapper);
@@ -32,6 +34,56 @@ class UriHandler implements vscode.UriHandler {
             return this.pcfInit();
         } else if (uri.path === UriPath.Open) {
             return this.handleOpenPowerPages(uri);
+        } else if (uri.path === UriPath.MetadataDiffImport) {
+            return this.handleMetadataDiffImport(uri);
+        }
+    }
+
+    // vscode://microsoft-IsvExpTools.powerplatform-vscode/metadataDiffImport?filePath=<encoded-absolute-path>
+    async handleMetadataDiffImport(uri: vscode.Uri): Promise<void> {
+        const startTime = Date.now();
+        try {
+            const params = new URLSearchParams(uri.query);
+            const rawFilePath = params.get(URI_CONSTANTS.PARAMETERS.FILE_PATH);
+
+            oneDSLoggerWrapper.getLogger().traceInfo(
+                uriHandlerTelemetryEventNames.URI_HANDLER_METADATA_DIFF_IMPORT_TRIGGERED,
+                { timestamp: startTime.toString(), hasFilePath: rawFilePath ? "true" : "false" }
+            );
+
+            const pathResult = resolveMetadataDiffImportFilePath(rawFilePath);
+            if (!pathResult.ok) {
+                const message = pathResult.reason === "missing"
+                    ? URI_HANDLER_STRINGS.ERRORS.METADATA_DIFF_IMPORT_MISSING_FILE_PATH
+                    : URI_HANDLER_STRINGS.ERRORS.METADATA_DIFF_IMPORT_INVALID_FILE_PATH;
+                vscode.window.showErrorMessage(message);
+                oneDSLoggerWrapper.getLogger().traceInfo(
+                    uriHandlerTelemetryEventNames.URI_HANDLER_METADATA_DIFF_IMPORT_TRIGGERED,
+                    { success: "false", reason: pathResult.reason, duration: (Date.now() - startTime).toString() }
+                );
+                return;
+            }
+
+            const fileUri = vscode.Uri.file(pathResult.filePath);
+            await importMetadataDiff(fileUri);
+
+            oneDSLoggerWrapper.getLogger().traceInfo(
+                uriHandlerTelemetryEventNames.URI_HANDLER_METADATA_DIFF_IMPORT_TRIGGERED,
+                { success: "true", duration: (Date.now() - startTime).toString() }
+            );
+        } catch (error) {
+            oneDSLoggerWrapper.getLogger().traceError(
+                uriHandlerTelemetryEventNames.URI_HANDLER_METADATA_DIFF_IMPORT_TRIGGERED,
+                "Metadata diff import via URI failed",
+                error instanceof Error ? error : new Error(String(error)),
+                { duration: (Date.now() - startTime).toString() }
+            );
+            vscode.window.showErrorMessage(
+                URI_HANDLER_STRINGS.ERRORS.METADATA_DIFF_IMPORT_FAILED.replace(
+                    "{0}",
+                    error instanceof Error ? error.message : String(error)
+                )
+            );
         }
     }
 
