@@ -19,6 +19,11 @@ export class AuthTreeView implements vscode.TreeDataProvider<AuthProfileTreeItem
         public readonly dataSource: () => Promise<PacAuthListOutput>,
         pacWrapper: PacWrapper) {
 
+        // Seed the loading flag so the "Add Auth Profile" welcome button starts disabled. getChildren()
+        // also manages this key, but it only runs once the view is first made visible, so without seeding
+        // here the button briefly renders enabled while the initial `pac auth list` is still in flight.
+        vscode.commands.executeCommand('setContext', 'microsoft.powerplatform.authPanel.isInitializing', true);
+
         const watchPath = GetAuthProfileWatchPattern();
         if (watchPath) {
             const watcher = vscode.workspace.createFileSystemWatcher(watchPath);
