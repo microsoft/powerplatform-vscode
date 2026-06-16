@@ -188,7 +188,7 @@
         "view": "pacCLI.authPanel",
         "contents": "%pacCLI.authPanel.welcome.whenInteractiveSupported%",
         "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported",
-        "enablement": "!microsoft.powerplatform.authPanel.isInitializing"
+        "enablement": "pacCLI.panelsRegistered && !microsoft.powerplatform.authPanel.isInitializing"
       },
       {
         "view": "pacCLI.authPanel",
@@ -1005,7 +1005,7 @@
         },
         {
           "command": "pacCLI.authPanel.newAuthProfile",
-          "when": "pacCLI.authPanel.interactiveLoginSupported"
+          "when": "pacCLI.authPanel.interactiveLoginSupported && pacCLI.panelsRegistered"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.newAuthProfile",
@@ -1271,22 +1271,22 @@
       "view/title": [
         {
           "command": "pacCLI.authPanel.newAuthProfile",
-          "when": "!virtualWorkspace && view == pacCLI.authPanel && pacCLI.authPanel.interactiveLoginSupported",
+          "when": "!virtualWorkspace && view == pacCLI.authPanel && pacCLI.authPanel.interactiveLoginSupported && pacCLI.panelsRegistered",
           "group": "navigation@0"
         },
         {
           "command": "pacCLI.authPanel.refresh",
-          "when": "!virtualWorkspace && view == pacCLI.authPanel",
+          "when": "!virtualWorkspace && view == pacCLI.authPanel && pacCLI.panelsRegistered",
           "group": "navigation@1"
         },
         {
           "command": "pacCLI.authPanel.clearAuthProfile",
-          "when": "!virtualWorkspace && view == pacCLI.authPanel",
+          "when": "!virtualWorkspace && view == pacCLI.authPanel && pacCLI.panelsRegistered",
           "group": "navigation@2"
         },
         {
           "command": "pacCLI.envAndSolutionsPanel.refresh",
-          "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel",
+          "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel && pacCLI.panelsRegistered",
           "group": "navigation"
         },
         {
@@ -1869,6 +1869,9 @@
   },
   "overrides": {
     "uuid": "$uuid",
+    "@azure/msal-node": {
+      "uuid": "^11.0.0"
+    },
     "axios": "1.16.0",
     "basic-ftp": "5.3.1",
     "fast-uri": "3.1.2",

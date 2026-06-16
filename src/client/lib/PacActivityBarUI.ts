@@ -25,6 +25,11 @@ export function RegisterBasicPanels(pacWrapper: PacWrapper): vscode.Disposable[]
         pacWrapper,
         () => pacWrapper.activeOrg());
 
+    // Gates the declarative view/title buttons in package.json so they can't be clicked before
+    // their commands are registered (above), which on first run is delayed by slow CLI
+    // acquisition. Avoids "command 'pacCLI.authPanel.refresh' not found" (issue #1601).
+    vscode.commands.executeCommand("setContext", "pacCLI.panelsRegistered", true);
+
     return [authPanel, envAndSolutionPanel];
 }
 
