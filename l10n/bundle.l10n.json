@@ -133,6 +133,9 @@
   "User cancelled environment switch": "User cancelled environment switch",
   "User cancelled folder selection": "User cancelled folder selection",
   "Download failed: {0}": "Download failed: {0}",
+  "Metadata diff import URI is missing the required 'filePath' query parameter.": "Metadata diff import URI is missing the required 'filePath' query parameter.",
+  "Metadata diff import URI must reference an absolute file path without '..' segments.": "Metadata diff import URI must reference an absolute file path without '..' segments.",
+  "Metadata diff import failed: {0}": "Metadata diff import failed: {0}",
   "Site download cancelled. Authentication is required to proceed.": "Site download cancelled. Authentication is required to proceed.",
   "Site download cancelled. Correct environment connection is required.": "Site download cancelled. Correct environment connection is required.",
   "Site download cancelled. No folder selected.": "Site download cancelled. No folder selected.",
@@ -435,6 +438,7 @@
   "Export Site Comparison": "Export Site Comparison",
   "Importing comparison...": "Importing comparison...",
   "Import Site Comparison": "Import Site Comparison",
+  "Metadata diff file must be a .json file.": "Metadata diff file must be a .json file.",
   "Invalid file format. The file does not contain valid metadata diff data.": "Invalid file format. The file does not contain valid metadata diff data.",
   "Unsupported version. This file was created with a newer version of the extension.": "Unsupported version. This file was created with a newer version of the extension.",
   "This file was exported with a newer version of the extension. Please update your extension to import this file.": "This file was exported with a newer version of the extension. Please update your extension to import this file.",
@@ -611,6 +615,12 @@
     "message": "Failed to import comparison: {0}",
     "comment": [
       "Error message when import fails. {0} is the error message."
+    ]
+  },
+  "Metadata diff file not found: {0}/Error message when the supplied import file is missing. {0} is the file path.": {
+    "message": "Metadata diff file not found: {0}",
+    "comment": [
+      "Error message when the supplied import file is missing. {0} is the file path."
     ]
   },
   "Refreshing comparison for {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\")).../This is a markdown formatting which must persist across translations.": {

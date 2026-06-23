@@ -822,6 +822,22 @@ Return to this chat and @powerpages can help you write and edit your website cod
     <trans-unit id="++CODE++8a194d5287e3da019883144787cd5f282753f5ce892d933be0833b3818c25503">
       <source xml:lang="en">Maximum 30 characters allowed</source>
     </trans-unit>
+    <trans-unit id="++CODE++3ab101664903513d135cf6e3a5e2f260910f63b67cdf40df9266777777989cd9">
+      <source xml:lang="en">Metadata diff file must be a .json file.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++c9e90f17b8b088e896b5de437e61ed7b0df4ccd3fdcbf82c82bfda388f3859bb">
+      <source xml:lang="en">Metadata diff file not found: {0}</source>
+      <note>Error message when the supplied import file is missing. {0} is the file path.</note>
+    </trans-unit>
+    <trans-unit id="++CODE++83e1d90c7af88ff613efd0f32526d98bb9f37f4401422ea5b7ac512a2a86857a">
+      <source xml:lang="en">Metadata diff import URI is missing the required 'filePath' query parameter.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++63de590b02582ef032b1d20773a96c3341b92bcd46ccb62914b85b219914ae72">
+      <source xml:lang="en">Metadata diff import URI must reference an absolute file path without '..' segments.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++b70ce9905812faa5fb6d0b257f49dab5ea4b7671ff776b0ba480550dd7b5669e">
+      <source xml:lang="en">Metadata diff import failed: {0}</source>
+    </trans-unit>
     <trans-unit id="++CODE++b1c8258fb401975727a82d9ce473af0a600f076cc7b73dbd16524e815cf4153d">
       <source xml:lang="en">Microsoft wants your feedback</source>
     </trans-unit>
