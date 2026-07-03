@@ -1440,10 +1440,6 @@ URL: {1}
         <source xml:lang="en">Replace</source>
         <target state="translated">置換</target>
       </trans-unit>
-      <trans-unit id="++CODE++b62120c5416487f4c793d75aee7fea083971e5ac665a3f35767023f408f482e5">
-        <source xml:lang="en">Response data is empty</source>
-        <target state="translated">応答データが空です</target>
-      </trans-unit>
       <trans-unit id="++CODE++b87504a6b179044cf99d39cf641f47aa5e76c4c5b949413ec33953ec35c10ac4">
         <source xml:lang="en">Results opened in SARIF viewer successfully.</source>
         <target state="translated">結果が SARIF ビューアーで正常に開かれました。</target>

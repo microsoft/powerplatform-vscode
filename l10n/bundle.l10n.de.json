@@ -335,7 +335,6 @@
   "Refreshing comparison for {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\")).../This is a markdown formatting which must persist across translations.": "Vergleich für {0} wird aktualisiert ([Details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Downloadausgabe anzeigen\"))...",
   "Remote": "Remote",
   "Replace": "Ersetzen",
-  "Response data is empty": "Antwortdaten sind leer",
   "Results opened in SARIF viewer successfully.": "Die Ergebnisse wurden im SARIF-Viewer erfolgreich geöffnet.",
   "Run": "Ausführen",
   "Run Server Logic": "Serverlogik ausführen",
