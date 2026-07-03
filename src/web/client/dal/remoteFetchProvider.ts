@@ -161,8 +161,12 @@ async function fetchFromDataverseAndCreateFiles(
             }
 
             if (result[Constants.ODATA_COUNT] !== 0 && data.length === 0) {
-                console.error(vscode.l10n.t("Response data is empty"));
-                throw new Error(ERROR_CONSTANTS.EMPTY_RESPONSE);
+                makeRequestCall = false;
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_EMPTY_DATAVERSE_RESPONSE,
+                    { entityName }
+                );
+                break;
             }
 
             WebExtensionContext.telemetry.sendAPISuccessTelemetry(
