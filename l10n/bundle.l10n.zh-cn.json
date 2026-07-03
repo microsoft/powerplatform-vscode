@@ -335,7 +335,6 @@
   "Refreshing comparison for {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\")).../This is a markdown formatting which must persist across translations.": "正在刷新 {0} 的比较([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\"))...",
   "Remote": "远程",
   "Replace": "替换",
-  "Response data is empty": "响应数据为空",
   "Results opened in SARIF viewer successfully.": "已成功在 SARIF 查看器中打开结果。",
   "Run": "运行",
   "Run Server Logic": "运行服务器逻辑",

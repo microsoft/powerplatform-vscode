@@ -335,7 +335,6 @@
   "Refreshing comparison for {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Show download output\")).../This is a markdown formatting which must persist across translations.": "Aktualizuje se porovnání pro {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel \"Zobrazit výstup stahování\"))…",
   "Remote": "Vzdálený",
   "Replace": "Nahradit",
-  "Response data is empty": "Data odpovědi jsou prázdná.",
   "Results opened in SARIF viewer successfully.": "Výsledky se úspěšně otevřely v prohlížeči SARIF.",
   "Run": "Spustit",
   "Run Server Logic": "Spustit logiku serveru",
