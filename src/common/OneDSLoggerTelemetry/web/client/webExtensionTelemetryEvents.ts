@@ -136,5 +136,6 @@ export enum webExtensionTelemetryEventNames {
     WEB_EXTENSION_WEBFILE_NOT_FOUND = "WebExtensionWebfileNotFound",
     WEB_EXTENSION_SERVERLOGIC_NOT_FOUND = "WebExtensionServerlogicNotFound",
     WEB_EXTENSION_OPTIONAL_ENTITY_NOT_FOUND = "WebExtensionOptionalEntityNotFound",
-    WEB_EXTENSION_EMPTY_DATAVERSE_RESPONSE = "WebExtensionEmptyDataverseResponse"
+    WEB_EXTENSION_EMPTY_DATAVERSE_RESPONSE = "WebExtensionEmptyDataverseResponse",
+    WEB_EXTENSION_TOKEN_REFRESH_RETRY = "WebExtensionTokenRefreshRetry"
 }

@@ -131,7 +131,7 @@ async function fetchFromDataverseAndCreateFiles(
                     ),
                     Prefer: `odata.maxpagesize=${Constants.MAX_ENTITY_FETCH_COUNT}, odata.include-annotations="Microsoft.Dynamics.CRM.*"`,
                 },
-            });
+            }, () => WebExtensionContext.refreshDataverseToken());
 
             // Gracefully handle 400/404 for optional entities (blogs, forums, ideas)
             // These entities may not be provisioned for all sites
@@ -666,7 +666,7 @@ async function fetchMappingEntityContent(
 
     const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, {
         headers: getCommonHeadersForDataverse(accessToken),
-    });
+    }, () => WebExtensionContext.refreshDataverseToken());
 
     // Gracefully handle 404 for optional entities (deleted/moved files or missing server logic)
     const notFoundTelemetryMap = new Map<string, string>([
