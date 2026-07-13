@@ -133,10 +133,12 @@ jobs:
           );
           NODE
 
-          git diff --exit-code --quiet -- gulpfile.mjs && {
+          # `git diff --quiet` returns 1 when the expected change exists. Keep
+          # that status inside an `if` so it does not become the step result.
+          if git diff --exit-code --quiet -- gulpfile.mjs; then
             echo "PAC version replacement did not modify gulpfile.mjs."
             exit 1
-          }
+          fi
 
       - name: Create Pull Request
         if: steps.versions.outputs.update-needed == 'true' && steps.existing-pr.outputs.exists != 'true'
