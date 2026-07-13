@@ -8,6 +8,7 @@ import WebExtensionContext from "../WebExtensionContext";
 import { IEntityInfo } from "../common/interfaces";
 import * as Constants from "../common/constants";
 import { getFileEntityId, getFileEntityName, getFileRootWebPageId } from "../utilities/fileAndEntityUtil";
+import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 
 interface IQuickPickItem extends vscode.QuickPickItem {
     label: string;
@@ -75,11 +76,20 @@ export class QuickPickProvider {
     }
 
     public async showQuickPick() {
+        const connectedUserCount = this.getLength();
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_ACTIVE_USERS_VIEWED,
+            { connectedUserCount: connectedUserCount.toString() }
+        );
+
         const selectedUser = await vscode.window.showQuickPick(this.items, {
-            title: vscode.l10n.t(Constants.WEB_EXTENSION_QUICK_PICK_TITLE.toUpperCase() + ` (${this.getLength()})`),
+            title: vscode.l10n.t(Constants.WEB_EXTENSION_QUICK_PICK_TITLE.toUpperCase() + ` (${connectedUserCount})`),
             placeHolder: vscode.l10n.t(Constants.WEB_EXTENSION_QUICK_PICK_PLACEHOLDER),
         });
         if (selectedUser) {
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_USER_SELECTED
+            );
             this.handleSelectedOption(selectedUser);
         }
     }
@@ -109,12 +119,20 @@ export class QuickPickProvider {
 
         if (collaborationOptionsSelected) {
             if (collaborationOptionsSelected.label === Constants.START_TEAMS_CHAT) {
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_CONTACT_OPTION_SELECTED,
+                    { option: "teams" }
+                );
                 if (selectedOption.id) {
                     WebExtensionContext.openTeamsChat(selectedOption.id);
                 } else {
                     vscode.window.showInformationMessage(Constants.WEB_EXTENSION_TEAMS_CHAT_NOT_AVAILABLE);
                 }
             } else if (collaborationOptionsSelected.label === Constants.SEND_AN_EMAIL) {
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_CONTACT_OPTION_SELECTED,
+                    { option: "email" }
+                );
                 if (selectedOption.id) {
                     WebExtensionContext.openMail(selectedOption.id);
                 } else {
