@@ -885,8 +885,7 @@ describe("WebExtensionContext co-presence engagement telemetry", () => {
             "userA",
             [{ connectionId: "connA", entityId: "entity1" }]
         );
-        // Current user with two tabs: the entry contains the current connection,
-        // so it must be treated as self and excluded entirely (no self-inflation).
+        // Self opens two tabs: entry includes the current connection, so it's excluded.
         WebExtensionContext.connectedUsers.setUserData(
             "container",
             "Self",

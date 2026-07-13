@@ -941,11 +941,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this.trackCoPresenceRealized();
     }
 
-    /**
-     * Emits the co-presence "realized" event the first time the current user
-     * actually sees at least one other collaborator in the session. Fires at
-     * most once per session (latched). Logs only a count, never identity.
-     */
+    /** Fires the "realized" event once per session, the first time the user sees another collaborator. Logs a count only, never identity. */
     private trackCoPresenceRealized() {
         if (this._coPresenceOtherUserDetected) {
             return;
@@ -965,15 +961,9 @@ class WebExtensionContext implements IWebExtensionContext {
     }
 
     /**
-     * Counts distinct connected collaborators other than the current user.
-     *
-     * The connected-users map is keyed by userId (AAD object id) and includes
-     * the current user's own entry. "Self" is the entry whose connections
-     * contain the current connection id; it is excluded entirely so that the
-     * current user opening the portal in multiple tabs does not inflate the
-     * count. Every remaining entry with at least one connection is a distinct
-     * other person.
-     * @returns the number of distinct other collaborators currently connected.
+     * Counts distinct other collaborators. The self entry (whose connections
+     * include the current connection id) is excluded, so extra self tabs don't
+     * inflate the count.
      */
     public getOtherConnectedUserCount(): number {
         let count = 0;

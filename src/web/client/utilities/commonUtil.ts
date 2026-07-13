@@ -130,11 +130,8 @@ export function isVersionControlEnabled() {
 
 
 /**
- * Reads the co-presence experimental feature flag. Pure getter: it does NOT emit
- * telemetry, because it is called on every tab/editor change. The one-time
- * enabled/disabled decision is logged once at activation in
- * `processWillStartCollaboration`.
- * @returns true when the co-presence feature is enabled, otherwise false.
+ * Pure getter for the co-presence feature flag. Emits no telemetry (it runs on
+ * every tab/editor change); the enable/disable decision is logged once at activation.
  */
 export function isCoPresenceEnabled(): boolean {
     return vscode.workspace
