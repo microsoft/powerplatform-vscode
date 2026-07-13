@@ -878,18 +878,23 @@ describe("WebExtensionContext co-presence engagement telemetry", () => {
         sinon.restore();
     });
 
-    it("getOtherConnectedUserCount_shouldCountOnlyUsersWithNonSelfConnections", () => {
+    it("getOtherConnectedUserCount_shouldExcludeSelfEvenWithMultipleTabs", () => {
         WebExtensionContext.connectedUsers.setUserData(
             "container",
             "User A",
             "userA",
             [{ connectionId: "connA", entityId: "entity1" }]
         );
+        // Current user with two tabs: the entry contains the current connection,
+        // so it must be treated as self and excluded entirely (no self-inflation).
         WebExtensionContext.connectedUsers.setUserData(
             "container",
             "Self",
             "selfUser",
-            [{ connectionId: "self-connection", entityId: "entity1" }]
+            [
+                { connectionId: "self-connection", entityId: "entity1" },
+                { connectionId: "self-connection-tab2", entityId: "entity1" }
+            ]
         );
 
         const count = WebExtensionContext.getOtherConnectedUserCount();

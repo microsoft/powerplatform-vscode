@@ -76,14 +76,14 @@ export class QuickPickProvider {
     }
 
     public async showQuickPick() {
-        const connectedUserCount = this.getLength();
+        const usersOnPageCount = this.getLength();
         WebExtensionContext.telemetry.sendInfoTelemetry(
             webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_ACTIVE_USERS_VIEWED,
-            { connectedUserCount: connectedUserCount.toString() }
+            { usersOnPageCount: usersOnPageCount.toString() }
         );
 
         const selectedUser = await vscode.window.showQuickPick(this.items, {
-            title: vscode.l10n.t(Constants.WEB_EXTENSION_QUICK_PICK_TITLE.toUpperCase() + ` (${connectedUserCount})`),
+            title: vscode.l10n.t(Constants.WEB_EXTENSION_QUICK_PICK_TITLE.toUpperCase() + ` (${usersOnPageCount})`),
             placeHolder: vscode.l10n.t(Constants.WEB_EXTENSION_QUICK_PICK_PLACEHOLDER),
         });
         if (selectedUser) {

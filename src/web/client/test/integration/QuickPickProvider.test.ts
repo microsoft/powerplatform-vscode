@@ -25,7 +25,7 @@ describe("QuickPickProvider", () => {
         assert.calledWith(
             sendInfoTelemetry,
             webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_ACTIVE_USERS_VIEWED,
-            { connectedUserCount: "0" }
+            { usersOnPageCount: "0" }
         );
     });
 

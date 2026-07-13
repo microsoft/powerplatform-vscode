@@ -965,17 +965,23 @@ class WebExtensionContext implements IWebExtensionContext {
     }
 
     /**
-     * Counts connected users other than the current user (i.e. users that have
-     * at least one connection which is not the current connection).
+     * Counts distinct connected collaborators other than the current user.
+     *
+     * The connected-users map is keyed by userId (AAD object id) and includes
+     * the current user's own entry. "Self" is the entry whose connections
+     * contain the current connection id; it is excluded entirely so that the
+     * current user opening the portal in multiple tabs does not inflate the
+     * count. Every remaining entry with at least one connection is a distinct
+     * other person.
      * @returns the number of distinct other collaborators currently connected.
      */
     public getOtherConnectedUserCount(): number {
         let count = 0;
         for (const user of this.connectedUsers.getUserMap.values()) {
-            const hasOtherConnection = user._connectionData.some(
-                connection => connection.connectionId !== this._currentConnectionId
+            const isSelf = user._connectionData.some(
+                connection => connection.connectionId === this._currentConnectionId
             );
-            if (hasOtherConnection) {
+            if (!isSelf && user._connectionData.length > 0) {
                 count++;
             }
         }
