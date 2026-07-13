@@ -1,0 +1,193 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# Checks daily for new stable Microsoft.PowerApps.CLI versions and creates a
+# pull request when gulpfile.mjs needs to be updated.
+
+name: PAC Version Check
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pac-version-check
+  cancel-in-progress: false
+
+jobs:
+  check-version:
+    name: Check PAC Version
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Generate GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: 2740120
+          private-key: ${{ secrets.POWER_PAGES_PUBLIC_GITHUB_APP_PRIVATE_KEY }}
+
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: main
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Check PAC Versions
+        id: versions
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          PACKAGE_ID="microsoft.powerapps.cli"
+          PACKAGE_INDEX="https://api.nuget.org/v3-flatcontainer/${PACKAGE_ID}/index.json"
+          LATEST_VERSION="$(
+            curl --fail --silent --show-error --location "$PACKAGE_INDEX" |
+              jq --raw-output '.versions[] | select(contains("-") | not)' |
+              sort --version-sort |
+              tail --lines=1
+          )"
+          CURRENT_VERSION="$(
+            sed -n "s/^const cliVersion = '\([^']*\)';$/\1/p" gulpfile.mjs
+          )"
+
+          if [[ ! "$LATEST_VERSION" =~ ^[0-9]+(\.[0-9]+){2,3}$ ]]; then
+            echo "Unable to determine a valid stable PAC version from NuGet."
+            exit 1
+          fi
+
+          if [[ ! "$CURRENT_VERSION" =~ ^[0-9]+(\.[0-9]+){2,3}$ ]]; then
+            echo "Unable to determine the current PAC version from gulpfile.mjs."
+            exit 1
+          fi
+
+          echo "Current PAC version: $CURRENT_VERSION"
+          echo "Latest PAC version: $LATEST_VERSION"
+          echo "current=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
+          echo "latest=$LATEST_VERSION" >> "$GITHUB_OUTPUT"
+
+          if [[ "$CURRENT_VERSION" == "$LATEST_VERSION" ]]; then
+            echo "update-needed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "update-needed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check for Existing Pull Request
+        if: steps.versions.outputs.update-needed == 'true'
+        id: existing-pr
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          set -euo pipefail
+
+          EXISTING_PR="$(
+            gh pr list \
+              --base main \
+              --limit 100 \
+              --state open \
+              --json title,url \
+              --jq '[.[] | select(.title | startswith("Bump PAC to "))][0].url // ""'
+          )"
+
+          if [ -n "$EXISTING_PR" ]; then
+            echo "Pull request already exists: $EXISTING_PR"
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "url=$EXISTING_PR" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Update PAC Version
+        if: steps.versions.outputs.update-needed == 'true' && steps.existing-pr.outputs.exists != 'true'
+        env:
+          CURRENT_VERSION: ${{ steps.versions.outputs.current }}
+          LATEST_VERSION: ${{ steps.versions.outputs.latest }}
+        run: |
+          set -euo pipefail
+
+          node <<'NODE'
+          const fs = require('fs');
+
+          const filePath = 'gulpfile.mjs';
+          const currentVersionDeclaration = `const cliVersion = '${process.env.CURRENT_VERSION}'`;
+          const latestVersionDeclaration = `const cliVersion = '${process.env.LATEST_VERSION}'`;
+          const fileContent = fs.readFileSync(filePath, 'utf8');
+          const occurrences = fileContent.split(currentVersionDeclaration).length - 1;
+
+          if (occurrences !== 1) {
+              throw new Error(`Expected one current PAC version declaration, found ${occurrences}.`);
+          }
+
+          fs.writeFileSync(
+              filePath,
+              fileContent.replace(currentVersionDeclaration, latestVersionDeclaration)
+          );
+          NODE
+
+          # `git diff --quiet` returns 1 when the expected change exists. Keep
+          # that status inside an `if` so it does not become the step result.
+          if git diff --exit-code --quiet -- gulpfile.mjs; then
+            echo "PAC version replacement did not modify gulpfile.mjs."
+            exit 1
+          fi
+
+      - name: Create Pull Request
+        if: steps.versions.outputs.update-needed == 'true' && steps.existing-pr.outputs.exists != 'true'
+        id: create-pr
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          LATEST_VERSION: ${{ steps.versions.outputs.latest }}
+        run: |
+          set -euo pipefail
+
+          BRANCH="automation/pac-version-${LATEST_VERSION}-${GITHUB_RUN_ID}"
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add gulpfile.mjs
+          git commit -m "Bump PAC to $LATEST_VERSION"
+          git push --set-upstream origin "$BRANCH"
+
+          PR_URL="$(
+            gh pr create \
+              --base main \
+              --head "$BRANCH" \
+              --title "Bump PAC to $LATEST_VERSION" \
+              --body "$(printf 'Bump PAC to %s\n\nhttps://www.nuget.org/packages/Microsoft.PowerApps.CLI/%s' "$LATEST_VERSION" "$LATEST_VERSION")"
+          )"
+          echo "url=$PR_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Summarize Run
+        if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+          CURRENT_VERSION: ${{ steps.versions.outputs.current }}
+          LATEST_VERSION: ${{ steps.versions.outputs.latest }}
+          UPDATE_NEEDED: ${{ steps.versions.outputs.update-needed }}
+          EXISTING_PR_URL: ${{ steps.existing-pr.outputs.url }}
+          CREATED_PR_URL: ${{ steps.create-pr.outputs.url }}
+        run: |
+          {
+            echo "## PAC Version Check"
+            echo ""
+            echo "- Current version: \`${CURRENT_VERSION:-unknown}\`"
+            echo "- Latest version: \`${LATEST_VERSION:-unknown}\`"
+            if [ "$JOB_STATUS" != "success" ]; then
+              echo "- Result: the workflow failed before completing the version update."
+            elif [ "$UPDATE_NEEDED" != "true" ]; then
+              echo "- Result: PAC is already up to date."
+            elif [ -n "$EXISTING_PR_URL" ]; then
+              echo "- Result: an update pull request already exists: $EXISTING_PR_URL"
+            else
+              echo "- Result: created $CREATED_PR_URL"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
