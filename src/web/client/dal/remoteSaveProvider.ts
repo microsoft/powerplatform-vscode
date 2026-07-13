@@ -198,7 +198,8 @@ async function saveDataToDataverse(
             );
             const response = await WebExtensionContext.concurrencyHandler.handleRequest(
                 saveCallParameters.requestUrl,
-                saveCallParameters.requestInit
+                saveCallParameters.requestInit,
+                () => WebExtensionContext.refreshDataverseToken()
             );
 
             if (!response.ok) {

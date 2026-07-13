@@ -13,7 +13,7 @@ import { POWERPAGES_SITE_FOLDER } from "../../../../../common/constants";
 import { showProgressWithNotification } from "../../../../../common/utilities/Utils";
 import { FileComparisonStatus, IFileComparisonResult } from "../../models/IFileComparisonResult";
 import { SiteVisibility } from "../../models/SiteVisibility";
-import { getAllFiles } from "../../ActionsHubUtils";
+import { getAllFiles, isBinaryFile } from "../../ActionsHubUtils";
 import MetadataDiffContext from "../../MetadataDiffContext";
 import PacContext from "../../../../pac/PacContext";
 
@@ -413,6 +413,41 @@ export function compareFiles(
 }
 
 /**
+ * Normalizes line endings in a text buffer so that CRLF and lone CR are treated
+ * the same as LF. CR (0x0D) and LF (0x0A) are single-byte ASCII characters that
+ * never appear as UTF-8 continuation bytes, so decoding as UTF-8 before normalizing
+ * is safe for multi-byte content.
+ * @param content The file content buffer
+ * @returns The content as a string with normalized (LF) line endings
+ */
+function normalizeLineEndings(content: Buffer): string {
+    return content.toString("utf8").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+}
+
+/**
+ * Determines whether two file contents are equal for diff purposes.
+ * Binary files are compared byte-for-byte. Text files are first compared
+ * byte-for-byte and, if that fails, compared again after normalizing line
+ * endings so that files differing only by CRLF vs LF are not reported as modified.
+ * @param localContent The local file content buffer
+ * @param remoteContent The remote file content buffer
+ * @param relativePath The relative path of the file (used to detect binary files)
+ * @returns True if the contents are considered equal, false otherwise
+ */
+function areFileContentsEqual(localContent: Buffer, remoteContent: Buffer, relativePath: string): boolean {
+    if (localContent.equals(remoteContent)) {
+        return true;
+    }
+
+    // SVG is text-based, so treat it as text (includeSvg=false) for content comparison
+    if (isBinaryFile(relativePath, false)) {
+        return false;
+    }
+
+    return normalizeLineEndings(localContent) === normalizeLineEndings(remoteContent);
+}
+
+/**
  * Compares two file maps and adds results to the results array.
  * File path comparison is case-insensitive to handle Windows file system behavior.
  * @param remoteFiles Map of remote files (relative path -> absolute path)
@@ -449,7 +484,7 @@ function compareFileMaps(
             const remoteContent = fs.readFileSync(remotePath);
             const localContent = fs.readFileSync(localEntry.absolutePath);
 
-            if (!remoteContent.equals(localContent)) {
+            if (!areFileContentsEqual(localContent, remoteContent, localEntry.originalPath)) {
                 // Check if we already have a result for this path (case-insensitive)
                 if (!results.some(r => r.relativePath.toLowerCase() === lowerCasePath)) {
                     results.push({

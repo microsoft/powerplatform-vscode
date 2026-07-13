@@ -155,6 +155,70 @@ describe("WebExtensionContext", () => {
         expect(WebExtensionContext.dataverseAccessToken).eq(accessToken);
     });
 
+    it("refreshDataverseToken_whenCalled_shouldReturnFreshTokenAndUpdateStoredToken", async () => {
+        const accessToken = "refreshed-token-value";
+        stub(vscode.authentication, "getSession").resolves({
+            accessToken: accessToken,
+        } as vscode.AuthenticationSession);
+        const entityId = "3355d5ec-b38d-46ca-a150-c00386b0a4be";
+        const queryParamsMap = new Map<string, string>([
+            [Constants.queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"]
+        ]);
+        stub(authenticationProvider, "dataverseAuthentication").resolves(
+            { accessToken: accessToken, userId: "" }
+        );
+        WebExtensionContext.setWebExtensionContext("webPages", entityId, queryParamsMap);
+
+        const token = await WebExtensionContext.refreshDataverseToken();
+
+        expect(token).eq(accessToken);
+        expect(WebExtensionContext.dataverseAccessToken).eq(accessToken);
+    });
+
+    it("refreshDataverseToken_whenCalledConcurrently_shouldAcquireTokenOnlyOnce", async () => {
+        const accessToken = "de-duped-token";
+        stub(vscode.authentication, "getSession").resolves({
+            accessToken: accessToken,
+        } as vscode.AuthenticationSession);
+        const entityId = "3355d5ec-b38d-46ca-a150-c00386b0a4be";
+        const queryParamsMap = new Map<string, string>([
+            [Constants.queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"]
+        ]);
+        const dataverseAuthentication = stub(authenticationProvider, "dataverseAuthentication").resolves(
+            { accessToken: accessToken, userId: "" }
+        );
+        WebExtensionContext.setWebExtensionContext("webPages", entityId, queryParamsMap);
+
+        const [t1, t2, t3] = await Promise.all([
+            WebExtensionContext.refreshDataverseToken(),
+            WebExtensionContext.refreshDataverseToken(),
+            WebExtensionContext.refreshDataverseToken(),
+        ]);
+
+        expect(t1).eq(accessToken);
+        expect(t2).eq(accessToken);
+        expect(t3).eq(accessToken);
+        assert.calledOnce(dataverseAuthentication);
+    });
+
+    it("refreshDataverseToken_whenAuthenticationFails_shouldReturnEmptyString", async () => {
+        stub(vscode.authentication, "getSession").resolves({
+            accessToken: "",
+        } as vscode.AuthenticationSession);
+        const entityId = "3355d5ec-b38d-46ca-a150-c00386b0a4be";
+        const queryParamsMap = new Map<string, string>([
+            [Constants.queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"]
+        ]);
+        stub(authenticationProvider, "dataverseAuthentication").resolves({ accessToken: "", userId: "" });
+        stub(WebExtensionContext.telemetry, "sendErrorTelemetry");
+        stub(vscode.FileSystemError, "NoPermissions").returns(new Error("no permissions") as vscode.FileSystemError);
+        WebExtensionContext.setWebExtensionContext("webPages", entityId, queryParamsMap);
+
+        const token = await WebExtensionContext.refreshDataverseToken();
+
+        expect(token).eq("");
+    });
+
     it("updateFileDetailsInContext_whenPassAllParams_shouldSetFileDataMap", async () => {
         //Act
         const attributePaths = {
@@ -796,5 +860,140 @@ describe("WebExtensionContext", () => {
             Constants.initializationEntityName.PORTALLANGUAGE
         );
         //#endregion
+    });
+});
+
+describe("WebExtensionContext co-presence engagement telemetry", () => {
+    const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+    beforeEach(() => {
+        // Reset singleton co-presence state for deterministic assertions
+        WebExtensionContext.connectedUsers.getUserMap.clear();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (WebExtensionContext as any)._coPresenceOtherUserDetected = false;
+        WebExtensionContext.setCurrentConnectionId("self-connection");
+    });
+
+    afterEach(() => {
+        sinon.restore();
+    });
+
+    it("getOtherConnectedUserCount_shouldExcludeSelfEvenWithMultipleTabs", () => {
+        WebExtensionContext.connectedUsers.setUserData(
+            "container",
+            "User A",
+            "userA",
+            [{ connectionId: "connA", entityId: "entity1" }]
+        );
+        // Self opens two tabs: entry includes the current connection, so it's excluded.
+        WebExtensionContext.connectedUsers.setUserData(
+            "container",
+            "Self",
+            "selfUser",
+            [
+                { connectionId: "self-connection", entityId: "entity1" },
+                { connectionId: "self-connection-tab2", entityId: "entity1" }
+            ]
+        );
+
+        const count = WebExtensionContext.getOtherConnectedUserCount();
+
+        expect(count).eq(1);
+    });
+
+    it("updateConnectedUsersInContext_whenOtherUserPresent_shouldSendOtherUserDetectedOnce", async () => {
+        const sendInfoTelemetry = stub(WebExtensionContext.telemetry, "sendInfoTelemetry");
+
+        await WebExtensionContext.updateConnectedUsersInContext(
+            "container",
+            "User A",
+            "userA",
+            [{ connectionId: "connA", entityId: "entity1" }]
+        );
+        await WebExtensionContext.updateConnectedUsersInContext(
+            "container",
+            "User B",
+            "userB",
+            [{ connectionId: "connB", entityId: "entity1" }]
+        );
+
+        const otherUserDetectedCalls = sendInfoTelemetry
+            .getCalls()
+            .filter(call => call.args[0] === webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_OTHER_USER_DETECTED);
+        expect(otherUserDetectedCalls.length).eq(1);
+    });
+
+    it("updateConnectedUsersInContext_whenOnlySelfPresent_shouldNotSendOtherUserDetected", async () => {
+        const sendInfoTelemetry = stub(WebExtensionContext.telemetry, "sendInfoTelemetry");
+
+        await WebExtensionContext.updateConnectedUsersInContext(
+            "container",
+            "Self",
+            "selfUser",
+            [{ connectionId: "self-connection", entityId: "entity1" }]
+        );
+
+        const otherUserDetectedCalls = sendInfoTelemetry
+            .getCalls()
+            .filter(call => call.args[0] === webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_OTHER_USER_DETECTED);
+        expect(otherUserDetectedCalls.length).eq(0);
+    });
+
+    it("openTeamsChat_whenMailAvailable_shouldSendTeamsChatOpenedTelemetry", async () => {
+        stub(WebExtensionContext, "getMail").resolves("user@contoso.com");
+        stub(vscode.env, "openExternal").resolves(true);
+        const sendInfoTelemetry = stub(WebExtensionContext.telemetry, "sendInfoTelemetry");
+
+        WebExtensionContext.openTeamsChat("userA");
+        await flushPromises();
+
+        assert.calledWith(
+            sendInfoTelemetry,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_TEAMS_CHAT_OPENED
+        );
+    });
+
+    it("openTeamsChat_whenMailUnavailable_shouldSendTeamsChatUnavailableTelemetry", async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        stub(WebExtensionContext, "getMail").resolves(undefined as any);
+        stub(vscode.window, "showErrorMessage");
+        const sendInfoTelemetry = stub(WebExtensionContext.telemetry, "sendInfoTelemetry");
+
+        WebExtensionContext.openTeamsChat("userA");
+        await flushPromises();
+
+        assert.calledWith(
+            sendInfoTelemetry,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_TEAMS_CHAT_UNAVAILABLE
+        );
+    });
+
+    it("openMail_whenMailAvailable_shouldSendEmailOpenedTelemetry", async () => {
+        stub(WebExtensionContext, "getMail").resolves("user@contoso.com");
+        stub(vscode.env, "openExternal").resolves(true);
+        const sendInfoTelemetry = stub(WebExtensionContext.telemetry, "sendInfoTelemetry");
+
+        await WebExtensionContext.openMail("userA");
+        await flushPromises();
+
+        assert.calledWith(
+            sendInfoTelemetry,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_EMAIL_OPENED
+        );
+    });
+
+    it("openMail_whenMailUnavailable_shouldSendEmailUnavailableTelemetry", async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        stub(WebExtensionContext, "getMail").resolves(undefined as any);
+        stub(vscode.window, "showErrorMessage");
+        const sendInfoTelemetry = stub(WebExtensionContext.telemetry, "sendInfoTelemetry");
+
+        await WebExtensionContext.openMail("userA");
+        await flushPromises();
+
+        assert.calledWith(
+            sendInfoTelemetry,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_EMAIL_UNAVAILABLE
+        );
     });
 });

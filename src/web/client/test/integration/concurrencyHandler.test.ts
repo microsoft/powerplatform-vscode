@@ -80,4 +80,87 @@ describe("ConcurrencyHandler", () => {
             assert.calledWith(fetchStub, "https://test.com/api", requestInit);
         });
     });
+
+    describe("handleRequest 401 token refresh", () => {
+        it("should refresh token and retry once on 401, returning the retried success", async () => {
+            const unauthorized = { ok: false, status: 401 };
+            const success = { ok: true, status: 200 };
+            const fetchStub = stub(fetch, "default")
+                .onFirstCall().resolves(unauthorized as unknown as fetch.Response)
+                .onSecondCall().resolves(success as unknown as fetch.Response);
+            const onUnauthorized = stub().resolves("fresh-token");
+
+            const handler = new ConcurrencyHandler();
+            const requestInit = { headers: { authorization: "Bearer stale-token", "content-type": "application/json" } };
+            const result = await handler.handleRequest("https://test.com/api", requestInit, onUnauthorized);
+
+            expect(result).to.equal(success);
+            assert.calledOnce(onUnauthorized);
+            assert.calledTwice(fetchStub);
+            // Retried request must carry the refreshed token while preserving other headers.
+            const retriedInit = fetchStub.getCall(1).args[1] as { headers: Record<string, string> };
+            expect(retriedInit.headers.authorization).to.equal("Bearer fresh-token");
+            expect(retriedInit.headers["content-type"]).to.equal("application/json");
+        });
+
+        it("should not loop when the retried request also returns 401", async () => {
+            const unauthorized = { ok: false, status: 401 };
+            const fetchStub = stub(fetch, "default").resolves(unauthorized as unknown as fetch.Response);
+            const onUnauthorized = stub().resolves("fresh-token");
+
+            const handler = new ConcurrencyHandler();
+            const result = await handler.handleRequest(
+                "https://test.com/api",
+                { headers: { authorization: "Bearer stale-token" } },
+                onUnauthorized
+            );
+
+            expect((result as unknown as { status: number }).status).to.equal(401);
+            assert.calledOnce(onUnauthorized);
+            assert.calledTwice(fetchStub);
+        });
+
+        it("should fail-fast (no retry) when refresh returns an empty token", async () => {
+            const unauthorized = { ok: false, status: 401 };
+            const fetchStub = stub(fetch, "default").resolves(unauthorized as unknown as fetch.Response);
+            const onUnauthorized = stub().resolves("");
+
+            const handler = new ConcurrencyHandler();
+            const result = await handler.handleRequest(
+                "https://test.com/api",
+                { headers: { authorization: "Bearer stale-token" } },
+                onUnauthorized
+            );
+
+            expect((result as unknown as { status: number }).status).to.equal(401);
+            assert.calledOnce(onUnauthorized);
+            assert.calledOnce(fetchStub);
+        });
+
+        it("should return 401 as-is when no onUnauthorized provider is supplied (back-compat)", async () => {
+            const unauthorized = { ok: false, status: 401 };
+            const fetchStub = stub(fetch, "default").resolves(unauthorized as unknown as fetch.Response);
+
+            const handler = new ConcurrencyHandler();
+            const result = await handler.handleRequest("https://test.com/api", {
+                headers: { authorization: "Bearer stale-token" },
+            });
+
+            expect((result as unknown as { status: number }).status).to.equal(401);
+            assert.calledOnce(fetchStub);
+        });
+
+        it("should not invoke the provider on a successful first response", async () => {
+            const success = { ok: true, status: 200 };
+            const fetchStub = stub(fetch, "default").resolves(success as unknown as fetch.Response);
+            const onUnauthorized = stub().resolves("fresh-token");
+
+            const handler = new ConcurrencyHandler();
+            const result = await handler.handleRequest("https://test.com/api", undefined, onUnauthorized);
+
+            expect(result).to.equal(success);
+            assert.notCalled(onUnauthorized);
+            assert.calledOnce(fetchStub);
+        });
+    });
 });

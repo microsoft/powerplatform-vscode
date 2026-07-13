@@ -1084,9 +1084,6 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++95e154398a4bc0091aa4d6b607472ac5a89e41fbc84a3a49f823314d6de9eebc">
       <source xml:lang="en">Replace</source>
     </trans-unit>
-    <trans-unit id="++CODE++b62120c5416487f4c793d75aee7fea083971e5ac665a3f35767023f408f482e5">
-      <source xml:lang="en">Response data is empty</source>
-    </trans-unit>
     <trans-unit id="++CODE++b87504a6b179044cf99d39cf641f47aa5e76c4c5b949413ec33953ec35c10ac4">
       <source xml:lang="en">Results opened in SARIF viewer successfully.</source>
     </trans-unit>

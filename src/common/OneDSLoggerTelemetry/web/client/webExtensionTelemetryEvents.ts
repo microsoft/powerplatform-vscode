@@ -76,6 +76,16 @@ export enum webExtensionTelemetryEventNames {
     WEB_EXTENSION_MULTI_FILE_INVALID_DATAVERSE_URL = "WebExtensionMultiFileInvalidDataverseUrl",
     WEB_EXTENSION_CO_PRESENCE_FEATURE_FLAG_DISABLED = "WebExtensionCoPresenceFeatureFlagDisabled",
     WEB_EXTENSION_CO_PRESENCE_FEATURE_FLAG_ENABLED = "WebExtensionCoPresenceFeatureFlagEnabled",
+    // Co-presence usage funnel: Activated -> Realized -> Viewed -> Selected -> Contacted
+    WEB_EXTENSION_CO_PRESENCE_ACTIVATED = "WebExtensionCoPresenceActivated",
+    WEB_EXTENSION_CO_PRESENCE_OTHER_USER_DETECTED = "WebExtensionCoPresenceOtherUserDetected",
+    WEB_EXTENSION_CO_PRESENCE_ACTIVE_USERS_VIEWED = "WebExtensionCoPresenceActiveUsersViewed",
+    WEB_EXTENSION_CO_PRESENCE_USER_SELECTED = "WebExtensionCoPresenceUserSelected",
+    WEB_EXTENSION_CO_PRESENCE_CONTACT_OPTION_SELECTED = "WebExtensionCoPresenceContactOptionSelected",
+    WEB_EXTENSION_CO_PRESENCE_TEAMS_CHAT_OPENED = "WebExtensionCoPresenceTeamsChatOpened",
+    WEB_EXTENSION_CO_PRESENCE_TEAMS_CHAT_UNAVAILABLE = "WebExtensionCoPresenceTeamsChatUnavailable",
+    WEB_EXTENSION_CO_PRESENCE_EMAIL_OPENED = "WebExtensionCoPresenceEmailOpened",
+    WEB_EXTENSION_CO_PRESENCE_EMAIL_UNAVAILABLE = "WebExtensionCoPresenceEmailUnavailable",
     WEB_EXTENSION_FILES_LOAD_SUCCESS = "WebExtensionFilesLoadSuccess",
     WEB_EXTENSION_PREPARE_WORKSPACE_SUCCESS = "webExtensionPrepareWorkspaceSuccess",
     WEB_EXTENSION_APP_NAME_NOT_FOUND = "WebExtensionAppNameNotFound",
@@ -135,5 +145,7 @@ export enum webExtensionTelemetryEventNames {
     WEB_EXTENSION_REQUEST_RETRY = "WebExtensionRequestRetry",
     WEB_EXTENSION_WEBFILE_NOT_FOUND = "WebExtensionWebfileNotFound",
     WEB_EXTENSION_SERVERLOGIC_NOT_FOUND = "WebExtensionServerlogicNotFound",
-    WEB_EXTENSION_OPTIONAL_ENTITY_NOT_FOUND = "WebExtensionOptionalEntityNotFound"
+    WEB_EXTENSION_OPTIONAL_ENTITY_NOT_FOUND = "WebExtensionOptionalEntityNotFound",
+    WEB_EXTENSION_EMPTY_DATAVERSE_RESPONSE = "WebExtensionEmptyDataverseResponse",
+    WEB_EXTENSION_TOKEN_REFRESH_RETRY = "WebExtensionTokenRefreshRetry"
 }
