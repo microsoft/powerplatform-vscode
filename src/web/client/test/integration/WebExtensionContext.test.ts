@@ -862,3 +862,138 @@ describe("WebExtensionContext", () => {
         //#endregion
     });
 });
+
+describe("WebExtensionContext co-presence engagement telemetry", () => {
+    const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+    beforeEach(() => {
+        // Reset singleton co-presence state for deterministic assertions
+        WebExtensionContext.connectedUsers.getUserMap.clear();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (WebExtensionContext as any)._coPresenceOtherUserDetected = false;
+        WebExtensionContext.setCurrentConnectionId("self-connection");
+    });
+
+    afterEach(() => {
+        sinon.restore();
+    });
+
+    it("getOtherConnectedUserCount_shouldExcludeSelfEvenWithMultipleTabs", () => {
+        WebExtensionContext.connectedUsers.setUserData(
+            "container",
+            "User A",
+            "userA",
+            [{ connectionId: "connA", entityId: "entity1" }]
+        );
+        // Self opens two tabs: entry includes the current connection, so it's excluded.
+        WebExtensionContext.connectedUsers.setUserData(
+            "container",
+            "Self",
+            "selfUser",
+            [
+                { connectionId: "self-connection", entityId: "entity1" },
+                { connectionId: "self-connection-tab2", entityId: "entity1" }
+            ]
+        );
+
+        const count = WebExtensionContext.getOtherConnectedUserCount();
+
+        expect(count).eq(1);
+    });
+
+    it("updateConnectedUsersInContext_whenOtherUserPresent_shouldSendOtherUserDetectedOnce", async () => {
+        const sendInfoTelemetry = stub(WebExtensionContext.telemetry, "sendInfoTelemetry");
+
+        await WebExtensionContext.updateConnectedUsersInContext(
+            "container",
+            "User A",
+            "userA",
+            [{ connectionId: "connA", entityId: "entity1" }]
+        );
+        await WebExtensionContext.updateConnectedUsersInContext(
+            "container",
+            "User B",
+            "userB",
+            [{ connectionId: "connB", entityId: "entity1" }]
+        );
+
+        const otherUserDetectedCalls = sendInfoTelemetry
+            .getCalls()
+            .filter(call => call.args[0] === webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_OTHER_USER_DETECTED);
+        expect(otherUserDetectedCalls.length).eq(1);
+    });
+
+    it("updateConnectedUsersInContext_whenOnlySelfPresent_shouldNotSendOtherUserDetected", async () => {
+        const sendInfoTelemetry = stub(WebExtensionContext.telemetry, "sendInfoTelemetry");
+
+        await WebExtensionContext.updateConnectedUsersInContext(
+            "container",
+            "Self",
+            "selfUser",
+            [{ connectionId: "self-connection", entityId: "entity1" }]
+        );
+
+        const otherUserDetectedCalls = sendInfoTelemetry
+            .getCalls()
+            .filter(call => call.args[0] === webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_OTHER_USER_DETECTED);
+        expect(otherUserDetectedCalls.length).eq(0);
+    });
+
+    it("openTeamsChat_whenMailAvailable_shouldSendTeamsChatOpenedTelemetry", async () => {
+        stub(WebExtensionContext, "getMail").resolves("user@contoso.com");
+        stub(vscode.env, "openExternal").resolves(true);
+        const sendInfoTelemetry = stub(WebExtensionContext.telemetry, "sendInfoTelemetry");
+
+        WebExtensionContext.openTeamsChat("userA");
+        await flushPromises();
+
+        assert.calledWith(
+            sendInfoTelemetry,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_TEAMS_CHAT_OPENED
+        );
+    });
+
+    it("openTeamsChat_whenMailUnavailable_shouldSendTeamsChatUnavailableTelemetry", async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        stub(WebExtensionContext, "getMail").resolves(undefined as any);
+        stub(vscode.window, "showErrorMessage");
+        const sendInfoTelemetry = stub(WebExtensionContext.telemetry, "sendInfoTelemetry");
+
+        WebExtensionContext.openTeamsChat("userA");
+        await flushPromises();
+
+        assert.calledWith(
+            sendInfoTelemetry,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_TEAMS_CHAT_UNAVAILABLE
+        );
+    });
+
+    it("openMail_whenMailAvailable_shouldSendEmailOpenedTelemetry", async () => {
+        stub(WebExtensionContext, "getMail").resolves("user@contoso.com");
+        stub(vscode.env, "openExternal").resolves(true);
+        const sendInfoTelemetry = stub(WebExtensionContext.telemetry, "sendInfoTelemetry");
+
+        await WebExtensionContext.openMail("userA");
+        await flushPromises();
+
+        assert.calledWith(
+            sendInfoTelemetry,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_EMAIL_OPENED
+        );
+    });
+
+    it("openMail_whenMailUnavailable_shouldSendEmailUnavailableTelemetry", async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        stub(WebExtensionContext, "getMail").resolves(undefined as any);
+        stub(vscode.window, "showErrorMessage");
+        const sendInfoTelemetry = stub(WebExtensionContext.telemetry, "sendInfoTelemetry");
+
+        await WebExtensionContext.openMail("userA");
+        await flushPromises();
+
+        assert.calledWith(
+            sendInfoTelemetry,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_EMAIL_UNAVAILABLE
+        );
+    });
+});

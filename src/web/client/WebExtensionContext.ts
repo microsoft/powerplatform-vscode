@@ -148,6 +148,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _containerId: string;
     private _currentConnectionId: string;
     private _connectedUsers: UserDataMap;
+    private _coPresenceOtherUserDetected: boolean;
     private _quickPickProvider: QuickPickProvider;
     private _userCollaborationProvider: UserCollaborationProvider;
     private _graphClientService: GraphClientService;
@@ -386,6 +387,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._containerId = "";
         this._currentConnectionId = "";
         this._connectedUsers = new UserDataMap();
+        this._coPresenceOtherUserDetected = false;
         this._quickPickProvider = new QuickPickProvider();
         this._userCollaborationProvider = new UserCollaborationProvider();
         this._graphClientService = new GraphClientService();
@@ -935,6 +937,45 @@ class WebExtensionContext implements IWebExtensionContext {
             userId,
             connectionData
         );
+
+        this.trackCoPresenceRealized();
+    }
+
+    /** Fires the "realized" event once per session, the first time the user sees another collaborator. Logs a count only, never identity. */
+    private trackCoPresenceRealized() {
+        if (this._coPresenceOtherUserDetected) {
+            return;
+        }
+
+        const otherUserCount = this.getOtherConnectedUserCount();
+        if (otherUserCount > 0) {
+            this._coPresenceOtherUserDetected = true;
+            this.telemetry.sendInfoTelemetry(
+                webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_OTHER_USER_DETECTED,
+                {
+                    containerId: this._containerId,
+                    connectedUserCount: otherUserCount.toString(),
+                }
+            );
+        }
+    }
+
+    /**
+     * Counts distinct other collaborators. The self entry (whose connections
+     * include the current connection id) is excluded, so extra self tabs don't
+     * inflate the count.
+     */
+    public getOtherConnectedUserCount(): number {
+        let count = 0;
+        for (const user of this.connectedUsers.getUserMap.values()) {
+            const isSelf = user._connectionData.some(
+                connection => connection.connectionId === this._currentConnectionId
+            );
+            if (!isSelf && user._connectionData.length > 0) {
+                count++;
+            }
+        }
+        return count;
     }
 
     public async removeConnectedUserInContext(userId: string, removeConnectionData: IConnectionData) {
@@ -953,9 +994,15 @@ class WebExtensionContext implements IWebExtensionContext {
     public openTeamsChat(userId: string) {
         this.getMail(userId).then((mail) => {
             if (mail === undefined) {
+                this.telemetry.sendInfoTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_TEAMS_CHAT_UNAVAILABLE
+                );
                 vscode.window.showErrorMessage(Constants.WEB_EXTENSION_TEAMS_CHAT_NOT_AVAILABLE);
                 return;
             } else {
+                this.telemetry.sendInfoTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_TEAMS_CHAT_OPENED
+                );
                 const teamsChatLink = getTeamChatURL(mail);
                 vscode.env.openExternal(vscode.Uri.parse(teamsChatLink));
             }
@@ -965,9 +1012,15 @@ class WebExtensionContext implements IWebExtensionContext {
     public async openMail(userId: string): Promise<void> {
         this.getMail(userId).then((mail) => {
             if (mail === undefined) {
+                this.telemetry.sendInfoTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_EMAIL_UNAVAILABLE
+                );
                 vscode.window.showErrorMessage(Constants.WEB_EXTENSION_SEND_EMAIL_NOT_AVAILABLE);
                 return;
             } else {
+                this.telemetry.sendInfoTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_EMAIL_OPENED
+                );
                 const mailToPath = getMailToPath(mail);
                 vscode.env.openExternal(vscode.Uri.parse(mailToPath));
             }
