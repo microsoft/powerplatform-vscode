@@ -76,8 +76,11 @@ export class EtagHandlerService {
                 webExtensionTelemetryEventNames.WEB_EXTENSION_ETAG_HANDLER_SERVICE
             );
 
-            await WebExtensionContext.dataverseAuthentication();
-            const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, requestInit);
+            const response = await WebExtensionContext.concurrencyHandler.handleRequest(
+                requestUrl,
+                requestInit,
+                () => WebExtensionContext.refreshDataverseToken()
+            );
 
             if (response.ok) {
                 const result = await response.json();
@@ -170,8 +173,11 @@ export class EtagHandlerService {
                 this.updateFileEtag.name
             );
 
-            await WebExtensionContext.dataverseAuthentication();
-            const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, requestInit);
+            const response = await WebExtensionContext.concurrencyHandler.handleRequest(
+                requestUrl,
+                requestInit,
+                () => WebExtensionContext.refreshDataverseToken()
+            );
 
             if (response.ok) {
                 const result = await response.json();

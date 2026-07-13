@@ -155,6 +155,70 @@ describe("WebExtensionContext", () => {
         expect(WebExtensionContext.dataverseAccessToken).eq(accessToken);
     });
 
+    it("refreshDataverseToken_whenCalled_shouldReturnFreshTokenAndUpdateStoredToken", async () => {
+        const accessToken = "refreshed-token-value";
+        stub(vscode.authentication, "getSession").resolves({
+            accessToken: accessToken,
+        } as vscode.AuthenticationSession);
+        const entityId = "3355d5ec-b38d-46ca-a150-c00386b0a4be";
+        const queryParamsMap = new Map<string, string>([
+            [Constants.queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"]
+        ]);
+        stub(authenticationProvider, "dataverseAuthentication").resolves(
+            { accessToken: accessToken, userId: "" }
+        );
+        WebExtensionContext.setWebExtensionContext("webPages", entityId, queryParamsMap);
+
+        const token = await WebExtensionContext.refreshDataverseToken();
+
+        expect(token).eq(accessToken);
+        expect(WebExtensionContext.dataverseAccessToken).eq(accessToken);
+    });
+
+    it("refreshDataverseToken_whenCalledConcurrently_shouldAcquireTokenOnlyOnce", async () => {
+        const accessToken = "de-duped-token";
+        stub(vscode.authentication, "getSession").resolves({
+            accessToken: accessToken,
+        } as vscode.AuthenticationSession);
+        const entityId = "3355d5ec-b38d-46ca-a150-c00386b0a4be";
+        const queryParamsMap = new Map<string, string>([
+            [Constants.queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"]
+        ]);
+        const dataverseAuthentication = stub(authenticationProvider, "dataverseAuthentication").resolves(
+            { accessToken: accessToken, userId: "" }
+        );
+        WebExtensionContext.setWebExtensionContext("webPages", entityId, queryParamsMap);
+
+        const [t1, t2, t3] = await Promise.all([
+            WebExtensionContext.refreshDataverseToken(),
+            WebExtensionContext.refreshDataverseToken(),
+            WebExtensionContext.refreshDataverseToken(),
+        ]);
+
+        expect(t1).eq(accessToken);
+        expect(t2).eq(accessToken);
+        expect(t3).eq(accessToken);
+        assert.calledOnce(dataverseAuthentication);
+    });
+
+    it("refreshDataverseToken_whenAuthenticationFails_shouldReturnEmptyString", async () => {
+        stub(vscode.authentication, "getSession").resolves({
+            accessToken: "",
+        } as vscode.AuthenticationSession);
+        const entityId = "3355d5ec-b38d-46ca-a150-c00386b0a4be";
+        const queryParamsMap = new Map<string, string>([
+            [Constants.queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"]
+        ]);
+        stub(authenticationProvider, "dataverseAuthentication").resolves({ accessToken: "", userId: "" });
+        stub(WebExtensionContext.telemetry, "sendErrorTelemetry");
+        stub(vscode.FileSystemError, "NoPermissions").returns(new Error("no permissions") as vscode.FileSystemError);
+        WebExtensionContext.setWebExtensionContext("webPages", entityId, queryParamsMap);
+
+        const token = await WebExtensionContext.refreshDataverseToken();
+
+        expect(token).eq("");
+    });
+
     it("updateFileDetailsInContext_whenPassAllParams_shouldSetFileDataMap", async () => {
         //Act
         const attributePaths = {

@@ -126,6 +126,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _extensionActivationTime: number;
     private _extensionUri: vscode.Uri;
     private _dataverseAccessToken: string;
+    private _dataverseTokenRefreshPromise?: Promise<string>;
     private _entityDataMap: EntityDataMap;
     private _entityForeignKeyDataMap: EntityForeignKeyDataMap;
     private _isContextSet: boolean;
@@ -516,6 +517,34 @@ class WebExtensionContext implements IWebExtensionContext {
 
     public getWebpageNames() {
         return this._webpageNames;
+    }
+
+    /**
+     * Refreshes the Dataverse access token, de-duplicating concurrent callers so
+     * that many simultaneous 401 responses trigger only a single token acquisition.
+     *
+     * Used by the request path to recover from token-expiry (HTTP 401) without
+     * looping: it returns the freshly acquired token, or an empty string if the
+     * refresh failed (so callers can fail-fast instead of retrying indefinitely).
+     *
+     * @returns The refreshed Dataverse access token, or "" on failure.
+     */
+    public async refreshDataverseToken(): Promise<string> {
+        if (!this._dataverseTokenRefreshPromise) {
+            this._dataverseTokenRefreshPromise = (async () => {
+                try {
+                    await this.dataverseAuthentication();
+                    return this._dataverseAccessToken;
+                } catch {
+                    // dataverseAuthentication throws when no token could be acquired.
+                    // Swallow here so the 401 retry path can fail-fast rather than crash.
+                    return "";
+                } finally {
+                    this._dataverseTokenRefreshPromise = undefined;
+                }
+            })();
+        }
+        return this._dataverseTokenRefreshPromise;
     }
 
     public async updateFileDetailsInContext(
