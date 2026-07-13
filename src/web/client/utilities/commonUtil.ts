@@ -129,23 +129,14 @@ export function isVersionControlEnabled() {
 }
 
 
-export function isCoPresenceEnabled() {
-    const isCoPresenceEnabled = vscode.workspace
+/**
+ * Pure getter for the co-presence feature flag. Emits no telemetry (it runs on
+ * every tab/editor change); the enable/disable decision is logged once at activation.
+ */
+export function isCoPresenceEnabled(): boolean {
+    return vscode.workspace
         .getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME)
-        .get(CO_PRESENCE_FEATURE_SETTING_NAME);
-
-    if (!isCoPresenceEnabled) {
-        WebExtensionContext.telemetry.sendInfoTelemetry(
-            webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_FEATURE_FLAG_DISABLED
-        );
-    }
-    else {
-        WebExtensionContext.telemetry.sendInfoTelemetry(
-            webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_FEATURE_FLAG_ENABLED
-        );
-    }
-
-    return isCoPresenceEnabled;
+        .get(CO_PRESENCE_FEATURE_SETTING_NAME) as boolean;
 }
 
 /**

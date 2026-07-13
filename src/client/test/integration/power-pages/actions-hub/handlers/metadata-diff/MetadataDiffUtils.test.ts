@@ -286,6 +286,35 @@ describe("MetadataDiffUtils", () => {
             expect(results.length).to.equal(0);
         });
 
+        it("should not report text files differing only by CRLF vs LF line endings", () => {
+            fs.writeFileSync(path.join(remotePath, "script.js"), "line1\r\nline2\r\nline3\r\n");
+            fs.writeFileSync(path.join(localPath, "script.js"), "line1\nline2\nline3\n");
+
+            const results = compareFiles(remotePath, localPath);
+
+            expect(results.length).to.equal(0);
+        });
+
+        it("should still report text files with genuine content differences when line endings also differ", () => {
+            fs.writeFileSync(path.join(remotePath, "script.js"), "line1\r\nline2\r\n");
+            fs.writeFileSync(path.join(localPath, "script.js"), "line1\nCHANGED\n");
+
+            const results = compareFiles(remotePath, localPath);
+
+            expect(results.length).to.equal(1);
+            expect(results[0].status).to.equal(FileComparisonStatus.MODIFIED);
+        });
+
+        it("should still byte-compare binary files (CRLF vs LF is a real difference)", () => {
+            fs.writeFileSync(path.join(remotePath, "image.png"), Buffer.from("a\r\nb"));
+            fs.writeFileSync(path.join(localPath, "image.png"), Buffer.from("a\nb"));
+
+            const results = compareFiles(remotePath, localPath);
+
+            expect(results.length).to.equal(1);
+            expect(results[0].status).to.equal(FileComparisonStatus.MODIFIED);
+        });
+
         it("should use case-insensitive path comparison", () => {
             // Create files with different case - on Windows these would be the same file
             fs.writeFileSync(path.join(remotePath, "File.TXT"), "remote");

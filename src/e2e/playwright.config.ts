@@ -34,6 +34,18 @@ if (fs.existsSync(envPath)) {
 const AUTH_STATE_PATH = path.resolve(__dirname, '.auth', 'storageState.json');
 const useStorageState = fs.existsSync(AUTH_STATE_PATH) && !process.env.PP_FORCE_REAUTH;
 
+/**
+ * The auth fixtures type the test username/password into the Microsoft login
+ * form, and the test navigates to a private site URL. Playwright traces record
+ * fill() action values and full network traffic, while videos/screenshots
+ * capture the typed values. To avoid persisting these into CI artifacts, all
+ * capture is disabled when running in CI; it stays on locally for debugging.
+ */
+const isCI = !!process.env.CI;
+const traceMode = isCI ? 'off' : 'retain-on-failure';
+const videoMode = isCI ? 'off' : 'retain-on-failure';
+const screenshotMode = isCI ? 'off' : 'only-on-failure';
+
 export default defineConfig({
     testDir: './test',
     timeout: 120000,
@@ -51,9 +63,9 @@ export default defineConfig({
     ],
     use: {
         actionTimeout: 30000,
-        trace: 'retain-on-failure',
-        screenshot: 'only-on-failure',
-        video: 'retain-on-failure',
+        trace: traceMode,
+        screenshot: screenshotMode,
+        video: videoMode,
         storageState: useStorageState ? AUTH_STATE_PATH : undefined,
         ...devices['Desktop Chrome'],
     },

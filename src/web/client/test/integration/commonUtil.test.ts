@@ -4,12 +4,19 @@
  */
 
 import { expect } from "chai";
+import sinon, { stub, assert } from "sinon";
+import * as vscode from "vscode";
 import { schemaEntityName } from "../../schema/constants";
 import {
     convertContentToUint8Array,
     convertContentToString,
     GetFileNameWithExtension,
+    isCoPresenceEnabled,
 } from "../../utilities/commonUtil";
+import WebExtensionContext from "../../WebExtensionContext";
+import { CO_PRESENCE_FEATURE_SETTING_NAME } from "../../common/constants";
+import { SETTINGS_EXPERIMENTAL_STORE_NAME } from "../../../../common/constants";
+import { webExtensionTelemetryEventNames } from "../../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 
 describe("commonUtil", async () => {
     it("convertContentToUint8Array_shouldReturnBase64AsUint8Output", () => {
@@ -259,5 +266,58 @@ describe("commonUtil", async () => {
         //Assert
         const expectedResult = `${fileName}.${extension}`;
         expect(result).eq(expectedResult);
+    });
+});
+
+describe("isCoPresenceEnabled", () => {
+    afterEach(() => {
+        sinon.restore();
+    });
+
+    const stubConfig = (value: boolean | undefined) => {
+        const get = stub().withArgs(CO_PRESENCE_FEATURE_SETTING_NAME).returns(value);
+        stub(vscode.workspace, "getConfiguration")
+            .withArgs(SETTINGS_EXPERIMENTAL_STORE_NAME)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .returns({ get } as any);
+    };
+
+    it("isCoPresenceEnabled_whenSettingEnabled_shouldReturnTrue", () => {
+        stubConfig(true);
+
+        const result = isCoPresenceEnabled();
+
+        expect(result).eq(true);
+    });
+
+    it("isCoPresenceEnabled_whenSettingDisabled_shouldReturnFalse", () => {
+        stubConfig(false);
+
+        const result = isCoPresenceEnabled();
+
+        expect(result).eq(false);
+    });
+
+    it("isCoPresenceEnabled_shouldNotEmitTelemetry", () => {
+        stubConfig(true);
+        const sendInfoTelemetry = stub(WebExtensionContext.telemetry, "sendInfoTelemetry");
+
+        isCoPresenceEnabled();
+
+        assert.notCalled(sendInfoTelemetry);
+    });
+});
+
+describe("processWillStartCollaboration telemetry event names", () => {
+    it("hasCoPresenceFunnelEventNames", () => {
+        expect(webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_ACTIVATED).to.be.a("string");
+        expect(webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_OTHER_USER_DETECTED).to.be.a("string");
+        expect(webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_ACTIVE_USERS_VIEWED).to.be.a("string");
+        expect(webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_USER_SELECTED).to.be.a("string");
+        expect(webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_CONTACT_OPTION_SELECTED).to.be.a("string");
+        expect(webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_TEAMS_CHAT_OPENED).to.be.a("string");
+        expect(webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_TEAMS_CHAT_UNAVAILABLE).to.be.a("string");
+        expect(webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_EMAIL_OPENED).to.be.a("string");
+        expect(webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_EMAIL_UNAVAILABLE).to.be.a("string");
     });
 });
