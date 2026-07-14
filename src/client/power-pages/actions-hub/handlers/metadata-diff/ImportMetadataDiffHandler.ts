@@ -112,26 +112,56 @@ function validateImportData(data: unknown): string | undefined {
 /**
  * Imports a metadata diff from a JSON file
  */
-export async function importMetadataDiff(): Promise<void> {
+export async function importMetadataDiff(presuppliedFileUri?: vscode.Uri): Promise<void> {
     traceInfo(Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_IMPORT_CALLED, {
-        methodName: importMetadataDiff.name
+        methodName: importMetadataDiff.name,
+        source: presuppliedFileUri ? "uri_handler" : "command_palette"
     });
 
     try {
-        // Show open dialog first (before progress)
-        const openUris = await vscode.window.showOpenDialog({
-            canSelectMany: false,
-            filters: {
-                [Constants.Strings.METADATA_DIFF_EXPORT_FILTER_NAME]: ["json"]
-            },
-            title: Constants.Strings.METADATA_DIFF_IMPORT_TITLE
-        });
+        let fileUri: vscode.Uri;
 
-        if (!openUris || openUris.length === 0) {
-            return; // User cancelled
+        if (presuppliedFileUri) {
+            // URI-handler path: validate the supplied file before proceeding.
+            if (!fs.existsSync(presuppliedFileUri.fsPath)) {
+                vscode.window.showErrorMessage(
+                    Constants.StringFunctions.METADATA_DIFF_IMPORT_FILE_NOT_FOUND(presuppliedFileUri.fsPath)
+                );
+                traceError(
+                    Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_IMPORT_FAILED,
+                    new Error("Pre-supplied file path does not exist"),
+                    { methodName: importMetadataDiff.name, reason: "file_not_found" }
+                );
+                return;
+            }
+            if (!presuppliedFileUri.fsPath.toLowerCase().endsWith(".json")) {
+                vscode.window.showErrorMessage(
+                    Constants.Strings.METADATA_DIFF_IMPORT_NOT_JSON
+                );
+                traceError(
+                    Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_IMPORT_FAILED,
+                    new Error("Pre-supplied file is not .json"),
+                    { methodName: importMetadataDiff.name, reason: "wrong_extension" }
+                );
+                return;
+            }
+            fileUri = presuppliedFileUri;
+        } else {
+            // Command path: existing file-picker flow (unchanged).
+            const openUris = await vscode.window.showOpenDialog({
+                canSelectMany: false,
+                filters: {
+                    [Constants.Strings.METADATA_DIFF_EXPORT_FILTER_NAME]: ["json"]
+                },
+                title: Constants.Strings.METADATA_DIFF_IMPORT_TITLE
+            });
+
+            if (!openUris || openUris.length === 0) {
+                return; // User cancelled
+            }
+
+            fileUri = openUris[0];
         }
-
-        const fileUri = openUris[0];
 
         // Read and parse the file first to validate before showing progress
         let importData: IMetadataDiffExport;
