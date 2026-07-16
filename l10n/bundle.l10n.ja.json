@@ -168,6 +168,7 @@
   "Explain the following code {% include 'Page Copy'%}": "次のコード {% include 'Page Copy'%} を説明して",
   "Export Site Comparison": "サイト比較のエクスポート",
   "Exporting comparison...": "比較をエクスポートしています...",
+  "Extension Version:": "Extension Version:",
   "Extension installed but API not available yet. Opening as text file...": "拡張機能がインストールされていますが、API はまだ使用できません。テキスト ファイルとして開いています...",
   "Failed to clone the site. Please try again.": "パケットをクローンできませんでした。もう一度お試しください。",
   "Failed to create a new Power Pages site. Please try again.": "新しい Power Pages サイトを作成できませんでした。もう一度お試しください。",
