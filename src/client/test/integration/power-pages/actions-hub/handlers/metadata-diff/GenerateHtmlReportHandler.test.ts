@@ -4,6 +4,9 @@
  */
 
 import * as vscode from "vscode";
+import * as fs from "fs/promises";
+import * as os from "os";
+import * as path from "path";
 import { expect } from "chai";
 import sinon from "sinon";
 import { generateHtmlReport, getComponentTypeFromPath, getComponentTypeDisplayName } from "../../../../../../power-pages/actions-hub/handlers/metadata-diff/GenerateHtmlReportHandler";
@@ -11,6 +14,7 @@ import { MetadataDiffSiteTreeItem } from "../../../../../../power-pages/actions-
 import { FileComparisonStatus, IFileComparisonResult, ISiteComparisonResults } from "../../../../../../power-pages/actions-hub/models/IFileComparisonResult";
 import { SiteVisibility } from "../../../../../../power-pages/actions-hub/models/SiteVisibility";
 import * as TelemetryHelper from "../../../../../../power-pages/actions-hub/TelemetryHelper";
+import * as CommonUtils from "../../../../../../../common/utilities/Utils";
 
 describe("GenerateHtmlReportHandler", () => {
     let sandbox: sinon.SinonSandbox;
@@ -138,6 +142,28 @@ describe("GenerateHtmlReportHandler", () => {
 
             const saveDialogOptions = showSaveDialogStub.firstCall.args[0];
             expect(saveDialogOptions.defaultUri.fsPath).to.include("metadata-diff-report");
+        });
+
+        it("should include the extension version in the generated report", async () => {
+            const mockResults: IFileComparisonResult[] = [
+                { localPath: "/local/file.html", remotePath: "/remote/file.html", relativePath: "file.html", status: FileComparisonStatus.ADDED }
+            ];
+            const treeItem = createMockTreeItem(mockResults);
+            const testDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "metadata-diff-report-"));
+            const reportPath = path.join(testDirectory, "report.html");
+            const reportUri = vscode.Uri.file(reportPath);
+            sandbox.stub(CommonUtils, "getExtensionVersion").returns("9.8.7");
+            showSaveDialogStub.resolves(reportUri);
+
+            try {
+                await generateHtmlReport(treeItem);
+
+                const htmlContent = await fs.readFile(reportPath, "utf8");
+                expect(htmlContent).to.include("Extension Version:");
+                expect(htmlContent).to.include("9.8.7");
+            } finally {
+                await fs.rm(testDirectory, { recursive: true, force: true });
+            }
         });
     });
 

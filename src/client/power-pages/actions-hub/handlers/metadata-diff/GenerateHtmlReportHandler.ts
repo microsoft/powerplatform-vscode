@@ -12,6 +12,7 @@ import { traceInfo, traceError } from "../../TelemetryHelper";
 import { isBinaryFile } from "../../ActionsHubUtils";
 import { WebsiteDataModel } from "../../../../../common/services/Constants";
 import { POWERPAGES_SITE_FOLDER } from "../../../../../common/constants";
+import { getExtensionVersion } from "../../../../../common/utilities/Utils";
 
 /**
  * Maximum file size in bytes to include content in the report (5MB)
@@ -585,6 +586,7 @@ function generateHtmlContent(
     createdOn?: string
 ): string {
     const generatedDate = formatDateForDisplay(new Date());
+    const extensionVersion = getExtensionVersion();
     const comparisonResults = fileContents.map(fc => fc.result);
     const groupedResults = groupByStatus(comparisonResults);
 
@@ -1252,7 +1254,11 @@ function generateHtmlContent(
                 <div class="header-info-item">
                     <span class="header-info-label"><strong>${escapeHtml(Constants.Strings.HTML_REPORT_GENERATED_LABEL)}</strong></span>
                     <span>${escapeHtml(generatedDate)}</span>
-                </div>
+                </div>${extensionVersion ? `
+                <div class="header-info-item">
+                    <span class="header-info-label"><strong>${escapeHtml(Constants.Strings.HTML_REPORT_EXTENSION_VERSION_LABEL)}</strong></span>
+                    <span>${escapeHtml(extensionVersion)}</span>
+                </div>` : ""}
             </div>
         </header>
 
