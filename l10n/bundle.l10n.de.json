@@ -168,6 +168,7 @@
   "Explain the following code {% include 'Page Copy'%}": "Den folgenden Code erläutern: {% include 'Page Copy'%}",
   "Export Site Comparison": "Sitevergleich exportieren",
   "Exporting comparison...": "Vergleich wird exportiert...",
+  "Extension Version:": "Extension Version:",
   "Extension installed but API not available yet. Opening as text file...": "Die Erweiterung wurde installiert, aber die API ist noch nicht verfügbar. Wird geöffnet als Textdatei...",
   "Failed to clone the site. Please try again.": "Fehler beim Klonen der Website. Bitte versuchen Sie es noch einmal.",
   "Failed to create a new Power Pages site. Please try again.": "Es konnte keine neue Power Pages-Website erstellt werden. Versuchen Sie es erneut.",
