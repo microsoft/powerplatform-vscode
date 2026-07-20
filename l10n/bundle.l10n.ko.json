@@ -168,7 +168,7 @@
   "Explain the following code {% include 'Page Copy'%}": "{% include 'Page Copy'%} 코드 설명",
   "Export Site Comparison": "사이트 비교 내보내기",
   "Exporting comparison...": "비교를 내보내는 중...",
-  "Extension Version:": "Extension Version:",
+  "Extension Version:": "확장 버전:",
   "Extension installed but API not available yet. Opening as text file...": "확장이 설치되었지만 아직 API를 사용할 수 없습니다. 텍스트 파일로 여는 중...",
   "Failed to clone the site. Please try again.": "사이트를 복제하지 못했습니다. 다시 시도하세요.",
   "Failed to create a new Power Pages site. Please try again.": "새 Power Pages 사이트를 만들지 못했습니다. 다시 시도해 주세요.",
