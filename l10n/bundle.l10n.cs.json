@@ -168,7 +168,7 @@
   "Explain the following code {% include 'Page Copy'%}": "Vysvětlit následující kód: {% include 'Page Copy'%}",
   "Export Site Comparison": "Exportovat porovnání webů",
   "Exporting comparison...": "Exportuje se porovnání…",
-  "Extension Version:": "Extension Version:",
+  "Extension Version:": "Verze rozšíření:",
   "Extension installed but API not available yet. Opening as text file...": "Rozšíření je nainstalované, ale rozhraní API zatím není k dispozici. Otevírá se jako textový soubor…",
   "Failed to clone the site. Please try again.": "Klonování webu se nezdařilo. Zkuste to znovu.",
   "Failed to create a new Power Pages site. Please try again.": "Nový web Power Pages se nepodařilo vytvořit. Zkuste to znovu.",
