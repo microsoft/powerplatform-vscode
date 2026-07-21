@@ -168,7 +168,7 @@
   "Explain the following code {% include 'Page Copy'%}": "解释以下代码 {% include 'Page Copy'%}",
   "Export Site Comparison": "导出网站比较",
   "Exporting comparison...": "正在导出比较...",
-  "Extension Version:": "Extension Version:",
+  "Extension Version:": "扩展版本:",
   "Extension installed but API not available yet. Opening as text file...": "已安装扩展，但 API 尚不可用。正在以文本文件形式打开...",
   "Failed to clone the site. Please try again.": "未能克隆站点。请重试。",
   "Failed to create a new Power Pages site. Please try again.": "无法创建新的 Power Pages 站点。请重试。",

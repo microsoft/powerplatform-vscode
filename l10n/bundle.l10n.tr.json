@@ -168,7 +168,7 @@
   "Explain the following code {% include 'Page Copy'%}": "Şu kodu açıklayın {% include 'Page Copy'%}",
   "Export Site Comparison": "Site Karşılaştırmasını Dışarı Aktar",
   "Exporting comparison...": "Karşılaştırma dışarı aktarılıyor...",
-  "Extension Version:": "Extension Version:",
+  "Extension Version:": "Uzantı Sürümü:",
   "Extension installed but API not available yet. Opening as text file...": "Uzatma yüklendi ancak API henüz mevcut değil. Metin dosyası olarak açılıyor...",
   "Failed to clone the site. Please try again.": "Site kopyalanamadı. Lütfen yeniden deneyin.",
   "Failed to create a new Power Pages site. Please try again.": "Yeni bir Power Pages sitesi oluşturulamadı. Lütfen yeniden deneyin.",
