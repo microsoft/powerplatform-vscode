@@ -16,5 +16,11 @@ export enum uriHandlerTelemetryEventNames {
     URI_HANDLER_DOWNLOAD_STARTED = "UriHandlerDownloadStarted",
     URI_HANDLER_DOWNLOAD_COMPLETED = "UriHandlerDownloadCompleted",
     URI_HANDLER_FOLDER_OPENED = "UriHandlerFolderOpened",
-    URI_HANDLER_PCF_INIT_TRIGGERED = "UriHandlerPcfInitTriggered"
+    URI_HANDLER_PCF_INIT_TRIGGERED = "UriHandlerPcfInitTriggered",
+    URI_HANDLER_AGENTIC_CREATE_TRIGGERED = "UriHandlerAgenticCreateTriggered",
+    URI_HANDLER_AGENTIC_CREATE_DISABLED = "UriHandlerAgenticCreateDisabled",
+    URI_HANDLER_AGENTIC_CREATE_FAILED = "UriHandlerAgenticCreateFailed",
+    URI_HANDLER_PAC_CREATE_TRIGGERED = "UriHandlerPacCreateTriggered",
+    URI_HANDLER_PAC_CREATE_DISABLED = "UriHandlerPacCreateDisabled",
+    URI_HANDLER_PAC_CREATE_FAILED = "UriHandlerPacCreateFailed"
 }
