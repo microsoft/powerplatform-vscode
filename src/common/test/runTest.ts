@@ -22,7 +22,10 @@ async function main() {
 
         // Download VS Code, unzip it and run the integration test
         await runTests({
-            version: 'insiders',
+            // Pin to 'stable' rather than 'insiders'. 'insiders' always pulls the
+            // latest Insiders build at run time; a change to its macOS app-bundle
+            // layout breaks @vscode/test-electron's binary resolution (spawn ENOENT).
+            version: 'stable',
             extensionDevelopmentPath,
             extensionTestsPath
         });
