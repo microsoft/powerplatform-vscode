@@ -11,16 +11,34 @@ import { URI_HANDLER_STRINGS } from "./constants/uriStrings";
 import { uriHandlerTelemetryEventNames } from "./telemetry/uriHandlerTelemetryEvents";
 import { UriHandlerUtils, UriParameters } from "./utils/uriHandlerUtils";
 
+/**
+ * Signature for a deep-link route handler. Each registered URI path maps to one handler.
+ */
+type UriRouteHandler = (uri: vscode.Uri) => Promise<void>;
+
 export function RegisterUriHandler(pacWrapper: PacWrapper): vscode.Disposable {
     const uriHandler = new UriHandler(pacWrapper);
     return vscode.window.registerUriHandler(uriHandler);
 }
 
-class UriHandler implements vscode.UriHandler {
+export class UriHandler implements vscode.UriHandler {
     private readonly pacWrapper: PacWrapper;
+    private readonly routes: ReadonlyMap<string, UriRouteHandler>;
 
     constructor(pacWrapper: PacWrapper) {
         this.pacWrapper = pacWrapper;
+        this.routes = this.buildRoutes();
+    }
+
+    /**
+     * Builds the deep-link routing table (URI path -> handler). Register new deep-link
+     * paths here so `handleUri` can dispatch to them.
+     */
+    private buildRoutes(): ReadonlyMap<string, UriRouteHandler> {
+        return new Map<string, UriRouteHandler>([
+            [UriPath.PcfInit, () => this.pcfInit()],
+            [UriPath.Open, (uri) => this.handleOpenPowerPages(uri)],
+        ]);
     }
 
     // URIs targeting our extension are in the format
@@ -28,11 +46,14 @@ class UriHandler implements vscode.UriHandler {
     // vscode://microsoft-IsvExpTools.powerplatform-vscode/pcfInit
     // vscode://microsoft-IsvExpTools.powerplatform-vscode/open?websiteid=xxx&envid=yyy&orgurl=zzz&schema=PortalSchemaV2
     public async handleUri(uri: vscode.Uri): Promise<void> {
-        if (uri.path === UriPath.PcfInit) {
-            return this.pcfInit();
-        } else if (uri.path === UriPath.Open) {
-            return this.handleOpenPowerPages(uri);
+        const route = this.routes.get(uri.path);
+        if (route) {
+            await route(uri);
+            return;
         }
+        // Unrecognized paths are intentionally ignored for forward compatibility. Reserved
+        // deep-link paths (URI_CONSTANTS.PATHS.AGENTIC_CREATE / PAC_CREATE) will be wired up
+        // in a follow-up change.
     }
 
     async pcfInit(): Promise<void> {

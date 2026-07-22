@@ -10,7 +10,9 @@ export const URI_CONSTANTS = {
     EXTENSION_ID: 'microsoft-IsvExpTools.powerplatform-vscode',
     PATHS: {
         PCF_INIT: '/pcfInit',
-        OPEN: '/open'
+        OPEN: '/open',
+        AGENTIC_CREATE: '/agenticCreate',
+        PAC_CREATE: '/pacCreate'
     },
     PARAMETERS: {
         WEBSITE_ID: 'websiteid',
@@ -20,10 +22,26 @@ export const URI_CONSTANTS = {
         SITE_NAME: 'sitename',
         WEBSITE_NAME: 'websitename',
         SITE_URL: 'siteurl',
-        WEBSITE_PREVIEW_URL: 'websitepreviewurl'
+        WEBSITE_PREVIEW_URL: 'websitepreviewurl',
+        REGION: 'region',
+        TENANT_ID: 'tenantid',
+        SOURCE: 'source',
+        AGENT_HOST: 'agenthost',
+        VERSION: 'v'
     },
     SCHEMA_VALUES: {
         PORTAL_SCHEMA_V2: 'portalschemav2'
+    },
+    SOURCE_VALUES: {
+        POWER_PAGES_HOME: 'powerPagesHome'
+    },
+    AGENT_HOST_VALUES: {
+        COPILOT: 'copilot',
+        CLAUDE: 'claude',
+        AUTO: 'auto'
+    },
+    CONTRACT_VERSION: {
+        CURRENT: '1'
     },
     MODEL_VERSIONS: {
         VERSION_1: 1,
@@ -40,4 +58,6 @@ export const URI_CONSTANTS = {
 export const enum UriPath {
     PcfInit = '/pcfInit',
     Open = '/open',
+    AgenticCreate = '/agenticCreate',
+    PacCreate = '/pacCreate',
 }
