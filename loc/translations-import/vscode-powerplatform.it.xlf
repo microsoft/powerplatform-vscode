@@ -736,7 +736,7 @@ Tipo: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++c735e741b6c5591f1a0ff9ff37ecbea0db5806d5139f2a00a89c2e501a6f5314">
         <source xml:lang="en">Extension Version:</source>
-        <target state="new">Extension Version:</target>
+        <target state="translated">Versione estensione:</target>
       </trans-unit>
       <trans-unit id="++CODE++173848927e1a6ed7f8c52d958d530c9ce90053649c734a3bc20bfb2053d8ef88">
         <source xml:lang="en">Extension installed but API not available yet. Opening as text file...</source>
