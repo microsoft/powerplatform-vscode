@@ -9,6 +9,7 @@ import * as vscode from "vscode";
 import { AuthEnvironmentService } from "../../uriHandler/utils/authEnvironment";
 import { UriParameters } from "../../uriHandler/utils/uriHandlerUtils";
 import { PacWrapper } from "../../pac/PacWrapper";
+import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
 type ProgressReporter = vscode.Progress<{ message?: string; increment?: number }>;
 type ProgressTask = (progress: ProgressReporter, token: vscode.CancellationToken) => Thenable<void>;
@@ -34,6 +35,16 @@ describe("AuthEnvironmentService", () => {
 
     beforeEach(() => {
         sandbox = sinon.createSandbox();
+
+        // The OneDS logger is never instantiated in the integration test host, so
+        // `oneDSLoggerWrapper.getLogger()` would return undefined and any telemetry
+        // call inside the service would throw. Stub it with a no-op logger.
+        sandbox.stub(oneDSLoggerWrapper, "getLogger").returns({
+            traceInfo: sandbox.stub(),
+            traceWarning: sandbox.stub(),
+            traceError: sandbox.stub(),
+            featureUsage: sandbox.stub()
+        } as unknown as ReturnType<typeof oneDSLoggerWrapper.getLogger>);
 
         pacWrapperStub = {
             activeOrg: sandbox.stub(),
