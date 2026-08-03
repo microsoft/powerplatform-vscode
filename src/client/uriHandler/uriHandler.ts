@@ -11,6 +11,8 @@ import { URI_HANDLER_STRINGS } from "./constants/uriStrings";
 import { uriHandlerTelemetryEventNames } from "./telemetry/uriHandlerTelemetryEvents";
 import { UriHandlerUtils, UriParameters } from "./utils/uriHandlerUtils";
 import { AuthEnvironmentService } from "./utils/authEnvironment";
+import { AgenticCreateHandler } from "./handlers/agenticCreateHandler";
+import { PacCreateHandler } from "./handlers/pacCreateHandler";
 
 /**
  * Signature for a deep-link route handler. Each registered URI path maps to one handler.
@@ -26,10 +28,14 @@ export class UriHandler implements vscode.UriHandler {
     private readonly pacWrapper: PacWrapper;
     private readonly routes: ReadonlyMap<string, UriRouteHandler>;
     private readonly authEnvironmentService: AuthEnvironmentService;
+    private readonly agenticCreateHandler: AgenticCreateHandler;
+    private readonly pacCreateHandler: PacCreateHandler;
 
     constructor(pacWrapper: PacWrapper) {
         this.pacWrapper = pacWrapper;
         this.authEnvironmentService = new AuthEnvironmentService(pacWrapper);
+        this.agenticCreateHandler = new AgenticCreateHandler(pacWrapper);
+        this.pacCreateHandler = new PacCreateHandler(pacWrapper);
         this.routes = this.buildRoutes();
     }
 
@@ -41,6 +47,8 @@ export class UriHandler implements vscode.UriHandler {
         return new Map<string, UriRouteHandler>([
             [UriPath.PcfInit, () => this.pcfInit()],
             [UriPath.Open, (uri) => this.handleOpenPowerPages(uri)],
+            [UriPath.AgenticCreate, (uri) => this.agenticCreateHandler.handle(uri)],
+            [UriPath.PacCreate, (uri) => this.pacCreateHandler.handle(uri)],
         ]);
     }
 
@@ -54,9 +62,7 @@ export class UriHandler implements vscode.UriHandler {
             await route(uri);
             return;
         }
-        // Unrecognized paths are intentionally ignored for forward compatibility. Reserved
-        // deep-link paths (URI_CONSTANTS.PATHS.AGENTIC_CREATE / PAC_CREATE) will be wired up
-        // in a follow-up change.
+        // Unrecognized paths are intentionally ignored for forward compatibility.
     }
 
     async pcfInit(): Promise<void> {
