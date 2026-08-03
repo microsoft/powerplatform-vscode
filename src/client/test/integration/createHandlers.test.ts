@@ -59,7 +59,14 @@ describe("Create deep-link handlers (gated)", () => {
         await handler.handle(pacCreateUri);
 
         expect(PacCreateHandler.isEnabled()).to.be.false;
-        expect(traceInfoStub.calledWith(uriHandlerTelemetryEventNames.URI_HANDLER_PAC_CREATE_DISABLED)).to.be.true;
+        const disabled = traceInfoStub.getCalls().find(
+            (call) => call.args[0] === uriHandlerTelemetryEventNames.URI_HANDLER_PAC_CREATE_DISABLED
+        );
+        expect(disabled, "expected a disabled telemetry event").to.not.be.undefined;
+        expect(disabled?.args[1]).to.include({
+            source: URI_CONSTANTS.SOURCE_VALUES.POWER_PAGES_HOME,
+            hasEnvironmentId: "true"
+        });
         expect(traceInfoStub.calledWith(uriHandlerTelemetryEventNames.URI_HANDLER_PAC_CREATE_TRIGGERED)).to.be.false;
     });
 
@@ -88,7 +95,14 @@ describe("Create deep-link handlers (gated)", () => {
         await handler.handle(agenticCreateUri);
 
         expect(AgenticCreateHandler.isEnabled()).to.be.false;
-        expect(traceInfoStub.calledWith(uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_DISABLED)).to.be.true;
+        const disabled = traceInfoStub.getCalls().find(
+            (call) => call.args[0] === uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_DISABLED
+        );
+        expect(disabled, "expected a disabled telemetry event").to.not.be.undefined;
+        expect(disabled?.args[1]).to.include({
+            source: URI_CONSTANTS.SOURCE_VALUES.POWER_PAGES_HOME,
+            agentHost: URI_CONSTANTS.AGENT_HOST_VALUES.COPILOT
+        });
         expect(traceInfoStub.calledWith(uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_TRIGGERED)).to.be.false;
     });
 

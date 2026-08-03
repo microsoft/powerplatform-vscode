@@ -39,18 +39,19 @@ export class AgenticCreateHandler {
      * Entry point wired into the URI route map.
      */
     public async handle(uri: vscode.Uri): Promise<void> {
+        // Parse the (secret-free) deep-link params up front so the redacted telemetry payload
+        // is available on every path, including the flag-off and failure cases.
+        const telemetryData = buildCreateFlowTelemetry(parseCreateFlowParameters(uri));
+
         if (!AgenticCreateHandler.isEnabled()) {
             oneDSLoggerWrapper.getLogger().traceInfo(
                 uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_DISABLED,
-                {}
+                telemetryData
             );
             return;
         }
 
         try {
-            const params = parseCreateFlowParameters(uri);
-            const telemetryData = buildCreateFlowTelemetry(params);
-
             oneDSLoggerWrapper.getLogger().traceInfo(
                 uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_TRIGGERED,
                 telemetryData
@@ -65,7 +66,7 @@ export class AgenticCreateHandler {
                 uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_FAILED,
                 'Agentic create deep link failed',
                 error instanceof Error ? error : new Error(String(error)),
-                {}
+                telemetryData
             );
         }
     }

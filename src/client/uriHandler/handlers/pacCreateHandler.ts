@@ -39,18 +39,19 @@ export class PacCreateHandler {
      * Entry point wired into the URI route map.
      */
     public async handle(uri: vscode.Uri): Promise<void> {
+        // Parse the (secret-free) deep-link params up front so the redacted telemetry payload
+        // is available on every path, including the flag-off and failure cases.
+        const telemetryData = buildCreateFlowTelemetry(parseCreateFlowParameters(uri));
+
         if (!PacCreateHandler.isEnabled()) {
             oneDSLoggerWrapper.getLogger().traceInfo(
                 uriHandlerTelemetryEventNames.URI_HANDLER_PAC_CREATE_DISABLED,
-                {}
+                telemetryData
             );
             return;
         }
 
         try {
-            const params = parseCreateFlowParameters(uri);
-            const telemetryData = buildCreateFlowTelemetry(params);
-
             oneDSLoggerWrapper.getLogger().traceInfo(
                 uriHandlerTelemetryEventNames.URI_HANDLER_PAC_CREATE_TRIGGERED,
                 telemetryData
@@ -65,7 +66,7 @@ export class PacCreateHandler {
                 uriHandlerTelemetryEventNames.URI_HANDLER_PAC_CREATE_FAILED,
                 'PAC create deep link failed',
                 error instanceof Error ? error : new Error(String(error)),
-                {}
+                telemetryData
             );
         }
     }
