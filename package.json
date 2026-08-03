@@ -1786,7 +1786,7 @@
     "@vscode/l10n-dev": "^0.0.35",
     "@vscode/test-electron": "^3.1.0",
     "@vscode/test-web": "^0.0.80",
-    "@vscode/vsce": "^2.19.0",
+    "@vscode/vsce": "^3.9.2",
     "assert": "^2.0.0",
     "chai": "^4.3.6",
     "constants-browserify": "^1.0.0",
@@ -1897,10 +1897,6 @@
     "pacote": "21.0.1",
     "release-it": {
       "undici": "^6.27.0"
-    },
-    "@vscode/vsce": {
-      "minimatch": "3.1.5",
-      "brace-expansion": "1.1.16"
     },
     "@koa/router": {
       "path-to-regexp": "^8.4.0"
