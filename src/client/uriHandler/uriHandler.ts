@@ -18,7 +18,7 @@ export function RegisterUriHandler(pacWrapper: PacWrapper): vscode.Disposable {
     return vscode.window.registerUriHandler(uriHandler);
 }
 
-class UriHandler implements vscode.UriHandler {
+export class UriHandler implements vscode.UriHandler {
     private readonly pacWrapper: PacWrapper;
 
     constructor(pacWrapper: PacWrapper) {
@@ -65,7 +65,7 @@ class UriHandler implements vscode.UriHandler {
             }
 
             const fileUri = vscode.Uri.file(pathResult.filePath);
-            await importMetadataDiff(fileUri);
+            await importMetadataDiff(fileUri, { openFirstFile: true });
 
             oneDSLoggerWrapper.getLogger().traceInfo(
                 uriHandlerTelemetryEventNames.URI_HANDLER_METADATA_DIFF_IMPORT_TRIGGERED,

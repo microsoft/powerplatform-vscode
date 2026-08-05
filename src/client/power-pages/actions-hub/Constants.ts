@@ -717,6 +717,7 @@ export const Constants = {
         ACTIONS_HUB_METADATA_DIFF_IMPORT_CALLED: "ActionsHubMetadataDiffImportCalled",
         ACTIONS_HUB_METADATA_DIFF_IMPORT_SUCCESS: "ActionsHubMetadataDiffImportSuccess",
         ACTIONS_HUB_METADATA_DIFF_IMPORT_FAILED: "ActionsHubMetadataDiffImportFailed",
+        ACTIONS_HUB_METADATA_DIFF_IMPORT_AUTO_OPEN_FAILED: "ActionsHubMetadataDiffImportAutoOpenFailed",
         ACTIONS_HUB_METADATA_DIFF_RESYNC_CALLED: "ActionsHubMetadataDiffResyncCalled",
         ACTIONS_HUB_METADATA_DIFF_RESYNC_COMPLETED: "ActionsHubMetadataDiffResyncCompleted",
         ACTIONS_HUB_METADATA_DIFF_RESYNC_FAILED: "ActionsHubMetadataDiffResyncFailed",
