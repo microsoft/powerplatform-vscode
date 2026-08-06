@@ -4,7 +4,11 @@
  */
 
 import * as vscode from "vscode";
-import * as fs from "fs";
+// Use the CommonJS require form so sinon stubs the real `fs` singleton. A
+// namespace import (`import * as fs`) is compiled to a `__importStar` wrapper
+// whose properties are non-configurable getters, which sinon cannot replace
+// ("Descriptor for property existsSync is non-configurable and non-writable").
+import fs = require("fs");
 import { expect } from "chai";
 import sinon from "sinon";
 import * as TelemetryHelper from "../../../../../../power-pages/actions-hub/TelemetryHelper";
