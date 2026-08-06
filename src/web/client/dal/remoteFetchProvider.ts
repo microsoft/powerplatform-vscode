@@ -131,7 +131,7 @@ async function fetchFromDataverseAndCreateFiles(
                     ),
                     Prefer: `odata.maxpagesize=${Constants.MAX_ENTITY_FETCH_COUNT}, odata.include-annotations="Microsoft.Dynamics.CRM.*"`,
                 },
-            });
+            }, () => WebExtensionContext.refreshDataverseToken());
 
             // Gracefully handle 400/404 for optional entities (blogs, forums, ideas)
             // These entities may not be provisioned for all sites
@@ -161,8 +161,12 @@ async function fetchFromDataverseAndCreateFiles(
             }
 
             if (result[Constants.ODATA_COUNT] !== 0 && data.length === 0) {
-                console.error(vscode.l10n.t("Response data is empty"));
-                throw new Error(ERROR_CONSTANTS.EMPTY_RESPONSE);
+                makeRequestCall = false;
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_EMPTY_DATAVERSE_RESPONSE,
+                    { entityName }
+                );
+                break;
             }
 
             WebExtensionContext.telemetry.sendAPISuccessTelemetry(
@@ -662,7 +666,7 @@ async function fetchMappingEntityContent(
 
     const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, {
         headers: getCommonHeadersForDataverse(accessToken),
-    });
+    }, () => WebExtensionContext.refreshDataverseToken());
 
     // Gracefully handle 404 for optional entities (deleted/moved files or missing server logic)
     const notFoundTelemetryMap = new Map<string, string>([

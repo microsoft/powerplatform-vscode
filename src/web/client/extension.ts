@@ -389,9 +389,16 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
 
 export function processWillStartCollaboration(context: vscode.ExtensionContext) {
     if (isCoPresenceEnabled()) {
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_ACTIVATED
+        );
         registerCollaborationView();
         vscode.commands.registerCommand('powerPlatform.previewCurrentActiveUsers', () => WebExtensionContext.quickPickProvider.showQuickPick());
         createWebWorkerInstance(context);
+    } else {
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_FEATURE_FLAG_DISABLED
+        );
     }
 }
 

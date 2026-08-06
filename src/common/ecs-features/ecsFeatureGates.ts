@@ -130,3 +130,23 @@ export const {
         enableMetadataDiff: true,
     }
 });
+
+export const {
+    feature: EnableAgenticCreateFromHome
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable the agentic create deep link (agenticCreate) launched from the Power Pages home page',
+    fallback: {
+        enableAgenticCreateFromHome: false,
+    }
+});
+
+export const {
+    feature: EnablePacCreateFromHome
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable the PAC CLI create deep link (pacCreate) launched from the Power Pages home page',
+    fallback: {
+        enablePacCreateFromHome: false,
+    }
+});

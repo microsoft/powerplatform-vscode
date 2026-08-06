@@ -11,7 +11,9 @@ export const URI_CONSTANTS = {
     PATHS: {
         PCF_INIT: '/pcfInit',
         OPEN: '/open',
-        METADATA_DIFF_IMPORT: '/metadataDiffImport'
+        METADATA_DIFF_IMPORT: '/metadataDiffImport',
+        AGENTIC_CREATE: '/agenticCreate',
+        PAC_CREATE: '/pacCreate'
     },
     PARAMETERS: {
         WEBSITE_ID: 'websiteid',
@@ -22,10 +24,26 @@ export const URI_CONSTANTS = {
         WEBSITE_NAME: 'websitename',
         SITE_URL: 'siteurl',
         WEBSITE_PREVIEW_URL: 'websitepreviewurl',
-        FILE_PATH: 'filePath'
+        FILE_PATH: 'filePath',
+        REGION: 'region',
+        TENANT_ID: 'tenantid',
+        SOURCE: 'source',
+        AGENT_HOST: 'agenthost',
+        VERSION: 'v'
     },
     SCHEMA_VALUES: {
         PORTAL_SCHEMA_V2: 'portalschemav2'
+    },
+    SOURCE_VALUES: {
+        POWER_PAGES_HOME: 'powerPagesHome'
+    },
+    AGENT_HOST_VALUES: {
+        COPILOT: 'copilot',
+        CLAUDE: 'claude',
+        AUTO: 'auto'
+    },
+    CONTRACT_VERSION: {
+        CURRENT: '1'
     },
     MODEL_VERSIONS: {
         VERSION_1: 1,
@@ -43,4 +61,6 @@ export const enum UriPath {
     PcfInit = '/pcfInit',
     Open = '/open',
     MetadataDiffImport = '/metadataDiffImport',
+    AgenticCreate = '/agenticCreate',
+    PacCreate = '/pacCreate',
 }

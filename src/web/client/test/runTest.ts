@@ -22,7 +22,11 @@ async function main() {
 
         // Download VS Code, unzip it and run the integration test
         await runTests({
-            version: 'insiders',
+            // Pin to 'stable' rather than 'insiders' so CI runs against a
+            // predictable build. 'insiders' pulls whatever was published that
+            // day, which historically broke @vscode/test-electron's macOS
+            // binary resolution before the resolver was hardened in 3.1.0.
+            version: 'stable',
             extensionDevelopmentPath,
             extensionTestsPath
         });

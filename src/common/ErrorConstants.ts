@@ -24,8 +24,6 @@ export const ERROR_CONSTANTS = {
     SERVER_ERROR_PERMISSION_DENIED:
         "There was a permissions problem with the server",
     SERVER_ERROR_PERMISSION_DENIED_DESC: "Please try again in a minute or two",
-    EMPTY_RESPONSE: "There was no response",
-    EMPTY_RESPONSE_DESC: "Try again",
     THRESHOLD_LIMIT_EXCEEDED: "Threshold for dataverse api",
     THRESHOLD_LIMIT_EXCEEDED_DESC:
         "You’ve exceeded the threshold rate limit for the Dataverse API",

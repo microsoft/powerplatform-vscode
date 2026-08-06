@@ -32,7 +32,11 @@ export class ConcurrencyHandler {
 
     private _wrappedPolicy = wrap(this._retryPolicy, this._bulkhead);
 
-    public async handleRequest(requestInfo: RequestInfo, requestInit?: RequestInit) {
+    public async handleRequest(
+        requestInfo: RequestInfo,
+        requestInit?: RequestInit,
+        onUnauthorized?: () => Promise<string>
+    ) {
         let retryCount = 0;
 
         try {
@@ -47,7 +51,32 @@ export class ConcurrencyHandler {
                         }
                     );
                 }
-                return fetch(requestInfo, requestInit);
+
+                let response = await fetch(requestInfo, requestInit);
+
+                // node-fetch resolves (does not throw) on HTTP 401, so the retry
+                // policy above never sees it. Handle token-expiry here: refresh the
+                // token once, rebuild only the Authorization header, and re-issue the
+                // request a single time. Fail-fast (return the 401) if the refresh
+                // yields no token or the retried request still 401s — no refresh loop.
+                if (response.status === 401 && onUnauthorized) {
+                    const newToken = await onUnauthorized();
+                    if (newToken) {
+                        WebExtensionContext.telemetry.sendInfoTelemetry(
+                            webExtensionTelemetryEventNames.WEB_EXTENSION_TOKEN_REFRESH_RETRY,
+                            {
+                                url: typeof requestInfo === 'string' ? requestInfo : String(requestInfo)
+                            }
+                        );
+                        const headers = {
+                            ...(requestInit?.headers as Record<string, string>),
+                            authorization: "Bearer " + newToken,
+                        };
+                        response = await fetch(requestInfo, { ...requestInit, headers });
+                    }
+                }
+
+                return response;
             });
         } catch (e) {
             if (e instanceof BulkheadRejectedError) {
