@@ -1875,7 +1875,7 @@
     "axios": "1.18.0",
     "basic-ftp": "5.3.1",
     "fast-uri": "3.1.4",
-    "ip-address": "10.1.1",
+    "ip-address": "10.3.1",
     "tmp": "0.2.7",
     "form-data": "^4.0.6",
     "js-yaml": "^4.3.0",
@@ -1893,10 +1893,11 @@
     "brace-expansion": "5.0.8",
     "serialize-javascript": "^7.0.3",
     "diff": "^8.0.3",
-    "undici": "^7.28.0",
+    "socket.io-parser": "4.2.7",
+    "undici": "^7.29.0",
     "pacote": "21.0.1",
     "release-it": {
-      "undici": "^6.27.0"
+      "undici": "^6.28.0"
     },
     "@koa/router": {
       "path-to-regexp": "^8.4.0"
