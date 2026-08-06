@@ -8,9 +8,10 @@ import * as fs from "fs";
 import path from "path";
 import { Constants } from "../../Constants";
 import { traceError, traceInfo } from "../../TelemetryHelper";
-import { IMetadataDiffExport, METADATA_DIFF_EXPORT_VERSION } from "../../models/IMetadataDiffExport";
+import { IExportableFileComparisonResult, IMetadataDiffExport, METADATA_DIFF_EXPORT_VERSION } from "../../models/IMetadataDiffExport";
 import { FileComparisonStatus, IFileComparisonResult } from "../../models/IFileComparisonResult";
 import MetadataDiffContext from "../../MetadataDiffContext";
+import { MetadataDiffFileTreeItem } from "../../tree-items/metadata-diff/MetadataDiffFileTreeItem";
 import { getExtensionVersion } from "../../../../../common/utilities/Utils";
 
 /**
@@ -112,26 +113,59 @@ function validateImportData(data: unknown): string | undefined {
 /**
  * Imports a metadata diff from a JSON file
  */
-export async function importMetadataDiff(): Promise<void> {
+export async function importMetadataDiff(
+    presuppliedFileUri?: vscode.Uri,
+    options?: { openFirstFile?: boolean }
+): Promise<void> {
     traceInfo(Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_IMPORT_CALLED, {
-        methodName: importMetadataDiff.name
+        methodName: importMetadataDiff.name,
+        source: presuppliedFileUri ? "uri_handler" : "command_palette"
     });
 
     try {
-        // Show open dialog first (before progress)
-        const openUris = await vscode.window.showOpenDialog({
-            canSelectMany: false,
-            filters: {
-                [Constants.Strings.METADATA_DIFF_EXPORT_FILTER_NAME]: ["json"]
-            },
-            title: Constants.Strings.METADATA_DIFF_IMPORT_TITLE
-        });
+        let fileUri: vscode.Uri;
 
-        if (!openUris || openUris.length === 0) {
-            return; // User cancelled
+        if (presuppliedFileUri) {
+            // URI-handler path: validate the supplied file before proceeding.
+            if (!fs.existsSync(presuppliedFileUri.fsPath)) {
+                vscode.window.showErrorMessage(
+                    Constants.StringFunctions.METADATA_DIFF_IMPORT_FILE_NOT_FOUND(presuppliedFileUri.fsPath)
+                );
+                traceError(
+                    Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_IMPORT_FAILED,
+                    new Error("Pre-supplied file path does not exist"),
+                    { methodName: importMetadataDiff.name, reason: "file_not_found" }
+                );
+                return;
+            }
+            if (!presuppliedFileUri.fsPath.toLowerCase().endsWith(".json")) {
+                vscode.window.showErrorMessage(
+                    Constants.Strings.METADATA_DIFF_IMPORT_NOT_JSON
+                );
+                traceError(
+                    Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_IMPORT_FAILED,
+                    new Error("Pre-supplied file is not .json"),
+                    { methodName: importMetadataDiff.name, reason: "wrong_extension" }
+                );
+                return;
+            }
+            fileUri = presuppliedFileUri;
+        } else {
+            // Command path: existing file-picker flow (unchanged).
+            const openUris = await vscode.window.showOpenDialog({
+                canSelectMany: false,
+                filters: {
+                    [Constants.Strings.METADATA_DIFF_EXPORT_FILTER_NAME]: ["json"]
+                },
+                title: Constants.Strings.METADATA_DIFF_IMPORT_TITLE
+            });
+
+            if (!openUris || openUris.length === 0) {
+                return; // User cancelled
+            }
+
+            fileUri = openUris[0];
         }
-
-        const fileUri = openUris[0];
 
         // Read and parse the file first to validate before showing progress
         let importData: IMetadataDiffExport;
@@ -189,6 +223,10 @@ export async function importMetadataDiff(): Promise<void> {
             return;
         }
 
+        // Hoisted so the success path can locate the first viewable file after the
+        // progress task completes (used for the optional auto-open below).
+        const comparisonResults: IFileComparisonResult[] = [];
+
         // Now show progress while doing the actual file writing work
         await vscode.window.withProgress(
             {
@@ -215,8 +253,6 @@ export async function importMetadataDiff(): Promise<void> {
                 fs.mkdirSync(importedDiffsPath, { recursive: true });
 
                 // Write the file contents to the storage
-                const comparisonResults: IFileComparisonResult[] = [];
-
                 for (const file of importData.files) {
                     const localPath = path.join(importedDiffsPath, "local", file.relativePath);
                     const remotePath = path.join(importedDiffsPath, "remote", file.relativePath);
@@ -291,6 +327,63 @@ export async function importMetadataDiff(): Promise<void> {
         vscode.window.showInformationMessage(
             Constants.StringFunctions.METADATA_DIFF_IMPORT_SUCCESS(displayName)
         );
+
+        // Optional auto-open (opt-in, e.g. from the URI deep-link flow): surface the
+        // first viewable file diff so the user lands directly on a comparison.
+        if (options?.openFirstFile) {
+            // A file can be opened when openMetadataDiffFile has content to show for its
+            // status: modified -> diff (needs both sides), added -> local, deleted -> remote.
+            const isOpenable = (f: IExportableFileComparisonResult): boolean => {
+                switch (f.status) {
+                    case FileComparisonStatus.MODIFIED:
+                        return f.localContent != null && f.remoteContent != null;
+                    case FileComparisonStatus.ADDED:
+                        return f.localContent != null;
+                    case FileComparisonStatus.DELETED:
+                        return f.remoteContent != null;
+                    default:
+                        return false;
+                }
+            };
+            // Prefer a modified file (shows a real diff); otherwise open the first
+            // openable file of any status so at least one file surfaces.
+            const files = importData.files ?? [];
+            const viewableFile =
+                files.find(f => f.status === FileComparisonStatus.MODIFIED && isOpenable(f)) ??
+                files.find(isOpenable);
+            const comparisonResult = viewableFile
+                ? comparisonResults.find(r => r.relativePath === viewableFile.relativePath)
+                : undefined;
+
+            if (comparisonResult) {
+                // [DIAG] Temporary diagnostics to find why auto-open silently no-ops.
+                let diag = `viewable=${viewableFile?.relativePath}\nstatus=${comparisonResult.status}`
+                    + `\nlocalExists=${fs.existsSync(comparisonResult.localPath)}`
+                    + `\nremoteExists=${fs.existsSync(comparisonResult.remotePath)}`
+                    + `\nlocal=${comparisonResult.localPath}\nremote=${comparisonResult.remotePath}`;
+                try {
+                    const fileTreeItem = new MetadataDiffFileTreeItem(comparisonResult, displayName, true);
+                    await vscode.commands.executeCommand(
+                        Constants.Commands.METADATA_DIFF_OPEN_FILE,
+                        fileTreeItem
+                    );
+                    diag += `\nexecuteCommand=OK`;
+                } catch (error) {
+                    // Best-effort: import already succeeded; auto-open failure is non-fatal.
+                    diag += `\nERROR=${error instanceof Error ? (error.stack || error.message) : String(error)}`;
+                    traceError(
+                        Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_IMPORT_AUTO_OPEN_FAILED,
+                        error as Error,
+                        { methodName: importMetadataDiff.name }
+                    );
+                }
+                vscode.window.showInformationMessage(`[auto-open diag]\n${diag}`, { modal: true });
+            } else {
+                // [DIAG] No file matched the openable criteria.
+                const summary = (importData.files ?? []).map(f => `${f.status}:${f.relativePath} L=${f.localContent != null} R=${f.remoteContent != null}`).join("\n");
+                vscode.window.showInformationMessage(`[auto-open diag] no openable file selected.\n${summary}`, { modal: true });
+            }
+        }
     } catch (error) {
         traceError(
             Constants.EventNames.ACTIONS_HUB_METADATA_DIFF_IMPORT_FAILED,

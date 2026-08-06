@@ -269,6 +269,7 @@ export const Constants = {
         METADATA_DIFF_EXPORT_TITLE: vscode.l10n.t("Export Site Comparison"),
         METADATA_DIFF_IMPORT_PROGRESS: vscode.l10n.t("Importing comparison..."),
         METADATA_DIFF_IMPORT_TITLE: vscode.l10n.t("Import Site Comparison"),
+        METADATA_DIFF_IMPORT_NOT_JSON: vscode.l10n.t("Metadata diff file must be a .json file."),
         METADATA_DIFF_EXPORT_INVALID_FILE: vscode.l10n.t("Invalid file format. The file does not contain valid metadata diff data."),
         METADATA_DIFF_EXPORT_UNSUPPORTED_VERSION: vscode.l10n.t("Unsupported version. This file was created with a newer version of the extension."),
         METADATA_DIFF_EXPORT_NEWER_EXTENSION_VERSION: vscode.l10n.t("This file was exported with a newer version of the extension. Please update your extension to import this file."),
@@ -521,6 +522,15 @@ export const Constants = {
                 comment: ["Error message when import fails. {0} is the error message."]
             }),
         /**
+         * Returns the error message when a pre-supplied import file does not exist
+         */
+        METADATA_DIFF_IMPORT_FILE_NOT_FOUND: (filePath: string) =>
+            vscode.l10n.t({
+                message: "Metadata diff file not found: {0}",
+                args: [filePath],
+                comment: ["Error message when the supplied import file is missing. {0} is the file path."]
+            }),
+        /**
          * Returns the progress message when resyncing a site comparison
          */
         RESYNCING_SITE_COMPARISON: (siteName: string) =>
@@ -708,6 +718,7 @@ export const Constants = {
         ACTIONS_HUB_METADATA_DIFF_IMPORT_CALLED: "ActionsHubMetadataDiffImportCalled",
         ACTIONS_HUB_METADATA_DIFF_IMPORT_SUCCESS: "ActionsHubMetadataDiffImportSuccess",
         ACTIONS_HUB_METADATA_DIFF_IMPORT_FAILED: "ActionsHubMetadataDiffImportFailed",
+        ACTIONS_HUB_METADATA_DIFF_IMPORT_AUTO_OPEN_FAILED: "ActionsHubMetadataDiffImportAutoOpenFailed",
         ACTIONS_HUB_METADATA_DIFF_RESYNC_CALLED: "ActionsHubMetadataDiffResyncCalled",
         ACTIONS_HUB_METADATA_DIFF_RESYNC_COMPLETED: "ActionsHubMetadataDiffResyncCompleted",
         ACTIONS_HUB_METADATA_DIFF_RESYNC_FAILED: "ActionsHubMetadataDiffResyncFailed",

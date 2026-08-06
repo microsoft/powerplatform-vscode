@@ -386,7 +386,9 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_DISCARD_SITE, discardSiteChanges),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_GENERATE_HTML_REPORT, generateHtmlReport),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_EXPORT, exportMetadataDiff),
-                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_IMPORT, importMetadataDiff),
+                // Invoked from tree-item menus, which pass the tree node as the first
+                // argument; drop it so the command always uses the file-picker flow.
+                vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_IMPORT, () => importMetadataDiff()),
                 vscode.commands.registerCommand(Constants.Commands.METADATA_DIFF_RESYNC, resyncMetadataDiff(this._pacTerminal, this._context)),
                 MetadataDiffDecorationProvider.getInstance().register(),
                 ReadOnlyContentProvider.getInstance().register()

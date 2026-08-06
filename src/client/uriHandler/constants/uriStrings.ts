@@ -19,7 +19,10 @@ export const URI_HANDLER_STRINGS = {
         ENV_SWITCH_FAILED: vscode.l10n.t("Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command."),
         USER_CANCELLED_ENV_SWITCH: vscode.l10n.t("User cancelled environment switch"),
         USER_CANCELLED_FOLDER_SELECTION: vscode.l10n.t("User cancelled folder selection"),
-        DOWNLOAD_FAILED: vscode.l10n.t("Download failed: {0}")
+        DOWNLOAD_FAILED: vscode.l10n.t("Download failed: {0}"),
+        METADATA_DIFF_IMPORT_MISSING_FILE_PATH: vscode.l10n.t("Metadata diff import URI is missing the required 'filePath' query parameter."),
+        METADATA_DIFF_IMPORT_INVALID_FILE_PATH: vscode.l10n.t("Metadata diff import URI must reference an absolute file path without '..' segments."),
+        METADATA_DIFF_IMPORT_FAILED: vscode.l10n.t("Metadata diff import failed: {0}")
     },
     INFO: {
         DOWNLOAD_CANCELLED_AUTH: vscode.l10n.t("Site download cancelled. Authentication is required to proceed."),

@@ -11,6 +11,7 @@ export const URI_CONSTANTS = {
     PATHS: {
         PCF_INIT: '/pcfInit',
         OPEN: '/open',
+        METADATA_DIFF_IMPORT: '/metadataDiffImport',
         AGENTIC_CREATE: '/agenticCreate',
         PAC_CREATE: '/pacCreate'
     },
@@ -23,6 +24,7 @@ export const URI_CONSTANTS = {
         WEBSITE_NAME: 'websitename',
         SITE_URL: 'siteurl',
         WEBSITE_PREVIEW_URL: 'websitepreviewurl',
+        FILE_PATH: 'filePath',
         REGION: 'region',
         TENANT_ID: 'tenantid',
         SOURCE: 'source',
@@ -58,6 +60,7 @@ export const URI_CONSTANTS = {
 export const enum UriPath {
     PcfInit = '/pcfInit',
     Open = '/open',
+    MetadataDiffImport = '/metadataDiffImport',
     AgenticCreate = '/agenticCreate',
     PacCreate = '/pacCreate',
 }
