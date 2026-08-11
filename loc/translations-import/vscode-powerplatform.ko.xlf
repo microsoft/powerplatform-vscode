@@ -1501,6 +1501,10 @@ URL: {1}
         <source xml:lang="en">Select Folder to Download Power Pages Site</source>
         <target state="translated">Power Pages 사이트를 다운로드할 폴더 선택</target>
       </trans-unit>
+      <trans-unit id="++CODE++3fa3357e7ab619e582aa9350ee57f1679de1609ce6a53a5dd27fd2c6a07f0a10">
+        <source xml:lang="en">Select Target Folder</source>
+        <target state="new">Select Target Folder</target>
+      </trans-unit>
       <trans-unit id="++CODE++a40f78f3a7f5c5ab1b101e95cdf044552542712fdcf45a83dfea3f455b6f638a">
         <source xml:lang="en">Select Type</source>
         <target state="translated">유형 선택</target>
