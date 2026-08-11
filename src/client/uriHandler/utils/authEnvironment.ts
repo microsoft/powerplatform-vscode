@@ -8,7 +8,14 @@ import { PacWrapper } from "../../pac/PacWrapper";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { uriHandlerTelemetryEventNames } from "../telemetry/uriHandlerTelemetryEvents";
 import { URI_HANDLER_STRINGS } from "../constants/uriStrings";
-import { UriParameters } from "./uriHandlerUtils";
+
+/**
+ * Minimal target required for PAC CLI authentication and environment selection.
+ */
+export interface AuthEnvironmentTarget {
+    environmentId: string | null;
+    orgUrl: string | null;
+}
 
 /**
  * Encapsulates the PAC CLI authentication and environment-selection steps shared by the
@@ -26,7 +33,7 @@ export class AuthEnvironmentService {
     /**
      * Handle authentication and environment setup, reporting progress to the user.
      */
-    public async prepareAuthenticationAndEnvironment(uriParams: UriParameters, telemetryData: Record<string, string>): Promise<void> {
+    public async prepareAuthenticationAndEnvironment(uriParams: AuthEnvironmentTarget, telemetryData: Record<string, string>): Promise<void> {
         await vscode.window.withProgress(
             {
                 location: vscode.ProgressLocation.Notification,
@@ -69,7 +76,7 @@ export class AuthEnvironmentService {
     /**
      * Ensure user is authenticated with PAC CLI
      */
-    private async ensureAuthentication(uriParams: UriParameters, telemetryData: Record<string, string>, progress: vscode.Progress<{ message?: string; increment?: number }>): Promise<void> {
+    private async ensureAuthentication(uriParams: AuthEnvironmentTarget, telemetryData: Record<string, string>, progress: vscode.Progress<{ message?: string; increment?: number }>): Promise<void> {
         let authInfo;
         try {
             authInfo = await this.pacWrapper.activeOrg();
@@ -130,7 +137,7 @@ export class AuthEnvironmentService {
     /**
      * Ensure we're connected to the correct environment
      */
-    private async ensureCorrectEnvironment(uriParams: UriParameters, telemetryData: Record<string, string>, progress: vscode.Progress<{ message?: string; increment?: number }>): Promise<void> {
+    private async ensureCorrectEnvironment(uriParams: AuthEnvironmentTarget, telemetryData: Record<string, string>, progress: vscode.Progress<{ message?: string; increment?: number }>): Promise<void> {
         let currentAuthInfo;
         try {
             currentAuthInfo = await this.pacWrapper.activeOrg();
