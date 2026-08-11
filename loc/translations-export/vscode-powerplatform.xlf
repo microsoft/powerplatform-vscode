@@ -1130,6 +1130,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++e4efd0ebbc891e539d343ce3247c566fbb105ea4f5746251a256995cdeaefcd3">
       <source xml:lang="en">Select Folder to Download Power Pages Site</source>
     </trans-unit>
+    <trans-unit id="++CODE++3fa3357e7ab619e582aa9350ee57f1679de1609ce6a53a5dd27fd2c6a07f0a10">
+      <source xml:lang="en">Select Target Folder</source>
+    </trans-unit>
     <trans-unit id="++CODE++a40f78f3a7f5c5ab1b101e95cdf044552542712fdcf45a83dfea3f455b6f638a">
       <source xml:lang="en">Select Type</source>
     </trans-unit>
