@@ -11,6 +11,7 @@ import { UriParameters } from "../../uriHandler/utils/uriHandlerUtils";
 import { CreateFlowParameters } from "../../uriHandler/handlers/createFlowParams";
 import { PacWrapper } from "../../pac/PacWrapper";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import { URI_HANDLER_STRINGS } from "../../uriHandler/constants/uriStrings";
 
 type ProgressReporter = vscode.Progress<{ message?: string; increment?: number }>;
 type ProgressTask = (progress: ProgressReporter, token: vscode.CancellationToken) => Thenable<void>;
@@ -110,6 +111,40 @@ describe("AuthEnvironmentService", () => {
 
         expect(pacWrapperStub.authCreateNewAuthProfileForOrg.calledOnceWith("https://org.crm.dynamics.com/")).to.be.true;
         expect(pacWrapperStub.orgSelect.called).to.be.false;
+    });
+
+    it("rejects create-flow parameters without an environment ID", async () => {
+        const incompleteParams: CreateFlowParameters = {
+            ...CREATE_FLOW_PARAMS,
+            environmentId: null
+        };
+
+        let thrown: unknown;
+        try {
+            await service.prepareAuthenticationAndEnvironment(incompleteParams, {});
+        } catch (error) {
+            thrown = error;
+        }
+
+        expect(thrown).to.be.an("error").with.property("message", URI_HANDLER_STRINGS.ERRORS.ENVIRONMENT_ID_REQUIRED);
+        expect(pacWrapperStub.activeOrg.called).to.be.false;
+    });
+
+    it("rejects create-flow parameters without an organization URL", async () => {
+        const incompleteParams: CreateFlowParameters = {
+            ...CREATE_FLOW_PARAMS,
+            orgUrl: null
+        };
+
+        let thrown: unknown;
+        try {
+            await service.prepareAuthenticationAndEnvironment(incompleteParams, {});
+        } catch (error) {
+            thrown = error;
+        }
+
+        expect(thrown).to.be.an("error").with.property("message", URI_HANDLER_STRINGS.ERRORS.ORG_URL_REQUIRED);
+        expect(pacWrapperStub.activeOrg.called).to.be.false;
     });
 
     it("switches environment when the active org points at a different environment", async () => {

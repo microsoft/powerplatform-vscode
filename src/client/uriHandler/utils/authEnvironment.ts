@@ -17,6 +17,11 @@ export interface AuthEnvironmentTarget {
     orgUrl: string | null;
 }
 
+interface ValidatedAuthEnvironmentTarget {
+    environmentId: string;
+    orgUrl: string;
+}
+
 /**
  * Encapsulates the PAC CLI authentication and environment-selection steps shared by the
  * Power Pages deep-link flows. Extracted from `UriHandler` so that each deep-link handler
@@ -34,6 +39,8 @@ export class AuthEnvironmentService {
      * Handle authentication and environment setup, reporting progress to the user.
      */
     public async prepareAuthenticationAndEnvironment(uriParams: AuthEnvironmentTarget, telemetryData: Record<string, string>): Promise<void> {
+        const target = this.validateTarget(uriParams);
+
         await vscode.window.withProgress(
             {
                 location: vscode.ProgressLocation.Notification,
@@ -52,7 +59,7 @@ export class AuthEnvironmentService {
                 });
 
                 // Check and handle authentication
-                await this.ensureAuthentication(uriParams, telemetryData, progress);
+                await this.ensureAuthentication(target, telemetryData, progress);
 
                 progress.report({
                     message: URI_HANDLER_STRINGS.PROGRESS.CHECKING_ENV,
@@ -60,7 +67,7 @@ export class AuthEnvironmentService {
                 });
 
                 // Check and handle environment switching
-                await this.ensureCorrectEnvironment(uriParams, telemetryData, progress);
+                await this.ensureCorrectEnvironment(target, telemetryData, progress);
 
                 progress.report({
                     message: URI_HANDLER_STRINGS.PROGRESS.READY_TO_SELECT,
@@ -76,7 +83,7 @@ export class AuthEnvironmentService {
     /**
      * Ensure user is authenticated with PAC CLI
      */
-    private async ensureAuthentication(uriParams: AuthEnvironmentTarget, telemetryData: Record<string, string>, progress: vscode.Progress<{ message?: string; increment?: number }>): Promise<void> {
+    private async ensureAuthentication(uriParams: ValidatedAuthEnvironmentTarget, telemetryData: Record<string, string>, progress: vscode.Progress<{ message?: string; increment?: number }>): Promise<void> {
         let authInfo;
         try {
             authInfo = await this.pacWrapper.activeOrg();
@@ -109,7 +116,7 @@ export class AuthEnvironmentService {
                         increment: 10
                     });
 
-                    await this.pacWrapper.authCreateNewAuthProfileForOrg(uriParams.orgUrl!);
+                    await this.pacWrapper.authCreateNewAuthProfileForOrg(uriParams.orgUrl);
 
                     const newAuthInfo = await this.pacWrapper.activeOrg();
                     if (!newAuthInfo || newAuthInfo.Status !== "Success") {
@@ -137,7 +144,7 @@ export class AuthEnvironmentService {
     /**
      * Ensure we're connected to the correct environment
      */
-    private async ensureCorrectEnvironment(uriParams: AuthEnvironmentTarget, telemetryData: Record<string, string>, progress: vscode.Progress<{ message?: string; increment?: number }>): Promise<void> {
+    private async ensureCorrectEnvironment(uriParams: ValidatedAuthEnvironmentTarget, telemetryData: Record<string, string>, progress: vscode.Progress<{ message?: string; increment?: number }>): Promise<void> {
         let currentAuthInfo;
         try {
             currentAuthInfo = await this.pacWrapper.activeOrg();
@@ -169,7 +176,7 @@ export class AuthEnvironmentService {
                         increment: 10
                     });
 
-                    await this.pacWrapper.orgSelect(uriParams.orgUrl!);
+                    await this.pacWrapper.orgSelect(uriParams.orgUrl);
 
                     const verifyAuthInfo = await this.pacWrapper.activeOrg();
                     if (verifyAuthInfo?.Status !== "Success" || verifyAuthInfo.Results?.EnvironmentId !== uriParams.environmentId) {
@@ -192,6 +199,24 @@ export class AuthEnvironmentService {
                 throw new Error(URI_HANDLER_STRINGS.ERRORS.USER_CANCELLED_ENV_SWITCH);
             }
         }
+    }
+
+    /**
+     * Validate the authentication and environment target before invoking PAC CLI.
+     */
+    private validateTarget(uriParams: AuthEnvironmentTarget): ValidatedAuthEnvironmentTarget {
+        if (!uriParams.environmentId) {
+            throw new Error(URI_HANDLER_STRINGS.ERRORS.ENVIRONMENT_ID_REQUIRED);
+        }
+
+        if (!uriParams.orgUrl) {
+            throw new Error(URI_HANDLER_STRINGS.ERRORS.ORG_URL_REQUIRED);
+        }
+
+        return {
+            environmentId: uriParams.environmentId,
+            orgUrl: uriParams.orgUrl
+        };
     }
 
     /**
