@@ -20,6 +20,7 @@ export interface CreateFlowParameters {
     source: string | null;
     agentHost: string | null;
     version: string | null;
+    correlationId: string | null;
 }
 
 /**
@@ -36,7 +37,9 @@ export function parseCreateFlowParameters(uri: vscode.Uri): CreateFlowParameters
         websiteId: urlParams.get(URI_CONSTANTS.PARAMETERS.WEBSITE_ID),
         source: urlParams.get(URI_CONSTANTS.PARAMETERS.SOURCE),
         agentHost: urlParams.get(URI_CONSTANTS.PARAMETERS.AGENT_HOST),
-        version: urlParams.get(URI_CONSTANTS.PARAMETERS.VERSION)
+        version: urlParams.get(URI_CONSTANTS.PARAMETERS.VERSION),
+        // Power Pages Home does not emit this parameter yet; parse it defensively for the upcoming contract.
+        correlationId: urlParams.get(URI_CONSTANTS.PARAMETERS.REFERRER_SESSION_ID)
     };
 }
 
