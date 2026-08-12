@@ -22,5 +22,18 @@ export enum uriHandlerTelemetryEventNames {
     URI_HANDLER_AGENTIC_CREATE_FAILED = "UriHandlerAgenticCreateFailed",
     URI_HANDLER_PAC_CREATE_TRIGGERED = "UriHandlerPacCreateTriggered",
     URI_HANDLER_PAC_CREATE_DISABLED = "UriHandlerPacCreateDisabled",
-    URI_HANDLER_PAC_CREATE_FAILED = "UriHandlerPacCreateFailed"
+    URI_HANDLER_PAC_CREATE_FAILED = "UriHandlerPacCreateFailed",
+    URI_HANDLER_CREATE_AUTH_STARTED = "UriHandlerCreateAuthStarted",
+    URI_HANDLER_CREATE_AUTH_COMPLETED = "UriHandlerCreateAuthCompleted",
+    URI_HANDLER_CREATE_AUTH_FAILED = "UriHandlerCreateAuthFailed",
+    URI_HANDLER_CREATE_ENVIRONMENT_SET = "UriHandlerCreateEnvironmentSet",
+    URI_HANDLER_CREATE_FOLDER_SELECTED = "UriHandlerCreateFolderSelected",
+    URI_HANDLER_CREATE_FOLDER_CANCELLED = "UriHandlerCreateFolderCancelled",
+    URI_HANDLER_PAC_CREATE_PARAMS_COLLECTED = "UriHandlerPacCreateParamsCollected",
+    URI_HANDLER_PAC_CREATE_TERMINAL_LAUNCHED = "UriHandlerPacCreateTerminalLaunched",
+    URI_HANDLER_AGENTIC_CREATE_HOST_DETECTED = "UriHandlerAgenticCreateHostDetected",
+    URI_HANDLER_AGENTIC_CREATE_HOST_SELECTED = "UriHandlerAgenticCreateHostSelected",
+    URI_HANDLER_AGENTIC_CREATE_PLUGIN_SEQUENCE_LAUNCHED = "UriHandlerAgenticCreatePluginSequenceLaunched",
+    URI_HANDLER_AGENTIC_CREATE_SAMPLE_PROMPT_SENT = "UriHandlerAgenticCreateSamplePromptSent",
+    URI_HANDLER_CREATE_FLOW_DROPPED = "UriHandlerCreateFlowDropped"
 }

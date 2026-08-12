@@ -10,6 +10,7 @@ import { ECSFeaturesClient } from "../../../common/ecs-features/ecsFeatureClient
 import { EnablePacCreateFromHome } from "../../../common/ecs-features/ecsFeatureGates";
 import { uriHandlerTelemetryEventNames } from "../telemetry/uriHandlerTelemetryEvents";
 import { buildCreateFlowTelemetry, parseCreateFlowParameters } from "./createFlowParams";
+import { emitCreateFlowError, emitCreateFlowEvent } from "../telemetry/createFlowTelemetry";
 
 /**
  * Handles the `/pacCreate` deep link launched from the Power Pages home page, which will open
@@ -41,7 +42,8 @@ export class PacCreateHandler {
     public async handle(uri: vscode.Uri): Promise<void> {
         // Parse the (secret-free) deep-link params up front so the redacted telemetry payload
         // is available on every path, including the flag-off and failure cases.
-        const telemetryData = buildCreateFlowTelemetry(parseCreateFlowParameters(uri));
+        const params = parseCreateFlowParameters(uri);
+        const telemetryData = buildCreateFlowTelemetry(params);
 
         if (!PacCreateHandler.isEnabled()) {
             oneDSLoggerWrapper.getLogger().traceInfo(
@@ -52,9 +54,10 @@ export class PacCreateHandler {
         }
 
         try {
-            oneDSLoggerWrapper.getLogger().traceInfo(
+            emitCreateFlowEvent(
                 uriHandlerTelemetryEventNames.URI_HANDLER_PAC_CREATE_TRIGGERED,
-                telemetryData
+                params,
+                'pac'
             );
 
             // NOTE: Behavior intentionally not implemented yet. The PAC create flow (auth ->
@@ -62,11 +65,12 @@ export class PacCreateHandler {
             // retained for use by that implementation.
             void this.pacWrapper;
         } catch (error) {
-            oneDSLoggerWrapper.getLogger().traceError(
+            emitCreateFlowError(
                 uriHandlerTelemetryEventNames.URI_HANDLER_PAC_CREATE_FAILED,
                 'PAC create deep link failed',
-                error instanceof Error ? error : new Error(String(error)),
-                telemetryData
+                error,
+                params,
+                'pac'
             );
         }
     }
