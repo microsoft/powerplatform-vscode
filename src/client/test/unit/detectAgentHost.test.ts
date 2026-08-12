@@ -11,6 +11,16 @@ import {
     detectAgentHosts
 } from '../../uriHandler/utils/detectAgentHost';
 
+const createDeferred = <T>() => {
+    let resolve!: (value: T) => void;
+    let reject!: (reason?: unknown) => void;
+    const promise = new Promise<T>((promiseResolve, promiseReject) => {
+        resolve = promiseResolve;
+        reject = promiseReject;
+    });
+    return { promise, resolve, reject };
+};
+
 describe('detectAgentHost', () => {
     it('returns the installed host with trimmed version output', async () => {
         const runProbe = sinon.stub().resolves({ stdout: '  GitHub Copilot CLI 1.2.3\r\n' });
@@ -35,12 +45,19 @@ describe('detectAgentHost', () => {
         });
     });
 
-    it('probes both hosts and aggregates mixed results', async () => {
+    it('probes both hosts in parallel and aggregates mixed results', async () => {
+        const copilotProbe = createDeferred<{ stdout: string }>();
+        const claudeProbe = createDeferred<{ stdout: string }>();
         const runProbe = sinon.stub();
-        runProbe.withArgs('copilot --version').resolves({ stdout: 'copilot 0.0.1\n' });
-        runProbe.withArgs('claude --version').rejects(new Error('not found'));
+        runProbe.withArgs('copilot --version').returns(copilotProbe.promise);
+        runProbe.withArgs('claude --version').returns(claudeProbe.promise);
 
-        const results = await detectAgentHosts(runProbe);
+        const resultsPromise = detectAgentHosts(runProbe);
+
+        expect(runProbe.calledTwice).to.be.true;
+        copilotProbe.resolve({ stdout: 'copilot 0.0.1\n' });
+        claudeProbe.reject(new Error('not found'));
+        const results = await resultsPromise;
 
         expect(results).to.deep.equal([
             {

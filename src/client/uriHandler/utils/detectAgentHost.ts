@@ -39,10 +39,12 @@ const AGENT_HOST_PROBE_COMMANDS: Record<AgentHost, string> = {
     [AgentHost.Claude]: 'claude --version'
 };
 
+const AGENT_HOSTS: AgentHost[] = Object.values(AgentHost);
+const AGENT_HOST_PROBE_TIMEOUT_MS = 10000;
 const execAsync = promisify(exec);
 
 const defaultRunProbe: AgentHostProbe = async (command) => {
-    const { stdout } = await execAsync(command);
+    const { stdout } = await execAsync(command, { timeout: AGENT_HOST_PROBE_TIMEOUT_MS });
     return { stdout };
 };
 
@@ -79,8 +81,5 @@ export const detectAgentHost = async (
 export const detectAgentHosts = async (
     runProbe: AgentHostProbe = defaultRunProbe
 ): Promise<AgentHostDetectionResult[]> => {
-    return await Promise.all([
-        detectAgentHost(AgentHost.Copilot, runProbe),
-        detectAgentHost(AgentHost.Claude, runProbe)
-    ]);
+    return await Promise.all(AGENT_HOSTS.map(host => detectAgentHost(host, runProbe)));
 };
