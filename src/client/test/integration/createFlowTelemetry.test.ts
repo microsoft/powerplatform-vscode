@@ -36,24 +36,19 @@ describe("Create-flow telemetry", () => {
         correlationId: 'correlation-123'
     };
 
-    const expectIdentifiersRedacted = (properties: Record<string, string>): void => {
-        expect(properties).to.not.have.property('environmentId');
+    const expectIdentifiersHandled = (properties: Record<string, string>): void => {
+        expect(properties.environmentId).to.equal(params.environmentId);
+        expect(properties.websiteId).to.equal(params.websiteId);
         expect(properties).to.not.have.property('orgUrl');
         expect(properties).to.not.have.property('tenantId');
-        expect(properties).to.not.have.property('websiteId');
-        expect(Object.values(properties)).to.not.include(params.environmentId);
         expect(Object.values(properties)).to.not.include(params.orgUrl);
         expect(Object.values(properties)).to.not.include(params.tenantId);
-        expect(Object.values(properties)).to.not.include(params.websiteId);
         expect(properties).to.include({
             hasEnvironmentId: 'true',
             hasOrgUrl: 'true',
             hasTenantId: 'true',
             hasWebsiteId: 'true'
         });
-        expect(properties.environmentIdHash).to.match(/^[a-f0-9]{64}$/);
-        expect(properties.orgUrlHash).to.match(/^[a-f0-9]{64}$/);
-        expect(properties.websiteIdHash).to.match(/^[a-f0-9]{64}$/);
     };
 
     beforeEach(() => {
@@ -116,7 +111,7 @@ describe("Create-flow telemetry", () => {
             authenticationMode: 'existing',
             region: 'extra-region'
         });
-        expectIdentifiersRedacted(properties);
+        expectIdentifiersHandled(properties);
     });
 
     it("emits normalized errors with common, extra, and redacted properties", () => {
@@ -143,7 +138,7 @@ describe("Create-flow telemetry", () => {
             correlationId: params.correlationId,
             dropStage: 'authentication'
         });
-        expectIdentifiersRedacted(properties);
+        expectIdentifiersHandled(properties);
     });
 
     it("uses an empty correlation ID when the referrer session ID is absent", () => {
@@ -156,18 +151,13 @@ describe("Create-flow telemetry", () => {
         expect((traceInfoStub.firstCall.args[1] as Record<string, string>).correlationId).to.equal('');
     });
 
-    it("keeps the existing URI telemetry payload redacted", () => {
+    it("includes website and environment IDs while redacting organization URL and tenant ID", () => {
         const properties = buildCreateFlowTelemetry(params);
-        const repeatedProperties = buildCreateFlowTelemetry(params);
 
-        expectIdentifiersRedacted(properties);
-        expect(repeatedProperties.environmentIdHash).to.equal(properties.environmentIdHash);
-        expect(repeatedProperties.orgUrlHash).to.equal(properties.orgUrlHash);
-        expect(repeatedProperties.websiteIdHash).to.equal(properties.websiteIdHash);
-        expect(properties.environmentIdHash).to.not.equal(properties.websiteIdHash);
+        expectIdentifiersHandled(properties);
     });
 
-    it("uses empty identifier hashes when identifiers are absent", () => {
+    it("uses empty identifier values when website and environment IDs are absent", () => {
         const properties = buildCreateFlowTelemetry({
             ...params,
             environmentId: null,
@@ -176,9 +166,9 @@ describe("Create-flow telemetry", () => {
         });
 
         expect(properties).to.include({
-            environmentIdHash: '',
-            orgUrlHash: '',
-            websiteIdHash: ''
+            environmentId: '',
+            websiteId: ''
         });
+        expect(properties).to.not.have.property('orgUrl');
     });
 });

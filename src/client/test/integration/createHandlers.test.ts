@@ -45,10 +45,13 @@ describe("Create deep-link handlers (gated)", () => {
         });
     };
 
-    const expectIdentifierHashes = (properties: Record<string, string>): void => {
-        expect(properties.environmentIdHash).to.match(/^[a-f0-9]{64}$/);
-        expect(properties.orgUrlHash).to.match(/^[a-f0-9]{64}$/);
-        expect(properties.websiteIdHash).to.match(/^[a-f0-9]{64}$/);
+    const expectIdentifiers = (
+        properties: Record<string, string>,
+        environmentId: string,
+        websiteId: string
+    ): void => {
+        expect(properties).to.include({ environmentId, websiteId });
+        expect(properties).to.not.have.property('orgUrl');
     };
 
     beforeEach(() => {
@@ -80,7 +83,7 @@ describe("Create deep-link handlers (gated)", () => {
             source: URI_CONSTANTS.SOURCE_VALUES.POWER_PAGES_HOME,
             hasEnvironmentId: "true"
         });
-        expectIdentifierHashes(disabled?.args[1] as Record<string, string>);
+        expectIdentifiers(disabled?.args[1] as Record<string, string>, 'env-1', 'pac-website');
         expect(disabled?.args[1]).to.not.have.property('channel');
         expect(traceInfoStub.calledWith(uriHandlerTelemetryEventNames.URI_HANDLER_PAC_CREATE_TRIGGERED)).to.be.false;
     });
@@ -104,7 +107,7 @@ describe("Create deep-link handlers (gated)", () => {
             contractVersion: URI_CONSTANTS.CONTRACT_VERSION.CURRENT,
             correlationId: 'pac-correlation'
         });
-        expectIdentifierHashes(triggered?.args[1] as Record<string, string>);
+        expectIdentifiers(triggered?.args[1] as Record<string, string>, 'env-1', 'pac-website');
     });
 
     it("PacCreateHandler emits failed telemetry through the create-flow helper", async () => {
@@ -123,6 +126,11 @@ describe("Create deep-link handlers (gated)", () => {
             contractVersion: URI_CONSTANTS.CONTRACT_VERSION.CURRENT,
             correlationId: 'pac-correlation'
         });
+        expectIdentifiers(
+            traceErrorStub.firstCall.args[3] as Record<string, string>,
+            'env-1',
+            'pac-website'
+        );
     });
 
     it("AgenticCreateHandler is a no-op that only emits disabled telemetry when the flag is off", async () => {
@@ -140,7 +148,7 @@ describe("Create deep-link handlers (gated)", () => {
             source: URI_CONSTANTS.SOURCE_VALUES.POWER_PAGES_HOME,
             agentHost: URI_CONSTANTS.AGENT_HOST_VALUES.COPILOT
         });
-        expectIdentifierHashes(disabled?.args[1] as Record<string, string>);
+        expectIdentifiers(disabled?.args[1] as Record<string, string>, 'agent-env', 'agent-website');
         expect(disabled?.args[1]).to.not.have.property('channel');
         expect(traceInfoStub.calledWith(uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_TRIGGERED)).to.be.false;
     });
@@ -163,7 +171,7 @@ describe("Create deep-link handlers (gated)", () => {
             contractVersion: URI_CONSTANTS.CONTRACT_VERSION.CURRENT,
             correlationId: 'agent-correlation'
         });
-        expectIdentifierHashes(triggered?.args[1] as Record<string, string>);
+        expectIdentifiers(triggered?.args[1] as Record<string, string>, 'agent-env', 'agent-website');
     });
 
     it("AgenticCreateHandler emits failed telemetry through the create-flow helper", async () => {
@@ -182,5 +190,10 @@ describe("Create deep-link handlers (gated)", () => {
             contractVersion: URI_CONSTANTS.CONTRACT_VERSION.CURRENT,
             correlationId: 'agent-correlation'
         });
+        expectIdentifiers(
+            traceErrorStub.firstCall.args[3] as Record<string, string>,
+            'agent-env',
+            'agent-website'
+        );
     });
 });

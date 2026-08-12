@@ -3,7 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { createHash } from "crypto";
 import * as vscode from "vscode";
 import { URI_CONSTANTS } from "../constants/uriConstants";
 
@@ -44,14 +43,11 @@ export function parseCreateFlowParameters(uri: vscode.Uri): CreateFlowParameters
     };
 }
 
-function hashTelemetryIdentifier(value: string | null): string {
-    return value ? createHash('sha256').update(value).digest('hex') : '';
-}
-
 /**
  * Builds a non-sensitive telemetry payload describing a create-flow deep link.
  * Only low-cardinality, non-secret values (source, agent host, contract version, region)
- * and one-way hashes plus presence flags for identifiers are recorded — never raw identifiers.
+ * and the requested website/environment identifiers are recorded. Organization URLs and
+ * tenant identifiers remain redacted to presence flags.
  */
 export function buildCreateFlowTelemetry(params: CreateFlowParameters): Record<string, string> {
     return {
@@ -63,8 +59,7 @@ export function buildCreateFlowTelemetry(params: CreateFlowParameters): Record<s
         hasOrgUrl: params.orgUrl ? 'true' : 'false',
         hasWebsiteId: params.websiteId ? 'true' : 'false',
         hasTenantId: params.tenantId ? 'true' : 'false',
-        environmentIdHash: hashTelemetryIdentifier(params.environmentId),
-        orgUrlHash: hashTelemetryIdentifier(params.orgUrl),
-        websiteIdHash: hashTelemetryIdentifier(params.websiteId)
+        environmentId: params.environmentId || '',
+        websiteId: params.websiteId || ''
     };
 }
