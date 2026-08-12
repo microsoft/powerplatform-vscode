@@ -35,6 +35,7 @@ export const URI_HANDLER_STRINGS = {
     BUTTONS: {
         YES: vscode.l10n.t("Yes"),
         NO: vscode.l10n.t("No"),
+        SELECT_FOLDER: vscode.l10n.t("Select Folder"),
         OPEN_FOLDER: vscode.l10n.t("Open Folder"),
         OPEN_NEW_WORKSPACE: vscode.l10n.t("Open in New Workspace"),
         NOT_NOW: vscode.l10n.t("Not Now")
@@ -46,7 +47,8 @@ export const URI_HANDLER_STRINGS = {
             comment: ["Do not translate 'PCF' as it is a product name."]
         }),
         POWER_PAGES: vscode.l10n.t("Power Pages"),
-        PAC_CLI: vscode.l10n.t("PAC CLI")
+        PAC_CLI: vscode.l10n.t("PAC CLI"),
+        TARGET_FOLDER: vscode.l10n.t("Select Target Folder")
     },
     PROGRESS: {
         PREPARING: vscode.l10n.t("Preparing to open Power Pages site..."),

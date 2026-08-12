@@ -8,8 +8,10 @@ import * as sinon from "sinon";
 import * as vscode from "vscode";
 import { AuthEnvironmentService } from "../../uriHandler/utils/authEnvironment";
 import { UriParameters } from "../../uriHandler/utils/uriHandlerUtils";
+import { CreateFlowParameters } from "../../uriHandler/handlers/createFlowParams";
 import { PacWrapper } from "../../pac/PacWrapper";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import { URI_HANDLER_STRINGS } from "../../uriHandler/constants/uriStrings";
 
 type ProgressReporter = vscode.Progress<{ message?: string; increment?: number }>;
 type ProgressTask = (progress: ProgressReporter, token: vscode.CancellationToken) => Thenable<void>;
@@ -28,10 +30,25 @@ describe("AuthEnvironmentService", () => {
     let service: AuthEnvironmentService;
     let warningStub: sinon.SinonStub;
 
-    const uriParams = {
+    const OPEN_URI_PARAMS: UriParameters = {
+        websiteId: "site-1",
         environmentId: "env-1",
-        orgUrl: "https://org.crm.dynamics.com/"
-    } as unknown as UriParameters;
+        orgUrl: "https://org.crm.dynamics.com/",
+        schema: null,
+        siteName: null,
+        siteUrl: null,
+        modelVersion: 1
+    };
+    const CREATE_FLOW_PARAMS: CreateFlowParameters = {
+        environmentId: "env-1",
+        orgUrl: "https://org.crm.dynamics.com/",
+        region: null,
+        tenantId: null,
+        websiteId: null,
+        source: null,
+        agentHost: null,
+        version: null
+    };
 
     beforeEach(() => {
         sandbox = sinon.createSandbox();
@@ -76,11 +93,58 @@ describe("AuthEnvironmentService", () => {
             Results: { EnvironmentId: "env-1" }
         });
 
-        await service.prepareAuthenticationAndEnvironment(uriParams, {});
+        await service.prepareAuthenticationAndEnvironment(OPEN_URI_PARAMS, {});
 
         expect(warningStub.called).to.be.false;
         expect(pacWrapperStub.orgSelect.called).to.be.false;
         expect(pacWrapperStub.authCreateNewAuthProfileForOrg.called).to.be.false;
+    });
+
+    it("authenticates when passed create-flow parameters", async () => {
+        pacWrapperStub.activeOrg
+            .onFirstCall().resolves({ Status: "Failure" })
+            .onSecondCall().resolves({ Status: "Success", Results: { EnvironmentId: "env-1" } })
+            .onThirdCall().resolves({ Status: "Success", Results: { EnvironmentId: "env-1" } });
+        warningStub.resolves("Yes");
+
+        await service.prepareAuthenticationAndEnvironment(CREATE_FLOW_PARAMS, {});
+
+        expect(pacWrapperStub.authCreateNewAuthProfileForOrg.calledOnceWith("https://org.crm.dynamics.com/")).to.be.true;
+        expect(pacWrapperStub.orgSelect.called).to.be.false;
+    });
+
+    it("rejects create-flow parameters without an environment ID", async () => {
+        const incompleteParams: CreateFlowParameters = {
+            ...CREATE_FLOW_PARAMS,
+            environmentId: null
+        };
+
+        let thrown: unknown;
+        try {
+            await service.prepareAuthenticationAndEnvironment(incompleteParams, {});
+        } catch (error) {
+            thrown = error;
+        }
+
+        expect(thrown).to.be.an("error").with.property("message", URI_HANDLER_STRINGS.ERRORS.ENVIRONMENT_ID_REQUIRED);
+        expect(pacWrapperStub.activeOrg.called).to.be.false;
+    });
+
+    it("rejects create-flow parameters without an organization URL", async () => {
+        const incompleteParams: CreateFlowParameters = {
+            ...CREATE_FLOW_PARAMS,
+            orgUrl: null
+        };
+
+        let thrown: unknown;
+        try {
+            await service.prepareAuthenticationAndEnvironment(incompleteParams, {});
+        } catch (error) {
+            thrown = error;
+        }
+
+        expect(thrown).to.be.an("error").with.property("message", URI_HANDLER_STRINGS.ERRORS.ORG_URL_REQUIRED);
+        expect(pacWrapperStub.activeOrg.called).to.be.false;
     });
 
     it("switches environment when the active org points at a different environment", async () => {
@@ -90,7 +154,7 @@ describe("AuthEnvironmentService", () => {
             .onThirdCall().resolves({ Status: "Success", Results: { EnvironmentId: "env-1" } });
         warningStub.resolves("Yes");
 
-        await service.prepareAuthenticationAndEnvironment(uriParams, {});
+        await service.prepareAuthenticationAndEnvironment(OPEN_URI_PARAMS, {});
 
         expect(pacWrapperStub.orgSelect.calledOnceWith("https://org.crm.dynamics.com/")).to.be.true;
     });
