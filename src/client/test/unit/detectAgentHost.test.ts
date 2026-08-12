@@ -49,8 +49,8 @@ describe('detectAgentHost', () => {
         const copilotProbe = createDeferred<{ stdout: string }>();
         const claudeProbe = createDeferred<{ stdout: string }>();
         const runProbe = sinon.stub();
-        runProbe.withArgs('copilot --version').returns(copilotProbe.promise);
-        runProbe.withArgs('claude --version').returns(claudeProbe.promise);
+        runProbe.withArgs('copilot', ['--version']).returns(copilotProbe.promise);
+        runProbe.withArgs('claude', ['--version']).returns(claudeProbe.promise);
 
         const resultsPromise = detectAgentHosts(runProbe);
 
@@ -78,7 +78,7 @@ describe('detectAgentHost', () => {
         await detectAgentHosts(runProbe);
 
         expect(runProbe.calledTwice).to.be.true;
-        expect(runProbe.calledWithExactly('copilot --version')).to.be.true;
-        expect(runProbe.calledWithExactly('claude --version')).to.be.true;
+        expect(runProbe.calledWithExactly('copilot', ['--version'])).to.be.true;
+        expect(runProbe.calledWithExactly('claude', ['--version'])).to.be.true;
     });
 });

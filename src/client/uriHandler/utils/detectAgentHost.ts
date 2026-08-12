@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 import { URI_CONSTANTS } from '../constants/uriConstants';
 
@@ -32,19 +32,25 @@ export interface AgentHostDetectionResult {
 /**
  * Runs an agent-host CLI probe command.
  */
-export type AgentHostProbe = (command: string) => Promise<{ stdout: string }>;
+export type AgentHostProbe = (command: string, args: string[]) => Promise<{ stdout: string }>;
 
-const AGENT_HOST_PROBE_COMMANDS: Record<AgentHost, string> = {
-    [AgentHost.Copilot]: 'copilot --version',
-    [AgentHost.Claude]: 'claude --version'
+const AGENT_HOST_PROBES: Record<AgentHost, { command: string; args: string[] }> = {
+    [AgentHost.Copilot]: {
+        command: 'copilot',
+        args: ['--version']
+    },
+    [AgentHost.Claude]: {
+        command: 'claude',
+        args: ['--version']
+    }
 };
 
 const AGENT_HOSTS: AgentHost[] = Object.values(AgentHost);
 const AGENT_HOST_PROBE_TIMEOUT_MS = 10000;
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
-const defaultRunProbe: AgentHostProbe = async (command) => {
-    const { stdout } = await execAsync(command, { timeout: AGENT_HOST_PROBE_TIMEOUT_MS });
+const defaultRunProbe: AgentHostProbe = async (command, args) => {
+    const { stdout } = await execFileAsync(command, args, { timeout: AGENT_HOST_PROBE_TIMEOUT_MS });
     return { stdout };
 };
 
@@ -59,7 +65,8 @@ export const detectAgentHost = async (
     runProbe: AgentHostProbe = defaultRunProbe
 ): Promise<AgentHostDetectionResult> => {
     try {
-        const { stdout } = await runProbe(AGENT_HOST_PROBE_COMMANDS[host]);
+        const { command, args } = AGENT_HOST_PROBES[host];
+        const { stdout } = await runProbe(command, args);
         return {
             host,
             installed: true,
