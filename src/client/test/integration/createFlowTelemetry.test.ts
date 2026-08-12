@@ -51,6 +51,9 @@ describe("Create-flow telemetry", () => {
             hasTenantId: 'true',
             hasWebsiteId: 'true'
         });
+        expect(properties.environmentIdHash).to.match(/^[a-f0-9]{64}$/);
+        expect(properties.orgUrlHash).to.match(/^[a-f0-9]{64}$/);
+        expect(properties.websiteIdHash).to.match(/^[a-f0-9]{64}$/);
     };
 
     beforeEach(() => {
@@ -154,6 +157,28 @@ describe("Create-flow telemetry", () => {
     });
 
     it("keeps the existing URI telemetry payload redacted", () => {
-        expectIdentifiersRedacted(buildCreateFlowTelemetry(params));
+        const properties = buildCreateFlowTelemetry(params);
+        const repeatedProperties = buildCreateFlowTelemetry(params);
+
+        expectIdentifiersRedacted(properties);
+        expect(repeatedProperties.environmentIdHash).to.equal(properties.environmentIdHash);
+        expect(repeatedProperties.orgUrlHash).to.equal(properties.orgUrlHash);
+        expect(repeatedProperties.websiteIdHash).to.equal(properties.websiteIdHash);
+        expect(properties.environmentIdHash).to.not.equal(properties.websiteIdHash);
+    });
+
+    it("uses empty identifier hashes when identifiers are absent", () => {
+        const properties = buildCreateFlowTelemetry({
+            ...params,
+            environmentId: null,
+            orgUrl: null,
+            websiteId: null
+        });
+
+        expect(properties).to.include({
+            environmentIdHash: '',
+            orgUrlHash: '',
+            websiteIdHash: ''
+        });
     });
 });
