@@ -27,6 +27,7 @@ export const URI_CONSTANTS = {
         TENANT_ID: 'tenantid',
         SOURCE: 'source',
         AGENT_HOST: 'agenthost',
+        REFERRER_SESSION_ID: 'referrersessionid',
         VERSION: 'v'
     },
     SCHEMA_VALUES: {

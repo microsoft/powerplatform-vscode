@@ -23,12 +23,19 @@ describe("Create deep-link handlers (gated)", () => {
     const pacCreateUri = vscode.Uri.parse(
         `vscode://${URI_CONSTANTS.EXTENSION_ID}${URI_CONSTANTS.PATHS.PAC_CREATE}` +
         `?${URI_CONSTANTS.PARAMETERS.SOURCE}=${URI_CONSTANTS.SOURCE_VALUES.POWER_PAGES_HOME}` +
-        `&${URI_CONSTANTS.PARAMETERS.ENV_ID}=env-1&${URI_CONSTANTS.PARAMETERS.VERSION}=${URI_CONSTANTS.CONTRACT_VERSION.CURRENT}`
+        `&${URI_CONSTANTS.PARAMETERS.ENV_ID}=env-1&${URI_CONSTANTS.PARAMETERS.VERSION}=${URI_CONSTANTS.CONTRACT_VERSION.CURRENT}` +
+        `&${URI_CONSTANTS.PARAMETERS.ORG_URL}=https%3A%2F%2Fpac.crm.dynamics.com` +
+        `&${URI_CONSTANTS.PARAMETERS.WEBSITE_ID}=pac-website` +
+        `&${URI_CONSTANTS.PARAMETERS.REFERRER_SESSION_ID}=pac-correlation`
     );
     const agenticCreateUri = vscode.Uri.parse(
         `vscode://${URI_CONSTANTS.EXTENSION_ID}${URI_CONSTANTS.PATHS.AGENTIC_CREATE}` +
         `?${URI_CONSTANTS.PARAMETERS.SOURCE}=${URI_CONSTANTS.SOURCE_VALUES.POWER_PAGES_HOME}` +
-        `&${URI_CONSTANTS.PARAMETERS.AGENT_HOST}=${URI_CONSTANTS.AGENT_HOST_VALUES.COPILOT}`
+        `&${URI_CONSTANTS.PARAMETERS.AGENT_HOST}=${URI_CONSTANTS.AGENT_HOST_VALUES.COPILOT}` +
+        `&${URI_CONSTANTS.PARAMETERS.ENV_ID}=agent-env` +
+        `&${URI_CONSTANTS.PARAMETERS.ORG_URL}=https%3A%2F%2Fagent.crm.dynamics.com` +
+        `&${URI_CONSTANTS.PARAMETERS.WEBSITE_ID}=agent-website` +
+        `&${URI_CONSTANTS.PARAMETERS.REFERRER_SESSION_ID}=agent-correlation`
     );
 
     const setFlags = (enabled: boolean): void => {
@@ -36,6 +43,15 @@ describe("Create deep-link handlers (gated)", () => {
             enablePacCreateFromHome: enabled,
             enableAgenticCreateFromHome: enabled
         });
+    };
+
+    const expectIdentifiers = (
+        properties: Record<string, string>,
+        environmentId: string,
+        websiteId: string
+    ): void => {
+        expect(properties).to.include({ environmentId, websiteId });
+        expect(properties).to.not.have.property('orgUrl');
     };
 
     beforeEach(() => {
@@ -67,6 +83,8 @@ describe("Create deep-link handlers (gated)", () => {
             source: URI_CONSTANTS.SOURCE_VALUES.POWER_PAGES_HOME,
             hasEnvironmentId: "true"
         });
+        expectIdentifiers(disabled?.args[1] as Record<string, string>, 'env-1', 'pac-website');
+        expect(disabled?.args[1]).to.not.have.property('channel');
         expect(traceInfoStub.calledWith(uriHandlerTelemetryEventNames.URI_HANDLER_PAC_CREATE_TRIGGERED)).to.be.false;
     });
 
@@ -84,8 +102,35 @@ describe("Create deep-link handlers (gated)", () => {
         expect(triggered?.args[1]).to.include({
             source: URI_CONSTANTS.SOURCE_VALUES.POWER_PAGES_HOME,
             version: URI_CONSTANTS.CONTRACT_VERSION.CURRENT,
-            hasEnvironmentId: "true"
+            hasEnvironmentId: "true",
+            channel: 'pac',
+            contractVersion: URI_CONSTANTS.CONTRACT_VERSION.CURRENT,
+            correlationId: 'pac-correlation'
         });
+        expectIdentifiers(triggered?.args[1] as Record<string, string>, 'env-1', 'pac-website');
+    });
+
+    it("PacCreateHandler emits failed telemetry through the create-flow helper", async () => {
+        setFlags(true);
+        traceInfoStub.throws(new Error('trigger failed'));
+        const handler = new PacCreateHandler({} as PacWrapper);
+
+        await handler.handle(pacCreateUri);
+
+        expect(traceErrorStub.calledOnce).to.be.true;
+        expect(traceErrorStub.firstCall.args[0]).to.equal(
+            uriHandlerTelemetryEventNames.URI_HANDLER_PAC_CREATE_FAILED
+        );
+        expect(traceErrorStub.firstCall.args[3]).to.include({
+            channel: 'pac',
+            contractVersion: URI_CONSTANTS.CONTRACT_VERSION.CURRENT,
+            correlationId: 'pac-correlation'
+        });
+        expectIdentifiers(
+            traceErrorStub.firstCall.args[3] as Record<string, string>,
+            'env-1',
+            'pac-website'
+        );
     });
 
     it("AgenticCreateHandler is a no-op that only emits disabled telemetry when the flag is off", async () => {
@@ -103,6 +148,8 @@ describe("Create deep-link handlers (gated)", () => {
             source: URI_CONSTANTS.SOURCE_VALUES.POWER_PAGES_HOME,
             agentHost: URI_CONSTANTS.AGENT_HOST_VALUES.COPILOT
         });
+        expectIdentifiers(disabled?.args[1] as Record<string, string>, 'agent-env', 'agent-website');
+        expect(disabled?.args[1]).to.not.have.property('channel');
         expect(traceInfoStub.calledWith(uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_TRIGGERED)).to.be.false;
     });
 
@@ -119,7 +166,34 @@ describe("Create deep-link handlers (gated)", () => {
         expect(triggered, "expected a triggered telemetry event").to.not.be.undefined;
         expect(triggered?.args[1]).to.include({
             source: URI_CONSTANTS.SOURCE_VALUES.POWER_PAGES_HOME,
-            agentHost: URI_CONSTANTS.AGENT_HOST_VALUES.COPILOT
+            agentHost: URI_CONSTANTS.AGENT_HOST_VALUES.COPILOT,
+            channel: 'agent',
+            contractVersion: URI_CONSTANTS.CONTRACT_VERSION.CURRENT,
+            correlationId: 'agent-correlation'
         });
+        expectIdentifiers(triggered?.args[1] as Record<string, string>, 'agent-env', 'agent-website');
+    });
+
+    it("AgenticCreateHandler emits failed telemetry through the create-flow helper", async () => {
+        setFlags(true);
+        traceInfoStub.throws(new Error('trigger failed'));
+        const handler = new AgenticCreateHandler({} as PacWrapper);
+
+        await handler.handle(agenticCreateUri);
+
+        expect(traceErrorStub.calledOnce).to.be.true;
+        expect(traceErrorStub.firstCall.args[0]).to.equal(
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_FAILED
+        );
+        expect(traceErrorStub.firstCall.args[3]).to.include({
+            channel: 'agent',
+            contractVersion: URI_CONSTANTS.CONTRACT_VERSION.CURRENT,
+            correlationId: 'agent-correlation'
+        });
+        expectIdentifiers(
+            traceErrorStub.firstCall.args[3] as Record<string, string>,
+            'agent-env',
+            'agent-website'
+        );
     });
 });

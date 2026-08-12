@@ -20,6 +20,7 @@ export interface CreateFlowParameters {
     source: string | null;
     agentHost: string | null;
     version: string | null;
+    correlationId: string | null;
 }
 
 /**
@@ -36,14 +37,17 @@ export function parseCreateFlowParameters(uri: vscode.Uri): CreateFlowParameters
         websiteId: urlParams.get(URI_CONSTANTS.PARAMETERS.WEBSITE_ID),
         source: urlParams.get(URI_CONSTANTS.PARAMETERS.SOURCE),
         agentHost: urlParams.get(URI_CONSTANTS.PARAMETERS.AGENT_HOST),
-        version: urlParams.get(URI_CONSTANTS.PARAMETERS.VERSION)
+        version: urlParams.get(URI_CONSTANTS.PARAMETERS.VERSION),
+        // Power Pages Home does not emit this parameter yet; parse it defensively for the upcoming contract.
+        correlationId: urlParams.get(URI_CONSTANTS.PARAMETERS.REFERRER_SESSION_ID)
     };
 }
 
 /**
  * Builds a non-sensitive telemetry payload describing a create-flow deep link.
  * Only low-cardinality, non-secret values (source, agent host, contract version, region)
- * and presence flags for identifiers are recorded — never raw org URLs or tenant IDs.
+ * and the requested website/environment identifiers are recorded. Organization URLs and
+ * tenant identifiers remain redacted to presence flags.
  */
 export function buildCreateFlowTelemetry(params: CreateFlowParameters): Record<string, string> {
     return {
@@ -54,6 +58,8 @@ export function buildCreateFlowTelemetry(params: CreateFlowParameters): Record<s
         hasEnvironmentId: params.environmentId ? 'true' : 'false',
         hasOrgUrl: params.orgUrl ? 'true' : 'false',
         hasWebsiteId: params.websiteId ? 'true' : 'false',
-        hasTenantId: params.tenantId ? 'true' : 'false'
+        hasTenantId: params.tenantId ? 'true' : 'false',
+        environmentId: params.environmentId || '',
+        websiteId: params.websiteId || ''
     };
 }
