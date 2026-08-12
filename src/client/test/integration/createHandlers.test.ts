@@ -13,12 +13,14 @@ import { ECSFeaturesClient } from "../../../common/ecs-features/ecsFeatureClient
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { uriHandlerTelemetryEventNames } from "../../uriHandler/telemetry/uriHandlerTelemetryEvents";
 import { PacWrapper } from "../../pac/PacWrapper";
+import * as createFlowCommonStages from "../../uriHandler/handlers/createFlowCommonStages";
 
 describe("Create deep-link handlers (gated)", () => {
     let sandbox: sinon.SinonSandbox;
     let getConfigStub: sinon.SinonStub;
     let traceInfoStub: sinon.SinonStub;
     let traceErrorStub: sinon.SinonStub;
+    let runCreateFlowCommonStagesStub: sinon.SinonStub;
 
     const pacCreateUri = vscode.Uri.parse(
         `vscode://${URI_CONSTANTS.EXTENSION_ID}${URI_CONSTANTS.PATHS.PAC_CREATE}` +
@@ -62,6 +64,10 @@ describe("Create deep-link handlers (gated)", () => {
         sandbox.stub(oneDSLoggerWrapper, "getLogger").returns(
             { traceInfo: traceInfoStub, traceError: traceErrorStub } as unknown as ReturnType<typeof oneDSLoggerWrapper.getLogger>
         );
+        runCreateFlowCommonStagesStub = sandbox.stub(
+            createFlowCommonStages,
+            "runCreateFlowCommonStages"
+        ).resolves(vscode.Uri.file("C:\\sites"));
     });
 
     afterEach(() => {
@@ -86,11 +92,13 @@ describe("Create deep-link handlers (gated)", () => {
         expectIdentifiers(disabled?.args[1] as Record<string, string>, 'env-1', 'pac-website');
         expect(disabled?.args[1]).to.not.have.property('channel');
         expect(traceInfoStub.calledWith(uriHandlerTelemetryEventNames.URI_HANDLER_PAC_CREATE_TRIGGERED)).to.be.false;
+        expect(runCreateFlowCommonStagesStub.called).to.be.false;
     });
 
     it("PacCreateHandler parses params and emits triggered telemetry when the flag is on", async () => {
         setFlags(true);
-        const handler = new PacCreateHandler({} as PacWrapper);
+        const pacWrapper = {} as PacWrapper;
+        const handler = new PacCreateHandler(pacWrapper);
 
         await handler.handle(pacCreateUri);
 
@@ -108,6 +116,18 @@ describe("Create deep-link handlers (gated)", () => {
             correlationId: 'pac-correlation'
         });
         expectIdentifiers(triggered?.args[1] as Record<string, string>, 'env-1', 'pac-website');
+        expect(runCreateFlowCommonStagesStub.calledOnce).to.be.true;
+        expect(runCreateFlowCommonStagesStub.firstCall.args[0]).to.include({
+            environmentId: 'env-1',
+            websiteId: 'pac-website',
+            correlationId: 'pac-correlation'
+        });
+        expect(runCreateFlowCommonStagesStub.firstCall.args[1]).to.equal('pac');
+        expect(runCreateFlowCommonStagesStub.firstCall.args[2]).to.include({
+            environmentId: 'env-1',
+            websiteId: 'pac-website'
+        });
+        expect(runCreateFlowCommonStagesStub.firstCall.args[3]).to.equal(pacWrapper);
     });
 
     it("PacCreateHandler emits failed telemetry through the create-flow helper", async () => {
@@ -151,11 +171,13 @@ describe("Create deep-link handlers (gated)", () => {
         expectIdentifiers(disabled?.args[1] as Record<string, string>, 'agent-env', 'agent-website');
         expect(disabled?.args[1]).to.not.have.property('channel');
         expect(traceInfoStub.calledWith(uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_TRIGGERED)).to.be.false;
+        expect(runCreateFlowCommonStagesStub.called).to.be.false;
     });
 
     it("AgenticCreateHandler parses params and emits triggered telemetry when the flag is on", async () => {
         setFlags(true);
-        const handler = new AgenticCreateHandler({} as PacWrapper);
+        const pacWrapper = {} as PacWrapper;
+        const handler = new AgenticCreateHandler(pacWrapper);
 
         await handler.handle(agenticCreateUri);
 
@@ -172,6 +194,18 @@ describe("Create deep-link handlers (gated)", () => {
             correlationId: 'agent-correlation'
         });
         expectIdentifiers(triggered?.args[1] as Record<string, string>, 'agent-env', 'agent-website');
+        expect(runCreateFlowCommonStagesStub.calledOnce).to.be.true;
+        expect(runCreateFlowCommonStagesStub.firstCall.args[0]).to.include({
+            environmentId: 'agent-env',
+            websiteId: 'agent-website',
+            correlationId: 'agent-correlation'
+        });
+        expect(runCreateFlowCommonStagesStub.firstCall.args[1]).to.equal('agent');
+        expect(runCreateFlowCommonStagesStub.firstCall.args[2]).to.include({
+            environmentId: 'agent-env',
+            websiteId: 'agent-website'
+        });
+        expect(runCreateFlowCommonStagesStub.firstCall.args[3]).to.equal(pacWrapper);
     });
 
     it("AgenticCreateHandler emits failed telemetry through the create-flow helper", async () => {

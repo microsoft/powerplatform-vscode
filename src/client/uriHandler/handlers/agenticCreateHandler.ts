@@ -11,15 +11,16 @@ import { EnableAgenticCreateFromHome } from "../../../common/ecs-features/ecsFea
 import { uriHandlerTelemetryEventNames } from "../telemetry/uriHandlerTelemetryEvents";
 import { buildCreateFlowTelemetry, parseCreateFlowParameters } from "./createFlowParams";
 import { emitCreateFlowError, emitCreateFlowEvent } from "../telemetry/createFlowTelemetry";
+import { runCreateFlowCommonStages } from "./createFlowCommonStages";
 
 /**
  * Handles the `/agenticCreate` deep link launched from the Power Pages home page, which will
  * open VS Code into an agentic (terminal CLI agent host) create experience.
  *
  * This is a dark, flag-gated scaffold. When {@link EnableAgenticCreateFromHome} is off (the
- * default) the handler is a no-op. When enabled it only parses the deep-link parameters and
- * emits a "triggered" telemetry event — the actual agentic behavior (agent-host selection and
- * Power Pages plugin bootstrapping) is intentionally deferred to a follow-up change.
+ * default) the handler is a no-op. When enabled it runs the shared authentication, environment,
+ * and folder-selection stages. The actual agentic behavior (agent-host selection and Power Pages
+ * plugin bootstrapping) is intentionally deferred to a follow-up change.
  */
 export class AgenticCreateHandler {
     private readonly pacWrapper: PacWrapper;
@@ -60,10 +61,17 @@ export class AgenticCreateHandler {
                 'agent'
             );
 
-            // NOTE: Behavior intentionally not implemented yet. The agentic create flow
-            // (agent-host detection/selection + Power Pages plugin bootstrapping) is a
-            // follow-up. `pacWrapper` is retained for use by that implementation.
-            void this.pacWrapper;
+            const folderUri = await runCreateFlowCommonStages(
+                params,
+                'agent',
+                telemetryData,
+                this.pacWrapper
+            );
+            if (!folderUri) {
+                return;
+            }
+
+            // TODO (G2/G3 agent): Implement the channel-specific tail using folderUri.
         } catch (error) {
             emitCreateFlowError(
                 uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_FAILED,

@@ -11,15 +11,16 @@ import { EnablePacCreateFromHome } from "../../../common/ecs-features/ecsFeature
 import { uriHandlerTelemetryEventNames } from "../telemetry/uriHandlerTelemetryEvents";
 import { buildCreateFlowTelemetry, parseCreateFlowParameters } from "./createFlowParams";
 import { emitCreateFlowError, emitCreateFlowEvent } from "../telemetry/createFlowTelemetry";
+import { runCreateFlowCommonStages } from "./createFlowCommonStages";
 
 /**
  * Handles the `/pacCreate` deep link launched from the Power Pages home page, which will open
  * VS Code into a Power Platform CLI (PAC) create experience.
  *
  * This is a dark, flag-gated scaffold. When {@link EnablePacCreateFromHome} is off (the
- * default) the handler is a no-op. When enabled it only parses the deep-link parameters and
- * emits a "triggered" telemetry event — the actual PAC create behavior (auth, environment
- * selection, folder selection, PAC CLI terminal) is intentionally deferred to a follow-up.
+ * default) the handler is a no-op. When enabled it runs the shared authentication, environment,
+ * and folder-selection stages. The actual PAC create behavior (parameter collection and PAC CLI
+ * terminal launch) is intentionally deferred to a follow-up.
  */
 export class PacCreateHandler {
     private readonly pacWrapper: PacWrapper;
@@ -60,10 +61,17 @@ export class PacCreateHandler {
                 'pac'
             );
 
-            // NOTE: Behavior intentionally not implemented yet. The PAC create flow (auth ->
-            // environment -> folder -> PAC CLI terminal) is a follow-up. `pacWrapper` is
-            // retained for use by that implementation.
-            void this.pacWrapper;
+            const folderUri = await runCreateFlowCommonStages(
+                params,
+                'pac',
+                telemetryData,
+                this.pacWrapper
+            );
+            if (!folderUri) {
+                return;
+            }
+
+            // TODO (P1/P2 pac): Implement the channel-specific tail using folderUri.
         } catch (error) {
             emitCreateFlowError(
                 uriHandlerTelemetryEventNames.URI_HANDLER_PAC_CREATE_FAILED,
