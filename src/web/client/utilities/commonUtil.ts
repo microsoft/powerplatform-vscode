@@ -24,8 +24,6 @@ import { isWebFileV2 } from "./schemaHelperUtil";
 import { ServiceEndpointCategory } from "../../../common/services/Constants";
 import { PPAPIService } from "../../../common/services/PPAPIService";
 import * as Constants from "../common/constants";
-import { ECSFeaturesClient } from "../../../common/ecs-features/ecsFeatureClient";
-import { EnableCoPresence } from "../../../common/ecs-features/ecsFeatureGates";
 
 // decodes file content to UTF-8
 export function convertContentToUint8Array(content: string, isBase64Encoded: boolean): Uint8Array {
@@ -136,12 +134,9 @@ export function isVersionControlEnabled() {
  * every tab/editor change); the enable/disable decision is logged once at activation.
  */
 export function isCoPresenceEnabled(): boolean {
-    const isSettingEnabled = vscode.workspace
+    return vscode.workspace
         .getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME)
         .get(CO_PRESENCE_FEATURE_SETTING_NAME) as boolean;
-    const { enableCoPresence } = ECSFeaturesClient.getConfig(EnableCoPresence);
-
-    return isSettingEnabled && enableCoPresence;
 }
 
 /**

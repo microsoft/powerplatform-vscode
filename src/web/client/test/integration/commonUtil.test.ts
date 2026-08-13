@@ -17,7 +17,6 @@ import WebExtensionContext from "../../WebExtensionContext";
 import { CO_PRESENCE_FEATURE_SETTING_NAME } from "../../common/constants";
 import { SETTINGS_EXPERIMENTAL_STORE_NAME } from "../../../../common/constants";
 import { webExtensionTelemetryEventNames } from "../../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
-import { ECSFeaturesClient } from "../../../../common/ecs-features/ecsFeatureClient";
 
 describe("commonUtil", async () => {
     it("convertContentToUint8Array_shouldReturnBase64AsUint8Output", () => {
@@ -275,17 +274,16 @@ describe("isCoPresenceEnabled", () => {
         sinon.restore();
     });
 
-    const stubConfig = (settingValue: boolean | undefined, ecsValue: boolean) => {
-        const get = stub().withArgs(CO_PRESENCE_FEATURE_SETTING_NAME).returns(settingValue);
+    const stubConfig = (value: boolean | undefined) => {
+        const get = stub().withArgs(CO_PRESENCE_FEATURE_SETTING_NAME).returns(value);
         stub(vscode.workspace, "getConfiguration")
             .withArgs(SETTINGS_EXPERIMENTAL_STORE_NAME)
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .returns({ get } as any);
-        stub(ECSFeaturesClient, "getConfig").returns({ enableCoPresence: ecsValue });
     };
 
-    it("isCoPresenceEnabled_whenSettingAndEcsEnabled_shouldReturnTrue", () => {
-        stubConfig(true, true);
+    it("isCoPresenceEnabled_whenSettingEnabled_shouldReturnTrue", () => {
+        stubConfig(true);
 
         const result = isCoPresenceEnabled();
 
@@ -293,15 +291,7 @@ describe("isCoPresenceEnabled", () => {
     });
 
     it("isCoPresenceEnabled_whenSettingDisabled_shouldReturnFalse", () => {
-        stubConfig(false, true);
-
-        const result = isCoPresenceEnabled();
-
-        expect(result).eq(false);
-    });
-
-    it("isCoPresenceEnabled_whenEcsDisabled_shouldReturnFalse", () => {
-        stubConfig(true, false);
+        stubConfig(false);
 
         const result = isCoPresenceEnabled();
 
@@ -309,7 +299,7 @@ describe("isCoPresenceEnabled", () => {
     });
 
     it("isCoPresenceEnabled_shouldNotEmitTelemetry", () => {
-        stubConfig(true, true);
+        stubConfig(true);
         const sendInfoTelemetry = stub(WebExtensionContext.telemetry, "sendInfoTelemetry");
 
         isCoPresenceEnabled();

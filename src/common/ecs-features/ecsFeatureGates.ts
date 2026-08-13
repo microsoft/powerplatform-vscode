@@ -150,13 +150,3 @@ export const {
         enablePacCreateFromHome: false,
     }
 });
-
-export const {
-    feature: EnableCoPresence
-} = getFeatureConfigs({
-    teamName: PowerPagesClientName,
-    description: 'Enable co-presence in VS Code Web',
-    fallback: {
-        enableCoPresence: false,
-    }
-});
