@@ -139,12 +139,19 @@
   "You are currently connected to a different environment. Would you like to switch to the required environment?": "You are currently connected to a different environment. Would you like to switch to the required environment?",
   "Power Pages site download completed successfully. Would you like to open the downloaded site folder?": "Power Pages site download completed successfully. Would you like to open the downloaded site folder?",
   "Select Folder to Download Power Pages Site": "Select Folder to Download Power Pages Site",
+  "{0} isn't installed. Install it, then choose Check Again — most installs are picked up without restarting VS Code.": "{0} isn't installed. Install it, then choose Check Again — most installs are picked up without restarting VS Code.",
+  "{0} is now installed. Resume creating your Power Pages site?": "{0} is now installed. Resume creating your Power Pages site?",
   "Yes": "Yes",
   "No": "No",
   "Select Folder": "Select Folder",
   "Open Folder": "Open Folder",
   "Open in New Workspace": "Open in New Workspace",
   "Not Now": "Not Now",
+  "View Installation Guide": "View Installation Guide",
+  "Check Again": "Check Again",
+  "Dismiss": "Dismiss",
+  "Reload Window": "Reload Window",
+  "Resume": "Resume",
   "Download Power Pages Site": "Download Power Pages Site",
   "Select Folder for new PCF Control/Do not translate 'PCF' as it is a product name.": {
     "message": "Select Folder for new PCF Control",
@@ -163,6 +170,7 @@
   "Authenticating...": "Authenticating...",
   "Switching environment...": "Switching environment...",
   "pac pcf init": "pac pcf init",
+  "Not installed · Select to view installation guidance.": "Not installed · Select to view installation guidance.",
   "File might be referenced by name {0} here./{0} represents the name of the file": {
     "message": "File might be referenced by name {0} here.",
     "comment": [
