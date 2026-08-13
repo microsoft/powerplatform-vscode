@@ -187,6 +187,9 @@ This action cannot be undone.</source>
     <trans-unit id="++CODE++2c8d1f9ca282591926b952dc5949d44df6204f1f0a3f5183bcd5ef7ae5864bad">
       <source xml:lang="en">Choose web template</source>
     </trans-unit>
+    <trans-unit id="++CODE++246ef8c1130d56f5d9df740a4b26c033a8b9c064daba9bb0a052d18993e87373">
+      <source xml:lang="en">Claude Code</source>
+    </trans-unit>
     <trans-unit id="++CODE++83b12c2216efb4fdc924e1deb5182e905e4926ed0c1c324d467107f46d5a26a9">
       <source xml:lang="en">Clear</source>
     </trans-unit>
@@ -719,6 +722,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++0087988cdb71080f2525354e125366c6db7d85a36f199e2f80d14a44b3fd0340">
       <source xml:lang="en">Getting website endpoint...</source>
     </trans-unit>
+    <trans-unit id="++CODE++0f77fb6416bc872ede59a1594352d2ec69abadcc1870800eb9c0191ebc5a335b">
+      <source xml:lang="en">GitHub Copilot CLI</source>
+    </trans-unit>
     <trans-unit id="++CODE++7b9ca5026e65057a17f951928bd53dc4e7724c0850490d6237636e9d568db4b1">
       <source xml:lang="en">HTML report saved successfully to '{0}'.</source>
       <note>Success message when HTML report is saved. {0} is the file path.</note>
@@ -767,6 +773,12 @@ Return to this chat and @powerpages can help you write and edit your website cod
     </trans-unit>
     <trans-unit id="++CODE++569ca49f4aaf7846e952c1d4aeca72febd0b79fa1c4f9db08fd3127551218572">
       <source xml:lang="en">Install</source>
+    </trans-unit>
+    <trans-unit id="++CODE++f8b32f4e92bd84ce1fcd177bec17d43093de3ee8303bb40c1b9ea521ed6a70f6">
+      <source xml:lang="en">Installed</source>
+    </trans-unit>
+    <trans-unit id="++CODE++360963aae4ca47256844e205a2496968f7a9bd00dd397aa364a47eaa4eddbfd6">
+      <source xml:lang="en">Installed · {0}</source>
     </trans-unit>
     <trans-unit id="++CODE++25109e9c19daeeed3977b84ace83722ac8a4daafcfe4e3709082fcc5b228e7a8">
       <source xml:lang="en">Installing Power Pages generator(v{0})...</source>
