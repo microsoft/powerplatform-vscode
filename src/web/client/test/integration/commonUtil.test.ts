@@ -5,7 +5,6 @@
 
 import { expect } from "chai";
 import sinon, { stub, assert } from "sinon";
-import * as vscode from "vscode";
 import { schemaEntityName } from "../../schema/constants";
 import {
     convertContentToUint8Array,
@@ -14,8 +13,6 @@ import {
     isCoPresenceEnabled,
 } from "../../utilities/commonUtil";
 import WebExtensionContext from "../../WebExtensionContext";
-import { CO_PRESENCE_FEATURE_SETTING_NAME } from "../../common/constants";
-import { SETTINGS_EXPERIMENTAL_STORE_NAME } from "../../../../common/constants";
 import { webExtensionTelemetryEventNames } from "../../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 
 describe("commonUtil", async () => {
@@ -274,32 +271,13 @@ describe("isCoPresenceEnabled", () => {
         sinon.restore();
     });
 
-    const stubConfig = (value: boolean | undefined) => {
-        const get = stub().withArgs(CO_PRESENCE_FEATURE_SETTING_NAME).returns(value);
-        stub(vscode.workspace, "getConfiguration")
-            .withArgs(SETTINGS_EXPERIMENTAL_STORE_NAME)
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .returns({ get } as any);
-    };
-
-    it("isCoPresenceEnabled_whenSettingEnabled_shouldReturnTrue", () => {
-        stubConfig(true);
-
-        const result = isCoPresenceEnabled();
-
-        expect(result).eq(true);
-    });
-
-    it("isCoPresenceEnabled_whenSettingDisabled_shouldReturnFalse", () => {
-        stubConfig(false);
-
+    it("isCoPresenceEnabled_whenCalled_shouldReturnFalse", () => {
         const result = isCoPresenceEnabled();
 
         expect(result).eq(false);
     });
 
     it("isCoPresenceEnabled_shouldNotEmitTelemetry", () => {
-        stubConfig(true);
         const sendInfoTelemetry = stub(WebExtensionContext.telemetry, "sendInfoTelemetry");
 
         isCoPresenceEnabled();

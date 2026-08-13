@@ -7,7 +7,6 @@ import * as vscode from "vscode";
 import {
     BACK_TO_STUDIO_URL_TEMPLATE,
     BASE_64,
-    CO_PRESENCE_FEATURE_SETTING_NAME,
     DATA,
     STUDIO_PROD_REGION,
     VERSION_CONTROL_FOR_WEB_EXTENSION_SETTING_NAME,
@@ -130,13 +129,11 @@ export function isVersionControlEnabled() {
 
 
 /**
- * Pure getter for the co-presence feature flag. Emits no telemetry (it runs on
- * every tab/editor change); the enable/disable decision is logged once at activation.
+ * Indicates whether co-presence is enabled.
+ * @returns False while co-presence is hard-disabled.
  */
 export function isCoPresenceEnabled(): boolean {
-    return vscode.workspace
-        .getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME)
-        .get(CO_PRESENCE_FEATURE_SETTING_NAME) as boolean;
+    return false;
 }
 
 /**

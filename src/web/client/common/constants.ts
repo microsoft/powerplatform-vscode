@@ -58,9 +58,6 @@ export const ALL_APPLICATION_MIME_TYPE = 'application/';
 export const VERSION_CONTROL_FOR_WEB_EXTENSION_SETTING_NAME =
     "enableVersionControl";
 
-// Co-presence feature constants
-export const CO_PRESENCE_FEATURE_SETTING_NAME = "enableCoPresenceFeature";
-
 // Co-presence constants
 export const GET_OR_CREATE_SHARED_WORK_SPACE = "/api/data/v9.2/GetOrCreateSharedWorkspace";
 
