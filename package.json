@@ -741,6 +741,11 @@
           "markdownDescription": "Enable copilot in Visual Studio Code (Web extension)",
           "default": true
         },
+        "powerPlatform.experimental.enableCoPresenceFeature": {
+          "type": "boolean",
+          "markdownDescription": "Enable co-presence in Visual Studio Code (Web extension only)",
+          "default": false
+        },
         "powerPlatform.experimental.enableTelemetry": {
           "type": "boolean",
           "markdownDescription": "Enable custom telemetry for Power Pages",
