@@ -42,7 +42,8 @@ export const URI_CONSTANTS = {
         AUTO: 'auto'
     },
     CONTRACT_VERSION: {
-        CURRENT: '1'
+        CURRENT: '1',
+        SUPPORTED: ['1'] as const
     },
     MODEL_VERSIONS: {
         VERSION_1: 1,
