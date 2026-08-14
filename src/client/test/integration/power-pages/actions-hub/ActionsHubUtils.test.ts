@@ -133,7 +133,8 @@ describe('ActionsHubUtils', () => {
 
             // Create mock yaml module with stubbed methods
             mockYaml = {
-                load: sandbox.stub()
+                load: sandbox.stub(),
+                parse: sandbox.stub()
             };
 
             // Stub workspace folders
@@ -191,6 +192,95 @@ describe('ActionsHubUtils', () => {
             const result = findOtherSites(knownSiteIds, mockFs, mockYaml);
 
             expect(result).to.be.an('array').that.is.empty;
+        });
+
+        it('should find a classic site whose website.yml sits at the folder root', () => {
+            const siteFolder = path.join('/test/current', 'classic-site');
+
+            mockFs.readdirSync.returns([
+                { name: 'classic-site', isDirectory: () => true }
+            ]);
+
+            // No .powerpages-site folder, website.yml lives at the site folder root
+            mockFs.existsSync.withArgs(path.join(siteFolder, '.powerpages-site')).returns(false);
+            mockFs.existsSync.withArgs(path.join(siteFolder, 'website.yml')).returns(true);
+            mockFs.existsSync.returns(false);
+            mockFs.readFileSync.returns('yaml content');
+            mockYaml.parse.returns({ adx_name: 'Classic Site' });
+
+            mockGetWebsiteRecordId.withArgs(siteFolder).returns('classic-site-id');
+
+            const result = findOtherSites(new Set<string>(), mockFs, mockYaml);
+
+            expect(result).to.deep.equal([{
+                name: 'Classic Site',
+                websiteId: 'classic-site-id',
+                folderPath: siteFolder,
+                isCodeSite: false
+            }]);
+        });
+
+        it('should find a code site whose website.yml sits under .powerpages-site', () => {
+            const siteFolder = path.join('/test/current', 'code-site');
+            const powerPagesSiteFolder = path.join(siteFolder, '.powerpages-site');
+
+            mockFs.readdirSync.returns([
+                { name: 'code-site', isDirectory: () => true }
+            ]);
+
+            mockFs.existsSync.withArgs(powerPagesSiteFolder).returns(true);
+            mockFs.existsSync.withArgs(path.join(powerPagesSiteFolder, 'website.yml')).returns(true);
+            mockFs.existsSync.returns(false);
+            mockFs.readFileSync.returns('yaml content');
+            mockYaml.parse.returns({ adx_name: 'Code Site' });
+
+            mockGetWebsiteRecordId.withArgs(powerPagesSiteFolder).returns('code-site-id');
+
+            const result = findOtherSites(new Set<string>(), mockFs, mockYaml);
+
+            expect(result).to.deep.equal([{
+                name: 'Code Site',
+                websiteId: 'code-site-id',
+                folderPath: siteFolder,
+                isCodeSite: true
+            }]);
+        });
+
+        it('should exclude sites that already belong to the connected environment', () => {
+            const siteFolder = path.join('/test/current', 'known-site');
+
+            mockFs.readdirSync.returns([
+                { name: 'known-site', isDirectory: () => true }
+            ]);
+
+            mockFs.existsSync.withArgs(path.join(siteFolder, '.powerpages-site')).returns(false);
+            mockFs.existsSync.withArgs(path.join(siteFolder, 'website.yml')).returns(true);
+            mockFs.existsSync.returns(false);
+            mockFs.readFileSync.returns('yaml content');
+            mockYaml.parse.returns({ adx_name: 'Known Site' });
+
+            // Site IDs are normalized to lowercase when the known set is built
+            mockGetWebsiteRecordId.withArgs(siteFolder).returns('KNOWN-SITE-ID');
+
+            const result = findOtherSites(new Set<string>(['known-site-id']), mockFs, mockYaml);
+
+            expect(result).to.be.an('array').that.is.empty;
+        });
+
+        it('should skip folders without a website.yml', () => {
+            const siteFolder = path.join('/test/current', 'not-a-site');
+
+            mockFs.readdirSync.returns([
+                { name: 'not-a-site', isDirectory: () => true }
+            ]);
+
+            mockFs.existsSync.returns(false);
+
+            const result = findOtherSites(new Set<string>(), mockFs, mockYaml);
+
+            expect(result).to.be.an('array').that.is.empty;
+            expect(mockGetWebsiteRecordId.called).to.be.false;
+            expect(mockFs.existsSync.calledWith(path.join(siteFolder, 'website.yml'))).to.be.true;
         });
     });
 

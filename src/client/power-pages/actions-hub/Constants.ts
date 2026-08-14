@@ -236,6 +236,7 @@ export const Constants = {
         HTML_REPORT_CREATOR_LABEL: vscode.l10n.t("Creator:"),
         HTML_REPORT_CREATED_ON_LABEL: vscode.l10n.t("Created On:"),
         HTML_REPORT_GENERATED_LABEL: vscode.l10n.t("Generated:"),
+        HTML_REPORT_EXTENSION_VERSION_LABEL: vscode.l10n.t("Extension Version:"),
         HTML_REPORT_TOTAL_FILES_LABEL: vscode.l10n.t("Total Files:"),
         HTML_REPORT_CHANGED_FILES: vscode.l10n.t("Changed Files"),
         HTML_REPORT_CLICK_TO_EXPAND: vscode.l10n.t("(click to expand diff)"),

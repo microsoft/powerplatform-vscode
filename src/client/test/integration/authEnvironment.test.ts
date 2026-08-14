@@ -1,0 +1,184 @@
+/*
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ */
+
+import { expect } from "chai";
+import * as sinon from "sinon";
+import * as vscode from "vscode";
+import { AuthEnvironmentService } from "../../uriHandler/utils/authEnvironment";
+import { UriParameters } from "../../uriHandler/utils/uriHandlerUtils";
+import { CreateFlowParameters } from "../../uriHandler/handlers/createFlowParams";
+import { PacWrapper } from "../../pac/PacWrapper";
+import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import { URI_HANDLER_STRINGS } from "../../uriHandler/constants/uriStrings";
+
+type ProgressReporter = vscode.Progress<{ message?: string; increment?: number }>;
+type ProgressTask = (progress: ProgressReporter, token: vscode.CancellationToken) => Thenable<void>;
+
+// Minimal stubbed surface of PacWrapper that the service depends on.
+interface PacWrapperStub {
+    activeOrg: sinon.SinonStub;
+    orgSelect: sinon.SinonStub;
+    authCreateNewAuthProfileForOrg: sinon.SinonStub;
+    resetPacProcess: sinon.SinonStub;
+}
+
+describe("AuthEnvironmentService", () => {
+    let sandbox: sinon.SinonSandbox;
+    let pacWrapperStub: PacWrapperStub;
+    let service: AuthEnvironmentService;
+    let warningStub: sinon.SinonStub;
+
+    const OPEN_URI_PARAMS: UriParameters = {
+        websiteId: "site-1",
+        environmentId: "env-1",
+        orgUrl: "https://org.crm.dynamics.com/",
+        schema: null,
+        siteName: null,
+        siteUrl: null,
+        modelVersion: 1
+    };
+    const CREATE_FLOW_PARAMS: CreateFlowParameters = {
+        environmentId: "env-1",
+        orgUrl: "https://org.crm.dynamics.com/",
+        region: null,
+        tenantId: null,
+        websiteId: null,
+        source: null,
+        agentHost: null,
+        version: null,
+        correlationId: null
+    };
+
+    beforeEach(() => {
+        sandbox = sinon.createSandbox();
+
+        // The OneDS logger is never instantiated in the integration test host, so
+        // `oneDSLoggerWrapper.getLogger()` would return undefined and any telemetry
+        // call inside the service would throw. Stub it with a no-op logger.
+        sandbox.stub(oneDSLoggerWrapper, "getLogger").returns({
+            traceInfo: sandbox.stub(),
+            traceWarning: sandbox.stub(),
+            traceError: sandbox.stub(),
+            featureUsage: sandbox.stub()
+        } as unknown as ReturnType<typeof oneDSLoggerWrapper.getLogger>);
+
+        pacWrapperStub = {
+            activeOrg: sandbox.stub(),
+            orgSelect: sandbox.stub().resolves(),
+            authCreateNewAuthProfileForOrg: sandbox.stub().resolves(),
+            resetPacProcess: sandbox.stub().resolves()
+        };
+
+        // Run the progress task immediately with a no-op reporter.
+        sandbox.stub(vscode.window, "withProgress").callsFake(
+            ((_options: vscode.ProgressOptions, task: ProgressTask): Thenable<void> =>
+                task({ report: () => undefined }, new vscode.CancellationTokenSource().token)
+            ) as unknown as typeof vscode.window.withProgress
+        );
+
+        warningStub = sandbox.stub(vscode.window, "showWarningMessage");
+        sandbox.stub(vscode.window, "showInformationMessage");
+
+        service = new AuthEnvironmentService(pacWrapperStub as unknown as PacWrapper);
+    });
+
+    afterEach(() => {
+        sandbox.restore();
+    });
+
+    it("does not prompt when already authenticated to the requested environment", async () => {
+        pacWrapperStub.activeOrg.resolves({
+            Status: "Success",
+            Results: { EnvironmentId: "env-1" }
+        });
+
+        await service.prepareAuthenticationAndEnvironment(OPEN_URI_PARAMS, {});
+
+        expect(warningStub.called).to.be.false;
+        expect(pacWrapperStub.orgSelect.called).to.be.false;
+        expect(pacWrapperStub.authCreateNewAuthProfileForOrg.called).to.be.false;
+    });
+
+    it("authenticates when passed create-flow parameters", async () => {
+        pacWrapperStub.activeOrg
+            .onFirstCall().resolves({ Status: "Failure" })
+            .onSecondCall().resolves({ Status: "Success", Results: { EnvironmentId: "env-1" } })
+            .onThirdCall().resolves({ Status: "Success", Results: { EnvironmentId: "env-1" } });
+        warningStub.resolves("Yes");
+
+        await service.prepareAuthenticationAndEnvironment(CREATE_FLOW_PARAMS, {});
+
+        expect(pacWrapperStub.authCreateNewAuthProfileForOrg.calledOnceWith("https://org.crm.dynamics.com/")).to.be.true;
+        expect(pacWrapperStub.orgSelect.called).to.be.false;
+    });
+
+    it("rejects create-flow parameters without an environment ID", async () => {
+        const incompleteParams: CreateFlowParameters = {
+            ...CREATE_FLOW_PARAMS,
+            environmentId: null
+        };
+
+        let thrown: unknown;
+        try {
+            await service.prepareAuthenticationAndEnvironment(incompleteParams, {});
+        } catch (error) {
+            thrown = error;
+        }
+
+        expect(thrown).to.be.an("error").with.property("message", URI_HANDLER_STRINGS.ERRORS.ENVIRONMENT_ID_REQUIRED);
+        expect(pacWrapperStub.activeOrg.called).to.be.false;
+    });
+
+    it("rejects create-flow parameters without an organization URL", async () => {
+        const incompleteParams: CreateFlowParameters = {
+            ...CREATE_FLOW_PARAMS,
+            orgUrl: null
+        };
+
+        let thrown: unknown;
+        try {
+            await service.prepareAuthenticationAndEnvironment(incompleteParams, {});
+        } catch (error) {
+            thrown = error;
+        }
+
+        expect(thrown).to.be.an("error").with.property("message", URI_HANDLER_STRINGS.ERRORS.ORG_URL_REQUIRED);
+        expect(pacWrapperStub.activeOrg.called).to.be.false;
+    });
+
+    it("switches environment when the active org points at a different environment", async () => {
+        pacWrapperStub.activeOrg
+            .onFirstCall().resolves({ Status: "Success", Results: { EnvironmentId: "env-1" } })
+            .onSecondCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } })
+            .onThirdCall().resolves({ Status: "Success", Results: { EnvironmentId: "env-1" } });
+        warningStub.resolves("Yes");
+
+        await service.prepareAuthenticationAndEnvironment(OPEN_URI_PARAMS, {});
+
+        expect(pacWrapperStub.orgSelect.calledOnceWith("https://org.crm.dynamics.com/")).to.be.true;
+    });
+
+    it("resetPacProcessSafely swallows reset errors", async () => {
+        pacWrapperStub.resetPacProcess.rejects(new Error("reset boom"));
+
+        await service.resetPacProcessSafely({});
+
+        expect(pacWrapperStub.resetPacProcess.calledOnce).to.be.true;
+    });
+
+    it("resetPacProcessAndThrow resets and rethrows the original error", async () => {
+        const original = new Error("boom");
+        let thrown: unknown;
+
+        try {
+            await service.resetPacProcessAndThrow(original, {}, "message", "error_type");
+        } catch (error) {
+            thrown = error;
+        }
+
+        expect(thrown).to.equal(original);
+        expect(pacWrapperStub.resetPacProcess.calledOnce).to.be.true;
+    });
+});

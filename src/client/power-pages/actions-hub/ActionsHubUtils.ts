@@ -14,7 +14,7 @@ import { IOtherSiteInfo, IWebsiteDetails, WebsiteYaml } from "../../../common/se
 import ArtemisContext from "../../ArtemisContext";
 import { getActiveWebsites, getAllWebsites } from "../../../common/utilities/WebsiteUtil";
 import { ServiceEndpointCategory } from "../../../common/services/Constants";
-import { getWebsiteRecordId, getWebsiteYamlPath, hasWebsiteYaml } from "../../../common/utilities/WorkspaceInfoFinderUtil";
+import { getWebsiteRecordId, getWebsiteYamlPath } from "../../../common/utilities/WorkspaceInfoFinderUtil";
 import { POWERPAGES_SITE_FOLDER, UTF8_ENCODING } from "../../../common/constants";
 import { OrgInfo } from "../../pac/PacTypes";
 
@@ -114,18 +114,17 @@ export function findOtherSites(knownSiteIds: Set<string>, fsModule = fs, yamlMod
         // Check each directory for website.yml or .powerpages-site folder
         const otherSites: IOtherSiteInfo[] = [];
         for (const dir of directories) {
-            let websiteYamlPath = getWebsiteYamlPath(dir);
-            let hasWebsiteYamlFile = hasWebsiteYaml(dir);
-            const powerPagesSiteFolderExists = fs.existsSync(dir)
-            let workingDir = dir;
+            // A code site keeps its metadata under <site>/.powerpages-site, while a classic site keeps
+            // website.yml directly at the folder root. Probe for the .powerpages-site folder itself:
+            // probing `dir` would always report true, because every path here came from readdirSync,
+            // which would make classic sites invisible and mislabel every site as a code site.
+            const powerPagesSiteFolder = path.join(dir, POWERPAGES_SITE_FOLDER);
+            const isCodeSite = fsModule.existsSync(powerPagesSiteFolder);
+            const workingDir = isCodeSite ? powerPagesSiteFolder : dir;
+            const websiteYamlPath = getWebsiteYamlPath(workingDir);
 
-            if (powerPagesSiteFolderExists) {
-                workingDir = path.join(dir, POWERPAGES_SITE_FOLDER);
-                websiteYamlPath = getWebsiteYamlPath(workingDir);
-                hasWebsiteYamlFile = hasWebsiteYaml(workingDir);
-            }
-
-            if (hasWebsiteYamlFile) {
+            // fsModule (rather than hasWebsiteYaml) keeps the whole scan on the injected fs module.
+            if (fsModule.existsSync(websiteYamlPath)) {
                 try {
                     // Use the utility function to get website record ID
                     const websiteId = getWebsiteRecordId(workingDir);
@@ -140,7 +139,7 @@ export function findOtherSites(knownSiteIds: Set<string>, fsModule = fs, yamlMod
                             name: websiteData?.adx_name || websiteData?.name || path.basename(dir), // Use folder name as fallback
                             websiteId: websiteId,
                             folderPath: dir,
-                            isCodeSite: powerPagesSiteFolderExists
+                            isCodeSite: isCodeSite
                         });
                     }
                 } catch (error) {

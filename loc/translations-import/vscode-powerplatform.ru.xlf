@@ -734,6 +734,10 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
         <source xml:lang="en">Exporting comparison...</source>
         <target state="translated">Экспорт сравнения...</target>
       </trans-unit>
+      <trans-unit id="++CODE++c735e741b6c5591f1a0ff9ff37ecbea0db5806d5139f2a00a89c2e501a6f5314">
+        <source xml:lang="en">Extension Version:</source>
+        <target state="translated">Версия расширения:</target>
+      </trans-unit>
       <trans-unit id="++CODE++173848927e1a6ed7f8c52d958d530c9ce90053649c734a3bc20bfb2053d8ef88">
         <source xml:lang="en">Extension installed but API not available yet. Opening as text file...</source>
         <target state="translated">Расширение установлено, но API еще не доступен. Открытие в виде текстового файла...</target>
@@ -1496,6 +1500,10 @@ URL-адрес: {1}
       <trans-unit id="++CODE++e4efd0ebbc891e539d343ce3247c566fbb105ea4f5746251a256995cdeaefcd3">
         <source xml:lang="en">Select Folder to Download Power Pages Site</source>
         <target state="translated">Выберите папку для скачивания сайта Power Pages</target>
+      </trans-unit>
+      <trans-unit id="++CODE++3fa3357e7ab619e582aa9350ee57f1679de1609ce6a53a5dd27fd2c6a07f0a10">
+        <source xml:lang="en">Select Target Folder</source>
+        <target state="new">Select Target Folder</target>
       </trans-unit>
       <trans-unit id="++CODE++a40f78f3a7f5c5ab1b101e95cdf044552542712fdcf45a83dfea3f455b6f638a">
         <source xml:lang="en">Select Type</source>
