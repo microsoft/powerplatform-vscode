@@ -63,7 +63,7 @@ export class PacTerminal implements vscode.Disposable {
             }
         }));
 
-        this._cmdDisposables.push(RegisterUriHandler(this._pacWrapper));
+        this._cmdDisposables.push(RegisterUriHandler(this._pacWrapper, this._context.globalState));
     }
 
     public openDocumentation(): void {

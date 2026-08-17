@@ -13,6 +13,45 @@ import { buildCreateFlowTelemetry, parseCreateFlowParameters } from "./createFlo
 import { emitCreateFlowError, emitCreateFlowEvent } from "../telemetry/createFlowTelemetry";
 import { runCreateFlowCommonStages } from "./createFlowCommonStages";
 import { isSupportedContractVersion } from "./createFlowContractVersion";
+import { AgentHost, detectAgentHost } from "../utils/detectAgentHost";
+import { selectAgentHost } from "../utils/selectAgentHost";
+import {
+    AgentHostInstallationStrings,
+    resolveAgentHostInstallation
+} from "../utils/resolveAgentHostInstallation";
+import { ResumeMarkerStore, writeResumeMarker } from "../utils/resumeMarker";
+import { URI_HANDLER_STRINGS } from "../constants/uriStrings";
+
+/**
+ * Injectable dependencies used by the agent-specific create-flow tail.
+ */
+export interface AgenticCreateHandlerDependencies {
+    detectAgentHost: typeof detectAgentHost;
+    selectAgentHost: typeof selectAgentHost;
+    resolveAgentHostInstallation: typeof resolveAgentHostInstallation;
+    emitCreateFlowEvent: typeof emitCreateFlowEvent;
+}
+
+const DEFAULT_DEPENDENCIES: AgenticCreateHandlerDependencies = {
+    detectAgentHost,
+    selectAgentHost,
+    resolveAgentHostInstallation,
+    emitCreateFlowEvent
+};
+
+const AGENT_HOST_DISPLAY_NAMES: Record<AgentHost, string> = {
+    [AgentHost.Copilot]: URI_HANDLER_STRINGS.AGENT_HOSTS.COPILOT,
+    [AgentHost.Claude]: URI_HANDLER_STRINGS.AGENT_HOSTS.CLAUDE
+};
+
+const AGENT_HOST_INSTALLATION_STRINGS: AgentHostInstallationStrings = {
+    installGuidancePrompt: URI_HANDLER_STRINGS.PROMPTS.AGENT_HOST_INSTALL_GUIDANCE,
+    viewInstallationGuide: URI_HANDLER_STRINGS.BUTTONS.VIEW_INSTALLATION_GUIDE,
+    checkAgain: URI_HANDLER_STRINGS.BUTTONS.CHECK_AGAIN,
+    dismiss: URI_HANDLER_STRINGS.BUTTONS.DISMISS,
+    reloadWindow: URI_HANDLER_STRINGS.BUTTONS.RELOAD_WINDOW,
+    notNow: URI_HANDLER_STRINGS.BUTTONS.NOT_NOW
+};
 
 /**
  * Handles the `/agenticCreate` deep link launched from the Power Pages home page, which will
@@ -20,14 +59,22 @@ import { isSupportedContractVersion } from "./createFlowContractVersion";
  *
  * This is a dark, flag-gated scaffold. When {@link EnableAgenticCreateFromHome} is off (the
  * default) the handler is a no-op. When enabled it runs the shared authentication, environment,
- * and folder-selection stages. The actual agentic behavior (agent-host selection and Power Pages
- * plugin bootstrapping) is intentionally deferred to a follow-up change.
+ * and folder-selection stages, then resolves the selected agent host. Power Pages plugin
+ * bootstrapping is intentionally deferred to a follow-up change.
  */
 export class AgenticCreateHandler {
     private readonly pacWrapper: PacWrapper;
+    private readonly resumeMarkerStore?: ResumeMarkerStore;
+    private readonly dependencies: AgenticCreateHandlerDependencies;
 
-    constructor(pacWrapper: PacWrapper) {
+    constructor(
+        pacWrapper: PacWrapper,
+        resumeMarkerStore?: ResumeMarkerStore,
+        dependencies: AgenticCreateHandlerDependencies = DEFAULT_DEPENDENCIES
+    ) {
         this.pacWrapper = pacWrapper;
+        this.resumeMarkerStore = resumeMarkerStore;
+        this.dependencies = dependencies;
     }
 
     /**
@@ -85,7 +132,71 @@ export class AgenticCreateHandler {
                 return;
             }
 
-            // TODO (G2/G3 agent): Implement the channel-specific tail using folderUri.
+            // Legacy and isolated test callers can omit persistence; production registration supplies it.
+            const resumeMarkerStore = this.resumeMarkerStore;
+            if (!resumeMarkerStore) {
+                return;
+            }
+
+            const detection = await Promise.all([
+                this.dependencies.detectAgentHost(AgentHost.Copilot),
+                this.dependencies.detectAgentHost(AgentHost.Claude)
+            ]);
+            const selection = await this.dependencies.selectAgentHost(detection);
+            if (!selection) {
+                this.dependencies.emitCreateFlowEvent(
+                    uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED,
+                    params,
+                    'agent',
+                    { reason: 'hostSelectionCancelled' }
+                );
+                return;
+            }
+
+            this.dependencies.emitCreateFlowEvent(
+                uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_SELECTED,
+                params,
+                'agent',
+                {
+                    host: selection.host,
+                    installed: String(selection.installed)
+                }
+            );
+
+            if (selection.installed) {
+                // TODO (G3 agent): plugin marketplace add -> install -> sample prompt for the selected host.
+                return;
+            }
+
+            const resolution = await this.dependencies.resolveAgentHostInstallation(
+                selection.host,
+                AGENT_HOST_DISPLAY_NAMES[selection.host],
+                params,
+                {
+                    strings: AGENT_HOST_INSTALLATION_STRINGS,
+                    showInformationMessage: (message, ...buttons) =>
+                        vscode.window.showInformationMessage(message, ...buttons),
+                    showWarningMessage: (message, ...buttons) =>
+                        vscode.window.showWarningMessage(message, ...buttons),
+                    openExternal: async (url) => {
+                        await vscode.env.openExternal(vscode.Uri.parse(url));
+                    },
+                    writeResumeMarker: (marker) =>
+                        writeResumeMarker(resumeMarkerStore, marker),
+                    reloadWindow: async () => {
+                        await vscode.commands.executeCommand('workbench.action.reloadWindow');
+                    }
+                }
+            );
+
+            switch (resolution.status) {
+                case 'resolved':
+                    // TODO (G3 agent): plugin marketplace add -> install -> sample prompt for the selected host.
+                    return;
+                case 'reloading':
+                case 'dismissed':
+                    return;
+            }
         } catch (error) {
             emitCreateFlowError(
                 uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_FAILED,
