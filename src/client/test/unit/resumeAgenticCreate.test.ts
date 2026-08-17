@@ -275,6 +275,12 @@ describe('resumeAgenticCreate', () => {
             uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_RESUMED
         );
         expect(properties).to.not.be.undefined;
+        expect(properties).to.include({
+            environmentId: marker.environmentId,
+            websiteId: marker.websiteId,
+            correlationId: marker.correlationId,
+            hasOrgUrl: 'true'
+        });
         expect(properties).to.not.have.property('orgUrl');
         expect(Object.values(properties ?? {})).to.not.include(marker.orgUrl);
         expect(Object.keys(properties ?? {})).to.not.include.members(['folder', 'folderUri', 'path']);

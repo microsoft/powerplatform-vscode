@@ -191,7 +191,7 @@ export async function activate(
 
     // Register auth and env panels
     const pacWrapper = pacTerminal.getWrapper();
-    await resumeAgenticCreateOnActivation(_context.globalState, pacWrapper);
+    void resumeAgenticCreateOnActivation(_context.globalState, pacWrapper);
     const basicPanels = RegisterBasicPanels(pacWrapper);
     _context.subscriptions.push(...basicPanels);
 

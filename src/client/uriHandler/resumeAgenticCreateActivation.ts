@@ -42,23 +42,32 @@ export async function resumeAgenticCreateOnActivation(
     store: ResumeMarkerStore,
     pacWrapper: PacWrapper
 ): Promise<void> {
-    await resumeAgenticCreate({
-        store,
-        strings: RESUME_STRINGS,
-        isEnabled: AgenticCreateHandler.isEnabled,
-        detectHost: detectAgentHost,
-        now: Date.now,
-        showInformationMessage: (message, ...buttons) =>
-            vscode.window.showInformationMessage(message, ...buttons),
-        emitEvent: emitCreateFlowEvent,
-        runStages: async (params: CreateFlowParameters) => {
-            await runCreateFlowCommonStages(
-                params,
-                'agent',
-                buildCreateFlowTelemetry(params),
-                pacWrapper
-            );
-        },
-        clearMarker: clearResumeMarker
-    });
+    try {
+        await resumeAgenticCreate({
+            store,
+            strings: RESUME_STRINGS,
+            isEnabled: AgenticCreateHandler.isEnabled,
+            detectHost: detectAgentHost,
+            now: Date.now,
+            showInformationMessage: (message, ...buttons) =>
+                vscode.window.showInformationMessage(message, ...buttons),
+            emitEvent: emitCreateFlowEvent,
+            runStages: async (params: CreateFlowParameters) => {
+                await runCreateFlowCommonStages(
+                    params,
+                    'agent',
+                    buildCreateFlowTelemetry(params),
+                    pacWrapper
+                );
+            },
+            clearMarker: clearResumeMarker
+        });
+    } catch (error) {
+        console.error('Failed to resume agentic create after reload.', error);
+        try {
+            await clearResumeMarker(store);
+        } catch (clearError) {
+            console.error('Failed to clear the agentic create resume marker.', clearError);
+        }
+    }
 }
