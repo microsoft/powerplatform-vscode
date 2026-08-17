@@ -47,7 +47,8 @@ describe("AuthEnvironmentService", () => {
         websiteId: null,
         source: null,
         agentHost: null,
-        version: null
+        version: null,
+        correlationId: null
     };
 
     beforeEach(() => {

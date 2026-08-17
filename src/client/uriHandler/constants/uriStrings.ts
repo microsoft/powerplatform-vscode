@@ -30,7 +30,17 @@ export const URI_HANDLER_STRINGS = {
         AUTH_REQUIRED: vscode.l10n.t("You need to authenticate with Power Platform to download the site. Would you like to authenticate now?"),
         ENV_SWITCH_REQUIRED: vscode.l10n.t("You are currently connected to a different environment. Would you like to switch to the required environment?"),
         DOWNLOAD_COMPLETE: vscode.l10n.t("Power Pages site download completed successfully. Would you like to open the downloaded site folder?"),
-        FOLDER_SELECT: vscode.l10n.t("Select Folder to Download Power Pages Site")
+        FOLDER_SELECT: vscode.l10n.t("Select Folder to Download Power Pages Site"),
+        AGENT_HOST_INSTALL_GUIDANCE: vscode.l10n.t({
+            message: "{0} isn't installed. Install it, then choose {1} — most installs are picked up without restarting VS Code.",
+            args: ["{0}", vscode.l10n.t("Check Again")],
+            comment: [
+                "{0} is the agent host display name and is replaced when the message is shown.",
+                "{1} is the localized label of the Check Again button.",
+                "Do not translate 'VS Code' as it is a product name."
+            ]
+        }),
+        AGENT_HOST_INSTALL_RESUME: vscode.l10n.t("{0} is now installed. Resume creating your Power Pages site?")
     },
     BUTTONS: {
         YES: vscode.l10n.t("Yes"),
@@ -38,7 +48,12 @@ export const URI_HANDLER_STRINGS = {
         SELECT_FOLDER: vscode.l10n.t("Select Folder"),
         OPEN_FOLDER: vscode.l10n.t("Open Folder"),
         OPEN_NEW_WORKSPACE: vscode.l10n.t("Open in New Workspace"),
-        NOT_NOW: vscode.l10n.t("Not Now")
+        NOT_NOW: vscode.l10n.t("Not Now"),
+        VIEW_INSTALLATION_GUIDE: vscode.l10n.t("View Installation Guide"),
+        CHECK_AGAIN: vscode.l10n.t("Check Again"),
+        DISMISS: vscode.l10n.t("Dismiss"),
+        RELOAD_WINDOW: vscode.l10n.t("Reload Window"),
+        RESUME: vscode.l10n.t("Resume")
     },
     TITLES: {
         DOWNLOAD_TITLE: vscode.l10n.t("Download Power Pages Site"),
@@ -61,5 +76,8 @@ export const URI_HANDLER_STRINGS = {
     },
     COMMANDS: {
         PAC_PCF_INIT: vscode.l10n.t("pac pcf init")
+    },
+    DESCRIPTIONS: {
+        AGENT_HOST_NOT_INSTALLED: vscode.l10n.t("Not installed · Select to view installation guidance.")
     }
 } as const;
