@@ -71,6 +71,23 @@ describe("selectAgentHost", () => {
         expect(items[0].description).to.equal("Installed");
     });
 
+    it("shows the installed description when the version is whitespace-only", async () => {
+        const showQuickPick = sinon.stub().resolves(undefined);
+        const detection: AgentHostDetectionResult[] = [
+            {
+                host: AgentHost.Copilot,
+                installed: true,
+                version: "   "
+            },
+            mixedDetection[1]
+        ];
+
+        await selectAgentHost(detection, { showQuickPick });
+
+        const items = showQuickPick.firstCall.firstArg as vscode.QuickPickItem[];
+        expect(items[0].description).to.equal("Installed");
+    });
+
     it("returns a selection when the chosen host is not installed", async () => {
         const showQuickPick = sinon.stub().callsFake(async (items: readonly vscode.QuickPickItem[]) => items[1]);
 

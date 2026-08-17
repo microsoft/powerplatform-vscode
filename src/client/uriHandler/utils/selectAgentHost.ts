@@ -30,11 +30,12 @@ const getAgentHostDescription = (result: AgentHostDetectionResult): string => {
         return URI_HANDLER_STRINGS.DESCRIPTIONS.AGENT_HOST_NOT_INSTALLED;
     }
 
-    if (result.version === undefined) {
+    const version = result.version?.trim();
+    if (!version) {
         return URI_HANDLER_STRINGS.AGENT_HOSTS.INSTALLED;
     }
 
-    return URI_HANDLER_STRINGS.AGENT_HOSTS.INSTALLED_WITH_VERSION.replace("{0}", result.version);
+    return URI_HANDLER_STRINGS.AGENT_HOSTS.INSTALLED_WITH_VERSION.replace("{0}", version);
 };
 
 /**
