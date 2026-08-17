@@ -55,6 +55,12 @@ export const URI_HANDLER_STRINGS = {
         RELOAD_WINDOW: vscode.l10n.t("Reload Window"),
         RESUME: vscode.l10n.t("Resume")
     },
+    AGENT_HOSTS: {
+        COPILOT: vscode.l10n.t("GitHub Copilot CLI"),
+        CLAUDE: vscode.l10n.t("Claude Code"),
+        INSTALLED: vscode.l10n.t("Installed"),
+        INSTALLED_WITH_VERSION: vscode.l10n.t("Installed · {0}")
+    },
     TITLES: {
         DOWNLOAD_TITLE: vscode.l10n.t("Download Power Pages Site"),
         PCF_INIT: vscode.l10n.t({
