@@ -31,7 +31,15 @@ export const URI_HANDLER_STRINGS = {
         ENV_SWITCH_REQUIRED: vscode.l10n.t("You are currently connected to a different environment. Would you like to switch to the required environment?"),
         DOWNLOAD_COMPLETE: vscode.l10n.t("Power Pages site download completed successfully. Would you like to open the downloaded site folder?"),
         FOLDER_SELECT: vscode.l10n.t("Select Folder to Download Power Pages Site"),
-        AGENT_HOST_INSTALL_GUIDANCE: vscode.l10n.t("{0} isn't installed. Install it, then choose Check Again — most installs are picked up without restarting VS Code."),
+        AGENT_HOST_INSTALL_GUIDANCE: vscode.l10n.t({
+            message: "{0} isn't installed. Install it, then choose {1} — most installs are picked up without restarting VS Code.",
+            args: ["{0}", vscode.l10n.t("Check Again")],
+            comment: [
+                "{0} is the agent host display name and is replaced when the message is shown.",
+                "{1} is the localized label of the Check Again button.",
+                "Do not translate 'VS Code' as it is a product name."
+            ]
+        }),
         AGENT_HOST_INSTALL_RESUME: vscode.l10n.t("{0} is now installed. Resume creating your Power Pages site?")
     },
     BUTTONS: {

@@ -1579,8 +1579,11 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++cbb58bf52139fb4500869fc02c2559dc0bcd41de2b78a941bd8ab8c33e665a26">
       <source xml:lang="en">{0} is now installed. Resume creating your Power Pages site?</source>
     </trans-unit>
-    <trans-unit id="++CODE++7130e6af997675b07ed7d33d223f0cefa01078eef3dbefeefc80a5003aaeb4d8">
-      <source xml:lang="en">{0} isn't installed. Install it, then choose Check Again — most installs are picked up without restarting VS Code.</source>
+    <trans-unit id="++CODE++dda309fd0551478f2a322c36bc4ce212517a94dc4011163cfb3c23a125779792">
+      <source xml:lang="en">{0} isn't installed. Install it, then choose {1} — most installs are picked up without restarting VS Code.</source>
+      <note>{0} is the agent host display name and is replaced when the message is shown.
+{1} is the localized label of the Check Again button.
+Do not translate 'VS Code' as it is a product name.</note>
     </trans-unit>
     <trans-unit id="++CODE++21471e6993c28688e252bf884db38022cef15af0126d3d7f68c5e4a6c4dfd9d3">
       <source xml:lang="en">{0}: {1} (Remote ↔ Local)</source>
