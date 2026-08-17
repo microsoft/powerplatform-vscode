@@ -35,5 +35,11 @@ export enum uriHandlerTelemetryEventNames {
     URI_HANDLER_AGENTIC_CREATE_HOST_SELECTED = "UriHandlerAgenticCreateHostSelected",
     URI_HANDLER_AGENTIC_CREATE_PLUGIN_SEQUENCE_LAUNCHED = "UriHandlerAgenticCreatePluginSequenceLaunched",
     URI_HANDLER_AGENTIC_CREATE_SAMPLE_PROMPT_SENT = "UriHandlerAgenticCreateSamplePromptSent",
-    URI_HANDLER_CREATE_FLOW_DROPPED = "UriHandlerCreateFlowDropped"
+    URI_HANDLER_CREATE_FLOW_DROPPED = "UriHandlerCreateFlowDropped",
+    URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_PROMPTED = "UriHandlerAgenticCreateHostInstallPrompted",
+    URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_GUIDE_OPENED = "UriHandlerAgenticCreateHostInstallGuideOpened",
+    URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_RECHECKED = "UriHandlerAgenticCreateHostInstallRechecked",
+    URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_RELOAD_REQUESTED = "UriHandlerAgenticCreateHostInstallReloadRequested",
+    URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_RESUMED = "UriHandlerAgenticCreateHostInstallResumed",
+    URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_DISMISSED = "UriHandlerAgenticCreateHostInstallDismissed"
 }

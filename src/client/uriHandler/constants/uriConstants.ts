@@ -50,6 +50,16 @@ export const URI_CONSTANTS = {
     },
     TIMEOUTS: {
         COMPLETION_DIALOG: 30000 // 30 seconds
+    },
+    // TODO: confirm final install-guide URLs with design
+    AGENT_HOST_INSTALL_GUIDE_URLS: {
+        copilot: 'https://docs.github.com/en/copilot/how-tos/copilot-cli/set-up-copilot-cli/install-copilot-cli',
+        claude: 'https://code.claude.com/docs/en/setup'
+    },
+    // Resume markers remain fresh for 10 minutes.
+    RESUME_MARKER: {
+        KEY: 'powerPages.agenticCreate.resumeMarker',
+        TTL_MS: 600000
     }
 } as const;
 
