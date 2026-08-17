@@ -35,20 +35,35 @@ describe("Create-flow telemetry", () => {
         version: URI_CONSTANTS.CONTRACT_VERSION.CURRENT,
         correlationId: 'correlation-123'
     };
+    const sensitiveFolderPath = "C:\\sensitive\\selected-folder";
 
     const expectIdentifiersHandled = (properties: Record<string, string>): void => {
         expect(properties.environmentId).to.equal(params.environmentId);
         expect(properties.websiteId).to.equal(params.websiteId);
-        expect(properties).to.not.have.property('orgUrl');
-        expect(properties).to.not.have.property('tenantId');
-        expect(Object.values(properties)).to.not.include(params.orgUrl);
-        expect(Object.values(properties)).to.not.include(params.tenantId);
         expect(properties).to.include({
+            source: URI_CONSTANTS.SOURCE_VALUES.POWER_PAGES_HOME,
+            agentHost: URI_CONSTANTS.AGENT_HOST_VALUES.COPILOT,
+            version: URI_CONSTANTS.CONTRACT_VERSION.CURRENT,
+            region: 'NAM',
             hasEnvironmentId: 'true',
             hasOrgUrl: 'true',
             hasTenantId: 'true',
             hasWebsiteId: 'true'
         });
+        expect(properties).to.not.have.property('orgUrl');
+        expect(properties).to.not.have.property('tenantId');
+        expect(properties).to.not.have.property('folderPath');
+        expect(Object.values(properties)).to.not.include(params.orgUrl);
+        expect(Object.values(properties)).to.not.include(params.tenantId);
+        expect(Object.values(properties)).to.not.include(sensitiveFolderPath);
+        for (const presenceProperty of [
+            'hasEnvironmentId',
+            'hasOrgUrl',
+            'hasTenantId',
+            'hasWebsiteId'
+        ]) {
+            expect(properties[presenceProperty]).to.be.a('string');
+        }
     };
 
     beforeEach(() => {
@@ -64,8 +79,40 @@ describe("Create-flow telemetry", () => {
         sandbox.restore();
     });
 
-    it("defines the create-flow funnel events in stage order", () => {
-        expect(Object.values(uriHandlerTelemetryEventNames).slice(-19)).to.deep.equal([
+    it("defines the complete create-flow telemetry catalog", () => {
+        expect([
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_TRIGGERED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_DISABLED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_FAILED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_PAC_CREATE_TRIGGERED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_PAC_CREATE_DISABLED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_PAC_CREATE_FAILED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_AUTH_STARTED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_AUTH_COMPLETED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_AUTH_FAILED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_ENVIRONMENT_SET,
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_CANCELLED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_PAC_CREATE_PARAMS_COLLECTED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_PAC_CREATE_TERMINAL_LAUNCHED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_DETECTED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_SELECTED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_PLUGIN_SEQUENCE_LAUNCHED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_SAMPLE_PROMPT_SENT,
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_PROMPTED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_GUIDE_OPENED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_RECHECKED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_RELOAD_REQUESTED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_RESUMED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_DISMISSED
+        ]).to.deep.equal([
+            'UriHandlerAgenticCreateTriggered',
+            'UriHandlerAgenticCreateDisabled',
+            'UriHandlerAgenticCreateFailed',
+            'UriHandlerPacCreateTriggered',
+            'UriHandlerPacCreateDisabled',
+            'UriHandlerPacCreateFailed',
             'UriHandlerCreateAuthStarted',
             'UriHandlerCreateAuthCompleted',
             'UriHandlerCreateAuthFailed',
@@ -102,7 +149,7 @@ describe("Create-flow telemetry", () => {
             uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_AUTH_STARTED,
             params,
             'pac',
-            { authenticationMode: 'existing', region: 'extra-region' }
+            { authenticationMode: 'existing' }
         );
 
         expect(traceInfoStub.calledOnce).to.be.true;
@@ -114,8 +161,7 @@ describe("Create-flow telemetry", () => {
             channel: 'pac',
             contractVersion: URI_CONSTANTS.CONTRACT_VERSION.CURRENT,
             correlationId: params.correlationId,
-            authenticationMode: 'existing',
-            region: 'extra-region'
+            authenticationMode: 'existing'
         });
         expectIdentifiersHandled(properties);
     });
@@ -163,18 +209,50 @@ describe("Create-flow telemetry", () => {
         expectIdentifiersHandled(properties);
     });
 
-    it("uses empty identifier values when website and environment IDs are absent", () => {
-        const properties = buildCreateFlowTelemetry({
+    it("emits low-cardinality defaults and false presence flags when parameters are absent", () => {
+        const emptyParams: CreateFlowParameters = {
             ...params,
             environmentId: null,
             orgUrl: null,
-            websiteId: null
-        });
+            websiteId: null,
+            tenantId: null,
+            source: null,
+            agentHost: null,
+            version: null,
+            region: null
+        };
 
+        emitCreateFlowEvent(
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_AUTH_STARTED,
+            emptyParams,
+            'agent'
+        );
+
+        const properties = traceInfoStub.firstCall.args[1] as Record<string, string>;
         expect(properties).to.include({
+            source: 'unknown',
+            agentHost: 'unspecified',
+            version: 'unspecified',
+            region: 'unspecified',
+            hasEnvironmentId: 'false',
+            hasOrgUrl: 'false',
+            hasTenantId: 'false',
+            hasWebsiteId: 'false',
             environmentId: '',
-            websiteId: ''
+            websiteId: '',
+            channel: 'agent',
+            contractVersion: URI_CONSTANTS.CONTRACT_VERSION.CURRENT,
+            correlationId: params.correlationId
         });
         expect(properties).to.not.have.property('orgUrl');
+        expect(properties).to.not.have.property('tenantId');
+        for (const presenceProperty of [
+            'hasEnvironmentId',
+            'hasOrgUrl',
+            'hasTenantId',
+            'hasWebsiteId'
+        ]) {
+            expect(properties[presenceProperty]).to.be.a('string');
+        }
     });
 });

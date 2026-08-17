@@ -9,9 +9,11 @@ import * as vscode from "vscode";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { PacWrapper } from "../../pac/PacWrapper";
 import {
+    CreateFlowChannel,
     CreateFlowCommonStagesDependencies,
     runCreateFlowCommonStages
 } from "../../uriHandler/handlers/createFlowCommonStages";
+import { URI_CONSTANTS } from "../../uriHandler/constants/uriConstants";
 import {
     buildCreateFlowTelemetry,
     CreateFlowParameters
@@ -49,7 +51,7 @@ describe("Create-flow common stages", () => {
     const pacWrapper = {} as PacWrapper;
     const selectedFolder = vscode.Uri.file("C:\\sensitive\\selected-folder");
 
-    const expectRedactedTelemetry = (): void => {
+    const expectRedactedTelemetry = (channel: CreateFlowChannel): void => {
         const properties = [
             ...traceInfoStub.getCalls().map((call) => call.args[1] as Record<string, string>),
             ...traceErrorStub.getCalls().map((call) => call.args[3] as Record<string, string>)
@@ -63,10 +65,28 @@ describe("Create-flow common stages", () => {
             expect(Object.values(eventProperties)).to.not.include(params.orgUrl);
             expect(Object.values(eventProperties)).to.not.include(params.tenantId);
             expect(eventProperties).to.include({
+                source: params.source,
+                agentHost: 'unspecified',
+                version: params.version,
+                region: params.region,
+                hasEnvironmentId: 'true',
+                hasOrgUrl: 'true',
+                hasTenantId: 'true',
+                hasWebsiteId: 'true',
                 environmentId: params.environmentId,
                 websiteId: params.websiteId,
+                channel,
+                contractVersion: URI_CONSTANTS.CONTRACT_VERSION.CURRENT,
                 correlationId: params.correlationId
             });
+            for (const presenceProperty of [
+                'hasEnvironmentId',
+                'hasOrgUrl',
+                'hasTenantId',
+                'hasWebsiteId'
+            ]) {
+                expect(eventProperties[presenceProperty]).to.be.a('string');
+            }
         }
     };
 
@@ -115,33 +135,35 @@ describe("Create-flow common stages", () => {
         sandbox.restore();
     });
 
-    it("emits ordered stages and returns the selected folder", async () => {
-        selectTargetFolderStub.resolves(selectedFolder);
+    for (const channel of ['pac', 'agent'] as CreateFlowChannel[]) {
+        it(`emits ordered ${channel} stages and returns the selected folder`, async () => {
+            selectTargetFolderStub.resolves(selectedFolder);
 
-        const result = await runCreateFlowCommonStages(
-            params,
-            'pac',
-            telemetryData,
-            pacWrapper,
-            dependencies
-        );
+            const result = await runCreateFlowCommonStages(
+                params,
+                channel,
+                telemetryData,
+                pacWrapper,
+                dependencies
+            );
 
-        expect(result).to.equal(selectedFolder);
-        expect(prepareAuthenticationAndEnvironmentStub.calledOnceWithExactly(
-            {
-                environmentId: params.environmentId,
-                orgUrl: params.orgUrl
-            },
-            telemetryData
-        )).to.be.true;
-        expect(emittedEventNames).to.deep.equal([
-            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_AUTH_STARTED,
-            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_AUTH_COMPLETED,
-            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_ENVIRONMENT_SET,
-            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED
-        ]);
-        expectRedactedTelemetry();
-    });
+            expect(result).to.equal(selectedFolder);
+            expect(prepareAuthenticationAndEnvironmentStub.calledOnceWithExactly(
+                {
+                    environmentId: params.environmentId,
+                    orgUrl: params.orgUrl
+                },
+                telemetryData
+            )).to.be.true;
+            expect(emittedEventNames).to.deep.equal([
+                uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_AUTH_STARTED,
+                uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_AUTH_COMPLETED,
+                uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_ENVIRONMENT_SET,
+                uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED
+            ]);
+            expectRedactedTelemetry(channel);
+        });
+    }
 
     it("emits cancellation and drop stages when folder selection is cancelled", async () => {
         selectTargetFolderStub.resolves(undefined);
@@ -162,7 +184,7 @@ describe("Create-flow common stages", () => {
             uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_CANCELLED,
             uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED
         ]);
-        expectRedactedTelemetry();
+        expectRedactedTelemetry('agent');
     });
 
     it("emits authentication failure and drop stages when authentication fails", async () => {
@@ -184,6 +206,6 @@ describe("Create-flow common stages", () => {
             uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED
         ]);
         expect(traceErrorStub.calledOnce).to.be.true;
-        expectRedactedTelemetry();
+        expectRedactedTelemetry('pac');
     });
 });
