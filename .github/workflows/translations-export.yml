@@ -72,5 +72,5 @@ jobs:
       - name: Fail if export changes are required on fork PR
         if: steps.check-changes.outputs.has_changes == 'true' && github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == true
         run: |
-          Write-Error "Translations export produced changes, but this PR is from a fork so CI cannot push commits. Please run 'npm run translations-export' and commit the results."
+          echo "Translations export produced changes, but this PR is from a fork so CI cannot push commits. Please run 'npm run translations-export' and commit the results."
           exit 1
