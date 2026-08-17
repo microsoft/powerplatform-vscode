@@ -4,6 +4,7 @@
  */
 
 import { expect } from "chai";
+import { resolveMetadataDiffImportFilePath } from "../../uriHandler/utils/metadataDiffImportValidation";
 
 // Test URI handling functionality
 describe('UriHandler Schema Parameter Tests', () => {
@@ -209,5 +210,49 @@ describe('UriHandler Schema Parameter Tests', () => {
             expect(openWorkspaceOption).to.equal("Open in New Workspace");
             expect(notNowOption).to.equal("Not Now");
         });
+    });
+});
+
+describe('Metadata Diff Import filePath validation', () => {
+    it('reports "missing" when filePath is null', () => {
+        const result = resolveMetadataDiffImportFilePath(null);
+        expect(result.ok).to.be.false;
+        expect(result).to.deep.equal({ ok: false, reason: "missing" });
+    });
+
+    it('reports "missing" when filePath is undefined', () => {
+        const result = resolveMetadataDiffImportFilePath(undefined);
+        expect(result).to.deep.equal({ ok: false, reason: "missing" });
+    });
+
+    it('reports "missing" when filePath is an empty string', () => {
+        const result = resolveMetadataDiffImportFilePath("");
+        expect(result).to.deep.equal({ ok: false, reason: "missing" });
+    });
+
+    it('reports "invalid" for a relative path', () => {
+        const result = resolveMetadataDiffImportFilePath("relative/path/diff.json");
+        expect(result).to.deep.equal({ ok: false, reason: "invalid" });
+    });
+
+    it('reports "invalid" for a path containing ".." segments', () => {
+        const result = resolveMetadataDiffImportFilePath("/Users/test/../../etc/diff.json");
+        expect(result).to.deep.equal({ ok: false, reason: "invalid" });
+    });
+
+    it('reports "invalid" when ".." is hidden behind URL-encoding', () => {
+        // %2E%2E decodes to "..", so traversal attempts must be caught after decoding.
+        const result = resolveMetadataDiffImportFilePath("%2F..%2Fetc%2Fdiff.json");
+        expect(result).to.deep.equal({ ok: false, reason: "invalid" });
+    });
+
+    it('accepts an absolute path and returns the decoded path', () => {
+        const result = resolveMetadataDiffImportFilePath("/Users/test/diff.json");
+        expect(result).to.deep.equal({ ok: true, filePath: "/Users/test/diff.json" });
+    });
+
+    it('decodes percent-encoded absolute paths', () => {
+        const result = resolveMetadataDiffImportFilePath("%2FUsers%2Ftest%20user%2Fdiff.json");
+        expect(result).to.deep.equal({ ok: true, filePath: "/Users/test user/diff.json" });
     });
 });
