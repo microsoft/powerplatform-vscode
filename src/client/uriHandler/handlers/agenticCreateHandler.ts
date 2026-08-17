@@ -12,6 +12,7 @@ import { uriHandlerTelemetryEventNames } from "../telemetry/uriHandlerTelemetryE
 import { buildCreateFlowTelemetry, parseCreateFlowParameters } from "./createFlowParams";
 import { emitCreateFlowError, emitCreateFlowEvent } from "../telemetry/createFlowTelemetry";
 import { runCreateFlowCommonStages } from "./createFlowCommonStages";
+import { isSupportedContractVersion } from "./createFlowContractVersion";
 
 /**
  * Handles the `/agenticCreate` deep link launched from the Power Pages home page, which will
@@ -55,6 +56,19 @@ export class AgenticCreateHandler {
         }
 
         try {
+            if (!isSupportedContractVersion(params.version)) {
+                emitCreateFlowEvent(
+                    uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED,
+                    params,
+                    'agent',
+                    {
+                        reason: 'unsupportedContractVersion',
+                        version: params.version ?? ''
+                    }
+                );
+                return;
+            }
+
             emitCreateFlowEvent(
                 uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_TRIGGERED,
                 params,

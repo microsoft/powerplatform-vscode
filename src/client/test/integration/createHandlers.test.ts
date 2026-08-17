@@ -40,6 +40,12 @@ describe("Create deep-link handlers (gated)", () => {
         `&${URI_CONSTANTS.PARAMETERS.REFERRER_SESSION_ID}=agent-correlation`
     );
 
+    const withContractVersion = (uri: vscode.Uri, version: string): vscode.Uri => {
+        const query = new URLSearchParams(uri.query);
+        query.set(URI_CONSTANTS.PARAMETERS.VERSION, version);
+        return uri.with({ query: query.toString() });
+    };
+
     const setFlags = (enabled: boolean): void => {
         getConfigStub.returns({
             enablePacCreateFromHome: enabled,
@@ -95,7 +101,7 @@ describe("Create deep-link handlers (gated)", () => {
         expect(runCreateFlowCommonStagesStub.called).to.be.false;
     });
 
-    it("PacCreateHandler parses params and emits triggered telemetry when the flag is on", async () => {
+    it("PacCreateHandler proceeds with the supported contract version when the flag is on", async () => {
         setFlags(true);
         const pacWrapper = {} as PacWrapper;
         const handler = new PacCreateHandler(pacWrapper);
@@ -128,6 +134,30 @@ describe("Create deep-link handlers (gated)", () => {
             websiteId: 'pac-website'
         });
         expect(runCreateFlowCommonStagesStub.firstCall.args[3]).to.equal(pacWrapper);
+        expect(traceInfoStub.calledWith(
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED
+        )).to.be.false;
+    });
+
+    it("PacCreateHandler drops an unsupported contract version before the flow starts", async () => {
+        setFlags(true);
+        const handler = new PacCreateHandler({} as PacWrapper);
+
+        await handler.handle(withContractVersion(pacCreateUri, '2'));
+
+        const dropped = traceInfoStub.getCalls().find(
+            (call) => call.args[0] === uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED
+        );
+        expect(dropped, "expected a dropped telemetry event").to.not.be.undefined;
+        expect(dropped?.args[1]).to.include({
+            channel: 'pac',
+            reason: 'unsupportedContractVersion',
+            version: '2'
+        });
+        expect(traceInfoStub.calledWith(
+            uriHandlerTelemetryEventNames.URI_HANDLER_PAC_CREATE_TRIGGERED
+        )).to.be.false;
+        expect(runCreateFlowCommonStagesStub.called).to.be.false;
     });
 
     it("PacCreateHandler emits failed telemetry through the create-flow helper", async () => {
@@ -174,7 +204,7 @@ describe("Create deep-link handlers (gated)", () => {
         expect(runCreateFlowCommonStagesStub.called).to.be.false;
     });
 
-    it("AgenticCreateHandler parses params and emits triggered telemetry when the flag is on", async () => {
+    it("AgenticCreateHandler proceeds without a contract version when the flag is on", async () => {
         setFlags(true);
         const pacWrapper = {} as PacWrapper;
         const handler = new AgenticCreateHandler(pacWrapper);
@@ -206,6 +236,30 @@ describe("Create deep-link handlers (gated)", () => {
             websiteId: 'agent-website'
         });
         expect(runCreateFlowCommonStagesStub.firstCall.args[3]).to.equal(pacWrapper);
+        expect(traceInfoStub.calledWith(
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED
+        )).to.be.false;
+    });
+
+    it("AgenticCreateHandler drops an unsupported contract version before the flow starts", async () => {
+        setFlags(true);
+        const handler = new AgenticCreateHandler({} as PacWrapper);
+
+        await handler.handle(withContractVersion(agenticCreateUri, '2'));
+
+        const dropped = traceInfoStub.getCalls().find(
+            (call) => call.args[0] === uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED
+        );
+        expect(dropped, "expected a dropped telemetry event").to.not.be.undefined;
+        expect(dropped?.args[1]).to.include({
+            channel: 'agent',
+            reason: 'unsupportedContractVersion',
+            version: '2'
+        });
+        expect(traceInfoStub.calledWith(
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_TRIGGERED
+        )).to.be.false;
+        expect(runCreateFlowCommonStagesStub.called).to.be.false;
     });
 
     it("AgenticCreateHandler emits failed telemetry through the create-flow helper", async () => {
