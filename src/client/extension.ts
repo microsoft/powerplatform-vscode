@@ -55,6 +55,7 @@ import { activateServerApiAutocomplete } from "../common/intellisense";
 import { EnableServerLogicChanges } from "../common/ecs-features/ecsFeatureGates";
 import { setServerApiTelemetryContext } from "../common/intellisense/ServerApiTelemetryContext";
 import { activateServerLogicDebugger } from "../debugger/server-logic/ServerLogicDebugger";
+import { resumeAgenticCreateOnActivation } from "./uriHandler/resumeAgenticCreateActivation";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -190,6 +191,7 @@ export async function activate(
 
     // Register auth and env panels
     const pacWrapper = pacTerminal.getWrapper();
+    await resumeAgenticCreateOnActivation(_context.globalState, pacWrapper);
     const basicPanels = RegisterBasicPanels(pacWrapper);
     _context.subscriptions.push(...basicPanels);
 
