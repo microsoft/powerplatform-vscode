@@ -13,14 +13,18 @@ import { UriHandlerUtils, UriParameters } from "./utils/uriHandlerUtils";
 import { AuthEnvironmentService } from "./utils/authEnvironment";
 import { AgenticCreateHandler } from "./handlers/agenticCreateHandler";
 import { PacCreateHandler } from "./handlers/pacCreateHandler";
+import { ResumeMarkerStore } from "./utils/resumeMarker";
 
 /**
  * Signature for a deep-link route handler. Each registered URI path maps to one handler.
  */
 type UriRouteHandler = (uri: vscode.Uri) => Promise<void>;
 
-export function RegisterUriHandler(pacWrapper: PacWrapper): vscode.Disposable {
-    const uriHandler = new UriHandler(pacWrapper);
+export function RegisterUriHandler(
+    pacWrapper: PacWrapper,
+    resumeMarkerStore?: ResumeMarkerStore
+): vscode.Disposable {
+    const uriHandler = new UriHandler(pacWrapper, resumeMarkerStore);
     return vscode.window.registerUriHandler(uriHandler);
 }
 
@@ -31,10 +35,10 @@ export class UriHandler implements vscode.UriHandler {
     private readonly agenticCreateHandler: AgenticCreateHandler;
     private readonly pacCreateHandler: PacCreateHandler;
 
-    constructor(pacWrapper: PacWrapper) {
+    constructor(pacWrapper: PacWrapper, resumeMarkerStore?: ResumeMarkerStore) {
         this.pacWrapper = pacWrapper;
         this.authEnvironmentService = new AuthEnvironmentService(pacWrapper);
-        this.agenticCreateHandler = new AgenticCreateHandler(pacWrapper);
+        this.agenticCreateHandler = new AgenticCreateHandler(pacWrapper, resumeMarkerStore);
         this.pacCreateHandler = new PacCreateHandler(pacWrapper);
         this.routes = this.buildRoutes();
     }
