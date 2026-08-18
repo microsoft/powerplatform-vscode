@@ -182,6 +182,22 @@
   "Switching environment...": "Switching environment...",
   "pac pcf init": "pac pcf init",
   "Not installed · Select to view installation guidance.": "Not installed · Select to view installation guidance.",
+  "Create Power Pages Site": "Create Power Pages Site",
+  "Create a Power Pages site with {0}?": "Create a Power Pages site with {0}?",
+  "Review the steps below. When you choose Start in Terminal, a terminal opens and runs these commands in order — nothing runs until then.": "Review the steps below. When you choose Start in Terminal, a terminal opens and runs these commands in order — nothing runs until then.",
+  "Summary": "Summary",
+  "Command sequence": "Command sequence",
+  "Agent host": "Agent host",
+  "Target folder": "Target folder",
+  "Start in Terminal": "Start in Terminal",
+  "Run the command sequence shown above.": "Run the command sequence shown above.",
+  "Cancel": "Cancel",
+  "Close without running anything.": "Close without running anything.",
+  "Power Pages Agent: {0}": "Power Pages Agent: {0}",
+  "Register the Power Platform Skills marketplace.": "Register the Power Platform Skills marketplace.",
+  "Install the Power Pages plugin.": "Install the Power Pages plugin.",
+  "Install the Power Pages plugin (user scope).": "Install the Power Pages plugin (user scope).",
+  "Start {0} and ask how to create a site.": "Start {0} and ask how to create a site.",
   "File might be referenced by name {0} here./{0} represents the name of the file": {
     "message": "File might be referenced by name {0} here.",
     "comment": [
@@ -189,7 +205,6 @@
     ]
   },
   "Some references might be broken. Please check diagnostics for details.": "Some references might be broken. Please check diagnostics for details.",
-  "Cancel": "Cancel",
   "Install": "Install",
   "The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?/Do not translate 'Microsoft Edge Tools' ": {
     "message": "The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?",

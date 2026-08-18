@@ -65,6 +65,9 @@
       <source xml:lang="en">Adding {0} web file(s). Existing files will be skipped</source>
       <note>{0} represents the number of web files</note>
     </trans-unit>
+    <trans-unit id="++CODE++4a122057a87c136eb022c2dc03e836d5af660872449154ed18ab8a4bf41c3d62">
+      <source xml:lang="en">Agent host</source>
+    </trans-unit>
     <trans-unit id="++CODE++a52ace420f2175d08b1577a1bea5445e36801229c074ef9ed6c55a73401fd9c2">
       <source xml:lang="en">All</source>
     </trans-unit>
@@ -227,6 +230,9 @@ The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).
     <trans-unit id="++CODE++7d9eb7acb13e24625c404401d8e88b2350e32162455885f18276cf802f7701ed">
       <source xml:lang="en">Close</source>
     </trans-unit>
+    <trans-unit id="++CODE++d1753029a614b1d88cab379a325334a907b5a5f4edd942614fafad016fdc71bc">
+      <source xml:lang="en">Close without running anything.</source>
+    </trans-unit>
     <trans-unit id="++CODE++eef726ad55117038c05eaa478148144884ab56cadc5a46785e8221040ff7a6ec">
       <source xml:lang="en">Cloud Instance: {0}</source>
       <note>The {0} represents profile's Azure Cloud Instances</note>
@@ -308,6 +314,9 @@ Check the CodeQL extension panel for available queries.</source>
     <trans-unit id="++CODE++67a58f1682f864bfa789f056e50bab25181dfcddf455fadaad856c826f852d6a">
       <source xml:lang="en">Command failed with exit code: {0}</source>
     </trans-unit>
+    <trans-unit id="++CODE++4430f89d3ccddba65f0ecdcd57ad3d09f447aa32df98fe214338f0a9bbe7fccd">
+      <source xml:lang="en">Command sequence</source>
+    </trans-unit>
     <trans-unit id="++CODE++d73890ab56fd9e1ff5349b7bdb41fe0d848c5960c096b30357e26b912456f21f">
       <source xml:lang="en">Compare site with environment</source>
     </trans-unit>
@@ -358,6 +367,12 @@ Check the CodeQL extension panel for available queries.</source>
     </trans-unit>
     <trans-unit id="++CODE++92a450b51c228fc0a45836a3cb66a77276511e8b1a48e237c97f27576695288d">
       <source xml:lang="en">Could not locate CodeQL CLI in global storage.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++8c626503b8eae6da7057f956fedf4bb6a0bd4390576fad8aaed347ec7e46bff2">
+      <source xml:lang="en">Create Power Pages Site</source>
+    </trans-unit>
+    <trans-unit id="++CODE++de58e4c94da7cfd5e18d9a884c15e42b595b5b268d566f9db95adbff0df128c4">
+      <source xml:lang="en">Create a Power Pages site with {0}?</source>
     </trans-unit>
     <trans-unit id="++CODE++217ec8ef23f31be4473af7c3e69f7965308bd2284d53eba7daf17b791db5fc74">
       <source xml:lang="en">Created On:</source>
@@ -774,6 +789,12 @@ Return to this chat and @powerpages can help you write and edit your website cod
     <trans-unit id="++CODE++569ca49f4aaf7846e952c1d4aeca72febd0b79fa1c4f9db08fd3127551218572">
       <source xml:lang="en">Install</source>
     </trans-unit>
+    <trans-unit id="++CODE++afb9e7208bfe7bad4615e50b2e4d6faed57c184df9eb5d702d44178e6cdb98c8">
+      <source xml:lang="en">Install the Power Pages plugin (user scope).</source>
+    </trans-unit>
+    <trans-unit id="++CODE++0319a9891908f56a9700981a93a873b705d4be2baaf7cdf63d657e51d4b3e074">
+      <source xml:lang="en">Install the Power Pages plugin.</source>
+    </trans-unit>
     <trans-unit id="++CODE++f8b32f4e92bd84ce1fcd177bec17d43093de3ee8303bb40c1b9ea521ed6a70f6">
       <source xml:lang="en">Installed</source>
     </trans-unit>
@@ -1044,6 +1065,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++5fbb04557cac7e489e30d8dade7753361709a79b317cfe1e402c30363c43b924">
       <source xml:lang="en">Power Pages</source>
     </trans-unit>
+    <trans-unit id="++CODE++4fbcdd14dcc0d2c5a822c2bd039ce2f69a516e77ffc690eced0c386044c0467f">
+      <source xml:lang="en">Power Pages Agent: {0}</source>
+    </trans-unit>
     <trans-unit id="++CODE++1bac158cc07a75506df3774db0ad7c188c19ccad4943c4cf03da8b6700ef9ce4">
       <source xml:lang="en">Power Pages Copilot is now connected to the environment: {0} : {1}</source>
       <note>{0} represents the environment name</note>
@@ -1102,6 +1126,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
       <source xml:lang="en">Refreshing comparison for {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel &quot;Show download output&quot;))...</source>
       <note>This is a markdown formatting which must persist across translations.</note>
     </trans-unit>
+    <trans-unit id="++CODE++439dd80d491837c23c81411c8f2a0bb7ddbc7bbc557748cc59b8a8812cb09d86">
+      <source xml:lang="en">Register the Power Platform Skills marketplace.</source>
+    </trans-unit>
     <trans-unit id="++CODE++423e44de44431caef68c0c61968777e088fd50d2577feea60b9ba4a14b28a827">
       <source xml:lang="en">Reload Window</source>
     </trans-unit>
@@ -1117,11 +1144,17 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++d640c7421da066618a39daf4266da5f61f66a9b1afcd626481b831a17064965d">
       <source xml:lang="en">Resume</source>
     </trans-unit>
+    <trans-unit id="++CODE++91ea105b48e59b3e091f165b86c2f399cbbcebf8aeea1b8f7caf58095f4ca7a7">
+      <source xml:lang="en">Review the steps below. When you choose Start in Terminal, a terminal opens and runs these commands in order — nothing runs until then.</source>
+    </trans-unit>
     <trans-unit id="++CODE++00d60e31a4e6b8344d4201f25a6a7dee770713107f6d097abb01559d32b17f26">
       <source xml:lang="en">Run</source>
     </trans-unit>
     <trans-unit id="++CODE++ea703d2310b31c503c3e81398804a049aa6e65f78dbe7014f8f52dae263dadfb">
       <source xml:lang="en">Run Server Logic</source>
+    </trans-unit>
+    <trans-unit id="++CODE++930491181d9b2842d9fa56433360eab8a11f2f48c08feda732864864286a2d9d">
+      <source xml:lang="en">Run the command sequence shown above.</source>
     </trans-unit>
     <trans-unit id="++CODE++80b0001b823cb916650c75c5c08b3bdf9be4951036ec14ee4086b487125d05c8">
       <source xml:lang="en">Run this server logic file without debugging</source>
@@ -1265,6 +1298,12 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++9363df99329b30b2e856758ea1e1f08e117936f1a8116e29f8d64b4bc62f9ab6">
       <source xml:lang="en">Standard Data Model</source>
     </trans-unit>
+    <trans-unit id="++CODE++ada66949062668868b5f5b59a0d5571a24f90aae1122cd7e7edd2cf97c8bbd87">
+      <source xml:lang="en">Start in Terminal</source>
+    </trans-unit>
+    <trans-unit id="++CODE++a47f76b01246d53541af8d7efbe79fa7e3da233eec3774b617509262765ce0a0">
+      <source xml:lang="en">Start {0} and ask how to create a site.</source>
+    </trans-unit>
     <trans-unit id="++CODE++1cb2204ec480119230ac755787106a1550d9329553d146abd56da1947079d577">
       <source xml:lang="en">Starting CodeQL analysis for: {0}</source>
     </trans-unit>
@@ -1283,8 +1322,14 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
       <source xml:lang="en">Successfully discarded local changes to {0} files in '{1}'.</source>
       <note>Success message after discarding all local changes in a folder.</note>
     </trans-unit>
+    <trans-unit id="++CODE++8e76a94ac8320d515375e625bef1829238b097ecbd33611b59eeefd4ffefebfb">
+      <source xml:lang="en">Summary</source>
+    </trans-unit>
     <trans-unit id="++CODE++e3a0cecb7c0c51b4a918164be2e4a75795139fbc652adbed3c6a144cf4adc009">
       <source xml:lang="en">Switching environment...</source>
+    </trans-unit>
+    <trans-unit id="++CODE++e89c3109e1f14c41c020d764a9d88a91ddd18a4003ff438156d2eb8bd2b4f1c8">
+      <source xml:lang="en">Target folder</source>
     </trans-unit>
     <trans-unit id="++CODE++550b4ee4e0ae69ddf9c18f9d46f59e59da633a2644633d140197d62ded3f2657">
       <source xml:lang="en">Tell us more.</source>

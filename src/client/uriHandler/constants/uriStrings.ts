@@ -85,5 +85,27 @@ export const URI_HANDLER_STRINGS = {
     },
     DESCRIPTIONS: {
         AGENT_HOST_NOT_INSTALLED: vscode.l10n.t("Not installed · Select to view installation guidance.")
+    },
+    AGENT_HOST_CONFIRM: {
+        // Title of the confirmation webview panel tab.
+        PANEL_TITLE: vscode.l10n.t("Create Power Pages Site"),
+        // {0} is the agent host display name. Shown as the panel heading and document title.
+        TITLE: vscode.l10n.t("Create a Power Pages site with {0}?"),
+        DESCRIPTION: vscode.l10n.t("Review the steps below. When you choose Start in Terminal, a terminal opens and runs these commands in order — nothing runs until then."),
+        SUMMARY_HEADER: vscode.l10n.t("Summary"),
+        SEQUENCE_HEADER: vscode.l10n.t("Command sequence"),
+        HOST_LABEL: vscode.l10n.t("Agent host"),
+        FOLDER_LABEL: vscode.l10n.t("Target folder"),
+        START_LABEL: vscode.l10n.t("Start in Terminal"),
+        START_DETAIL: vscode.l10n.t("Run the command sequence shown above."),
+        CANCEL_LABEL: vscode.l10n.t("Cancel"),
+        CANCEL_DETAIL: vscode.l10n.t("Close without running anything."),
+        // {0} is the agent host display name. Used as the integrated terminal name.
+        TERMINAL_NAME: vscode.l10n.t("Power Pages Agent: {0}"),
+        STEP_REGISTER_MARKETPLACE: vscode.l10n.t("Register the Power Platform Skills marketplace."),
+        STEP_INSTALL_PLUGIN: vscode.l10n.t("Install the Power Pages plugin."),
+        STEP_INSTALL_PLUGIN_USER_SCOPE: vscode.l10n.t("Install the Power Pages plugin (user scope)."),
+        // {0} is the agent host display name.
+        STEP_LAUNCH_HOST: vscode.l10n.t("Start {0} and ask how to create a site.")
     }
 } as const;
