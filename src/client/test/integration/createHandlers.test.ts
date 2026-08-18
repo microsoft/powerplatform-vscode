@@ -284,4 +284,43 @@ describe("Create deep-link handlers (gated)", () => {
             'agent-website'
         );
     });
+
+    describe("local testing override", () => {
+        const realGetConfiguration = vscode.workspace.getConfiguration.bind(vscode.workspace);
+
+        const stubOverride = (value: boolean): void => {
+            sandbox.stub(vscode.workspace, "getConfiguration").callsFake(((section?: string) => {
+                if (section === URI_CONSTANTS.LOCAL_OVERRIDE_SETTING.NAMESPACE) {
+                    return {
+                        get: (key: string, defaultValue?: boolean) =>
+                            key === URI_CONSTANTS.LOCAL_OVERRIDE_SETTING.AGENTIC_CREATE_ENABLED
+                                ? value
+                                : defaultValue
+                    } as unknown as vscode.WorkspaceConfiguration;
+                }
+                return realGetConfiguration(section);
+            }) as typeof vscode.workspace.getConfiguration);
+        };
+
+        it("stays disabled when both ECS and the override are off", () => {
+            setFlags(false);
+            stubOverride(false);
+
+            expect(AgenticCreateHandler.isEnabled()).to.be.false;
+        });
+
+        it("is enabled by the override even though the ECS flag is off", () => {
+            setFlags(false);
+            stubOverride(true);
+
+            expect(AgenticCreateHandler.isEnabled()).to.be.true;
+        });
+
+        it("stays enabled from ECS when the override is off", () => {
+            setFlags(true);
+            stubOverride(false);
+
+            expect(AgenticCreateHandler.isEnabled()).to.be.true;
+        });
+    });
 });

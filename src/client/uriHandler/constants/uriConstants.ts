@@ -62,6 +62,12 @@ export const URI_CONSTANTS = {
         KEY: 'powerPages.agenticCreate.resumeMarker',
         TTL_MS: 600000
     },
+    // Developer-only escape hatch for local testing. The agentic create deep link is dark by
+    // default, so this VS Code setting forces it on without flipping the shipped ECS fallback.
+    LOCAL_OVERRIDE_SETTING: {
+        NAMESPACE: 'powerPlatform',
+        AGENTIC_CREATE_ENABLED: 'experimental.enableAgenticCreateFromHome'
+    },
     // Power Pages plugin bootstrap values handed to the selected agent host. Product and CLI
     // identifiers are intentionally not localized.
     AGENT_HOST_PLUGIN: {

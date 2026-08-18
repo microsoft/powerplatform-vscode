@@ -667,6 +667,11 @@
           "default": false,
           "markdownDescription": "Disable the PowerPlatform activity bar panels"
         },
+        "powerPlatform.experimental.enableAgenticCreateFromHome": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Developer-only. Force-enable the agentic create deep link (`/agenticCreate`) launched from the Power Pages home page, bypassing the ECS feature flag. Intended for local testing."
+        },
         "powerPlatform.experimental.enablePcfDebuggingFeatures": {
           "type": "boolean",
           "default": false,
