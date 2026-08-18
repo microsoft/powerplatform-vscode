@@ -68,6 +68,21 @@ export const URI_CONSTANTS = {
         NAMESPACE: 'powerPlatform',
         AGENTIC_CREATE_ENABLED: 'experimental.enableAgenticCreateFromHome'
     },
+    // Developer-only command that replays an `/agenticCreate` deep link without needing Power
+    // Pages Home to send one. Palette visibility is gated on LOCAL_OVERRIDE_SETTING.
+    LOCAL_TRIGGER: {
+        COMMAND_ID: 'powerpages.agenticCreate.triggerLocal',
+        // Global-state key holding the last link the developer ran, so it can be replayed.
+        LAST_LINK_KEY: 'powerPages.agenticCreate.lastLocalTriggerLink',
+        // Angle-bracket placeholders in the prefilled sample link that must be replaced.
+        PLACEHOLDER_PATTERN: /<[^<>]+>/,
+        SAMPLE: {
+            ENVIRONMENT_ID: '<environment-id>',
+            ORG_URL: '<https://contoso.crm.dynamics.com>',
+            WEBSITE_ID: '<website-id>',
+            REGION: 'unitedstates'
+        }
+    },
     // Power Pages plugin bootstrap values handed to the selected agent host. Product and CLI
     // identifiers are intentionally not localized.
     AGENT_HOST_PLUGIN: {

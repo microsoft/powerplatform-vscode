@@ -423,6 +423,11 @@
         "enablement": "resourcePath =~ /server-logics?[/\\\\]/ && resourceExtname == .js"
       },
       {
+        "command": "powerpages.agenticCreate.triggerLocal",
+        "category": "Power Pages",
+        "title": "Trigger Agentic Create (Local Testing)"
+      },
+      {
         "command": "powerPlatform.previewCurrentActiveUsers",
         "title": "Current Active Users",
         "icon": "$(person)",
@@ -998,6 +1003,10 @@
         }
       ],
       "commandPalette": [
+        {
+          "command": "powerpages.agenticCreate.triggerLocal",
+          "when": "!virtualWorkspace && config.powerPlatform.experimental.enableAgenticCreateFromHome"
+        },
         {
           "command": "microsoft-powerapps-portals.webExtension.init",
           "when": "never"
