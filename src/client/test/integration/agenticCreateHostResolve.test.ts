@@ -27,6 +27,7 @@ describe("Agentic create host resolution", () => {
     let selectAgentHostStub: sinon.SinonStub;
     let resolveAgentHostInstallationStub: sinon.SinonStub;
     let emitCreateFlowEventStub: sinon.SinonStub;
+    let confirmAndLaunchAgentHostStub: sinon.SinonStub;
     let traceInfoStub: sinon.SinonStub;
     let traceErrorStub: sinon.SinonStub;
     let storeUpdateStub: sinon.SinonStub;
@@ -112,6 +113,7 @@ describe("Agentic create host resolution", () => {
         });
         resolveAgentHostInstallationStub = sandbox.stub();
         emitCreateFlowEventStub = sandbox.stub().callsFake(emitCreateFlowEvent);
+        confirmAndLaunchAgentHostStub = sandbox.stub().resolves({ status: "launched" });
         storeUpdateStub = sandbox.stub().resolves();
         store = {
             get: () => undefined,
@@ -121,7 +123,8 @@ describe("Agentic create host resolution", () => {
             detectAgentHost: detectAgentHostStub,
             selectAgentHost: selectAgentHostStub,
             resolveAgentHostInstallation: resolveAgentHostInstallationStub,
-            emitCreateFlowEvent: emitCreateFlowEventStub
+            emitCreateFlowEvent: emitCreateFlowEventStub,
+            confirmAndLaunchAgentHost: confirmAndLaunchAgentHostStub
         };
     });
 
@@ -146,12 +149,13 @@ describe("Agentic create host resolution", () => {
             reason: "hostSelectionCancelled"
         });
         expect(resolveAgentHostInstallationStub.notCalled).to.be.true;
+        expect(confirmAndLaunchAgentHostStub.notCalled).to.be.true;
         expect(storeUpdateStub.notCalled).to.be.true;
         expectNoInstallEventsFromHandler();
         expectNoSensitiveTelemetry();
     });
 
-    it("emits host selected once and stops at the G3 seam for an installed host", async () => {
+    it("emits host selected once and confirms + launches for an installed host", async () => {
         await createHandler().handle(uri);
 
         expect(emitCreateFlowEventStub.calledOnce).to.be.true;
@@ -162,6 +166,10 @@ describe("Agentic create host resolution", () => {
             host: AgentHost.Copilot,
             installed: "true"
         });
+        expect(confirmAndLaunchAgentHostStub.calledOnce).to.be.true;
+        expect(confirmAndLaunchAgentHostStub.firstCall.args[0]).to.equal(AgentHost.Copilot);
+        expect(confirmAndLaunchAgentHostStub.firstCall.args[1]).to.equal("GitHub Copilot CLI");
+        expect(confirmAndLaunchAgentHostStub.firstCall.args[2]).to.equal(selectedFolder);
         expect(resolveAgentHostInstallationStub.notCalled).to.be.true;
         expect(storeUpdateStub.notCalled).to.be.true;
         expectNoInstallEventsFromHandler();
@@ -210,6 +218,14 @@ describe("Agentic create host resolution", () => {
                 "writeResumeMarker",
                 "reloadWindow"
             );
+            if (resolution.status === "resolved") {
+                expect(confirmAndLaunchAgentHostStub.calledOnce).to.be.true;
+                expect(confirmAndLaunchAgentHostStub.firstCall.args[0]).to.equal(AgentHost.Claude);
+                expect(confirmAndLaunchAgentHostStub.firstCall.args[1]).to.equal("Claude Code");
+                expect(confirmAndLaunchAgentHostStub.firstCall.args[2]).to.equal(selectedFolder);
+            } else {
+                expect(confirmAndLaunchAgentHostStub.notCalled).to.be.true;
+            }
             expect(storeUpdateStub.notCalled).to.be.true;
             expectNoInstallEventsFromHandler();
             expectNoSensitiveTelemetry();

@@ -9,7 +9,7 @@ import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLo
 import { ECSFeaturesClient } from "../../../common/ecs-features/ecsFeatureClient";
 import { EnableAgenticCreateFromHome } from "../../../common/ecs-features/ecsFeatureGates";
 import { uriHandlerTelemetryEventNames } from "../telemetry/uriHandlerTelemetryEvents";
-import { buildCreateFlowTelemetry, parseCreateFlowParameters } from "./createFlowParams";
+import { buildCreateFlowTelemetry, CreateFlowParameters, parseCreateFlowParameters } from "./createFlowParams";
 import { emitCreateFlowError, emitCreateFlowEvent } from "../telemetry/createFlowTelemetry";
 import { runCreateFlowCommonStages } from "./createFlowCommonStages";
 import { isSupportedContractVersion } from "./createFlowContractVersion";
@@ -20,6 +20,10 @@ import {
     resolveAgentHostInstallation
 } from "../utils/resolveAgentHostInstallation";
 import { ResumeMarkerStore, writeResumeMarker } from "../utils/resumeMarker";
+import { buildAgentHostCommandPlan } from "../utils/agentHostCommandPlan";
+import { showAgenticCreateConfirmPanel } from "../utils/agenticCreateConfirmPanel";
+import { launchAgentHostPlan } from "../utils/launchAgentHostPlan";
+import { confirmAndLaunchAgentHost, ConfirmAndLaunchOutcome } from "../utils/confirmAndLaunchAgentHost";
 import { URI_HANDLER_STRINGS } from "../constants/uriStrings";
 
 /**
@@ -30,13 +34,33 @@ export interface AgenticCreateHandlerDependencies {
     selectAgentHost: typeof selectAgentHost;
     resolveAgentHostInstallation: typeof resolveAgentHostInstallation;
     emitCreateFlowEvent: typeof emitCreateFlowEvent;
+    confirmAndLaunchAgentHost: (
+        host: AgentHost,
+        hostDisplayName: string,
+        folderUri: vscode.Uri,
+        params: CreateFlowParameters
+    ) => Promise<ConfirmAndLaunchOutcome>;
 }
+
+const AGENT_HOST_COMMAND_PLAN_STRINGS = {
+    registerMarketplace: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.STEP_REGISTER_MARKETPLACE,
+    installPlugin: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.STEP_INSTALL_PLUGIN,
+    installPluginUserScope: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.STEP_INSTALL_PLUGIN_USER_SCOPE,
+    launchHost: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.STEP_LAUNCH_HOST
+};
 
 const DEFAULT_DEPENDENCIES: AgenticCreateHandlerDependencies = {
     detectAgentHost,
     selectAgentHost,
     resolveAgentHostInstallation,
-    emitCreateFlowEvent
+    emitCreateFlowEvent,
+    confirmAndLaunchAgentHost: (host, hostDisplayName, folderUri, params) =>
+        confirmAndLaunchAgentHost(host, hostDisplayName, folderUri, params, {
+            buildPlan: (selectedHost, displayName) =>
+                buildAgentHostCommandPlan(selectedHost, displayName, AGENT_HOST_COMMAND_PLAN_STRINGS),
+            showConfirmPanel: showAgenticCreateConfirmPanel,
+            launchPlan: launchAgentHostPlan
+        })
 };
 
 const AGENT_HOST_DISPLAY_NAMES: Record<AgentHost, string> = {
@@ -164,7 +188,12 @@ export class AgenticCreateHandler {
             );
 
             if (selection.installed) {
-                // TODO (G3 agent): plugin marketplace add -> install -> sample prompt for the selected host.
+                await this.dependencies.confirmAndLaunchAgentHost(
+                    selection.host,
+                    AGENT_HOST_DISPLAY_NAMES[selection.host],
+                    folderUri,
+                    params
+                );
                 return;
             }
 
@@ -191,7 +220,12 @@ export class AgenticCreateHandler {
 
             switch (resolution.status) {
                 case 'resolved':
-                    // TODO (G3 agent): plugin marketplace add -> install -> sample prompt for the selected host.
+                    await this.dependencies.confirmAndLaunchAgentHost(
+                        selection.host,
+                        AGENT_HOST_DISPLAY_NAMES[selection.host],
+                        folderUri,
+                        params
+                    );
                     return;
                 case 'reloading':
                 case 'dismissed':

@@ -61,7 +61,20 @@ export const URI_CONSTANTS = {
     RESUME_MARKER: {
         KEY: 'powerPages.agenticCreate.resumeMarker',
         TTL_MS: 600000
-    }
+    },
+    // Power Pages plugin bootstrap values handed to the selected agent host. Product and CLI
+    // identifiers are intentionally not localized.
+    AGENT_HOST_PLUGIN: {
+        // GitHub repository backing the Power Platform Skills plugin marketplace.
+        // @see https://github.com/microsoft/power-platform-skills
+        MARKETPLACE_REPO: 'microsoft/power-platform-skills',
+        // Power Pages plugin identifier in <plugin>@<marketplace> form understood by both hosts.
+        PLUGIN_ID: 'power-pages@power-platform-skills',
+        // Seed prompt used to start the interactive session after the plugin is installed.
+        CREATE_PROMPT: 'How to use Power Pages Plugin for creating a site?'
+    },
+    // View type identifier for the agentic-create confirmation webview panel.
+    AGENTIC_CREATE_CONFIRM_VIEW_TYPE: 'powerPagesAgenticCreateConfirm'
 } as const;
 
 /**
