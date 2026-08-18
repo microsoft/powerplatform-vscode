@@ -212,6 +212,7 @@
       {
         "command": "powerpages.collaboration.openTeamsChat",
         "title": "Open Teams Chat",
+        "enablement": "isWeb && virtualWorkspace && config.powerPlatform.experimental.enableCoPresenceFeature",
         "icon": {
           "light": "src/web/client/assets/microsoftTeamsIcon/light/microsoftTeams.svg",
           "dark": "src/web/client/assets/microsoftTeamsIcon/dark/microsoftTeams.svg"
@@ -220,6 +221,7 @@
       {
         "command": "powerpages.collaboration.openMail",
         "title": "Open Mail",
+        "enablement": "isWeb && virtualWorkspace && config.powerPlatform.experimental.enableCoPresenceFeature",
         "icon": "$(mail)"
       },
       {
@@ -424,7 +426,7 @@
         "command": "powerPlatform.previewCurrentActiveUsers",
         "title": "Current Active Users",
         "icon": "$(person)",
-        "when": "isWeb && virtualWorkspace"
+        "enablement": "isWeb && virtualWorkspace && config.powerPlatform.experimental.enableCoPresenceFeature"
       },
       {
         "command": "microsoft.powerplatform.pages.preview-site",
@@ -987,7 +989,7 @@
         {
           "command": "powerPlatform.previewCurrentActiveUsers",
           "group": "navigation",
-          "when": "isWeb && virtualWorkspace"
+          "when": "isWeb && virtualWorkspace && config.powerPlatform.experimental.enableCoPresenceFeature"
         }
       ],
       "commandPalette": [
@@ -1145,7 +1147,15 @@
         },
         {
           "command": "powerPlatform.previewCurrentActiveUsers",
-          "when": "isWeb && virtualWorkspace"
+          "when": "isWeb && virtualWorkspace && config.powerPlatform.experimental.enableCoPresenceFeature"
+        },
+        {
+          "command": "powerpages.collaboration.openTeamsChat",
+          "when": "isWeb && virtualWorkspace && config.powerPlatform.experimental.enableCoPresenceFeature"
+        },
+        {
+          "command": "powerpages.collaboration.openMail",
+          "when": "isWeb && virtualWorkspace && config.powerPlatform.experimental.enableCoPresenceFeature"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.refresh",
@@ -1357,12 +1367,12 @@
         {
           "command": "powerpages.collaboration.openTeamsChat",
           "group": "inline",
-          "when": "viewItem == userNode"
+          "when": "viewItem == userNode && config.powerPlatform.experimental.enableCoPresenceFeature"
         },
         {
           "command": "powerpages.collaboration.openMail",
           "group": "inline",
-          "when": "viewItem == userNode"
+          "when": "viewItem == userNode && config.powerPlatform.experimental.enableCoPresenceFeature"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.refresh",
@@ -1688,7 +1698,7 @@
         {
           "id": "powerpages.collaborationView",
           "name": "People On The Site",
-          "when": "isWeb && virtualWorkspace",
+          "when": "isWeb && virtualWorkspace && config.powerPlatform.experimental.enableCoPresenceFeature",
           "contextualTitle": "People On The Site",
           "visibility": "visible"
         },
