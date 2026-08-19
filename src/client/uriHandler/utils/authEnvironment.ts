@@ -5,6 +5,7 @@
 
 import * as vscode from "vscode";
 import { PacWrapper } from "../../pac/PacWrapper";
+import { AuthProfileListing } from "../../pac/PacTypes";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { uriHandlerTelemetryEventNames } from "../telemetry/uriHandlerTelemetryEvents";
 import { URI_HANDLER_STRINGS } from "../constants/uriStrings";
@@ -19,6 +20,17 @@ import { CreateFlowCancellationError, describePacFailure, isCreateFlowCancellati
  */
 const isSameEnvironment = (left: string | undefined | null, right: string): boolean =>
     (left ?? '').trim().toLowerCase() === right.trim().toLowerCase();
+
+/**
+ * Compares two organization URLs, ignoring casing and a trailing slash.
+ *
+ * PAC and the deep link report the same organization with and without the trailing slash,
+ * so a plain string comparison would miss an otherwise usable auth profile.
+ */
+const isSameOrgUrl = (left: string | undefined | null, right: string): boolean => {
+    const normalize = (value: string) => value.trim().toLowerCase().replace(/\/+$/, '');
+    return normalize(left ?? '') === normalize(right) && normalize(right).length > 0;
+};
 
 /**
  * Minimal target required for PAC CLI authentication and environment selection.
@@ -37,11 +49,12 @@ interface ValidatedAuthEnvironmentTarget {
  * Outcome of a single attempt to point PAC at the requested environment.
  *
  * Failures are returned rather than thrown so the caller can offer a recovery step
- * (signing in to the target org) before giving up.
+ * (signing in to the target org) before giving up. `recoverable` marks the failures a new
+ * auth profile could plausibly fix; a link whose parameters disagree is not one of them.
  */
 type EnvironmentSwitchResult =
     | { success: true; environmentId: string | undefined }
-    | { success: false; errorMessage: string };
+    | { success: false; errorMessage: string; recoverable: boolean };
 
 /**
  * Encapsulates the PAC CLI authentication and environment-selection steps shared by the
@@ -202,7 +215,17 @@ export class AuthEnvironmentService {
 
                     let switchResult = await this.trySwitchEnvironment(uriParams);
 
-                    if (!switchResult.success) {
+                    if (!switchResult.success && switchResult.recoverable) {
+                        // The user may already have signed in to the target org under a different
+                        // profile. Reusing it avoids sending them through a browser sign-in for
+                        // an account they have already added.
+                        const profileResult = await this.trySwitchWithExistingAuthProfile(uriParams, telemetryData);
+                        if (profileResult) {
+                            switchResult = profileResult;
+                        }
+                    }
+
+                    if (!switchResult.success && switchResult.recoverable) {
                         // PAC can only select orgs the signed-in profile can see, so a target in
                         // another tenant or cloud fails here no matter how many times we retry the
                         // switch. Offer to sign in to that org instead of dead-ending the flow.
@@ -254,19 +277,100 @@ export class AuthEnvironmentService {
             // guidance and cannot tell which of those applies.
             return {
                 success: false,
+                recoverable: true,
                 errorMessage: describePacFailure(URI_HANDLER_STRINGS.ERRORS.ENV_SWITCH_FAILED, selectResult.Errors)
             };
         }
 
         const verifyAuthInfo = await this.pacWrapper.activeOrg();
-        if (verifyAuthInfo?.Status !== "Success" || !isSameEnvironment(verifyAuthInfo.Results?.EnvironmentId, uriParams.environmentId)) {
+        if (verifyAuthInfo?.Status !== "Success") {
             return {
                 success: false,
+                recoverable: true,
                 errorMessage: describePacFailure(URI_HANDLER_STRINGS.ERRORS.ENV_SWITCH_FAILED, verifyAuthInfo?.Errors)
             };
         }
 
-        return { success: true, environmentId: verifyAuthInfo.Results?.EnvironmentId };
+        const connectedEnvironmentId = verifyAuthInfo.Results?.EnvironmentId;
+        if (!isSameEnvironment(connectedEnvironmentId, uriParams.environmentId)) {
+            // The org URL resolved, but to a different environment than the link claims. The two
+            // link parameters disagree, so a new sign-in cannot reconcile them - report the
+            // inconsistency instead of sending the user through a pointless auth prompt.
+            return {
+                success: false,
+                recoverable: false,
+                errorMessage: URI_HANDLER_STRINGS.ERRORS.ENV_SWITCH_MISMATCH
+                    .replace('{0}', connectedEnvironmentId ?? 'unknown')
+                    .replace('{1}', uriParams.environmentId)
+            };
+        }
+
+        return { success: true, environmentId: connectedEnvironmentId };
+    }
+
+    /**
+     * Reuse an existing auth profile that already points at the target organization.
+     *
+     * `pac org select` only resolves organizations visible to the *active* profile, so the switch
+     * fails whenever the target belongs to a different account — even when the user already added
+     * that account. Selecting the stored profile fixes this without a browser sign-in.
+     *
+     * @returns The retried switch outcome, or `undefined` when no stored profile matches and the
+     * caller should fall back to creating one.
+     */
+    private async trySwitchWithExistingAuthProfile(
+        uriParams: ValidatedAuthEnvironmentTarget,
+        telemetryData: Record<string, string>
+    ): Promise<EnvironmentSwitchResult | undefined> {
+        let authList;
+        try {
+            authList = await this.pacWrapper.authList();
+        } catch {
+            // Reusing a profile is only an optimization: fall back to creating one.
+            return undefined;
+        }
+
+        if (authList?.Status !== "Success" || !Array.isArray(authList.Results)) {
+            return undefined;
+        }
+
+        const candidate = authList.Results.find(profile => this.matchesTarget(profile, uriParams));
+        if (!candidate) {
+            return undefined;
+        }
+
+        const selectResult = await this.pacWrapper.authSelectByIndex(candidate.Index);
+        if (selectResult && selectResult.Status !== "Success") {
+            return undefined;
+        }
+
+        oneDSLoggerWrapper.getLogger().traceInfo(
+            uriHandlerTelemetryEventNames.URI_HANDLER_ENV_SWITCH_PROFILE_SELECTED,
+            { ...telemetryData, requestedEnvId: uriParams.environmentId }
+        );
+
+        return this.trySwitchEnvironment(uriParams);
+    }
+
+    /**
+     * Whether a stored auth profile is already pointed at the requested organization.
+     *
+     * The environment ID and the organization URL are both checked because a link may carry
+     * either one in a form PAC recorded differently.
+     */
+    private matchesTarget(profile: AuthProfileListing, uriParams: ValidatedAuthEnvironmentTarget): boolean {
+        if (profile.IsActive) {
+            // The active profile is the one that just failed to select the target.
+            return false;
+        }
+
+        const organization = profile.ActiveOrganization;
+        if (!organization) {
+            return false;
+        }
+
+        return isSameEnvironment(organization.Item3, uriParams.environmentId)
+            || isSameOrgUrl(organization.Item2, uriParams.orgUrl);
     }
 
     /**
@@ -297,7 +401,7 @@ export class AuthEnvironmentService {
         if (signIn !== URI_HANDLER_STRINGS.BUTTONS.YES) {
             // Report the original PAC diagnosis: it is the only thing that explains why the
             // switch failed, and the user declined the one recovery we can offer.
-            return { success: false, errorMessage: previousErrorMessage };
+            return { success: false, recoverable: false, errorMessage: previousErrorMessage };
         }
 
         progress.report({
@@ -309,6 +413,7 @@ export class AuthEnvironmentService {
         if (authResult && authResult.Status !== "Success") {
             return {
                 success: false,
+                recoverable: false,
                 errorMessage: describePacFailure(URI_HANDLER_STRINGS.ERRORS.AUTH_FAILED, authResult.Errors)
             };
         }

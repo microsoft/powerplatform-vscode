@@ -17,6 +17,8 @@ export const URI_HANDLER_STRINGS = {
         AUTH_FAILED: vscode.l10n.t("Authentication failed after user initiated auth"),
         USER_CANCELLED_AUTH: vscode.l10n.t("User cancelled authentication"),
         ENV_SWITCH_FAILED: vscode.l10n.t("Failed to switch to the required environment. Sign in with an account that has access to the target environment, then try again."),
+        // {0} is the environment PAC connected to, {1} is the environment the link asked for.
+        ENV_SWITCH_MISMATCH: vscode.l10n.t("The link's organization URL and environment ID refer to different environments. Connected to {0} but the link requested {1}."),
         USER_CANCELLED_ENV_SWITCH: vscode.l10n.t("User cancelled environment switch"),
         USER_CANCELLED_FOLDER_SELECTION: vscode.l10n.t("User cancelled folder selection"),
         CREATE_FLOW_FAILED: vscode.l10n.t("Power Pages create flow could not continue. {0}"),

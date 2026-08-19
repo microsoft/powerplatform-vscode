@@ -15,6 +15,7 @@ export enum uriHandlerTelemetryEventNames {
     URI_HANDLER_ENV_SWITCH_COMPLETED = "UriHandlerEnvSwitchCompleted",
     URI_HANDLER_ENV_SWITCH_AUTH_REQUIRED = "UriHandlerEnvSwitchAuthRequired",
     URI_HANDLER_ENV_SWITCH_AUTH_COMPLETED = "UriHandlerEnvSwitchAuthCompleted",
+    URI_HANDLER_ENV_SWITCH_PROFILE_SELECTED = "UriHandlerEnvSwitchProfileSelected",
     URI_HANDLER_DOWNLOAD_STARTED = "UriHandlerDownloadStarted",
     URI_HANDLER_DOWNLOAD_COMPLETED = "UriHandlerDownloadCompleted",
     URI_HANDLER_FOLDER_OPENED = "UriHandlerFolderOpened",
