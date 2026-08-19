@@ -352,6 +352,35 @@ describe("AuthEnvironmentService", () => {
         expect(pacWrapperStub.authCreateNewAuthProfileForOrg.calledOnce).to.be.true;
     });
 
+    it("restores the previous auth profile when the reused one does not reach the target", async () => {
+        pacWrapperStub.activeOrg
+            .onFirstCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } })
+            .onSecondCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } })
+            .onThirdCall().resolves({ Status: "Success", Results: { EnvironmentId: "env-1" } });
+        pacWrapperStub.orgSelect
+            .onFirstCall().resolves({ Status: "Failure", Errors: ["no matching org"], Information: [] })
+            .onSecondCall().resolves({ Status: "Failure", Errors: ["still no matching org"], Information: [] })
+            .onThirdCall().resolves({ Status: "Success", Errors: [], Information: [] });
+        pacWrapperStub.authList.resolves({
+            Status: "Success",
+            Errors: [],
+            Information: [],
+            Results: [
+                { Index: 1, IsActive: true, ActiveOrganization: { Item1: "Other", Item2: "https://other.crm.dynamics.com/", Item3: "other-env" } },
+                { Index: 2, IsActive: false, ActiveOrganization: { Item1: "Stale", Item2: "https://org.crm.dynamics.com/", Item3: "env-1" } }
+            ]
+        });
+        warningStub.resolves("Yes");
+
+        await service.prepareAuthenticationAndEnvironment(OPEN_URI_PARAMS, {});
+
+        expect(pacWrapperStub.authSelectByIndex.calledTwice).to.be.true;
+        expect(pacWrapperStub.authSelectByIndex.firstCall.args[0]).to.equal(2);
+        // The speculative switch is rolled back so the user keeps the profile they started on.
+        expect(pacWrapperStub.authSelectByIndex.secondCall.args[0]).to.equal(1);
+        expect(pacWrapperStub.authCreateNewAuthProfileForOrg.calledOnce).to.be.true;
+    });
+
     it("falls back to signing in when listing auth profiles fails", async () => {
         pacWrapperStub.activeOrg
             .onFirstCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } })
