@@ -315,8 +315,9 @@ export class AuthEnvironmentService {
      * fails whenever the target belongs to a different account — even when the user already added
      * that account. Selecting the stored profile fixes this without a browser sign-in.
      *
-     * @returns The retried switch outcome, or `undefined` when no stored profile matches and the
-     * caller should fall back to creating one.
+     * @returns The retried switch outcome, or `undefined` when no stored profile helped and the
+     * caller should fall back to creating one. When the profile does not help, the previously
+     * active profile is restored so this step leaves no trace.
      */
     private async trySwitchWithExistingAuthProfile(
         uriParams: ValidatedAuthEnvironmentTarget,
@@ -339,6 +340,8 @@ export class AuthEnvironmentService {
             return undefined;
         }
 
+        const previouslyActive = authList.Results.find(profile => profile.IsActive);
+
         const selectResult = await this.pacWrapper.authSelectByIndex(candidate.Index);
         if (selectResult && selectResult.Status !== "Success") {
             return undefined;
@@ -349,7 +352,33 @@ export class AuthEnvironmentService {
             { ...telemetryData, requestedEnvId: uriParams.environmentId }
         );
 
-        return this.trySwitchEnvironment(uriParams);
+        const switchResult = await this.trySwitchEnvironment(uriParams);
+        if (switchResult.success) {
+            return switchResult;
+        }
+
+        // The profile did not get us to the target, so undo the switch rather than leaving the
+        // user on an account they never chose.
+        await this.restoreAuthProfile(previouslyActive);
+
+        // A mismatch is a statement about the link itself, so it survives the rollback; anything
+        // else falls through to the sign-in step.
+        return switchResult.recoverable ? undefined : switchResult;
+    }
+
+    /**
+     * Reactivate the auth profile that was current before a speculative profile switch.
+     */
+    private async restoreAuthProfile(previouslyActive: AuthProfileListing | undefined): Promise<void> {
+        if (!previouslyActive) {
+            return;
+        }
+
+        try {
+            await this.pacWrapper.authSelectByIndex(previouslyActive.Index);
+        } catch {
+            // Best effort only - the sign-in step that follows sets the active profile anyway.
+        }
     }
 
     /**
