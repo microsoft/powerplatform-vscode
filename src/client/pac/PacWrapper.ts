@@ -8,7 +8,7 @@ import * as path from "path";
 import * as readline from "readline";
 import * as fs from "fs-extra";
 import * as vscode from "vscode";
-import { ChildProcessWithoutNullStreams, spawn } from "child_process";
+import { ChildProcessWithoutNullStreams, spawn, SpawnOptionsWithoutStdio } from "child_process";
 import { BlockingQueue } from "../../common/utilities/BlockingQueue";
 import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput, PacOrgListOutput, PacOrgWhoOutput, PacAuthWhoOutput } from "./PacTypes";
 import { v4 } from "uuid";
@@ -28,14 +28,40 @@ export interface IPacInterop {
     showOutputChannel(): void;
 }
 
+/**
+ * A live `pac` child process paired with the promise that reports its death, so callers always
+ * observe the failure signal belonging to the exact process they wrote their command to.
+ */
+interface RunningPacProcess {
+    proc: ChildProcessWithoutNullStreams;
+    /** Never resolves; rejects once the process exits or fails to start. */
+    failure: Promise<never>;
+}
+
+/**
+ * Spawns the long-lived `pac` child process. Injectable so the process lifecycle handling can be
+ * exercised in tests without a real PAC executable.
+ */
+export type PacProcessSpawner = (
+    command: string,
+    args: string[],
+    options: SpawnOptionsWithoutStdio) => ChildProcessWithoutNullStreams;
+
 export class PacInterop implements IPacInterop {
-    private _proc: ChildProcessWithoutNullStreams | undefined;
+    private _running: RunningPacProcess | undefined;
+    private _recentStandardError = '';
     private outputQueue = new BlockingQueue<string>();
     private tempWorkingDirectory: string;
     private pacExecutablePath: string;
     private _outputChannel: vscode.LogOutputChannel | undefined;
 
-    public constructor(private readonly context: IPacWrapperContext, cliPath: string) {
+    /** Upper bound on the buffered stderr text kept for diagnosing a process failure. */
+    private static readonly MAX_BUFFERED_STANDARD_ERROR = 4096;
+
+    public constructor(
+        private readonly context: IPacWrapperContext,
+        cliPath: string,
+        private readonly spawnProcess: PacProcessSpawner = spawn) {
         // Set the Working Directory to a random temp folder, as we do not want
         // accidental writes by PAC being placed where they may interfere with things
         this.tempWorkingDirectory = path.join(os.tmpdir(), v4());
@@ -63,8 +89,8 @@ export class PacInterop implements IPacInterop {
         }
     }
 
-    private async proc(): Promise<ChildProcessWithoutNullStreams> {
-        if (!(this._proc)) {
+    private async proc(): Promise<RunningPacProcess> {
+        if (!(this._running)) {
             oneDSLoggerWrapper.getLogger().traceInfo('InternalPacProcessStarting');
 
             const env: NodeJS.ProcessEnv = { ...process.env, 'PP_TOOLS_AUTOMATION_AGENT': this.context.automationAgent };
@@ -80,34 +106,96 @@ export class PacInterop implements IPacInterop {
                 env['DOTNET_ROLL_FORWARD'] = 'Major';
             }
 
-            this._proc = spawn(this.pacExecutablePath, ["--non-interactive"], {
+            const proc = this.spawnProcess(this.pacExecutablePath, ["--non-interactive"], {
                 cwd: this.tempWorkingDirectory,
                 env: env
             });
+            this._recentStandardError = '';
 
-            const lineReader = readline.createInterface({ input: this._proc.stdout });
+            const lineReader = readline.createInterface({ input: proc.stdout });
             lineReader.on('line', (line: string) => { this.outputQueue.enqueue(line); });
 
+            // stderr is a pipe that nothing else consumes. Left undrained it fills, at which point
+            // PAC blocks forever inside its write and stops producing stdout, so every pending and
+            // future dequeue() hangs indefinitely (BlockingQueue never times out). Draining it keeps
+            // the process alive and gives us the text to explain a failure with.
+            proc.stderr.on('data', (data: Buffer) => { this.bufferStandardError(data.toString()); });
+
+            // Without these, a PAC process that dies or fails to start leaves the reference in place,
+            // so commands are written to a dead pipe and their dequeue() never settles.
+            const failure = new Promise<never>((_resolve, reject) => {
+                const fail = (reason: string) => {
+                    this.handleProcessTermination(proc);
+                    reject(new Error(reason));
+                };
+                proc.on('error', (error: Error) => fail(`PAC CLI process failed to start or crashed: ${error.message}`));
+                proc.on('exit', (code: number | null, signal: NodeJS.Signals | null) =>
+                    fail(this.describeUnexpectedExit(code, signal)));
+            });
+            // The process can die while no command is in flight; keep that from surfacing as an
+            // unhandled rejection. Callers still observe it through the race in executeCommand.
+            failure.catch(() => undefined);
+
+            this._running = { proc, failure };
+
             // Grab the first output, which will be the PAC Version info
-            await this.outputQueue.dequeue();
+            await Promise.race([this.outputQueue.dequeue(), failure]);
             oneDSLoggerWrapper.getLogger().traceInfo('InternalPacProcessStarted');
+
+            return { proc, failure };
         }
 
-        return this._proc;
+        return this._running;
+    }
+
+    /** Retains a bounded tail of PAC's stderr so a process failure can be reported with context. */
+    private bufferStandardError(text: string): void {
+        this._recentStandardError = (this._recentStandardError + text)
+            .slice(-PacInterop.MAX_BUFFERED_STANDARD_ERROR);
+    }
+
+    private describeUnexpectedExit(code: number | null, signal: NodeJS.Signals | null): string {
+        const cause = signal ? `signal ${signal}` : `exit code ${code}`;
+        const details = this._recentStandardError.trim();
+        return details
+            ? `PAC CLI process ended unexpectedly (${cause}): ${details}`
+            : `PAC CLI process ended unexpectedly (${cause}).`;
+    }
+
+    /**
+     * Drops the state tied to a terminated process so the next command spawns a fresh one.
+     * Ignores a process that has already been replaced, to avoid tearing down its successor.
+     */
+    private handleProcessTermination(terminated: ChildProcessWithoutNullStreams): void {
+        if (this._running?.proc !== terminated) {
+            return;
+        }
+
+        this._running = undefined;
+        // Responses of in-flight commands will never arrive; a fresh queue keeps the next
+        // process's output aligned with the callers waiting on it.
+        this.outputQueue = new BlockingQueue<string>();
+        oneDSLoggerWrapper.getLogger().traceInfo('InternalPacProcessTerminated');
     }
 
     public async executeCommand(args: PacArguments): Promise<string> {
         const command = JSON.stringify(args) + "\n";
-        (await this.proc()).stdin.write(command);
+        const { proc, failure } = await this.proc();
+        proc.stdin.write(command);
 
-        const result = await this.outputQueue.dequeue();
+        // Racing against process death turns "PAC went away" into an actionable error instead of a
+        // promise that never settles and a progress notification that spins forever.
+        const result = await Promise.race([this.outputQueue.dequeue(), failure]);
         return result;
     }
 
     public async exit(): Promise<void> {
-        if (this._proc) {
+        const running = this._running;
+        if (running) {
             try {
-                this._proc.stdin.write(JSON.stringify(new PacArguments("exit")));
+                // PAC reads stdin line by line, so without the newline the exit command is never
+                // seen and shutdown always falls through to the force kill below.
+                running.proc.stdin.write(JSON.stringify(new PacArguments("exit")) + "\n");
                 // Give the process a moment to exit gracefully
                 await new Promise(resolve => setTimeout(resolve, 1000));
             } catch {
@@ -115,12 +203,13 @@ export class PacInterop implements IPacInterop {
             }
 
             // Force kill if still running
-            if (this._proc && !this._proc.killed) {
-                this._proc.kill();
+            if (!running.proc.killed) {
+                running.proc.kill();
             }
 
             // Clear the process reference so a new one will be created on next use
-            this._proc = undefined;
+            this._running = undefined;
+            this._recentStandardError = '';
 
             // Clear any pending queue items
             this.outputQueue = new BlockingQueue<string>();
