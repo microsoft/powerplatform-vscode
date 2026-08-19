@@ -129,6 +129,7 @@
   "Authentication failed after user initiated auth": "Authentication failed after user initiated auth",
   "User cancelled authentication": "User cancelled authentication",
   "Failed to switch to the required environment. Sign in with an account that has access to the target environment, then try again.": "Failed to switch to the required environment. Sign in with an account that has access to the target environment, then try again.",
+  "The link's organization URL and environment ID refer to different environments. Connected to {0} but the link requested {1}.": "The link's organization URL and environment ID refer to different environments. Connected to {0} but the link requested {1}.",
   "User cancelled environment switch": "User cancelled environment switch",
   "User cancelled folder selection": "User cancelled folder selection",
   "Power Pages create flow could not continue. {0}": "Power Pages create flow could not continue. {0}",

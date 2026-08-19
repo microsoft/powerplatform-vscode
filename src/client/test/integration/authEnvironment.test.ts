@@ -22,6 +22,8 @@ interface PacWrapperStub {
     activeOrg: sinon.SinonStub;
     orgSelect: sinon.SinonStub;
     authCreateNewAuthProfileForOrg: sinon.SinonStub;
+    authList: sinon.SinonStub;
+    authSelectByIndex: sinon.SinonStub;
     resetPacProcess: sinon.SinonStub;
 }
 
@@ -69,6 +71,9 @@ describe("AuthEnvironmentService", () => {
             activeOrg: sandbox.stub(),
             orgSelect: sandbox.stub().resolves(),
             authCreateNewAuthProfileForOrg: sandbox.stub().resolves(),
+            // Default to no reusable profiles so tests opt in to the profile-reuse path.
+            authList: sandbox.stub().resolves({ Status: "Success", Results: [], Errors: [], Information: [] }),
+            authSelectByIndex: sandbox.stub().resolves({ Status: "Success", Errors: [], Information: [] }),
             resetPacProcess: sandbox.stub().resolves()
         };
 
@@ -246,6 +251,145 @@ describe("AuthEnvironmentService", () => {
 
         expect(warningStub.calledOnce).to.be.true;
         expect(pacWrapperStub.authCreateNewAuthProfileForOrg.called).to.be.false;
+    });
+
+    it("does not offer a sign-in recovery when the org URL resolves to a different environment", async () => {
+        // orgSelect succeeds, but the URL maps to an environment the link did not ask for:
+        // the link's own parameters disagree, so signing in again cannot reconcile them.
+        pacWrapperStub.activeOrg
+            .onFirstCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } })
+            .onSecondCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } })
+            .onThirdCall().resolves({ Status: "Success", Results: { EnvironmentId: "unexpected-env" } });
+        warningStub.resolves("Yes");
+
+        let thrown: unknown;
+        try {
+            await service.prepareAuthenticationAndEnvironment(OPEN_URI_PARAMS, {});
+        } catch (error) {
+            thrown = error;
+        }
+
+        expect(thrown).to.be.an("error");
+        expect((thrown as Error).message).to.contain("unexpected-env");
+        expect((thrown as Error).message).to.contain("env-1");
+        expect(pacWrapperStub.authCreateNewAuthProfileForOrg.called).to.be.false;
+        expect(warningStub.calledOnce).to.be.true;
+    });
+
+    it("reuses a stored auth profile that already points at the target environment", async () => {
+        pacWrapperStub.activeOrg
+            .onFirstCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } })
+            .onSecondCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } })
+            .onThirdCall().resolves({ Status: "Success", Results: { EnvironmentId: "env-1" } });
+        pacWrapperStub.orgSelect
+            .onFirstCall().resolves({ Status: "Failure", Errors: ["no matching org"], Information: [] })
+            .onSecondCall().resolves({ Status: "Success", Errors: [], Information: [] });
+        pacWrapperStub.authList.resolves({
+            Status: "Success",
+            Errors: [],
+            Information: [],
+            Results: [
+                { Index: 1, IsActive: true, ActiveOrganization: { Item1: "Other", Item2: "https://other.crm.dynamics.com/", Item3: "other-env" } },
+                { Index: 2, IsActive: false, ActiveOrganization: { Item1: "Target", Item2: "https://target.crm.dynamics.com/", Item3: "env-1" } }
+            ]
+        });
+        warningStub.resolves("Yes");
+
+        await service.prepareAuthenticationAndEnvironment(OPEN_URI_PARAMS, {});
+
+        expect(pacWrapperStub.authSelectByIndex.calledOnceWith(2)).to.be.true;
+        // The stored profile made a browser sign-in unnecessary.
+        expect(pacWrapperStub.authCreateNewAuthProfileForOrg.called).to.be.false;
+        expect(warningStub.calledOnce).to.be.true;
+    });
+
+    it("matches a stored auth profile on the org URL when the trailing slash differs", async () => {
+        pacWrapperStub.activeOrg
+            .onFirstCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } })
+            .onSecondCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } })
+            .onThirdCall().resolves({ Status: "Success", Results: { EnvironmentId: "env-1" } });
+        pacWrapperStub.orgSelect
+            .onFirstCall().resolves({ Status: "Failure", Errors: ["no matching org"], Information: [] })
+            .onSecondCall().resolves({ Status: "Success", Errors: [], Information: [] });
+        pacWrapperStub.authList.resolves({
+            Status: "Success",
+            Errors: [],
+            Information: [],
+            Results: [
+                // Same organization as the link, recorded without the trailing slash and in mixed case.
+                { Index: 4, IsActive: false, ActiveOrganization: { Item1: "Target", Item2: "https://ORG.crm.dynamics.com", Item3: "unrelated-env" } }
+            ]
+        });
+        warningStub.resolves("Yes");
+
+        await service.prepareAuthenticationAndEnvironment(OPEN_URI_PARAMS, {});
+
+        expect(pacWrapperStub.authSelectByIndex.calledOnceWith(4)).to.be.true;
+        expect(pacWrapperStub.authCreateNewAuthProfileForOrg.called).to.be.false;
+    });
+
+    it("falls back to signing in when no stored auth profile matches the target", async () => {
+        pacWrapperStub.activeOrg
+            .onFirstCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } })
+            .onSecondCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } })
+            .onThirdCall().resolves({ Status: "Success", Results: { EnvironmentId: "env-1" } });
+        pacWrapperStub.orgSelect
+            .onFirstCall().resolves({ Status: "Failure", Errors: ["no matching org"], Information: [] })
+            .onSecondCall().resolves({ Status: "Success", Errors: [], Information: [] });
+        pacWrapperStub.authList.resolves({
+            Status: "Success",
+            Errors: [],
+            Information: [],
+            Results: [
+                { Index: 1, IsActive: false, ActiveOrganization: { Item1: "Other", Item2: "https://other.crm.dynamics.com/", Item3: "unrelated-env" } }
+            ]
+        });
+        warningStub.resolves("Yes");
+
+        await service.prepareAuthenticationAndEnvironment(OPEN_URI_PARAMS, {});
+
+        expect(pacWrapperStub.authSelectByIndex.called).to.be.false;
+        expect(pacWrapperStub.authCreateNewAuthProfileForOrg.calledOnce).to.be.true;
+    });
+
+    it("falls back to signing in when listing auth profiles fails", async () => {
+        pacWrapperStub.activeOrg
+            .onFirstCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } })
+            .onSecondCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } })
+            .onThirdCall().resolves({ Status: "Success", Results: { EnvironmentId: "env-1" } });
+        pacWrapperStub.orgSelect
+            .onFirstCall().resolves({ Status: "Failure", Errors: ["no matching org"], Information: [] })
+            .onSecondCall().resolves({ Status: "Success", Errors: [], Information: [] });
+        pacWrapperStub.authList.rejects(new Error("auth list boom"));
+        warningStub.resolves("Yes");
+
+        await service.prepareAuthenticationAndEnvironment(OPEN_URI_PARAMS, {});
+
+        expect(pacWrapperStub.authCreateNewAuthProfileForOrg.calledOnce).to.be.true;
+    });
+
+    it("never reuses the active auth profile, which is the one that just failed", async () => {
+        pacWrapperStub.activeOrg
+            .onFirstCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } })
+            .onSecondCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } })
+            .onThirdCall().resolves({ Status: "Success", Results: { EnvironmentId: "env-1" } });
+        pacWrapperStub.orgSelect
+            .onFirstCall().resolves({ Status: "Failure", Errors: ["no matching org"], Information: [] })
+            .onSecondCall().resolves({ Status: "Success", Errors: [], Information: [] });
+        pacWrapperStub.authList.resolves({
+            Status: "Success",
+            Errors: [],
+            Information: [],
+            Results: [
+                { Index: 1, IsActive: true, ActiveOrganization: { Item1: "Target", Item2: "https://org.crm.dynamics.com/", Item3: "env-1" } }
+            ]
+        });
+        warningStub.resolves("Yes");
+
+        await service.prepareAuthenticationAndEnvironment(OPEN_URI_PARAMS, {});
+
+        expect(pacWrapperStub.authSelectByIndex.called).to.be.false;
+        expect(pacWrapperStub.authCreateNewAuthProfileForOrg.calledOnce).to.be.true;
     });
 
     it("reports a cancellation when the user declines the environment switch", async () => {
