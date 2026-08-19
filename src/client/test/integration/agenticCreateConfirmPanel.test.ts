@@ -4,11 +4,14 @@
  */
 
 import { expect } from "chai";
+import * as sinon from "sinon";
 import * as vscode from "vscode";
 import {
+    registerAgenticCreateConfirmPanelSerializer,
     showAgenticCreateConfirmPanel,
     ShowConfirmPanelDependencies
 } from "../../uriHandler/utils/agenticCreateConfirmPanel";
+import { URI_CONSTANTS } from "../../uriHandler/constants/uriConstants";
 import { PlannedCommand } from "../../uriHandler/utils/agentHostCommandPlan";
 
 describe("showAgenticCreateConfirmPanel", () => {
@@ -114,5 +117,43 @@ describe("showAgenticCreateConfirmPanel", () => {
             const escaped = command.commandLine.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
             expect(html).to.contain(escaped);
         }
+    });
+});
+
+describe("registerAgenticCreateConfirmPanelSerializer", () => {
+    let sandbox: sinon.SinonSandbox;
+
+    beforeEach(() => {
+        sandbox = sinon.createSandbox();
+    });
+
+    afterEach(() => {
+        sandbox.restore();
+    });
+
+    it("discards a panel restored after a window reload", async () => {
+        let registeredViewType: string | undefined;
+        let serializer: vscode.WebviewPanelSerializer | undefined;
+        const disposable = { dispose: () => undefined } as vscode.Disposable;
+
+        sandbox.stub(vscode.window, "registerWebviewPanelSerializer").callsFake(
+            (viewType: string, panelSerializer: vscode.WebviewPanelSerializer) => {
+                registeredViewType = viewType;
+                serializer = panelSerializer;
+                return disposable;
+            }
+        );
+
+        const result = registerAgenticCreateConfirmPanelSerializer();
+
+        expect(registeredViewType).to.equal(URI_CONSTANTS.AGENTIC_CREATE_CONFIRM_VIEW_TYPE);
+        expect(result).to.equal(disposable);
+
+        // The flow that owned the restored panel ended with the previous window, so the tab is
+        // closed rather than left behind unable to answer anything.
+        const dispose = sandbox.stub();
+        await serializer?.deserializeWebviewPanel({ dispose } as unknown as vscode.WebviewPanel, undefined);
+
+        expect(dispose.calledOnce).to.be.true;
     });
 });

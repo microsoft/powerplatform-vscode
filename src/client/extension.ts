@@ -56,6 +56,7 @@ import { EnableServerLogicChanges } from "../common/ecs-features/ecsFeatureGates
 import { setServerApiTelemetryContext } from "../common/intellisense/ServerApiTelemetryContext";
 import { activateServerLogicDebugger } from "../debugger/server-logic/ServerLogicDebugger";
 import { resumeAgenticCreateOnActivation } from "./uriHandler/resumeAgenticCreateActivation";
+import { registerAgenticCreateConfirmPanelSerializer } from "./uriHandler/utils/agenticCreateConfirmPanel";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -177,6 +178,10 @@ export async function activate(
                 PortalWebView.revive(webviewPanel);
             },
         });
+
+        // A confirmation panel restored after a reload has no flow left to answer, and VS Code
+        // cannot initialize a webview whose view type has no serializer.
+        _context.subscriptions.push(registerAgenticCreateConfirmPanelSerializer());
     }
 
     // Add CRUD related callback subscription here
