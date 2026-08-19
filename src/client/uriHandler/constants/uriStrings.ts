@@ -19,6 +19,7 @@ export const URI_HANDLER_STRINGS = {
         ENV_SWITCH_FAILED: vscode.l10n.t("Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command."),
         USER_CANCELLED_ENV_SWITCH: vscode.l10n.t("User cancelled environment switch"),
         USER_CANCELLED_FOLDER_SELECTION: vscode.l10n.t("User cancelled folder selection"),
+        CREATE_FLOW_FAILED: vscode.l10n.t("Power Pages create flow could not continue. {0}"),
         DOWNLOAD_FAILED: vscode.l10n.t("Download failed: {0}")
     },
     INFO: {

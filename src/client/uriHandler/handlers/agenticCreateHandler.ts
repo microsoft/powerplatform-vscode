@@ -20,6 +20,7 @@ import {
     resolveAgentHostInstallation
 } from "../utils/resolveAgentHostInstallation";
 import { ResumeMarkerStore, writeResumeMarker } from "../utils/resumeMarker";
+import { isCreateFlowCancellation } from "../utils/createFlowErrors";
 import { buildAgentHostCommandPlan } from "../utils/agentHostCommandPlan";
 import { showAgenticCreateConfirmPanel } from "../utils/agenticCreateConfirmPanel";
 import { launchAgentHostPlan } from "../utils/launchAgentHostPlan";
@@ -258,6 +259,17 @@ export class AgenticCreateHandler {
                 params,
                 'agent'
             );
+
+            // The deep link is user-initiated, so an unexpected failure must be visible rather
+            // than leaving the user waiting for a flow that has already stopped. The notification
+            // is deliberately not awaited: the flow is over, and awaiting would keep the handler
+            // pending until the user dismisses the toast.
+            if (!isCreateFlowCancellation(error)) {
+                const reason = error instanceof Error ? error.message : String(error);
+                void vscode.window.showErrorMessage(
+                    URI_HANDLER_STRINGS.ERRORS.CREATE_FLOW_FAILED.replace('{0}', reason)
+                );
+            }
         }
     }
 }

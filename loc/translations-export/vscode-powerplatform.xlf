@@ -1087,6 +1087,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++f519c6aeba20c1a712f6043bf6eb52bf3bb8834f5f1a6c9ea60244dbbb30453c">
       <source xml:lang="en">Power Pages Server Logic detected! You can now debug your server logic files with breakpoints and IntelliSense.</source>
     </trans-unit>
+    <trans-unit id="++CODE++7a32dfb1b02f49b639f9005bd389e30e5d496b57bfe8f59b032394e2ef189ae5">
+      <source xml:lang="en">Power Pages create flow could not continue. {0}</source>
+    </trans-unit>
     <trans-unit id="++CODE++04ac907168ac84b45263503d1306565bece49c4ae3e8ef4af310b304f03ab6d4">
       <source xml:lang="en">Power Pages site download completed successfully. Would you like to open the downloaded site folder?</source>
     </trans-unit>

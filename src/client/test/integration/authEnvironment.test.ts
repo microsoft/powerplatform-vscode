@@ -12,6 +12,7 @@ import { CreateFlowParameters } from "../../uriHandler/handlers/createFlowParams
 import { PacWrapper } from "../../pac/PacWrapper";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { URI_HANDLER_STRINGS } from "../../uriHandler/constants/uriStrings";
+import { CreateFlowCancellationError } from "../../uriHandler/utils/createFlowErrors";
 
 type ProgressReporter = vscode.Progress<{ message?: string; increment?: number }>;
 type ProgressTask = (progress: ProgressReporter, token: vscode.CancellationToken) => Thenable<void>;
@@ -158,6 +159,71 @@ describe("AuthEnvironmentService", () => {
         await service.prepareAuthenticationAndEnvironment(OPEN_URI_PARAMS, {});
 
         expect(pacWrapperStub.orgSelect.calledOnceWith("https://org.crm.dynamics.com/")).to.be.true;
+    });
+
+    it("does not prompt when the environment id casing differs", async () => {
+        pacWrapperStub.activeOrg.resolves({
+            Status: "Success",
+            Results: { EnvironmentId: "ENV-1" }
+        });
+
+        await service.prepareAuthenticationAndEnvironment(OPEN_URI_PARAMS, {});
+
+        expect(warningStub.called).to.be.false;
+        expect(pacWrapperStub.orgSelect.called).to.be.false;
+    });
+
+    it("includes the PAC CLI error text when the environment switch fails", async () => {
+        const pacError = "No Dataverse organization was found matching the specified criteria.";
+        pacWrapperStub.activeOrg
+            .onFirstCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } })
+            .onSecondCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } });
+        pacWrapperStub.orgSelect.resolves({ Status: "Failure", Errors: [pacError], Information: [] });
+        warningStub.resolves("Yes");
+
+        let thrown: unknown;
+        try {
+            await service.prepareAuthenticationAndEnvironment(OPEN_URI_PARAMS, {});
+        } catch (error) {
+            thrown = error;
+        }
+
+        expect(thrown).to.be.an("error");
+        expect((thrown as Error).message).to.contain(pacError);
+        expect((thrown as Error).message).to.contain(URI_HANDLER_STRINGS.ERRORS.ENV_SWITCH_FAILED);
+    });
+
+    it("reports a cancellation when the user declines the environment switch", async () => {
+        pacWrapperStub.activeOrg.resolves({
+            Status: "Success",
+            Results: { EnvironmentId: "other-env" }
+        });
+        warningStub.resolves(undefined);
+
+        let thrown: unknown;
+        try {
+            await service.prepareAuthenticationAndEnvironment(OPEN_URI_PARAMS, {});
+        } catch (error) {
+            thrown = error;
+        }
+
+        expect(thrown).to.be.instanceOf(CreateFlowCancellationError);
+        expect(pacWrapperStub.orgSelect.called).to.be.false;
+    });
+
+    it("reports a cancellation when the user declines authentication", async () => {
+        pacWrapperStub.activeOrg.resolves({ Status: "Failure" });
+        warningStub.resolves(undefined);
+
+        let thrown: unknown;
+        try {
+            await service.prepareAuthenticationAndEnvironment(OPEN_URI_PARAMS, {});
+        } catch (error) {
+            thrown = error;
+        }
+
+        expect(thrown).to.be.instanceOf(CreateFlowCancellationError);
+        expect(pacWrapperStub.authCreateNewAuthProfileForOrg.called).to.be.false;
     });
 
     it("resetPacProcessSafely swallows reset errors", async () => {

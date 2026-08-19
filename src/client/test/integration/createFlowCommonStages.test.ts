@@ -22,6 +22,7 @@ import {
 } from "../../uriHandler/telemetry/createFlowTelemetry";
 import { uriHandlerTelemetryEventNames } from "../../uriHandler/telemetry/uriHandlerTelemetryEvents";
 import { AuthEnvironmentService } from "../../uriHandler/utils/authEnvironment";
+import { CreateFlowCancellationError } from "../../uriHandler/utils/createFlowErrors";
 
 describe("Create-flow common stages", () => {
     let sandbox: sinon.SinonSandbox;
@@ -29,6 +30,7 @@ describe("Create-flow common stages", () => {
     let selectTargetFolderStub: sinon.SinonStub;
     let emitCreateFlowEventStub: sinon.SinonStub;
     let emitCreateFlowErrorStub: sinon.SinonStub;
+    let showErrorMessageStub: sinon.SinonStub;
     let traceInfoStub: sinon.SinonStub;
     let traceErrorStub: sinon.SinonStub;
     let emittedEventNames: string[];
@@ -75,6 +77,7 @@ describe("Create-flow common stages", () => {
         emittedEventNames = [];
         prepareAuthenticationAndEnvironmentStub = sandbox.stub().resolves();
         selectTargetFolderStub = sandbox.stub();
+        showErrorMessageStub = sandbox.stub().resolves(undefined);
         traceInfoStub = sandbox.stub();
         traceErrorStub = sandbox.stub();
         emitCreateFlowEventStub = sandbox.stub().callsFake((
@@ -107,7 +110,8 @@ describe("Create-flow common stages", () => {
             createAuthEnvironmentService: sandbox.stub().returns(authEnvironmentService),
             selectTargetFolder: selectTargetFolderStub,
             emitCreateFlowEvent: emitCreateFlowEventStub,
-            emitCreateFlowError: emitCreateFlowErrorStub
+            emitCreateFlowError: emitCreateFlowErrorStub,
+            showErrorMessage: showErrorMessageStub
         };
     });
 
@@ -185,5 +189,62 @@ describe("Create-flow common stages", () => {
         ]);
         expect(traceErrorStub.calledOnce).to.be.true;
         expectRedactedTelemetry();
+    });
+
+    it("surfaces the underlying reason when authentication or environment setup fails", async () => {
+        prepareAuthenticationAndEnvironmentStub.rejects(
+            new Error('No Dataverse organization was found matching the specified criteria.')
+        );
+
+        const result = await runCreateFlowCommonStages(
+            params,
+            'agent',
+            telemetryData,
+            pacWrapper,
+            dependencies
+        );
+
+        expect(result).to.be.undefined;
+        expect(showErrorMessageStub.calledOnce).to.be.true;
+        expect(showErrorMessageStub.firstCall.args[0]).to.contain(
+            'No Dataverse organization was found matching the specified criteria.'
+        );
+    });
+
+    it("does not report an error when the user declines a prompt", async () => {
+        prepareAuthenticationAndEnvironmentStub.rejects(
+            new CreateFlowCancellationError('User cancelled environment switch')
+        );
+
+        const result = await runCreateFlowCommonStages(
+            params,
+            'agent',
+            telemetryData,
+            pacWrapper,
+            dependencies
+        );
+
+        expect(result).to.be.undefined;
+        expect(showErrorMessageStub.called).to.be.false;
+        expect(emittedEventNames).to.deep.equal([
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_AUTH_STARTED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_AUTH_FAILED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED
+        ]);
+    });
+
+    it("does not report an error when the user cancels folder selection", async () => {
+        selectTargetFolderStub.resolves(undefined);
+
+        const result = await runCreateFlowCommonStages(
+            params,
+            'agent',
+            telemetryData,
+            pacWrapper,
+            dependencies
+        );
+
+        expect(result).to.be.undefined;
+        expect(showErrorMessageStub.called).to.be.false;
     });
 });
