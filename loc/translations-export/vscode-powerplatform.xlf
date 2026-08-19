@@ -659,8 +659,8 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++f865b154a9a2097159a09be82db76a9b29afc71df9ad86b9c08253f2e805d23c">
       <source xml:lang="en">Failed to open in VS Code Desktop: {0}</source>
     </trans-unit>
-    <trans-unit id="++CODE++ab47a93b0690e3553f60a7e1bd45df0a5e0ebf49f7f3c150d38f347699892163">
-      <source xml:lang="en">Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command.</source>
+    <trans-unit id="++CODE++c9fe03a874504715c768a8865824e1282d2a0ea591ec5be154bdf8f4fc0f540a">
+      <source xml:lang="en">Failed to switch to the required environment. Sign in with an account that has access to the target environment, then try again.</source>
     </trans-unit>
     <trans-unit id="++CODE++75528796fc394144a63eaa990d8dbf68c8ddbfd71ba7ddbe9b8f73852ad83165">
       <source xml:lang="en">Failed to upload the cloned site. Please try again.</source>
@@ -1619,6 +1619,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++87eb9aa1f1ac1b6b141aedc4c21a9cb7cf786453c529babe30c8760072bb34d6">
       <source xml:lang="en">You need to authenticate with Power Platform to download the site. Would you like to authenticate now?</source>
+    </trans-unit>
+    <trans-unit id="++CODE++de07c74e2f9fededbaa84847b02490b90a6168585455e35245aca8f47cfdf487">
+      <source xml:lang="en">Your current Power Platform sign-in cannot access the required environment. Would you like to sign in with a different account?</source>
     </trans-unit>
     <trans-unit id="++CODE++eeb25aaca6a9e3f6c670334480b8e56e2a362ecfec23f8e63617915b22ddc8a0">
       <source xml:lang="en">Your preview isn't updated. Please upload your site to see the latest changes.</source>
