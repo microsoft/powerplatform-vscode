@@ -57,11 +57,24 @@ function formatTemplate(template: string, value: string): string {
 }
 
 /**
- * Builds the full HTML document for the confirmation panel. All styling uses VS Code theme CSS
- * variables so it honors the active theme (including high-contrast), and a strict CSP with a
- * per-render nonce gates the single inline style block and inline script.
+ * Builds the full HTML document for the confirmation panel. Styling is driven by VS Code theme CSS
+ * variables so it honors the active theme (including high-contrast).
+ *
+ * Two details here are load-bearing and easy to regress:
+ *
+ * 1. `style-src` must admit VS Code's own injected stylesheet, which carries the `--vscode-*`
+ *    theme variables and the webview's default background. A bare `'nonce-...'` style-src excludes
+ *    it, and the variables then resolve to nothing: `color: var(--vscode-foreground)` becomes
+ *    invalid and falls back to black, which on a dark theme renders as an apparently blank panel.
+ *    `cspSource` plus `'unsafe-inline'` is the pattern VS Code documents for inline styles. The
+ *    script keeps its nonce, so the directive that actually guards against injection is unchanged
+ *    (and every interpolated value is HTML-escaped regardless).
+ *
+ * 2. Every `var()` carries a fallback, and body deliberately sets neither `color` nor
+ *    `font-family` — VS Code's defaults already supply both. Text can then never be styled into
+ *    invisibility if a variable is missing.
  */
-function buildHtml(hostDisplayName: string, folderPath: string, plan: PlannedCommand[]): string {
+function buildHtml(hostDisplayName: string, folderPath: string, plan: PlannedCommand[], cspSource: string): string {
     const nonce = getNonce();
     const confirm = URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM;
     const title = formatTemplate(confirm.TITLE, hostDisplayName);
@@ -80,28 +93,28 @@ function buildHtml(hostDisplayName: string, folderPath: string, plan: PlannedCom
 <html lang="${escapeHtml(vscode.env.language)}">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'nonce-${nonce}'; script-src 'nonce-${nonce}';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${escapeHtml(title)}</title>
-    <style nonce="${nonce}">
-        body { font-family: var(--vscode-font-family); color: var(--vscode-foreground); padding: 0 24px 24px; max-width: 820px; }
+    <style>
+        body { padding: 0 24px 24px; max-width: 820px; }
         h1 { font-size: 1.3em; font-weight: 600; margin-bottom: 0.3em; }
-        .description { color: var(--vscode-descriptionForeground); margin-top: 0; margin-bottom: 1.4em; }
-        h2.section-header { text-transform: uppercase; font-size: 0.72em; font-weight: 700; letter-spacing: 0.08em; color: var(--vscode-descriptionForeground); margin: 1.6em 0 0.6em; }
+        .description { color: var(--vscode-descriptionForeground, inherit); margin-top: 0; margin-bottom: 1.4em; }
+        h2.section-header { text-transform: uppercase; font-size: 0.72em; font-weight: 700; letter-spacing: 0.08em; color: var(--vscode-descriptionForeground, inherit); margin: 1.6em 0 0.6em; }
         dl.summary { display: grid; grid-template-columns: max-content 1fr; gap: 6px 20px; margin: 0; }
-        dl.summary dt { color: var(--vscode-descriptionForeground); }
+        dl.summary dt { color: var(--vscode-descriptionForeground, inherit); }
         dl.summary dd { margin: 0; word-break: break-all; }
         ol.commands { list-style: none; margin: 0; padding: 0; }
         li.command { margin-bottom: 1em; }
         .command-desc { margin-bottom: 4px; }
-        code.command-line { display: block; font-family: var(--vscode-editor-font-family, monospace); font-size: 0.9em; background: var(--vscode-textCodeBlock-background); padding: 7px 11px; border-radius: 4px; white-space: pre-wrap; word-break: break-all; }
+        code.command-line { display: block; font-family: var(--vscode-editor-font-family, monospace); font-size: 0.9em; background: var(--vscode-textCodeBlock-background, rgba(127, 127, 127, 0.18)); padding: 7px 11px; border-radius: 4px; white-space: pre-wrap; word-break: break-all; }
         .actions { display: flex; gap: 10px; margin-top: 2em; flex-wrap: wrap; }
-        button { font-family: inherit; font-size: 0.95em; padding: 7px 18px; border: 1px solid transparent; border-radius: 2px; cursor: pointer; }
-        button.primary { background: var(--vscode-button-background); color: var(--vscode-button-foreground); }
-        button.primary:hover { background: var(--vscode-button-hoverBackground); }
-        button.secondary { background: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground); }
-        button.secondary:hover { background: var(--vscode-button-secondaryHoverBackground); }
-        button:focus-visible { outline: 1px solid var(--vscode-focusBorder); outline-offset: 2px; }
+        button { font-family: inherit; font-size: 0.95em; padding: 7px 18px; border: 1px solid var(--vscode-contrastBorder, transparent); border-radius: 2px; cursor: pointer; }
+        button.primary { background: var(--vscode-button-background, #0078d4); color: var(--vscode-button-foreground, #ffffff); }
+        button.primary:hover { background: var(--vscode-button-hoverBackground, #026ec1); }
+        button.secondary { background: var(--vscode-button-secondaryBackground, rgba(127, 127, 127, 0.25)); color: var(--vscode-button-secondaryForeground, inherit); }
+        button.secondary:hover { background: var(--vscode-button-secondaryHoverBackground, rgba(127, 127, 127, 0.35)); }
+        button:focus-visible { outline: 1px solid var(--vscode-focusBorder, currentColor); outline-offset: 2px; }
     </style>
 </head>
 <body>
@@ -196,7 +209,7 @@ export function showAgenticCreateConfirmPanel(
             { enableScripts: true, retainContextWhenHidden: false }
         );
 
-        panel.webview.html = buildHtml(hostDisplayName, folderPath, plan);
+        panel.webview.html = buildHtml(hostDisplayName, folderPath, plan, panel.webview.cspSource);
 
         // Resolve exactly once. The message path resolves then disposes the panel (which fires
         // onDidDispose); the guard makes that disposal a no-op. A user-initiated close reaches
