@@ -73,6 +73,7 @@ describe("selectTargetFolder", () => {
         ]);
         expect(showQuickPickStub.firstCall.args[1]).to.deep.equal({
             canPickMany: false,
+            ignoreFocusOut: true,
             title: URI_HANDLER_STRINGS.TITLES.TARGET_FOLDER
         });
     });

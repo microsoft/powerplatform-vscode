@@ -55,6 +55,7 @@ export const selectTargetFolder = async (
 
     const selectedItem = await dependencies.showQuickPick(items, {
         canPickMany: false,
+        ignoreFocusOut: true,
         title: URI_HANDLER_STRINGS.TITLES.TARGET_FOLDER
     });
     if (!selectedItem) {
