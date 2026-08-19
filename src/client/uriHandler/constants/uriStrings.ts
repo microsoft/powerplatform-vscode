@@ -50,6 +50,7 @@ export const URI_HANDLER_STRINGS = {
         YES: vscode.l10n.t("Yes"),
         NO: vscode.l10n.t("No"),
         SELECT_FOLDER: vscode.l10n.t("Select Folder"),
+        BROWSE: vscode.l10n.t("Browse..."),
         OPEN_FOLDER: vscode.l10n.t("Open Folder"),
         OPEN_NEW_WORKSPACE: vscode.l10n.t("Open in New Workspace"),
         NOT_NOW: vscode.l10n.t("Not Now"),
