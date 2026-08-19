@@ -136,6 +136,31 @@ function buildHtml(hostDisplayName: string, folderPath: string, plan: PlannedCom
 }
 
 /**
+ * Registers the serializer VS Code uses when it restores a confirmation panel after a window
+ * reload, and discards the restored panel.
+ *
+ * The panel only carries meaning while the promise returned by
+ * {@link showAgenticCreateConfirmPanel} is awaiting a decision. A window reload ends that promise
+ * along with its message and dispose listeners, so a restored tab can never resolve anything and
+ * its buttons post to a listener that no longer exists. VS Code additionally fails to initialize a
+ * webview whose view type has no registered serializer, which reaches the user as
+ * "Error loading webview: Could not register service worker". Disposing the panel replaces that
+ * dead tab with no tab at all.
+ *
+ * @returns A disposable that unregisters the serializer.
+ */
+export function registerAgenticCreateConfirmPanelSerializer(): vscode.Disposable {
+    return vscode.window.registerWebviewPanelSerializer(
+        URI_CONSTANTS.AGENTIC_CREATE_CONFIRM_VIEW_TYPE,
+        {
+            async deserializeWebviewPanel(panel: vscode.WebviewPanel): Promise<void> {
+                panel.dispose();
+            }
+        }
+    );
+}
+
+/**
  * Shows the confirmation gate as a non-blocking webview panel (an editor tab) that both PREVIEWS
  * the exact command plan and collects the decision.
  *
