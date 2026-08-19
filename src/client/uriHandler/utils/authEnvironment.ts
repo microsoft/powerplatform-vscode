@@ -8,6 +8,17 @@ import { PacWrapper } from "../../pac/PacWrapper";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { uriHandlerTelemetryEventNames } from "../telemetry/uriHandlerTelemetryEvents";
 import { URI_HANDLER_STRINGS } from "../constants/uriStrings";
+import { CreateFlowCancellationError, describePacFailure } from "./createFlowErrors";
+
+/**
+ * Compares two environment identifiers.
+ *
+ * PAC and the deep link can report the same GUID with different casing, so a case-sensitive
+ * comparison would report a spurious mismatch and send the user through an environment switch
+ * that can never succeed.
+ */
+const isSameEnvironment = (left: string | undefined | null, right: string): boolean =>
+    (left ?? '').trim().toLowerCase() === right.trim().toLowerCase();
 
 /**
  * Minimal target required for PAC CLI authentication and environment selection.
@@ -120,7 +131,10 @@ export class AuthEnvironmentService {
 
                     const newAuthInfo = await this.pacWrapper.activeOrg();
                     if (!newAuthInfo || newAuthInfo.Status !== "Success") {
-                        throw new Error(URI_HANDLER_STRINGS.ERRORS.AUTH_FAILED);
+                        throw new Error(describePacFailure(
+                            URI_HANDLER_STRINGS.ERRORS.AUTH_FAILED,
+                            newAuthInfo?.Errors
+                        ));
                     }
 
                     oneDSLoggerWrapper.getLogger().traceInfo(
@@ -136,7 +150,7 @@ export class AuthEnvironmentService {
                     uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
                     { ...telemetryData, reason: 'user_cancelled_auth' }
                 );
-                throw new Error(URI_HANDLER_STRINGS.ERRORS.USER_CANCELLED_AUTH);
+                throw new CreateFlowCancellationError(URI_HANDLER_STRINGS.ERRORS.USER_CANCELLED_AUTH);
             }
         }
     }
@@ -152,7 +166,7 @@ export class AuthEnvironmentService {
             await this.resetPacProcessAndThrow(error, telemetryData, 'Failed to check current environment', 'env_check_failed');
         }
 
-        if (currentAuthInfo?.Status === "Success" && currentAuthInfo.Results?.EnvironmentId !== uriParams.environmentId) {
+        if (currentAuthInfo?.Status === "Success" && !isSameEnvironment(currentAuthInfo.Results?.EnvironmentId, uriParams.environmentId)) {
             oneDSLoggerWrapper.getLogger().traceInfo(
                 uriHandlerTelemetryEventNames.URI_HANDLER_ENV_SWITCH_REQUIRED,
                 {
@@ -176,11 +190,23 @@ export class AuthEnvironmentService {
                         increment: 10
                     });
 
-                    await this.pacWrapper.orgSelect(uriParams.orgUrl);
+                    const selectResult = await this.pacWrapper.orgSelect(uriParams.orgUrl);
+                    if (selectResult && selectResult.Status !== "Success") {
+                        // PAC explains exactly why the switch failed (wrong cloud, org not found,
+                        // no matching auth profile). Without this the user only ever sees the
+                        // generic guidance and cannot tell which of those applies.
+                        throw new Error(describePacFailure(
+                            URI_HANDLER_STRINGS.ERRORS.ENV_SWITCH_FAILED,
+                            selectResult.Errors
+                        ));
+                    }
 
                     const verifyAuthInfo = await this.pacWrapper.activeOrg();
-                    if (verifyAuthInfo?.Status !== "Success" || verifyAuthInfo.Results?.EnvironmentId !== uriParams.environmentId) {
-                        throw new Error(URI_HANDLER_STRINGS.ERRORS.ENV_SWITCH_FAILED);
+                    if (verifyAuthInfo?.Status !== "Success" || !isSameEnvironment(verifyAuthInfo.Results?.EnvironmentId, uriParams.environmentId)) {
+                        throw new Error(describePacFailure(
+                            URI_HANDLER_STRINGS.ERRORS.ENV_SWITCH_FAILED,
+                            verifyAuthInfo?.Errors
+                        ));
                     }
 
                     oneDSLoggerWrapper.getLogger().traceInfo(
@@ -196,7 +222,7 @@ export class AuthEnvironmentService {
                     uriHandlerTelemetryEventNames.URI_HANDLER_OPEN_POWER_PAGES_FAILED,
                     { ...telemetryData, reason: 'user_cancelled_env_switch' }
                 );
-                throw new Error(URI_HANDLER_STRINGS.ERRORS.USER_CANCELLED_ENV_SWITCH);
+                throw new CreateFlowCancellationError(URI_HANDLER_STRINGS.ERRORS.USER_CANCELLED_ENV_SWITCH);
             }
         }
     }

@@ -8,7 +8,9 @@ import { PacWrapper } from "../../pac/PacWrapper";
 import { emitCreateFlowError, emitCreateFlowEvent } from "../telemetry/createFlowTelemetry";
 import { uriHandlerTelemetryEventNames } from "../telemetry/uriHandlerTelemetryEvents";
 import { AuthEnvironmentService, AuthEnvironmentTarget } from "../utils/authEnvironment";
+import { isCreateFlowCancellation } from "../utils/createFlowErrors";
 import { selectTargetFolder } from "../utils/selectTargetFolder";
+import { URI_HANDLER_STRINGS } from "../constants/uriStrings";
 import { CreateFlowParameters } from "./createFlowParams";
 
 /**
@@ -24,13 +26,15 @@ export interface CreateFlowCommonStagesDependencies {
     selectTargetFolder: typeof selectTargetFolder;
     emitCreateFlowEvent: typeof emitCreateFlowEvent;
     emitCreateFlowError: typeof emitCreateFlowError;
+    showErrorMessage: (message: string) => Thenable<string | undefined>;
 }
 
 const DEFAULT_DEPENDENCIES: CreateFlowCommonStagesDependencies = {
     createAuthEnvironmentService: (pacWrapper) => new AuthEnvironmentService(pacWrapper),
     selectTargetFolder,
     emitCreateFlowEvent,
-    emitCreateFlowError
+    emitCreateFlowError,
+    showErrorMessage: (message) => vscode.window.showErrorMessage(message)
 };
 
 /**
@@ -76,6 +80,18 @@ export const runCreateFlowCommonStages = async (
             params,
             channel
         );
+
+        // A declined prompt already showed its own notification, so only genuine failures are
+        // reported here. Without this the flow ends in silence and looks like nothing happened.
+        // The notification is deliberately not awaited so the caller is not held open until the
+        // user dismisses it.
+        if (!isCreateFlowCancellation(error)) {
+            const reason = error instanceof Error ? error.message : String(error);
+            void dependencies.showErrorMessage(
+                URI_HANDLER_STRINGS.ERRORS.CREATE_FLOW_FAILED.replace('{0}', reason)
+            );
+        }
+
         return undefined;
     }
 
