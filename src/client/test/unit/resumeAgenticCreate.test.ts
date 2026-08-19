@@ -232,7 +232,7 @@ describe('resumeAgenticCreate', () => {
             expectedParams,
             'agent'
         )).to.be.true;
-        expect(context.runStages.calledOnceWithExactly(expectedParams)).to.be.true;
+        expect(context.runStages.calledOnceWithExactly(expectedParams, AgentHost.Copilot)).to.be.true;
         expect(calls).to.deep.equal(['emit', 'stages', 'clear']);
         expect(context.store.value).to.be.undefined;
     });

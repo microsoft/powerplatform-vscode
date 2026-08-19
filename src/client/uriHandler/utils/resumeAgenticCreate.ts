@@ -42,7 +42,7 @@ export interface ResumeAgenticCreateDependencies {
         ...buttons: string[]
     ): PromiseLike<string | undefined>;
     emitEvent: CreateFlowEventEmitter;
-    runStages(params: CreateFlowParameters): PromiseLike<unknown>;
+    runStages(params: CreateFlowParameters, host: AgentHost): PromiseLike<unknown>;
     clearMarker(store: ResumeMarkerStore): PromiseLike<void> | void;
 }
 
@@ -110,7 +110,7 @@ export async function resumeAgenticCreate(
             params,
             'agent'
         );
-        await deps.runStages(params);
+        await deps.runStages(params, marker.host);
     } finally {
         await deps.clearMarker(deps.store);
     }

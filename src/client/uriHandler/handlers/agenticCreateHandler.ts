@@ -21,10 +21,11 @@ import {
 } from "../utils/resolveAgentHostInstallation";
 import { ResumeMarkerStore, writeResumeMarker } from "../utils/resumeMarker";
 import { isCreateFlowCancellation } from "../utils/createFlowErrors";
-import { buildAgentHostCommandPlan } from "../utils/agentHostCommandPlan";
-import { showAgenticCreateConfirmPanel } from "../utils/agenticCreateConfirmPanel";
-import { launchAgentHostPlan } from "../utils/launchAgentHostPlan";
-import { confirmAndLaunchAgentHost, ConfirmAndLaunchOutcome } from "../utils/confirmAndLaunchAgentHost";
+import { ConfirmAndLaunchOutcome } from "../utils/confirmAndLaunchAgentHost";
+import {
+    confirmAndLaunchSelectedAgentHost,
+    getAgentHostDisplayName
+} from "../utils/agenticCreateLaunch";
 import { URI_CONSTANTS } from "../constants/uriConstants";
 import { URI_HANDLER_STRINGS } from "../constants/uriStrings";
 
@@ -44,30 +45,13 @@ export interface AgenticCreateHandlerDependencies {
     ) => Promise<ConfirmAndLaunchOutcome>;
 }
 
-const AGENT_HOST_COMMAND_PLAN_STRINGS = {
-    registerMarketplace: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.STEP_REGISTER_MARKETPLACE,
-    installPlugin: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.STEP_INSTALL_PLUGIN,
-    installPluginUserScope: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.STEP_INSTALL_PLUGIN_USER_SCOPE,
-    launchHost: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.STEP_LAUNCH_HOST
-};
-
 const DEFAULT_DEPENDENCIES: AgenticCreateHandlerDependencies = {
     detectAgentHost,
     selectAgentHost,
     resolveAgentHostInstallation,
     emitCreateFlowEvent,
     confirmAndLaunchAgentHost: (host, hostDisplayName, folderUri, params) =>
-        confirmAndLaunchAgentHost(host, hostDisplayName, folderUri, params, {
-            buildPlan: (selectedHost, displayName) =>
-                buildAgentHostCommandPlan(selectedHost, displayName, AGENT_HOST_COMMAND_PLAN_STRINGS),
-            showConfirmPanel: showAgenticCreateConfirmPanel,
-            launchPlan: launchAgentHostPlan
-        })
-};
-
-const AGENT_HOST_DISPLAY_NAMES: Record<AgentHost, string> = {
-    [AgentHost.Copilot]: URI_HANDLER_STRINGS.AGENT_HOSTS.COPILOT,
-    [AgentHost.Claude]: URI_HANDLER_STRINGS.AGENT_HOSTS.CLAUDE
+        confirmAndLaunchSelectedAgentHost(host, folderUri, params, hostDisplayName)
 };
 
 const AGENT_HOST_INSTALLATION_STRINGS: AgentHostInstallationStrings = {
@@ -210,7 +194,7 @@ export class AgenticCreateHandler {
             if (selection.installed) {
                 await this.dependencies.confirmAndLaunchAgentHost(
                     selection.host,
-                    AGENT_HOST_DISPLAY_NAMES[selection.host],
+                    getAgentHostDisplayName(selection.host),
                     folderUri,
                     params
                 );
@@ -219,7 +203,7 @@ export class AgenticCreateHandler {
 
             const resolution = await this.dependencies.resolveAgentHostInstallation(
                 selection.host,
-                AGENT_HOST_DISPLAY_NAMES[selection.host],
+                getAgentHostDisplayName(selection.host),
                 params,
                 {
                     strings: AGENT_HOST_INSTALLATION_STRINGS,
@@ -242,7 +226,7 @@ export class AgenticCreateHandler {
                 case 'resolved':
                     await this.dependencies.confirmAndLaunchAgentHost(
                         selection.host,
-                        AGENT_HOST_DISPLAY_NAMES[selection.host],
+                        getAgentHostDisplayName(selection.host),
                         folderUri,
                         params
                     );

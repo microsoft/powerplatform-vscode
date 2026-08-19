@@ -22,6 +22,7 @@ import {
     clearResumeMarker,
     ResumeMarkerStore
 } from './utils/resumeMarker';
+import { confirmAndLaunchSelectedAgentHost } from './utils/agenticCreateLaunch';
 
 const RESUME_STRINGS: ResumeAgenticCreateStrings = {
     resumePrompt: URI_HANDLER_STRINGS.PROMPTS.AGENT_HOST_INSTALL_RESUME,
@@ -52,13 +53,18 @@ export async function resumeAgenticCreateOnActivation(
             showInformationMessage: (message, ...buttons) =>
                 vscode.window.showInformationMessage(message, ...buttons),
             emitEvent: emitCreateFlowEvent,
-            runStages: async (params: CreateFlowParameters) => {
-                await runCreateFlowCommonStages(
+            runStages: async (params: CreateFlowParameters, host: AgentHost) => {
+                const folderUri = await runCreateFlowCommonStages(
                     params,
                     'agent',
                     buildCreateFlowTelemetry(params),
                     pacWrapper
                 );
+                if (!folderUri) {
+                    return;
+                }
+
+                await confirmAndLaunchSelectedAgentHost(host, folderUri, params);
             },
             clearMarker: clearResumeMarker
         });
