@@ -16,7 +16,7 @@ export const URI_HANDLER_STRINGS = {
         ORG_URL_REQUIRED: vscode.l10n.t("Organization URL is required"),
         AUTH_FAILED: vscode.l10n.t("Authentication failed after user initiated auth"),
         USER_CANCELLED_AUTH: vscode.l10n.t("User cancelled authentication"),
-        ENV_SWITCH_FAILED: vscode.l10n.t("Failed to switch to the required environment. Please sign in with an account that has access to the target environment using 'pac auth create' command."),
+        ENV_SWITCH_FAILED: vscode.l10n.t("Failed to switch to the required environment. Sign in with an account that has access to the target environment, then try again."),
         USER_CANCELLED_ENV_SWITCH: vscode.l10n.t("User cancelled environment switch"),
         USER_CANCELLED_FOLDER_SELECTION: vscode.l10n.t("User cancelled folder selection"),
         CREATE_FLOW_FAILED: vscode.l10n.t("Power Pages create flow could not continue. {0}"),
@@ -30,6 +30,7 @@ export const URI_HANDLER_STRINGS = {
     PROMPTS: {
         AUTH_REQUIRED: vscode.l10n.t("You need to authenticate with Power Platform to download the site. Would you like to authenticate now?"),
         ENV_SWITCH_REQUIRED: vscode.l10n.t("You are currently connected to a different environment. Would you like to switch to the required environment?"),
+        ENV_SWITCH_AUTH_REQUIRED: vscode.l10n.t("Your current Power Platform sign-in cannot access the required environment. Would you like to sign in with a different account?"),
         DOWNLOAD_COMPLETE: vscode.l10n.t("Power Pages site download completed successfully. Would you like to open the downloaded site folder?"),
         FOLDER_SELECT: vscode.l10n.t("Select Folder to Download Power Pages Site"),
         AGENT_HOST_INSTALL_GUIDANCE: vscode.l10n.t({

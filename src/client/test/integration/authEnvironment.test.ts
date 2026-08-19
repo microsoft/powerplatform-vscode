@@ -179,7 +179,8 @@ describe("AuthEnvironmentService", () => {
             .onFirstCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } })
             .onSecondCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } });
         pacWrapperStub.orgSelect.resolves({ Status: "Failure", Errors: [pacError], Information: [] });
-        warningStub.resolves("Yes");
+        // Accept the environment switch, then decline the follow-up sign-in recovery.
+        warningStub.onFirstCall().resolves("Yes").onSecondCall().resolves(undefined);
 
         let thrown: unknown;
         try {
@@ -191,6 +192,60 @@ describe("AuthEnvironmentService", () => {
         expect(thrown).to.be.an("error");
         expect((thrown as Error).message).to.contain(pacError);
         expect((thrown as Error).message).to.contain(URI_HANDLER_STRINGS.ERRORS.ENV_SWITCH_FAILED);
+        expect(pacWrapperStub.authCreateNewAuthProfileForOrg.called).to.be.false;
+        expect(pacWrapperStub.orgSelect.calledOnce).to.be.true;
+    });
+
+    it("signs in to the target org and retries when the first environment switch fails", async () => {
+        pacWrapperStub.activeOrg
+            .onFirstCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } })
+            .onSecondCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } })
+            .onThirdCall().resolves({ Status: "Success", Results: { EnvironmentId: "env-1" } });
+        pacWrapperStub.orgSelect
+            .onFirstCall().resolves({ Status: "Failure", Errors: ["no matching org"], Information: [] })
+            .onSecondCall().resolves({ Status: "Success", Errors: [], Information: [] });
+        warningStub.resolves("Yes");
+
+        await service.prepareAuthenticationAndEnvironment(OPEN_URI_PARAMS, {});
+
+        expect(pacWrapperStub.authCreateNewAuthProfileForOrg.calledOnceWith("https://org.crm.dynamics.com/")).to.be.true;
+        expect(pacWrapperStub.orgSelect.calledTwice).to.be.true;
+        expect(pacWrapperStub.resetPacProcess.called).to.be.false;
+    });
+
+    it("surfaces the sign-in failure when the recovery auth profile cannot be created", async () => {
+        const authError = "Authentication was cancelled by the user.";
+        pacWrapperStub.activeOrg
+            .onFirstCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } })
+            .onSecondCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } });
+        pacWrapperStub.orgSelect.resolves({ Status: "Failure", Errors: ["no matching org"], Information: [] });
+        pacWrapperStub.authCreateNewAuthProfileForOrg.resolves({ Status: "Failure", Errors: [authError], Information: [] });
+        warningStub.resolves("Yes");
+
+        let thrown: unknown;
+        try {
+            await service.prepareAuthenticationAndEnvironment(OPEN_URI_PARAMS, {});
+        } catch (error) {
+            thrown = error;
+        }
+
+        expect(thrown).to.be.an("error");
+        expect((thrown as Error).message).to.contain(authError);
+        // The retry must not run once the sign-in itself failed.
+        expect(pacWrapperStub.orgSelect.calledOnce).to.be.true;
+    });
+
+    it("does not offer a sign-in recovery when the environment switch succeeds", async () => {
+        pacWrapperStub.activeOrg
+            .onFirstCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } })
+            .onSecondCall().resolves({ Status: "Success", Results: { EnvironmentId: "other-env" } })
+            .onThirdCall().resolves({ Status: "Success", Results: { EnvironmentId: "env-1" } });
+        warningStub.resolves("Yes");
+
+        await service.prepareAuthenticationAndEnvironment(OPEN_URI_PARAMS, {});
+
+        expect(warningStub.calledOnce).to.be.true;
+        expect(pacWrapperStub.authCreateNewAuthProfileForOrg.called).to.be.false;
     });
 
     it("reports a cancellation when the user declines the environment switch", async () => {

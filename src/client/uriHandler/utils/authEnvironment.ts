@@ -8,7 +8,7 @@ import { PacWrapper } from "../../pac/PacWrapper";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { uriHandlerTelemetryEventNames } from "../telemetry/uriHandlerTelemetryEvents";
 import { URI_HANDLER_STRINGS } from "../constants/uriStrings";
-import { CreateFlowCancellationError, describePacFailure } from "./createFlowErrors";
+import { CreateFlowCancellationError, describePacFailure, isCreateFlowCancellation } from "./createFlowErrors";
 
 /**
  * Compares two environment identifiers.
@@ -32,6 +32,16 @@ interface ValidatedAuthEnvironmentTarget {
     environmentId: string;
     orgUrl: string;
 }
+
+/**
+ * Outcome of a single attempt to point PAC at the requested environment.
+ *
+ * Failures are returned rather than thrown so the caller can offer a recovery step
+ * (signing in to the target org) before giving up.
+ */
+type EnvironmentSwitchResult =
+    | { success: true; environmentId: string | undefined }
+    | { success: false; errorMessage: string };
 
 /**
  * Encapsulates the PAC CLI authentication and environment-selection steps shared by the
@@ -190,30 +200,33 @@ export class AuthEnvironmentService {
                         increment: 10
                     });
 
-                    const selectResult = await this.pacWrapper.orgSelect(uriParams.orgUrl);
-                    if (selectResult && selectResult.Status !== "Success") {
-                        // PAC explains exactly why the switch failed (wrong cloud, org not found,
-                        // no matching auth profile). Without this the user only ever sees the
-                        // generic guidance and cannot tell which of those applies.
-                        throw new Error(describePacFailure(
-                            URI_HANDLER_STRINGS.ERRORS.ENV_SWITCH_FAILED,
-                            selectResult.Errors
-                        ));
+                    let switchResult = await this.trySwitchEnvironment(uriParams);
+
+                    if (!switchResult.success) {
+                        // PAC can only select orgs the signed-in profile can see, so a target in
+                        // another tenant or cloud fails here no matter how many times we retry the
+                        // switch. Offer to sign in to that org instead of dead-ending the flow.
+                        switchResult = await this.retrySwitchWithNewAuthProfile(
+                            uriParams,
+                            telemetryData,
+                            progress,
+                            switchResult.errorMessage
+                        );
                     }
 
-                    const verifyAuthInfo = await this.pacWrapper.activeOrg();
-                    if (verifyAuthInfo?.Status !== "Success" || !isSameEnvironment(verifyAuthInfo.Results?.EnvironmentId, uriParams.environmentId)) {
-                        throw new Error(describePacFailure(
-                            URI_HANDLER_STRINGS.ERRORS.ENV_SWITCH_FAILED,
-                            verifyAuthInfo?.Errors
-                        ));
+                    if (!switchResult.success) {
+                        throw new Error(switchResult.errorMessage);
                     }
 
                     oneDSLoggerWrapper.getLogger().traceInfo(
                         uriHandlerTelemetryEventNames.URI_HANDLER_ENV_SWITCH_COMPLETED,
-                        { ...telemetryData, switchedToEnvId: verifyAuthInfo.Results?.EnvironmentId }
+                        { ...telemetryData, switchedToEnvId: switchResult.environmentId }
                     );
                 } catch (error) {
+                    if (isCreateFlowCancellation(error)) {
+                        throw error;
+                    }
+
                     await this.resetPacProcessAndThrow(error, telemetryData, 'Error switching environment', 'env_switch_error');
                 }
             } else {
@@ -225,6 +238,87 @@ export class AuthEnvironmentService {
                 throw new CreateFlowCancellationError(URI_HANDLER_STRINGS.ERRORS.USER_CANCELLED_ENV_SWITCH);
             }
         }
+    }
+
+    /**
+     * Point PAC at the requested environment and confirm the switch actually took effect.
+     *
+     * `pac org select` can report success while leaving the active org unchanged, so the
+     * result is always verified against `pac org who`.
+     */
+    private async trySwitchEnvironment(uriParams: ValidatedAuthEnvironmentTarget): Promise<EnvironmentSwitchResult> {
+        const selectResult = await this.pacWrapper.orgSelect(uriParams.orgUrl);
+        if (selectResult && selectResult.Status !== "Success") {
+            // PAC explains exactly why the switch failed (wrong cloud, org not found, no
+            // matching auth profile). Without this the user only ever sees the generic
+            // guidance and cannot tell which of those applies.
+            return {
+                success: false,
+                errorMessage: describePacFailure(URI_HANDLER_STRINGS.ERRORS.ENV_SWITCH_FAILED, selectResult.Errors)
+            };
+        }
+
+        const verifyAuthInfo = await this.pacWrapper.activeOrg();
+        if (verifyAuthInfo?.Status !== "Success" || !isSameEnvironment(verifyAuthInfo.Results?.EnvironmentId, uriParams.environmentId)) {
+            return {
+                success: false,
+                errorMessage: describePacFailure(URI_HANDLER_STRINGS.ERRORS.ENV_SWITCH_FAILED, verifyAuthInfo?.Errors)
+            };
+        }
+
+        return { success: true, environmentId: verifyAuthInfo.Results?.EnvironmentId };
+    }
+
+    /**
+     * Offer to sign in to the target organization, then retry the environment switch.
+     *
+     * The initial switch fails whenever no existing auth profile can see the target org, which
+     * the user cannot resolve from inside the flow. Creating a profile for the org is the one
+     * recovery available, so it is offered here instead of asking the user to run PAC by hand.
+     */
+    private async retrySwitchWithNewAuthProfile(
+        uriParams: ValidatedAuthEnvironmentTarget,
+        telemetryData: Record<string, string>,
+        progress: vscode.Progress<{ message?: string; increment?: number }>,
+        previousErrorMessage: string
+    ): Promise<EnvironmentSwitchResult> {
+        oneDSLoggerWrapper.getLogger().traceInfo(
+            uriHandlerTelemetryEventNames.URI_HANDLER_ENV_SWITCH_AUTH_REQUIRED,
+            { ...telemetryData, requestedEnvId: uriParams.environmentId }
+        );
+
+        const signIn = await vscode.window.showWarningMessage(
+            URI_HANDLER_STRINGS.PROMPTS.ENV_SWITCH_AUTH_REQUIRED,
+            { modal: true },
+            URI_HANDLER_STRINGS.BUTTONS.YES,
+            URI_HANDLER_STRINGS.BUTTONS.NO
+        );
+
+        if (signIn !== URI_HANDLER_STRINGS.BUTTONS.YES) {
+            // Report the original PAC diagnosis: it is the only thing that explains why the
+            // switch failed, and the user declined the one recovery we can offer.
+            return { success: false, errorMessage: previousErrorMessage };
+        }
+
+        progress.report({
+            message: URI_HANDLER_STRINGS.PROGRESS.AUTHENTICATING,
+            increment: 10
+        });
+
+        const authResult = await this.pacWrapper.authCreateNewAuthProfileForOrg(uriParams.orgUrl);
+        if (authResult && authResult.Status !== "Success") {
+            return {
+                success: false,
+                errorMessage: describePacFailure(URI_HANDLER_STRINGS.ERRORS.AUTH_FAILED, authResult.Errors)
+            };
+        }
+
+        oneDSLoggerWrapper.getLogger().traceInfo(
+            uriHandlerTelemetryEventNames.URI_HANDLER_ENV_SWITCH_AUTH_COMPLETED,
+            { ...telemetryData, requestedEnvId: uriParams.environmentId }
+        );
+
+        return this.trySwitchEnvironment(uriParams);
     }
 
     /**
