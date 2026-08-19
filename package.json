@@ -107,6 +107,8 @@
     "onCommand:powerplatform-walkthrough.saveConflict-start-folder",
     "onCommand:powerplatform-walkthrough.advancedCapabilities-learn-more",
     "onCommand:powerplatform-walkthrough.advancedCapabilities-start-coding",
+    "onWebviewPanel:portalPreview",
+    "onWebviewPanel:powerPagesAgenticCreateConfirm",
     "onStartupFinished",
     "workspaceContains:**/**.portalconfig",
     "onDebug",

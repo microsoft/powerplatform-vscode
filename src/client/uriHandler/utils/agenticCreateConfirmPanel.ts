@@ -35,6 +35,8 @@ const DEFAULT_CONFIRM_PANEL_DEPENDENCIES: ShowConfirmPanelDependencies = {
         vscode.window.createWebviewPanel(viewType, title, showOptions, options)
 };
 
+const RESTORED_PANEL_READY_MESSAGE = "agenticCreateConfirmRestoredPanelReady";
+
 /**
  * Escapes a string for safe interpolation into HTML text/attribute content. Folder paths and
  * command lines are the only interpolated values and are not fully trusted, so they are escaped
@@ -149,16 +151,43 @@ function buildHtml(hostDisplayName: string, folderPath: string, plan: PlannedCom
 }
 
 /**
+ * Builds the minimal document used to retire a confirmation panel restored after a window reload.
+ *
+ * The ready message is intentionally sent from inside the webview. Receiving it proves that VS
+ * Code has finished initializing the webview host and its service worker, so the extension can
+ * dispose the obsolete panel without tearing down a document whose service worker is still being
+ * registered.
+ */
+function buildRestoredPanelCleanupHtml(): string {
+    const nonce = getNonce();
+
+    return `<!DOCTYPE html>
+<html lang="${escapeHtml(vscode.env.language)}">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-${nonce}';">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${escapeHtml(URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.PANEL_TITLE)}</title>
+</head>
+<body>
+    <script nonce="${nonce}">
+        acquireVsCodeApi().postMessage({ type: "${RESTORED_PANEL_READY_MESSAGE}" });
+    </script>
+</body>
+</html>`;
+}
+
+/**
  * Registers the serializer VS Code uses when it restores a confirmation panel after a window
  * reload, and discards the restored panel.
  *
  * The panel only carries meaning while the promise returned by
  * {@link showAgenticCreateConfirmPanel} is awaiting a decision. A window reload ends that promise
  * along with its message and dispose listeners, so a restored tab can never resolve anything and
- * its buttons post to a listener that no longer exists. VS Code additionally fails to initialize a
- * webview whose view type has no registered serializer, which reaches the user as
- * "Error loading webview: Could not register service worker". Disposing the panel replaces that
- * dead tab with no tab at all.
+ * its buttons post to a listener that no longer exists. The serializer first loads a minimal
+ * cleanup document and waits for its ready message before disposing the panel. Disposing directly
+ * from `deserializeWebviewPanel` races VS Code's service-worker registration and can leave the tab
+ * showing "Could not register service worker: The document is in an invalid state."
  *
  * @returns A disposable that unregisters the serializer.
  */
@@ -167,7 +196,20 @@ export function registerAgenticCreateConfirmPanelSerializer(): vscode.Disposable
         URI_CONSTANTS.AGENTIC_CREATE_CONFIRM_VIEW_TYPE,
         {
             async deserializeWebviewPanel(panel: vscode.WebviewPanel): Promise<void> {
-                panel.dispose();
+                panel.webview.options = {
+                    enableScripts: true,
+                    localResourceRoots: []
+                };
+
+                const messageSubscription = panel.webview.onDidReceiveMessage(
+                    (message: { type?: unknown }) => {
+                        if (message?.type === RESTORED_PANEL_READY_MESSAGE) {
+                            panel.dispose();
+                        }
+                    }
+                );
+                panel.onDidDispose(() => messageSubscription.dispose());
+                panel.webview.html = buildRestoredPanelCleanupHtml();
             }
         }
     );

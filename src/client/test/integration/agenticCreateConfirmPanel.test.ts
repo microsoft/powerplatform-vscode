@@ -200,7 +200,15 @@ describe("registerAgenticCreateConfirmPanelSerializer", () => {
         sandbox.restore();
     });
 
-    it("discards a panel restored after a window reload", async () => {
+    it("activates the extension when VS Code restores the panel", () => {
+        const packageJson = vscode.extensions.getExtension(URI_CONSTANTS.EXTENSION_ID)?.packageJSON;
+
+        expect(packageJson?.activationEvents).to.include(
+            `onWebviewPanel:${URI_CONSTANTS.AGENTIC_CREATE_CONFIRM_VIEW_TYPE}`
+        );
+    });
+
+    it("discards a restored panel only after its webview reports ready", async () => {
         let registeredViewType: string | undefined;
         let serializer: vscode.WebviewPanelSerializer | undefined;
         const disposable = { dispose: () => undefined } as vscode.Disposable;
@@ -219,10 +227,48 @@ describe("registerAgenticCreateConfirmPanelSerializer", () => {
         expect(result).to.equal(disposable);
 
         // The flow that owned the restored panel ended with the previous window, so the tab is
-        // closed rather than left behind unable to answer anything.
+        // closed rather than left behind unable to answer anything. Waiting for a message from the
+        // cleanup document prevents disposal from racing VS Code's service-worker registration.
+        const messageEmitter = new vscode.EventEmitter<unknown>();
+        const disposeEmitter = new vscode.EventEmitter<void>();
         const dispose = sandbox.stub();
-        await serializer?.deserializeWebviewPanel({ dispose } as unknown as vscode.WebviewPanel, undefined);
+        let html = "";
+        let options: vscode.WebviewOptions = {};
+        const panel = {
+            webview: {
+                get html() {
+                    return html;
+                },
+                set html(value: string) {
+                    html = value;
+                },
+                get options() {
+                    return options;
+                },
+                set options(value: vscode.WebviewOptions) {
+                    options = value;
+                },
+                onDidReceiveMessage: messageEmitter.event
+            },
+            onDidDispose: disposeEmitter.event,
+            dispose
+        } as unknown as vscode.WebviewPanel;
+
+        await serializer?.deserializeWebviewPanel(panel, undefined);
+
+        expect(dispose.notCalled).to.be.true;
+        expect(options.enableScripts).to.be.true;
+        expect(options.localResourceRoots).to.deep.equal([]);
+        expect(html).to.contain("agenticCreateConfirmRestoredPanelReady");
+
+        messageEmitter.fire({ type: "unrelated" });
+        expect(dispose.notCalled).to.be.true;
+
+        messageEmitter.fire({ type: "agenticCreateConfirmRestoredPanelReady" });
 
         expect(dispose.calledOnce).to.be.true;
+
+        messageEmitter.dispose();
+        disposeEmitter.dispose();
     });
 });
