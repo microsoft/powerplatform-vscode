@@ -62,12 +62,19 @@ describe("confirmAndLaunchAgentHost", () => {
         expect(showConfirmPanel.calledOnceWithExactly("GitHub Copilot CLI", "c:/work/site", plan)).to
             .be.true;
         expect(launchPlan.calledOnceWithExactly(folderUri, plan, "GitHub Copilot CLI")).to.be.true;
-        expect(emitEvent.callCount).to.equal(2);
+        expect(emitEvent.callCount).to.equal(3);
         expect(emitEvent.firstCall.args[0]).to.equal(
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_CONFIRM_ACTION_CLICKED
+        );
+        expect(emitEvent.firstCall.args[3]).to.deep.equal({
+            host: AgentHost.Copilot,
+            action: "start"
+        });
+        expect(emitEvent.secondCall.args[0]).to.equal(
             uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_PLUGIN_SEQUENCE_LAUNCHED
         );
-        expect(emitEvent.firstCall.args[3]).to.deep.equal({ host: AgentHost.Copilot });
-        expect(emitEvent.secondCall.args[0]).to.equal(
+        expect(emitEvent.secondCall.args[3]).to.deep.equal({ host: AgentHost.Copilot });
+        expect(emitEvent.thirdCall.args[0]).to.equal(
             uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_SAMPLE_PROMPT_SENT
         );
     });
@@ -85,11 +92,18 @@ describe("confirmAndLaunchAgentHost", () => {
 
         expect(outcome).to.deep.equal({ status: "dropped" });
         expect(launchPlan.notCalled).to.be.true;
-        expect(emitEvent.calledOnce).to.be.true;
+        expect(emitEvent.callCount).to.equal(2);
         expect(emitEvent.firstCall.args[0]).to.equal(
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_CONFIRM_ACTION_CLICKED
+        );
+        expect(emitEvent.firstCall.args[3]).to.deep.equal({
+            host: AgentHost.Claude,
+            action: "cancel"
+        });
+        expect(emitEvent.secondCall.args[0]).to.equal(
             uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED
         );
-        expect(emitEvent.firstCall.args[3]).to.deep.equal({ reason: "confirmCancelled" });
+        expect(emitEvent.secondCall.args[3]).to.deep.equal({ reason: "confirmCancelled" });
     });
 
     it("drops the flow with confirmDismissed when the panel is dismissed", async () => {
@@ -105,6 +119,10 @@ describe("confirmAndLaunchAgentHost", () => {
 
         expect(outcome).to.deep.equal({ status: "dropped" });
         expect(launchPlan.notCalled).to.be.true;
+        expect(emitEvent.calledOnce).to.be.true;
+        expect(emitEvent.firstCall.args[0]).to.equal(
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED
+        );
         expect(emitEvent.firstCall.args[3]).to.deep.equal({ reason: "confirmDismissed" });
     });
 
@@ -121,6 +139,13 @@ describe("confirmAndLaunchAgentHost", () => {
 
         expect(outcome).to.deep.equal({ status: "edit" });
         expect(launchPlan.notCalled).to.be.true;
-        expect(emitEvent.notCalled).to.be.true;
+        expect(emitEvent.calledOnce).to.be.true;
+        expect(emitEvent.firstCall.args[0]).to.equal(
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_CONFIRM_ACTION_CLICKED
+        );
+        expect(emitEvent.firstCall.args[3]).to.deep.equal({
+            host: AgentHost.Copilot,
+            action: "edit"
+        });
     });
 });

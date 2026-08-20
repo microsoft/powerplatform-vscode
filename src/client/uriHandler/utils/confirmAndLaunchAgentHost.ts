@@ -69,6 +69,15 @@ export async function confirmAndLaunchAgentHost(
     const plan = deps.buildPlan(host, hostDisplayName);
     const decision = await deps.showConfirmPanel(hostDisplayName, folderUri.fsPath, plan);
 
+    if (decision !== 'dismissed') {
+        await emitEvent(
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_CONFIRM_ACTION_CLICKED,
+            params,
+            'agent',
+            { host, action: decision }
+        );
+    }
+
     if (decision === 'start') {
         deps.launchPlan(folderUri, plan, hostDisplayName);
         await emitEvent(
