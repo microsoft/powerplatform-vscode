@@ -76,7 +76,13 @@ function formatTemplate(template: string, value: string): string {
  *    `font-family` — VS Code's defaults already supply both. Text can then never be styled into
  *    invisibility if a variable is missing.
  */
-function buildHtml(hostDisplayName: string, folderPath: string, plan: PlannedCommand[], cspSource: string): string {
+function buildHtml(
+    hostDisplayName: string,
+    folderPath: string,
+    plan: PlannedCommand[],
+    cspSource: string,
+    started = false
+): string {
     const nonce = getNonce();
     const confirm = URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM;
     const title = formatTemplate(confirm.TITLE, hostDisplayName);
@@ -117,6 +123,7 @@ function buildHtml(hostDisplayName: string, folderPath: string, plan: PlannedCom
         button.secondary { background: var(--vscode-button-secondaryBackground, rgba(127, 127, 127, 0.25)); color: var(--vscode-button-secondaryForeground, inherit); }
         button.secondary:hover { background: var(--vscode-button-secondaryHoverBackground, rgba(127, 127, 127, 0.35)); }
         button:focus-visible { outline: 1px solid var(--vscode-focusBorder, currentColor); outline-offset: 2px; }
+        button:disabled { cursor: default; opacity: 0.7; }
     </style>
 </head>
 <body>
@@ -134,14 +141,17 @@ function buildHtml(hostDisplayName: string, folderPath: string, plan: PlannedCom
     </ol>
 
     <div class="actions">
-        <button class="primary" id="start" title="${escapeHtml(confirm.START_DETAIL)}">${escapeHtml(confirm.START_LABEL)}</button>
+        <button class="primary" id="start" title="${escapeHtml(confirm.START_DETAIL)}"${started ? " disabled" : ""}>${escapeHtml(confirm.START_LABEL)}</button>
         <button class="secondary" id="cancel" title="${escapeHtml(confirm.CANCEL_DETAIL)}">${escapeHtml(confirm.CANCEL_LABEL)}</button>
     </div>
 
     <script nonce="${nonce}">
         const vscode = acquireVsCodeApi();
         for (const id of ["start", "cancel"]) {
-            document.getElementById(id).addEventListener("click", () => {
+            document.getElementById(id).addEventListener("click", (event) => {
+                if (id === "start") {
+                    event.currentTarget.disabled = true;
+                }
                 vscode.postMessage({ decision: id });
             });
         }
@@ -229,7 +239,9 @@ export function registerAgenticCreateConfirmPanelSerializer(): vscode.Disposable
  *     could trigger.
  *
  * No terminal is created and nothing runs here — the caller launches the agent only when this
- * resolves `"start"`, using the same {@link PlannedCommand} array that was previewed.
+ * resolves `"start"`, using the same {@link PlannedCommand} array that was previewed. After Start,
+ * the panel remains open with the action disabled so the command lines stay available for manual
+ * recovery when a bootstrap step fails.
  *
  * @param hostDisplayName Agent host display name (e.g. "GitHub Copilot CLI").
  * @param folderPath Absolute path of the selected target folder.
@@ -253,9 +265,9 @@ export function showAgenticCreateConfirmPanel(
 
         panel.webview.html = buildHtml(hostDisplayName, folderPath, plan, panel.webview.cspSource);
 
-        // Resolve exactly once. The message path resolves then disposes the panel (which fires
-        // onDidDispose); the guard makes that disposal a no-op. A user-initiated close reaches
-        // onDidDispose directly and resolves "dismissed" without re-disposing.
+        // Resolve exactly once. Start keeps the panel as a durable command reference; Cancel closes
+        // it. A user-initiated close reaches onDidDispose and resolves "dismissed" only when no
+        // decision has already been made.
         let settled = false;
         const settleWith = (decision: ConfirmDecision): void => {
             if (settled) {
@@ -266,8 +278,19 @@ export function showAgenticCreateConfirmPanel(
         };
 
         panel.webview.onDidReceiveMessage((message: { decision?: unknown }) => {
-            if (message?.decision === "start" || message?.decision === "cancel") {
-                settleWith(message.decision);
+            if (message?.decision === "start") {
+                // Persist the disabled state in webview.html so hiding and revealing the tab cannot
+                // recreate an enabled Start button after the command plan has already launched.
+                panel.webview.html = buildHtml(
+                    hostDisplayName,
+                    folderPath,
+                    plan,
+                    panel.webview.cspSource,
+                    true
+                );
+                settleWith("start");
+            } else if (message?.decision === "cancel") {
+                settleWith("cancel");
                 panel.dispose();
             }
         });

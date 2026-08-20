@@ -67,14 +67,19 @@ describe("showAgenticCreateConfirmPanel", () => {
         createWebviewPanel: () => fake.panel
     });
 
-    it("resolves 'start' and disposes the panel when the user starts", async () => {
+    it("resolves 'start' and keeps a disabled command reference open", async () => {
         const fake = createFakePanel();
         const decisionPromise = showAgenticCreateConfirmPanel("GitHub Copilot CLI", "c:/work/site", plan, depsFor(fake));
 
         fake.emitMessage({ decision: "start" });
 
         expect(await decisionPromise).to.equal("start");
-        expect(fake.disposeCalled()).to.be.true;
+        expect(fake.disposeCalled()).to.be.false;
+        expect(fake.html()).to.contain('id="start"');
+        expect(fake.html()).to.contain('id="start" title="Run the command sequence shown above." disabled');
+        for (const command of plan) {
+            expect(fake.html()).to.contain(command.commandLine.replace(/"/g, "&quot;"));
+        }
     });
 
     it("resolves 'cancel' when the user cancels", async () => {
@@ -84,6 +89,7 @@ describe("showAgenticCreateConfirmPanel", () => {
         fake.emitMessage({ decision: "cancel" });
 
         expect(await decisionPromise).to.equal("cancel");
+        expect(fake.disposeCalled()).to.be.true;
     });
 
     it("resolves 'dismissed' when the panel is closed without a choice", async () => {
