@@ -5,7 +5,6 @@
 
 import * as vscode from 'vscode';
 import { URI_HANDLER_STRINGS } from './constants/uriStrings';
-import { AgenticCreateHandler } from './handlers/agenticCreateHandler';
 import { CreateFlowParameters } from './handlers/createFlowParams';
 import { emitCreateFlowEvent } from './telemetry/createFlowTelemetry';
 import { uriHandlerTelemetryEventNames } from './telemetry/uriHandlerTelemetryEvents';
@@ -31,8 +30,6 @@ const RESUME_STRINGS: ResumeAgenticCreateStrings = {
     }
 };
 
-let resumeInFlight: Promise<void> | undefined;
-
 /**
  * Checks for and resumes an agentic-create flow during desktop-extension activation.
  * @param store VS Code global state containing a possible resume marker.
@@ -40,58 +37,47 @@ let resumeInFlight: Promise<void> | undefined;
 export async function resumeAgenticCreateOnActivation(
     store: ResumeMarkerStore
 ): Promise<void> {
-    if (resumeInFlight) {
-        return resumeInFlight;
-    }
-
-    resumeInFlight = (async () => {
-        try {
-            await resumeAgenticCreate({
-                store,
-                strings: RESUME_STRINGS,
-                isEnabled: AgenticCreateHandler.getEnablementState,
-                detectHost: detectAgentHost,
-                now: Date.now,
-                showInformationMessage: (message, ...buttons) =>
-                    vscode.window.showInformationMessage(message, ...buttons),
-                emitEvent: emitCreateFlowEvent,
-                runStages: async (params: CreateFlowParameters, host: AgentHost) => {
-                    const folderUri = await selectTargetFolder();
-                    if (!folderUri) {
-                        emitCreateFlowEvent(
-                            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_CANCELLED,
-                            params,
-                            'agent'
-                        );
-                        emitCreateFlowEvent(
-                            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED,
-                            params,
-                            'agent',
-                            { reason: 'folderSelectionCancelled' }
-                        );
-                        return;
-                    }
-
+    try {
+        await resumeAgenticCreate({
+            store,
+            strings: RESUME_STRINGS,
+            detectHost: detectAgentHost,
+            now: Date.now,
+            showInformationMessage: (message, ...buttons) =>
+                vscode.window.showInformationMessage(message, ...buttons),
+            emitEvent: emitCreateFlowEvent,
+            runStages: async (params: CreateFlowParameters, host: AgentHost) => {
+                const folderUri = await selectTargetFolder();
+                if (!folderUri) {
                     emitCreateFlowEvent(
-                        uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED,
+                        uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_CANCELLED,
                         params,
                         'agent'
                     );
-                    await confirmAndLaunchSelectedAgentHost(host, folderUri, params);
-                },
-                clearMarker: clearResumeMarker
-            });
-        } catch (error) {
-            console.error('Failed to resume agentic create after reload.', error);
-            try {
-                await clearResumeMarker(store);
-            } catch (clearError) {
-                console.error('Failed to clear the agentic create resume marker.', clearError);
-            }
-        } finally {
-            resumeInFlight = undefined;
-        }
-    })();
+                    emitCreateFlowEvent(
+                        uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED,
+                        params,
+                        'agent',
+                        { reason: 'folderSelectionCancelled' }
+                    );
+                    return;
+                }
 
-    return resumeInFlight;
+                emitCreateFlowEvent(
+                    uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED,
+                    params,
+                    'agent'
+                );
+                await confirmAndLaunchSelectedAgentHost(host, folderUri, params);
+            },
+            clearMarker: clearResumeMarker
+        });
+    } catch (error) {
+        console.error('Failed to resume agentic create after reload.', error);
+        try {
+            await clearResumeMarker(store);
+        } catch (clearError) {
+            console.error('Failed to clear the agentic create resume marker.', clearError);
+        }
+    }
 }

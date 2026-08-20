@@ -10,7 +10,6 @@ import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLo
 import { resumeAgenticCreateOnActivation } from "../../uriHandler/resumeAgenticCreateActivation";
 import * as agenticCreateLaunch from "../../uriHandler/utils/agenticCreateLaunch";
 import * as createFlowCommonStages from "../../uriHandler/handlers/createFlowCommonStages";
-import { AgenticCreateHandler } from "../../uriHandler/handlers/agenticCreateHandler";
 import { AgentHost } from "../../uriHandler/utils/detectAgentHost";
 import * as detectAgentHostModule from "../../uriHandler/utils/detectAgentHost";
 import { ResumeMarker, ResumeMarkerStore } from "../../uriHandler/utils/resumeMarker";
@@ -44,7 +43,6 @@ describe("resumeAgenticCreateOnActivation", () => {
             }
         };
 
-        sandbox.stub(AgenticCreateHandler, "getEnablementState").returns(true);
         sandbox.stub(detectAgentHostModule, "detectAgentHost").resolves({
             host: AgentHost.Copilot,
             installed: true,

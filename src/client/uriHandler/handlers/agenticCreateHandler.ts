@@ -18,7 +18,6 @@ import {
     resolveAgentHostInstallation
 } from "../utils/resolveAgentHostInstallation";
 import { ResumeMarkerStore, writeResumeMarker } from "../utils/resumeMarker";
-import { isCreateFlowCancellation } from "../utils/createFlowErrors";
 import { ConfirmAndLaunchOutcome } from "../utils/confirmAndLaunchAgentHost";
 import {
     confirmAndLaunchSelectedAgentHost,
@@ -83,32 +82,20 @@ export class AgenticCreateHandler {
     }
 
     /**
-     * Current enablement state for the agentic create deep link.
+     * Whether the agentic create deep link is enabled. Defaults to false.
      *
      * The ECS flag is dark by default, so
      * `powerPlatform.experimental.enableAgenticCreateFromHome` acts as a developer-only escape
      * hatch that forces the flow on for local testing. This keeps the shipped ECS fallback off
      * while letting a developer exercise the end-to-end deep link without a code change.
-     *
-     * @returns True or false after ECS is loaded, or undefined while ECS is still initializing.
      */
-    public static getEnablementState(): boolean | undefined {
+    public static isEnabled(): boolean {
         if (AgenticCreateHandler.isLocalOverrideEnabled()) {
             return true;
         }
 
-        if (!ECSFeaturesClient.isInitialized()) {
-            return undefined;
-        }
-
-        return ECSFeaturesClient.getConfig(EnableAgenticCreateFromHome).enableAgenticCreateFromHome;
-    }
-
-    /**
-     * Whether the agentic create deep link is enabled. Defaults to false until ECS is loaded.
-     */
-    public static isEnabled(): boolean {
-        return AgenticCreateHandler.getEnablementState() ?? false;
+        const enabled = ECSFeaturesClient.getConfig(EnableAgenticCreateFromHome).enableAgenticCreateFromHome;
+        return enabled === undefined ? false : enabled;
     }
 
     /**
@@ -265,12 +252,10 @@ export class AgenticCreateHandler {
             // than leaving the user waiting for a flow that has already stopped. The notification
             // is deliberately not awaited: the flow is over, and awaiting would keep the handler
             // pending until the user dismisses the toast.
-            if (!isCreateFlowCancellation(error)) {
-                const reason = error instanceof Error ? error.message : String(error);
-                void vscode.window.showErrorMessage(
-                    URI_HANDLER_STRINGS.ERRORS.CREATE_FLOW_FAILED.replace('{0}', reason)
-                );
-            }
+            const reason = error instanceof Error ? error.message : String(error);
+            void vscode.window.showErrorMessage(
+                URI_HANDLER_STRINGS.ERRORS.CREATE_FLOW_FAILED.replace('{0}', reason)
+            );
         }
     }
 }

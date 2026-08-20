@@ -75,10 +75,7 @@ export const selectAgentHost = async (
     deps: { showQuickPick?: typeof vscode.window.showQuickPick } = {}
 ): Promise<AgentHostSelection | undefined> => {
     const items = getAgentHostQuickPickItems(detection);
-    const selectedItem = await (deps.showQuickPick ?? vscode.window.showQuickPick)(
-        items,
-        { ignoreFocusOut: true }
-    );
+    const selectedItem = await (deps.showQuickPick ?? vscode.window.showQuickPick)(items);
 
     if (!selectedItem) {
         return undefined;

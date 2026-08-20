@@ -18,7 +18,6 @@ import * as createFlowCommonStages from "../../uriHandler/handlers/createFlowCom
 describe("Create deep-link handlers (gated)", () => {
     let sandbox: sinon.SinonSandbox;
     let getConfigStub: sinon.SinonStub;
-    let isEcsInitializedStub: sinon.SinonStub;
     let traceInfoStub: sinon.SinonStub;
     let traceErrorStub: sinon.SinonStub;
     let runCreateFlowCommonStagesStub: sinon.SinonStub;
@@ -66,7 +65,6 @@ describe("Create deep-link handlers (gated)", () => {
     beforeEach(() => {
         sandbox = sinon.createSandbox();
         getConfigStub = sandbox.stub(ECSFeaturesClient, "getConfig") as unknown as sinon.SinonStub;
-        isEcsInitializedStub = sandbox.stub(ECSFeaturesClient, "isInitialized").returns(true);
         traceInfoStub = sandbox.stub();
         traceErrorStub = sandbox.stub();
         sandbox.stub(oneDSLoggerWrapper, "getLogger").returns(
@@ -296,14 +294,6 @@ describe("Create deep-link handlers (gated)", () => {
             setFlags(false);
             stubOverride(false);
 
-            expect(AgenticCreateHandler.isEnabled()).to.be.false;
-        });
-
-        it("reports unknown enablement before ECS initializes", () => {
-            isEcsInitializedStub.returns(false);
-            stubOverride(false);
-
-            expect(AgenticCreateHandler.getEnablementState()).to.be.undefined;
             expect(AgenticCreateHandler.isEnabled()).to.be.false;
         });
 

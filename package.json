@@ -107,7 +107,6 @@
     "onCommand:powerplatform-walkthrough.saveConflict-start-folder",
     "onCommand:powerplatform-walkthrough.advancedCapabilities-learn-more",
     "onCommand:powerplatform-walkthrough.advancedCapabilities-start-coding",
-    "onWebviewPanel:portalPreview",
     "onWebviewPanel:powerPagesAgenticCreateConfirm",
     "onStartupFinished",
     "workspaceContains:**/**.portalconfig",
@@ -427,7 +426,7 @@
       {
         "command": "powerpages.agenticCreate.triggerLocal",
         "category": "Power Pages",
-        "title": "Trigger Agentic Create (Local Testing)"
+        "title": "%powerpages.agenticCreate.triggerLocal.title%"
       },
       {
         "command": "powerPlatform.previewCurrentActiveUsers",
@@ -677,7 +676,7 @@
         "powerPlatform.experimental.enableAgenticCreateFromHome": {
           "type": "boolean",
           "default": false,
-          "markdownDescription": "Developer-only. Force-enable the agentic create deep link (`/agenticCreate`) launched from the Power Pages home page, bypassing the ECS feature flag. Intended for local testing."
+          "markdownDescription": "%powerPlatform.experimental.enableAgenticCreateFromHome.description%"
         },
         "powerPlatform.experimental.enablePcfDebuggingFeatures": {
           "type": "boolean",

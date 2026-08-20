@@ -87,7 +87,6 @@ function createContext(
     const deps: ResumeAgenticCreateDependencies = {
         store,
         strings,
-        isEnabled: () => true,
         detectHost,
         now: () => NOW,
         showInformationMessage,
@@ -118,30 +117,6 @@ describe('resumeAgenticCreate', () => {
         expect(context.emitEvent.notCalled).to.be.true;
         expect(context.runStages.notCalled).to.be.true;
         expect(context.clearMarker.notCalled).to.be.true;
-    });
-
-    it('clears without resuming when the ECS gate is disabled', async () => {
-        const context = createContext();
-        context.deps.isEnabled = () => false;
-
-        await resumeAgenticCreate(context.deps);
-
-        expect(context.store.value).to.be.undefined;
-        expect(context.clearMarker.calledOnceWithExactly(context.store)).to.be.true;
-        expect(context.detectHost.notCalled).to.be.true;
-        expect(context.emitEvent.notCalled).to.be.true;
-    });
-
-    it('keeps a fresh marker while the ECS gate is still unknown', async () => {
-        const context = createContext();
-        context.deps.isEnabled = () => undefined;
-
-        await resumeAgenticCreate(context.deps);
-
-        expect(context.store.value).to.deep.equal(marker);
-        expect(context.clearMarker.notCalled).to.be.true;
-        expect(context.detectHost.notCalled).to.be.true;
-        expect(context.showInformationMessage.notCalled).to.be.true;
     });
 
     it('clears a stale marker without detecting or prompting', async () => {

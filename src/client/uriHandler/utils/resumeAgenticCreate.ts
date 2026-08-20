@@ -34,7 +34,6 @@ export interface ResumeAgenticCreateStrings {
 export interface ResumeAgenticCreateDependencies {
     store: ResumeMarkerStore;
     strings: ResumeAgenticCreateStrings;
-    isEnabled(): boolean | undefined;
     detectHost(host: AgentHost): Promise<AgentHostDetectionResult>;
     now(): number;
     showInformationMessage(
@@ -72,17 +71,8 @@ export async function resumeAgenticCreate(
         return;
     }
 
-    const enabled = deps.isEnabled();
-    if (enabled === undefined) {
-        // ECS has not loaded yet. Keep the fresh marker so activation can retry after ECS
-        // initialization instead of treating an unknown flag state as disabled.
-        return;
-    }
-    if (!enabled) {
-        await deps.clearMarker(deps.store);
-        return;
-    }
-
+    // The short-lived marker is written only after the gated Agentic Create flow has already
+    // started, so resuming it must not depend on ECS being initialized again after reload.
     const detection = await deps.detectHost(marker.host);
     if (!detection.installed) {
         await deps.clearMarker(deps.store);
