@@ -132,6 +132,18 @@ describe('resumeAgenticCreate', () => {
         expect(context.emitEvent.notCalled).to.be.true;
     });
 
+    it('keeps a fresh marker while the ECS gate is still unknown', async () => {
+        const context = createContext();
+        context.deps.isEnabled = () => undefined;
+
+        await resumeAgenticCreate(context.deps);
+
+        expect(context.store.value).to.deep.equal(marker);
+        expect(context.clearMarker.notCalled).to.be.true;
+        expect(context.detectHost.notCalled).to.be.true;
+        expect(context.showInformationMessage.notCalled).to.be.true;
+    });
+
     it('clears a stale marker without detecting or prompting', async () => {
         const context = createContext({ ...marker, timestamp: Number.MIN_SAFE_INTEGER });
 

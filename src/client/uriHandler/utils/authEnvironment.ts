@@ -342,28 +342,32 @@ export class AuthEnvironmentService {
 
         const previouslyActive = authList.Results.find(profile => profile.IsActive);
 
-        const selectResult = await this.pacWrapper.authSelectByIndex(candidate.Index);
-        if (selectResult && selectResult.Status !== "Success") {
-            return undefined;
+        let keepCandidateActive = false;
+        try {
+            const selectResult = await this.pacWrapper.authSelectByIndex(candidate.Index);
+            if (selectResult && selectResult.Status !== "Success") {
+                return undefined;
+            }
+
+            oneDSLoggerWrapper.getLogger().traceInfo(
+                uriHandlerTelemetryEventNames.URI_HANDLER_ENV_SWITCH_PROFILE_SELECTED,
+                { ...telemetryData, requestedEnvId: uriParams.environmentId }
+            );
+
+            const switchResult = await this.trySwitchEnvironment(uriParams);
+            if (switchResult.success) {
+                keepCandidateActive = true;
+                return switchResult;
+            }
+
+            // A mismatch is a statement about the link itself; anything else falls through to the
+            // sign-in step after the speculative profile has been restored.
+            return switchResult.recoverable ? undefined : switchResult;
+        } finally {
+            if (!keepCandidateActive) {
+                await this.restoreAuthProfile(previouslyActive);
+            }
         }
-
-        oneDSLoggerWrapper.getLogger().traceInfo(
-            uriHandlerTelemetryEventNames.URI_HANDLER_ENV_SWITCH_PROFILE_SELECTED,
-            { ...telemetryData, requestedEnvId: uriParams.environmentId }
-        );
-
-        const switchResult = await this.trySwitchEnvironment(uriParams);
-        if (switchResult.success) {
-            return switchResult;
-        }
-
-        // The profile did not get us to the target, so undo the switch rather than leaving the
-        // user on an account they never chose.
-        await this.restoreAuthProfile(previouslyActive);
-
-        // A mismatch is a statement about the link itself, so it survives the rollback; anything
-        // else falls through to the sign-in step.
-        return switchResult.recoverable ? undefined : switchResult;
     }
 
     /**

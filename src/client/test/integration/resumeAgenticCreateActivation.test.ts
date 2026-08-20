@@ -44,7 +44,7 @@ describe("resumeAgenticCreateOnActivation", () => {
             }
         };
 
-        sandbox.stub(AgenticCreateHandler, "isEnabled").returns(true);
+        sandbox.stub(AgenticCreateHandler, "getEnablementState").returns(true);
         sandbox.stub(detectAgentHostModule, "detectAgentHost").resolves({
             host: AgentHost.Copilot,
             installed: true,

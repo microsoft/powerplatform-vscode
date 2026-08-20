@@ -12,6 +12,13 @@ import { oneDSLoggerWrapper } from "../OneDSLoggerTelemetry/oneDSLoggerWrapper";
 export abstract class ECSFeaturesClient {
     private static _ecsConfig: Record<string, string | boolean>;
 
+    /**
+     * Whether ECS configuration has been loaded successfully.
+     */
+    public static isInitialized(): boolean {
+        return this._ecsConfig !== undefined;
+    }
+
     // Initialize ECSFeatureClient - any client config can be fetched with utility function like below
     // EnableMultifileVscodeWeb.getConfig().enableMultifileVscodeWeb
     public static async init(filters: ECSAPIFeatureFlagFilters, clientName: string, force = false) {

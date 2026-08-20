@@ -34,7 +34,7 @@ export interface ResumeAgenticCreateStrings {
 export interface ResumeAgenticCreateDependencies {
     store: ResumeMarkerStore;
     strings: ResumeAgenticCreateStrings;
-    isEnabled(): boolean;
+    isEnabled(): boolean | undefined;
     detectHost(host: AgentHost): Promise<AgentHostDetectionResult>;
     now(): number;
     showInformationMessage(
@@ -66,9 +66,19 @@ export async function resumeAgenticCreate(
         return;
     }
 
-    if (!deps.isEnabled()
-        || !isResumeMarkerFresh(marker, deps.now())
+    if (!isResumeMarkerFresh(marker, deps.now())
         || !isAgentHost(marker.host)) {
+        await deps.clearMarker(deps.store);
+        return;
+    }
+
+    const enabled = deps.isEnabled();
+    if (enabled === undefined) {
+        // ECS has not loaded yet. Keep the fresh marker so activation can retry after ECS
+        // initialization instead of treating an unknown flag state as disabled.
+        return;
+    }
+    if (!enabled) {
         await deps.clearMarker(deps.store);
         return;
     }

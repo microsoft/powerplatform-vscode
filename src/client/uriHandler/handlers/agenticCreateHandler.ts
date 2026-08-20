@@ -83,20 +83,32 @@ export class AgenticCreateHandler {
     }
 
     /**
-     * Whether the agentic create deep link is enabled. Defaults to false.
+     * Current enablement state for the agentic create deep link.
      *
      * The ECS flag is dark by default, so
      * `powerPlatform.experimental.enableAgenticCreateFromHome` acts as a developer-only escape
      * hatch that forces the flow on for local testing. This keeps the shipped ECS fallback off
      * while letting a developer exercise the end-to-end deep link without a code change.
+     *
+     * @returns True or false after ECS is loaded, or undefined while ECS is still initializing.
      */
-    public static isEnabled(): boolean {
+    public static getEnablementState(): boolean | undefined {
         if (AgenticCreateHandler.isLocalOverrideEnabled()) {
             return true;
         }
 
-        const enabled = ECSFeaturesClient.getConfig(EnableAgenticCreateFromHome).enableAgenticCreateFromHome;
-        return enabled === undefined ? false : enabled;
+        if (!ECSFeaturesClient.isInitialized()) {
+            return undefined;
+        }
+
+        return ECSFeaturesClient.getConfig(EnableAgenticCreateFromHome).enableAgenticCreateFromHome;
+    }
+
+    /**
+     * Whether the agentic create deep link is enabled. Defaults to false until ECS is loaded.
+     */
+    public static isEnabled(): boolean {
+        return AgenticCreateHandler.getEnablementState() ?? false;
     }
 
     /**

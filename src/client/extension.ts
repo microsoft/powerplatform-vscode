@@ -251,6 +251,10 @@ export async function activate(
                         },
                         PowerPagesClientName, true);
 
+                    // A fresh Agentic Create marker is preserved while ECS is unknown. Retry now
+                    // that the production flag has loaded.
+                    void resumeAgenticCreateOnActivation(_context.globalState);
+
                     // Register copilot panels only after ECS initialization is complete
                     registerCopilotPanels(pacWrapper);
 

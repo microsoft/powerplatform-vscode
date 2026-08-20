@@ -51,6 +51,19 @@ describe("ECSFeaturesClient", () => {
         sandbox.restore();
     });
 
+    it("reports whether ECS configuration has loaded", async () => {
+        expect(ECSFeaturesClient.isInitialized()).to.be.false;
+        fetchStub.resolves({
+            ok: true,
+            status: 200,
+            json: () => Promise.resolve({ [clientName]: { featureA: true } })
+        } as unknown as Response);
+
+        await ECSFeaturesClient.init(mockFilters, clientName, true);
+
+        expect(ECSFeaturesClient.isInitialized()).to.be.true;
+    });
+
     describe("init", () => {
         it("should initialize config on successful response", async () => {
             const mockConfig = { featureA: true, featureB: "value" };
