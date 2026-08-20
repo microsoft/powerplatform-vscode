@@ -424,11 +424,6 @@
         "enablement": "resourcePath =~ /server-logics?[/\\\\]/ && resourceExtname == .js"
       },
       {
-        "command": "powerpages.agenticCreate.triggerLocal",
-        "category": "Power Pages",
-        "title": "%powerpages.agenticCreate.triggerLocal.title%"
-      },
-      {
         "command": "powerPlatform.previewCurrentActiveUsers",
         "title": "Current Active Users",
         "icon": "$(person)",
@@ -672,11 +667,6 @@
           "type": "boolean",
           "default": false,
           "markdownDescription": "Disable the PowerPlatform activity bar panels"
-        },
-        "powerPlatform.experimental.enableAgenticCreateFromHome": {
-          "type": "boolean",
-          "default": false,
-          "markdownDescription": "%powerPlatform.experimental.enableAgenticCreateFromHome.description%"
         },
         "powerPlatform.experimental.enablePcfDebuggingFeatures": {
           "type": "boolean",
@@ -1004,10 +994,6 @@
         }
       ],
       "commandPalette": [
-        {
-          "command": "powerpages.agenticCreate.triggerLocal",
-          "when": "!virtualWorkspace && config.powerPlatform.experimental.enableAgenticCreateFromHome"
-        },
         {
           "command": "microsoft-powerapps-portals.webExtension.init",
           "when": "never"

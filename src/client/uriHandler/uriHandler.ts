@@ -14,27 +14,18 @@ import { AuthEnvironmentService } from "./utils/authEnvironment";
 import { AgenticCreateHandler } from "./handlers/agenticCreateHandler";
 import { PacCreateHandler } from "./handlers/pacCreateHandler";
 import { ResumeMarkerStore } from "./utils/resumeMarker";
-import { registerAgenticCreateLocalTrigger } from "./commands/agenticCreateLocalTrigger";
 
 /**
  * Signature for a deep-link route handler. Each registered URI path maps to one handler.
  */
 type UriRouteHandler = (uri: vscode.Uri) => Promise<void>;
 
-/**
- * Registers the deep-link handler plus the developer-only command that replays an
- * agentic-create deep link locally. Both share one handler instance so the command exercises
- * the production dispatch path.
- */
 export function RegisterUriHandler(
     pacWrapper: PacWrapper,
     resumeMarkerStore?: ResumeMarkerStore
 ): vscode.Disposable {
     const uriHandler = new UriHandler(pacWrapper, resumeMarkerStore);
-    return vscode.Disposable.from(
-        vscode.window.registerUriHandler(uriHandler),
-        registerAgenticCreateLocalTrigger((uri) => uriHandler.handleUri(uri), resumeMarkerStore)
-    );
+    return vscode.window.registerUriHandler(uriHandler);
 }
 
 export class UriHandler implements vscode.UriHandler {

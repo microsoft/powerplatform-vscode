@@ -110,20 +110,5 @@ export const URI_HANDLER_STRINGS = {
         STEP_INSTALL_PLUGIN_USER_SCOPE: vscode.l10n.t("Install the Power Pages plugin (user scope)."),
         // {0} is the agent host display name.
         STEP_LAUNCH_HOST: vscode.l10n.t("Start {0} and ask how to create a site.")
-    },
-    LOCAL_TRIGGER: {
-        INPUT_TITLE: vscode.l10n.t("Trigger Agentic Create (Local Testing)"),
-        INPUT_PROMPT: vscode.l10n.t("Edit the deep link, then press Enter to run the same flow Power Pages sends."),
-        LINK_REQUIRED: vscode.l10n.t("Enter a deep link."),
-        LINK_INVALID: vscode.l10n.t("Enter a valid URI."),
-        // {0} is the expected deep-link path, for example /agenticCreate.
-        LINK_PATH_INVALID: vscode.l10n.t("The link path must be {0}."),
-        LINK_SCHEME_INVALID: vscode.l10n.t({
-            message: "The link must start with vscode:// or vscode-insiders://.",
-            comment: ["Do not translate 'vscode://' or 'vscode-insiders://' as they are URI schemes."]
-        }),
-        LINK_PLACEHOLDERS: vscode.l10n.t("Replace the <...> placeholders with real values."),
-        // {0} is the name of the setting that enables the flow.
-        DISABLED: vscode.l10n.t("Agentic create is disabled. Set {0} to true to enable it.")
     }
 } as const;

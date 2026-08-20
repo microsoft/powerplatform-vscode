@@ -23,7 +23,6 @@ import {
     confirmAndLaunchSelectedAgentHost,
     getAgentHostDisplayName
 } from "../utils/agenticCreateLaunch";
-import { URI_CONSTANTS } from "../constants/uriConstants";
 import { URI_HANDLER_STRINGS } from "../constants/uriStrings";
 
 /**
@@ -82,29 +81,11 @@ export class AgenticCreateHandler {
     }
 
     /**
-     * Whether the agentic create deep link is enabled. Defaults to false.
-     *
-     * The ECS flag is dark by default, so
-     * `powerPlatform.experimental.enableAgenticCreateFromHome` acts as a developer-only escape
-     * hatch that forces the flow on for local testing. This keeps the shipped ECS fallback off
-     * while letting a developer exercise the end-to-end deep link without a code change.
+     * Whether the agentic create deep link is enabled via ECS. Defaults to false.
      */
     public static isEnabled(): boolean {
-        if (AgenticCreateHandler.isLocalOverrideEnabled()) {
-            return true;
-        }
-
         const enabled = ECSFeaturesClient.getConfig(EnableAgenticCreateFromHome).enableAgenticCreateFromHome;
         return enabled === undefined ? false : enabled;
-    }
-
-    /**
-     * Reads the developer-only local override setting used to force the dark flag on.
-     */
-    private static isLocalOverrideEnabled(): boolean {
-        return vscode.workspace
-            .getConfiguration(URI_CONSTANTS.LOCAL_OVERRIDE_SETTING.NAMESPACE)
-            .get<boolean>(URI_CONSTANTS.LOCAL_OVERRIDE_SETTING.AGENTIC_CREATE_ENABLED, false) === true;
     }
 
     /**

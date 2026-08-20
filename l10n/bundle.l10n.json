@@ -201,19 +201,6 @@
   "Install the Power Pages plugin.": "Install the Power Pages plugin.",
   "Install the Power Pages plugin (user scope).": "Install the Power Pages plugin (user scope).",
   "Start {0} and ask how to create a site.": "Start {0} and ask how to create a site.",
-  "Trigger Agentic Create (Local Testing)": "Trigger Agentic Create (Local Testing)",
-  "Edit the deep link, then press Enter to run the same flow Power Pages sends.": "Edit the deep link, then press Enter to run the same flow Power Pages sends.",
-  "Enter a deep link.": "Enter a deep link.",
-  "Enter a valid URI.": "Enter a valid URI.",
-  "The link path must be {0}.": "The link path must be {0}.",
-  "The link must start with vscode:// or vscode-insiders://./Do not translate 'vscode://' or 'vscode-insiders://' as they are URI schemes.": {
-    "message": "The link must start with vscode:// or vscode-insiders://.",
-    "comment": [
-      "Do not translate 'vscode://' or 'vscode-insiders://' as they are URI schemes."
-    ]
-  },
-  "Replace the <...> placeholders with real values.": "Replace the <...> placeholders with real values.",
-  "Agentic create is disabled. Set {0} to true to enable it.": "Agentic create is disabled. Set {0} to true to enable it.",
   "File might be referenced by name {0} here./{0} represents the name of the file": {
     "message": "File might be referenced by name {0} here.",
     "comment": [

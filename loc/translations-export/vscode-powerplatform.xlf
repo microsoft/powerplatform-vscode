@@ -68,9 +68,6 @@
     <trans-unit id="++CODE++4a122057a87c136eb022c2dc03e836d5af660872449154ed18ab8a4bf41c3d62">
       <source xml:lang="en">Agent host</source>
     </trans-unit>
-    <trans-unit id="++CODE++0bccb7a3dabaa450d9abfe017ebe05ee72eeaed89faba704b340b645e73ba795">
-      <source xml:lang="en">Agentic create is disabled. Set {0} to true to enable it.</source>
-    </trans-unit>
     <trans-unit id="++CODE++a52ace420f2175d08b1577a1bea5445e36801229c074ef9ed6c55a73401fd9c2">
       <source xml:lang="en">All</source>
     </trans-unit>
@@ -494,9 +491,6 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
       <source xml:lang="en">Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel &quot;Show download output&quot;))...</source>
       <note>This is a markdown formatting which must persist across translations.</note>
     </trans-unit>
-    <trans-unit id="++CODE++b673885980167a45d5cc83b33a88215073acaf9b0f8131037117d9087f0fd935">
-      <source xml:lang="en">Edit the deep link, then press Enter to run the same flow Power Pages sends.</source>
-    </trans-unit>
     <trans-unit id="++CODE++ac72407b10d30bf47faf11da09b605a85fc649bd3f2e33acb281655cb9021d9d">
       <source xml:lang="en">Edit the site</source>
     </trans-unit>
@@ -506,14 +500,8 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++0feefedc5916a0c9a464f4ef9f28fab835a23e1d035878f397e38053381aa3fa">
       <source xml:lang="en">Enter Organization ID</source>
     </trans-unit>
-    <trans-unit id="++CODE++dc510a7085f5f8a313f4e8139c7e8f73421a7d9a6ca477423bb48867a3a1ae45">
-      <source xml:lang="en">Enter a deep link.</source>
-    </trans-unit>
     <trans-unit id="++CODE++d836838411c4fbaf037387dcc5cd69d7561889fa19ff57ab5beed63fd3b4dd95">
       <source xml:lang="en">Enter a name for the cloned site</source>
-    </trans-unit>
-    <trans-unit id="++CODE++3a653269d4cc6ab5b889d532d21efa1b5ee4f0c7b39407513d01f268afdd8fdc">
-      <source xml:lang="en">Enter a valid URI.</source>
     </trans-unit>
     <trans-unit id="++CODE++80ccd89cd4c287f3ca9f3693982e8034544fefeba563c974f93482158e8f0737">
       <source xml:lang="en">Enter name</source>
@@ -1153,9 +1141,6 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++95e154398a4bc0091aa4d6b607472ac5a89e41fbc84a3a49f823314d6de9eebc">
       <source xml:lang="en">Replace</source>
     </trans-unit>
-    <trans-unit id="++CODE++060de3f97883b6eee281c56607071a39ecec98e2d75ccdc9662452ae47acc1d4">
-      <source xml:lang="en">Replace the &lt;...&gt; placeholders with real values.</source>
-    </trans-unit>
     <trans-unit id="++CODE++b87504a6b179044cf99d39cf641f47aa5e76c4c5b949413ec33953ec35c10ac4">
       <source xml:lang="en">Results opened in SARIF viewer successfully.</source>
     </trans-unit>
@@ -1375,13 +1360,6 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
       <source xml:lang="en">The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?</source>
       <note>Do not translate 'Microsoft Edge Tools' </note>
     </trans-unit>
-    <trans-unit id="++CODE++5ae6bd8e6ffa3e2b0c09dfa778672b6d01943b85339da6606abeefc204416868">
-      <source xml:lang="en">The link must start with vscode:// or vscode-insiders://.</source>
-      <note>Do not translate 'vscode://' or 'vscode-insiders://' as they are URI schemes.</note>
-    </trans-unit>
-    <trans-unit id="++CODE++1b7ff015c997e7d7d333495e39bd4ac7cd4994b4171408973a0cb180db77326b">
-      <source xml:lang="en">The link path must be {0}.</source>
-    </trans-unit>
     <trans-unit id="++CODE++e4a2396fd7a366292a40abc87b18a2329458c258f4d0e0e593e6189dff19a117">
       <source xml:lang="en">The name you want to give to this authentication profile</source>
     </trans-unit>
@@ -1436,9 +1414,6 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++1ad14134a4f26b4cf2f8e203eb324fab77722a2f5368f489162d3d2319d01060">
       <source xml:lang="en">Total Files:</source>
-    </trans-unit>
-    <trans-unit id="++CODE++a42753714588808f8736536ca95dedb681e3e900618e7eee9ee546871b6eadf4">
-      <source xml:lang="en">Trigger Agentic Create (Local Testing)</source>
     </trans-unit>
     <trans-unit id="++CODE++4a7c431a6572c68bba17c3a5d858adbf5112462574953baf4d7d2fd0619807fe">
       <source xml:lang="en">Try @powerpages with GitHub Copilot</source>
@@ -1749,9 +1724,6 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
     <trans-unit id="pacCLI.authPanel.deleteAuthProfile.title">
       <source xml:lang="en">Delete Auth Profile</source>
     </trans-unit>
-    <trans-unit id="powerPlatform.experimental.enableAgenticCreateFromHome.description">
-      <source xml:lang="en">Developer-only. Force-enable the agentic create deep link (`/agenticCreate`) launched from the Power Pages home page, bypassing the ECS feature flag. Intended for local testing.</source>
-    </trans-unit>
     <trans-unit id="pacCLI.disableTelemetry.title">
       <source xml:lang="en">Disable PAC Telemetry</source>
     </trans-unit>
@@ -1965,9 +1937,6 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.configuration.downloadSite.description">
       <source xml:lang="en">The folder where site will be downloaded when using Power Pages Actions. Leave this empty to ask for a folder every time you download a site.</source>
-    </trans-unit>
-    <trans-unit id="powerpages.agenticCreate.triggerLocal.title">
-      <source xml:lang="en">Trigger Agentic Create (Local Testing)</source>
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite.title">
       <source xml:lang="en">Upload Site</source>
