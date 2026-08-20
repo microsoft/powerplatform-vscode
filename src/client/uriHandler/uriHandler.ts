@@ -38,7 +38,7 @@ export class UriHandler implements vscode.UriHandler {
     constructor(pacWrapper: PacWrapper, resumeMarkerStore?: ResumeMarkerStore) {
         this.pacWrapper = pacWrapper;
         this.authEnvironmentService = new AuthEnvironmentService(pacWrapper);
-        this.agenticCreateHandler = new AgenticCreateHandler(pacWrapper, resumeMarkerStore);
+        this.agenticCreateHandler = new AgenticCreateHandler(resumeMarkerStore);
         this.pacCreateHandler = new PacCreateHandler(pacWrapper);
         this.routes = this.buildRoutes();
     }

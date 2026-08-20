@@ -7,13 +7,11 @@ import { expect } from "chai";
 import * as sinon from "sinon";
 import * as vscode from "vscode";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
-import { PacWrapper } from "../../pac/PacWrapper";
 import { URI_CONSTANTS } from "../../uriHandler/constants/uriConstants";
 import {
     AgenticCreateHandler,
     AgenticCreateHandlerDependencies
 } from "../../uriHandler/handlers/agenticCreateHandler";
-import * as createFlowCommonStages from "../../uriHandler/handlers/createFlowCommonStages";
 import { emitCreateFlowEvent } from "../../uriHandler/telemetry/createFlowTelemetry";
 import { uriHandlerTelemetryEventNames } from "../../uriHandler/telemetry/uriHandlerTelemetryEvents";
 import { AgentHost, AgentHostDetectionResult } from "../../uriHandler/utils/detectAgentHost";
@@ -22,11 +20,11 @@ import { ResumeMarkerStore } from "../../uriHandler/utils/resumeMarker";
 
 describe("Agentic create host resolution", () => {
     let sandbox: sinon.SinonSandbox;
-    let runCreateFlowCommonStagesStub: sinon.SinonStub;
     let detectAgentHostStub: sinon.SinonStub;
-    let selectAgentHostStub: sinon.SinonStub;
+    let selectAgenticCreateInputsStub: sinon.SinonStub;
     let resolveAgentHostInstallationStub: sinon.SinonStub;
     let emitCreateFlowEventStub: sinon.SinonStub;
+    let confirmAndLaunchAgentHostStub: sinon.SinonStub;
     let traceInfoStub: sinon.SinonStub;
     let traceErrorStub: sinon.SinonStub;
     let storeUpdateStub: sinon.SinonStub;
@@ -67,7 +65,7 @@ describe("Agentic create host resolution", () => {
     ]);
 
     const createHandler = (): AgenticCreateHandler =>
-        new AgenticCreateHandler({} as PacWrapper, store, dependencies);
+        new AgenticCreateHandler(store, dependencies);
 
     const expectNoSensitiveTelemetry = (): void => {
         for (const call of traceInfoStub.getCalls()) {
@@ -98,20 +96,20 @@ describe("Agentic create host resolution", () => {
             } as unknown as ReturnType<typeof oneDSLoggerWrapper.getLogger>
         );
 
-        runCreateFlowCommonStagesStub = sandbox.stub().resolves(selectedFolder);
-        sandbox.stub(
-            createFlowCommonStages,
-            "runCreateFlowCommonStages"
-        ).callsFake(runCreateFlowCommonStagesStub);
         detectAgentHostStub = sandbox.stub();
         detectAgentHostStub.withArgs(AgentHost.Copilot).resolves(detection[0]);
         detectAgentHostStub.withArgs(AgentHost.Claude).resolves(detection[1]);
-        selectAgentHostStub = sandbox.stub().resolves({
-            host: AgentHost.Copilot,
-            installed: true
+        selectAgenticCreateInputsStub = sandbox.stub().resolves({
+            status: "selected",
+            folderUri: selectedFolder,
+            hostSelection: {
+                host: AgentHost.Copilot,
+                installed: true
+            }
         });
         resolveAgentHostInstallationStub = sandbox.stub();
         emitCreateFlowEventStub = sandbox.stub().callsFake(emitCreateFlowEvent);
+        confirmAndLaunchAgentHostStub = sandbox.stub().resolves({ status: "launched" });
         storeUpdateStub = sandbox.stub().resolves();
         store = {
             get: () => undefined,
@@ -119,9 +117,10 @@ describe("Agentic create host resolution", () => {
         };
         dependencies = {
             detectAgentHost: detectAgentHostStub,
-            selectAgentHost: selectAgentHostStub,
+            selectAgenticCreateInputs: selectAgenticCreateInputsStub,
             resolveAgentHostInstallation: resolveAgentHostInstallationStub,
-            emitCreateFlowEvent: emitCreateFlowEventStub
+            emitCreateFlowEvent: emitCreateFlowEventStub,
+            confirmAndLaunchAgentHost: confirmAndLaunchAgentHostStub
         };
     });
 
@@ -129,39 +128,76 @@ describe("Agentic create host resolution", () => {
         sandbox.restore();
     });
 
+    it("drops the flow when folder selection is cancelled", async () => {
+        selectAgenticCreateInputsStub.resolves({
+            status: "cancelled",
+            step: "folder"
+        });
+
+        await createHandler().handle(uri);
+
+        expect(emitCreateFlowEventStub.callCount).to.equal(2);
+        expect(emitCreateFlowEventStub.firstCall.args[0]).to.equal(
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_CANCELLED
+        );
+        expect(emitCreateFlowEventStub.secondCall.args[0]).to.equal(
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED
+        );
+        expect(emitCreateFlowEventStub.secondCall.args[3]).to.deep.equal({
+            reason: "folderSelectionCancelled"
+        });
+        expect(resolveAgentHostInstallationStub.notCalled).to.be.true;
+        expect(confirmAndLaunchAgentHostStub.notCalled).to.be.true;
+    });
+
     it("drops the flow when host selection is cancelled", async () => {
-        selectAgentHostStub.resolves(undefined);
+        selectAgenticCreateInputsStub.resolves({
+            status: "cancelled",
+            step: "host",
+            folderUri: selectedFolder
+        });
 
         await createHandler().handle(uri);
 
         expect(detectAgentHostStub.callCount).to.equal(2);
         expect(detectAgentHostStub.firstCall.calledWithExactly(AgentHost.Copilot)).to.be.true;
         expect(detectAgentHostStub.secondCall.calledWithExactly(AgentHost.Claude)).to.be.true;
-        expect(selectAgentHostStub.calledOnceWithExactly(detection)).to.be.true;
-        expect(emitCreateFlowEventStub.calledOnce).to.be.true;
-        expect(emitCreateFlowEventStub.firstCall.args).to.include(
+        expect(selectAgenticCreateInputsStub.calledOnceWithExactly(detection)).to.be.true;
+        expect(emitCreateFlowEventStub.callCount).to.equal(2);
+        expect(emitCreateFlowEventStub.firstCall.args[0]).to.equal(
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED
+        );
+        expect(emitCreateFlowEventStub.secondCall.args).to.include(
             uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED
         );
-        expect(emitCreateFlowEventStub.firstCall.args[3]).to.deep.equal({
+        expect(emitCreateFlowEventStub.secondCall.args[3]).to.deep.equal({
             reason: "hostSelectionCancelled"
         });
         expect(resolveAgentHostInstallationStub.notCalled).to.be.true;
+        expect(confirmAndLaunchAgentHostStub.notCalled).to.be.true;
         expect(storeUpdateStub.notCalled).to.be.true;
         expectNoInstallEventsFromHandler();
         expectNoSensitiveTelemetry();
     });
 
-    it("emits host selected once and stops at the G3 seam for an installed host", async () => {
+    it("emits host selected once and confirms + launches for an installed host", async () => {
         await createHandler().handle(uri);
 
-        expect(emitCreateFlowEventStub.calledOnce).to.be.true;
+        expect(emitCreateFlowEventStub.callCount).to.equal(2);
         expect(emitCreateFlowEventStub.firstCall.args[0]).to.equal(
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED
+        );
+        expect(emitCreateFlowEventStub.secondCall.args[0]).to.equal(
             uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_SELECTED
         );
-        expect(emitCreateFlowEventStub.firstCall.args[3]).to.deep.equal({
+        expect(emitCreateFlowEventStub.secondCall.args[3]).to.deep.equal({
             host: AgentHost.Copilot,
             installed: "true"
         });
+        expect(confirmAndLaunchAgentHostStub.calledOnce).to.be.true;
+        expect(confirmAndLaunchAgentHostStub.firstCall.args[0]).to.equal(AgentHost.Copilot);
+        expect(confirmAndLaunchAgentHostStub.firstCall.args[1]).to.equal("GitHub Copilot CLI");
+        expect(confirmAndLaunchAgentHostStub.firstCall.args[2]).to.equal(selectedFolder);
         expect(resolveAgentHostInstallationStub.notCalled).to.be.true;
         expect(storeUpdateStub.notCalled).to.be.true;
         expectNoInstallEventsFromHandler();
@@ -183,19 +219,26 @@ describe("Agentic create host resolution", () => {
 
     for (const resolution of resolutions) {
         it(`handles a not-installed host when installation resolution is ${resolution.status}`, async () => {
-            selectAgentHostStub.resolves({
-                host: AgentHost.Claude,
-                installed: false
+            selectAgenticCreateInputsStub.resolves({
+                status: "selected",
+                folderUri: selectedFolder,
+                hostSelection: {
+                    host: AgentHost.Claude,
+                    installed: false
+                }
             });
             resolveAgentHostInstallationStub.resolves(resolution);
 
             await createHandler().handle(uri);
 
-            expect(emitCreateFlowEventStub.calledOnce).to.be.true;
+            expect(emitCreateFlowEventStub.callCount).to.equal(2);
             expect(emitCreateFlowEventStub.firstCall.args[0]).to.equal(
+                uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED
+            );
+            expect(emitCreateFlowEventStub.secondCall.args[0]).to.equal(
                 uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_SELECTED
             );
-            expect(emitCreateFlowEventStub.firstCall.args[3]).to.deep.equal({
+            expect(emitCreateFlowEventStub.secondCall.args[3]).to.deep.equal({
                 host: AgentHost.Claude,
                 installed: "false"
             });
@@ -210,6 +253,14 @@ describe("Agentic create host resolution", () => {
                 "writeResumeMarker",
                 "reloadWindow"
             );
+            if (resolution.status === "resolved") {
+                expect(confirmAndLaunchAgentHostStub.calledOnce).to.be.true;
+                expect(confirmAndLaunchAgentHostStub.firstCall.args[0]).to.equal(AgentHost.Claude);
+                expect(confirmAndLaunchAgentHostStub.firstCall.args[1]).to.equal("Claude Code");
+                expect(confirmAndLaunchAgentHostStub.firstCall.args[2]).to.equal(selectedFolder);
+            } else {
+                expect(confirmAndLaunchAgentHostStub.notCalled).to.be.true;
+            }
             expect(storeUpdateStub.notCalled).to.be.true;
             expectNoInstallEventsFromHandler();
             expectNoSensitiveTelemetry();

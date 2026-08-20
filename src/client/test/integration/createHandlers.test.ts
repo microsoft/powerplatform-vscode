@@ -185,7 +185,7 @@ describe("Create deep-link handlers (gated)", () => {
 
     it("AgenticCreateHandler is a no-op that only emits disabled telemetry when the flag is off", async () => {
         setFlags(false);
-        const handler = new AgenticCreateHandler({} as PacWrapper);
+        const handler = new AgenticCreateHandler();
 
         await handler.handle(agenticCreateUri);
 
@@ -206,8 +206,7 @@ describe("Create deep-link handlers (gated)", () => {
 
     it("AgenticCreateHandler proceeds without a contract version when the flag is on", async () => {
         setFlags(true);
-        const pacWrapper = {} as PacWrapper;
-        const handler = new AgenticCreateHandler(pacWrapper);
+        const handler = new AgenticCreateHandler();
 
         await handler.handle(agenticCreateUri);
 
@@ -224,18 +223,7 @@ describe("Create deep-link handlers (gated)", () => {
             correlationId: 'agent-correlation'
         });
         expectIdentifiers(triggered?.args[1] as Record<string, string>, 'agent-env', 'agent-website');
-        expect(runCreateFlowCommonStagesStub.calledOnce).to.be.true;
-        expect(runCreateFlowCommonStagesStub.firstCall.args[0]).to.include({
-            environmentId: 'agent-env',
-            websiteId: 'agent-website',
-            correlationId: 'agent-correlation'
-        });
-        expect(runCreateFlowCommonStagesStub.firstCall.args[1]).to.equal('agent');
-        expect(runCreateFlowCommonStagesStub.firstCall.args[2]).to.include({
-            environmentId: 'agent-env',
-            websiteId: 'agent-website'
-        });
-        expect(runCreateFlowCommonStagesStub.firstCall.args[3]).to.equal(pacWrapper);
+        expect(runCreateFlowCommonStagesStub.called).to.be.false;
         expect(traceInfoStub.calledWith(
             uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED
         )).to.be.false;
@@ -243,7 +231,7 @@ describe("Create deep-link handlers (gated)", () => {
 
     it("AgenticCreateHandler drops an unsupported contract version before the flow starts", async () => {
         setFlags(true);
-        const handler = new AgenticCreateHandler({} as PacWrapper);
+        const handler = new AgenticCreateHandler();
 
         await handler.handle(withContractVersion(agenticCreateUri, '2'));
 
@@ -265,7 +253,7 @@ describe("Create deep-link handlers (gated)", () => {
     it("AgenticCreateHandler emits failed telemetry through the create-flow helper", async () => {
         setFlags(true);
         traceInfoStub.throws(new Error('trigger failed'));
-        const handler = new AgenticCreateHandler({} as PacWrapper);
+        const handler = new AgenticCreateHandler();
 
         await handler.handle(agenticCreateUri);
 

@@ -34,7 +34,6 @@ export interface ResumeAgenticCreateStrings {
 export interface ResumeAgenticCreateDependencies {
     store: ResumeMarkerStore;
     strings: ResumeAgenticCreateStrings;
-    isEnabled(): boolean;
     detectHost(host: AgentHost): Promise<AgentHostDetectionResult>;
     now(): number;
     showInformationMessage(
@@ -42,7 +41,7 @@ export interface ResumeAgenticCreateDependencies {
         ...buttons: string[]
     ): PromiseLike<string | undefined>;
     emitEvent: CreateFlowEventEmitter;
-    runStages(params: CreateFlowParameters): PromiseLike<unknown>;
+    runStages(params: CreateFlowParameters, host: AgentHost): PromiseLike<unknown>;
     clearMarker(store: ResumeMarkerStore): PromiseLike<void> | void;
 }
 
@@ -66,13 +65,14 @@ export async function resumeAgenticCreate(
         return;
     }
 
-    if (!deps.isEnabled()
-        || !isResumeMarkerFresh(marker, deps.now())
+    if (!isResumeMarkerFresh(marker, deps.now())
         || !isAgentHost(marker.host)) {
         await deps.clearMarker(deps.store);
         return;
     }
 
+    // The short-lived marker is written only after the gated Agentic Create flow has already
+    // started, so resuming it must not depend on ECS being initialized again after reload.
     const detection = await deps.detectHost(marker.host);
     if (!detection.installed) {
         await deps.clearMarker(deps.store);
@@ -110,7 +110,7 @@ export async function resumeAgenticCreate(
             params,
             'agent'
         );
-        await deps.runStages(params);
+        await deps.runStages(params, marker.host);
     } finally {
         await deps.clearMarker(deps.store);
     }

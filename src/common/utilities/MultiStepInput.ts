@@ -16,6 +16,7 @@ interface QuickPickParameters<T extends QuickPickItem> {
   activeItem?: T;
   placeholder: string;
   buttons?: QuickInputButton[];
+  ignoreFocusOut?: boolean;
 }
 
 interface AsyncQuickPickParameters<T extends QuickPickItem> {
@@ -95,7 +96,7 @@ export class MultiStepInput {
   async showQuickPick<
     T extends QuickPickItem,
     P extends QuickPickParameters<T>
-  >({ title, step, totalSteps, items, activeItem, placeholder, buttons }: P) {
+  >({ title, step, totalSteps, items, activeItem, placeholder, buttons, ignoreFocusOut }: P) {
     const disposables: Disposable[] = [];
     try {
       return await new Promise<
@@ -108,6 +109,7 @@ export class MultiStepInput {
         input.placeholder = placeholder;
         input.items = items;
         input.activeItems = activeItem ? [activeItem] : [];
+        input.ignoreFocusOut = ignoreFocusOut ?? false;
 
         input.buttons = [
           ...(this.steps.length > 1 ? [QuickInputButtons.Back] : []),
@@ -118,7 +120,8 @@ export class MultiStepInput {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             item === QuickInputButtons.Back ? reject(InputFlowAction.back) : resolve(<any>item);
           }),
-          input.onDidChangeSelection((items) => resolve(items[0]))
+          input.onDidChangeSelection((items) => resolve(items[0])),
+          input.onDidHide(() => reject(InputFlowAction.cancel))
         );
         if (this.current) {
           this.current.dispose();

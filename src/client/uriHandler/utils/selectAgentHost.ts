@@ -15,7 +15,7 @@ export interface AgentHostSelection {
     installed: boolean;
 }
 
-interface AgentHostQuickPickItem extends vscode.QuickPickItem {
+export interface AgentHostQuickPickItem extends vscode.QuickPickItem {
     host: AgentHost;
     installed: boolean;
 }
@@ -39,6 +39,32 @@ const getAgentHostDescription = (result: AgentHostDetectionResult): string => {
 };
 
 /**
+ * Builds agent-host items shared by the standalone picker and Agentic Create wizard.
+ * @param detection Agent-host detection results in display order.
+ * @returns Quick Pick items carrying the host selection data.
+ */
+export const getAgentHostQuickPickItems = (
+    detection: AgentHostDetectionResult[]
+): AgentHostQuickPickItem[] => detection.map(result => ({
+    label: AGENT_HOST_DISPLAY_NAMES[result.host],
+    description: getAgentHostDescription(result),
+    host: result.host,
+    installed: result.installed
+}));
+
+/**
+ * Removes Quick Pick presentation fields from an agent-host selection.
+ * @param selectedItem Selected agent-host item.
+ * @returns Host and installation state consumed by the flow.
+ */
+export const toAgentHostSelection = (
+    selectedItem: AgentHostQuickPickItem
+): AgentHostSelection => ({
+    host: selectedItem.host,
+    installed: selectedItem.installed
+});
+
+/**
  * Prompts the user to select an agent host from the supplied detection results.
  * @param detection Agent host detection results in display order.
  * @param deps Optional UI dependencies used to display the QuickPick.
@@ -48,20 +74,12 @@ export const selectAgentHost = async (
     detection: AgentHostDetectionResult[],
     deps: { showQuickPick?: typeof vscode.window.showQuickPick } = {}
 ): Promise<AgentHostSelection | undefined> => {
-    const items: AgentHostQuickPickItem[] = detection.map(result => ({
-        label: AGENT_HOST_DISPLAY_NAMES[result.host],
-        description: getAgentHostDescription(result),
-        host: result.host,
-        installed: result.installed
-    }));
+    const items = getAgentHostQuickPickItems(detection);
     const selectedItem = await (deps.showQuickPick ?? vscode.window.showQuickPick)(items);
 
     if (!selectedItem) {
         return undefined;
     }
 
-    return {
-        host: selectedItem.host,
-        installed: selectedItem.installed
-    };
+    return toAgentHostSelection(selectedItem);
 };
