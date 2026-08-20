@@ -11,10 +11,10 @@ import { EnableAgenticCreateFromHome } from "../../../common/ecs-features/ecsFea
 import { uriHandlerTelemetryEventNames } from "../telemetry/uriHandlerTelemetryEvents";
 import { buildCreateFlowTelemetry, CreateFlowParameters, parseCreateFlowParameters } from "./createFlowParams";
 import { emitCreateFlowError, emitCreateFlowEvent } from "../telemetry/createFlowTelemetry";
-import { runCreateFlowCommonStages } from "./createFlowCommonStages";
+import { prepareCreateFlowAuthenticationAndEnvironment } from "./createFlowCommonStages";
 import { isSupportedContractVersion } from "./createFlowContractVersion";
 import { AgentHost, detectAgentHost } from "../utils/detectAgentHost";
-import { selectAgentHost } from "../utils/selectAgentHost";
+import { selectAgenticCreateInputs } from "../utils/selectAgenticCreateInputs";
 import {
     AgentHostInstallationStrings,
     resolveAgentHostInstallation
@@ -34,7 +34,7 @@ import { URI_HANDLER_STRINGS } from "../constants/uriStrings";
  */
 export interface AgenticCreateHandlerDependencies {
     detectAgentHost: typeof detectAgentHost;
-    selectAgentHost: typeof selectAgentHost;
+    selectAgenticCreateInputs: typeof selectAgenticCreateInputs;
     resolveAgentHostInstallation: typeof resolveAgentHostInstallation;
     emitCreateFlowEvent: typeof emitCreateFlowEvent;
     confirmAndLaunchAgentHost: (
@@ -47,7 +47,7 @@ export interface AgenticCreateHandlerDependencies {
 
 const DEFAULT_DEPENDENCIES: AgenticCreateHandlerDependencies = {
     detectAgentHost,
-    selectAgentHost,
+    selectAgenticCreateInputs,
     resolveAgentHostInstallation,
     emitCreateFlowEvent,
     confirmAndLaunchAgentHost: (host, hostDisplayName, folderUri, params) =>
@@ -68,9 +68,9 @@ const AGENT_HOST_INSTALLATION_STRINGS: AgentHostInstallationStrings = {
  * open VS Code into an agentic (terminal CLI agent host) create experience.
  *
  * This is a dark, flag-gated scaffold. When {@link EnableAgenticCreateFromHome} is off (the
- * default) the handler is a no-op. When enabled it runs the shared authentication, environment,
- * and folder-selection stages, then resolves the selected agent host. Power Pages plugin
- * bootstrapping is intentionally deferred to a follow-up change.
+ * default) the handler is a no-op. When enabled it runs shared authentication/environment
+ * preparation, collects folder and host in one multi-step flow, then confirms and launches the
+ * selected agent host.
  */
 export class AgenticCreateHandler {
     private readonly pacWrapper: PacWrapper;
@@ -150,13 +150,13 @@ export class AgenticCreateHandler {
                 'agent'
             );
 
-            const folderUri = await runCreateFlowCommonStages(
+            const prepared = await prepareCreateFlowAuthenticationAndEnvironment(
                 params,
                 'agent',
                 telemetryData,
                 this.pacWrapper
             );
-            if (!folderUri) {
+            if (!prepared) {
                 return;
             }
 
@@ -170,17 +170,37 @@ export class AgenticCreateHandler {
                 this.dependencies.detectAgentHost(AgentHost.Copilot),
                 this.dependencies.detectAgentHost(AgentHost.Claude)
             ]);
-            const selection = await this.dependencies.selectAgentHost(detection);
-            if (!selection) {
+
+            const inputs = await this.dependencies.selectAgenticCreateInputs(detection);
+            if (inputs.status === "cancelled") {
+                if (inputs.step === "folder") {
+                    this.dependencies.emitCreateFlowEvent(
+                        uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_CANCELLED,
+                        params,
+                        'agent'
+                    );
+                } else {
+                    this.dependencies.emitCreateFlowEvent(
+                        uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED,
+                        params,
+                        'agent'
+                    );
+                }
                 this.dependencies.emitCreateFlowEvent(
                     uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED,
                     params,
                     'agent',
-                    { reason: 'hostSelectionCancelled' }
+                    { reason: inputs.step === "folder" ? "folderSelectionCancelled" : "hostSelectionCancelled" }
                 );
                 return;
             }
 
+            const { folderUri, hostSelection: selection } = inputs;
+            this.dependencies.emitCreateFlowEvent(
+                uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED,
+                params,
+                'agent'
+            );
             this.dependencies.emitCreateFlowEvent(
                 uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_SELECTED,
                 params,

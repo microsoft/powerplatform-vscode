@@ -6,10 +6,56 @@
 import * as vscode from "vscode";
 import { URI_HANDLER_STRINGS } from "../constants/uriStrings";
 
-interface TargetFolderQuickPickItem extends vscode.QuickPickItem {
+export interface TargetFolderQuickPickItem extends vscode.QuickPickItem {
     uri?: vscode.Uri;
     browse?: true;
 }
+
+/**
+ * Builds the target-folder items shared by the standalone picker and Agentic Create wizard.
+ * @param workspaceFolders Open workspace folders in display order.
+ * @returns Workspace-folder items followed by Browse.
+ */
+export const getTargetFolderQuickPickItems = (
+    workspaceFolders: readonly vscode.WorkspaceFolder[]
+): TargetFolderQuickPickItem[] => {
+    const items: TargetFolderQuickPickItem[] = workspaceFolders.map(folder => ({
+        label: folder.name,
+        description: folder.uri.fsPath,
+        iconPath: new vscode.ThemeIcon("folder"),
+        uri: folder.uri
+    }));
+    items.push({
+        label: URI_HANDLER_STRINGS.BUTTONS.BROWSE,
+        iconPath: new vscode.ThemeIcon("folder-opened"),
+        browse: true
+    });
+    return items;
+};
+
+/**
+ * Resolves a target-folder item, opening the native folder dialog only for Browse.
+ * @param selectedItem Quick Pick item selected by the user.
+ * @param showOpenDialog Native folder dialog implementation.
+ * @returns The selected folder, or undefined when Browse is cancelled.
+ */
+export const resolveTargetFolderQuickPickItem = async (
+    selectedItem: TargetFolderQuickPickItem,
+    showOpenDialog: SelectTargetFolderDependencies["showOpenDialog"]
+): Promise<vscode.Uri | undefined> => {
+    if (!selectedItem.browse) {
+        return selectedItem.uri;
+    }
+
+    const selectedFolders = await showOpenDialog({
+        canSelectFolders: true,
+        canSelectFiles: false,
+        canSelectMany: false,
+        openLabel: URI_HANDLER_STRINGS.BUTTONS.SELECT_FOLDER,
+        title: URI_HANDLER_STRINGS.TITLES.TARGET_FOLDER
+    });
+    return selectedFolders?.[0];
+};
 
 /**
  * VS Code interactions used by {@link selectTargetFolder}.
@@ -41,17 +87,7 @@ const DEFAULT_DEPENDENCIES: SelectTargetFolderDependencies = {
 export const selectTargetFolder = async (
     dependencies: SelectTargetFolderDependencies = DEFAULT_DEPENDENCIES
 ): Promise<vscode.Uri | undefined> => {
-    const items: TargetFolderQuickPickItem[] = dependencies.getWorkspaceFolders().map(folder => ({
-        label: folder.name,
-        description: folder.uri.fsPath,
-        iconPath: new vscode.ThemeIcon("folder"),
-        uri: folder.uri
-    }));
-    items.push({
-        label: URI_HANDLER_STRINGS.BUTTONS.BROWSE,
-        iconPath: new vscode.ThemeIcon("folder-opened"),
-        browse: true
-    });
+    const items = getTargetFolderQuickPickItems(dependencies.getWorkspaceFolders());
 
     const selectedItem = await dependencies.showQuickPick(items, {
         canPickMany: false,
@@ -62,17 +98,5 @@ export const selectTargetFolder = async (
         return undefined;
     }
 
-    if (!selectedItem.browse) {
-        return selectedItem.uri;
-    }
-
-    const selectedFolders = await dependencies.showOpenDialog({
-        canSelectFolders: true,
-        canSelectFiles: false,
-        canSelectMany: false,
-        openLabel: URI_HANDLER_STRINGS.BUTTONS.SELECT_FOLDER,
-        title: URI_HANDLER_STRINGS.TITLES.TARGET_FOLDER
-    });
-
-    return selectedFolders?.[0];
+    return resolveTargetFolderQuickPickItem(selectedItem, dependencies.showOpenDialog);
 };

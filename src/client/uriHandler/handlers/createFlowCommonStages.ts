@@ -38,21 +38,21 @@ const DEFAULT_DEPENDENCIES: CreateFlowCommonStagesDependencies = {
 };
 
 /**
- * Runs the authentication, environment, and target-folder stages shared by create flows.
+ * Runs the authentication and environment stages shared by create flows.
  * @param params Parsed create-flow parameters.
  * @param channel Create-flow channel requesting the shared stages.
  * @param telemetryData Redacted telemetry passed to the authentication/environment service.
  * @param pacWrapper PAC CLI wrapper used by the authentication/environment service.
  * @param dependencies Injectable dependencies used by integration tests.
- * @returns The selected target folder, or undefined when the flow has already been dropped.
+ * @returns Whether selection stages may proceed.
  */
-export const runCreateFlowCommonStages = async (
+export const prepareCreateFlowAuthenticationAndEnvironment = async (
     params: CreateFlowParameters,
     channel: CreateFlowChannel,
     telemetryData: Record<string, string>,
     pacWrapper: PacWrapper,
     dependencies: CreateFlowCommonStagesDependencies = DEFAULT_DEPENDENCIES
-): Promise<vscode.Uri | undefined> => {
+): Promise<boolean> => {
     dependencies.emitCreateFlowEvent(
         uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_AUTH_STARTED,
         params,
@@ -92,7 +92,7 @@ export const runCreateFlowCommonStages = async (
             );
         }
 
-        return undefined;
+        return false;
     }
 
     dependencies.emitCreateFlowEvent(
@@ -105,6 +105,35 @@ export const runCreateFlowCommonStages = async (
         params,
         channel
     );
+    return true;
+};
+
+/**
+ * Runs authentication, environment, and standalone target-folder selection.
+ * @param params Parsed create-flow parameters.
+ * @param channel Create-flow channel requesting the shared stages.
+ * @param telemetryData Redacted telemetry passed to the authentication/environment service.
+ * @param pacWrapper PAC CLI wrapper used by the authentication/environment service.
+ * @param dependencies Injectable dependencies used by integration tests.
+ * @returns The selected target folder, or undefined when the flow has already been dropped.
+ */
+export const runCreateFlowCommonStages = async (
+    params: CreateFlowParameters,
+    channel: CreateFlowChannel,
+    telemetryData: Record<string, string>,
+    pacWrapper: PacWrapper,
+    dependencies: CreateFlowCommonStagesDependencies = DEFAULT_DEPENDENCIES
+): Promise<vscode.Uri | undefined> => {
+    const prepared = await prepareCreateFlowAuthenticationAndEnvironment(
+        params,
+        channel,
+        telemetryData,
+        pacWrapper,
+        dependencies
+    );
+    if (!prepared) {
+        return undefined;
+    }
 
     const folderUri = await dependencies.selectTargetFolder();
     if (!folderUri) {

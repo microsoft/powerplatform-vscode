@@ -21,6 +21,7 @@ describe("Create deep-link handlers (gated)", () => {
     let traceInfoStub: sinon.SinonStub;
     let traceErrorStub: sinon.SinonStub;
     let runCreateFlowCommonStagesStub: sinon.SinonStub;
+    let prepareCreateFlowStub: sinon.SinonStub;
 
     const pacCreateUri = vscode.Uri.parse(
         `vscode://${URI_CONSTANTS.EXTENSION_ID}${URI_CONSTANTS.PATHS.PAC_CREATE}` +
@@ -74,6 +75,10 @@ describe("Create deep-link handlers (gated)", () => {
             createFlowCommonStages,
             "runCreateFlowCommonStages"
         ).resolves(vscode.Uri.file("C:\\sites"));
+        prepareCreateFlowStub = sandbox.stub(
+            createFlowCommonStages,
+            "prepareCreateFlowAuthenticationAndEnvironment"
+        ).resolves(true);
     });
 
     afterEach(() => {
@@ -201,7 +206,7 @@ describe("Create deep-link handlers (gated)", () => {
         expectIdentifiers(disabled?.args[1] as Record<string, string>, 'agent-env', 'agent-website');
         expect(disabled?.args[1]).to.not.have.property('channel');
         expect(traceInfoStub.calledWith(uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_TRIGGERED)).to.be.false;
-        expect(runCreateFlowCommonStagesStub.called).to.be.false;
+        expect(prepareCreateFlowStub.called).to.be.false;
     });
 
     it("AgenticCreateHandler proceeds without a contract version when the flag is on", async () => {
@@ -224,18 +229,18 @@ describe("Create deep-link handlers (gated)", () => {
             correlationId: 'agent-correlation'
         });
         expectIdentifiers(triggered?.args[1] as Record<string, string>, 'agent-env', 'agent-website');
-        expect(runCreateFlowCommonStagesStub.calledOnce).to.be.true;
-        expect(runCreateFlowCommonStagesStub.firstCall.args[0]).to.include({
+        expect(prepareCreateFlowStub.calledOnce).to.be.true;
+        expect(prepareCreateFlowStub.firstCall.args[0]).to.include({
             environmentId: 'agent-env',
             websiteId: 'agent-website',
             correlationId: 'agent-correlation'
         });
-        expect(runCreateFlowCommonStagesStub.firstCall.args[1]).to.equal('agent');
-        expect(runCreateFlowCommonStagesStub.firstCall.args[2]).to.include({
+        expect(prepareCreateFlowStub.firstCall.args[1]).to.equal('agent');
+        expect(prepareCreateFlowStub.firstCall.args[2]).to.include({
             environmentId: 'agent-env',
             websiteId: 'agent-website'
         });
-        expect(runCreateFlowCommonStagesStub.firstCall.args[3]).to.equal(pacWrapper);
+        expect(prepareCreateFlowStub.firstCall.args[3]).to.equal(pacWrapper);
         expect(traceInfoStub.calledWith(
             uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED
         )).to.be.false;
@@ -259,7 +264,7 @@ describe("Create deep-link handlers (gated)", () => {
         expect(traceInfoStub.calledWith(
             uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_TRIGGERED
         )).to.be.false;
-        expect(runCreateFlowCommonStagesStub.called).to.be.false;
+        expect(prepareCreateFlowStub.called).to.be.false;
     });
 
     it("AgenticCreateHandler emits failed telemetry through the create-flow helper", async () => {

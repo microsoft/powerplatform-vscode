@@ -142,6 +142,7 @@
   "Your current Power Platform sign-in cannot access the required environment. Would you like to sign in with a different account?": "Your current Power Platform sign-in cannot access the required environment. Would you like to sign in with a different account?",
   "Power Pages site download completed successfully. Would you like to open the downloaded site folder?": "Power Pages site download completed successfully. Would you like to open the downloaded site folder?",
   "Select Folder to Download Power Pages Site": "Select Folder to Download Power Pages Site",
+  "Select an agent host": "Select an agent host",
   "Check Again": "Check Again",
   "{0} isn't installed. Install it, then choose {1} — most installs are picked up without restarting VS Code./{0} is the agent host display name and is replaced when the message is shown.{1} is the localized label of the Check Again button.Do not translate 'VS Code' as it is a product name.": {
     "message": "{0} isn't installed. Install it, then choose {1} — most installs are picked up without restarting VS Code.",

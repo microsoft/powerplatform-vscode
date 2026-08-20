@@ -35,6 +35,7 @@ export const URI_HANDLER_STRINGS = {
         ENV_SWITCH_AUTH_REQUIRED: vscode.l10n.t("Your current Power Platform sign-in cannot access the required environment. Would you like to sign in with a different account?"),
         DOWNLOAD_COMPLETE: vscode.l10n.t("Power Pages site download completed successfully. Would you like to open the downloaded site folder?"),
         FOLDER_SELECT: vscode.l10n.t("Select Folder to Download Power Pages Site"),
+        AGENT_HOST_SELECT: vscode.l10n.t("Select an agent host"),
         AGENT_HOST_INSTALL_GUIDANCE: vscode.l10n.t({
             message: "{0} isn't installed. Install it, then choose {1} — most installs are picked up without restarting VS Code.",
             args: ["{0}", vscode.l10n.t("Check Again")],

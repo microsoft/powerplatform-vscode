@@ -1217,6 +1217,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++84744ab78214e2fc629e2925963080b5ad6c4ab1db6cce278900c3e6403bbc2f">
       <source xml:lang="en">Select a website to compare with</source>
     </trans-unit>
+    <trans-unit id="++CODE++09423c9974048a464769e508ea44c35c066347d438b5551f57999bf635cadac2">
+      <source xml:lang="en">Select an agent host</source>
+    </trans-unit>
     <trans-unit id="++CODE++87468e6a845b82466220c11dd0ca315a4389dc1cb8e0ee102035bb4ce5cb7e39">
       <source xml:lang="en">Select an environment</source>
     </trans-unit>
