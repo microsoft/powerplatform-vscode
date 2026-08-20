@@ -77,9 +77,26 @@ describe("showAgenticCreateConfirmPanel", () => {
         expect(fake.disposeCalled()).to.be.false;
         expect(fake.html()).to.contain('id="start"');
         expect(fake.html()).to.contain('id="start" title="Run the command sequence shown above." disabled');
+        expect(fake.html()).to.contain('id="edit" title="Return to folder and agent host selection." disabled');
         for (const command of plan) {
             expect(fake.html()).to.contain(command.commandLine.replace(/"/g, "&quot;"));
         }
+    });
+
+    it("ignores a queued Edit message after Start has already settled", async () => {
+        const fake = createFakePanel();
+        const decisionPromise = showAgenticCreateConfirmPanel(
+            "GitHub Copilot CLI",
+            "c:/work/site",
+            plan,
+            depsFor(fake)
+        );
+
+        fake.emitMessage({ decision: "start" });
+        fake.emitMessage({ decision: "edit" });
+
+        expect(await decisionPromise).to.equal("start");
+        expect(fake.disposeCalled()).to.be.false;
     });
 
     it("resolves 'cancel' when the user cancels", async () => {
@@ -90,6 +107,36 @@ describe("showAgenticCreateConfirmPanel", () => {
 
         expect(await decisionPromise).to.equal("cancel");
         expect(fake.disposeCalled()).to.be.true;
+    });
+
+    it("resolves 'edit' and closes the stale confirmation panel", async () => {
+        const fake = createFakePanel();
+        const decisionPromise = showAgenticCreateConfirmPanel(
+            "GitHub Copilot CLI",
+            "c:/work/site",
+            plan,
+            depsFor(fake)
+        );
+
+        fake.emitMessage({ decision: "edit" });
+
+        expect(await decisionPromise).to.equal("edit");
+        expect(fake.disposeCalled()).to.be.true;
+    });
+
+    it("omits Edit choices when the caller cannot reopen selection", () => {
+        const fake = createFakePanel();
+
+        void showAgenticCreateConfirmPanel(
+            "GitHub Copilot CLI",
+            "c:/work/site",
+            plan,
+            depsFor(fake),
+            false
+        );
+
+        expect(fake.html()).to.not.contain('id="edit"');
+        expect(fake.html()).to.not.contain(">Edit choices<");
     });
 
     it("resolves 'dismissed' when the panel is closed without a choice", async () => {

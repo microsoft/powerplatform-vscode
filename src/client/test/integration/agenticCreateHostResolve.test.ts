@@ -204,6 +204,57 @@ describe("Agentic create host resolution", () => {
         expectNoSensitiveTelemetry();
     });
 
+    it("reopens the picker with current choices and confirms the edited selection", async () => {
+        const editedFolder = vscode.Uri.file("C:\\private\\edited-site");
+        detectAgentHostStub.withArgs(AgentHost.Claude).resolves({
+            host: AgentHost.Claude,
+            installed: true,
+            version: "2.0.0"
+        });
+        selectAgenticCreateInputsStub
+            .onFirstCall()
+            .resolves({
+                status: "selected",
+                folderUri: selectedFolder,
+                hostSelection: {
+                    host: AgentHost.Copilot,
+                    installed: true
+                }
+            })
+            .onSecondCall()
+            .resolves({
+                status: "selected",
+                folderUri: editedFolder,
+                hostSelection: {
+                    host: AgentHost.Claude,
+                    installed: true
+                }
+            });
+        confirmAndLaunchAgentHostStub
+            .onFirstCall()
+            .resolves({ status: "edit" })
+            .onSecondCall()
+            .resolves({ status: "launched" });
+
+        await createHandler().handle(uri);
+
+        expect(selectAgenticCreateInputsStub.calledTwice).to.be.true;
+        expect(selectAgenticCreateInputsStub.secondCall.args[1]).to.deep.equal({
+            folderUri: selectedFolder,
+            hostSelection: {
+                host: AgentHost.Copilot,
+                installed: true
+            }
+        });
+        expect(confirmAndLaunchAgentHostStub.callCount).to.equal(2);
+        expect(confirmAndLaunchAgentHostStub.secondCall.args.slice(0, 3)).to.deep.equal([
+            AgentHost.Claude,
+            "Claude Code",
+            editedFolder
+        ]);
+        expect(resolveAgentHostInstallationStub.notCalled).to.be.true;
+    });
+
     const resolutions: AgentHostInstallResolution[] = [
         {
             status: "resolved",

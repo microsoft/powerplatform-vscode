@@ -20,7 +20,10 @@ type CreateFlowEventEmitter = (
 /**
  * Terminal outcome of the confirm-and-launch step.
  */
-export type ConfirmAndLaunchOutcome = { status: 'launched' } | { status: 'dropped' };
+export type ConfirmAndLaunchOutcome =
+    | { status: 'launched' }
+    | { status: 'edit' }
+    | { status: 'dropped' };
 
 /**
  * Side effects used by {@link confirmAndLaunchAgentHost}. The VS Code-touching pieces (panel and
@@ -81,6 +84,10 @@ export async function confirmAndLaunchAgentHost(
             { host }
         );
         return { status: 'launched' };
+    }
+
+    if (decision === 'edit') {
+        return { status: 'edit' };
     }
 
     await emitEvent(

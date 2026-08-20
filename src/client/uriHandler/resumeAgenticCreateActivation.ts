@@ -68,7 +68,13 @@ export async function resumeAgenticCreateOnActivation(
                     params,
                     'agent'
                 );
-                await confirmAndLaunchSelectedAgentHost(host, folderUri, params);
+                await confirmAndLaunchSelectedAgentHost(
+                    host,
+                    folderUri,
+                    params,
+                    undefined,
+                    false
+                );
             },
             clearMarker: clearResumeMarker
         });

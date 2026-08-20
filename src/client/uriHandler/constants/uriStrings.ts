@@ -101,6 +101,8 @@ export const URI_HANDLER_STRINGS = {
         FOLDER_LABEL: vscode.l10n.t("Target folder"),
         START_LABEL: vscode.l10n.t("Start in Terminal"),
         START_DETAIL: vscode.l10n.t("Run the command sequence shown above."),
+        EDIT_LABEL: vscode.l10n.t("Edit choices"),
+        EDIT_DETAIL: vscode.l10n.t("Return to folder and agent host selection."),
         CANCEL_LABEL: vscode.l10n.t("Cancel"),
         CANCEL_DETAIL: vscode.l10n.t("Close without running anything."),
         // {0} is the agent host display name. Used as the integrated terminal name.

@@ -12,10 +12,11 @@ import { PlannedCommand } from "./agentHostCommandPlan";
 /**
  * The user's decision at the confirmation gate.
  * - `start`     run the previewed command plan.
+ * - `edit`      return to folder and agent-host selection.
  * - `cancel`    explicitly abandon the flow.
  * - `dismissed` the panel was closed without a choice (possibly accidental).
  */
-export type ConfirmDecision = "start" | "cancel" | "dismissed";
+export type ConfirmDecision = "start" | "edit" | "cancel" | "dismissed";
 
 /**
  * Side effects used by {@link showAgenticCreateConfirmPanel}. Injected so the panel can be tested
@@ -81,7 +82,8 @@ function buildHtml(
     folderPath: string,
     plan: PlannedCommand[],
     cspSource: string,
-    started = false
+    started: boolean,
+    allowEdit: boolean
 ): string {
     const nonce = getNonce();
     const confirm = URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM;
@@ -142,15 +144,17 @@ function buildHtml(
 
     <div class="actions">
         <button class="primary" id="start" title="${escapeHtml(confirm.START_DETAIL)}"${started ? " disabled" : ""}>${escapeHtml(confirm.START_LABEL)}</button>
+        ${allowEdit ? `<button class="secondary" id="edit" title="${escapeHtml(confirm.EDIT_DETAIL)}"${started ? " disabled" : ""}>${escapeHtml(confirm.EDIT_LABEL)}</button>` : ""}
         <button class="secondary" id="cancel" title="${escapeHtml(confirm.CANCEL_DETAIL)}">${escapeHtml(confirm.CANCEL_LABEL)}</button>
     </div>
 
     <script nonce="${nonce}">
         const vscode = acquireVsCodeApi();
-        for (const id of ["start", "cancel"]) {
+        for (const id of [${allowEdit ? '"start", "edit", "cancel"' : '"start", "cancel"'}]) {
             document.getElementById(id).addEventListener("click", (event) => {
                 if (id === "start") {
                     event.currentTarget.disabled = true;
+                    document.getElementById("edit")?.setAttribute("disabled", "");
                 }
                 vscode.postMessage({ decision: id });
             });
@@ -247,13 +251,15 @@ export function registerAgenticCreateConfirmPanelSerializer(): vscode.Disposable
  * @param folderPath Absolute path of the selected target folder.
  * @param plan Ordered command plan to preview and, on approval, run.
  * @param deps Optional injected side effects.
+ * @param allowEdit Whether folder/host selection can be reopened by the caller.
  * @returns The user's {@link ConfirmDecision}. Closing the tab resolves `"dismissed"`.
  */
 export function showAgenticCreateConfirmPanel(
     hostDisplayName: string,
     folderPath: string,
     plan: PlannedCommand[],
-    deps: ShowConfirmPanelDependencies = DEFAULT_CONFIRM_PANEL_DEPENDENCIES
+    deps: ShowConfirmPanelDependencies = DEFAULT_CONFIRM_PANEL_DEPENDENCIES,
+    allowEdit = true
 ): Promise<ConfirmDecision> {
     return new Promise<ConfirmDecision>((resolve) => {
         const panel = deps.createWebviewPanel(
@@ -263,22 +269,33 @@ export function showAgenticCreateConfirmPanel(
             { enableScripts: true, retainContextWhenHidden: false }
         );
 
-        panel.webview.html = buildHtml(hostDisplayName, folderPath, plan, panel.webview.cspSource);
+        panel.webview.html = buildHtml(
+            hostDisplayName,
+            folderPath,
+            plan,
+            panel.webview.cspSource,
+            false,
+            allowEdit
+        );
 
         // Resolve exactly once. Start keeps the panel as a durable command reference; Cancel closes
         // it. A user-initiated close reaches onDidDispose and resolves "dismissed" only when no
         // decision has already been made.
         let settled = false;
-        const settleWith = (decision: ConfirmDecision): void => {
+        const settleWith = (decision: ConfirmDecision): boolean => {
             if (settled) {
-                return;
+                return false;
             }
             settled = true;
             resolve(decision);
+            return true;
         };
 
         panel.webview.onDidReceiveMessage((message: { decision?: unknown }) => {
             if (message?.decision === "start") {
+                if (!settleWith("start")) {
+                    return;
+                }
                 // Persist the disabled state in webview.html so hiding and revealing the tab cannot
                 // recreate an enabled Start button after the command plan has already launched.
                 panel.webview.html = buildHtml(
@@ -286,12 +303,13 @@ export function showAgenticCreateConfirmPanel(
                     folderPath,
                     plan,
                     panel.webview.cspSource,
-                    true
+                    true,
+                    allowEdit
                 );
-                settleWith("start");
-            } else if (message?.decision === "cancel") {
-                settleWith("cancel");
-                panel.dispose();
+            } else if (message?.decision === "edit" || message?.decision === "cancel") {
+                if (settleWith(message.decision)) {
+                    panel.dispose();
+                }
             }
         });
 

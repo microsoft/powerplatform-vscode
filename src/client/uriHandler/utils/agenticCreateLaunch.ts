@@ -43,18 +43,27 @@ export function getAgentHostDisplayName(host: AgentHost): string {
  * @param folderUri Target folder selected for the site.
  * @param params Deep-link parameters used by telemetry.
  * @param hostDisplayName Optional already-resolved display name.
+ * @param allowEdit Whether the confirmation may return to folder/host selection.
  * @returns Whether the command plan was launched or dropped.
  */
 export function confirmAndLaunchSelectedAgentHost(
     host: AgentHost,
     folderUri: vscode.Uri,
     params: CreateFlowParameters,
-    hostDisplayName: string = getAgentHostDisplayName(host)
+    hostDisplayName: string = getAgentHostDisplayName(host),
+    allowEdit = true
 ): Promise<ConfirmAndLaunchOutcome> {
     return confirmAndLaunchAgentHost(host, hostDisplayName, folderUri, params, {
         buildPlan: (selectedHost, displayName) =>
             buildAgentHostCommandPlan(selectedHost, displayName, AGENT_HOST_COMMAND_PLAN_STRINGS),
-        showConfirmPanel: showAgenticCreateConfirmPanel,
+        showConfirmPanel: (displayName, folderPath, plan) =>
+            showAgenticCreateConfirmPanel(
+                displayName,
+                folderPath,
+                plan,
+                undefined,
+                allowEdit
+            ),
         launchPlan: launchAgentHostPlan
     });
 }

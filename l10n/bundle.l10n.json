@@ -194,6 +194,8 @@
   "Target folder": "Target folder",
   "Start in Terminal": "Start in Terminal",
   "Run the command sequence shown above.": "Run the command sequence shown above.",
+  "Edit choices": "Edit choices",
+  "Return to folder and agent host selection.": "Return to folder and agent host selection.",
   "Cancel": "Cancel",
   "Close without running anything.": "Close without running anything.",
   "Power Pages Agent: {0}": "Power Pages Agent: {0}",

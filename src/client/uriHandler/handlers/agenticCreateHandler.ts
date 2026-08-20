@@ -11,8 +11,15 @@ import { uriHandlerTelemetryEventNames } from "../telemetry/uriHandlerTelemetryE
 import { buildCreateFlowTelemetry, CreateFlowParameters, parseCreateFlowParameters } from "./createFlowParams";
 import { emitCreateFlowError, emitCreateFlowEvent } from "../telemetry/createFlowTelemetry";
 import { isSupportedContractVersion } from "./createFlowContractVersion";
-import { AgentHost, detectAgentHost } from "../utils/detectAgentHost";
-import { selectAgenticCreateInputs } from "../utils/selectAgenticCreateInputs";
+import {
+    AgentHost,
+    AgentHostDetectionResult,
+    detectAgentHost
+} from "../utils/detectAgentHost";
+import {
+    AgenticCreateInputsSelection,
+    selectAgenticCreateInputs
+} from "../utils/selectAgenticCreateInputs";
 import {
     AgentHostInstallationStrings,
     resolveAgentHostInstallation
@@ -131,94 +138,103 @@ export class AgenticCreateHandler {
                 return;
             }
 
-            const detection = await Promise.all([
+            let detection: AgentHostDetectionResult[] = await Promise.all([
                 this.dependencies.detectAgentHost(AgentHost.Copilot),
                 this.dependencies.detectAgentHost(AgentHost.Claude)
             ]);
+            let selectionToEdit: AgenticCreateInputsSelection | undefined;
 
-            const inputs = await this.dependencies.selectAgenticCreateInputs(detection);
-            if (inputs.status === "cancelled") {
-                if (inputs.step === "folder") {
+            for (;;) {
+                const inputs = selectionToEdit
+                    ? await this.dependencies.selectAgenticCreateInputs(detection, selectionToEdit)
+                    : await this.dependencies.selectAgenticCreateInputs(detection);
+                if (inputs.status === "cancelled") {
+                    if (inputs.step === "folder") {
+                        this.dependencies.emitCreateFlowEvent(
+                            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_CANCELLED,
+                            params,
+                            'agent'
+                        );
+                    } else {
+                        this.dependencies.emitCreateFlowEvent(
+                            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED,
+                            params,
+                            'agent'
+                        );
+                    }
                     this.dependencies.emitCreateFlowEvent(
-                        uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_CANCELLED,
+                        uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED,
                         params,
-                        'agent'
+                        'agent',
+                        { reason: inputs.step === "folder" ? "folderSelectionCancelled" : "hostSelectionCancelled" }
                     );
-                } else {
-                    this.dependencies.emitCreateFlowEvent(
-                        uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED,
-                        params,
-                        'agent'
-                    );
+                    return;
                 }
+
+                const { folderUri, hostSelection } = inputs;
+                let confirmedHostSelection = hostSelection;
                 this.dependencies.emitCreateFlowEvent(
-                    uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED,
+                    uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED,
+                    params,
+                    'agent'
+                );
+                this.dependencies.emitCreateFlowEvent(
+                    uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_SELECTED,
                     params,
                     'agent',
-                    { reason: inputs.step === "folder" ? "folderSelectionCancelled" : "hostSelectionCancelled" }
+                    {
+                        host: hostSelection.host,
+                        installed: String(hostSelection.installed)
+                    }
                 );
-                return;
-            }
 
-            const { folderUri, hostSelection: selection } = inputs;
-            this.dependencies.emitCreateFlowEvent(
-                uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED,
-                params,
-                'agent'
-            );
-            this.dependencies.emitCreateFlowEvent(
-                uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_SELECTED,
-                params,
-                'agent',
-                {
-                    host: selection.host,
-                    installed: String(selection.installed)
+                if (!hostSelection.installed) {
+                    const resolution = await this.dependencies.resolveAgentHostInstallation(
+                        hostSelection.host,
+                        getAgentHostDisplayName(hostSelection.host),
+                        params,
+                        {
+                            strings: AGENT_HOST_INSTALLATION_STRINGS,
+                            showInformationMessage: (message, ...buttons) =>
+                                vscode.window.showInformationMessage(message, ...buttons),
+                            showWarningMessage: (message, ...buttons) =>
+                                vscode.window.showWarningMessage(message, ...buttons),
+                            openExternal: async (url) => {
+                                await vscode.env.openExternal(vscode.Uri.parse(url));
+                            },
+                            writeResumeMarker: (marker) =>
+                                writeResumeMarker(resumeMarkerStore, marker),
+                            reloadWindow: async () => {
+                                await vscode.commands.executeCommand('workbench.action.reloadWindow');
+                            }
+                        }
+                    );
+                    if (resolution.status !== 'resolved') {
+                        return;
+                    }
+
+                    confirmedHostSelection = { ...hostSelection, installed: true };
+                    detection = detection.map(result =>
+                        result.host === hostSelection.host
+                            ? { ...result, installed: true }
+                            : result
+                    );
                 }
-            );
 
-            if (selection.installed) {
-                await this.dependencies.confirmAndLaunchAgentHost(
-                    selection.host,
-                    getAgentHostDisplayName(selection.host),
+                const outcome = await this.dependencies.confirmAndLaunchAgentHost(
+                    confirmedHostSelection.host,
+                    getAgentHostDisplayName(confirmedHostSelection.host),
                     folderUri,
                     params
                 );
-                return;
-            }
-
-            const resolution = await this.dependencies.resolveAgentHostInstallation(
-                selection.host,
-                getAgentHostDisplayName(selection.host),
-                params,
-                {
-                    strings: AGENT_HOST_INSTALLATION_STRINGS,
-                    showInformationMessage: (message, ...buttons) =>
-                        vscode.window.showInformationMessage(message, ...buttons),
-                    showWarningMessage: (message, ...buttons) =>
-                        vscode.window.showWarningMessage(message, ...buttons),
-                    openExternal: async (url) => {
-                        await vscode.env.openExternal(vscode.Uri.parse(url));
-                    },
-                    writeResumeMarker: (marker) =>
-                        writeResumeMarker(resumeMarkerStore, marker),
-                    reloadWindow: async () => {
-                        await vscode.commands.executeCommand('workbench.action.reloadWindow');
-                    }
+                if (outcome.status !== 'edit') {
+                    return;
                 }
-            );
 
-            switch (resolution.status) {
-                case 'resolved':
-                    await this.dependencies.confirmAndLaunchAgentHost(
-                        selection.host,
-                        getAgentHostDisplayName(selection.host),
-                        folderUri,
-                        params
-                    );
-                    return;
-                case 'reloading':
-                case 'dismissed':
-                    return;
+                selectionToEdit = {
+                    folderUri,
+                    hostSelection: confirmedHostSelection
+                };
             }
         } catch (error) {
             emitCreateFlowError(

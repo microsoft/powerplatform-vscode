@@ -107,4 +107,20 @@ describe("confirmAndLaunchAgentHost", () => {
         expect(launchPlan.notCalled).to.be.true;
         expect(emitEvent.firstCall.args[3]).to.deep.equal({ reason: "confirmDismissed" });
     });
+
+    it("returns to selection without launching or emitting drop telemetry when editing", async () => {
+        const { deps, launchPlan, emitEvent } = buildDeps("edit");
+
+        const outcome = await confirmAndLaunchAgentHost(
+            AgentHost.Copilot,
+            "GitHub Copilot CLI",
+            folderUri,
+            params,
+            deps
+        );
+
+        expect(outcome).to.deep.equal({ status: "edit" });
+        expect(launchPlan.notCalled).to.be.true;
+        expect(emitEvent.notCalled).to.be.true;
+    });
 });
