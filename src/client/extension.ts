@@ -197,7 +197,7 @@ export async function activate(
     // Register auth and env panels
     const pacWrapper = pacTerminal.getWrapper();
     // Resume off the activation path so the interactive prompt and create stages never block activation.
-    void resumeAgenticCreateOnActivation(_context.globalState, pacWrapper);
+    void resumeAgenticCreateOnActivation(_context.globalState);
     const basicPanels = RegisterBasicPanels(pacWrapper);
     _context.subscriptions.push(...basicPanels);
 

@@ -7,13 +7,11 @@ import { expect } from "chai";
 import * as sinon from "sinon";
 import * as vscode from "vscode";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
-import { PacWrapper } from "../../pac/PacWrapper";
 import { URI_CONSTANTS } from "../../uriHandler/constants/uriConstants";
 import {
     AgenticCreateHandler,
     AgenticCreateHandlerDependencies
 } from "../../uriHandler/handlers/agenticCreateHandler";
-import * as createFlowCommonStages from "../../uriHandler/handlers/createFlowCommonStages";
 import { emitCreateFlowEvent } from "../../uriHandler/telemetry/createFlowTelemetry";
 import { uriHandlerTelemetryEventNames } from "../../uriHandler/telemetry/uriHandlerTelemetryEvents";
 import { AgentHost, AgentHostDetectionResult } from "../../uriHandler/utils/detectAgentHost";
@@ -22,7 +20,6 @@ import { ResumeMarkerStore } from "../../uriHandler/utils/resumeMarker";
 
 describe("Agentic create host resolution", () => {
     let sandbox: sinon.SinonSandbox;
-    let prepareCreateFlowStub: sinon.SinonStub;
     let detectAgentHostStub: sinon.SinonStub;
     let selectAgenticCreateInputsStub: sinon.SinonStub;
     let resolveAgentHostInstallationStub: sinon.SinonStub;
@@ -68,7 +65,7 @@ describe("Agentic create host resolution", () => {
     ]);
 
     const createHandler = (): AgenticCreateHandler =>
-        new AgenticCreateHandler({} as PacWrapper, store, dependencies);
+        new AgenticCreateHandler(store, dependencies);
 
     const expectNoSensitiveTelemetry = (): void => {
         for (const call of traceInfoStub.getCalls()) {
@@ -99,11 +96,6 @@ describe("Agentic create host resolution", () => {
             } as unknown as ReturnType<typeof oneDSLoggerWrapper.getLogger>
         );
 
-        prepareCreateFlowStub = sandbox.stub().resolves(true);
-        sandbox.stub(
-            createFlowCommonStages,
-            "prepareCreateFlowAuthenticationAndEnvironment"
-        ).callsFake(prepareCreateFlowStub);
         detectAgentHostStub = sandbox.stub();
         detectAgentHostStub.withArgs(AgentHost.Copilot).resolves(detection[0]);
         detectAgentHostStub.withArgs(AgentHost.Claude).resolves(detection[1]);
@@ -134,16 +126,6 @@ describe("Agentic create host resolution", () => {
 
     afterEach(() => {
         sandbox.restore();
-    });
-
-    it("stops before selection when authentication or environment preparation fails", async () => {
-        prepareCreateFlowStub.resolves(false);
-
-        await createHandler().handle(uri);
-
-        expect(detectAgentHostStub.notCalled).to.be.true;
-        expect(selectAgenticCreateInputsStub.notCalled).to.be.true;
-        expect(confirmAndLaunchAgentHostStub.notCalled).to.be.true;
     });
 
     it("drops the flow when folder selection is cancelled", async () => {

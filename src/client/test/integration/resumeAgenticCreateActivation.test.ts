@@ -7,7 +7,6 @@ import { expect } from "chai";
 import * as sinon from "sinon";
 import * as vscode from "vscode";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
-import { PacWrapper } from "../../pac/PacWrapper";
 import { resumeAgenticCreateOnActivation } from "../../uriHandler/resumeAgenticCreateActivation";
 import * as agenticCreateLaunch from "../../uriHandler/utils/agenticCreateLaunch";
 import * as createFlowCommonStages from "../../uriHandler/handlers/createFlowCommonStages";
@@ -15,13 +14,17 @@ import { AgenticCreateHandler } from "../../uriHandler/handlers/agenticCreateHan
 import { AgentHost } from "../../uriHandler/utils/detectAgentHost";
 import * as detectAgentHostModule from "../../uriHandler/utils/detectAgentHost";
 import { ResumeMarker, ResumeMarkerStore } from "../../uriHandler/utils/resumeMarker";
+import * as selectTargetFolderModule from "../../uriHandler/utils/selectTargetFolder";
+import { uriHandlerTelemetryEventNames } from "../../uriHandler/telemetry/uriHandlerTelemetryEvents";
 
 describe("resumeAgenticCreateOnActivation", () => {
     let sandbox: sinon.SinonSandbox;
     let marker: ResumeMarker | undefined;
     let store: ResumeMarkerStore;
     let runCreateFlowCommonStagesStub: sinon.SinonStub;
+    let selectTargetFolderStub: sinon.SinonStub;
     let confirmAndLaunchStub: sinon.SinonStub;
+    let traceInfoStub: sinon.SinonStub;
 
     beforeEach(() => {
         sandbox = sinon.createSandbox();
@@ -51,14 +54,19 @@ describe("resumeAgenticCreateOnActivation", () => {
             ((_message: string, ...buttons: string[]) =>
                 Promise.resolve(buttons[0])) as unknown as typeof vscode.window.showInformationMessage
         );
+        traceInfoStub = sandbox.stub();
         sandbox.stub(oneDSLoggerWrapper, "getLogger").returns({
-            traceInfo: sandbox.stub(),
+            traceInfo: traceInfoStub,
             traceError: sandbox.stub()
         } as unknown as ReturnType<typeof oneDSLoggerWrapper.getLogger>);
 
         runCreateFlowCommonStagesStub = sandbox.stub(
             createFlowCommonStages,
             "runCreateFlowCommonStages"
+        );
+        selectTargetFolderStub = sandbox.stub(
+            selectTargetFolderModule,
+            "selectTargetFolder"
         );
         confirmAndLaunchStub = sandbox.stub(
             agenticCreateLaunch,
@@ -70,14 +78,15 @@ describe("resumeAgenticCreateOnActivation", () => {
         sandbox.restore();
     });
 
-    it("continues through confirmation and terminal launch after common stages", async () => {
+    it("continues through folder selection and terminal launch without authentication stages", async () => {
         const folderUri = vscode.Uri.file("C:\\sites\\target");
-        runCreateFlowCommonStagesStub.resolves(folderUri);
+        selectTargetFolderStub.resolves(folderUri);
 
-        await resumeAgenticCreateOnActivation(store, {} as PacWrapper);
+        await resumeAgenticCreateOnActivation(store);
 
-        expect(runCreateFlowCommonStagesStub.calledOnce).to.be.true;
-        const params = runCreateFlowCommonStagesStub.firstCall.args[0];
+        expect(runCreateFlowCommonStagesStub.notCalled).to.be.true;
+        expect(selectTargetFolderStub.calledOnceWithExactly()).to.be.true;
+        const params = confirmAndLaunchStub.firstCall.args[2];
         expect(params).to.deep.equal({
             environmentId: "environment-id",
             orgUrl: "https://org.crm.dynamics.com",
@@ -89,21 +98,30 @@ describe("resumeAgenticCreateOnActivation", () => {
             version: null,
             correlationId: "correlation-id"
         });
-        expect(runCreateFlowCommonStagesStub.firstCall.args[1]).to.equal("agent");
         expect(confirmAndLaunchStub.calledOnceWithExactly(
             AgentHost.Copilot,
             folderUri,
             params
         )).to.be.true;
+        expect(traceInfoStub.calledWith(
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED
+        )).to.be.true;
         expect(marker).to.be.undefined;
     });
 
-    it("does not open confirmation when common stages are cancelled", async () => {
-        runCreateFlowCommonStagesStub.resolves(undefined);
+    it("does not open confirmation when folder selection is cancelled", async () => {
+        selectTargetFolderStub.resolves(undefined);
 
-        await resumeAgenticCreateOnActivation(store, {} as PacWrapper);
+        await resumeAgenticCreateOnActivation(store);
 
+        expect(runCreateFlowCommonStagesStub.notCalled).to.be.true;
         expect(confirmAndLaunchStub.notCalled).to.be.true;
+        expect(traceInfoStub.calledWith(
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_CANCELLED
+        )).to.be.true;
+        expect(traceInfoStub.calledWith(
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED
+        )).to.be.true;
         expect(marker).to.be.undefined;
     });
 });

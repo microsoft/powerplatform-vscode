@@ -4,15 +4,11 @@
  */
 
 import * as vscode from 'vscode';
-import { PacWrapper } from '../pac/PacWrapper';
 import { URI_HANDLER_STRINGS } from './constants/uriStrings';
 import { AgenticCreateHandler } from './handlers/agenticCreateHandler';
-import {
-    buildCreateFlowTelemetry,
-    CreateFlowParameters
-} from './handlers/createFlowParams';
-import { runCreateFlowCommonStages } from './handlers/createFlowCommonStages';
+import { CreateFlowParameters } from './handlers/createFlowParams';
 import { emitCreateFlowEvent } from './telemetry/createFlowTelemetry';
+import { uriHandlerTelemetryEventNames } from './telemetry/uriHandlerTelemetryEvents';
 import { AgentHost, detectAgentHost } from './utils/detectAgentHost';
 import {
     resumeAgenticCreate,
@@ -23,6 +19,7 @@ import {
     ResumeMarkerStore
 } from './utils/resumeMarker';
 import { confirmAndLaunchSelectedAgentHost } from './utils/agenticCreateLaunch';
+import { selectTargetFolder } from './utils/selectTargetFolder';
 
 const RESUME_STRINGS: ResumeAgenticCreateStrings = {
     resumePrompt: URI_HANDLER_STRINGS.PROMPTS.AGENT_HOST_INSTALL_RESUME,
@@ -37,11 +34,9 @@ const RESUME_STRINGS: ResumeAgenticCreateStrings = {
 /**
  * Checks for and resumes an agentic-create flow during desktop-extension activation.
  * @param store VS Code global state containing a possible resume marker.
- * @param pacWrapper PAC CLI wrapper used by the shared create-flow stages.
  */
 export async function resumeAgenticCreateOnActivation(
-    store: ResumeMarkerStore,
-    pacWrapper: PacWrapper
+    store: ResumeMarkerStore
 ): Promise<void> {
     try {
         await resumeAgenticCreate({
@@ -54,16 +49,27 @@ export async function resumeAgenticCreateOnActivation(
                 vscode.window.showInformationMessage(message, ...buttons),
             emitEvent: emitCreateFlowEvent,
             runStages: async (params: CreateFlowParameters, host: AgentHost) => {
-                const folderUri = await runCreateFlowCommonStages(
-                    params,
-                    'agent',
-                    buildCreateFlowTelemetry(params),
-                    pacWrapper
-                );
+                const folderUri = await selectTargetFolder();
                 if (!folderUri) {
+                    emitCreateFlowEvent(
+                        uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_CANCELLED,
+                        params,
+                        'agent'
+                    );
+                    emitCreateFlowEvent(
+                        uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED,
+                        params,
+                        'agent',
+                        { reason: 'folderSelectionCancelled' }
+                    );
                     return;
                 }
 
+                emitCreateFlowEvent(
+                    uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED,
+                    params,
+                    'agent'
+                );
                 await confirmAndLaunchSelectedAgentHost(host, folderUri, params);
             },
             clearMarker: clearResumeMarker

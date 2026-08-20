@@ -4,14 +4,12 @@
  */
 
 import * as vscode from "vscode";
-import { PacWrapper } from "../../pac/PacWrapper";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { ECSFeaturesClient } from "../../../common/ecs-features/ecsFeatureClient";
 import { EnableAgenticCreateFromHome } from "../../../common/ecs-features/ecsFeatureGates";
 import { uriHandlerTelemetryEventNames } from "../telemetry/uriHandlerTelemetryEvents";
 import { buildCreateFlowTelemetry, CreateFlowParameters, parseCreateFlowParameters } from "./createFlowParams";
 import { emitCreateFlowError, emitCreateFlowEvent } from "../telemetry/createFlowTelemetry";
-import { prepareCreateFlowAuthenticationAndEnvironment } from "./createFlowCommonStages";
 import { isSupportedContractVersion } from "./createFlowContractVersion";
 import { AgentHost, detectAgentHost } from "../utils/detectAgentHost";
 import { selectAgenticCreateInputs } from "../utils/selectAgenticCreateInputs";
@@ -68,21 +66,18 @@ const AGENT_HOST_INSTALLATION_STRINGS: AgentHostInstallationStrings = {
  * open VS Code into an agentic (terminal CLI agent host) create experience.
  *
  * This is a dark, flag-gated scaffold. When {@link EnableAgenticCreateFromHome} is off (the
- * default) the handler is a no-op. When enabled it runs shared authentication/environment
- * preparation, collects folder and host in one multi-step flow, then confirms and launches the
- * selected agent host.
+ * default) the handler is a no-op. When enabled it collects folder and host in one multi-step
+ * flow, then confirms and launches the selected agent host. Authentication is intentionally left
+ * to the selected agent experience.
  */
 export class AgenticCreateHandler {
-    private readonly pacWrapper: PacWrapper;
     private readonly resumeMarkerStore?: ResumeMarkerStore;
     private readonly dependencies: AgenticCreateHandlerDependencies;
 
     constructor(
-        pacWrapper: PacWrapper,
         resumeMarkerStore?: ResumeMarkerStore,
         dependencies: AgenticCreateHandlerDependencies = DEFAULT_DEPENDENCIES
     ) {
-        this.pacWrapper = pacWrapper;
         this.resumeMarkerStore = resumeMarkerStore;
         this.dependencies = dependencies;
     }
@@ -149,16 +144,6 @@ export class AgenticCreateHandler {
                 params,
                 'agent'
             );
-
-            const prepared = await prepareCreateFlowAuthenticationAndEnvironment(
-                params,
-                'agent',
-                telemetryData,
-                this.pacWrapper
-            );
-            if (!prepared) {
-                return;
-            }
 
             // Legacy and isolated test callers can omit persistence; production registration supplies it.
             const resumeMarkerStore = this.resumeMarkerStore;

@@ -21,7 +21,6 @@ describe("Create deep-link handlers (gated)", () => {
     let traceInfoStub: sinon.SinonStub;
     let traceErrorStub: sinon.SinonStub;
     let runCreateFlowCommonStagesStub: sinon.SinonStub;
-    let prepareCreateFlowStub: sinon.SinonStub;
 
     const pacCreateUri = vscode.Uri.parse(
         `vscode://${URI_CONSTANTS.EXTENSION_ID}${URI_CONSTANTS.PATHS.PAC_CREATE}` +
@@ -75,10 +74,6 @@ describe("Create deep-link handlers (gated)", () => {
             createFlowCommonStages,
             "runCreateFlowCommonStages"
         ).resolves(vscode.Uri.file("C:\\sites"));
-        prepareCreateFlowStub = sandbox.stub(
-            createFlowCommonStages,
-            "prepareCreateFlowAuthenticationAndEnvironment"
-        ).resolves(true);
     });
 
     afterEach(() => {
@@ -190,7 +185,7 @@ describe("Create deep-link handlers (gated)", () => {
 
     it("AgenticCreateHandler is a no-op that only emits disabled telemetry when the flag is off", async () => {
         setFlags(false);
-        const handler = new AgenticCreateHandler({} as PacWrapper);
+        const handler = new AgenticCreateHandler();
 
         await handler.handle(agenticCreateUri);
 
@@ -206,13 +201,12 @@ describe("Create deep-link handlers (gated)", () => {
         expectIdentifiers(disabled?.args[1] as Record<string, string>, 'agent-env', 'agent-website');
         expect(disabled?.args[1]).to.not.have.property('channel');
         expect(traceInfoStub.calledWith(uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_TRIGGERED)).to.be.false;
-        expect(prepareCreateFlowStub.called).to.be.false;
+        expect(runCreateFlowCommonStagesStub.called).to.be.false;
     });
 
     it("AgenticCreateHandler proceeds without a contract version when the flag is on", async () => {
         setFlags(true);
-        const pacWrapper = {} as PacWrapper;
-        const handler = new AgenticCreateHandler(pacWrapper);
+        const handler = new AgenticCreateHandler();
 
         await handler.handle(agenticCreateUri);
 
@@ -229,18 +223,7 @@ describe("Create deep-link handlers (gated)", () => {
             correlationId: 'agent-correlation'
         });
         expectIdentifiers(triggered?.args[1] as Record<string, string>, 'agent-env', 'agent-website');
-        expect(prepareCreateFlowStub.calledOnce).to.be.true;
-        expect(prepareCreateFlowStub.firstCall.args[0]).to.include({
-            environmentId: 'agent-env',
-            websiteId: 'agent-website',
-            correlationId: 'agent-correlation'
-        });
-        expect(prepareCreateFlowStub.firstCall.args[1]).to.equal('agent');
-        expect(prepareCreateFlowStub.firstCall.args[2]).to.include({
-            environmentId: 'agent-env',
-            websiteId: 'agent-website'
-        });
-        expect(prepareCreateFlowStub.firstCall.args[3]).to.equal(pacWrapper);
+        expect(runCreateFlowCommonStagesStub.called).to.be.false;
         expect(traceInfoStub.calledWith(
             uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED
         )).to.be.false;
@@ -248,7 +231,7 @@ describe("Create deep-link handlers (gated)", () => {
 
     it("AgenticCreateHandler drops an unsupported contract version before the flow starts", async () => {
         setFlags(true);
-        const handler = new AgenticCreateHandler({} as PacWrapper);
+        const handler = new AgenticCreateHandler();
 
         await handler.handle(withContractVersion(agenticCreateUri, '2'));
 
@@ -264,13 +247,13 @@ describe("Create deep-link handlers (gated)", () => {
         expect(traceInfoStub.calledWith(
             uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_TRIGGERED
         )).to.be.false;
-        expect(prepareCreateFlowStub.called).to.be.false;
+        expect(runCreateFlowCommonStagesStub.called).to.be.false;
     });
 
     it("AgenticCreateHandler emits failed telemetry through the create-flow helper", async () => {
         setFlags(true);
         traceInfoStub.throws(new Error('trigger failed'));
-        const handler = new AgenticCreateHandler({} as PacWrapper);
+        const handler = new AgenticCreateHandler();
 
         await handler.handle(agenticCreateUri);
 
