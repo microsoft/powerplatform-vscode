@@ -60,7 +60,7 @@ describe("selectAgenticCreateInputs", () => {
             items: Array<vscode.QuickPickItem & { uri?: vscode.Uri }>;
         }) => options.step === 1 ? options.items[0] : options.items[1]);
 
-        const result = await selectAgenticCreateInputs(detection, {
+        const result = await selectAgenticCreateInputs(detection, undefined, {
             getWorkspaceFolders: () => [workspaceFolder],
             showOpenDialog
         });
@@ -108,7 +108,7 @@ describe("selectAgenticCreateInputs", () => {
         });
         showOpenDialog.resolves(undefined);
 
-        const result = await selectAgenticCreateInputs(detection, {
+        const result = await selectAgenticCreateInputs(detection, undefined, {
             getWorkspaceFolders: () => [workspaceFolder],
             showOpenDialog
         });
@@ -130,7 +130,7 @@ describe("selectAgenticCreateInputs", () => {
             }
         });
 
-        const result = await selectAgenticCreateInputs(detection, {
+        const result = await selectAgenticCreateInputs(detection, undefined, {
             getWorkspaceFolders: () => [workspaceFolder],
             showOpenDialog
         });
@@ -159,7 +159,7 @@ describe("selectAgenticCreateInputs", () => {
             }
         });
 
-        const result = await selectAgenticCreateInputs(detection, {
+        const result = await selectAgenticCreateInputs(detection, undefined, {
             getWorkspaceFolders: () => [workspaceFolder],
             showOpenDialog
         });
@@ -168,6 +168,46 @@ describe("selectAgenticCreateInputs", () => {
             status: "cancelled",
             step: "host",
             folderUri: workspaceFolder.uri
+        });
+    });
+
+    it("preselects the current browsed folder and host when editing choices", async () => {
+        runSteps();
+        const browsedFolder = vscode.Uri.file("C:\\sites\\outside-workspace");
+        const activeItems: vscode.QuickPickItem[] = [];
+        showQuickPick.callsFake(async (options: {
+            activeItem?: vscode.QuickPickItem;
+        }) => {
+            activeItems.push(options.activeItem as vscode.QuickPickItem);
+            return options.activeItem;
+        });
+
+        const result = await selectAgenticCreateInputs(
+            detection,
+            {
+                folderUri: browsedFolder,
+                hostSelection: {
+                    host: AgentHost.Claude,
+                    installed: false
+                }
+            },
+            {
+                getWorkspaceFolders: () => [workspaceFolder],
+                showOpenDialog
+            }
+        );
+
+        expect(activeItems.map(item => item.label)).to.deep.equal([
+            browsedFolder.fsPath,
+            "Claude Code"
+        ]);
+        expect(result).to.deep.equal({
+            status: "selected",
+            folderUri: browsedFolder,
+            hostSelection: {
+                host: AgentHost.Claude,
+                installed: false
+            }
         });
     });
 });

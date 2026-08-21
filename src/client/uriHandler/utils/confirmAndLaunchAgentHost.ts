@@ -20,7 +20,10 @@ type CreateFlowEventEmitter = (
 /**
  * Terminal outcome of the confirm-and-launch step.
  */
-export type ConfirmAndLaunchOutcome = { status: 'launched' } | { status: 'dropped' };
+export type ConfirmAndLaunchOutcome =
+    | { status: 'launched' }
+    | { status: 'edit' }
+    | { status: 'dropped' };
 
 /**
  * Side effects used by {@link confirmAndLaunchAgentHost}. The VS Code-touching pieces (panel and
@@ -66,6 +69,15 @@ export async function confirmAndLaunchAgentHost(
     const plan = deps.buildPlan(host, hostDisplayName);
     const decision = await deps.showConfirmPanel(hostDisplayName, folderUri.fsPath, plan);
 
+    if (decision !== 'dismissed') {
+        await emitEvent(
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_CONFIRM_ACTION_CLICKED,
+            params,
+            'agent',
+            { host, action: decision }
+        );
+    }
+
     if (decision === 'start') {
         deps.launchPlan(folderUri, plan, hostDisplayName);
         await emitEvent(
@@ -81,6 +93,10 @@ export async function confirmAndLaunchAgentHost(
             { host }
         );
         return { status: 'launched' };
+    }
+
+    if (decision === 'edit') {
+        return { status: 'edit' };
     }
 
     await emitEvent(

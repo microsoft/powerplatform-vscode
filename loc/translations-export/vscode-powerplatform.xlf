@@ -491,6 +491,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
       <source xml:lang="en">Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel &quot;Show download output&quot;))...</source>
       <note>This is a markdown formatting which must persist across translations.</note>
     </trans-unit>
+    <trans-unit id="++CODE++4ea2d9bfa687c285ad10e5b21ed9c1a67b3c0bf6f79f746038f9fd903b9614c9">
+      <source xml:lang="en">Edit choices</source>
+    </trans-unit>
     <trans-unit id="++CODE++ac72407b10d30bf47faf11da09b605a85fc649bd3f2e33acb281655cb9021d9d">
       <source xml:lang="en">Edit the site</source>
     </trans-unit>
@@ -1146,6 +1149,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++d640c7421da066618a39daf4266da5f61f66a9b1afcd626481b831a17064965d">
       <source xml:lang="en">Resume</source>
+    </trans-unit>
+    <trans-unit id="++CODE++1dd14e0777f881f5d27788be6a9c7f28aa14242f14ae2da8c53bbf610484b376">
+      <source xml:lang="en">Return to folder and agent host selection.</source>
     </trans-unit>
     <trans-unit id="++CODE++91ea105b48e59b3e091f165b86c2f399cbbcebf8aeea1b8f7caf58095f4ca7a7">
       <source xml:lang="en">Review the steps below. When you choose Start in Terminal, a terminal opens and runs these commands in order — nothing runs until then.</source>

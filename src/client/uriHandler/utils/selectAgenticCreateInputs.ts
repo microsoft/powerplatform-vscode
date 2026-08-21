@@ -19,12 +19,13 @@ import {
     TargetFolderQuickPickItem
 } from "./selectTargetFolder";
 
+export interface AgenticCreateInputsSelection {
+    folderUri: vscode.Uri;
+    hostSelection: AgentHostSelection;
+}
+
 export type AgenticCreateInputsResult =
-    | {
-        status: "selected";
-        folderUri: vscode.Uri;
-        hostSelection: AgentHostSelection;
-    }
+    | ({ status: "selected" } & AgenticCreateInputsSelection)
     | {
         status: "cancelled";
         step: "folder" | "host";
@@ -59,16 +60,36 @@ const DEFAULT_DEPENDENCIES: SelectAgenticCreateInputsDependencies = {
  * step, while Esc ends the wizard and reports the step that was cancelled.
  *
  * @param detection Agent-host detection results shown in step two.
+ * @param initialSelection Existing folder and host choices when editing a confirmation.
  * @param dependencies Optional VS Code interactions used by integration tests.
  * @returns Completed inputs or the step cancelled with Esc.
  */
 export async function selectAgenticCreateInputs(
     detection: AgentHostDetectionResult[],
+    initialSelection?: AgenticCreateInputsSelection,
     dependencies: SelectAgenticCreateInputsDependencies = DEFAULT_DEPENDENCIES
 ): Promise<AgenticCreateInputsResult> {
-    const state: AgenticCreateInputState = { currentStep: "folder" };
+    const state: AgenticCreateInputState = {
+        currentStep: "folder",
+        folderUri: initialSelection?.folderUri,
+        hostSelection: initialSelection?.hostSelection
+    };
     const folderItems = getTargetFolderQuickPickItems(dependencies.getWorkspaceFolders());
     const hostItems = getAgentHostQuickPickItems(detection);
+    state.folderItem = folderItems.find(item =>
+        item.uri?.toString() === initialSelection?.folderUri.toString()
+    );
+    if (initialSelection && !state.folderItem) {
+        state.folderItem = {
+            label: initialSelection.folderUri.fsPath,
+            iconPath: new vscode.ThemeIcon("folder"),
+            uri: initialSelection.folderUri
+        };
+        folderItems.unshift(state.folderItem);
+    }
+    state.hostItem = hostItems.find(item =>
+        item.host === initialSelection?.hostSelection.host
+    );
     const title = URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.PANEL_TITLE;
 
     const pickHost = async (input: MultiStepInput): Promise<void> => {

@@ -99,7 +99,9 @@ describe("resumeAgenticCreateOnActivation", () => {
         expect(confirmAndLaunchStub.calledOnceWithExactly(
             AgentHost.Copilot,
             folderUri,
-            params
+            params,
+            undefined,
+            false
         )).to.be.true;
         expect(traceInfoStub.calledWith(
             uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED
