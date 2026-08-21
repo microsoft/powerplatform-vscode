@@ -1503,7 +1503,7 @@ URL: {1}
       </trans-unit>
       <trans-unit id="++CODE++3fa3357e7ab619e582aa9350ee57f1679de1609ce6a53a5dd27fd2c6a07f0a10">
         <source xml:lang="en">Select Target Folder</source>
-        <target state="new">Select Target Folder</target>
+        <target state="translated">対象フォルダーの選択</target>
       </trans-unit>
       <trans-unit id="++CODE++a40f78f3a7f5c5ab1b101e95cdf044552542712fdcf45a83dfea3f455b6f638a">
         <source xml:lang="en">Select Type</source>
