@@ -43,6 +43,12 @@ describe("UriHandler routing", () => {
         sandbox.restore();
     });
 
+    it("activates the extension when a Power Pages URI is invoked", () => {
+        const packageJson = vscode.extensions.getExtension(URI_CONSTANTS.EXTENSION_ID)?.packageJSON;
+
+        expect(packageJson?.activationEvents).to.include("onUri");
+    });
+
     it("dispatches /pcfInit to the PCF init handler", async () => {
         await handler.handleUri(makeUri(URI_CONSTANTS.PATHS.PCF_INIT));
 
