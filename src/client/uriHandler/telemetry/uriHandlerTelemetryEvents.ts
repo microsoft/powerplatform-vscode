@@ -42,5 +42,9 @@ export enum uriHandlerTelemetryEventNames {
     URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_RECHECKED = "UriHandlerAgenticCreateHostInstallRechecked",
     URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_RELOAD_REQUESTED = "UriHandlerAgenticCreateHostInstallReloadRequested",
     URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_RESUMED = "UriHandlerAgenticCreateHostInstallResumed",
-    URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_DISMISSED = "UriHandlerAgenticCreateHostInstallDismissed"
+    URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_DISMISSED = "UriHandlerAgenticCreateHostInstallDismissed",
+    URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_OFFERED = "UriHandlerAgenticCreateHostBootstrapOffered",
+    URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_STARTED = "UriHandlerAgenticCreateHostBootstrapStarted",
+    URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_COMPLETED = "UriHandlerAgenticCreateHostBootstrapCompleted",
+    URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_RECOVERY = "UriHandlerAgenticCreateHostBootstrapRecovery"
 }

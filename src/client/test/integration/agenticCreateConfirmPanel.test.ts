@@ -16,8 +16,16 @@ import { PlannedCommand } from "../../uriHandler/utils/agentHostCommandPlan";
 
 describe("showAgenticCreateConfirmPanel", () => {
     const plan: PlannedCommand[] = [
-        { commandLine: 'copilot plugin marketplace add "microsoft/power-platform-skills"', description: "register" },
-        { commandLine: 'copilot -i "How to use Power Pages Plugin for creating a site?"', description: "start" }
+        {
+            kind: "registerMarketplace",
+            commandLine: 'copilot plugin marketplace add "microsoft/power-platform-skills"',
+            description: "register"
+        },
+        {
+            kind: "launchHost",
+            commandLine: 'copilot -i "How to use Power Pages Plugin for creating a site?"',
+            description: "start"
+        }
     ];
 
     interface FakePanel {

@@ -127,6 +127,9 @@ This action cannot be undone.</source>
     <trans-unit id="++CODE++a57666e58a53eea23667fddf0a7c41bdc64abfc5eae94637e88388a6b139b314">
       <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
     </trans-unit>
+    <trans-unit id="++CODE++a90b528b474ea1f3279d587f9f36e5fcbf68b78802182fad5b4b5a39994b97fa">
+      <source xml:lang="en">Automatic command execution could not continue. Use the commands in the confirmation page as a manual reference.</source>
+    </trans-unit>
     <trans-unit id="++CODE++bf27ec2e917b9f2578f8e6372f8656370d24cffe2c5a7b900d0b3280f8ec69fb">
       <source xml:lang="en">Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.</source>
     </trans-unit>
@@ -798,6 +801,9 @@ Return to this chat and @powerpages can help you write and edit your website cod
     <trans-unit id="++CODE++0319a9891908f56a9700981a93a873b705d4be2baaf7cdf63d657e51d4b3e074">
       <source xml:lang="en">Install the Power Pages plugin.</source>
     </trans-unit>
+    <trans-unit id="++CODE++f4e4fc5fabef6cc519fba95f4f04a16af14cbf8ab4184364347685adf9c6c908">
+      <source xml:lang="en">Install {0}.</source>
+    </trans-unit>
     <trans-unit id="++CODE++f8b32f4e92bd84ce1fcd177bec17d43093de3ee8303bb40c1b9ea521ed6a70f6">
       <source xml:lang="en">Installed</source>
     </trans-unit>
@@ -970,8 +976,8 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++ccb4c324f516c63335c648ee08a66b8cc78737d26156f0c84707cd0ee4235492">
       <source xml:lang="en">Not Now</source>
     </trans-unit>
-    <trans-unit id="++CODE++29aea876d5bca2b2ee00e4d89a01aa8b1a8e97175fef5ab5cb73e81d8455b500">
-      <source xml:lang="en">Not installed · Select to view installation guidance.</source>
+    <trans-unit id="++CODE++d2a8b37ce31e400c29e2b2440d5cc286c4b6b9c8b07c2c3c89a785538a60d0d9">
+      <source xml:lang="en">Not installed · Automatic installation will be included.</source>
     </trans-unit>
     <trans-unit id="++CODE++b2b461f3eae470e95fdcfd61a3cbe6680e84d0a7221a305f696ce44843badc89">
       <source xml:lang="en">Object ID: {0}</source>
@@ -1128,6 +1134,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++6e31aef31ad6cc82d8d8d41fd45043885761a11b9222b1ec7ce9d78a36dd4451">
       <source xml:lang="en">Ready to select download folder</source>
     </trans-unit>
+    <trans-unit id="++CODE++4beee00982258909dff4f083e46a4dabf7716b14e21d96b80450dee39985a2c3">
+      <source xml:lang="en">Refresh the terminal PATH.</source>
+    </trans-unit>
     <trans-unit id="++CODE++fdc383411e8354c470e19c960527019a9bf48c61c08a5c3ec3fb8b7b32ccba34">
       <source xml:lang="en">Refreshing comparison for {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel &quot;Show download output&quot;))...</source>
       <note>This is a markdown formatting which must persist across translations.</note>
@@ -1153,8 +1162,8 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++1dd14e0777f881f5d27788be6a9c7f28aa14242f14ae2da8c53bbf610484b376">
       <source xml:lang="en">Return to folder and agent host selection.</source>
     </trans-unit>
-    <trans-unit id="++CODE++91ea105b48e59b3e091f165b86c2f399cbbcebf8aeea1b8f7caf58095f4ca7a7">
-      <source xml:lang="en">Review the steps below. When you choose Start in Terminal, a terminal opens and runs these commands in order — nothing runs until then.</source>
+    <trans-unit id="++CODE++10037afa84471c0d5cb366245aacce217d85e834f3b91531937d8301c8e88d02">
+      <source xml:lang="en">Review the steps below. Start in Terminal runs them in order. The agent host may ask you to sign in during its first interactive launch.</source>
     </trans-unit>
     <trans-unit id="++CODE++00d60e31a4e6b8344d4201f25a6a7dee770713107f6d097abb01559d32b17f26">
       <source xml:lang="en">Run</source>
@@ -1362,6 +1371,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++98a4cf89a57d927fce50521aaf27e9fd7dc5046e82725348cf6024469a4f2bdf">
       <source xml:lang="en">The account signed in to VS Code differs from the one authenticated in PAC CLI (Power Platform CLI). This mismatch can cause data not to load or actions to fail because UI commands run through the CLI. To fix it, sign in to VS Code using the same account as your PAC CLI. If needed, you can update your PAC CLI authentication separately via the command line.</source>
     </trans-unit>
+    <trans-unit id="++CODE++060c9df5fdf6a8377bb3548fb5a8d170c73a312ff8a509c12d8d7e25661a6477">
+      <source xml:lang="en">The approved sequence is running in the terminal. This page remains available as a command reference.</source>
+    </trans-unit>
     <trans-unit id="++CODE++0bc2e4918b64f82220bde3dae30dc007a45fb59c3677833fb5a0e275a3b6b54b">
       <source xml:lang="en">The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?</source>
       <note>Do not translate 'Microsoft Edge Tools' </note>
@@ -1526,6 +1538,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++527423ed0138373aa91233083f12eceeae92aa1998e6706d7a260524dafbe6c4">
       <source xml:lang="en">Validating authentication...</source>
+    </trans-unit>
+    <trans-unit id="++CODE++e7ff9f2963479e3a67c6681ca691ffcf17d26c6dbfdc73c76961918bce7e2c89">
+      <source xml:lang="en">Verify that {0} is available in this terminal.</source>
     </trans-unit>
     <trans-unit id="++CODE++e9d8c62d601b715092d29b92eb772eff38e7130e2f8199a3c41196489ef23bf4">
       <source xml:lang="en">View Installation Guide</source>

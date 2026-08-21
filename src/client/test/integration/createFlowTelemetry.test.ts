@@ -65,7 +65,7 @@ describe("Create-flow telemetry", () => {
     });
 
     it("defines the create-flow funnel events in stage order", () => {
-        expect(Object.values(uriHandlerTelemetryEventNames).slice(-20)).to.deep.equal([
+        expect(Object.values(uriHandlerTelemetryEventNames).slice(-24)).to.deep.equal([
             'UriHandlerCreateAuthStarted',
             'UriHandlerCreateAuthCompleted',
             'UriHandlerCreateAuthFailed',
@@ -85,7 +85,11 @@ describe("Create-flow telemetry", () => {
             'UriHandlerAgenticCreateHostInstallRechecked',
             'UriHandlerAgenticCreateHostInstallReloadRequested',
             'UriHandlerAgenticCreateHostInstallResumed',
-            'UriHandlerAgenticCreateHostInstallDismissed'
+            'UriHandlerAgenticCreateHostInstallDismissed',
+            'UriHandlerAgenticCreateHostBootstrapOffered',
+            'UriHandlerAgenticCreateHostBootstrapStarted',
+            'UriHandlerAgenticCreateHostBootstrapCompleted',
+            'UriHandlerAgenticCreateHostBootstrapRecovery'
         ]);
     });
 

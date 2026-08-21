@@ -23,6 +23,7 @@ describe("Agentic create host resolution", () => {
     let detectAgentHostStub: sinon.SinonStub;
     let selectAgenticCreateInputsStub: sinon.SinonStub;
     let resolveAgentHostInstallationStub: sinon.SinonStub;
+    let resolveAgentHostBootstrapStub: sinon.SinonStub;
     let emitCreateFlowEventStub: sinon.SinonStub;
     let confirmAndLaunchAgentHostStub: sinon.SinonStub;
     let traceInfoStub: sinon.SinonStub;
@@ -108,6 +109,14 @@ describe("Agentic create host resolution", () => {
             }
         });
         resolveAgentHostInstallationStub = sandbox.stub();
+        resolveAgentHostBootstrapStub = sandbox.stub().returns({
+            supported: true,
+            config: {
+                platform: "win32",
+                installer: "winget",
+                shellPath: "pwsh"
+            }
+        });
         emitCreateFlowEventStub = sandbox.stub().callsFake(emitCreateFlowEvent);
         confirmAndLaunchAgentHostStub = sandbox.stub().resolves({ status: "launched" });
         storeUpdateStub = sandbox.stub().resolves();
@@ -119,6 +128,7 @@ describe("Agentic create host resolution", () => {
             detectAgentHost: detectAgentHostStub,
             selectAgenticCreateInputs: selectAgenticCreateInputsStub,
             resolveAgentHostInstallation: resolveAgentHostInstallationStub,
+            resolveAgentHostBootstrap: resolveAgentHostBootstrapStub,
             emitCreateFlowEvent: emitCreateFlowEventStub,
             confirmAndLaunchAgentHost: confirmAndLaunchAgentHostStub
         };
@@ -269,7 +279,7 @@ describe("Agentic create host resolution", () => {
     ];
 
     for (const resolution of resolutions) {
-        it(`handles a not-installed host when installation resolution is ${resolution.status}`, async () => {
+        it(`uses the fallback for unavailable prerequisites when installation resolution is ${resolution.status}`, async () => {
             selectAgenticCreateInputsStub.resolves({
                 status: "selected",
                 folderUri: selectedFolder,
@@ -278,11 +288,15 @@ describe("Agentic create host resolution", () => {
                     installed: false
                 }
             });
+            resolveAgentHostBootstrapStub.returns({
+                supported: false,
+                reason: "missingWinget"
+            });
             resolveAgentHostInstallationStub.resolves(resolution);
 
             await createHandler().handle(uri);
 
-            expect(emitCreateFlowEventStub.callCount).to.equal(2);
+            expect(emitCreateFlowEventStub.callCount).to.equal(3);
             expect(emitCreateFlowEventStub.firstCall.args[0]).to.equal(
                 uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED
             );
@@ -293,6 +307,9 @@ describe("Agentic create host resolution", () => {
                 host: AgentHost.Claude,
                 installed: "false"
             });
+            expect(emitCreateFlowEventStub.thirdCall.args[0]).to.equal(
+                uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_RECOVERY
+            );
             expect(resolveAgentHostInstallationStub.calledOnce).to.be.true;
             expect(resolveAgentHostInstallationStub.firstCall.args[0]).to.equal(AgentHost.Claude);
             expect(resolveAgentHostInstallationStub.firstCall.args[1]).to.equal("Claude Code");
@@ -313,9 +330,65 @@ describe("Agentic create host resolution", () => {
                 expect(confirmAndLaunchAgentHostStub.notCalled).to.be.true;
             }
             expect(storeUpdateStub.notCalled).to.be.true;
-            expectNoInstallEventsFromHandler();
             expectNoSensitiveTelemetry();
             expect(traceErrorStub.notCalled).to.be.true;
         });
     }
+
+    it("confirms the automatic bootstrap before opening fallback guidance", async () => {
+        selectAgenticCreateInputsStub.resolves({
+            status: "selected",
+            folderUri: selectedFolder,
+            hostSelection: {
+                host: AgentHost.Claude,
+                installed: false
+            }
+        });
+
+        await createHandler().handle(uri);
+
+        expect(resolveAgentHostBootstrapStub.calledOnceWithExactly(AgentHost.Claude)).to.be.true;
+        expect(confirmAndLaunchAgentHostStub.calledOnce).to.be.true;
+        expect(confirmAndLaunchAgentHostStub.firstCall.args[4]).to.deep.equal({
+            platform: "win32",
+            installer: "winget",
+            shellPath: "pwsh"
+        });
+        expect(resolveAgentHostInstallationStub.notCalled).to.be.true;
+    });
+
+    it("falls back after automatic execution recovery and retries plugin setup without reinstalling", async () => {
+        selectAgenticCreateInputsStub.resolves({
+            status: "selected",
+            folderUri: selectedFolder,
+            hostSelection: {
+                host: AgentHost.Claude,
+                installed: false
+            }
+        });
+        confirmAndLaunchAgentHostStub
+            .onFirstCall()
+            .resolves({
+                status: "recovery",
+                result: {
+                    status: "recovery",
+                    reason: "shellIntegrationUnavailable"
+                }
+            })
+            .onSecondCall()
+            .resolves({ status: "launched" });
+        resolveAgentHostInstallationStub.resolves({
+            status: "resolved",
+            host: AgentHost.Claude
+        });
+
+        await createHandler().handle(uri);
+
+        expect(confirmAndLaunchAgentHostStub.calledTwice).to.be.true;
+        expect(confirmAndLaunchAgentHostStub.firstCall.args[4]).to.deep.include({
+            installer: "winget"
+        });
+        expect(confirmAndLaunchAgentHostStub.secondCall.args[4]).to.be.undefined;
+        expect(resolveAgentHostInstallationStub.calledOnce).to.be.true;
+    });
 });

@@ -31,6 +31,10 @@ import {
     getAgentHostDisplayName
 } from "../utils/agenticCreateLaunch";
 import { URI_HANDLER_STRINGS } from "../constants/uriStrings";
+import {
+    AgentHostBootstrapConfig,
+    resolveAgentHostBootstrap
+} from "../utils/agentHostBootstrap";
 
 /**
  * Injectable dependencies used by the agent-specific create-flow tail.
@@ -39,12 +43,14 @@ export interface AgenticCreateHandlerDependencies {
     detectAgentHost: typeof detectAgentHost;
     selectAgenticCreateInputs: typeof selectAgenticCreateInputs;
     resolveAgentHostInstallation: typeof resolveAgentHostInstallation;
+    resolveAgentHostBootstrap: typeof resolveAgentHostBootstrap;
     emitCreateFlowEvent: typeof emitCreateFlowEvent;
     confirmAndLaunchAgentHost: (
         host: AgentHost,
         hostDisplayName: string,
         folderUri: vscode.Uri,
-        params: CreateFlowParameters
+        params: CreateFlowParameters,
+        bootstrap?: AgentHostBootstrapConfig
     ) => Promise<ConfirmAndLaunchOutcome>;
 }
 
@@ -52,9 +58,17 @@ const DEFAULT_DEPENDENCIES: AgenticCreateHandlerDependencies = {
     detectAgentHost,
     selectAgenticCreateInputs,
     resolveAgentHostInstallation,
+    resolveAgentHostBootstrap,
     emitCreateFlowEvent,
-    confirmAndLaunchAgentHost: (host, hostDisplayName, folderUri, params) =>
-        confirmAndLaunchSelectedAgentHost(host, folderUri, params, hostDisplayName)
+    confirmAndLaunchAgentHost: (host, hostDisplayName, folderUri, params, bootstrap) =>
+        confirmAndLaunchSelectedAgentHost(
+            host,
+            folderUri,
+            params,
+            hostDisplayName,
+            true,
+            bootstrap
+        )
 };
 
 const AGENT_HOST_INSTALLATION_STRINGS: AgentHostInstallationStrings = {
@@ -143,6 +157,29 @@ export class AgenticCreateHandler {
                 this.dependencies.detectAgentHost(AgentHost.Claude)
             ]);
             let selectionToEdit: AgenticCreateInputsSelection | undefined;
+            const resolveMissingHost = async (
+                host: AgentHost
+            ): ReturnType<typeof resolveAgentHostInstallation> =>
+                this.dependencies.resolveAgentHostInstallation(
+                    host,
+                    getAgentHostDisplayName(host),
+                    params,
+                    {
+                        strings: AGENT_HOST_INSTALLATION_STRINGS,
+                        showInformationMessage: (message, ...buttons) =>
+                            vscode.window.showInformationMessage(message, ...buttons),
+                        showWarningMessage: (message, ...buttons) =>
+                            vscode.window.showWarningMessage(message, ...buttons),
+                        openExternal: async (url) => {
+                            await vscode.env.openExternal(vscode.Uri.parse(url));
+                        },
+                        writeResumeMarker: (marker) =>
+                            writeResumeMarker(resumeMarkerStore, marker),
+                        reloadWindow: async () => {
+                            await vscode.commands.executeCommand('workbench.action.reloadWindow');
+                        }
+                    }
+                );
 
             for (;;) {
                 const inputs = selectionToEdit
@@ -173,6 +210,7 @@ export class AgenticCreateHandler {
 
                 const { folderUri, hostSelection } = inputs;
                 let confirmedHostSelection = hostSelection;
+                let bootstrap: AgentHostBootstrapConfig | undefined;
                 this.dependencies.emitCreateFlowEvent(
                     uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED,
                     params,
@@ -189,44 +227,91 @@ export class AgenticCreateHandler {
                 );
 
                 if (!hostSelection.installed) {
-                    const resolution = await this.dependencies.resolveAgentHostInstallation(
-                        hostSelection.host,
-                        getAgentHostDisplayName(hostSelection.host),
-                        params,
-                        {
-                            strings: AGENT_HOST_INSTALLATION_STRINGS,
-                            showInformationMessage: (message, ...buttons) =>
-                                vscode.window.showInformationMessage(message, ...buttons),
-                            showWarningMessage: (message, ...buttons) =>
-                                vscode.window.showWarningMessage(message, ...buttons),
-                            openExternal: async (url) => {
-                                await vscode.env.openExternal(vscode.Uri.parse(url));
-                            },
-                            writeResumeMarker: (marker) =>
-                                writeResumeMarker(resumeMarkerStore, marker),
-                            reloadWindow: async () => {
-                                await vscode.commands.executeCommand('workbench.action.reloadWindow');
-                            }
-                        }
+                    const bootstrapResolution = this.dependencies.resolveAgentHostBootstrap(
+                        hostSelection.host
                     );
+                    if (bootstrapResolution.supported) {
+                        bootstrap = bootstrapResolution.config;
+                        this.dependencies.emitCreateFlowEvent(
+                            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_OFFERED,
+                            params,
+                            'agent',
+                            {
+                                host: hostSelection.host,
+                                platform: bootstrap.platform,
+                                installer: bootstrap.installer
+                            }
+                        );
+                    } else {
+                        this.dependencies.emitCreateFlowEvent(
+                            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_RECOVERY,
+                            params,
+                            'agent',
+                            {
+                                host: hostSelection.host,
+                                reason: bootstrapResolution.reason,
+                                commandKind: '',
+                                exitCodeCategory: 'notStarted'
+                            }
+                        );
+                        const resolution = await resolveMissingHost(hostSelection.host);
+                        if (resolution.status !== 'resolved') {
+                            return;
+                        }
+
+                        confirmedHostSelection = { ...hostSelection, installed: true };
+                        detection = detection.map(result =>
+                            result.host === hostSelection.host
+                                ? { ...result, installed: true }
+                                : result
+                        );
+                    }
+                }
+
+                let outcome = await this.dependencies.confirmAndLaunchAgentHost(
+                    confirmedHostSelection.host,
+                    getAgentHostDisplayName(confirmedHostSelection.host),
+                    folderUri,
+                    params,
+                    bootstrap
+                );
+
+                const shouldUseHostInstallFallback =
+                    outcome.status === 'recovery' &&
+                    !confirmedHostSelection.installed &&
+                    (
+                        outcome.result.reason === 'shellIntegrationUnavailable' ||
+                        outcome.result.failedCommand?.kind === 'installHost' ||
+                        outcome.result.failedCommand?.kind === 'refreshPath' ||
+                        outcome.result.failedCommand?.kind === 'verifyHost'
+                    );
+                if (shouldUseHostInstallFallback) {
+                    const resolution = await resolveMissingHost(confirmedHostSelection.host);
                     if (resolution.status !== 'resolved') {
                         return;
                     }
 
-                    confirmedHostSelection = { ...hostSelection, installed: true };
+                    confirmedHostSelection = { ...confirmedHostSelection, installed: true };
                     detection = detection.map(result =>
-                        result.host === hostSelection.host
+                        result.host === confirmedHostSelection.host
                             ? { ...result, installed: true }
                             : result
                     );
+                    outcome = await this.dependencies.confirmAndLaunchAgentHost(
+                        confirmedHostSelection.host,
+                        getAgentHostDisplayName(confirmedHostSelection.host),
+                        folderUri,
+                        params
+                    );
                 }
 
-                const outcome = await this.dependencies.confirmAndLaunchAgentHost(
-                    confirmedHostSelection.host,
-                    getAgentHostDisplayName(confirmedHostSelection.host),
-                    folderUri,
-                    params
-                );
+                if (outcome.status === 'recovery') {
+                    void vscode.window.showWarningMessage(
+                        URI_HANDLER_STRINGS.ERRORS.AGENT_HOST_SEQUENCE_RECOVERY
+                    );
+                    return;
+                }
+
                 if (outcome.status !== 'edit') {
                     return;
                 }

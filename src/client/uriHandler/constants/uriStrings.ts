@@ -20,6 +20,7 @@ export const URI_HANDLER_STRINGS = {
         USER_CANCELLED_ENV_SWITCH: vscode.l10n.t("User cancelled environment switch"),
         USER_CANCELLED_FOLDER_SELECTION: vscode.l10n.t("User cancelled folder selection"),
         CREATE_FLOW_FAILED: vscode.l10n.t("Power Pages create flow could not continue. {0}"),
+        AGENT_HOST_SEQUENCE_RECOVERY: vscode.l10n.t("Automatic command execution could not continue. Use the commands in the confirmation page as a manual reference."),
         DOWNLOAD_FAILED: vscode.l10n.t("Download failed: {0}")
     },
     INFO: {
@@ -87,14 +88,15 @@ export const URI_HANDLER_STRINGS = {
         PAC_PCF_INIT: vscode.l10n.t("pac pcf init")
     },
     DESCRIPTIONS: {
-        AGENT_HOST_NOT_INSTALLED: vscode.l10n.t("Not installed · Select to view installation guidance.")
+        AGENT_HOST_NOT_INSTALLED: vscode.l10n.t("Not installed · Automatic installation will be included.")
     },
     AGENT_HOST_CONFIRM: {
         // Title of the confirmation webview panel tab.
         PANEL_TITLE: vscode.l10n.t("Create Power Pages Site"),
         // {0} is the agent host display name. Shown as the panel heading and document title.
         TITLE: vscode.l10n.t("Create a Power Pages site with {0}?"),
-        DESCRIPTION: vscode.l10n.t("Review the steps below. When you choose Start in Terminal, a terminal opens and runs these commands in order — nothing runs until then."),
+        DESCRIPTION: vscode.l10n.t("Review the steps below. Start in Terminal runs them in order. The agent host may ask you to sign in during its first interactive launch."),
+        RUNNING_STATUS: vscode.l10n.t("The approved sequence is running in the terminal. This page remains available as a command reference."),
         SUMMARY_HEADER: vscode.l10n.t("Summary"),
         SEQUENCE_HEADER: vscode.l10n.t("Command sequence"),
         HOST_LABEL: vscode.l10n.t("Agent host"),
@@ -107,6 +109,9 @@ export const URI_HANDLER_STRINGS = {
         CANCEL_DETAIL: vscode.l10n.t("Close without running anything."),
         // {0} is the agent host display name. Used as the integrated terminal name.
         TERMINAL_NAME: vscode.l10n.t("Power Pages Agent: {0}"),
+        STEP_INSTALL_HOST: vscode.l10n.t("Install {0}."),
+        STEP_REFRESH_PATH: vscode.l10n.t("Refresh the terminal PATH."),
+        STEP_VERIFY_HOST: vscode.l10n.t("Verify that {0} is available in this terminal."),
         STEP_REGISTER_MARKETPLACE: vscode.l10n.t("Register the Power Platform Skills marketplace."),
         STEP_INSTALL_PLUGIN: vscode.l10n.t("Install the Power Pages plugin."),
         STEP_INSTALL_PLUGIN_USER_SCOPE: vscode.l10n.t("Install the Power Pages plugin (user scope)."),

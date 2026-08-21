@@ -111,6 +111,7 @@ function buildHtml(
         body { padding: 0 24px 24px; max-width: 820px; }
         h1 { font-size: 1.3em; font-weight: 600; margin-bottom: 0.3em; }
         .description { color: var(--vscode-descriptionForeground, inherit); margin-top: 0; margin-bottom: 1.4em; }
+        .status { border-left: 3px solid var(--vscode-progressBar-background, #0078d4); background: var(--vscode-textBlockQuote-background, rgba(127, 127, 127, 0.12)); padding: 8px 12px; margin: 1em 0; }
         h2.section-header { text-transform: uppercase; font-size: 0.72em; font-weight: 700; letter-spacing: 0.08em; color: var(--vscode-descriptionForeground, inherit); margin: 1.6em 0 0.6em; }
         dl.summary { display: grid; grid-template-columns: max-content 1fr; gap: 6px 20px; margin: 0; }
         dl.summary dt { color: var(--vscode-descriptionForeground, inherit); }
@@ -132,6 +133,7 @@ function buildHtml(
 <body>
     <h1>${escapeHtml(title)}</h1>
     <p class="description">${escapeHtml(confirm.DESCRIPTION)}</p>
+    ${started ? `<p class="status" role="status">${escapeHtml(confirm.RUNNING_STATUS)}</p>` : ""}
 
     <h2 class="section-header">${escapeHtml(confirm.SUMMARY_HEADER)}</h2>
     <dl class="summary">

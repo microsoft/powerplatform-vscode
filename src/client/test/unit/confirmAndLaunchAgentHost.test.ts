@@ -20,8 +20,8 @@ describe("confirmAndLaunchAgentHost", () => {
     const folderUri = { fsPath: "c:/work/site" } as unknown as vscode.Uri;
     const params = {} as CreateFlowParameters;
     const plan: PlannedCommand[] = [
-        { commandLine: "step-1", description: "one" },
-        { commandLine: "step-2", description: "two" }
+        { kind: "registerMarketplace", commandLine: "step-1", description: "one" },
+        { kind: "launchHost", commandLine: "step-2", description: "two" }
     ];
 
     const buildDeps = (
@@ -35,7 +35,7 @@ describe("confirmAndLaunchAgentHost", () => {
     } => {
         const buildPlan = sinon.stub().returns(plan);
         const showConfirmPanel = sinon.stub().resolves(decision);
-        const launchPlan = sinon.stub();
+        const launchPlan = sinon.stub().resolves({ status: "launched" });
         const emitEvent = sinon.stub().resolves();
         return {
             deps: { buildPlan, showConfirmPanel, launchPlan, emitEvent },
@@ -146,6 +146,44 @@ describe("confirmAndLaunchAgentHost", () => {
         expect(emitEvent.firstCall.args[3]).to.deep.equal({
             host: AgentHost.Copilot,
             action: "edit"
+        });
+    });
+
+    it("returns recovery and does not emit launch telemetry when a command fails", async () => {
+        const { deps, launchPlan, emitEvent } = buildDeps("start");
+        launchPlan.resolves({
+            status: "recovery",
+            reason: "commandFailed",
+            failedCommand: plan[0],
+            exitCode: 1
+        });
+
+        const outcome = await confirmAndLaunchAgentHost(
+            AgentHost.Copilot,
+            "GitHub Copilot CLI",
+            folderUri,
+            params,
+            deps
+        );
+
+        expect(outcome).to.deep.equal({
+            status: "recovery",
+            result: {
+                status: "recovery",
+                reason: "commandFailed",
+                failedCommand: plan[0],
+                exitCode: 1
+            }
+        });
+        expect(emitEvent.callCount).to.equal(2);
+        expect(emitEvent.secondCall.args[0]).to.equal(
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_RECOVERY
+        );
+        expect(emitEvent.secondCall.args[3]).to.deep.equal({
+            host: AgentHost.Copilot,
+            reason: "commandFailed",
+            commandKind: "registerMarketplace",
+            exitCodeCategory: "nonZero"
         });
     });
 });

@@ -48,7 +48,7 @@ describe("selectAgentHost", () => {
             },
             {
                 label: "Claude Code",
-                description: "Not installed · Select to view installation guidance.",
+                description: "Not installed · Automatic installation will be included.",
                 host: AgentHost.Claude,
                 installed: false
             }
