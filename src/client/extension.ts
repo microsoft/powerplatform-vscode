@@ -73,6 +73,10 @@ export async function activate(
 ): Promise<void> {
     _context = context;
 
+    // Register the transient confirmation serializer before any awaited activation work. VS Code
+    // may be waiting for it while restoring a panel, and authentication can remain interactive.
+    _context.subscriptions.push(registerAgenticCreateConfirmPanelSerializer());
+
     // Logging telemetry in US cluster for unauthenticated scenario
     oneDSLoggerWrapper.instantiate("us");
 
@@ -179,9 +183,6 @@ export async function activate(
             },
         });
 
-        // A confirmation panel restored after a reload has no flow left to answer, and VS Code
-        // cannot initialize a webview whose view type has no serializer.
-        _context.subscriptions.push(registerAgenticCreateConfirmPanelSerializer());
     }
 
     // Add CRUD related callback subscription here

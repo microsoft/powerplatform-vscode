@@ -284,7 +284,7 @@ describe("registerAgenticCreateConfirmPanelSerializer", () => {
         // cleanup document prevents disposal from racing VS Code's service-worker registration.
         const messageEmitter = new vscode.EventEmitter<unknown>();
         const disposeEmitter = new vscode.EventEmitter<void>();
-        const dispose = sandbox.stub();
+        const dispose = sandbox.stub().callsFake(() => disposeEmitter.fire());
         let html = "";
         let options: vscode.WebviewOptions = {};
         const panel = {
@@ -321,6 +321,40 @@ describe("registerAgenticCreateConfirmPanelSerializer", () => {
 
         expect(dispose.calledOnce).to.be.true;
 
+        messageEmitter.dispose();
+        disposeEmitter.dispose();
+    });
+
+    it("discards a restored panel when its cleanup webview never reports ready", async () => {
+        const clock = sandbox.useFakeTimers();
+        let serializer: vscode.WebviewPanelSerializer | undefined;
+        sandbox.stub(vscode.window, "registerWebviewPanelSerializer").callsFake(
+            (_viewType: string, panelSerializer: vscode.WebviewPanelSerializer) => {
+                serializer = panelSerializer;
+                return { dispose: () => undefined };
+            }
+        );
+        registerAgenticCreateConfirmPanelSerializer();
+
+        const messageEmitter = new vscode.EventEmitter<unknown>();
+        const disposeEmitter = new vscode.EventEmitter<void>();
+        const dispose = sandbox.stub().callsFake(() => disposeEmitter.fire());
+        const panel = {
+            webview: {
+                html: "",
+                options: {},
+                onDidReceiveMessage: messageEmitter.event
+            },
+            onDidDispose: disposeEmitter.event,
+            dispose
+        } as unknown as vscode.WebviewPanel;
+
+        await serializer?.deserializeWebviewPanel(panel, undefined);
+        expect(dispose.notCalled).to.be.true;
+
+        await clock.tickAsync(5000);
+
+        expect(dispose.calledOnce).to.be.true;
         messageEmitter.dispose();
         disposeEmitter.dispose();
     });

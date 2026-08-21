@@ -37,6 +37,7 @@ const DEFAULT_CONFIRM_PANEL_DEPENDENCIES: ShowConfirmPanelDependencies = {
 };
 
 const RESTORED_PANEL_READY_MESSAGE = "agenticCreateConfirmRestoredPanelReady";
+const RESTORED_PANEL_DISPOSE_TIMEOUT_MS = 5000;
 
 /**
  * Escapes a string for safe interpolation into HTML text/attribute content. Folder paths and
@@ -215,14 +216,29 @@ export function registerAgenticCreateConfirmPanelSerializer(): vscode.Disposable
                     localResourceRoots: []
                 };
 
+                let disposed = false;
+                const disposePanel = (): void => {
+                    if (!disposed) {
+                        disposed = true;
+                        panel.dispose();
+                    }
+                };
+                const fallbackTimer = setTimeout(
+                    disposePanel,
+                    RESTORED_PANEL_DISPOSE_TIMEOUT_MS
+                );
                 const messageSubscription = panel.webview.onDidReceiveMessage(
                     (message: { type?: unknown }) => {
                         if (message?.type === RESTORED_PANEL_READY_MESSAGE) {
-                            panel.dispose();
+                            disposePanel();
                         }
                     }
                 );
-                panel.onDidDispose(() => messageSubscription.dispose());
+                panel.onDidDispose(() => {
+                    disposed = true;
+                    clearTimeout(fallbackTimer);
+                    messageSubscription.dispose();
+                });
                 panel.webview.html = buildRestoredPanelCleanupHtml();
             }
         }
