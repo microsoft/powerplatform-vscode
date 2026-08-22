@@ -21,9 +21,8 @@ export function initializeGenerator(
     cliContext: any
 ): void {
     const generator = new GeneratorAcquisition(cliContext);
-    generator.ensureInstalled();
+    const yoCommandPath = generator.ensureInstalled();
     context.subscriptions.push(generator);
-    const yoCommandPath = generator.yoCommandPath;
     if (yoCommandPath) {
         registerCreateCommands(context, yoCommandPath);
         vscode.workspace
