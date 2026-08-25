@@ -97,6 +97,9 @@ export const URI_HANDLER_STRINGS = {
         TITLE: vscode.l10n.t("Create a Power Pages site with {0}?"),
         DESCRIPTION: vscode.l10n.t("Review the steps below. Start in Terminal runs them in order. The agent host may ask you to sign in during its first interactive launch."),
         RUNNING_STATUS: vscode.l10n.t("The approved sequence is running in the terminal. This page remains available as a command reference."),
+        SHELL_INTEGRATION_RECOVERY_STATUS: vscode.l10n.t("Automatic execution could not start because terminal Shell Integration is unavailable. Use the commands below as a manual recovery reference."),
+        // {0} is the localized description of the command that failed.
+        COMMAND_RECOVERY_STATUS: vscode.l10n.t("Automatic execution stopped while trying to: {0}. Use the commands below as a manual recovery reference."),
         SUMMARY_HEADER: vscode.l10n.t("Summary"),
         SEQUENCE_HEADER: vscode.l10n.t("Command sequence"),
         HOST_LABEL: vscode.l10n.t("Agent host"),
@@ -107,6 +110,8 @@ export const URI_HANDLER_STRINGS = {
         EDIT_DETAIL: vscode.l10n.t("Return to folder and agent host selection."),
         CANCEL_LABEL: vscode.l10n.t("Cancel"),
         CANCEL_DETAIL: vscode.l10n.t("Close without running anything."),
+        CLOSE_LABEL: vscode.l10n.t("Close"),
+        CLOSE_DETAIL: vscode.l10n.t("Close this command reference."),
         // {0} is the agent host display name. Used as the integrated terminal name.
         TERMINAL_NAME: vscode.l10n.t("Power Pages Agent: {0}"),
         STEP_INSTALL_HOST: vscode.l10n.t("Install {0}."),

@@ -30,17 +30,23 @@ describe("confirmAndLaunchAgentHost", () => {
         deps: ConfirmAndLaunchDependencies;
         buildPlan: sinon.SinonStub;
         showConfirmPanel: sinon.SinonStub;
+        showRecovery: sinon.SinonStub;
         launchPlan: sinon.SinonStub;
         emitEvent: sinon.SinonStub;
     } => {
         const buildPlan = sinon.stub().returns(plan);
-        const showConfirmPanel = sinon.stub().resolves(decision);
+        const showRecovery = sinon.stub().resolves(true);
+        const showConfirmPanel = sinon.stub().returns({
+            decision: Promise.resolve(decision),
+            showRecovery
+        });
         const launchPlan = sinon.stub().resolves({ status: "launched" });
         const emitEvent = sinon.stub().resolves();
         return {
             deps: { buildPlan, showConfirmPanel, launchPlan, emitEvent },
             buildPlan,
             showConfirmPanel,
+            showRecovery,
             launchPlan,
             emitEvent
         };
@@ -150,13 +156,14 @@ describe("confirmAndLaunchAgentHost", () => {
     });
 
     it("returns recovery and does not emit launch telemetry when a command fails", async () => {
-        const { deps, launchPlan, emitEvent } = buildDeps("start");
-        launchPlan.resolves({
+        const { deps, launchPlan, showRecovery, emitEvent } = buildDeps("start");
+        const recoveryResult = {
             status: "recovery",
             reason: "commandFailed",
             failedCommand: plan[0],
             exitCode: 1
-        });
+        } as const;
+        launchPlan.resolves(recoveryResult);
 
         const outcome = await confirmAndLaunchAgentHost(
             AgentHost.Copilot,
@@ -176,6 +183,7 @@ describe("confirmAndLaunchAgentHost", () => {
             }
         });
         expect(emitEvent.callCount).to.equal(2);
+        expect(showRecovery.calledOnceWithExactly(recoveryResult)).to.be.true;
         expect(emitEvent.secondCall.args[0]).to.equal(
             uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_RECOVERY
         );

@@ -130,6 +130,12 @@ This action cannot be undone.</source>
     <trans-unit id="++CODE++a90b528b474ea1f3279d587f9f36e5fcbf68b78802182fad5b4b5a39994b97fa">
       <source xml:lang="en">Automatic command execution could not continue. Use the commands in the confirmation page as a manual reference.</source>
     </trans-unit>
+    <trans-unit id="++CODE++77a45eee99657e99dc65689cb4bbb41c0e7ad32d66ced5b8fe9b0518ec804b1d">
+      <source xml:lang="en">Automatic execution could not start because terminal Shell Integration is unavailable. Use the commands below as a manual recovery reference.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++69ed01f62586b0f967577d80f893f23dd9138bf2267188c96e4efcc761e79151">
+      <source xml:lang="en">Automatic execution stopped while trying to: {0}. Use the commands below as a manual recovery reference.</source>
+    </trans-unit>
     <trans-unit id="++CODE++bf27ec2e917b9f2578f8e6372f8656370d24cffe2c5a7b900d0b3280f8ec69fb">
       <source xml:lang="en">Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.</source>
     </trans-unit>
@@ -232,6 +238,9 @@ The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).
     </trans-unit>
     <trans-unit id="++CODE++7d9eb7acb13e24625c404401d8e88b2350e32162455885f18276cf802f7701ed">
       <source xml:lang="en">Close</source>
+    </trans-unit>
+    <trans-unit id="++CODE++7211aa590388acbd78f73cb66a2bb97d7492c9073e8e251727a0367deb34d7c8">
+      <source xml:lang="en">Close this command reference.</source>
     </trans-unit>
     <trans-unit id="++CODE++d1753029a614b1d88cab379a325334a907b5a5f4edd942614fafad016fdc71bc">
       <source xml:lang="en">Close without running anything.</source>

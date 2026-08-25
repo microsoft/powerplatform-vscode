@@ -8,7 +8,9 @@ import type { CreateFlowParameters } from "../handlers/createFlowParams";
 import { uriHandlerTelemetryEventNames } from "../telemetry/uriHandlerTelemetryEvents";
 import type { PlannedCommand } from "./agentHostCommandPlan";
 import type { AgentHost } from "./detectAgentHost";
-import type { ConfirmDecision } from "./agenticCreateConfirmPanel";
+import type {
+    AgenticCreateConfirmPanelSession
+} from "./agenticCreateConfirmPanel";
 import type { LaunchAgentHostPlanResult } from "./launchAgentHostPlan";
 
 type CreateFlowEventEmitter = (
@@ -37,7 +39,7 @@ export interface ConfirmAndLaunchDependencies {
         hostDisplayName: string,
         folderPath: string,
         plan: PlannedCommand[]
-    ) => Promise<ConfirmDecision>;
+    ) => AgenticCreateConfirmPanelSession;
     launchPlan: (
         folderUri: vscode.Uri,
         plan: PlannedCommand[],
@@ -73,7 +75,8 @@ export async function confirmAndLaunchAgentHost(
 ): Promise<ConfirmAndLaunchOutcome> {
     const emitEvent = deps.emitEvent ?? defaultEmitEvent;
     const plan = deps.buildPlan(host, hostDisplayName);
-    const decision = await deps.showConfirmPanel(hostDisplayName, folderUri.fsPath, plan);
+    const confirmPanel = deps.showConfirmPanel(hostDisplayName, folderUri.fsPath, plan);
+    const decision = await confirmPanel.decision;
 
     if (decision !== 'dismissed') {
         await emitEvent(
@@ -97,6 +100,7 @@ export async function confirmAndLaunchAgentHost(
 
         const launchResult = await deps.launchPlan(folderUri, plan, hostDisplayName);
         if (launchResult.status === 'recovery') {
+            await confirmPanel.showRecovery(launchResult);
             await emitEvent(
                 uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_RECOVERY,
                 params,
