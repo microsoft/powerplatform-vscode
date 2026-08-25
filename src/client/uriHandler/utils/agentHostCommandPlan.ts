@@ -4,13 +4,28 @@
  */
 
 import { URI_CONSTANTS } from "../constants/uriConstants";
+import {
+    AgentHostBootstrapConfig,
+    getAgentHostInstallCommand,
+    getAgentHostPathRefreshCommand
+} from "./agentHostBootstrap";
 import { AgentHost } from "./detectAgentHost";
+
+export type PlannedCommandKind =
+    | "installHost"
+    | "refreshPath"
+    | "verifyHost"
+    | "registerMarketplace"
+    | "installPlugin"
+    | "launchHost";
 
 /**
  * A single planned terminal command. The same structure drives both the preview shown to the
  * user and the actual execution, so what the user is shown can never drift from what is run.
  */
 export interface PlannedCommand {
+    /** Stable command purpose used by execution and telemetry. */
+    kind: PlannedCommandKind;
     /** Exact command line sent to the terminal (product/CLI syntax — not localized). */
     commandLine: string;
     /** Localized one-line explanation of what this step does, shown in the preview. */
@@ -22,6 +37,9 @@ export interface PlannedCommand {
  * copy in keeps the builder free of the VS Code localization runtime so it stays unit-testable.
  */
 export interface AgentHostCommandPlanStrings {
+    installHost: string;
+    refreshPath: string;
+    verifyHost: string;
     registerMarketplace: string;
     installPlugin: string;
     installPluginUserScope: string;
@@ -52,39 +70,65 @@ function formatLaunchDescription(template: string, hostDisplayName: string): str
 export function buildAgentHostCommandPlan(
     host: AgentHost,
     hostDisplayName: string,
-    strings: AgentHostCommandPlanStrings
+    strings: AgentHostCommandPlanStrings,
+    bootstrap?: AgentHostBootstrapConfig
 ): PlannedCommand[] {
     const { MARKETPLACE_REPO, PLUGIN_ID, CREATE_PROMPT } = URI_CONSTANTS.AGENT_HOST_PLUGIN;
     const launchDescription = formatLaunchDescription(strings.launchHost, hostDisplayName);
+    const bootstrapCommands: PlannedCommand[] = bootstrap
+        ? [
+            {
+                kind: "installHost",
+                commandLine: getAgentHostInstallCommand(host, bootstrap),
+                description: strings.installHost.replace("{0}", hostDisplayName)
+            },
+            {
+                kind: "refreshPath",
+                commandLine: getAgentHostPathRefreshCommand(bootstrap),
+                description: strings.refreshPath
+            },
+            {
+                kind: "verifyHost",
+                commandLine: `${host} --version`,
+                description: strings.verifyHost.replace("{0}", hostDisplayName)
+            }
+        ]
+        : [];
 
     switch (host) {
         case AgentHost.Claude:
-            return [
+            return [...bootstrapCommands,
                 {
+                    kind: "registerMarketplace",
                     commandLine: `claude plugin marketplace add "${MARKETPLACE_REPO}"`,
                     description: strings.registerMarketplace
                 },
                 {
+                    kind: "installPlugin",
                     commandLine: `claude plugin install "${PLUGIN_ID}" --scope user`,
                     description: strings.installPluginUserScope
                 },
                 {
+                    kind: "launchHost",
                     commandLine: `claude "${CREATE_PROMPT}"`,
                     description: launchDescription
                 }
             ];
         case AgentHost.Copilot:
         default:
-            return [
+            return [...bootstrapCommands,
                 {
+                    kind: "registerMarketplace",
                     commandLine: `copilot plugin marketplace add "${MARKETPLACE_REPO}"`,
                     description: strings.registerMarketplace
                 },
                 {
+                    kind: "installPlugin",
                     commandLine: `copilot plugin install "${PLUGIN_ID}"`,
                     description: strings.installPlugin
                 },
                 {
+                    kind: "launchHost",
                     commandLine: `copilot -i "${CREATE_PROMPT}"`,
                     description: launchDescription
                 }

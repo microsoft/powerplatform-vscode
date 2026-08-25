@@ -17,6 +17,7 @@ export enum uriHandlerTelemetryEventNames {
     URI_HANDLER_DOWNLOAD_COMPLETED = "UriHandlerDownloadCompleted",
     URI_HANDLER_FOLDER_OPENED = "UriHandlerFolderOpened",
     URI_HANDLER_PCF_INIT_TRIGGERED = "UriHandlerPcfInitTriggered",
+    URI_HANDLER_AGENTIC_CREATE_RECEIVED = "UriHandlerAgenticCreateReceived",
     URI_HANDLER_AGENTIC_CREATE_TRIGGERED = "UriHandlerAgenticCreateTriggered",
     URI_HANDLER_AGENTIC_CREATE_DISABLED = "UriHandlerAgenticCreateDisabled",
     URI_HANDLER_AGENTIC_CREATE_FAILED = "UriHandlerAgenticCreateFailed",
@@ -42,5 +43,11 @@ export enum uriHandlerTelemetryEventNames {
     URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_RECHECKED = "UriHandlerAgenticCreateHostInstallRechecked",
     URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_RELOAD_REQUESTED = "UriHandlerAgenticCreateHostInstallReloadRequested",
     URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_RESUMED = "UriHandlerAgenticCreateHostInstallResumed",
-    URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_DISMISSED = "UriHandlerAgenticCreateHostInstallDismissed"
+    URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_DISMISSED = "UriHandlerAgenticCreateHostInstallDismissed",
+    URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_OFFERED = "UriHandlerAgenticCreateHostBootstrapOffered",
+    URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_STARTED = "UriHandlerAgenticCreateHostBootstrapStarted",
+    URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_COMPLETED = "UriHandlerAgenticCreateHostBootstrapCompleted",
+    URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_RECOVERY = "UriHandlerAgenticCreateHostBootstrapRecovery",
+    URI_HANDLER_AGENTIC_CREATE_COMMAND_SEQUENCE_RECOVERY = "UriHandlerAgenticCreateCommandSequenceRecovery",
+    URI_HANDLER_AGENTIC_CREATE_HANDOFF_COMPLETED = "UriHandlerAgenticCreateHandoffCompleted"
 }

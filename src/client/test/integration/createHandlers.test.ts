@@ -196,10 +196,18 @@ describe("Create deep-link handlers (gated)", () => {
         expect(disabled, "expected a disabled telemetry event").to.not.be.undefined;
         expect(disabled?.args[1]).to.include({
             source: URI_CONSTANTS.SOURCE_VALUES.POWER_PAGES_HOME,
-            agentHost: URI_CONSTANTS.AGENT_HOST_VALUES.COPILOT
+            entryPoint: URI_CONSTANTS.SOURCE_VALUES.STUDIO,
+            agentHost: URI_CONSTANTS.AGENT_HOST_VALUES.COPILOT,
+            channel: 'agent',
+            correlationId: 'agent-correlation',
+            referrerSessionId: 'agent-correlation',
+            funnelStage: 'featureGate',
+            funnelOutcome: 'disabled'
         });
         expectIdentifiers(disabled?.args[1] as Record<string, string>, 'agent-env', 'agent-website');
-        expect(disabled?.args[1]).to.not.have.property('channel');
+        expect(traceInfoStub.calledWith(
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_RECEIVED
+        )).to.be.true;
         expect(traceInfoStub.calledWith(uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_TRIGGERED)).to.be.false;
         expect(runCreateFlowCommonStagesStub.called).to.be.false;
     });

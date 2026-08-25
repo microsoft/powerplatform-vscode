@@ -23,6 +23,7 @@ describe("Agentic create host resolution", () => {
     let detectAgentHostStub: sinon.SinonStub;
     let selectAgenticCreateInputsStub: sinon.SinonStub;
     let resolveAgentHostInstallationStub: sinon.SinonStub;
+    let resolveAgentHostBootstrapStub: sinon.SinonStub;
     let emitCreateFlowEventStub: sinon.SinonStub;
     let confirmAndLaunchAgentHostStub: sinon.SinonStub;
     let traceInfoStub: sinon.SinonStub;
@@ -108,6 +109,14 @@ describe("Agentic create host resolution", () => {
             }
         });
         resolveAgentHostInstallationStub = sandbox.stub();
+        resolveAgentHostBootstrapStub = sandbox.stub().returns({
+            supported: true,
+            config: {
+                platform: "win32",
+                installer: "winget",
+                shellPath: "pwsh"
+            }
+        });
         emitCreateFlowEventStub = sandbox.stub().callsFake(emitCreateFlowEvent);
         confirmAndLaunchAgentHostStub = sandbox.stub().resolves({ status: "launched" });
         storeUpdateStub = sandbox.stub().resolves();
@@ -119,6 +128,7 @@ describe("Agentic create host resolution", () => {
             detectAgentHost: detectAgentHostStub,
             selectAgenticCreateInputs: selectAgenticCreateInputsStub,
             resolveAgentHostInstallation: resolveAgentHostInstallationStub,
+            resolveAgentHostBootstrap: resolveAgentHostBootstrapStub,
             emitCreateFlowEvent: emitCreateFlowEventStub,
             confirmAndLaunchAgentHost: confirmAndLaunchAgentHostStub
         };
@@ -136,14 +146,14 @@ describe("Agentic create host resolution", () => {
 
         await createHandler().handle(uri);
 
-        expect(emitCreateFlowEventStub.callCount).to.equal(2);
-        expect(emitCreateFlowEventStub.firstCall.args[0]).to.equal(
+        expect(emitCreateFlowEventStub.callCount).to.equal(4);
+        expect(emitCreateFlowEventStub.getCall(2).args[0]).to.equal(
             uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_CANCELLED
         );
-        expect(emitCreateFlowEventStub.secondCall.args[0]).to.equal(
+        expect(emitCreateFlowEventStub.getCall(3).args[0]).to.equal(
             uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED
         );
-        expect(emitCreateFlowEventStub.secondCall.args[3]).to.deep.equal({
+        expect(emitCreateFlowEventStub.getCall(3).args[3]).to.deep.equal({
             reason: "folderSelectionCancelled"
         });
         expect(resolveAgentHostInstallationStub.notCalled).to.be.true;
@@ -163,14 +173,14 @@ describe("Agentic create host resolution", () => {
         expect(detectAgentHostStub.firstCall.calledWithExactly(AgentHost.Copilot)).to.be.true;
         expect(detectAgentHostStub.secondCall.calledWithExactly(AgentHost.Claude)).to.be.true;
         expect(selectAgenticCreateInputsStub.calledOnceWithExactly(detection)).to.be.true;
-        expect(emitCreateFlowEventStub.callCount).to.equal(2);
-        expect(emitCreateFlowEventStub.firstCall.args[0]).to.equal(
+        expect(emitCreateFlowEventStub.callCount).to.equal(4);
+        expect(emitCreateFlowEventStub.getCall(2).args[0]).to.equal(
             uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED
         );
-        expect(emitCreateFlowEventStub.secondCall.args).to.include(
+        expect(emitCreateFlowEventStub.getCall(3).args).to.include(
             uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED
         );
-        expect(emitCreateFlowEventStub.secondCall.args[3]).to.deep.equal({
+        expect(emitCreateFlowEventStub.getCall(3).args[3]).to.deep.equal({
             reason: "hostSelectionCancelled"
         });
         expect(resolveAgentHostInstallationStub.notCalled).to.be.true;
@@ -183,14 +193,25 @@ describe("Agentic create host resolution", () => {
     it("emits host selected once and confirms + launches for an installed host", async () => {
         await createHandler().handle(uri);
 
-        expect(emitCreateFlowEventStub.callCount).to.equal(2);
+        expect(emitCreateFlowEventStub.callCount).to.equal(4);
         expect(emitCreateFlowEventStub.firstCall.args[0]).to.equal(
-            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_RECEIVED
         );
         expect(emitCreateFlowEventStub.secondCall.args[0]).to.equal(
-            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_SELECTED
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_DETECTED
         );
         expect(emitCreateFlowEventStub.secondCall.args[3]).to.deep.equal({
+            copilotInstalled: "true",
+            claudeInstalled: "false",
+            installedHostCount: "1"
+        });
+        expect(emitCreateFlowEventStub.getCall(2).args[0]).to.equal(
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED
+        );
+        expect(emitCreateFlowEventStub.getCall(3).args[0]).to.equal(
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_SELECTED
+        );
+        expect(emitCreateFlowEventStub.getCall(3).args[3]).to.deep.equal({
             host: AgentHost.Copilot,
             installed: "true"
         });
@@ -269,7 +290,7 @@ describe("Agentic create host resolution", () => {
     ];
 
     for (const resolution of resolutions) {
-        it(`handles a not-installed host when installation resolution is ${resolution.status}`, async () => {
+        it(`uses the fallback for unavailable prerequisites when installation resolution is ${resolution.status}`, async () => {
             selectAgenticCreateInputsStub.resolves({
                 status: "selected",
                 folderUri: selectedFolder,
@@ -278,21 +299,39 @@ describe("Agentic create host resolution", () => {
                     installed: false
                 }
             });
+            resolveAgentHostBootstrapStub.returns({
+                supported: false,
+                reason: "missingWinget"
+            });
             resolveAgentHostInstallationStub.resolves(resolution);
 
             await createHandler().handle(uri);
 
-            expect(emitCreateFlowEventStub.callCount).to.equal(2);
-            expect(emitCreateFlowEventStub.firstCall.args[0]).to.equal(
+            expect(emitCreateFlowEventStub.callCount).to.equal(
+                resolution.status === "dismissed" ? 6 : 5
+            );
+            expect(emitCreateFlowEventStub.getCall(2).args[0]).to.equal(
                 uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED
             );
-            expect(emitCreateFlowEventStub.secondCall.args[0]).to.equal(
+            expect(emitCreateFlowEventStub.getCall(3).args[0]).to.equal(
                 uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_SELECTED
             );
-            expect(emitCreateFlowEventStub.secondCall.args[3]).to.deep.equal({
+            expect(emitCreateFlowEventStub.getCall(3).args[3]).to.deep.equal({
                 host: AgentHost.Claude,
                 installed: "false"
             });
+            expect(emitCreateFlowEventStub.getCall(4).args[0]).to.equal(
+                uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_RECOVERY
+            );
+            if (resolution.status === "dismissed") {
+                expect(emitCreateFlowEventStub.getCall(5).args).to.include(
+                    uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED
+                );
+                expect(emitCreateFlowEventStub.getCall(5).args[3]).to.deep.equal({
+                    reason: "hostInstallDismissed",
+                    host: AgentHost.Claude
+                });
+            }
             expect(resolveAgentHostInstallationStub.calledOnce).to.be.true;
             expect(resolveAgentHostInstallationStub.firstCall.args[0]).to.equal(AgentHost.Claude);
             expect(resolveAgentHostInstallationStub.firstCall.args[1]).to.equal("Claude Code");
@@ -313,9 +352,65 @@ describe("Agentic create host resolution", () => {
                 expect(confirmAndLaunchAgentHostStub.notCalled).to.be.true;
             }
             expect(storeUpdateStub.notCalled).to.be.true;
-            expectNoInstallEventsFromHandler();
             expectNoSensitiveTelemetry();
             expect(traceErrorStub.notCalled).to.be.true;
         });
     }
+
+    it("confirms the automatic bootstrap before opening fallback guidance", async () => {
+        selectAgenticCreateInputsStub.resolves({
+            status: "selected",
+            folderUri: selectedFolder,
+            hostSelection: {
+                host: AgentHost.Claude,
+                installed: false
+            }
+        });
+
+        await createHandler().handle(uri);
+
+        expect(resolveAgentHostBootstrapStub.calledOnceWithExactly(AgentHost.Claude)).to.be.true;
+        expect(confirmAndLaunchAgentHostStub.calledOnce).to.be.true;
+        expect(confirmAndLaunchAgentHostStub.firstCall.args[4]).to.deep.equal({
+            platform: "win32",
+            installer: "winget",
+            shellPath: "pwsh"
+        });
+        expect(resolveAgentHostInstallationStub.notCalled).to.be.true;
+    });
+
+    it("falls back after automatic execution recovery and retries plugin setup without reinstalling", async () => {
+        selectAgenticCreateInputsStub.resolves({
+            status: "selected",
+            folderUri: selectedFolder,
+            hostSelection: {
+                host: AgentHost.Claude,
+                installed: false
+            }
+        });
+        confirmAndLaunchAgentHostStub
+            .onFirstCall()
+            .resolves({
+                status: "recovery",
+                result: {
+                    status: "recovery",
+                    reason: "shellIntegrationUnavailable"
+                }
+            })
+            .onSecondCall()
+            .resolves({ status: "launched" });
+        resolveAgentHostInstallationStub.resolves({
+            status: "resolved",
+            host: AgentHost.Claude
+        });
+
+        await createHandler().handle(uri);
+
+        expect(confirmAndLaunchAgentHostStub.calledTwice).to.be.true;
+        expect(confirmAndLaunchAgentHostStub.firstCall.args[4]).to.deep.include({
+            installer: "winget"
+        });
+        expect(confirmAndLaunchAgentHostStub.secondCall.args[4]).to.be.undefined;
+        expect(resolveAgentHostInstallationStub.calledOnce).to.be.true;
+    });
 });

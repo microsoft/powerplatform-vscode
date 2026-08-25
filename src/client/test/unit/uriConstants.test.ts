@@ -33,6 +33,7 @@ describe("URI_CONSTANTS deep-link contract", () => {
     it("defines the versioned contract and known enumerated values", () => {
         expect(URI_CONSTANTS.CONTRACT_VERSION.CURRENT).to.equal("1");
         expect(URI_CONSTANTS.SOURCE_VALUES.POWER_PAGES_HOME).to.equal("powerPagesHome");
+        expect(URI_CONSTANTS.SOURCE_VALUES.STUDIO).to.equal("studio");
         expect(URI_CONSTANTS.AGENT_HOST_VALUES.COPILOT).to.equal("copilot");
         expect(URI_CONSTANTS.AGENT_HOST_VALUES.CLAUDE).to.equal("claude");
         expect(URI_CONSTANTS.AGENT_HOST_VALUES.AUTO).to.equal("auto");

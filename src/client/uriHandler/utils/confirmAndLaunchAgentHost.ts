@@ -8,7 +8,10 @@ import type { CreateFlowParameters } from "../handlers/createFlowParams";
 import { uriHandlerTelemetryEventNames } from "../telemetry/uriHandlerTelemetryEvents";
 import type { PlannedCommand } from "./agentHostCommandPlan";
 import type { AgentHost } from "./detectAgentHost";
-import type { ConfirmDecision } from "./agenticCreateConfirmPanel";
+import type {
+    AgenticCreateConfirmPanelSession
+} from "./agenticCreateConfirmPanel";
+import type { LaunchAgentHostPlanResult } from "./launchAgentHostPlan";
 
 type CreateFlowEventEmitter = (
     eventName: string,
@@ -23,6 +26,7 @@ type CreateFlowEventEmitter = (
 export type ConfirmAndLaunchOutcome =
     | { status: 'launched' }
     | { status: 'edit' }
+    | { status: 'recovery'; result: Extract<LaunchAgentHostPlanResult, { status: 'recovery' }> }
     | { status: 'dropped' };
 
 /**
@@ -35,8 +39,12 @@ export interface ConfirmAndLaunchDependencies {
         hostDisplayName: string,
         folderPath: string,
         plan: PlannedCommand[]
-    ) => Promise<ConfirmDecision>;
-    launchPlan: (folderUri: vscode.Uri, plan: PlannedCommand[], hostDisplayName: string) => void;
+    ) => AgenticCreateConfirmPanelSession;
+    launchPlan: (
+        folderUri: vscode.Uri,
+        plan: PlannedCommand[],
+        hostDisplayName: string
+    ) => Promise<LaunchAgentHostPlanResult>;
     emitEvent?: CreateFlowEventEmitter;
 }
 
@@ -67,7 +75,8 @@ export async function confirmAndLaunchAgentHost(
 ): Promise<ConfirmAndLaunchOutcome> {
     const emitEvent = deps.emitEvent ?? defaultEmitEvent;
     const plan = deps.buildPlan(host, hostDisplayName);
-    const decision = await deps.showConfirmPanel(hostDisplayName, folderUri.fsPath, plan);
+    const confirmPanel = deps.showConfirmPanel(hostDisplayName, folderUri.fsPath, plan);
+    const decision = await confirmPanel.decision;
 
     if (decision !== 'dismissed') {
         await emitEvent(
@@ -79,7 +88,61 @@ export async function confirmAndLaunchAgentHost(
     }
 
     if (decision === 'start') {
-        deps.launchPlan(folderUri, plan, hostDisplayName);
+        const includesBootstrap = plan.some(command => command.kind === 'installHost');
+        if (includesBootstrap) {
+            await emitEvent(
+                uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_STARTED,
+                params,
+                'agent',
+                { host }
+            );
+        }
+
+        const launchResult = await deps.launchPlan(folderUri, plan, hostDisplayName);
+        const completedCommandKinds = launchResult.completedCommandKinds ?? [];
+        const bootstrapCompleted = includesBootstrap && (
+            launchResult.status === 'launched' ||
+            completedCommandKinds.includes('verifyHost')
+        );
+        if (bootstrapCompleted) {
+            await emitEvent(
+                uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_COMPLETED,
+                params,
+                'agent',
+                { host }
+            );
+        }
+
+        if (launchResult.status === 'recovery') {
+            await confirmPanel.showRecovery(launchResult);
+            const bootstrapCommandKinds: PlannedCommand['kind'][] = [
+                'installHost',
+                'refreshPath',
+                'verifyHost'
+            ];
+            const isBootstrapRecovery = includesBootstrap && (
+                launchResult.reason === 'shellIntegrationUnavailable' ||
+                (
+                    launchResult.failedCommand !== undefined &&
+                    bootstrapCommandKinds.includes(launchResult.failedCommand.kind)
+                )
+            );
+            await emitEvent(
+                isBootstrapRecovery
+                    ? uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_RECOVERY
+                    : uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_COMMAND_SEQUENCE_RECOVERY,
+                params,
+                'agent',
+                {
+                    host,
+                    reason: launchResult.reason,
+                    commandKind: launchResult.failedCommand?.kind ?? '',
+                    exitCodeCategory: launchResult.exitCode === undefined ? 'unknown' : 'nonZero'
+                }
+            );
+            return { status: 'recovery', result: launchResult };
+        }
+
         await emitEvent(
             uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_PLUGIN_SEQUENCE_LAUNCHED,
             params,
@@ -91,6 +154,15 @@ export async function confirmAndLaunchAgentHost(
             params,
             'agent',
             { host }
+        );
+        await emitEvent(
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HANDOFF_COMPLETED,
+            params,
+            'agent',
+            {
+                host,
+                bootstrapUsed: String(includesBootstrap)
+            }
         );
         return { status: 'launched' };
     }

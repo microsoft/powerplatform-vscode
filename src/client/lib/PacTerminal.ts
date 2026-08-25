@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import * as os from 'os'
 import { PacInterop, PacWrapper } from '../pac/PacWrapper';
 import { PacWrapperContext } from '../pac/PacWrapperContext';
-import { RegisterUriHandler } from '../uriHandler/uriHandler';
 
 export class PacTerminal implements vscode.Disposable {
     private readonly _context: vscode.ExtensionContext;
@@ -62,8 +61,6 @@ export class PacTerminal implements vscode.Disposable {
                 vscode.window.showErrorMessage(vscode.l10n.t("Failed to disable PAC telemetry."));
             }
         }));
-
-        this._cmdDisposables.push(RegisterUriHandler(this._pacWrapper, this._context.globalState));
     }
 
     public openDocumentation(): void {

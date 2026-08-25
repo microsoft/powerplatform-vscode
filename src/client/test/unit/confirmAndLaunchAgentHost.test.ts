@@ -20,8 +20,8 @@ describe("confirmAndLaunchAgentHost", () => {
     const folderUri = { fsPath: "c:/work/site" } as unknown as vscode.Uri;
     const params = {} as CreateFlowParameters;
     const plan: PlannedCommand[] = [
-        { commandLine: "step-1", description: "one" },
-        { commandLine: "step-2", description: "two" }
+        { kind: "registerMarketplace", commandLine: "step-1", description: "one" },
+        { kind: "launchHost", commandLine: "step-2", description: "two" }
     ];
 
     const buildDeps = (
@@ -30,17 +30,23 @@ describe("confirmAndLaunchAgentHost", () => {
         deps: ConfirmAndLaunchDependencies;
         buildPlan: sinon.SinonStub;
         showConfirmPanel: sinon.SinonStub;
+        showRecovery: sinon.SinonStub;
         launchPlan: sinon.SinonStub;
         emitEvent: sinon.SinonStub;
     } => {
         const buildPlan = sinon.stub().returns(plan);
-        const showConfirmPanel = sinon.stub().resolves(decision);
-        const launchPlan = sinon.stub();
+        const showRecovery = sinon.stub().resolves(true);
+        const showConfirmPanel = sinon.stub().returns({
+            decision: Promise.resolve(decision),
+            showRecovery
+        });
+        const launchPlan = sinon.stub().resolves({ status: "launched" });
         const emitEvent = sinon.stub().resolves();
         return {
             deps: { buildPlan, showConfirmPanel, launchPlan, emitEvent },
             buildPlan,
             showConfirmPanel,
+            showRecovery,
             launchPlan,
             emitEvent
         };
@@ -62,7 +68,7 @@ describe("confirmAndLaunchAgentHost", () => {
         expect(showConfirmPanel.calledOnceWithExactly("GitHub Copilot CLI", "c:/work/site", plan)).to
             .be.true;
         expect(launchPlan.calledOnceWithExactly(folderUri, plan, "GitHub Copilot CLI")).to.be.true;
-        expect(emitEvent.callCount).to.equal(3);
+        expect(emitEvent.callCount).to.equal(4);
         expect(emitEvent.firstCall.args[0]).to.equal(
             uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_CONFIRM_ACTION_CLICKED
         );
@@ -77,6 +83,13 @@ describe("confirmAndLaunchAgentHost", () => {
         expect(emitEvent.thirdCall.args[0]).to.equal(
             uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_SAMPLE_PROMPT_SENT
         );
+        expect(emitEvent.getCall(3).args[0]).to.equal(
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HANDOFF_COMPLETED
+        );
+        expect(emitEvent.getCall(3).args[3]).to.deep.equal({
+            host: AgentHost.Copilot,
+            bootstrapUsed: "false"
+        });
     });
 
     it("drops the flow with confirmCancelled and does not launch when cancelled", async () => {
@@ -147,5 +160,78 @@ describe("confirmAndLaunchAgentHost", () => {
             host: AgentHost.Copilot,
             action: "edit"
         });
+    });
+
+    it("returns recovery and does not emit launch telemetry when a command fails", async () => {
+        const { deps, launchPlan, showRecovery, emitEvent } = buildDeps("start");
+        const recoveryResult = {
+            status: "recovery",
+            reason: "commandFailed",
+            failedCommand: plan[0],
+            exitCode: 1
+        } as const;
+        launchPlan.resolves(recoveryResult);
+
+        const outcome = await confirmAndLaunchAgentHost(
+            AgentHost.Copilot,
+            "GitHub Copilot CLI",
+            folderUri,
+            params,
+            deps
+        );
+
+        expect(outcome).to.deep.equal({
+            status: "recovery",
+            result: {
+                status: "recovery",
+                reason: "commandFailed",
+                failedCommand: plan[0],
+                exitCode: 1
+            }
+        });
+        expect(emitEvent.callCount).to.equal(2);
+        expect(showRecovery.calledOnceWithExactly(recoveryResult)).to.be.true;
+        expect(emitEvent.secondCall.args[0]).to.equal(
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_COMMAND_SEQUENCE_RECOVERY
+        );
+        expect(emitEvent.secondCall.args[3]).to.deep.equal({
+            host: AgentHost.Copilot,
+            reason: "commandFailed",
+            commandKind: "registerMarketplace",
+            exitCodeCategory: "nonZero"
+        });
+    });
+
+    it("completes bootstrap before recording a later plugin recovery", async () => {
+        const { deps, buildPlan, launchPlan, emitEvent } = buildDeps("start");
+        const bootstrapPlan: PlannedCommand[] = [
+            { kind: "installHost", commandLine: "install-host", description: "install host" },
+            { kind: "refreshPath", commandLine: "refresh-path", description: "refresh path" },
+            { kind: "verifyHost", commandLine: "verify-host", description: "verify host" },
+            ...plan
+        ];
+        buildPlan.returns(bootstrapPlan);
+        launchPlan.resolves({
+            status: "recovery",
+            reason: "commandFailed",
+            failedCommand: bootstrapPlan[3],
+            exitCode: 1,
+            completedCommandKinds: ["installHost", "refreshPath", "verifyHost"]
+        });
+
+        await confirmAndLaunchAgentHost(
+            AgentHost.Copilot,
+            "GitHub Copilot CLI",
+            folderUri,
+            params,
+            deps
+        );
+
+        expect(emitEvent.getCalls().map(call => call.args[0])).to.deep.equal([
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_CONFIRM_ACTION_CLICKED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_STARTED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_COMPLETED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_COMMAND_SEQUENCE_RECOVERY
+        ]);
     });
 });

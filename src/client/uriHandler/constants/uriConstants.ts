@@ -34,7 +34,8 @@ export const URI_CONSTANTS = {
         PORTAL_SCHEMA_V2: 'portalschemav2'
     },
     SOURCE_VALUES: {
-        POWER_PAGES_HOME: 'powerPagesHome'
+        POWER_PAGES_HOME: 'powerPagesHome',
+        STUDIO: 'studio'
     },
     AGENT_HOST_VALUES: {
         COPILOT: 'copilot',

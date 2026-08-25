@@ -5,6 +5,7 @@
 
 import type * as vscode from 'vscode';
 import { URI_HANDLER_STRINGS } from '../constants/uriStrings';
+import type { AgentHostBootstrapConfig } from './agentHostBootstrap';
 import type { CreateFlowParameters } from '../handlers/createFlowParams';
 import { buildAgentHostCommandPlan } from './agentHostCommandPlan';
 import { showAgenticCreateConfirmPanel } from './agenticCreateConfirmPanel';
@@ -13,6 +14,9 @@ import { AgentHost } from './detectAgentHost';
 import { launchAgentHostPlan } from './launchAgentHostPlan';
 
 const AGENT_HOST_COMMAND_PLAN_STRINGS = {
+    installHost: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.STEP_INSTALL_HOST,
+    refreshPath: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.STEP_REFRESH_PATH,
+    verifyHost: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.STEP_VERIFY_HOST,
     registerMarketplace: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.STEP_REGISTER_MARKETPLACE,
     installPlugin: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.STEP_INSTALL_PLUGIN,
     installPluginUserScope: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.STEP_INSTALL_PLUGIN_USER_SCOPE,
@@ -44,6 +48,7 @@ export function getAgentHostDisplayName(host: AgentHost): string {
  * @param params Deep-link parameters used by telemetry.
  * @param hostDisplayName Optional already-resolved display name.
  * @param allowEdit Whether the confirmation may return to folder/host selection.
+ * @param bootstrap Optional missing-host bootstrap configuration.
  * @returns Whether the command plan was launched or dropped.
  */
 export function confirmAndLaunchSelectedAgentHost(
@@ -51,11 +56,17 @@ export function confirmAndLaunchSelectedAgentHost(
     folderUri: vscode.Uri,
     params: CreateFlowParameters,
     hostDisplayName: string = getAgentHostDisplayName(host),
-    allowEdit = true
+    allowEdit = true,
+    bootstrap?: AgentHostBootstrapConfig
 ): Promise<ConfirmAndLaunchOutcome> {
     return confirmAndLaunchAgentHost(host, hostDisplayName, folderUri, params, {
         buildPlan: (selectedHost, displayName) =>
-            buildAgentHostCommandPlan(selectedHost, displayName, AGENT_HOST_COMMAND_PLAN_STRINGS),
+            buildAgentHostCommandPlan(
+                selectedHost,
+                displayName,
+                AGENT_HOST_COMMAND_PLAN_STRINGS,
+                bootstrap
+            ),
         showConfirmPanel: (displayName, folderPath, plan) =>
             showAgenticCreateConfirmPanel(
                 displayName,
@@ -64,6 +75,13 @@ export function confirmAndLaunchSelectedAgentHost(
                 undefined,
                 allowEdit
             ),
-        launchPlan: launchAgentHostPlan
+        launchPlan: (selectedFolderUri, plan, displayName) =>
+            launchAgentHostPlan(
+                selectedFolderUri,
+                plan,
+                displayName,
+                undefined,
+                bootstrap?.shellPath
+            )
     });
 }

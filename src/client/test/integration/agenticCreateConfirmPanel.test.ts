@@ -16,23 +16,35 @@ import { PlannedCommand } from "../../uriHandler/utils/agentHostCommandPlan";
 
 describe("showAgenticCreateConfirmPanel", () => {
     const plan: PlannedCommand[] = [
-        { commandLine: 'copilot plugin marketplace add "microsoft/power-platform-skills"', description: "register" },
-        { commandLine: 'copilot -i "How to use Power Pages Plugin for creating a site?"', description: "start" }
+        {
+            kind: "registerMarketplace",
+            commandLine: 'copilot plugin marketplace add "microsoft/power-platform-skills"',
+            description: "register"
+        },
+        {
+            kind: "launchHost",
+            commandLine: 'copilot -i "How to use Power Pages Plugin for creating a site?"',
+            description: "start"
+        }
     ];
 
     interface FakePanel {
         panel: vscode.WebviewPanel;
         emitMessage: (message: unknown) => void;
         emitDispose: () => void;
+        emitViewState: () => void;
         disposeCalled: () => boolean;
         html: () => string;
+        postedMessages: () => unknown[];
     }
 
     const createFakePanel = (): FakePanel => {
         const messageEmitter = new vscode.EventEmitter<unknown>();
         const disposeEmitter = new vscode.EventEmitter<void>();
+        const viewStateEmitter = new vscode.EventEmitter<vscode.WebviewPanelOnDidChangeViewStateEvent>();
         let disposed = false;
         let htmlValue = "";
+        const postedMessages: unknown[] = [];
 
         const panel = {
             webview: {
@@ -43,10 +55,16 @@ describe("showAgenticCreateConfirmPanel", () => {
                     htmlValue = value;
                 },
                 onDidReceiveMessage: messageEmitter.event,
+                postMessage: (message: unknown) => {
+                    postedMessages.push(message);
+                    return Promise.resolve(true);
+                },
                 asWebviewUri: (uri: vscode.Uri) => uri,
                 cspSource: "vscode-webview://fake-webview-id"
             },
             onDidDispose: disposeEmitter.event,
+            onDidChangeViewState: viewStateEmitter.event,
+            visible: true,
             dispose: () => {
                 disposed = true;
                 disposeEmitter.fire();
@@ -58,8 +76,10 @@ describe("showAgenticCreateConfirmPanel", () => {
             panel,
             emitMessage: (message) => messageEmitter.fire(message),
             emitDispose: () => disposeEmitter.fire(),
+            emitViewState: () => viewStateEmitter.fire({ webviewPanel: panel }),
             disposeCalled: () => disposed,
-            html: () => htmlValue
+            html: () => htmlValue,
+            postedMessages: () => postedMessages
         };
     };
 
@@ -67,17 +87,16 @@ describe("showAgenticCreateConfirmPanel", () => {
         createWebviewPanel: () => fake.panel
     });
 
-    it("resolves 'start' and keeps a disabled command reference open", async () => {
+    it("resolves 'start' without replacing the accessible document", async () => {
         const fake = createFakePanel();
-        const decisionPromise = showAgenticCreateConfirmPanel("GitHub Copilot CLI", "c:/work/site", plan, depsFor(fake));
+        const session = showAgenticCreateConfirmPanel("GitHub Copilot CLI", "c:/work/site", plan, depsFor(fake));
+        const initialHtml = fake.html();
 
         fake.emitMessage({ decision: "start" });
 
-        expect(await decisionPromise).to.equal("start");
+        expect(await session.decision).to.equal("start");
         expect(fake.disposeCalled()).to.be.false;
-        expect(fake.html()).to.contain('id="start"');
-        expect(fake.html()).to.contain('id="start" title="Run the command sequence shown above." disabled');
-        expect(fake.html()).to.contain('id="edit" title="Return to folder and agent host selection." disabled');
+        expect(fake.html()).to.equal(initialHtml);
         for (const command of plan) {
             expect(fake.html()).to.contain(command.commandLine.replace(/"/g, "&quot;"));
         }
@@ -85,7 +104,7 @@ describe("showAgenticCreateConfirmPanel", () => {
 
     it("ignores a queued Edit message after Start has already settled", async () => {
         const fake = createFakePanel();
-        const decisionPromise = showAgenticCreateConfirmPanel(
+        const session = showAgenticCreateConfirmPanel(
             "GitHub Copilot CLI",
             "c:/work/site",
             plan,
@@ -95,23 +114,23 @@ describe("showAgenticCreateConfirmPanel", () => {
         fake.emitMessage({ decision: "start" });
         fake.emitMessage({ decision: "edit" });
 
-        expect(await decisionPromise).to.equal("start");
+        expect(await session.decision).to.equal("start");
         expect(fake.disposeCalled()).to.be.false;
     });
 
     it("resolves 'cancel' when the user cancels", async () => {
         const fake = createFakePanel();
-        const decisionPromise = showAgenticCreateConfirmPanel("Claude Code", "c:/work/site", plan, depsFor(fake));
+        const session = showAgenticCreateConfirmPanel("Claude Code", "c:/work/site", plan, depsFor(fake));
 
         fake.emitMessage({ decision: "cancel" });
 
-        expect(await decisionPromise).to.equal("cancel");
+        expect(await session.decision).to.equal("cancel");
         expect(fake.disposeCalled()).to.be.true;
     });
 
     it("resolves 'edit' and closes the stale confirmation panel", async () => {
         const fake = createFakePanel();
-        const decisionPromise = showAgenticCreateConfirmPanel(
+        const session = showAgenticCreateConfirmPanel(
             "GitHub Copilot CLI",
             "c:/work/site",
             plan,
@@ -120,7 +139,7 @@ describe("showAgenticCreateConfirmPanel", () => {
 
         fake.emitMessage({ decision: "edit" });
 
-        expect(await decisionPromise).to.equal("edit");
+        expect(await session.decision).to.equal("edit");
         expect(fake.disposeCalled()).to.be.true;
     });
 
@@ -141,22 +160,122 @@ describe("showAgenticCreateConfirmPanel", () => {
 
     it("resolves 'dismissed' when the panel is closed without a choice", async () => {
         const fake = createFakePanel();
-        const decisionPromise = showAgenticCreateConfirmPanel("GitHub Copilot CLI", "c:/work/site", plan, depsFor(fake));
+        const session = showAgenticCreateConfirmPanel("GitHub Copilot CLI", "c:/work/site", plan, depsFor(fake));
 
         fake.emitDispose();
 
-        expect(await decisionPromise).to.equal("dismissed");
+        expect(await session.decision).to.equal("dismissed");
     });
 
     it("ignores unknown messages and keeps the panel open", async () => {
         const fake = createFakePanel();
-        const decisionPromise = showAgenticCreateConfirmPanel("GitHub Copilot CLI", "c:/work/site", plan, depsFor(fake));
+        const session = showAgenticCreateConfirmPanel("GitHub Copilot CLI", "c:/work/site", plan, depsFor(fake));
 
         fake.emitMessage({ decision: "bogus" });
         expect(fake.disposeCalled()).to.be.false;
 
         fake.emitMessage({ decision: "start" });
-        expect(await decisionPromise).to.equal("start");
+        expect(await session.decision).to.equal("start");
+    });
+
+    it("closes the command reference when Close is activated after Start", async () => {
+        const fake = createFakePanel();
+        const session = showAgenticCreateConfirmPanel(
+            "GitHub Copilot CLI",
+            "c:/work/site",
+            plan,
+            depsFor(fake)
+        );
+
+        fake.emitMessage({ decision: "start" });
+        expect(await session.decision).to.equal("start");
+
+        fake.emitMessage({ action: "close" });
+
+        expect(fake.disposeCalled()).to.be.true;
+    });
+
+    it("renders persistent live regions and restores the started state without rerunning", () => {
+        const fake = createFakePanel();
+        void showAgenticCreateConfirmPanel(
+            "GitHub Copilot CLI",
+            "c:/work/site",
+            plan,
+            depsFor(fake)
+        );
+
+        const html = fake.html();
+        expect(html).to.contain('id="running-status" role="status" aria-live="polite" aria-atomic="true"');
+        expect(html).to.contain('id="recovery-status" role="alert" aria-live="assertive" aria-atomic="true"');
+        expect(html).to.contain('id="close" title="Close this command reference." hidden');
+        expect(html).to.contain("closeButton.focus()");
+        expect(html).to.contain('vscode.setState({ state: "running" })');
+        expect(html).to.contain("const persistedState = vscode.getState()");
+    });
+
+    it("posts an assertive recovery state with the failed command description", async () => {
+        const fake = createFakePanel();
+        const session = showAgenticCreateConfirmPanel(
+            "GitHub Copilot CLI",
+            "c:/work/site",
+            plan,
+            depsFor(fake)
+        );
+
+        await session.showRecovery({
+            status: "recovery",
+            reason: "commandFailed",
+            failedCommand: plan[0],
+            exitCode: 1
+        });
+
+        expect(fake.postedMessages()).to.deep.equal([{
+            type: "agenticCreateConfirmState",
+            state: "recovery",
+            message: "Automatic execution stopped while trying to: register. Use the commands below as a manual recovery reference."
+        }]);
+    });
+
+    it("reposts the recovery state when a hidden webview becomes visible again", async () => {
+        const fake = createFakePanel();
+        const session = showAgenticCreateConfirmPanel(
+            "GitHub Copilot CLI",
+            "c:/work/site",
+            plan,
+            depsFor(fake)
+        );
+
+        await session.showRecovery({
+            status: "recovery",
+            reason: "commandFailed",
+            failedCommand: plan[0],
+            exitCode: 1
+        });
+        fake.emitViewState();
+
+        expect(fake.postedMessages()).to.have.length(2);
+        expect(fake.postedMessages()[1]).to.deep.equal(fake.postedMessages()[0]);
+    });
+
+    it("posts a specific recovery state when Shell Integration is unavailable", async () => {
+        const fake = createFakePanel();
+        const session = showAgenticCreateConfirmPanel(
+            "Claude Code",
+            "c:/work/site",
+            plan,
+            depsFor(fake)
+        );
+
+        await session.showRecovery({
+            status: "recovery",
+            reason: "shellIntegrationUnavailable"
+        });
+
+        expect(fake.postedMessages()[0]).to.deep.equal({
+            type: "agenticCreateConfirmState",
+            state: "recovery",
+            message: "Automatic execution could not start because terminal Shell Integration is unavailable. Use the commands below as a manual recovery reference."
+        });
     });
 
     it("renders the host, folder, and every command line in the panel HTML", () => {
@@ -284,7 +403,7 @@ describe("registerAgenticCreateConfirmPanelSerializer", () => {
         // cleanup document prevents disposal from racing VS Code's service-worker registration.
         const messageEmitter = new vscode.EventEmitter<unknown>();
         const disposeEmitter = new vscode.EventEmitter<void>();
-        const dispose = sandbox.stub();
+        const dispose = sandbox.stub().callsFake(() => disposeEmitter.fire());
         let html = "";
         let options: vscode.WebviewOptions = {};
         const panel = {
@@ -321,6 +440,40 @@ describe("registerAgenticCreateConfirmPanelSerializer", () => {
 
         expect(dispose.calledOnce).to.be.true;
 
+        messageEmitter.dispose();
+        disposeEmitter.dispose();
+    });
+
+    it("discards a restored panel when its cleanup webview never reports ready", async () => {
+        const clock = sandbox.useFakeTimers();
+        let serializer: vscode.WebviewPanelSerializer | undefined;
+        sandbox.stub(vscode.window, "registerWebviewPanelSerializer").callsFake(
+            (_viewType: string, panelSerializer: vscode.WebviewPanelSerializer) => {
+                serializer = panelSerializer;
+                return { dispose: () => undefined };
+            }
+        );
+        registerAgenticCreateConfirmPanelSerializer();
+
+        const messageEmitter = new vscode.EventEmitter<unknown>();
+        const disposeEmitter = new vscode.EventEmitter<void>();
+        const dispose = sandbox.stub().callsFake(() => disposeEmitter.fire());
+        const panel = {
+            webview: {
+                html: "",
+                options: {},
+                onDidReceiveMessage: messageEmitter.event
+            },
+            onDidDispose: disposeEmitter.event,
+            dispose
+        } as unknown as vscode.WebviewPanel;
+
+        await serializer?.deserializeWebviewPanel(panel, undefined);
+        expect(dispose.notCalled).to.be.true;
+
+        await clock.tickAsync(5000);
+
+        expect(dispose.calledOnce).to.be.true;
         messageEmitter.dispose();
         disposeEmitter.dispose();
     });

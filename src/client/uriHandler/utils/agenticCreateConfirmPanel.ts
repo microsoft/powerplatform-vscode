@@ -8,6 +8,7 @@ import { getNonce } from "../../../common/utilities/Utils";
 import { URI_CONSTANTS } from "../constants/uriConstants";
 import { URI_HANDLER_STRINGS } from "../constants/uriStrings";
 import { PlannedCommand } from "./agentHostCommandPlan";
+import type { LaunchAgentHostPlanResult } from "./launchAgentHostPlan";
 
 /**
  * The user's decision at the confirmation gate.
@@ -17,6 +18,16 @@ import { PlannedCommand } from "./agentHostCommandPlan";
  * - `dismissed` the panel was closed without a choice (possibly accidental).
  */
 export type ConfirmDecision = "start" | "edit" | "cancel" | "dismissed";
+
+/**
+ * Active confirmation panel controlled by the launch orchestrator.
+ */
+export interface AgenticCreateConfirmPanelSession {
+    decision: Promise<ConfirmDecision>;
+    showRecovery(
+        result: Extract<LaunchAgentHostPlanResult, { status: "recovery" }>
+    ): PromiseLike<boolean>;
+}
 
 /**
  * Side effects used by {@link showAgenticCreateConfirmPanel}. Injected so the panel can be tested
@@ -37,6 +48,7 @@ const DEFAULT_CONFIRM_PANEL_DEPENDENCIES: ShowConfirmPanelDependencies = {
 };
 
 const RESTORED_PANEL_READY_MESSAGE = "agenticCreateConfirmRestoredPanelReady";
+const RESTORED_PANEL_DISPOSE_TIMEOUT_MS = 5000;
 
 /**
  * Escapes a string for safe interpolation into HTML text/attribute content. Folder paths and
@@ -57,6 +69,25 @@ function escapeHtml(value: string): string {
  */
 function formatTemplate(template: string, value: string): string {
     return template.split("{0}").join(value);
+}
+
+/**
+ * Builds the accessible recovery announcement for a failed execution.
+ */
+function formatRecoveryStatus(
+    result: Extract<LaunchAgentHostPlanResult, { status: "recovery" }>
+): string {
+    const confirm = URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM;
+    if (result.reason === "shellIntegrationUnavailable") {
+        return confirm.SHELL_INTEGRATION_RECOVERY_STATUS;
+    }
+
+    const failedDescription = (result.failedCommand?.description ?? confirm.SEQUENCE_HEADER)
+        .replace(/[\s.!?。！？]+$/u, "");
+    return formatTemplate(
+        confirm.COMMAND_RECOVERY_STATUS,
+        failedDescription
+    );
 }
 
 /**
@@ -82,7 +113,6 @@ function buildHtml(
     folderPath: string,
     plan: PlannedCommand[],
     cspSource: string,
-    started: boolean,
     allowEdit: boolean
 ): string {
     const nonce = getNonce();
@@ -110,6 +140,9 @@ function buildHtml(
         body { padding: 0 24px 24px; max-width: 820px; }
         h1 { font-size: 1.3em; font-weight: 600; margin-bottom: 0.3em; }
         .description { color: var(--vscode-descriptionForeground, inherit); margin-top: 0; margin-bottom: 1.4em; }
+        .status { margin: 0; }
+        .status:not(:empty) { border-left: 3px solid var(--vscode-progressBar-background, #0078d4); background: var(--vscode-textBlockQuote-background, rgba(127, 127, 127, 0.12)); padding: 8px 12px; margin: 1em 0; }
+        .status.recovery:not(:empty) { border-left-color: var(--vscode-notificationsWarningIcon-foreground, #b89500); }
         h2.section-header { text-transform: uppercase; font-size: 0.72em; font-weight: 700; letter-spacing: 0.08em; color: var(--vscode-descriptionForeground, inherit); margin: 1.6em 0 0.6em; }
         dl.summary { display: grid; grid-template-columns: max-content 1fr; gap: 6px 20px; margin: 0; }
         dl.summary dt { color: var(--vscode-descriptionForeground, inherit); }
@@ -124,13 +157,15 @@ function buildHtml(
         button.primary:hover { background: var(--vscode-button-hoverBackground, #026ec1); }
         button.secondary { background: var(--vscode-button-secondaryBackground, rgba(127, 127, 127, 0.25)); color: var(--vscode-button-secondaryForeground, inherit); }
         button.secondary:hover { background: var(--vscode-button-secondaryHoverBackground, rgba(127, 127, 127, 0.35)); }
-        button:focus-visible { outline: 1px solid var(--vscode-focusBorder, currentColor); outline-offset: 2px; }
+        button:focus-visible { outline: 2px solid var(--vscode-focusBorder, currentColor); outline-offset: 2px; }
         button:disabled { cursor: default; opacity: 0.7; }
     </style>
 </head>
 <body>
     <h1>${escapeHtml(title)}</h1>
     <p class="description">${escapeHtml(confirm.DESCRIPTION)}</p>
+    <p class="status" id="running-status" role="status" aria-live="polite" aria-atomic="true" data-message="${escapeHtml(confirm.RUNNING_STATUS)}"></p>
+    <p class="status recovery" id="recovery-status" role="alert" aria-live="assertive" aria-atomic="true"></p>
 
     <h2 class="section-header">${escapeHtml(confirm.SUMMARY_HEADER)}</h2>
     <dl class="summary">
@@ -143,21 +178,73 @@ function buildHtml(
     </ol>
 
     <div class="actions">
-        <button class="primary" id="start" title="${escapeHtml(confirm.START_DETAIL)}"${started ? " disabled" : ""}>${escapeHtml(confirm.START_LABEL)}</button>
-        ${allowEdit ? `<button class="secondary" id="edit" title="${escapeHtml(confirm.EDIT_DETAIL)}"${started ? " disabled" : ""}>${escapeHtml(confirm.EDIT_LABEL)}</button>` : ""}
+        <button class="primary" id="start" title="${escapeHtml(confirm.START_DETAIL)}">${escapeHtml(confirm.START_LABEL)}</button>
+        ${allowEdit ? `<button class="secondary" id="edit" title="${escapeHtml(confirm.EDIT_DETAIL)}">${escapeHtml(confirm.EDIT_LABEL)}</button>` : ""}
         <button class="secondary" id="cancel" title="${escapeHtml(confirm.CANCEL_DETAIL)}">${escapeHtml(confirm.CANCEL_LABEL)}</button>
+        <button class="secondary" id="close" title="${escapeHtml(confirm.CLOSE_DETAIL)}" hidden>${escapeHtml(confirm.CLOSE_LABEL)}</button>
     </div>
 
     <script nonce="${nonce}">
         const vscode = acquireVsCodeApi();
-        for (const id of [${allowEdit ? '"start", "edit", "cancel"' : '"start", "cancel"'}]) {
-            document.getElementById(id).addEventListener("click", (event) => {
-                if (id === "start") {
-                    event.currentTarget.disabled = true;
-                    document.getElementById("edit")?.setAttribute("disabled", "");
-                }
-                vscode.postMessage({ decision: id });
-            });
+        const startButton = document.getElementById("start");
+        const editButton = document.getElementById("edit");
+        const cancelButton = document.getElementById("cancel");
+        const closeButton = document.getElementById("close");
+        const runningStatus = document.getElementById("running-status");
+        const recoveryStatus = document.getElementById("recovery-status");
+
+        function showStartedState(shouldFocus, shouldPersist) {
+            startButton.disabled = true;
+            editButton?.setAttribute("disabled", "");
+            cancelButton.hidden = true;
+            closeButton.hidden = false;
+            recoveryStatus.textContent = "";
+            runningStatus.textContent = runningStatus.dataset.message;
+            if (shouldPersist) {
+                vscode.setState({ state: "running" });
+            }
+            if (shouldFocus) {
+                closeButton.focus();
+            }
+        }
+
+        function showRecoveryState(message, shouldPersist) {
+            startButton.disabled = true;
+            editButton?.setAttribute("disabled", "");
+            cancelButton.hidden = true;
+            closeButton.hidden = false;
+            runningStatus.textContent = "";
+            recoveryStatus.textContent = message;
+            if (shouldPersist) {
+                vscode.setState({ state: "recovery", message });
+            }
+        }
+
+        startButton.addEventListener("click", () => {
+            if (!startButton.disabled) {
+                showStartedState(true, true);
+                vscode.postMessage({ decision: "start" });
+            }
+        });
+        editButton?.addEventListener("click", () => vscode.postMessage({ decision: "edit" }));
+        cancelButton.addEventListener("click", () => vscode.postMessage({ decision: "cancel" }));
+        closeButton.addEventListener("click", () => vscode.postMessage({ action: "close" }));
+
+        window.addEventListener("message", (event) => {
+            const message = event.data;
+            if (message?.type === "agenticCreateConfirmState"
+                && message.state === "recovery"
+                && typeof message.message === "string") {
+                showRecoveryState(message.message, true);
+            }
+        });
+
+        const persistedState = vscode.getState();
+        if (persistedState?.state === "running") {
+            showStartedState(false, false);
+        } else if (persistedState?.state === "recovery"
+            && typeof persistedState.message === "string") {
+            showRecoveryState(persistedState.message, false);
         }
     </script>
 </body>
@@ -215,14 +302,29 @@ export function registerAgenticCreateConfirmPanelSerializer(): vscode.Disposable
                     localResourceRoots: []
                 };
 
+                let disposed = false;
+                const disposePanel = (): void => {
+                    if (!disposed) {
+                        disposed = true;
+                        panel.dispose();
+                    }
+                };
+                const fallbackTimer = setTimeout(
+                    disposePanel,
+                    RESTORED_PANEL_DISPOSE_TIMEOUT_MS
+                );
                 const messageSubscription = panel.webview.onDidReceiveMessage(
                     (message: { type?: unknown }) => {
                         if (message?.type === RESTORED_PANEL_READY_MESSAGE) {
-                            panel.dispose();
+                            disposePanel();
                         }
                     }
                 );
-                panel.onDidDispose(() => messageSubscription.dispose());
+                panel.onDidDispose(() => {
+                    disposed = true;
+                    clearTimeout(fallbackTimer);
+                    messageSubscription.dispose();
+                });
                 panel.webview.html = buildRestoredPanelCleanupHtml();
             }
         }
@@ -252,7 +354,7 @@ export function registerAgenticCreateConfirmPanelSerializer(): vscode.Disposable
  * @param plan Ordered command plan to preview and, on approval, run.
  * @param deps Optional injected side effects.
  * @param allowEdit Whether folder/host selection can be reopened by the caller.
- * @returns The user's {@link ConfirmDecision}. Closing the tab resolves `"dismissed"`.
+ * @returns The active panel session, including the user's decision and recovery-state updater.
  */
 export function showAgenticCreateConfirmPanel(
     hostDisplayName: string,
@@ -260,60 +362,70 @@ export function showAgenticCreateConfirmPanel(
     plan: PlannedCommand[],
     deps: ShowConfirmPanelDependencies = DEFAULT_CONFIRM_PANEL_DEPENDENCIES,
     allowEdit = true
-): Promise<ConfirmDecision> {
-    return new Promise<ConfirmDecision>((resolve) => {
-        const panel = deps.createWebviewPanel(
-            URI_CONSTANTS.AGENTIC_CREATE_CONFIRM_VIEW_TYPE,
-            URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.PANEL_TITLE,
-            vscode.ViewColumn.Active,
-            { enableScripts: true, retainContextWhenHidden: false }
-        );
+): AgenticCreateConfirmPanelSession {
+    const panel = deps.createWebviewPanel(
+        URI_CONSTANTS.AGENTIC_CREATE_CONFIRM_VIEW_TYPE,
+        URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.PANEL_TITLE,
+        vscode.ViewColumn.Active,
+        { enableScripts: true, retainContextWhenHidden: false }
+    );
 
-        panel.webview.html = buildHtml(
-            hostDisplayName,
-            folderPath,
-            plan,
-            panel.webview.cspSource,
-            false,
-            allowEdit
-        );
+    panel.webview.html = buildHtml(
+        hostDisplayName,
+        folderPath,
+        plan,
+        panel.webview.cspSource,
+        allowEdit
+    );
 
-        // Resolve exactly once. Start keeps the panel as a durable command reference; Cancel closes
-        // it. A user-initiated close reaches onDidDispose and resolves "dismissed" only when no
-        // decision has already been made.
-        let settled = false;
-        const settleWith = (decision: ConfirmDecision): boolean => {
-            if (settled) {
-                return false;
-            }
-            settled = true;
-            resolve(decision);
-            return true;
-        };
-
-        panel.webview.onDidReceiveMessage((message: { decision?: unknown }) => {
-            if (message?.decision === "start") {
-                if (!settleWith("start")) {
-                    return;
-                }
-                // Persist the disabled state in webview.html so hiding and revealing the tab cannot
-                // recreate an enabled Start button after the command plan has already launched.
-                panel.webview.html = buildHtml(
-                    hostDisplayName,
-                    folderPath,
-                    plan,
-                    panel.webview.cspSource,
-                    true,
-                    allowEdit
-                );
-            } else if (message?.decision === "edit" || message?.decision === "cancel") {
-                if (settleWith(message.decision)) {
-                    panel.dispose();
-                }
-            }
-        });
-
-        // Closing the tab without choosing an action is a possibly-accidental interruption.
-        panel.onDidDispose(() => settleWith("dismissed"));
+    let settleDecision: (decision: ConfirmDecision) => void;
+    const decision = new Promise<ConfirmDecision>((resolve) => {
+        settleDecision = resolve;
     });
+
+    // Resolve exactly once. Start keeps the panel as a durable command reference; Cancel closes it.
+    let settled = false;
+    const settleWith = (value: ConfirmDecision): boolean => {
+        if (settled) {
+            return false;
+        }
+        settled = true;
+        settleDecision(value);
+        return true;
+    };
+
+    let recoveryMessage: string | undefined;
+    const postRecoveryState = (): PromiseLike<boolean> => panel.webview.postMessage({
+        type: "agenticCreateConfirmState",
+        state: "recovery",
+        message: recoveryMessage
+    });
+    panel.onDidChangeViewState(({ webviewPanel }) => {
+        if (webviewPanel.visible && recoveryMessage) {
+            void postRecoveryState();
+        }
+    });
+
+    panel.webview.onDidReceiveMessage((message: { decision?: unknown; action?: unknown }) => {
+        if (message?.action === "close") {
+            panel.dispose();
+        } else if (message?.decision === "start") {
+            settleWith("start");
+        } else if (message?.decision === "edit" || message?.decision === "cancel") {
+            if (settleWith(message.decision)) {
+                panel.dispose();
+            }
+        }
+    });
+
+    // Closing the tab without choosing an action is a possibly-accidental interruption.
+    panel.onDidDispose(() => settleWith("dismissed"));
+
+    return {
+        decision,
+        showRecovery: (result) => {
+            recoveryMessage = formatRecoveryStatus(result);
+            return postRecoveryState();
+        }
+    };
 }
