@@ -94,34 +94,28 @@ describe("UriHandler routing", () => {
         expect(openStub.called).to.be.false;
     });
 
-    it("defers /pacCreate until PAC initialization completes", async () => {
+    it("does not register /pacCreate before PAC initialization", async () => {
         const earlyHandler = new UriHandler();
-        const dispatch = earlyHandler.handleUri(makeUri(URI_CONSTANTS.PATHS.PAC_CREATE));
-        await Promise.resolve();
+        await earlyHandler.handleUri(makeUri(URI_CONSTANTS.PATHS.PAC_CREATE));
 
         expect(pacCreateStub.notCalled).to.be.true;
 
         earlyHandler.initializePacWrapper({} as PacWrapper);
-        await dispatch;
+        await earlyHandler.handleUri(makeUri(URI_CONSTANTS.PATHS.PAC_CREATE));
 
         expect(pacCreateStub.calledOnce).to.be.true;
     });
 
-    it("releases deferred PAC routes when PAC initialization fails", async () => {
+    it("does not register /open before PAC initialization", async () => {
         const earlyHandler = new UriHandler();
-        const dispatch = earlyHandler.handleUri(makeUri(URI_CONSTANTS.PATHS.PAC_CREATE));
-        earlyHandler.failPacInitialization(new Error("PAC unavailable"));
+        await earlyHandler.handleUri(makeUri(URI_CONSTANTS.PATHS.OPEN));
 
-        let error: unknown;
-        try {
-            await dispatch;
-        } catch (caughtError) {
-            error = caughtError;
-        }
+        expect(openStub.notCalled).to.be.true;
 
-        expect(error).to.be.instanceOf(Error);
-        expect((error as Error).message).to.equal("PAC unavailable");
-        expect(pacCreateStub.notCalled).to.be.true;
+        earlyHandler.initializePacWrapper({} as PacWrapper);
+        await earlyHandler.handleUri(makeUri(URI_CONSTANTS.PATHS.OPEN));
+
+        expect(openStub.calledOnce).to.be.true;
     });
 
     it("ignores unknown paths without throwing", async () => {

@@ -205,7 +205,6 @@ export async function activate(
     try {
         cliPath = await cli.ensureInstalled();
     } catch (error) {
-        uriHandler.failPacInitialization(error);
         oneDSLoggerWrapper.getLogger().traceError(
             "PacCliAcquisitionFailed",
             "PAC CLI acquisition failed during extension activation",
