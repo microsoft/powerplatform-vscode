@@ -85,6 +85,18 @@ describe("UriHandler routing", () => {
         expect(pacCreateStub.notCalled).to.be.true;
     });
 
+    it("does not register /pcfInit before PAC initialization", async () => {
+        const earlyHandler = new UriHandler();
+        await earlyHandler.handleUri(makeUri(URI_CONSTANTS.PATHS.PCF_INIT));
+
+        expect(pcfInitStub.notCalled).to.be.true;
+
+        earlyHandler.initializePacWrapper({} as PacWrapper);
+        await earlyHandler.handleUri(makeUri(URI_CONSTANTS.PATHS.PCF_INIT));
+
+        expect(pcfInitStub.calledOnce).to.be.true;
+    });
+
     it("dispatches /pacCreate to the PAC create handler", async () => {
         await handler.handleUri(makeUri(URI_CONSTANTS.PATHS.PAC_CREATE));
 

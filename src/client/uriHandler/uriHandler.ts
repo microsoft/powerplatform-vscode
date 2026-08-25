@@ -57,6 +57,7 @@ export class UriHandler implements vscode.UriHandler {
             pacWrapper,
             authEnvironmentService: new AuthEnvironmentService(pacWrapper)
         };
+        this.routes.set(UriPath.PcfInit, () => this.pcfInit());
         this.routes.set(UriPath.Open, (uri) => this.handleOpenPowerPages(uri));
         this.routes.set(UriPath.PacCreate, (uri) => pacCreateHandler.handle(uri));
     }
@@ -74,7 +75,6 @@ export class UriHandler implements vscode.UriHandler {
      */
     private buildRoutes(): Map<string, UriRouteHandler> {
         return new Map<string, UriRouteHandler>([
-            [UriPath.PcfInit, () => this.pcfInit()],
             [UriPath.AgenticCreate, (uri) => this.agenticCreateHandler.handle(uri)],
         ]);
     }
