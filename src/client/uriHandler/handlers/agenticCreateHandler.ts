@@ -4,11 +4,10 @@
  */
 
 import * as vscode from "vscode";
-import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { ECSFeaturesClient } from "../../../common/ecs-features/ecsFeatureClient";
 import { EnableAgenticCreateFromHome } from "../../../common/ecs-features/ecsFeatureGates";
 import { uriHandlerTelemetryEventNames } from "../telemetry/uriHandlerTelemetryEvents";
-import { buildCreateFlowTelemetry, CreateFlowParameters, parseCreateFlowParameters } from "./createFlowParams";
+import { CreateFlowParameters, parseCreateFlowParameters } from "./createFlowParams";
 import { emitCreateFlowError, emitCreateFlowEvent } from "../telemetry/createFlowTelemetry";
 import { isSupportedContractVersion } from "./createFlowContractVersion";
 import {
@@ -116,17 +115,22 @@ export class AgenticCreateHandler {
         // Parse the (secret-free) deep-link params up front so the redacted telemetry payload
         // is available on every path, including the flag-off and failure cases.
         const params = parseCreateFlowParameters(uri);
-        const telemetryData = buildCreateFlowTelemetry(params);
-
-        if (!AgenticCreateHandler.isEnabled()) {
-            oneDSLoggerWrapper.getLogger().traceInfo(
-                uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_DISABLED,
-                telemetryData
-            );
-            return;
-        }
-
         try {
+            this.dependencies.emitCreateFlowEvent(
+                uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_RECEIVED,
+                params,
+                'agent'
+            );
+
+            if (!AgenticCreateHandler.isEnabled()) {
+                this.dependencies.emitCreateFlowEvent(
+                    uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_DISABLED,
+                    params,
+                    'agent'
+                );
+                return;
+            }
+
             if (!isSupportedContractVersion(params.version)) {
                 emitCreateFlowEvent(
                     uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED,
@@ -156,6 +160,22 @@ export class AgenticCreateHandler {
                 this.dependencies.detectAgentHost(AgentHost.Copilot),
                 this.dependencies.detectAgentHost(AgentHost.Claude)
             ]);
+            this.dependencies.emitCreateFlowEvent(
+                uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_DETECTED,
+                params,
+                'agent',
+                {
+                    copilotInstalled: String(
+                        detection.find(result => result.host === AgentHost.Copilot)?.installed ?? false
+                    ),
+                    claudeInstalled: String(
+                        detection.find(result => result.host === AgentHost.Claude)?.installed ?? false
+                    ),
+                    installedHostCount: String(
+                        detection.filter(result => result.installed).length
+                    )
+                }
+            );
             let selectionToEdit: AgenticCreateInputsSelection | undefined;
             const resolveMissingHost = async (
                 host: AgentHost
@@ -180,6 +200,20 @@ export class AgenticCreateHandler {
                         }
                     }
                 );
+            const shouldStopAfterInstallResolution = (
+                resolution: Awaited<ReturnType<typeof resolveAgentHostInstallation>>,
+                host: AgentHost
+            ): boolean => {
+                if (resolution.status === 'dismissed') {
+                    this.dependencies.emitCreateFlowEvent(
+                        uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED,
+                        params,
+                        'agent',
+                        { reason: 'hostInstallDismissed', host }
+                    );
+                }
+                return resolution.status !== 'resolved';
+            };
 
             for (;;) {
                 const inputs = selectionToEdit
@@ -255,7 +289,7 @@ export class AgenticCreateHandler {
                             }
                         );
                         const resolution = await resolveMissingHost(hostSelection.host);
-                        if (resolution.status !== 'resolved') {
+                        if (shouldStopAfterInstallResolution(resolution, hostSelection.host)) {
                             return;
                         }
 
@@ -287,7 +321,10 @@ export class AgenticCreateHandler {
                     );
                 if (shouldUseHostInstallFallback) {
                     const resolution = await resolveMissingHost(confirmedHostSelection.host);
-                    if (resolution.status !== 'resolved') {
+                    if (shouldStopAfterInstallResolution(
+                        resolution,
+                        confirmedHostSelection.host
+                    )) {
                         return;
                     }
 

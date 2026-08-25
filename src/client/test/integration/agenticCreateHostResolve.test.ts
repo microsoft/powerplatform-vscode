@@ -146,14 +146,14 @@ describe("Agentic create host resolution", () => {
 
         await createHandler().handle(uri);
 
-        expect(emitCreateFlowEventStub.callCount).to.equal(2);
-        expect(emitCreateFlowEventStub.firstCall.args[0]).to.equal(
+        expect(emitCreateFlowEventStub.callCount).to.equal(4);
+        expect(emitCreateFlowEventStub.getCall(2).args[0]).to.equal(
             uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_CANCELLED
         );
-        expect(emitCreateFlowEventStub.secondCall.args[0]).to.equal(
+        expect(emitCreateFlowEventStub.getCall(3).args[0]).to.equal(
             uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED
         );
-        expect(emitCreateFlowEventStub.secondCall.args[3]).to.deep.equal({
+        expect(emitCreateFlowEventStub.getCall(3).args[3]).to.deep.equal({
             reason: "folderSelectionCancelled"
         });
         expect(resolveAgentHostInstallationStub.notCalled).to.be.true;
@@ -173,14 +173,14 @@ describe("Agentic create host resolution", () => {
         expect(detectAgentHostStub.firstCall.calledWithExactly(AgentHost.Copilot)).to.be.true;
         expect(detectAgentHostStub.secondCall.calledWithExactly(AgentHost.Claude)).to.be.true;
         expect(selectAgenticCreateInputsStub.calledOnceWithExactly(detection)).to.be.true;
-        expect(emitCreateFlowEventStub.callCount).to.equal(2);
-        expect(emitCreateFlowEventStub.firstCall.args[0]).to.equal(
+        expect(emitCreateFlowEventStub.callCount).to.equal(4);
+        expect(emitCreateFlowEventStub.getCall(2).args[0]).to.equal(
             uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED
         );
-        expect(emitCreateFlowEventStub.secondCall.args).to.include(
+        expect(emitCreateFlowEventStub.getCall(3).args).to.include(
             uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED
         );
-        expect(emitCreateFlowEventStub.secondCall.args[3]).to.deep.equal({
+        expect(emitCreateFlowEventStub.getCall(3).args[3]).to.deep.equal({
             reason: "hostSelectionCancelled"
         });
         expect(resolveAgentHostInstallationStub.notCalled).to.be.true;
@@ -193,14 +193,25 @@ describe("Agentic create host resolution", () => {
     it("emits host selected once and confirms + launches for an installed host", async () => {
         await createHandler().handle(uri);
 
-        expect(emitCreateFlowEventStub.callCount).to.equal(2);
+        expect(emitCreateFlowEventStub.callCount).to.equal(4);
         expect(emitCreateFlowEventStub.firstCall.args[0]).to.equal(
-            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_RECEIVED
         );
         expect(emitCreateFlowEventStub.secondCall.args[0]).to.equal(
-            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_SELECTED
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_DETECTED
         );
         expect(emitCreateFlowEventStub.secondCall.args[3]).to.deep.equal({
+            copilotInstalled: "true",
+            claudeInstalled: "false",
+            installedHostCount: "1"
+        });
+        expect(emitCreateFlowEventStub.getCall(2).args[0]).to.equal(
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED
+        );
+        expect(emitCreateFlowEventStub.getCall(3).args[0]).to.equal(
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_SELECTED
+        );
+        expect(emitCreateFlowEventStub.getCall(3).args[3]).to.deep.equal({
             host: AgentHost.Copilot,
             installed: "true"
         });
@@ -296,20 +307,31 @@ describe("Agentic create host resolution", () => {
 
             await createHandler().handle(uri);
 
-            expect(emitCreateFlowEventStub.callCount).to.equal(3);
-            expect(emitCreateFlowEventStub.firstCall.args[0]).to.equal(
+            expect(emitCreateFlowEventStub.callCount).to.equal(
+                resolution.status === "dismissed" ? 6 : 5
+            );
+            expect(emitCreateFlowEventStub.getCall(2).args[0]).to.equal(
                 uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED
             );
-            expect(emitCreateFlowEventStub.secondCall.args[0]).to.equal(
+            expect(emitCreateFlowEventStub.getCall(3).args[0]).to.equal(
                 uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_SELECTED
             );
-            expect(emitCreateFlowEventStub.secondCall.args[3]).to.deep.equal({
+            expect(emitCreateFlowEventStub.getCall(3).args[3]).to.deep.equal({
                 host: AgentHost.Claude,
                 installed: "false"
             });
-            expect(emitCreateFlowEventStub.thirdCall.args[0]).to.equal(
+            expect(emitCreateFlowEventStub.getCall(4).args[0]).to.equal(
                 uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_RECOVERY
             );
+            if (resolution.status === "dismissed") {
+                expect(emitCreateFlowEventStub.getCall(5).args).to.include(
+                    uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED
+                );
+                expect(emitCreateFlowEventStub.getCall(5).args[3]).to.deep.equal({
+                    reason: "hostInstallDismissed",
+                    host: AgentHost.Claude
+                });
+            }
             expect(resolveAgentHostInstallationStub.calledOnce).to.be.true;
             expect(resolveAgentHostInstallationStub.firstCall.args[0]).to.equal(AgentHost.Claude);
             expect(resolveAgentHostInstallationStub.firstCall.args[1]).to.equal("Claude Code");

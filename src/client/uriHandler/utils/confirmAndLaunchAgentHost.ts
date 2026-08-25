@@ -135,6 +135,15 @@ export async function confirmAndLaunchAgentHost(
             'agent',
             { host }
         );
+        await emitEvent(
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HANDOFF_COMPLETED,
+            params,
+            'agent',
+            {
+                host,
+                bootstrapUsed: String(includesBootstrap)
+            }
+        );
         return { status: 'launched' };
     }
 

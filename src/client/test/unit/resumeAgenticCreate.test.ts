@@ -64,6 +64,7 @@ interface TestContext {
     detectHost: sinon.SinonStub;
     showInformationMessage: sinon.SinonStub;
     emitEvent: sinon.SinonStub;
+    emitError: sinon.SinonStub;
     runStages: sinon.SinonStub;
     clearMarker: sinon.SinonStub;
 }
@@ -82,6 +83,7 @@ function createContext(
     });
     const showInformationMessage = sinon.stub().resolves(promptSelection);
     const emitEvent = sinon.stub().resolves();
+    const emitError = sinon.stub().resolves();
     const runStages = sinon.stub().resolves();
     const clearMarker = sinon.stub().callsFake(clearResumeMarker);
     const deps: ResumeAgenticCreateDependencies = {
@@ -91,6 +93,7 @@ function createContext(
         now: () => NOW,
         showInformationMessage,
         emitEvent,
+        emitError,
         runStages,
         clearMarker
     };
@@ -101,6 +104,7 @@ function createContext(
         detectHost,
         showInformationMessage,
         emitEvent,
+        emitError,
         runStages,
         clearMarker
     };
@@ -127,6 +131,12 @@ describe('resumeAgenticCreate', () => {
         expect(context.store.value).to.be.undefined;
         expect(context.detectHost.notCalled).to.be.true;
         expect(context.showInformationMessage.notCalled).to.be.true;
+        expect(context.emitEvent.calledOnceWithExactly(
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED,
+            sinon.match.has('correlationId', marker.correlationId),
+            'agent',
+            { reason: 'resumeMarkerStale' }
+        )).to.be.true;
     });
 
     it('clears an unsupported persisted host without probing it', async () => {
@@ -137,9 +147,15 @@ describe('resumeAgenticCreate', () => {
         expect(context.store.value).to.be.undefined;
         expect(context.detectHost.notCalled).to.be.true;
         expect(context.showInformationMessage.notCalled).to.be.true;
+        expect(context.emitEvent.calledOnceWithExactly(
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED,
+            sinon.match.has('agentHost', 'unsupported'),
+            'agent',
+            { reason: 'resumeHostUnsupported' }
+        )).to.be.true;
     });
 
-    it('clears without prompting when the host is still missing', async () => {
+    it('records a drop without prompting when the host is still missing', async () => {
         const context = createContext();
         context.detectHost.resolves({
             host: AgentHost.Copilot,
@@ -151,17 +167,35 @@ describe('resumeAgenticCreate', () => {
         expect(context.detectHost.calledOnceWithExactly(AgentHost.Copilot)).to.be.true;
         expect(context.store.value).to.be.undefined;
         expect(context.showInformationMessage.notCalled).to.be.true;
-        expect(context.emitEvent.notCalled).to.be.true;
+        expect(context.emitEvent.calledOnceWithExactly(
+            uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED,
+            sinon.match.has('correlationId', marker.correlationId),
+            'agent',
+            {
+                reason: 'resumeHostMissing',
+                host: AgentHost.Copilot
+            }
+        )).to.be.true;
     });
 
     for (const selection of [strings.notNow, undefined]) {
-        it(`clears silently when the prompt returns ${selection ?? 'dismissed'}`, async () => {
+        it(`records a drop when the prompt returns ${selection ?? 'dismissed'}`, async () => {
             const context = createContext(marker, selection);
 
             await resumeAgenticCreate(context.deps);
 
             expect(context.store.value).to.be.undefined;
-            expect(context.emitEvent.notCalled).to.be.true;
+            expect(context.emitEvent.calledOnceWithExactly(
+                uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED,
+                sinon.match.has('correlationId', marker.correlationId),
+                'agent',
+                {
+                    reason: selection === strings.notNow
+                        ? 'resumeDeclined'
+                        : 'resumeDismissed',
+                    host: AgentHost.Copilot
+                }
+            )).to.be.true;
             expect(context.runStages.notCalled).to.be.true;
         });
     }
@@ -238,6 +272,14 @@ describe('resumeAgenticCreate', () => {
         expect(error).to.be.instanceOf(Error);
         expect((error as Error).message).to.equal('stage failed');
         expect(context.emitEvent.calledOnce).to.be.true;
+        expect(context.emitError.calledOnceWithExactly(
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_FAILED,
+            'Agentic create resume failed',
+            sinon.match.instanceOf(Error),
+            sinon.match.has('correlationId', marker.correlationId),
+            'agent',
+            { failureStage: 'resume' }
+        )).to.be.true;
         expect(context.clearMarker.calledOnce).to.be.true;
         expect(context.store.value).to.be.undefined;
     });

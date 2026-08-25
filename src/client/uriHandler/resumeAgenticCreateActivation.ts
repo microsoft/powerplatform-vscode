@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import { URI_HANDLER_STRINGS } from './constants/uriStrings';
 import { CreateFlowParameters } from './handlers/createFlowParams';
-import { emitCreateFlowEvent } from './telemetry/createFlowTelemetry';
+import { emitCreateFlowError, emitCreateFlowEvent } from './telemetry/createFlowTelemetry';
 import { uriHandlerTelemetryEventNames } from './telemetry/uriHandlerTelemetryEvents';
 import { AgentHost, detectAgentHost } from './utils/detectAgentHost';
 import {
@@ -46,6 +46,7 @@ export async function resumeAgenticCreateOnActivation(
             showInformationMessage: (message, ...buttons) =>
                 vscode.window.showInformationMessage(message, ...buttons),
             emitEvent: emitCreateFlowEvent,
+            emitError: emitCreateFlowError,
             runStages: async (params: CreateFlowParameters, host: AgentHost) => {
                 const folderUri = await selectTargetFolder();
                 if (!folderUri) {

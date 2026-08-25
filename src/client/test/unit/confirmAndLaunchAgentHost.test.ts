@@ -68,7 +68,7 @@ describe("confirmAndLaunchAgentHost", () => {
         expect(showConfirmPanel.calledOnceWithExactly("GitHub Copilot CLI", "c:/work/site", plan)).to
             .be.true;
         expect(launchPlan.calledOnceWithExactly(folderUri, plan, "GitHub Copilot CLI")).to.be.true;
-        expect(emitEvent.callCount).to.equal(3);
+        expect(emitEvent.callCount).to.equal(4);
         expect(emitEvent.firstCall.args[0]).to.equal(
             uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_CONFIRM_ACTION_CLICKED
         );
@@ -83,6 +83,13 @@ describe("confirmAndLaunchAgentHost", () => {
         expect(emitEvent.thirdCall.args[0]).to.equal(
             uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_SAMPLE_PROMPT_SENT
         );
+        expect(emitEvent.getCall(3).args[0]).to.equal(
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HANDOFF_COMPLETED
+        );
+        expect(emitEvent.getCall(3).args[3]).to.deep.equal({
+            host: AgentHost.Copilot,
+            bootstrapUsed: "false"
+        });
     });
 
     it("drops the flow with confirmCancelled and does not launch when cancelled", async () => {
