@@ -76,27 +76,6 @@ describe("UriHandler routing", () => {
         expect(openStub.called).to.be.false;
     });
 
-    it("dispatches /agenticCreate before PAC initialization", async () => {
-        const earlyHandler = new UriHandler();
-
-        await earlyHandler.handleUri(makeUri(URI_CONSTANTS.PATHS.AGENTIC_CREATE));
-
-        expect(agenticCreateStub.calledOnce).to.be.true;
-        expect(pacCreateStub.notCalled).to.be.true;
-    });
-
-    it("does not register /pcfInit before PAC initialization", async () => {
-        const earlyHandler = new UriHandler();
-        await earlyHandler.handleUri(makeUri(URI_CONSTANTS.PATHS.PCF_INIT));
-
-        expect(pcfInitStub.notCalled).to.be.true;
-
-        earlyHandler.initializePacWrapper({} as PacWrapper);
-        await earlyHandler.handleUri(makeUri(URI_CONSTANTS.PATHS.PCF_INIT));
-
-        expect(pcfInitStub.calledOnce).to.be.true;
-    });
-
     it("dispatches /pacCreate to the PAC create handler", async () => {
         await handler.handleUri(makeUri(URI_CONSTANTS.PATHS.PAC_CREATE));
 
@@ -104,30 +83,6 @@ describe("UriHandler routing", () => {
         expect(agenticCreateStub.called).to.be.false;
         expect(pcfInitStub.called).to.be.false;
         expect(openStub.called).to.be.false;
-    });
-
-    it("does not register /pacCreate before PAC initialization", async () => {
-        const earlyHandler = new UriHandler();
-        await earlyHandler.handleUri(makeUri(URI_CONSTANTS.PATHS.PAC_CREATE));
-
-        expect(pacCreateStub.notCalled).to.be.true;
-
-        earlyHandler.initializePacWrapper({} as PacWrapper);
-        await earlyHandler.handleUri(makeUri(URI_CONSTANTS.PATHS.PAC_CREATE));
-
-        expect(pacCreateStub.calledOnce).to.be.true;
-    });
-
-    it("does not register /open before PAC initialization", async () => {
-        const earlyHandler = new UriHandler();
-        await earlyHandler.handleUri(makeUri(URI_CONSTANTS.PATHS.OPEN));
-
-        expect(openStub.notCalled).to.be.true;
-
-        earlyHandler.initializePacWrapper({} as PacWrapper);
-        await earlyHandler.handleUri(makeUri(URI_CONSTANTS.PATHS.OPEN));
-
-        expect(openStub.calledOnce).to.be.true;
     });
 
     it("ignores unknown paths without throwing", async () => {

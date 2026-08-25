@@ -57,7 +57,7 @@ import { setServerApiTelemetryContext } from "../common/intellisense/ServerApiTe
 import { activateServerLogicDebugger } from "../debugger/server-logic/ServerLogicDebugger";
 import { resumeAgenticCreateOnActivation } from "./uriHandler/resumeAgenticCreateActivation";
 import { registerAgenticCreateConfirmPanelSerializer } from "./uriHandler/utils/agenticCreateConfirmPanel";
-import { UriHandler } from "./uriHandler/uriHandler";
+import { AgenticCreateUriHandler } from "./uriHandler/agenticCreateUriHandler";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -88,7 +88,7 @@ export async function activate(
     // Agentic Create does not depend on Microsoft authentication or PAC acquisition. Register the
     // shared URI router and resume continuation before either awaited operation so cold links and
     // reload recovery cannot be blocked by unrelated setup.
-    const uriHandler = new UriHandler(undefined, _context.globalState);
+    const uriHandler = new AgenticCreateUriHandler(_context.globalState);
     _context.subscriptions.push(vscode.window.registerUriHandler(uriHandler));
     void resumeAgenticCreateOnActivation(_context.globalState);
 

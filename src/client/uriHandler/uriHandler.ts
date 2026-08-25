@@ -19,13 +19,9 @@ import { ResumeMarkerStore } from "./utils/resumeMarker";
  * Signature for a deep-link route handler. Each registered URI path maps to one handler.
  */
 type UriRouteHandler = (uri: vscode.Uri) => Promise<void>;
-type PacUriServices = {
-    pacWrapper: PacWrapper;
-    authEnvironmentService: AuthEnvironmentService;
-};
 
 export function RegisterUriHandler(
-    pacWrapper?: PacWrapper,
+    pacWrapper: PacWrapper,
     resumeMarkerStore?: ResumeMarkerStore
 ): vscode.Disposable {
     const uriHandler = new UriHandler(pacWrapper, resumeMarkerStore);
@@ -33,49 +29,30 @@ export function RegisterUriHandler(
 }
 
 export class UriHandler implements vscode.UriHandler {
-    private readonly routes: Map<string, UriRouteHandler>;
+    private readonly pacWrapper: PacWrapper;
+    private readonly routes: ReadonlyMap<string, UriRouteHandler>;
+    private readonly authEnvironmentService: AuthEnvironmentService;
     private readonly agenticCreateHandler: AgenticCreateHandler;
-    private pacServices?: PacUriServices;
+    private readonly pacCreateHandler: PacCreateHandler;
 
-    constructor(pacWrapper?: PacWrapper, resumeMarkerStore?: ResumeMarkerStore) {
+    constructor(pacWrapper: PacWrapper, resumeMarkerStore?: ResumeMarkerStore) {
+        this.pacWrapper = pacWrapper;
+        this.authEnvironmentService = new AuthEnvironmentService(pacWrapper);
         this.agenticCreateHandler = new AgenticCreateHandler(resumeMarkerStore);
+        this.pacCreateHandler = new PacCreateHandler(pacWrapper);
         this.routes = this.buildRoutes();
-        if (pacWrapper) {
-            this.initializePacWrapper(pacWrapper);
-        }
-    }
-
-    /**
-     * Supplies PAC-dependent route services after CLI acquisition completes.
-     */
-    public initializePacWrapper(pacWrapper: PacWrapper): void {
-        if (this.pacServices) {
-            return;
-        }
-        const pacCreateHandler = new PacCreateHandler(pacWrapper);
-        this.pacServices = {
-            pacWrapper,
-            authEnvironmentService: new AuthEnvironmentService(pacWrapper)
-        };
-        this.routes.set(UriPath.PcfInit, () => this.pcfInit());
-        this.routes.set(UriPath.Open, (uri) => this.handleOpenPowerPages(uri));
-        this.routes.set(UriPath.PacCreate, (uri) => pacCreateHandler.handle(uri));
-    }
-
-    private getPacServices(): PacUriServices {
-        if (!this.pacServices) {
-            throw new Error("PAC URI services are not initialized");
-        }
-        return this.pacServices;
     }
 
     /**
      * Builds the deep-link routing table (URI path -> handler). Register new deep-link
      * paths here so `handleUri` can dispatch to them.
      */
-    private buildRoutes(): Map<string, UriRouteHandler> {
+    private buildRoutes(): ReadonlyMap<string, UriRouteHandler> {
         return new Map<string, UriRouteHandler>([
+            [UriPath.PcfInit, () => this.pcfInit()],
+            [UriPath.Open, (uri) => this.handleOpenPowerPages(uri)],
             [UriPath.AgenticCreate, (uri) => this.agenticCreateHandler.handle(uri)],
+            [UriPath.PacCreate, (uri) => this.pacCreateHandler.handle(uri)],
         ]);
     }
 
@@ -147,7 +124,6 @@ export class UriHandler implements vscode.UriHandler {
         let telemetryData: Record<string, string> = {};
 
         try {
-            const { authEnvironmentService } = this.getPacServices();
             // Parse URI parameters and validate
             const uriParams = UriHandlerUtils.parseUriParameters(uri);
             telemetryData = UriHandlerUtils.buildTelemetryData(uriParams, uri);
@@ -161,7 +137,7 @@ export class UriHandler implements vscode.UriHandler {
             this.validateRequiredParameters(uriParams, telemetryData);
 
             // Prepare authentication and environment
-            await authEnvironmentService.prepareAuthenticationAndEnvironment(uriParams, telemetryData);
+            await this.authEnvironmentService.prepareAuthenticationAndEnvironment(uriParams, telemetryData);
 
             // Handle the download process
             await this.handleSiteDownload(uriParams, telemetryData, startTime);
@@ -297,7 +273,6 @@ export class UriHandler implements vscode.UriHandler {
      * Execute the actual download operation
      */
     private async executeDownload(selectedFolder: vscode.Uri, uriParams: UriParameters, telemetryData: Record<string, string>, startTime: number): Promise<void> {
-        const { pacWrapper, authEnvironmentService } = this.getPacServices();
         try {
             const downloadCommand = `pages download -p "${selectedFolder.fsPath}" -id ${uriParams.websiteId} -mv ${uriParams.modelVersion}`;
 
@@ -317,7 +292,7 @@ export class UriHandler implements vscode.UriHandler {
                     cancellable: false
                 },
                 async (_) => {
-                    const downloadResult = await pacWrapper.downloadSite(
+                    const downloadResult = await this.pacWrapper.downloadSite(
                         selectedFolder.fsPath,
                         uriParams.websiteId!,
                         uriParams.modelVersion as 1 | 2
@@ -352,7 +327,7 @@ export class UriHandler implements vscode.UriHandler {
                 { ...telemetryData, error: 'download_failed' }
             );
 
-            await authEnvironmentService.resetPacProcessSafely(telemetryData);
+            await this.authEnvironmentService.resetPacProcessSafely(telemetryData);
             throw error;
         }
     }
