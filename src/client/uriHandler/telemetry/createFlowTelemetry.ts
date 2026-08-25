@@ -38,6 +38,8 @@ const FUNNEL_EVENT_PROPERTIES: Partial<Record<
         { funnelStage: 'hostBootstrap', funnelOutcome: 'completed' },
     [uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_RECOVERY]:
         { funnelStage: 'hostBootstrap', funnelOutcome: 'recovery' },
+    [uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_COMMAND_SEQUENCE_RECOVERY]:
+        { funnelStage: 'terminalExecution', funnelOutcome: 'recovery' },
     [uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_PROMPTED]:
         { funnelStage: 'hostInstallFallback', funnelOutcome: 'prompted' },
     [uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_GUIDE_OPENED]:

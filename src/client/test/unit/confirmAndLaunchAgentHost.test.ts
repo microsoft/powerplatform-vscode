@@ -192,7 +192,7 @@ describe("confirmAndLaunchAgentHost", () => {
         expect(emitEvent.callCount).to.equal(2);
         expect(showRecovery.calledOnceWithExactly(recoveryResult)).to.be.true;
         expect(emitEvent.secondCall.args[0]).to.equal(
-            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_RECOVERY
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_COMMAND_SEQUENCE_RECOVERY
         );
         expect(emitEvent.secondCall.args[3]).to.deep.equal({
             host: AgentHost.Copilot,
@@ -200,5 +200,38 @@ describe("confirmAndLaunchAgentHost", () => {
             commandKind: "registerMarketplace",
             exitCodeCategory: "nonZero"
         });
+    });
+
+    it("completes bootstrap before recording a later plugin recovery", async () => {
+        const { deps, buildPlan, launchPlan, emitEvent } = buildDeps("start");
+        const bootstrapPlan: PlannedCommand[] = [
+            { kind: "installHost", commandLine: "install-host", description: "install host" },
+            { kind: "refreshPath", commandLine: "refresh-path", description: "refresh path" },
+            { kind: "verifyHost", commandLine: "verify-host", description: "verify host" },
+            ...plan
+        ];
+        buildPlan.returns(bootstrapPlan);
+        launchPlan.resolves({
+            status: "recovery",
+            reason: "commandFailed",
+            failedCommand: bootstrapPlan[3],
+            exitCode: 1,
+            completedCommandKinds: ["installHost", "refreshPath", "verifyHost"]
+        });
+
+        await confirmAndLaunchAgentHost(
+            AgentHost.Copilot,
+            "GitHub Copilot CLI",
+            folderUri,
+            params,
+            deps
+        );
+
+        expect(emitEvent.getCalls().map(call => call.args[0])).to.deep.equal([
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_CONFIRM_ACTION_CLICKED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_STARTED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_COMPLETED,
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_COMMAND_SEQUENCE_RECOVERY
+        ]);
     });
 });

@@ -76,6 +76,15 @@ describe("UriHandler routing", () => {
         expect(openStub.called).to.be.false;
     });
 
+    it("dispatches /agenticCreate before PAC initialization", async () => {
+        const earlyHandler = new UriHandler();
+
+        await earlyHandler.handleUri(makeUri(URI_CONSTANTS.PATHS.AGENTIC_CREATE));
+
+        expect(agenticCreateStub.calledOnce).to.be.true;
+        expect(pacCreateStub.notCalled).to.be.true;
+    });
+
     it("dispatches /pacCreate to the PAC create handler", async () => {
         await handler.handleUri(makeUri(URI_CONSTANTS.PATHS.PAC_CREATE));
 
@@ -83,6 +92,36 @@ describe("UriHandler routing", () => {
         expect(agenticCreateStub.called).to.be.false;
         expect(pcfInitStub.called).to.be.false;
         expect(openStub.called).to.be.false;
+    });
+
+    it("defers /pacCreate until PAC initialization completes", async () => {
+        const earlyHandler = new UriHandler();
+        const dispatch = earlyHandler.handleUri(makeUri(URI_CONSTANTS.PATHS.PAC_CREATE));
+        await Promise.resolve();
+
+        expect(pacCreateStub.notCalled).to.be.true;
+
+        earlyHandler.initializePacWrapper({} as PacWrapper);
+        await dispatch;
+
+        expect(pacCreateStub.calledOnce).to.be.true;
+    });
+
+    it("releases deferred PAC routes when PAC initialization fails", async () => {
+        const earlyHandler = new UriHandler();
+        const dispatch = earlyHandler.handleUri(makeUri(URI_CONSTANTS.PATHS.PAC_CREATE));
+        earlyHandler.failPacInitialization(new Error("PAC unavailable"));
+
+        let error: unknown;
+        try {
+            await dispatch;
+        } catch (caughtError) {
+            error = caughtError;
+        }
+
+        expect(error).to.be.instanceOf(Error);
+        expect((error as Error).message).to.equal("PAC unavailable");
+        expect(pacCreateStub.notCalled).to.be.true;
     });
 
     it("ignores unknown paths without throwing", async () => {

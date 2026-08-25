@@ -5,17 +5,21 @@
 
 import * as vscode from "vscode";
 import { URI_HANDLER_STRINGS } from "../constants/uriStrings";
-import { PlannedCommand } from "./agentHostCommandPlan";
+import {
+    PlannedCommand,
+    PlannedCommandKind
+} from "./agentHostCommandPlan";
 
 const SHELL_INTEGRATION_TIMEOUT_MS = 3000;
 
 export type LaunchAgentHostPlanResult =
-    | { status: "launched" }
+    | { status: "launched"; completedCommandKinds?: PlannedCommandKind[] }
     | {
         status: "recovery";
         reason: "shellIntegrationUnavailable" | "commandFailed";
         failedCommand?: PlannedCommand;
         exitCode?: number;
+        completedCommandKinds?: PlannedCommandKind[];
     };
 
 /**
@@ -27,6 +31,7 @@ export interface LaunchAgentHostPlanDependencies {
         terminal: vscode.Terminal
     ) => Promise<vscode.TerminalShellIntegration | undefined>;
     executeCommand: (
+        terminal: vscode.Terminal,
         shellIntegration: vscode.TerminalShellIntegration,
         commandLine: string
     ) => Promise<number | undefined>;
@@ -41,6 +46,11 @@ const waitForShellIntegration = async (
 
     return new Promise(resolve => {
         let settled = false;
+        const subscriptions: vscode.Disposable[] = [];
+        const cleanup = (): void => {
+            clearTimeout(timer);
+            subscriptions.forEach(subscription => subscription.dispose());
+        };
         const settle = (
             shellIntegration: vscode.TerminalShellIntegration | undefined
         ): void => {
@@ -48,39 +58,63 @@ const waitForShellIntegration = async (
                 return;
             }
             settled = true;
-            clearTimeout(timer);
-            subscription.dispose();
+            cleanup();
             resolve(shellIntegration);
         };
-        const subscription = vscode.window.onDidChangeTerminalShellIntegration(event => {
-            if (event.terminal === terminal) {
-                settle(event.shellIntegration);
-            }
-        });
         const timer = setTimeout(
             () => settle(undefined),
             SHELL_INTEGRATION_TIMEOUT_MS
         );
+        const integrationSubscription = vscode.window.onDidChangeTerminalShellIntegration(event => {
+            if (event.terminal === terminal) {
+                settle(event.shellIntegration);
+            }
+        });
+        const closeSubscription = vscode.window.onDidCloseTerminal(closedTerminal => {
+            if (closedTerminal === terminal) {
+                settle(undefined);
+            }
+        });
+        subscriptions.push(integrationSubscription, closeSubscription);
     });
 };
 
 const executeCommand = async (
+    terminal: vscode.Terminal,
     shellIntegration: vscode.TerminalShellIntegration,
     commandLine: string
 ): Promise<number | undefined> => {
     return new Promise((resolve, reject) => {
         let execution: vscode.TerminalShellExecution;
-        const subscription = vscode.window.onDidEndTerminalShellExecution(event => {
+        let settled = false;
+        const subscriptions: vscode.Disposable[] = [];
+        const cleanup = (): void => {
+            subscriptions.forEach(subscription => subscription.dispose());
+        };
+        const settle = (exitCode: number | undefined): void => {
+            if (!settled) {
+                settled = true;
+                cleanup();
+                resolve(exitCode);
+            }
+        };
+        const executionSubscription = vscode.window.onDidEndTerminalShellExecution(event => {
             if (event.execution === execution) {
-                subscription.dispose();
-                resolve(event.exitCode);
+                settle(event.exitCode);
             }
         });
+        const closeSubscription = vscode.window.onDidCloseTerminal(closedTerminal => {
+            if (closedTerminal === terminal) {
+                settle(undefined);
+            }
+        });
+        subscriptions.push(executionSubscription, closeSubscription);
 
         try {
             execution = shellIntegration.executeCommand(commandLine);
         } catch (error) {
-            subscription.dispose();
+            settled = true;
+            cleanup();
             reject(error);
         }
     });
@@ -128,20 +162,24 @@ export async function launchAgentHostPlan(
     if (!shellIntegration) {
         return {
             status: "recovery",
-            reason: "shellIntegrationUnavailable"
+            reason: "shellIntegrationUnavailable",
+            completedCommandKinds: []
         };
     }
 
+    const completedCommandKinds: PlannedCommandKind[] = [];
     for (const command of plan) {
         if (command.kind === "launchHost") {
             try {
                 shellIntegration.executeCommand(command.commandLine);
-                return { status: "launched" };
+                completedCommandKinds.push(command.kind);
+                return { status: "launched", completedCommandKinds };
             } catch {
                 return {
                     status: "recovery",
                     reason: "commandFailed",
-                    failedCommand: command
+                    failedCommand: command,
+                    completedCommandKinds
                 };
             }
         }
@@ -149,6 +187,7 @@ export async function launchAgentHostPlan(
         let exitCode: number | undefined;
         try {
             exitCode = await deps.executeCommand(
+                terminal,
                 shellIntegration,
                 command.commandLine
             );
@@ -156,7 +195,8 @@ export async function launchAgentHostPlan(
             return {
                 status: "recovery",
                 reason: "commandFailed",
-                failedCommand: command
+                failedCommand: command,
+                completedCommandKinds
             };
         }
         if (exitCode !== 0) {
@@ -164,10 +204,12 @@ export async function launchAgentHostPlan(
                 status: "recovery",
                 reason: "commandFailed",
                 failedCommand: command,
-                exitCode
+                exitCode,
+                completedCommandKinds
             };
         }
+        completedCommandKinds.push(command.kind);
     }
 
-    return { status: "launched" };
+    return { status: "launched", completedCommandKinds };
 }

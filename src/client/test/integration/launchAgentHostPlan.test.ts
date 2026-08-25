@@ -84,14 +84,21 @@ describe("launchAgentHostPlan", () => {
             "pwsh"
         );
 
-        expect(result).to.deep.equal({ status: "launched" });
+        expect(result).to.deep.equal({
+            status: "launched",
+            completedCommandKinds: [
+                "registerMarketplace",
+                "installPlugin",
+                "launchHost"
+            ]
+        });
         expect(createTerminal.firstCall.firstArg).to.deep.equal({
             name: "Power Pages Agent: GitHub Copilot CLI",
             cwd: folderUri.fsPath,
             isTransient: true,
             shellPath: "pwsh"
         });
-        expect(executeObservedCommand.getCalls().map(call => call.args[1])).to.deep.equal([
+        expect(executeObservedCommand.getCalls().map(call => call.args[2])).to.deep.equal([
             "marketplace-command",
             "install-command"
         ]);
@@ -116,7 +123,8 @@ describe("launchAgentHostPlan", () => {
             status: "recovery",
             reason: "commandFailed",
             failedCommand: plan[1],
-            exitCode: 1
+            exitCode: 1,
+            completedCommandKinds: ["registerMarketplace"]
         });
         expect(executeObservedCommand.calledTwice).to.be.true;
         expect(executeInteractiveCommand.notCalled).to.be.true;
@@ -138,9 +146,35 @@ describe("launchAgentHostPlan", () => {
 
         expect(result).to.deep.equal({
             status: "recovery",
-            reason: "shellIntegrationUnavailable"
+            reason: "shellIntegrationUnavailable",
+            completedCommandKinds: []
         });
         expect(executeObservedCommand.notCalled).to.be.true;
+        expect(executeInteractiveCommand.notCalled).to.be.true;
+    });
+
+    it("stops when an observed command ends without an exit code", async () => {
+        const {
+            deps,
+            executeObservedCommand,
+            executeInteractiveCommand
+        } = buildDependencies([undefined]);
+
+        const result = await launchAgentHostPlan(
+            folderUri,
+            plan,
+            "GitHub Copilot CLI",
+            deps
+        );
+
+        expect(result).to.deep.equal({
+            status: "recovery",
+            reason: "commandFailed",
+            failedCommand: plan[0],
+            exitCode: undefined,
+            completedCommandKinds: []
+        });
+        expect(executeObservedCommand.calledOnce).to.be.true;
         expect(executeInteractiveCommand.notCalled).to.be.true;
     });
 });

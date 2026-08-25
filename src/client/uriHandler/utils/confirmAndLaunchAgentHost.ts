@@ -99,10 +99,38 @@ export async function confirmAndLaunchAgentHost(
         }
 
         const launchResult = await deps.launchPlan(folderUri, plan, hostDisplayName);
+        const completedCommandKinds = launchResult.completedCommandKinds ?? [];
+        const bootstrapCompleted = includesBootstrap && (
+            launchResult.status === 'launched' ||
+            completedCommandKinds.includes('verifyHost')
+        );
+        if (bootstrapCompleted) {
+            await emitEvent(
+                uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_COMPLETED,
+                params,
+                'agent',
+                { host }
+            );
+        }
+
         if (launchResult.status === 'recovery') {
             await confirmPanel.showRecovery(launchResult);
+            const bootstrapCommandKinds: PlannedCommand['kind'][] = [
+                'installHost',
+                'refreshPath',
+                'verifyHost'
+            ];
+            const isBootstrapRecovery = includesBootstrap && (
+                launchResult.reason === 'shellIntegrationUnavailable' ||
+                (
+                    launchResult.failedCommand !== undefined &&
+                    bootstrapCommandKinds.includes(launchResult.failedCommand.kind)
+                )
+            );
             await emitEvent(
-                uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_RECOVERY,
+                isBootstrapRecovery
+                    ? uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_RECOVERY
+                    : uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_COMMAND_SEQUENCE_RECOVERY,
                 params,
                 'agent',
                 {
@@ -113,14 +141,6 @@ export async function confirmAndLaunchAgentHost(
                 }
             );
             return { status: 'recovery', result: launchResult };
-        }
-        if (includesBootstrap) {
-            await emitEvent(
-                uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_COMPLETED,
-                params,
-                'agent',
-                { host }
-            );
         }
 
         await emitEvent(

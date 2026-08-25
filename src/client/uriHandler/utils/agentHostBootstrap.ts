@@ -38,12 +38,8 @@ export function resolveAgentHostBootstrap(
 ): AgentHostBootstrapResolution {
     switch (platform) {
         case "win32": {
-            const shellPath = isCommandAvailable("pwsh")
-                ? "pwsh"
-                : isCommandAvailable("powershell")
-                    ? "powershell"
-                    : undefined;
-            if (!shellPath) {
+            // VS Code Shell Integration and the agent hosts require PowerShell 7+.
+            if (!isCommandAvailable("pwsh")) {
                 return { supported: false, reason: "missingPowerShell" };
             }
             if (!isCommandAvailable("winget")) {
@@ -54,7 +50,7 @@ export function resolveAgentHostBootstrap(
                 config: {
                     platform,
                     installer: "winget",
-                    shellPath
+                    shellPath: "pwsh"
                 }
             };
         }

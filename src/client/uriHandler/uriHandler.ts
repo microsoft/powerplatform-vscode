@@ -19,9 +19,17 @@ import { ResumeMarkerStore } from "./utils/resumeMarker";
  * Signature for a deep-link route handler. Each registered URI path maps to one handler.
  */
 type UriRouteHandler = (uri: vscode.Uri) => Promise<void>;
+type PacUriServices = {
+    pacWrapper: PacWrapper;
+    authEnvironmentService: AuthEnvironmentService;
+    pacCreateHandler: PacCreateHandler;
+};
+type PacUriServicesState =
+    | { status: "ready"; services: PacUriServices }
+    | { status: "failed"; error: Error };
 
 export function RegisterUriHandler(
-    pacWrapper: PacWrapper,
+    pacWrapper?: PacWrapper,
     resumeMarkerStore?: ResumeMarkerStore
 ): vscode.Disposable {
     const uriHandler = new UriHandler(pacWrapper, resumeMarkerStore);
@@ -29,18 +37,62 @@ export function RegisterUriHandler(
 }
 
 export class UriHandler implements vscode.UriHandler {
-    private readonly pacWrapper: PacWrapper;
     private readonly routes: ReadonlyMap<string, UriRouteHandler>;
-    private readonly authEnvironmentService: AuthEnvironmentService;
     private readonly agenticCreateHandler: AgenticCreateHandler;
-    private readonly pacCreateHandler: PacCreateHandler;
+    private pacServices?: PacUriServices;
+    private pacServicesSettled = false;
+    private readonly pacServicesReady: Promise<PacUriServicesState>;
+    private readonly resolvePacServices: (state: PacUriServicesState) => void;
 
-    constructor(pacWrapper: PacWrapper, resumeMarkerStore?: ResumeMarkerStore) {
-        this.pacWrapper = pacWrapper;
-        this.authEnvironmentService = new AuthEnvironmentService(pacWrapper);
+    constructor(pacWrapper?: PacWrapper, resumeMarkerStore?: ResumeMarkerStore) {
+        let resolvePacServices: (state: PacUriServicesState) => void = () => undefined;
+        this.pacServicesReady = new Promise(resolve => {
+            resolvePacServices = resolve;
+        });
+        this.resolvePacServices = resolvePacServices;
         this.agenticCreateHandler = new AgenticCreateHandler(resumeMarkerStore);
-        this.pacCreateHandler = new PacCreateHandler(pacWrapper);
         this.routes = this.buildRoutes();
+        if (pacWrapper) {
+            this.initializePacWrapper(pacWrapper);
+        }
+    }
+
+    /**
+     * Supplies PAC-dependent route services after CLI acquisition completes.
+     */
+    public initializePacWrapper(pacWrapper: PacWrapper): void {
+        if (this.pacServicesSettled) {
+            return;
+        }
+        this.pacServicesSettled = true;
+        this.pacServices = {
+            pacWrapper,
+            authEnvironmentService: new AuthEnvironmentService(pacWrapper),
+            pacCreateHandler: new PacCreateHandler(pacWrapper)
+        };
+        this.resolvePacServices({ status: "ready", services: this.pacServices });
+    }
+
+    /**
+     * Releases deferred PAC routes when CLI acquisition fails.
+     */
+    public failPacInitialization(error: unknown): void {
+        if (this.pacServicesSettled) {
+            return;
+        }
+        this.pacServicesSettled = true;
+        this.resolvePacServices({
+            status: "failed",
+            error: error instanceof Error ? error : new Error(String(error))
+        });
+    }
+
+    private async getPacServices(): Promise<PacUriServices> {
+        const state = await this.pacServicesReady;
+        if (state.status === "failed") {
+            throw state.error;
+        }
+        return state.services;
     }
 
     /**
@@ -52,7 +104,10 @@ export class UriHandler implements vscode.UriHandler {
             [UriPath.PcfInit, () => this.pcfInit()],
             [UriPath.Open, (uri) => this.handleOpenPowerPages(uri)],
             [UriPath.AgenticCreate, (uri) => this.agenticCreateHandler.handle(uri)],
-            [UriPath.PacCreate, (uri) => this.pacCreateHandler.handle(uri)],
+            [UriPath.PacCreate, async (uri) => {
+                const { pacCreateHandler } = await this.getPacServices();
+                await pacCreateHandler.handle(uri);
+            }],
         ]);
     }
 
@@ -124,6 +179,7 @@ export class UriHandler implements vscode.UriHandler {
         let telemetryData: Record<string, string> = {};
 
         try {
+            const { authEnvironmentService } = await this.getPacServices();
             // Parse URI parameters and validate
             const uriParams = UriHandlerUtils.parseUriParameters(uri);
             telemetryData = UriHandlerUtils.buildTelemetryData(uriParams, uri);
@@ -137,7 +193,7 @@ export class UriHandler implements vscode.UriHandler {
             this.validateRequiredParameters(uriParams, telemetryData);
 
             // Prepare authentication and environment
-            await this.authEnvironmentService.prepareAuthenticationAndEnvironment(uriParams, telemetryData);
+            await authEnvironmentService.prepareAuthenticationAndEnvironment(uriParams, telemetryData);
 
             // Handle the download process
             await this.handleSiteDownload(uriParams, telemetryData, startTime);
@@ -273,6 +329,7 @@ export class UriHandler implements vscode.UriHandler {
      * Execute the actual download operation
      */
     private async executeDownload(selectedFolder: vscode.Uri, uriParams: UriParameters, telemetryData: Record<string, string>, startTime: number): Promise<void> {
+        const { pacWrapper, authEnvironmentService } = await this.getPacServices();
         try {
             const downloadCommand = `pages download -p "${selectedFolder.fsPath}" -id ${uriParams.websiteId} -mv ${uriParams.modelVersion}`;
 
@@ -292,7 +349,7 @@ export class UriHandler implements vscode.UriHandler {
                     cancellable: false
                 },
                 async (_) => {
-                    const downloadResult = await this.pacWrapper.downloadSite(
+                    const downloadResult = await pacWrapper.downloadSite(
                         selectedFolder.fsPath,
                         uriParams.websiteId!,
                         uriParams.modelVersion as 1 | 2
@@ -327,7 +384,7 @@ export class UriHandler implements vscode.UriHandler {
                 { ...telemetryData, error: 'download_failed' }
             );
 
-            await this.authEnvironmentService.resetPacProcessSafely(telemetryData);
+            await authEnvironmentService.resetPacProcessSafely(telemetryData);
             throw error;
         }
     }

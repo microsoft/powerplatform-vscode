@@ -29,18 +29,14 @@ describe("resolveAgentHostBootstrap", () => {
         });
     });
 
-    it("uses built-in Windows PowerShell when PowerShell 7 is unavailable", () => {
+    it("rejects legacy Windows PowerShell when PowerShell 7 is unavailable", () => {
         expect(resolveAgentHostBootstrap(
             AgentHost.Claude,
             "win32",
             availability("powershell", "winget")
         )).to.deep.equal({
-            supported: true,
-            config: {
-                platform: "win32",
-                installer: "winget",
-                shellPath: "powershell"
-            }
+            supported: false,
+            reason: "missingPowerShell"
         });
     });
 

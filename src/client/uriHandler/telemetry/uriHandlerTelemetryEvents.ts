@@ -48,5 +48,6 @@ export enum uriHandlerTelemetryEventNames {
     URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_STARTED = "UriHandlerAgenticCreateHostBootstrapStarted",
     URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_COMPLETED = "UriHandlerAgenticCreateHostBootstrapCompleted",
     URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_RECOVERY = "UriHandlerAgenticCreateHostBootstrapRecovery",
+    URI_HANDLER_AGENTIC_CREATE_COMMAND_SEQUENCE_RECOVERY = "UriHandlerAgenticCreateCommandSequenceRecovery",
     URI_HANDLER_AGENTIC_CREATE_HANDOFF_COMPLETED = "UriHandlerAgenticCreateHandoffCompleted"
 }
