@@ -51,7 +51,10 @@ describe("launchAgentHostPlan", () => {
         } as unknown as vscode.TerminalShellIntegration;
         const executeObservedCommand = sinon.stub();
         exitCodes.forEach((exitCode, index) =>
-            executeObservedCommand.onCall(index).resolves(exitCode)
+            executeObservedCommand.onCall(index).resolves({
+                exitCode,
+                output: ""
+            })
         );
 
         return {
@@ -84,14 +87,23 @@ describe("launchAgentHostPlan", () => {
             "pwsh"
         );
 
-        expect(result).to.deep.equal({
-            status: "launched",
-            completedCommandKinds: [
+        expect(result.status).to.equal("launched");
+        expect(result.skippedCommandKinds).to.deep.equal([]);
+        expect(result.completedCommandKinds).to.deep.equal(
+            [
                 "registerMarketplace",
                 "installPlugin",
                 "launchHost"
             ]
+        );
+        expect(result.setupState).to.deep.equal({
+            marketplace: "present",
+            plugin: "present"
         });
+        if (result.status !== "launched") {
+            throw new Error("Expected the plan to launch");
+        }
+        expect(result.terminal).to.not.be.undefined;
         expect(createTerminal.firstCall.firstArg).to.deep.equal({
             name: "Power Pages Agent: GitHub Copilot CLI",
             cwd: folderUri.fsPath,
@@ -124,7 +136,12 @@ describe("launchAgentHostPlan", () => {
             reason: "commandFailed",
             failedCommand: plan[1],
             exitCode: 1,
-            completedCommandKinds: ["registerMarketplace"]
+            completedCommandKinds: ["registerMarketplace"],
+            skippedCommandKinds: [],
+            setupState: {
+                marketplace: "present",
+                plugin: "unknown"
+            }
         });
         expect(executeObservedCommand.calledTwice).to.be.true;
         expect(executeInteractiveCommand.notCalled).to.be.true;
@@ -147,7 +164,12 @@ describe("launchAgentHostPlan", () => {
         expect(result).to.deep.equal({
             status: "recovery",
             reason: "shellIntegrationUnavailable",
-            completedCommandKinds: []
+            completedCommandKinds: [],
+            skippedCommandKinds: [],
+            setupState: {
+                marketplace: "unknown",
+                plugin: "unknown"
+            }
         });
         expect(executeObservedCommand.notCalled).to.be.true;
         expect(executeInteractiveCommand.notCalled).to.be.true;
@@ -172,9 +194,165 @@ describe("launchAgentHostPlan", () => {
             reason: "commandFailed",
             failedCommand: plan[0],
             exitCode: undefined,
-            completedCommandKinds: []
+            completedCommandKinds: [],
+            skippedCommandKinds: [],
+            setupState: {
+                marketplace: "unknown",
+                plugin: "unknown"
+            }
         });
         expect(executeObservedCommand.calledOnce).to.be.true;
         expect(executeInteractiveCommand.notCalled).to.be.true;
+    });
+
+    it("uses read-only check output to skip setup that is already present", async () => {
+        const conditionalPlan: PlannedCommand[] = [
+            {
+                kind: "checkMarketplace",
+                commandLine: "copilot plugin marketplace list",
+                description: "check marketplace",
+                setupCheck: "marketplace"
+            },
+            {
+                kind: "checkPlugin",
+                commandLine: "copilot plugin list",
+                description: "check plugin",
+                setupCheck: "plugin"
+            },
+            {
+                kind: "registerMarketplace",
+                commandLine: "add marketplace",
+                description: "register",
+                runWhenSetupState: {
+                    component: "marketplace",
+                    states: ["missing", "unknown"]
+                }
+            },
+            {
+                kind: "enablePlugin",
+                commandLine: "enable plugin",
+                description: "enable",
+                runWhenSetupState: {
+                    component: "plugin",
+                    states: ["disabled"]
+                }
+            },
+            {
+                kind: "installPlugin",
+                commandLine: "install plugin",
+                description: "install",
+                runWhenSetupState: {
+                    component: "plugin",
+                    states: ["missing", "unknown"]
+                }
+            },
+            {
+                kind: "launchHost",
+                commandLine: "launch-command",
+                description: "launch"
+            }
+        ];
+        const { deps, executeObservedCommand } = buildDependencies();
+        executeObservedCommand.onFirstCall().resolves({
+            exitCode: 0,
+            output: "power-platform-skills"
+        });
+        executeObservedCommand.onSecondCall().resolves({
+            exitCode: 0,
+            output: "power-pages@power-platform-skills"
+        });
+        const progress: string[] = [];
+
+        const result = await launchAgentHostPlan(
+            folderUri,
+            conditionalPlan,
+            "GitHub Copilot CLI",
+            deps,
+            undefined,
+            {
+                marketplace: "unknown",
+                plugin: "unknown"
+            },
+            update => progress.push(`${update.command.kind}:${update.status}`)
+        );
+
+        expect(result.status).to.equal("launched");
+        expect(result.skippedCommandKinds).to.deep.equal([
+            "registerMarketplace",
+            "enablePlugin",
+            "installPlugin"
+        ]);
+        expect(result.setupState).to.deep.equal({
+            marketplace: "present",
+            plugin: "present"
+        });
+        expect(executeObservedCommand.calledTwice).to.be.true;
+        expect(progress).to.deep.equal([
+            "checkMarketplace:running",
+            "checkPlugin:running",
+            "registerMarketplace:skipped",
+            "enablePlugin:skipped",
+            "installPlugin:skipped",
+            "launchHost:running"
+        ]);
+    });
+
+    it("enables a disabled plugin without reinstalling it", async () => {
+        const conditionalPlan: PlannedCommand[] = [
+            {
+                kind: "checkPlugin",
+                commandLine: "copilot plugin list",
+                description: "check plugin",
+                setupCheck: "plugin"
+            },
+            {
+                kind: "installPlugin",
+                commandLine: "install plugin",
+                description: "install",
+                runWhenSetupState: {
+                    component: "plugin",
+                    states: ["missing", "unknown"]
+                }
+            },
+            {
+                kind: "enablePlugin",
+                commandLine: "enable plugin",
+                description: "enable",
+                runWhenSetupState: {
+                    component: "plugin",
+                    states: ["disabled"]
+                }
+            },
+            {
+                kind: "launchHost",
+                commandLine: "launch-command",
+                description: "launch"
+            }
+        ];
+        const { deps, executeObservedCommand } = buildDependencies();
+        executeObservedCommand.onFirstCall().resolves({
+            exitCode: 0,
+            output: "power-pages@power-platform-skills disabled"
+        });
+        executeObservedCommand.onSecondCall().resolves({
+            exitCode: 0,
+            output: ""
+        });
+
+        const result = await launchAgentHostPlan(
+            folderUri,
+            conditionalPlan,
+            "GitHub Copilot CLI",
+            deps
+        );
+
+        expect(result.status).to.equal("launched");
+        expect(result.skippedCommandKinds).to.deep.equal(["installPlugin"]);
+        expect(executeObservedCommand.getCalls().map(
+            call => call.args[2]
+        )).to.deep.equal([
+            "copilot plugin list",
+            "enable plugin"
+        ]);
     });
 });
