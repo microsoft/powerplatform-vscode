@@ -12,6 +12,8 @@ import type {
     AgenticCreateConfirmPanelSession
 } from "./agenticCreateConfirmPanel";
 import type { LaunchAgentHostPlanResult } from "./launchAgentHostPlan";
+import type { LaunchAgentHostProgress } from "./launchAgentHostPlan";
+import type { AgentHostSetupState } from "./agentHostSetupPrecheck";
 
 type CreateFlowEventEmitter = (
     eventName: string,
@@ -43,7 +45,9 @@ export interface ConfirmAndLaunchDependencies {
     launchPlan: (
         folderUri: vscode.Uri,
         plan: PlannedCommand[],
-        hostDisplayName: string
+        hostDisplayName: string,
+        onProgress: (progress: LaunchAgentHostProgress) => void,
+        setupStateOverride?: AgentHostSetupState
     ) => Promise<LaunchAgentHostPlanResult>;
     emitEvent?: CreateFlowEventEmitter;
 }
@@ -98,73 +102,125 @@ export async function confirmAndLaunchAgentHost(
             );
         }
 
-        const launchResult = await deps.launchPlan(folderUri, plan, hostDisplayName);
-        const completedCommandKinds = launchResult.completedCommandKinds ?? [];
-        const bootstrapCompleted = includesBootstrap && (
-            launchResult.status === 'launched' ||
-            completedCommandKinds.includes('verifyHost')
-        );
-        if (bootstrapCompleted) {
+        let bootstrapCompletionEmitted = false;
+        let attemptPlan = plan;
+        let attemptSetupState: AgentHostSetupState | undefined;
+        const completedMutatingCommands = new Set<PlannedCommand["kind"]>();
+        const mutatingCommandKinds: PlannedCommand["kind"][] = [
+            'installHost',
+            'registerMarketplace',
+            'installPlugin',
+            'enablePlugin'
+        ];
+        for (;;) {
+            const launchResult = await deps.launchPlan(
+                folderUri,
+                attemptPlan,
+                hostDisplayName,
+                progress => {
+                    void confirmPanel.showProgress(progress);
+                },
+                attemptSetupState
+            );
+            const completedCommandKinds = launchResult.completedCommandKinds ?? [];
+            const bootstrapCompleted = includesBootstrap && (
+                launchResult.status === 'launched' ||
+                completedCommandKinds.includes('verifyHost')
+            );
+            if (bootstrapCompleted && !bootstrapCompletionEmitted) {
+                bootstrapCompletionEmitted = true;
+                await emitEvent(
+                    uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_COMPLETED,
+                    params,
+                    'agent',
+                    { host }
+                );
+            }
+
+            if (launchResult.status === 'recovery') {
+                const bootstrapCommandKinds: PlannedCommand['kind'][] = [
+                    'installHost',
+                    'refreshPath',
+                    'verifyHost'
+                ];
+                const isBootstrapRecovery = includesBootstrap && (
+                    launchResult.reason === 'shellIntegrationUnavailable' ||
+                    (
+                        launchResult.failedCommand !== undefined &&
+                        bootstrapCommandKinds.includes(launchResult.failedCommand.kind)
+                    )
+                );
+                await emitEvent(
+                    isBootstrapRecovery
+                        ? uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_RECOVERY
+                        : uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_COMMAND_SEQUENCE_RECOVERY,
+                    params,
+                    'agent',
+                    {
+                        host,
+                        reason: launchResult.reason,
+                        commandKind: launchResult.failedCommand?.kind ?? '',
+                        exitCodeCategory: launchResult.exitCode === undefined ? 'unknown' : 'nonZero'
+                    }
+                );
+                const recoveryDecision = await confirmPanel.showRecovery(launchResult);
+                if (recoveryDecision === 'retry') {
+                    for (const commandKind of launchResult.completedCommandKinds ?? []) {
+                        if (mutatingCommandKinds.includes(commandKind)) {
+                            completedMutatingCommands.add(commandKind);
+                        }
+                    }
+                    attemptPlan = plan.filter(
+                        command => !completedMutatingCommands.has(command.kind)
+                    );
+                    attemptSetupState = launchResult.setupState;
+                    continue;
+                }
+                if (recoveryDecision === 'cancel') {
+                    await emitEvent(
+                        uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED,
+                        params,
+                        'agent',
+                        { reason: 'recoveryCancelled', host }
+                    );
+                    return { status: 'dropped' };
+                }
+                return { status: 'recovery', result: launchResult };
+            }
+            await confirmPanel.showLaunched(launchResult);
+
             await emitEvent(
-                uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_COMPLETED,
+                uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_PLUGIN_SEQUENCE_LAUNCHED,
                 params,
                 'agent',
                 { host }
             );
-        }
-
-        if (launchResult.status === 'recovery') {
-            await confirmPanel.showRecovery(launchResult);
-            const bootstrapCommandKinds: PlannedCommand['kind'][] = [
-                'installHost',
-                'refreshPath',
-                'verifyHost'
-            ];
-            const isBootstrapRecovery = includesBootstrap && (
-                launchResult.reason === 'shellIntegrationUnavailable' ||
-                (
-                    launchResult.failedCommand !== undefined &&
-                    bootstrapCommandKinds.includes(launchResult.failedCommand.kind)
-                )
+            await emitEvent(
+                uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_SAMPLE_PROMPT_SENT,
+                params,
+                'agent',
+                { host }
             );
             await emitEvent(
-                isBootstrapRecovery
-                    ? uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_RECOVERY
-                    : uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_COMMAND_SEQUENCE_RECOVERY,
+                uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HANDOFF_COMPLETED,
                 params,
                 'agent',
                 {
                     host,
-                    reason: launchResult.reason,
-                    commandKind: launchResult.failedCommand?.kind ?? '',
-                    exitCodeCategory: launchResult.exitCode === undefined ? 'unknown' : 'nonZero'
+                    bootstrapUsed: String(includesBootstrap),
+                    marketplaceSetupSkipped: String(
+                        launchResult.setupState?.marketplace === 'present'
+                        && !launchResult.completedCommandKinds?.includes('registerMarketplace')
+                    ),
+                    pluginSetupSkipped: String(
+                        launchResult.setupState?.plugin === 'present'
+                        && !launchResult.completedCommandKinds?.includes('installPlugin')
+                        && !launchResult.completedCommandKinds?.includes('enablePlugin')
+                    )
                 }
             );
-            return { status: 'recovery', result: launchResult };
+            return { status: 'launched' };
         }
-
-        await emitEvent(
-            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_PLUGIN_SEQUENCE_LAUNCHED,
-            params,
-            'agent',
-            { host }
-        );
-        await emitEvent(
-            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_SAMPLE_PROMPT_SENT,
-            params,
-            'agent',
-            { host }
-        );
-        await emitEvent(
-            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HANDOFF_COMPLETED,
-            params,
-            'agent',
-            {
-                host,
-                bootstrapUsed: String(includesBootstrap)
-            }
-        );
-        return { status: 'launched' };
     }
 
     if (decision === 'edit') {

@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import type * as vscode from 'vscode';
+import * as vscode from 'vscode';
 import { URI_HANDLER_STRINGS } from '../constants/uriStrings';
 import type { AgentHostBootstrapConfig } from './agentHostBootstrap';
 import type { CreateFlowParameters } from '../handlers/createFlowParams';
@@ -12,14 +12,24 @@ import { showAgenticCreateConfirmPanel } from './agenticCreateConfirmPanel';
 import { confirmAndLaunchAgentHost, ConfirmAndLaunchOutcome } from './confirmAndLaunchAgentHost';
 import { AgentHost } from './detectAgentHost';
 import { launchAgentHostPlan } from './launchAgentHostPlan';
+import {
+    AgentHostSetupState,
+    detectAgentHostSetup,
+    UNKNOWN_AGENT_HOST_SETUP
+} from './agentHostSetupPrecheck';
+import { emitCreateFlowEvent } from '../telemetry/createFlowTelemetry';
+import { uriHandlerTelemetryEventNames } from '../telemetry/uriHandlerTelemetryEvents';
 
 const AGENT_HOST_COMMAND_PLAN_STRINGS = {
     installHost: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.STEP_INSTALL_HOST,
     refreshPath: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.STEP_REFRESH_PATH,
     verifyHost: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.STEP_VERIFY_HOST,
+    checkMarketplace: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.STEP_CHECK_MARKETPLACE,
+    checkPlugin: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.STEP_CHECK_PLUGIN,
     registerMarketplace: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.STEP_REGISTER_MARKETPLACE,
     installPlugin: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.STEP_INSTALL_PLUGIN,
     installPluginUserScope: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.STEP_INSTALL_PLUGIN_USER_SCOPE,
+    enablePlugin: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.STEP_ENABLE_PLUGIN,
     launchHost: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.STEP_LAUNCH_HOST
 };
 
@@ -51,7 +61,7 @@ export function getAgentHostDisplayName(host: AgentHost): string {
  * @param bootstrap Optional missing-host bootstrap configuration.
  * @returns Whether the command plan was launched or dropped.
  */
-export function confirmAndLaunchSelectedAgentHost(
+export async function confirmAndLaunchSelectedAgentHost(
     host: AgentHost,
     folderUri: vscode.Uri,
     params: CreateFlowParameters,
@@ -59,13 +69,38 @@ export function confirmAndLaunchSelectedAgentHost(
     allowEdit = true,
     bootstrap?: AgentHostBootstrapConfig
 ): Promise<ConfirmAndLaunchOutcome> {
+    const precheckStartedAt = Date.now();
+    const setupState: AgentHostSetupState = bootstrap
+        ? UNKNOWN_AGENT_HOST_SETUP
+        : await vscode.window.withProgress(
+            {
+                location: vscode.ProgressLocation.Notification,
+                title: URI_HANDLER_STRINGS.PROGRESS.CHECKING_ASSISTANT_SETUP,
+                cancellable: false
+            },
+            () => detectAgentHostSetup(host)
+        );
+    emitCreateFlowEvent(
+        uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_SETUP_CHECKED,
+        params,
+        'agent',
+        {
+            host,
+            marketplaceState: setupState.marketplace,
+            pluginState: setupState.plugin,
+            deferredUntilHostInstall: String(Boolean(bootstrap)),
+            durationMs: String(Date.now() - precheckStartedAt)
+        }
+    );
+
     return confirmAndLaunchAgentHost(host, hostDisplayName, folderUri, params, {
         buildPlan: (selectedHost, displayName) =>
             buildAgentHostCommandPlan(
                 selectedHost,
                 displayName,
                 AGENT_HOST_COMMAND_PLAN_STRINGS,
-                bootstrap
+                bootstrap,
+                setupState
             ),
         showConfirmPanel: (displayName, folderPath, plan) =>
             showAgenticCreateConfirmPanel(
@@ -73,15 +108,31 @@ export function confirmAndLaunchSelectedAgentHost(
                 folderPath,
                 plan,
                 undefined,
-                allowEdit
+                allowEdit,
+                setupState,
+                Boolean(bootstrap),
+                () => emitCreateFlowEvent(
+                    uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_TECHNICAL_DETAILS_OPENED,
+                    params,
+                    'agent',
+                    { host }
+                )
             ),
-        launchPlan: (selectedFolderUri, plan, displayName) =>
+        launchPlan: (
+            selectedFolderUri,
+            plan,
+            displayName,
+            onProgress,
+            setupStateOverride
+        ) =>
             launchAgentHostPlan(
                 selectedFolderUri,
                 plan,
                 displayName,
                 undefined,
-                bootstrap?.shellPath
+                bootstrap?.shellPath,
+                setupStateOverride ?? setupState,
+                onProgress
             )
     });
 }

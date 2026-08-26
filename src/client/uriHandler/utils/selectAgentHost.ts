@@ -24,6 +24,10 @@ const AGENT_HOST_DISPLAY_NAMES: Record<AgentHost, string> = {
     [AgentHost.Copilot]: URI_HANDLER_STRINGS.AGENT_HOSTS.COPILOT,
     [AgentHost.Claude]: URI_HANDLER_STRINGS.AGENT_HOSTS.CLAUDE
 };
+const AGENT_HOST_DETAILS: Record<AgentHost, string> = {
+    [AgentHost.Copilot]: URI_HANDLER_STRINGS.AGENT_HOSTS.COPILOT_DETAIL,
+    [AgentHost.Claude]: URI_HANDLER_STRINGS.AGENT_HOSTS.CLAUDE_DETAIL
+};
 
 const getAgentHostDescription = (result: AgentHostDetectionResult): string => {
     if (!result.installed) {
@@ -48,6 +52,7 @@ export const getAgentHostQuickPickItems = (
 ): AgentHostQuickPickItem[] => detection.map(result => ({
     label: AGENT_HOST_DISPLAY_NAMES[result.host],
     description: getAgentHostDescription(result),
+    detail: AGENT_HOST_DETAILS[result.host],
     host: result.host,
     installed: result.installed
 }));

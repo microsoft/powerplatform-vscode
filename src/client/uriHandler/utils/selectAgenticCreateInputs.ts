@@ -4,6 +4,7 @@
  */
 
 import * as vscode from "vscode";
+import * as path from "path";
 import { MultiStepInput } from "../../../common/utilities/MultiStepInput";
 import { URI_HANDLER_STRINGS } from "../constants/uriStrings";
 import {
@@ -81,7 +82,9 @@ export async function selectAgenticCreateInputs(
     );
     if (initialSelection && !state.folderItem) {
         state.folderItem = {
-            label: initialSelection.folderUri.fsPath,
+            label: path.basename(initialSelection.folderUri.fsPath),
+            description: URI_HANDLER_STRINGS.DESCRIPTIONS.SELECTED_FOLDER,
+            detail: initialSelection.folderUri.fsPath,
             iconPath: new vscode.ThemeIcon("folder"),
             uri: initialSelection.folderUri
         };
@@ -107,7 +110,7 @@ export async function selectAgenticCreateInputs(
                 ignoreFocusOut: boolean;
             }
         >({
-            title,
+            title: URI_HANDLER_STRINGS.TITLES.AI_ASSISTANT,
             step: 2,
             totalSteps: 2,
             placeholder: URI_HANDLER_STRINGS.PROMPTS.AGENT_HOST_SELECT,
@@ -141,7 +144,7 @@ export async function selectAgenticCreateInputs(
                 title,
                 step: 1,
                 totalSteps: 2,
-                placeholder: URI_HANDLER_STRINGS.TITLES.TARGET_FOLDER,
+                placeholder: URI_HANDLER_STRINGS.TITLES.TARGET_FOLDER_PLACEHOLDER,
                 items: folderItems,
                 activeItem: state.folderItem,
                 ignoreFocusOut: true

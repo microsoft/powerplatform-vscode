@@ -25,6 +25,12 @@
     <trans-unit id="++CODE++22a97bc8f9b1cf66fa77f878b5a2cc57c52ad534e6ca38fbd6e5dd3b9854602c">
       <source xml:lang="en">A webtemplate with the same name already exists. Please enter a different name.</source>
     </trans-unit>
+    <trans-unit id="++CODE++ab6eb4ac63b58418bc7cdc4e78c3250a824ffc56d3ccad452a97bb95ebe4da16">
+      <source xml:lang="en">AI assistant</source>
+    </trans-unit>
+    <trans-unit id="++CODE++df568d5aa213eb9ba8f00a18860883ea047ca2cf14074707843fdc665f2adae0">
+      <source xml:lang="en">AI assistant and Power Pages guidance will be prepared</source>
+    </trans-unit>
     <trans-unit id="++CODE++bcfb3427790816de073090a76469fec945a3c7f5f82bbac338378ea22784c70a">
       <source xml:lang="en">AI features have been disabled by your organization. Contact your admin for details. [Learn more](https://go.microsoft.com/fwlink/?linkid=2285848)</source>
     </trans-unit>
@@ -65,14 +71,14 @@
       <source xml:lang="en">Adding {0} web file(s). Existing files will be skipped</source>
       <note>{0} represents the number of web files</note>
     </trans-unit>
-    <trans-unit id="++CODE++4a122057a87c136eb022c2dc03e836d5af660872449154ed18ab8a4bf41c3d62">
-      <source xml:lang="en">Agent host</source>
-    </trans-unit>
     <trans-unit id="++CODE++a52ace420f2175d08b1577a1bea5445e36801229c074ef9ed6c55a73401fd9c2">
       <source xml:lang="en">All</source>
     </trans-unit>
     <trans-unit id="++CODE++8890e663481705393ed3b1b4642095a11329e21320824ed567e383a12ea888f4">
       <source xml:lang="en">All changed files are binary files (e.g., images) and cannot be displayed in the diff viewer. You can view them individually in the file tree.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++b1bf095d56d6b8cc3cb50bbd05cd8cef599ccc050f4e4ff8b51902100fe382e4">
+      <source xml:lang="en">Already set up — no action needed</source>
     </trans-unit>
     <trans-unit id="++CODE++5490d0b16535529301b0cda95abc687e682b2964413863130a9a2debf61c279f">
       <source xml:lang="en">An imported comparison already exists for this site. Do you want to replace it?</source>
@@ -130,12 +136,6 @@ This action cannot be undone.</source>
     <trans-unit id="++CODE++a90b528b474ea1f3279d587f9f36e5fcbf68b78802182fad5b4b5a39994b97fa">
       <source xml:lang="en">Automatic command execution could not continue. Use the commands in the confirmation page as a manual reference.</source>
     </trans-unit>
-    <trans-unit id="++CODE++77a45eee99657e99dc65689cb4bbb41c0e7ad32d66ced5b8fe9b0518ec804b1d">
-      <source xml:lang="en">Automatic execution could not start because terminal Shell Integration is unavailable. Use the commands below as a manual recovery reference.</source>
-    </trans-unit>
-    <trans-unit id="++CODE++69ed01f62586b0f967577d80f893f23dd9138bf2267188c96e4efcc761e79151">
-      <source xml:lang="en">Automatic execution stopped while trying to: {0}. Use the commands below as a manual recovery reference.</source>
-    </trans-unit>
     <trans-unit id="++CODE++bf27ec2e917b9f2578f8e6372f8656370d24cffe2c5a7b900d0b3280f8ec69fb">
       <source xml:lang="en">Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.</source>
     </trans-unit>
@@ -147,6 +147,9 @@ This action cannot be undone.</source>
     </trans-unit>
     <trans-unit id="++CODE++c8baac5a74383177a725f6e5cc4254c0cfddfb0ab13f295520b96a30d7c5457e">
       <source xml:lang="en">Binary file content is not available in imported comparisons. The original file was not included in the export.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++cf83383f7f59311da2c1b6e42e5fb5794a04dba7849ed17efe667afb9c858e99">
+      <source xml:lang="en">Both assistants can guide you through creating a Power Pages site</source>
     </trans-unit>
     <trans-unit id="++CODE++c58a6bd402efb06c3e7dfd6d68910412fee2dfc1788ae384dc123089ce912285">
       <source xml:lang="en">Browse...</source>
@@ -172,6 +175,9 @@ This action cannot be undone.</source>
     <trans-unit id="++CODE++ee3b92bec1620eefaad49e74f1055436ec9353e489407875694d5faf08207fa9">
       <source xml:lang="en">Cannot refresh an imported comparison. Import a new file or run a new comparison.</source>
     </trans-unit>
+    <trans-unit id="++CODE++07ab1cba74a48bb2a2048c8b2fdd5ea26eeee63b4ef3e5e11c42572e4a72e21f">
+      <source xml:lang="en">Change choices</source>
+    </trans-unit>
     <trans-unit id="++CODE++cdf024cea6f90cc5aacbe1c08a6c77b322820dc46ff96b1410e30527d7239c49">
       <source xml:lang="en">Changed Files</source>
     </trans-unit>
@@ -181,8 +187,17 @@ This action cannot be undone.</source>
     <trans-unit id="++CODE++32e60e730d2e6845d352b9c5dd55af8bed341c220b7f94d58325bc1dc75adb63">
       <source xml:lang="en">Check Again</source>
     </trans-unit>
+    <trans-unit id="++CODE++c1055e53a436b6bba647f9f056cfeadaa19be471673fb5b3699f44bd33df7b49">
+      <source xml:lang="en">Check Power Pages guidance</source>
+    </trans-unit>
     <trans-unit id="++CODE++9885d66d0771f63c5a4b5d3b8cbe26be8832bc941243f5b18573975750a9986b">
       <source xml:lang="en">Check the URL and verify the parameters are correct</source>
+    </trans-unit>
+    <trans-unit id="++CODE++ad3e89bef86f8ceb231210fea30e3d002d408fac645d8db473ad521178a95716">
+      <source xml:lang="en">Check whether Power Pages guidance is already available.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++db0bc76f6f6b21cdc0b0f8fe55c3ecb0493186948029bbe5a2607609f13a9457">
+      <source xml:lang="en">Check whether the Power Platform Skills marketplace is already registered.</source>
     </trans-unit>
     <trans-unit id="++CODE++6632cd07f161cbf30f0b3c569bb72daa960ac2c0c49a90daa7cee3185f636e27">
       <source xml:lang="en">Checking environment...</source>
@@ -190,11 +205,26 @@ This action cannot be undone.</source>
     <trans-unit id="++CODE++c724a9256b7af89455e04cc3611e5df1030c25f92652356f205c15f02c2da28e">
       <source xml:lang="en">Checking for active auth profile...</source>
     </trans-unit>
+    <trans-unit id="++CODE++5b3d5d102dba2ea53c320fba3ab0b86bcca0d6e85cbe5fa7edf5133840224fb9">
+      <source xml:lang="en">Checking your existing AI assistant setup...</source>
+    </trans-unit>
+    <trans-unit id="++CODE++73960701e1e1ba7d7e405ffb393043b87930f4dd55a801a50e897af577d1bf85">
+      <source xml:lang="en">Choose an open folder or select another folder</source>
+    </trans-unit>
+    <trans-unit id="++CODE++0bef7b55e9801034aca62445b0d5cd35326726ae3fd77929dfd9eb881317a56d">
+      <source xml:lang="en">Choose another folder...</source>
+    </trans-unit>
     <trans-unit id="++CODE++e1c3ec6d279ce7c1a208abce1314435297d8369739967d8a9db962ab572c617f">
       <source xml:lang="en">Choose page template</source>
     </trans-unit>
     <trans-unit id="++CODE++2e26d2dfb9cee802cfa45d319a651b63ff4c20c05089a3d340a03aef7210002c">
       <source xml:lang="en">Choose parent page</source>
+    </trans-unit>
+    <trans-unit id="++CODE++b4d5be9463a6ea2b10ba23f3a628111df78cd534fec4ea24bfe7162426ff120f">
+      <source xml:lang="en">Choose this if you use Claude. Opens a guided conversation in the VS Code terminal.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++f52f25757078968b67e2eddb547bfd6f95bb7b9087f061ae903216b1865c4d37">
+      <source xml:lang="en">Choose this if you use GitHub Copilot. Opens a guided conversation in the VS Code terminal.</source>
     </trans-unit>
     <trans-unit id="++CODE++2c8d1f9ca282591926b952dc5949d44df6204f1f0a3f5183bcd5ef7ae5864bad">
       <source xml:lang="en">Choose web template</source>
@@ -326,9 +356,6 @@ Check the CodeQL extension panel for available queries.</source>
     <trans-unit id="++CODE++67a58f1682f864bfa789f056e50bab25181dfcddf455fadaad856c826f852d6a">
       <source xml:lang="en">Command failed with exit code: {0}</source>
     </trans-unit>
-    <trans-unit id="++CODE++4430f89d3ccddba65f0ecdcd57ad3d09f447aa32df98fe214338f0a9bbe7fccd">
-      <source xml:lang="en">Command sequence</source>
-    </trans-unit>
     <trans-unit id="++CODE++d73890ab56fd9e1ff5349b7bdb41fe0d848c5960c096b30357e26b912456f21f">
       <source xml:lang="en">Compare site with environment</source>
     </trans-unit>
@@ -359,6 +386,9 @@ Check the CodeQL extension panel for available queries.</source>
     <trans-unit id="++CODE++eebdd24a77d9ad32222660c07777163bf5f6732df2b172351f3f8d5783e4f529">
       <source xml:lang="en">Confirm</source>
     </trans-unit>
+    <trans-unit id="++CODE++ea8a86764262ea648f7989b0d748939ef4127b5073c4aa07e143d55eab0727c2">
+      <source xml:lang="en">Continue in the terminal and follow the prompts to create your Power Pages site.</source>
+    </trans-unit>
     <trans-unit id="++CODE++02c3c88b02a43e1818bf427f60d8e58b84d40c0990e09d01c75fff4a934221d0">
       <source xml:lang="en">Continue with Copilot for Power Pages</source>
     </trans-unit>
@@ -382,9 +412,6 @@ Check the CodeQL extension panel for available queries.</source>
     </trans-unit>
     <trans-unit id="++CODE++8c626503b8eae6da7057f956fedf4bb6a0bd4390576fad8aaed347ec7e46bff2">
       <source xml:lang="en">Create Power Pages Site</source>
-    </trans-unit>
-    <trans-unit id="++CODE++de58e4c94da7cfd5e18d9a884c15e42b595b5b268d566f9db95adbff0df128c4">
-      <source xml:lang="en">Create a Power Pages site with {0}?</source>
     </trans-unit>
     <trans-unit id="++CODE++217ec8ef23f31be4473af7c3e69f7965308bd2284d53eba7daf17b791db5fc74">
       <source xml:lang="en">Created On:</source>
@@ -418,6 +445,9 @@ Check the CodeQL extension panel for available queries.</source>
     </trans-unit>
     <trans-unit id="++CODE++52587c2a224d685113316dc5961aec7749a46dded161bfe07c40b715ca61db29">
       <source xml:lang="en">Current site path not found. Please ensure you have a site folder open.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++0f44a8048edf6c356698e800cc5861a742ecce1460715dd3cc3426bcf0c430bb">
+      <source xml:lang="en">Currently open</source>
     </trans-unit>
     <trans-unit id="++CODE++ec1f0e40eb1d8b21b1c3e73679727c461ad9922cea5648859e5446ded7f9c97f">
       <source xml:lang="en">Data Model:</source>
@@ -503,11 +533,11 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
       <source xml:lang="en">Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel &quot;Show download output&quot;))...</source>
       <note>This is a markdown formatting which must persist across translations.</note>
     </trans-unit>
-    <trans-unit id="++CODE++4ea2d9bfa687c285ad10e5b21ed9c1a67b3c0bf6f79f746038f9fd903b9614c9">
-      <source xml:lang="en">Edit choices</source>
-    </trans-unit>
     <trans-unit id="++CODE++ac72407b10d30bf47faf11da09b605a85fc649bd3f2e33acb281655cb9021d9d">
       <source xml:lang="en">Edit the site</source>
+    </trans-unit>
+    <trans-unit id="++CODE++7b5ef63dfdc82ebd3b1b48e7cded5ef61a12392d5bbbc75435ef71ddd8e253e8">
+      <source xml:lang="en">Enable the existing Power Pages plugin.</source>
     </trans-unit>
     <trans-unit id="++CODE++102f547594eb0c68a16e0e5eb6661fa576c7a5fb6ce224ea36194e9fd4f87dac">
       <source xml:lang="en">Enhanced Data Model</source>
@@ -755,6 +785,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++0f77fb6416bc872ede59a1594352d2ec69abadcc1870800eb9c0191ebc5a335b">
       <source xml:lang="en">GitHub Copilot CLI</source>
     </trans-unit>
+    <trans-unit id="++CODE++89897ae1567765f0180fbb840e4b280ba70c63f91e80834819dbdb1082e1abb4">
+      <source xml:lang="en">Go to terminal</source>
+    </trans-unit>
     <trans-unit id="++CODE++7b9ca5026e65057a17f951928bd53dc4e7724c0850490d6237636e9d568db4b1">
       <source xml:lang="en">HTML report saved successfully to '{0}'.</source>
       <note>Success message when HTML report is saved. {0} is the file path.</note>
@@ -804,6 +837,9 @@ Return to this chat and @powerpages can help you write and edit your website cod
     <trans-unit id="++CODE++569ca49f4aaf7846e952c1d4aeca72febd0b79fa1c4f9db08fd3127551218572">
       <source xml:lang="en">Install</source>
     </trans-unit>
+    <trans-unit id="++CODE++1aa707daa2f18dfc81920cb276846995391a51f655b32fd2a1f04b873112afa0">
+      <source xml:lang="en">Install it first only when required.</source>
+    </trans-unit>
     <trans-unit id="++CODE++afb9e7208bfe7bad4615e50b2e4d6faed57c184df9eb5d702d44178e6cdb98c8">
       <source xml:lang="en">Install the Power Pages plugin (user scope).</source>
     </trans-unit>
@@ -812,12 +848,6 @@ Return to this chat and @powerpages can help you write and edit your website cod
     </trans-unit>
     <trans-unit id="++CODE++f4e4fc5fabef6cc519fba95f4f04a16af14cbf8ab4184364347685adf9c6c908">
       <source xml:lang="en">Install {0}.</source>
-    </trans-unit>
-    <trans-unit id="++CODE++f8b32f4e92bd84ce1fcd177bec17d43093de3ee8303bb40c1b9ea521ed6a70f6">
-      <source xml:lang="en">Installed</source>
-    </trans-unit>
-    <trans-unit id="++CODE++360963aae4ca47256844e205a2496968f7a9bd00dd397aa364a47eaa4eddbfd6">
-      <source xml:lang="en">Installed · {0}</source>
     </trans-unit>
     <trans-unit id="++CODE++25109e9c19daeeed3977b84ace83722ac8a4daafcfe4e3709082fcc5b228e7a8">
       <source xml:lang="en">Installing Power Pages generator(v{0})...</source>
@@ -894,6 +924,9 @@ Return to this chat and @powerpages can help you write and edit your website cod
     </trans-unit>
     <trans-unit id="++CODE++e8ce5dcaf408935ff76747226d2e8bee4319a2f593c1d7a838115e56183d1f37">
       <source xml:lang="en">Modified</source>
+    </trans-unit>
+    <trans-unit id="++CODE++27328b70f02b598ee9896d89c63650827821b0ebadc47f7e6a44d2e924ef0923">
+      <source xml:lang="en">More setup options</source>
     </trans-unit>
     <trans-unit id="++CODE++0516c7a52473008fcb8090b8654caa0f680697bf92bb7b41dc4eb2eb1516fe29">
       <source xml:lang="en">Multiple websites found. Please select one.</source>
@@ -985,8 +1018,11 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++ccb4c324f516c63335c648ee08a66b8cc78737d26156f0c84707cd0ee4235492">
       <source xml:lang="en">Not Now</source>
     </trans-unit>
-    <trans-unit id="++CODE++d2a8b37ce31e400c29e2b2440d5cc286c4b6b9c8b07c2c3c89a785538a60d0d9">
-      <source xml:lang="en">Not installed · Automatic installation will be included.</source>
+    <trans-unit id="++CODE++7299c11b6b572547a608ee5d782cc56f014934516374b92d4753e4d11199a68e">
+      <source xml:lang="en">Not installed · VS Code can install it after you review the setup</source>
+    </trans-unit>
+    <trans-unit id="++CODE++71c305931aa88962ee397c54c18587ab739c09d78eaa35730b9bb7c5f67c5a60">
+      <source xml:lang="en">Nothing runs until you start. Your AI assistant may ask you to sign in the first time.</source>
     </trans-unit>
     <trans-unit id="++CODE++b2b461f3eae470e95fdcfd61a3cbe6680e84d0a7221a305f696ce44843badc89">
       <source xml:lang="en">Object ID: {0}</source>
@@ -1004,6 +1040,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++f329c8f717c6c20eb60774d8f9227683661d74ebae48207076be60be8796dd5d">
       <source xml:lang="en">Open Results</source>
     </trans-unit>
+    <trans-unit id="++CODE++7dedc8ba4c58f930003a099b071b46bbb008cb0ea1a1be9914d2b44ef3cd8bf0">
+      <source xml:lang="en">Open a guided conversation in the terminal.</source>
+    </trans-unit>
     <trans-unit id="++CODE++c923497edb55fd73ded53b2d43ccaf08ed3ed77118d934fd762fb7a5048b16e4">
       <source xml:lang="en">Open as Text</source>
     </trans-unit>
@@ -1015,6 +1054,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++e473d99cc18c8fbc20a562b15d5c16437343c2dc28d5b176e64890b7b3d350d1">
       <source xml:lang="en">Open in VS Code Desktop</source>
+    </trans-unit>
+    <trans-unit id="++CODE++6657d53859b47177343f10c30ee09ee1eb5fea489e367cdbc03dc657a67d83e7">
+      <source xml:lang="en">Open installation guidance, detection, and reload options.</source>
     </trans-unit>
     <trans-unit id="++CODE++87fe691d426d47ee588ac957e12a9936b94fe6d70fd9ef97c92f7af1671ed9a0">
       <source xml:lang="en">Opening in VS Code Desktop. If it doesn't open or shows an error, you may need to install VS Code or update the Power Platform extension.</source>
@@ -1096,11 +1138,20 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++7a32dfb1b02f49b639f9005bd389e30e5d496b57bfe8f59b032394e2ef189ae5">
       <source xml:lang="en">Power Pages create flow could not continue. {0}</source>
     </trans-unit>
+    <trans-unit id="++CODE++13c2ef11be36bf86bc43b68f7e6de78675b18c44e51e7fa4616caa8117e37ac2">
+      <source xml:lang="en">Power Pages guidance</source>
+    </trans-unit>
+    <trans-unit id="++CODE++159d0dfd03e257b21d54685cadf9cce54503e7a78f2e8b25462c12fd96da23df">
+      <source xml:lang="en">Power Pages guidance will be added</source>
+    </trans-unit>
     <trans-unit id="++CODE++04ac907168ac84b45263503d1306565bece49c4ae3e8ef4af310b304f03ab6d4">
       <source xml:lang="en">Power Pages site download completed successfully. Would you like to open the downloaded site folder?</source>
     </trans-unit>
     <trans-unit id="++CODE++cce89cd3a0f118dafd3173f6444abdcd2b9782153af1b6bfa8f63ef3d4b68268">
       <source xml:lang="en">Power Pages studio URL is not available</source>
+    </trans-unit>
+    <trans-unit id="++CODE++bb8f6297e71e62de5d4c51cc368c429676d52e6ee636672009c4064a77e734b1">
+      <source xml:lang="en">Power Platform Skills marketplace</source>
     </trans-unit>
     <trans-unit id="++CODE++41024d68d0b449f0dfc48541fe0be218aa6acc1cc982ef1a701b759f037fecfa">
       <source xml:lang="en">Power Platform Tools - Site Comparison</source>
@@ -1117,12 +1168,21 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++51b545b10e7c3ffa5c7a61b222ed1039c55ddba4cc130f834338e498cdd0d129">
       <source xml:lang="en">PowerPages config file updated successfully: {0}</source>
     </trans-unit>
+    <trans-unit id="++CODE++b3bd8e83df2f6be7037ed0a3dc8fa15c074d072892fba84e95aadf69f5c0c107">
+      <source xml:lang="en">Prepare the selected AI assistant and start a guided site-creation conversation.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++2455acf43e90db03fb5e0757a8d3eb6532e3385a2059ec04a191910a84c89334">
+      <source xml:lang="en">Prepare your AI assistant</source>
+    </trans-unit>
     <trans-unit id="++CODE++777d5f3afd46e18d42c0baad6d9a0c7a6867cdf31ae4d342ad5e695486f05ae7">
       <source xml:lang="en">Preparing pac CLI (v{0})...</source>
       <note>{0} represents the version number</note>
     </trans-unit>
     <trans-unit id="++CODE++a8994ac993c5dbea35b5267f2c2ee800ee8ce17569ba51a699748b406c5170fd">
       <source xml:lang="en">Preparing to open Power Pages site...</source>
+    </trans-unit>
+    <trans-unit id="++CODE++6dea9e6645c58730f32afc38583007216cbdc0acc06af111c853a5a86768fa7b">
+      <source xml:lang="en">Preparing your AI-assisted site setup...</source>
     </trans-unit>
     <trans-unit id="++CODE++f6412ced721a26ac3e3cb55d3ff713d8403c3dfc2efa0cff07b48478bdd57555">
       <source xml:lang="en">Preview site</source>
@@ -1140,8 +1200,23 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
       <source xml:lang="en">Profile Kind: {0}</source>
       <note>The {0} represents the profile type (Admin vs Dataverse)</note>
     </trans-unit>
+    <trans-unit id="++CODE++5c7aca4002894e8b320d53d82f2514ada6896cb1471293665d6a1ae56f5ab384">
+      <source xml:lang="en">Read-only check</source>
+    </trans-unit>
+    <trans-unit id="++CODE++05b2e15fbf6773bd21500edd9816d691715e8ce9695d3365edaa34b7ba624ab4">
+      <source xml:lang="en">Ready to create your Power Pages site</source>
+    </trans-unit>
     <trans-unit id="++CODE++6e31aef31ad6cc82d8d8d41fd45043885761a11b9222b1ec7ce9d78a36dd4451">
       <source xml:lang="en">Ready to select download folder</source>
+    </trans-unit>
+    <trans-unit id="++CODE++996f87b386e1a749cd732144efb70e9ab253be425bfe8c8b79acab98ee1ad5e7">
+      <source xml:lang="en">Ready to use</source>
+    </trans-unit>
+    <trans-unit id="++CODE++027c85f23774e952cb5473bca7dd38c7ab7b9cb27cc125fc27a74c3e7c3bb188">
+      <source xml:lang="en">Ready to use · {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++33379bfefe1ff8d8adb03e471907d57aec30d7e0d0cca00a97ff37c8efc28498">
+      <source xml:lang="en">Ready — Power Pages guidance is already available</source>
     </trans-unit>
     <trans-unit id="++CODE++4beee00982258909dff4f083e46a4dabf7716b14e21d96b80450dee39985a2c3">
       <source xml:lang="en">Refresh the terminal PATH.</source>
@@ -1168,11 +1243,11 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++d640c7421da066618a39daf4266da5f61f66a9b1afcd626481b831a17064965d">
       <source xml:lang="en">Resume</source>
     </trans-unit>
-    <trans-unit id="++CODE++1dd14e0777f881f5d27788be6a9c7f28aa14242f14ae2da8c53bbf610484b376">
-      <source xml:lang="en">Return to folder and agent host selection.</source>
+    <trans-unit id="++CODE++d1e8333e2c33c3f9b0b84a66134d0fac42224263d61da62c056df51059627260">
+      <source xml:lang="en">Return to save-location and AI-assistant selection.</source>
     </trans-unit>
-    <trans-unit id="++CODE++10037afa84471c0d5cb366245aacce217d85e834f3b91531937d8301c8e88d02">
-      <source xml:lang="en">Review the steps below. Start in Terminal runs them in order. The agent host may ask you to sign in during its first interactive launch.</source>
+    <trans-unit id="++CODE++3ed71f2fa2e779ad265f8cf7c51ab267c0669869c3cc48547cca2f5fb34bad7b">
+      <source xml:lang="en">Reuse your existing setup and add only what is missing.</source>
     </trans-unit>
     <trans-unit id="++CODE++00d60e31a4e6b8344d4201f25a6a7dee770713107f6d097abb01559d32b17f26">
       <source xml:lang="en">Run</source>
@@ -1180,14 +1255,17 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++ea703d2310b31c503c3e81398804a049aa6e65f78dbe7014f8f52dae263dadfb">
       <source xml:lang="en">Run Server Logic</source>
     </trans-unit>
-    <trans-unit id="++CODE++930491181d9b2842d9fa56433360eab8a11f2f48c08feda732864864286a2d9d">
-      <source xml:lang="en">Run the command sequence shown above.</source>
+    <trans-unit id="++CODE++b7f51e3f712d6cd6dc89c5bb1319c2827797ad0d173d71150faf219afda8dba5">
+      <source xml:lang="en">Run the approved setup again.</source>
     </trans-unit>
     <trans-unit id="++CODE++80b0001b823cb916650c75c5c08b3bdf9be4951036ec14ee4086b487125d05c8">
       <source xml:lang="en">Run this server logic file without debugging</source>
     </trans-unit>
     <trans-unit id="++CODE++9eb3810da0fd0dbacf4b6f4d7ad58e6e631ab807c0dd404dcb9f03066da8443b">
       <source xml:lang="en">Running CodeQL analysis...</source>
+    </trans-unit>
+    <trans-unit id="++CODE++0de9163a10d1eacd6dbb2f4cc4eb195820015d7c079a843731f11f57fbcfa03a">
+      <source xml:lang="en">Runs only if missing</source>
     </trans-unit>
     <trans-unit id="++CODE++3a74613b70fb8cc650773d71501f0c370322e9ae7d7739857db61c95a3b1bc80">
       <source xml:lang="en">SARIF viewer extension does not expose expected API. Falling back to text editor...</source>
@@ -1217,17 +1295,14 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++e4efd0ebbc891e539d343ce3247c566fbb105ea4f5746251a256995cdeaefcd3">
       <source xml:lang="en">Select Folder to Download Power Pages Site</source>
     </trans-unit>
-    <trans-unit id="++CODE++3fa3357e7ab619e582aa9350ee57f1679de1609ce6a53a5dd27fd2c6a07f0a10">
-      <source xml:lang="en">Select Target Folder</source>
-    </trans-unit>
     <trans-unit id="++CODE++a40f78f3a7f5c5ab1b101e95cdf044552542712fdcf45a83dfea3f455b6f638a">
       <source xml:lang="en">Select Type</source>
     </trans-unit>
+    <trans-unit id="++CODE++1f8ae67dfa68590603d7b192c86cee8bf83ecaabf797b801510ddfad4a2120a0">
+      <source xml:lang="en">Select a folder on your computer</source>
+    </trans-unit>
     <trans-unit id="++CODE++84744ab78214e2fc629e2925963080b5ad6c4ab1db6cce278900c3e6403bbc2f">
       <source xml:lang="en">Select a website to compare with</source>
-    </trans-unit>
-    <trans-unit id="++CODE++09423c9974048a464769e508ea44c35c066347d438b5551f57999bf635cadac2">
-      <source xml:lang="en">Select an agent host</source>
     </trans-unit>
     <trans-unit id="++CODE++87468e6a845b82466220c11dd0ca315a4389dc1cb8e0ee102035bb4ce5cb7e39">
       <source xml:lang="en">Select an environment</source>
@@ -1243,6 +1318,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++26297069e403c73e147151f2964757b7e9149762cf3a8e04ffd833907fb979e4">
       <source xml:lang="en">Select the folder that will contain your project root for your site</source>
+    </trans-unit>
+    <trans-unit id="++CODE++0cf59bef45cfea95855e61502b14de9addb31e2544246e64bc5bf56e59151676">
+      <source xml:lang="en">Selected folder</source>
     </trans-unit>
     <trans-unit id="++CODE++4d6f03fa73020c945e651c34d40c5529f3477ac02df254c1764a68d576575e14">
       <source xml:lang="en">Selection is empty.</source>
@@ -1260,6 +1338,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
       <source xml:lang="en">Session ID: {0}</source>
       <note>{0} is the Session ID</note>
     </trans-unit>
+    <trans-unit id="++CODE++7013af4c42fe43802a9e8b0affc4f521fcd126160569969fb2ec09e1b7c422b1">
+      <source xml:lang="en">Setup</source>
+    </trans-unit>
     <trans-unit id="++CODE++a525be98c4abc148f352c9f9069ef7adf9dccd3047d6d92cfd49282d7ac71ba4">
       <source xml:lang="en">Show Details</source>
     </trans-unit>
@@ -1268,6 +1349,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++899fb203e6c2faac8093e21a2fa8db0d4b13d16ea5492461d8b72dbcee3ecf2a">
       <source xml:lang="en">Show Output Panel</source>
+    </trans-unit>
+    <trans-unit id="++CODE++91a89b053471ba536a65fab8f2bafe77edcf39bfb38c6d34fb0e2b6606edf775">
+      <source xml:lang="en">Show the terminal containing your AI assistant conversation.</source>
     </trans-unit>
     <trans-unit id="++CODE++2f65ba5aa38a9acac3a9a9c0a9aeecd7b32796008dc63432bedbe6ef62982558">
       <source xml:lang="en">Sign in to VS Code with PAC CLI account</source>
@@ -1306,6 +1390,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++e14f56f166e3f1c738244eb549eed009edbcede757905ce707cc30dbffd60c8b">
       <source xml:lang="en">Site download failed. Please try again later.</source>
     </trans-unit>
+    <trans-unit id="++CODE++d76027e0c7605fe9a19470f285ea734943aac5799470b81cb358589a88c63f43">
+      <source xml:lang="en">Site files</source>
+    </trans-unit>
     <trans-unit id="++CODE++a72357d268bce5e1643bfd74563495784179f75ace0d652db8f808f293586b63">
       <source xml:lang="en">Site management URL not found for the selected site. Please try again after refreshing the environment.</source>
     </trans-unit>
@@ -1328,14 +1415,20 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++9363df99329b30b2e856758ea1e1f08e117936f1a8116e29f8d64b4bc62f9ab6">
       <source xml:lang="en">Standard Data Model</source>
     </trans-unit>
-    <trans-unit id="++CODE++ada66949062668868b5f5b59a0d5571a24f90aae1122cd7e7edd2cf97c8bbd87">
-      <source xml:lang="en">Start in Terminal</source>
+    <trans-unit id="++CODE++a56c8a3c7dcae77fae095408fd1c3c78be18b9f9d9e55a1df4d5981f7d9f666d">
+      <source xml:lang="en">Start creating site</source>
+    </trans-unit>
+    <trans-unit id="++CODE++48d7f716e3117fd89e07beb50d77dac2faca9ac5a3ca000a0970131236c83941">
+      <source xml:lang="en">Start creating your site</source>
     </trans-unit>
     <trans-unit id="++CODE++a47f76b01246d53541af8d7efbe79fa7e3da233eec3774b617509262765ce0a0">
       <source xml:lang="en">Start {0} and ask how to create a site.</source>
     </trans-unit>
     <trans-unit id="++CODE++1cb2204ec480119230ac755787106a1550d9329553d146abd56da1947079d577">
       <source xml:lang="en">Starting CodeQL analysis for: {0}</source>
+    </trans-unit>
+    <trans-unit id="++CODE++aa7e18bcc9e1af5b82b8ffc8cfc0e009d4aa7396e21dad5173567347b6f67b5a">
+      <source xml:lang="en">Step {0} of {1}: {2}</source>
     </trans-unit>
     <trans-unit id="++CODE++155f816c0407310c0dab222493370773e045ee7fe04e6c9a951b07f495531264">
       <source xml:lang="en">Submit</source>
@@ -1358,8 +1451,8 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++e3a0cecb7c0c51b4a918164be2e4a75795139fbc652adbed3c6a144cf4adc009">
       <source xml:lang="en">Switching environment...</source>
     </trans-unit>
-    <trans-unit id="++CODE++e89c3109e1f14c41c020d764a9d88a91ddd18a4003ff438156d2eb8bd2b4f1c8">
-      <source xml:lang="en">Target folder</source>
+    <trans-unit id="++CODE++890ab358a55d7fcefe7527f675efb96865cf84d1d54e8d52d9692e3b599031e3">
+      <source xml:lang="en">Technical details</source>
     </trans-unit>
     <trans-unit id="++CODE++550b4ee4e0ae69ddf9c18f9d46f59e59da633a2644633d140197d62ded3f2657">
       <source xml:lang="en">Tell us more.</source>
@@ -1379,9 +1472,6 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++98a4cf89a57d927fce50521aaf27e9fd7dc5046e82725348cf6024469a4f2bdf">
       <source xml:lang="en">The account signed in to VS Code differs from the one authenticated in PAC CLI (Power Platform CLI). This mismatch can cause data not to load or actions to fail because UI commands run through the CLI. To fix it, sign in to VS Code using the same account as your PAC CLI. If needed, you can update your PAC CLI authentication separately via the command line.</source>
-    </trans-unit>
-    <trans-unit id="++CODE++060c9df5fdf6a8377bb3548fb5a8d170c73a312ff8a509c12d8d7e25661a6477">
-      <source xml:lang="en">The approved sequence is running in the terminal. This page remains available as a command reference.</source>
     </trans-unit>
     <trans-unit id="++CODE++0bc2e4918b64f82220bde3dae30dc007a45fb59c3677833fb5a0e275a3b6b54b">
       <source xml:lang="en">The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?</source>
@@ -1545,6 +1635,12 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++4164b3068322daf412659fb28d24b8b18f2d9fcdb160a63980bafbd16134231b">
       <source xml:lang="en">VS Code - PAC CLI authentication mismatch detected</source>
     </trans-unit>
+    <trans-unit id="++CODE++27c0efcbbe80b779e5c6b1b1de540723559ab962af2bd2f42b73544f3be4eba7">
+      <source xml:lang="en">VS Code could not run the setup automatically. Your site files were not changed. Use Technical details below as a manual reference.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++c833f62f7f675cfd8fc55a98f1caffdcff0dc5a068074193f00a9948c48de935">
+      <source xml:lang="en">VS Code will prepare {0}, add Power Pages guidance, and start a conversation to help you create your site. No command-line experience is required.</source>
+    </trans-unit>
     <trans-unit id="++CODE++527423ed0138373aa91233083f12eceeae92aa1998e6706d7a260524dafbe6c4">
       <source xml:lang="en">Validating authentication...</source>
     </trans-unit>
@@ -1553,6 +1649,15 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++e9d8c62d601b715092d29b92eb772eff38e7130e2f8199a3c41196489ef23bf4">
       <source xml:lang="en">View Installation Guide</source>
+    </trans-unit>
+    <trans-unit id="++CODE++7e7ae09b5d5d540ee7b6f9e6274a5f6d8b685f27102a71b1e2d01686c8ce7b3e">
+      <source xml:lang="en">View the exact checks and commands VS Code may run.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++581ab44e0ca612597e180d8f7e9c1483a1780ab81f92c0922170290af41abaf0">
+      <source xml:lang="en">We couldn't finish preparing your AI assistant</source>
+    </trans-unit>
+    <trans-unit id="++CODE++c418d46d8a581a7b5f36109fefca81035cd945e4c19b8f9ea0cf1e69f9c41b99">
+      <source xml:lang="en">We couldn't finish this step: {0}. Your site files were not changed. Use Technical details below to continue manually.</source>
     </trans-unit>
     <trans-unit id="++CODE++d941ee96c6f480390012381f9fc0dfd961f2aa803732860e2505a8453700f458">
       <source xml:lang="en">We encountered an error preparing the files for edit.</source>
@@ -1595,8 +1700,17 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++e4bb03b399c07eeda658d87305435a58818cb5e0c3b76ae054d99564cf14ef6b">
       <source xml:lang="en">What do you need help with?</source>
     </trans-unit>
+    <trans-unit id="++CODE++8f9b77e6e0b4eebac0a0786b761ecfaf5782fd7223b1fb34ae6c6bbe2fd63a9b">
+      <source xml:lang="en">What happens next</source>
+    </trans-unit>
+    <trans-unit id="++CODE++8004b95f91e79703d2ddca715590f7a05230633432ee9ea2338cf62b6361d823">
+      <source xml:lang="en">Where should VS Code save your site files?</source>
+    </trans-unit>
     <trans-unit id="++CODE++ab06f2880f954cfbc6788988300346315e8372cc05d92ce26ff6635c607e1406">
       <source xml:lang="en">Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++a5cfd0fbbce951e724627a56ec1dd262a323a63354112882f0090c910f91e0aa">
+      <source xml:lang="en">Which AI assistant would you like to use?</source>
     </trans-unit>
     <trans-unit id="++CODE++47a853b9f140a6f231de8498ec559d7d882536070b83c1e45c16671fd48a0b65">
       <source xml:lang="en">Working on it...</source>
@@ -1628,8 +1742,14 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++87eb9aa1f1ac1b6b141aedc4c21a9cb7cf786453c529babe30c8760072bb34d6">
       <source xml:lang="en">You need to authenticate with Power Platform to download the site. Would you like to authenticate now?</source>
     </trans-unit>
+    <trans-unit id="++CODE++de9b518ec2cdba0bc28a21f584cabc2cf729af662c7a2b089b9da73cc7255a7c">
+      <source xml:lang="en">Your AI assistant is ready</source>
+    </trans-unit>
     <trans-unit id="++CODE++eeb25aaca6a9e3f6c670334480b8e56e2a362ecfec23f8e63617915b22ddc8a0">
       <source xml:lang="en">Your preview isn't updated. Please upload your site to see the latest changes.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++03d355f99859ee71a77d05d55a90440b281422774ce986ef1afc482d38c8004f">
+      <source xml:lang="en">Your selected AI assistant is ready to use.</source>
     </trans-unit>
     <trans-unit id="++CODE++3a928d0a6dd0e0c6b56eb3bf08b20e6361e876fd6b2eeca59f718cbfdc310472">
       <source xml:lang="en">dotnet sdk 6.0 or greater must be installed</source>
@@ -1668,6 +1788,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++75a1e748520c8974a0ff5bf44b9d3a54c618fc7422b40e41465de59d8049331d">
       <source xml:lang="en">{0} files changed (Imported {1})</source>
       <note>Description for imported comparison. {0} is file count, {1} is formatted date.</note>
+    </trans-unit>
+    <trans-unit id="++CODE++70aaa6e6c7103dc6394c6b83d8ce3c0fd0f522cd3194fdd0a9a842c76ea6bdba">
+      <source xml:lang="en">{0} is already set up. Skipping this step.</source>
     </trans-unit>
     <trans-unit id="++CODE++cbb58bf52139fb4500869fc02c2559dc0bcd41de2b78a941bd8ab8c33e665a26">
       <source xml:lang="en">{0} is now installed. Resume creating your Power Pages site?</source>

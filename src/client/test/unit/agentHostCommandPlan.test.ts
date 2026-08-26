@@ -15,9 +15,12 @@ describe("buildAgentHostCommandPlan", () => {
         installHost: "install {0}",
         refreshPath: "refresh path",
         verifyHost: "verify {0}",
+        checkMarketplace: "check marketplace",
+        checkPlugin: "check plugin",
         registerMarketplace: "register",
         installPlugin: "install",
         installPluginUserScope: "install user scope",
+        enablePlugin: "enable plugin",
         launchHost: "start {0}"
     };
 
@@ -104,8 +107,11 @@ describe("buildAgentHostCommandPlan", () => {
             "installHost",
             "refreshPath",
             "verifyHost",
+            "checkMarketplace",
+            "checkPlugin",
             "registerMarketplace",
             "installPlugin",
+            "enablePlugin",
             "launchHost"
         ]);
     });
@@ -129,5 +135,59 @@ describe("buildAgentHostCommandPlan", () => {
         });
         expect(plan[1].commandLine).to.equal('export PATH="$HOME/.local/bin:$PATH"; hash -r');
         expect(plan[2].commandLine).to.equal("claude --version");
+    });
+
+    it("skips marketplace and plugin setup when both are already present", () => {
+        const plan = buildAgentHostCommandPlan(
+            AgentHost.Copilot,
+            "GitHub Copilot CLI",
+            strings,
+            undefined,
+            {
+                marketplace: "present",
+                plugin: "present"
+            }
+        );
+
+        expect(plan.map(command => command.kind)).to.deep.equal(["launchHost"]);
+    });
+
+    it("installs only the missing setup component", () => {
+        const plan = buildAgentHostCommandPlan(
+            AgentHost.Claude,
+            "Claude Code",
+            strings,
+            undefined,
+            {
+                marketplace: "present",
+                plugin: "missing"
+            }
+        );
+
+        expect(plan.map(command => command.kind)).to.deep.equal([
+            "installPlugin",
+            "launchHost"
+        ]);
+    });
+
+    it("enables an installed but disabled plugin instead of reinstalling it", () => {
+        const plan = buildAgentHostCommandPlan(
+            AgentHost.Claude,
+            "Claude Code",
+            strings,
+            undefined,
+            {
+                marketplace: "present",
+                plugin: "disabled"
+            }
+        );
+
+        expect(plan.map(command => command.kind)).to.deep.equal([
+            "enablePlugin",
+            "launchHost"
+        ]);
+        expect(plan[0].commandLine).to.equal(
+            'claude plugin enable "power-pages@power-platform-skills" --scope user'
+        );
     });
 });

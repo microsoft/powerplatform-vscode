@@ -34,6 +34,8 @@ export enum uriHandlerTelemetryEventNames {
     URI_HANDLER_PAC_CREATE_TERMINAL_LAUNCHED = "UriHandlerPacCreateTerminalLaunched",
     URI_HANDLER_AGENTIC_CREATE_HOST_DETECTED = "UriHandlerAgenticCreateHostDetected",
     URI_HANDLER_AGENTIC_CREATE_HOST_SELECTED = "UriHandlerAgenticCreateHostSelected",
+    URI_HANDLER_AGENTIC_CREATE_SETUP_CHECKED = "UriHandlerAgenticCreateSetupChecked",
+    URI_HANDLER_AGENTIC_CREATE_TECHNICAL_DETAILS_OPENED = "UriHandlerAgenticCreateTechnicalDetailsOpened",
     URI_HANDLER_AGENTIC_CREATE_CONFIRM_ACTION_CLICKED = "UriHandlerAgenticCreateConfirmActionClicked",
     URI_HANDLER_AGENTIC_CREATE_PLUGIN_SEQUENCE_LAUNCHED = "UriHandlerAgenticCreatePluginSequenceLaunched",
     URI_HANDLER_AGENTIC_CREATE_SAMPLE_PROMPT_SENT = "UriHandlerAgenticCreateSamplePromptSent",

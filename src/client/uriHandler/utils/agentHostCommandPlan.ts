@@ -10,13 +10,22 @@ import {
     getAgentHostPathRefreshCommand
 } from "./agentHostBootstrap";
 import { AgentHost } from "./detectAgentHost";
+import {
+    AgentHostSetupComponent,
+    AgentHostSetupState,
+    getAgentHostSetupCheckCommand,
+    UNKNOWN_AGENT_HOST_SETUP
+} from "./agentHostSetupPrecheck";
 
 export type PlannedCommandKind =
     | "installHost"
     | "refreshPath"
     | "verifyHost"
+    | "checkMarketplace"
+    | "checkPlugin"
     | "registerMarketplace"
     | "installPlugin"
+    | "enablePlugin"
     | "launchHost";
 
 /**
@@ -30,6 +39,13 @@ export interface PlannedCommand {
     commandLine: string;
     /** Localized one-line explanation of what this step does, shown in the preview. */
     description: string;
+    /** Setup component populated by this read-only inventory command. */
+    setupCheck?: AgentHostSetupComponent;
+    /** Execute this command only for the listed setup states. */
+    runWhenSetupState?: {
+        component: AgentHostSetupComponent;
+        states: AgentHostSetupState[AgentHostSetupComponent][];
+    };
 }
 
 /**
@@ -40,9 +56,12 @@ export interface AgentHostCommandPlanStrings {
     installHost: string;
     refreshPath: string;
     verifyHost: string;
+    checkMarketplace: string;
+    checkPlugin: string;
     registerMarketplace: string;
     installPlugin: string;
     installPluginUserScope: string;
+    enablePlugin: string;
     /** Launch step description template; {0} is replaced with the agent host display name. */
     launchHost: string;
 }
@@ -71,7 +90,8 @@ export function buildAgentHostCommandPlan(
     host: AgentHost,
     hostDisplayName: string,
     strings: AgentHostCommandPlanStrings,
-    bootstrap?: AgentHostBootstrapConfig
+    bootstrap?: AgentHostBootstrapConfig,
+    setupState: AgentHostSetupState = UNKNOWN_AGENT_HOST_SETUP
 ): PlannedCommand[] {
     const { MARKETPLACE_REPO, PLUGIN_ID, CREATE_PROMPT } = URI_CONSTANTS.AGENT_HOST_PLUGIN;
     const launchDescription = formatLaunchDescription(strings.launchHost, hostDisplayName);
@@ -94,20 +114,68 @@ export function buildAgentHostCommandPlan(
             }
         ]
         : [];
+    const setupChecks: PlannedCommand[] = bootstrap
+        ? [
+            {
+                kind: "checkMarketplace",
+                commandLine: getAgentHostSetupCheckCommand(host, "marketplace"),
+                description: strings.checkMarketplace,
+                setupCheck: "marketplace"
+            },
+            {
+                kind: "checkPlugin",
+                commandLine: getAgentHostSetupCheckCommand(host, "plugin"),
+                description: strings.checkPlugin,
+                setupCheck: "plugin"
+            }
+        ]
+        : [];
+    const includeMarketplaceSetup = bootstrap
+        || setupState.marketplace !== "present";
+    const includePluginSetup = bootstrap
+        || setupState.plugin === "missing"
+        || setupState.plugin === "unknown";
+    const includePluginEnable = bootstrap
+        || setupState.plugin === "disabled";
 
     switch (host) {
         case AgentHost.Claude:
-            return [...bootstrapCommands,
-                {
+            return [
+                ...bootstrapCommands,
+                ...setupChecks,
+                ...(includeMarketplaceSetup ? [{
                     kind: "registerMarketplace",
                     commandLine: `claude plugin marketplace add "${MARKETPLACE_REPO}"`,
-                    description: strings.registerMarketplace
-                },
-                {
+                    description: strings.registerMarketplace,
+                    ...(bootstrap ? {
+                        runWhenSetupState: {
+                            component: "marketplace" as const,
+                            states: ["missing", "unknown"] as const
+                        }
+                    } : {})
+                } satisfies PlannedCommand] : []),
+                ...(includePluginSetup ? [{
                     kind: "installPlugin",
                     commandLine: `claude plugin install "${PLUGIN_ID}" --scope user`,
-                    description: strings.installPluginUserScope
-                },
+                    description: strings.installPluginUserScope,
+                    ...(bootstrap ? {
+                        runWhenSetupState: {
+                            component: "plugin" as const,
+                            states: ["missing", "unknown"] as const
+                        }
+                    } : {})
+                } satisfies PlannedCommand] : []),
+                ...(includePluginEnable ? [{
+                    kind: "enablePlugin",
+                    commandLine: `claude plugin enable "${PLUGIN_ID}" --scope user`,
+                    description: strings.enablePlugin,
+                    ...(bootstrap ? {
+                        runWhenSetupState: {
+                            component: "plugin" as const,
+                            states: ["disabled"] as const
+                        }
+                    } : {})
+                } satisfies PlannedCommand] : []),
                 {
                     kind: "launchHost",
                     commandLine: `claude "${CREATE_PROMPT}"`,
@@ -116,17 +184,42 @@ export function buildAgentHostCommandPlan(
             ];
         case AgentHost.Copilot:
         default:
-            return [...bootstrapCommands,
-                {
+            return [
+                ...bootstrapCommands,
+                ...setupChecks,
+                ...(includeMarketplaceSetup ? [{
                     kind: "registerMarketplace",
                     commandLine: `copilot plugin marketplace add "${MARKETPLACE_REPO}"`,
-                    description: strings.registerMarketplace
-                },
-                {
+                    description: strings.registerMarketplace,
+                    ...(bootstrap ? {
+                        runWhenSetupState: {
+                            component: "marketplace" as const,
+                            states: ["missing", "unknown"] as const
+                        }
+                    } : {})
+                } satisfies PlannedCommand] : []),
+                ...(includePluginSetup ? [{
                     kind: "installPlugin",
                     commandLine: `copilot plugin install "${PLUGIN_ID}"`,
-                    description: strings.installPlugin
-                },
+                    description: strings.installPlugin,
+                    ...(bootstrap ? {
+                        runWhenSetupState: {
+                            component: "plugin" as const,
+                            states: ["missing", "unknown"] as const
+                        }
+                    } : {})
+                } satisfies PlannedCommand] : []),
+                ...(includePluginEnable ? [{
+                    kind: "enablePlugin",
+                    commandLine: `copilot plugin enable "${PLUGIN_ID}"`,
+                    description: strings.enablePlugin,
+                    ...(bootstrap ? {
+                        runWhenSetupState: {
+                            component: "plugin" as const,
+                            states: ["disabled"] as const
+                        }
+                    } : {})
+                } satisfies PlannedCommand] : []),
                 {
                     kind: "launchHost",
                     commandLine: `copilot -i "${CREATE_PROMPT}"`,

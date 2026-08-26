@@ -21,12 +21,14 @@ export const getTargetFolderQuickPickItems = (
 ): TargetFolderQuickPickItem[] => {
     const items: TargetFolderQuickPickItem[] = workspaceFolders.map(folder => ({
         label: folder.name,
-        description: folder.uri.fsPath,
+        description: URI_HANDLER_STRINGS.DESCRIPTIONS.CURRENTLY_OPEN,
+        detail: folder.uri.fsPath,
         iconPath: new vscode.ThemeIcon("folder"),
         uri: folder.uri
     }));
     items.push({
-        label: URI_HANDLER_STRINGS.BUTTONS.BROWSE,
+        label: URI_HANDLER_STRINGS.BUTTONS.CHOOSE_ANOTHER_FOLDER,
+        detail: URI_HANDLER_STRINGS.DESCRIPTIONS.CHOOSE_ANOTHER_FOLDER,
         iconPath: new vscode.ThemeIcon("folder-opened"),
         browse: true
     });
@@ -92,7 +94,8 @@ export const selectTargetFolder = async (
     const selectedItem = await dependencies.showQuickPick(items, {
         canPickMany: false,
         ignoreFocusOut: true,
-        title: URI_HANDLER_STRINGS.TITLES.TARGET_FOLDER
+        title: URI_HANDLER_STRINGS.TITLES.TARGET_FOLDER,
+        placeHolder: URI_HANDLER_STRINGS.TITLES.TARGET_FOLDER_PLACEHOLDER
     });
     if (!selectedItem) {
         return undefined;

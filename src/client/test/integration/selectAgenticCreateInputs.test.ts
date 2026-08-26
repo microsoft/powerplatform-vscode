@@ -78,11 +78,11 @@ describe("selectAgenticCreateInputs", () => {
             title: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.PANEL_TITLE,
             step: 1,
             totalSteps: 2,
-            placeholder: URI_HANDLER_STRINGS.TITLES.TARGET_FOLDER,
+            placeholder: URI_HANDLER_STRINGS.TITLES.TARGET_FOLDER_PLACEHOLDER,
             ignoreFocusOut: true
         });
         expect(showQuickPick.secondCall.firstArg).to.include({
-            title: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.PANEL_TITLE,
+            title: URI_HANDLER_STRINGS.TITLES.AI_ASSISTANT,
             step: 2,
             totalSteps: 2,
             placeholder: URI_HANDLER_STRINGS.PROMPTS.AGENT_HOST_SELECT,
@@ -198,7 +198,7 @@ describe("selectAgenticCreateInputs", () => {
         );
 
         expect(activeItems.map(item => item.label)).to.deep.equal([
-            browsedFolder.fsPath,
+            "outside-workspace",
             "Claude Code"
         ]);
         expect(result).to.deep.equal({
