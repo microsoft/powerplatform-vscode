@@ -42,13 +42,13 @@ describe("selectAgentHost", () => {
         }))).to.deep.equal([
             {
                 label: "GitHub Copilot CLI",
-                description: "Installed · 1.2.3",
+                description: "Ready to use · 1.2.3",
                 host: AgentHost.Copilot,
                 installed: true
             },
             {
                 label: "Claude Code",
-                description: "Not installed · Automatic installation will be included.",
+                description: "Not installed · VS Code can install it after you review the setup",
                 host: AgentHost.Claude,
                 installed: false
             }
@@ -68,7 +68,7 @@ describe("selectAgentHost", () => {
         await selectAgentHost(detection, { showQuickPick });
 
         const items = showQuickPick.firstCall.firstArg as vscode.QuickPickItem[];
-        expect(items[0].description).to.equal("Installed");
+        expect(items[0].description).to.equal("Ready to use");
     });
 
     it("shows the installed description when the version is whitespace-only", async () => {
@@ -85,7 +85,7 @@ describe("selectAgentHost", () => {
         await selectAgentHost(detection, { showQuickPick });
 
         const items = showQuickPick.firstCall.firstArg as vscode.QuickPickItem[];
-        expect(items[0].description).to.equal("Installed");
+        expect(items[0].description).to.equal("Ready to use");
     });
 
     it("returns a selection when the chosen host is not installed", async () => {

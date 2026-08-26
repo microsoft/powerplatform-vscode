@@ -57,16 +57,16 @@ describe("selectTargetFolder", () => {
         }))).to.deep.equal([
             {
                 label: firstFolder.name,
-                description: firstFolder.uri.fsPath,
+                description: URI_HANDLER_STRINGS.DESCRIPTIONS.CURRENTLY_OPEN,
                 uri: firstFolder.uri
             },
             {
                 label: secondFolder.name,
-                description: secondFolder.uri.fsPath,
+                description: URI_HANDLER_STRINGS.DESCRIPTIONS.CURRENTLY_OPEN,
                 uri: secondFolder.uri
             },
             {
-                label: URI_HANDLER_STRINGS.BUTTONS.BROWSE,
+                label: URI_HANDLER_STRINGS.BUTTONS.CHOOSE_ANOTHER_FOLDER,
                 description: undefined,
                 uri: undefined
             }
@@ -74,7 +74,8 @@ describe("selectTargetFolder", () => {
         expect(showQuickPickStub.firstCall.args[1]).to.deep.equal({
             canPickMany: false,
             ignoreFocusOut: true,
-            title: URI_HANDLER_STRINGS.TITLES.TARGET_FOLDER
+            title: URI_HANDLER_STRINGS.TITLES.TARGET_FOLDER,
+            placeHolder: URI_HANDLER_STRINGS.TITLES.TARGET_FOLDER_PLACEHOLDER
         });
     });
 
@@ -125,6 +126,6 @@ describe("selectTargetFolder", () => {
 
         const items = showQuickPickStub.firstCall.firstArg as vscode.QuickPickItem[];
         expect(items).to.have.lengthOf(1);
-        expect(items[0].label).to.equal(URI_HANDLER_STRINGS.BUTTONS.BROWSE);
+        expect(items[0].label).to.equal(URI_HANDLER_STRINGS.BUTTONS.CHOOSE_ANOTHER_FOLDER);
     });
 });
