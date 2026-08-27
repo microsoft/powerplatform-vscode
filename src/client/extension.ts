@@ -57,7 +57,10 @@ import { setServerApiTelemetryContext } from "../common/intellisense/ServerApiTe
 import { activateServerLogicDebugger } from "../debugger/server-logic/ServerLogicDebugger";
 import { resumeAgenticCreateOnActivation } from "./uriHandler/resumeAgenticCreateActivation";
 import { registerAgenticCreateConfirmPanelSerializer } from "./uriHandler/utils/agenticCreateConfirmPanel";
-import { AgenticCreateUriHandler } from "./uriHandler/agenticCreateUriHandler";
+import {
+    AGENTIC_CREATE_LOCAL_TRIGGER_COMMAND,
+    AgenticCreateUriHandler
+} from "./uriHandler/agenticCreateUriHandler";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -90,6 +93,12 @@ export async function activate(
     // reload recovery cannot be blocked by unrelated setup.
     const uriHandler = new AgenticCreateUriHandler(_context.globalState);
     _context.subscriptions.push(vscode.window.registerUriHandler(uriHandler));
+    if (_context.extensionMode === vscode.ExtensionMode.Development) {
+        _context.subscriptions.push(vscode.commands.registerCommand(
+            AGENTIC_CREATE_LOCAL_TRIGGER_COMMAND,
+            () => uriHandler.triggerLocalTest()
+        ));
+    }
     void resumeAgenticCreateOnActivation(_context.globalState);
 
     // Cooldown prevents a tight retry loop: failed auth can trigger another session change,

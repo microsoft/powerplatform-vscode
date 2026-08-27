@@ -7,7 +7,11 @@ import { expect } from "chai";
 import * as sinon from "sinon";
 import * as vscode from "vscode";
 import { PacWrapper } from "../../pac/PacWrapper";
-import { AgenticCreateUriHandler } from "../../uriHandler/agenticCreateUriHandler";
+import {
+    AGENTIC_CREATE_LOCAL_TRIGGER_COMMAND,
+    AgenticCreateUriHandler,
+    buildLocalAgenticCreateUri
+} from "../../uriHandler/agenticCreateUriHandler";
 import { URI_CONSTANTS } from "../../uriHandler/constants/uriConstants";
 import { AgenticCreateHandler } from "../../uriHandler/handlers/agenticCreateHandler";
 import { UriHandler } from "../../uriHandler/uriHandler";
@@ -55,5 +59,52 @@ describe("AgenticCreateUriHandler", () => {
 
         expect(delegateStub.calledOnceWithExactly(uri)).to.be.true;
         expect(agenticCreateStub.notCalled).to.be.true;
+    });
+
+    it("builds the Studio-shaped local test URI without sensitive data", () => {
+        const uri = buildLocalAgenticCreateUri(123);
+        const query = new URLSearchParams(uri.query);
+
+        expect(uri.path).to.equal(URI_CONSTANTS.PATHS.AGENTIC_CREATE);
+        expect(query.get(URI_CONSTANTS.PARAMETERS.ENV_ID)).to.equal(
+            "local-test-environment"
+        );
+        expect(query.get(URI_CONSTANTS.PARAMETERS.ORG_URL)).to.equal(
+            "https://local-test.crm.dynamics.com"
+        );
+        expect(query.get(URI_CONSTANTS.PARAMETERS.REFERRER_SESSION_ID)).to.equal(
+            "local-123"
+        );
+        expect(query.get(URI_CONSTANTS.PARAMETERS.SOURCE)).to.equal("studio");
+        expect(query.get(URI_CONSTANTS.PARAMETERS.VERSION)).to.equal("1");
+    });
+
+    it("runs the local trigger through the real flow while bypassing only ECS", async () => {
+        await handler.triggerLocalTest();
+
+        expect(agenticCreateStub.calledOnce).to.be.true;
+        expect(agenticCreateStub.firstCall.args[0].path).to.equal(
+            URI_CONSTANTS.PATHS.AGENTIC_CREATE
+        );
+        expect(agenticCreateStub.firstCall.args[1]).to.deep.equal({
+            bypassFeatureGate: true
+        });
+    });
+
+    it("contributes the local trigger only to the development-host palette", () => {
+        const packageJson = vscode.extensions.getExtension(
+            URI_CONSTANTS.EXTENSION_ID
+        )?.packageJSON;
+        const command = packageJson?.contributes?.commands?.find(
+            (item: { command?: string }) =>
+                item.command === AGENTIC_CREATE_LOCAL_TRIGGER_COMMAND
+        );
+        const menu = packageJson?.contributes?.menus?.commandPalette?.find(
+            (item: { command?: string }) =>
+                item.command === AGENTIC_CREATE_LOCAL_TRIGGER_COMMAND
+        );
+
+        expect(command?.enablement).to.equal("isExtensionDevelopmentHost");
+        expect(menu?.when).to.equal("isExtensionDevelopmentHost");
     });
 });

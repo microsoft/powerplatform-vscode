@@ -212,6 +212,12 @@
     ],
     "commands": [
       {
+        "command": "microsoft.powerplatform.agenticCreate.testLocal",
+        "category": "Power Pages (Development)",
+        "title": "%microsoft.powerplatform.agenticCreate.testLocal.title%",
+        "enablement": "isExtensionDevelopmentHost"
+      },
+      {
         "command": "powerpages.collaboration.openTeamsChat",
         "title": "Open Teams Chat",
         "enablement": "isWeb && virtualWorkspace && config.powerPlatform.experimental.enableCoPresenceFeature",
@@ -995,6 +1001,10 @@
         }
       ],
       "commandPalette": [
+        {
+          "command": "microsoft.powerplatform.agenticCreate.testLocal",
+          "when": "isExtensionDevelopmentHost"
+        },
         {
           "command": "microsoft-powerapps-portals.webExtension.init",
           "when": "never"
