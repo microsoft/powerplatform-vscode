@@ -12,6 +12,8 @@ import { ResumeMarkerStore } from "./utils/resumeMarker";
 
 export const AGENTIC_CREATE_LOCAL_TRIGGER_COMMAND =
     "microsoft.powerplatform.agenticCreate.testLocal";
+export const AGENTIC_CREATE_LOCAL_TRIGGER_CONTEXT =
+    "powerPlatform.agenticCreate.localTestEnabled";
 
 /**
  * Builds a secret-free Studio-shaped URI for local Extension Development Host testing.
