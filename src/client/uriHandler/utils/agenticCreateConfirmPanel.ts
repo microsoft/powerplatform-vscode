@@ -144,7 +144,8 @@ function buildHtml(
     cspSource: string,
     allowEdit: boolean,
     setupState: AgentHostSetupState,
-    hostNeedsInstall: boolean
+    hostNeedsInstall: boolean,
+    siteDescription: string
 ): string {
     const nonce = getNonce();
     const confirm = URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM;
@@ -282,6 +283,7 @@ function buildHtml(
                 <dt>${escapeHtml(confirm.FOLDER_LABEL)}</dt>
                 <dd><span class="summary-primary">${escapeHtml(folderName)}</span><span class="summary-secondary">${escapeHtml(folderPath)}</span></dd>
                 <dt>${escapeHtml(confirm.HOST_LABEL)}</dt><dd>${escapeHtml(hostDisplayName)}</dd>
+                <dt>${escapeHtml(confirm.SITE_GOAL_LABEL)}</dt><dd>${escapeHtml(siteDescription)}</dd>
                 <dt>${escapeHtml(confirm.SETUP_LABEL)}</dt><dd>${escapeHtml(setupSummary)}</dd>
             </dl>
         </section>
@@ -588,6 +590,7 @@ export function registerAgenticCreateConfirmPanelSerializer(): vscode.Disposable
  * @param setupState Existing marketplace and plugin setup discovered before confirmation.
  * @param hostNeedsInstall Whether the selected assistant must be installed first.
  * @param onTechnicalDetailsExpanded Called once when the user first opens Technical details.
+ * @param siteDescription Maker-provided description shown in the summary.
  * @returns The active panel session, including the user's decision and recovery-state updater.
  */
 export function showAgenticCreateConfirmPanel(
@@ -598,7 +601,8 @@ export function showAgenticCreateConfirmPanel(
     allowEdit = true,
     setupState: AgentHostSetupState = UNKNOWN_AGENT_HOST_SETUP,
     hostNeedsInstall = false,
-    onTechnicalDetailsExpanded?: () => void
+    onTechnicalDetailsExpanded?: () => void,
+    siteDescription = ""
 ): AgenticCreateConfirmPanelSession {
     const confirm = URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM;
     const progressStageLabels: Record<MakerProgressStage, string> = {
@@ -693,7 +697,8 @@ export function showAgenticCreateConfirmPanel(
             createdPanel.webview.cspSource,
             allowEdit,
             setupState,
-            hostNeedsInstall
+            hostNeedsInstall,
+            siteDescription
         );
 
         const readyTimer = setTimeout(() => {
