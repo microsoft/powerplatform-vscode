@@ -28,6 +28,8 @@ const FUNNEL_EVENT_PROPERTIES: Partial<Record<
         { funnelStage: 'folderSelection', funnelOutcome: 'cancelled' },
     [uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_SELECTED]:
         { funnelStage: 'hostSelection', funnelOutcome: 'selected' },
+    [uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_SITE_DESCRIPTION_COLLECTED]:
+        { funnelStage: 'siteDescription', funnelOutcome: 'collected' },
     [uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_SETUP_CHECKED]:
         { funnelStage: 'setupPrecheck', funnelOutcome: 'completed' },
     [uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_TECHNICAL_DETAILS_OPENED]:

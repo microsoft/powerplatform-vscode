@@ -23,7 +23,7 @@ describe("showAgenticCreateConfirmPanel", () => {
         },
         {
             kind: "launchHost",
-            commandLine: 'copilot -i "How to use Power Pages Plugin for creating a site?"',
+            commandLine: 'copilot -i "/power-pages:create-site A community event site"',
             description: "start"
         }
     ];
@@ -380,7 +380,10 @@ describe("showAgenticCreateConfirmPanel", () => {
             {
                 marketplace: "present",
                 plugin: "present"
-            }
+            },
+            false,
+            undefined,
+            "A volunteer portal for a food bank"
         );
 
         const html = fake.html();
@@ -388,12 +391,15 @@ describe("showAgenticCreateConfirmPanel", () => {
         expect(html).to.contain("No command-line experience is required.");
         expect(html).to.contain('id="summary-title"');
         expect(html).to.contain("What happens next");
-        expect(html).to.contain("Ready — Power Pages guidance is already available");
+        expect(html).to.contain("Ready — Power Pages Plugin is already installed");
         expect(html).to.contain('<details id="technical-details">');
         expect(html).to.not.contain('<details id="technical-details" open>');
         expect(html).to.contain(">Start creating site</button>");
         expect(html).to.contain(">Change choices</button>");
         expect(html).to.contain("Already set up — no action needed");
+        expect(html).to.contain("Site to create");
+        expect(html).to.contain("A volunteer portal for a food bank");
+        expect(html).to.contain("Check the Power Pages Plugin");
     });
 
     it("renders WCAG-oriented keyboard, reflow, forced-colors, and reduced-motion support", () => {
@@ -444,7 +450,7 @@ describe("showAgenticCreateConfirmPanel", () => {
             {
                 type: "agenticCreateConfirmState",
                 state: "progress",
-                description: "Check Power Pages guidance",
+                description: "Check the Power Pages Plugin",
                 step: 1,
                 totalSteps: 2,
                 status: "running"

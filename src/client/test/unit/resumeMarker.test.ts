@@ -46,7 +46,12 @@ class FakeResumeMarkerStore implements ResumeMarkerStore {
 
 describe('resumeMarker', () => {
     it('builds the locked resumable context with the supplied timestamp', () => {
-        const marker = buildResumeMarker(params, AgentHost.Copilot, 123456);
+        const marker = buildResumeMarker(
+            params,
+            AgentHost.Copilot,
+            123456,
+            'A volunteer management portal'
+        );
 
         expect(marker).to.deep.equal({
             host: AgentHost.Copilot,
@@ -55,7 +60,8 @@ describe('resumeMarker', () => {
             environmentId: 'environment-id',
             orgUrl: 'https://org.crm.dynamics.com',
             websiteId: 'website-id',
-            source: 'powerPagesHome'
+            source: 'powerPagesHome',
+            siteDescription: 'A volunteer management portal'
         });
     });
 

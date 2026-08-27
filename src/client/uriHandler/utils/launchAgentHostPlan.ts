@@ -4,6 +4,7 @@
  */
 
 import * as vscode from "vscode";
+import * as path from "path";
 import { URI_HANDLER_STRINGS } from "../constants/uriStrings";
 import {
     PlannedCommand,
@@ -15,6 +16,49 @@ import {
 } from "./agentHostSetupPrecheck";
 
 const SHELL_INTEGRATION_TIMEOUT_MS = 3000;
+
+function quotePowerShellArgument(argument: string): string {
+    return `'${argument.replace(/'/g, "''")}'`;
+}
+
+function quotePosixArgument(argument: string): string {
+    return `'${argument.replace(/'/g, `'"'"'`)}'`;
+}
+
+function quoteFishArgument(argument: string): string {
+    return `'${argument.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`;
+}
+
+/**
+ * Builds a shell-safe command from a fixed executable and untrusted arguments.
+ */
+export function buildAgentHostShellCommand(
+    executable: string,
+    args: string[],
+    shellPath: string
+): string {
+    if (!/^[A-Za-z0-9._/-]+$/u.test(executable)) {
+        throw new Error("Unsupported agent host executable");
+    }
+
+    const shellName = path.basename(shellPath).toLowerCase();
+    let quoteArgument: (argument: string) => string;
+    if (shellName === "pwsh" || shellName === "pwsh.exe"
+        || shellName === "powershell" || shellName === "powershell.exe") {
+        quoteArgument = quotePowerShellArgument;
+    } else if (
+        shellName === "bash" || shellName === "bash.exe"
+        || shellName === "zsh" || shellName === "sh"
+    ) {
+        quoteArgument = quotePosixArgument;
+    } else if (shellName === "fish") {
+        quoteArgument = quoteFishArgument;
+    } else {
+        throw new Error(`Unsupported terminal shell: ${shellName}`);
+    }
+
+    return [executable, ...args.map(quoteArgument)].join(" ");
+}
 
 export type LaunchAgentHostPlanResult =
     | {
@@ -194,12 +238,13 @@ export async function launchAgentHostPlan(
     const terminalName = URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.TERMINAL_NAME
         .split("{0}")
         .join(hostDisplayName);
+    const executionShellPath = shellPath ?? vscode.env.shell;
 
     const terminal = deps.createTerminal({
         name: terminalName,
         cwd: folderUri.fsPath,
         isTransient: true,
-        ...(shellPath ? { shellPath } : {})
+        ...(executionShellPath ? { shellPath: executionShellPath } : {})
     });
     terminal.show();
 
@@ -242,7 +287,15 @@ export async function launchAgentHostPlan(
         });
         if (command.kind === "launchHost") {
             try {
-                shellIntegration.executeCommand(command.commandLine);
+                if (command.executable && command.args) {
+                    shellIntegration.executeCommand(buildAgentHostShellCommand(
+                        command.executable,
+                        command.args,
+                        executionShellPath
+                    ));
+                } else {
+                    shellIntegration.executeCommand(command.commandLine);
+                }
                 completedCommandKinds.push(command.kind);
                 return {
                     status: "launched",

@@ -106,7 +106,8 @@ describe('resolveAgentHostInstallation', () => {
             AgentHost.Copilot,
             'GitHub Copilot CLI',
             params,
-            context.deps
+            context.deps,
+            'A volunteer management portal'
         );
 
         expect(context.showInformationMessage.calledOnceWithExactly(
@@ -158,7 +159,8 @@ describe('resolveAgentHostInstallation', () => {
             AgentHost.Copilot,
             'GitHub Copilot CLI',
             params,
-            context.deps
+            context.deps,
+            'A volunteer management portal'
         );
 
         expect(context.detectHost.calledOnceWithExactly(AgentHost.Copilot)).to.be.true;
@@ -201,7 +203,8 @@ describe('resolveAgentHostInstallation', () => {
             AgentHost.Copilot,
             'GitHub Copilot CLI',
             params,
-            context.deps
+            context.deps,
+            'A volunteer management portal'
         );
 
         const marker = context.writeMarker.firstCall.args[0] as ResumeMarker;
@@ -212,7 +215,8 @@ describe('resolveAgentHostInstallation', () => {
             environmentId: 'environment-id',
             orgUrl: 'https://org.crm.dynamics.com',
             websiteId: 'website-id',
-            source: 'powerPagesHome'
+            source: 'powerPagesHome',
+            siteDescription: 'A volunteer management portal'
         });
         expect(calls).to.deep.equal(['marker', 'event', 'reload']);
         expect(context.events).to.deep.include({

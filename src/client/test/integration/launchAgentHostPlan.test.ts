@@ -8,6 +8,7 @@ import * as sinon from "sinon";
 import * as vscode from "vscode";
 import { PlannedCommand } from "../../uriHandler/utils/agentHostCommandPlan";
 import {
+    buildAgentHostShellCommand,
     launchAgentHostPlan,
     LaunchAgentHostPlanDependencies
 } from "../../uriHandler/utils/launchAgentHostPlan";
@@ -354,5 +355,53 @@ describe("launchAgentHostPlan", () => {
             "copilot plugin list",
             "enable plugin"
         ]);
+    });
+
+    it("shell-quotes the maker prompt before terminal execution", async () => {
+        const prompt = `/power-pages:create-site Build a portal with 'quotes', \`ticks\`, and $(calc)`;
+        const argumentPlan: PlannedCommand[] = [{
+            kind: "launchHost",
+            commandLine: `copilot -i ${JSON.stringify(prompt)}`,
+            executable: "copilot",
+            args: ["-i", prompt],
+            description: "start"
+        }];
+        const {
+            deps,
+            executeInteractiveCommand
+        } = buildDependencies([]);
+
+        const result = await launchAgentHostPlan(
+            folderUri,
+            argumentPlan,
+            "GitHub Copilot CLI",
+            deps,
+            "bash"
+        );
+
+        expect(result.status).to.equal("launched");
+        expect(executeInteractiveCommand.calledOnceWithExactly(
+            `copilot '-i' '/power-pages:create-site Build a portal with '"'"'quotes'"'"', \`ticks\`, and $(calc)'`
+        )).to.be.true;
+    });
+
+    it("quotes untrusted prompts for PowerShell without interpolation", () => {
+        const prompt = `/power-pages:create-site A donor's site with $(calc) and \`ticks\``;
+
+        expect(buildAgentHostShellCommand(
+            "copilot",
+            ["-i", prompt],
+            "pwsh.exe"
+        )).to.equal(
+            `copilot '-i' '/power-pages:create-site A donor''s site with $(calc) and \`ticks\`'`
+        );
+    });
+
+    it("rejects terminal shells without a supported escaping strategy", () => {
+        expect(() => buildAgentHostShellCommand(
+            "copilot",
+            ["-i", "/power-pages:create-site test"],
+            "cmd.exe"
+        )).to.throw("Unsupported terminal shell: cmd.exe");
     });
 });

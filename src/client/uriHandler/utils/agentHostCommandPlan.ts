@@ -37,6 +37,9 @@ export interface PlannedCommand {
     kind: PlannedCommandKind;
     /** Exact command line sent to the terminal (product/CLI syntax — not localized). */
     commandLine: string;
+    /** Executable and arguments used when values must bypass shell parsing. */
+    executable?: string;
+    args?: string[];
     /** Localized one-line explanation of what this step does, shown in the preview. */
     description: string;
     /** Setup component populated by this read-only inventory command. */
@@ -91,10 +94,17 @@ export function buildAgentHostCommandPlan(
     hostDisplayName: string,
     strings: AgentHostCommandPlanStrings,
     bootstrap?: AgentHostBootstrapConfig,
-    setupState: AgentHostSetupState = UNKNOWN_AGENT_HOST_SETUP
+    setupState: AgentHostSetupState = UNKNOWN_AGENT_HOST_SETUP,
+    siteDescription = "Create a Power Pages site"
 ): PlannedCommand[] {
-    const { MARKETPLACE_REPO, PLUGIN_ID, CREATE_PROMPT } = URI_CONSTANTS.AGENT_HOST_PLUGIN;
+    const {
+        MARKETPLACE_REPO,
+        PLUGIN_ID,
+        CREATE_SKILL_COMMAND
+    } = URI_CONSTANTS.AGENT_HOST_PLUGIN;
     const launchDescription = formatLaunchDescription(strings.launchHost, hostDisplayName);
+    const createPrompt = `${CREATE_SKILL_COMMAND} ${siteDescription}`;
+    const previewPrompt = JSON.stringify(createPrompt);
     const bootstrapCommands: PlannedCommand[] = bootstrap
         ? [
             {
@@ -178,7 +188,9 @@ export function buildAgentHostCommandPlan(
                 } satisfies PlannedCommand] : []),
                 {
                     kind: "launchHost",
-                    commandLine: `claude "${CREATE_PROMPT}"`,
+                    commandLine: `claude ${previewPrompt}`,
+                    executable: "claude",
+                    args: [createPrompt],
                     description: launchDescription
                 }
             ];
@@ -222,7 +234,9 @@ export function buildAgentHostCommandPlan(
                 } satisfies PlannedCommand] : []),
                 {
                     kind: "launchHost",
-                    commandLine: `copilot -i "${CREATE_PROMPT}"`,
+                    commandLine: `copilot -i ${previewPrompt}`,
+                    executable: "copilot",
+                    args: ["-i", createPrompt],
                     description: launchDescription
                 }
             ];

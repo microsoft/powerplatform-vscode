@@ -40,7 +40,12 @@ describe("buildAgentHostCommandPlan", () => {
             },
             {
                 kind: "launchHost",
-                commandLine: 'copilot -i "How to use Power Pages Plugin for creating a site?"',
+                commandLine: 'copilot -i "/power-pages:create-site Create a Power Pages site"',
+                executable: "copilot",
+                args: [
+                    "-i",
+                    "/power-pages:create-site Create a Power Pages site"
+                ],
                 description: "start GitHub Copilot CLI"
             }
         ]);
@@ -62,7 +67,11 @@ describe("buildAgentHostCommandPlan", () => {
             },
             {
                 kind: "launchHost",
-                commandLine: 'claude "How to use Power Pages Plugin for creating a site?"',
+                commandLine: 'claude "/power-pages:create-site Create a Power Pages site"',
+                executable: "claude",
+                args: [
+                    "/power-pages:create-site Create a Power Pages site"
+                ],
                 description: "start Claude Code"
             }
         ]);
@@ -189,5 +198,29 @@ describe("buildAgentHostCommandPlan", () => {
         expect(plan[0].commandLine).to.equal(
             'claude plugin enable "power-pages@power-platform-skills" --scope user'
         );
+    });
+
+    it("passes the maker prompt to the create-site skill without shell interpolation", () => {
+        const plan = buildAgentHostCommandPlan(
+            AgentHost.Copilot,
+            "GitHub Copilot CLI",
+            strings,
+            undefined,
+            {
+                marketplace: "present",
+                plugin: "present"
+            },
+            'A volunteer portal with "Event signup" and donations'
+        );
+        const launch = plan[0];
+
+        expect(launch.commandLine).to.equal(
+            'copilot -i "/power-pages:create-site A volunteer portal with \\"Event signup\\" and donations"'
+        );
+        expect(launch.executable).to.equal("copilot");
+        expect(launch.args).to.deep.equal([
+            "-i",
+            '/power-pages:create-site A volunteer portal with "Event signup" and donations'
+        ]);
     });
 });

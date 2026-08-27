@@ -34,7 +34,8 @@ describe("resumeAgenticCreateOnActivation", () => {
             environmentId: "environment-id",
             orgUrl: "https://org.crm.dynamics.com",
             websiteId: "website-id",
-            source: "powerPagesHome"
+            source: "powerPagesHome",
+            siteDescription: "A volunteer services portal"
         };
         store = {
             get: <T>() => marker as T | undefined,
@@ -101,7 +102,9 @@ describe("resumeAgenticCreateOnActivation", () => {
             folderUri,
             params,
             undefined,
-            false
+            false,
+            undefined,
+            "A volunteer services portal"
         )).to.be.true;
         expect(traceInfoStub.calledWith(
             uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED

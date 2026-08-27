@@ -79,13 +79,15 @@ function formatInstallGuidance(
  * @param hostDisplayName Localized display name for the host.
  * @param params Deep-link create-flow parameters used by redacted telemetry and resume persistence.
  * @param deps Injected UI and runtime dependencies.
+ * @param siteDescription Maker-provided description preserved across reload.
  * @returns The terminal outcome for the calling create-flow handler.
  */
 export async function resolveAgentHostInstallation(
     host: AgentHost,
     hostDisplayName: string,
     params: CreateFlowParameters,
-    deps: ResolveAgentHostInstallationDependencies
+    deps: ResolveAgentHostInstallationDependencies,
+    siteDescription?: string
 ): Promise<AgentHostInstallResolution> {
     const detectHost = deps.detectHost ?? detectAgentHost;
     const emitEvent = deps.emitEvent ?? defaultEmitEvent;
@@ -143,7 +145,9 @@ export async function resolveAgentHostInstallation(
         );
 
         if (warningSelection === strings.reloadWindow) {
-            await deps.writeResumeMarker(buildResumeMarker(params, host, now()));
+            await deps.writeResumeMarker(
+                buildResumeMarker(params, host, now(), siteDescription)
+            );
             await emitEvent(
                 uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_RELOAD_REQUESTED,
                 params,
