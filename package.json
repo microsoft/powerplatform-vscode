@@ -215,7 +215,7 @@
         "command": "microsoft.powerplatform.agenticCreate.testLocal",
         "category": "Power Pages (Development)",
         "title": "%microsoft.powerplatform.agenticCreate.testLocal.title%",
-        "enablement": "isExtensionDevelopmentHost"
+        "enablement": "powerPlatform.agenticCreate.localTestEnabled"
       },
       {
         "command": "powerpages.collaboration.openTeamsChat",
@@ -1003,7 +1003,7 @@
       "commandPalette": [
         {
           "command": "microsoft.powerplatform.agenticCreate.testLocal",
-          "when": "isExtensionDevelopmentHost"
+          "when": "powerPlatform.agenticCreate.localTestEnabled"
         },
         {
           "command": "microsoft-powerapps-portals.webExtension.init",

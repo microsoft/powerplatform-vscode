@@ -9,6 +9,7 @@ import * as vscode from "vscode";
 import { PacWrapper } from "../../pac/PacWrapper";
 import {
     AGENTIC_CREATE_LOCAL_TRIGGER_COMMAND,
+    AGENTIC_CREATE_LOCAL_TRIGGER_CONTEXT,
     AgenticCreateUriHandler,
     buildLocalAgenticCreateUri
 } from "../../uriHandler/agenticCreateUriHandler";
@@ -104,7 +105,9 @@ describe("AgenticCreateUriHandler", () => {
                 item.command === AGENTIC_CREATE_LOCAL_TRIGGER_COMMAND
         );
 
-        expect(command?.enablement).to.equal("isExtensionDevelopmentHost");
-        expect(menu?.when).to.equal("isExtensionDevelopmentHost");
+        expect(command?.enablement).to.equal(
+            AGENTIC_CREATE_LOCAL_TRIGGER_CONTEXT
+        );
+        expect(menu?.when).to.equal(AGENTIC_CREATE_LOCAL_TRIGGER_CONTEXT);
     });
 });
