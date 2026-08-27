@@ -49,7 +49,8 @@ export interface AgenticCreateHandlerDependencies {
         hostDisplayName: string,
         folderUri: vscode.Uri,
         params: CreateFlowParameters,
-        bootstrap?: AgentHostBootstrapConfig
+        bootstrap?: AgentHostBootstrapConfig,
+        siteDescription?: string
     ) => Promise<ConfirmAndLaunchOutcome>;
 }
 
@@ -63,14 +64,22 @@ const DEFAULT_DEPENDENCIES: AgenticCreateHandlerDependencies = {
     resolveAgentHostInstallation,
     resolveAgentHostBootstrap,
     emitCreateFlowEvent,
-    confirmAndLaunchAgentHost: (host, hostDisplayName, folderUri, params, bootstrap) =>
+    confirmAndLaunchAgentHost: (
+        host,
+        hostDisplayName,
+        folderUri,
+        params,
+        bootstrap,
+        siteDescription
+    ) =>
         confirmAndLaunchSelectedAgentHost(
             host,
             folderUri,
             params,
             hostDisplayName,
             true,
-            bootstrap
+            bootstrap,
+            siteDescription
         )
 };
 
@@ -185,7 +194,8 @@ export class AgenticCreateHandler {
             );
             let selectionToEdit: AgenticCreateInputsSelection | undefined;
             const resolveMissingHost = async (
-                host: AgentHost
+                host: AgentHost,
+                siteDescription: string
             ): ReturnType<typeof resolveAgentHostInstallation> =>
                 this.dependencies.resolveAgentHostInstallation(
                     host,
@@ -205,7 +215,8 @@ export class AgenticCreateHandler {
                         reloadWindow: async () => {
                             await vscode.commands.executeCommand('workbench.action.reloadWindow');
                         }
-                    }
+                    },
+                    siteDescription
                 );
             const shouldStopAfterInstallResolution = (
                 resolution: Awaited<ReturnType<typeof resolveAgentHostInstallation>>,
@@ -244,12 +255,18 @@ export class AgenticCreateHandler {
                         uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED,
                         params,
                         'agent',
-                        { reason: inputs.step === "folder" ? "folderSelectionCancelled" : "hostSelectionCancelled" }
+                        {
+                            reason: inputs.step === "folder"
+                                ? "folderSelectionCancelled"
+                                : inputs.step === "host"
+                                    ? "hostSelectionCancelled"
+                                    : "siteDescriptionCancelled"
+                        }
                     );
                     return;
                 }
 
-                const { folderUri, hostSelection } = inputs;
+                const { folderUri, hostSelection, siteDescription } = inputs;
                 let confirmedHostSelection = hostSelection;
                 let bootstrap: AgentHostBootstrapConfig | undefined;
                 this.dependencies.emitCreateFlowEvent(
@@ -264,6 +281,18 @@ export class AgenticCreateHandler {
                     {
                         host: hostSelection.host,
                         installed: String(hostSelection.installed)
+                    }
+                );
+                this.dependencies.emitCreateFlowEvent(
+                    uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_SITE_DESCRIPTION_COLLECTED,
+                    params,
+                    'agent',
+                    {
+                        lengthCategory: siteDescription.length <= 200
+                            ? 'short'
+                            : siteDescription.length <= 500
+                                ? 'medium'
+                                : 'long'
                     }
                 );
 
@@ -295,7 +324,10 @@ export class AgenticCreateHandler {
                                 exitCodeCategory: 'notStarted'
                             }
                         );
-                        const resolution = await resolveMissingHost(hostSelection.host);
+                        const resolution = await resolveMissingHost(
+                            hostSelection.host,
+                            siteDescription
+                        );
                         if (shouldStopAfterInstallResolution(resolution, hostSelection.host)) {
                             return;
                         }
@@ -314,7 +346,8 @@ export class AgenticCreateHandler {
                     getAgentHostDisplayName(confirmedHostSelection.host),
                     folderUri,
                     params,
-                    bootstrap
+                    bootstrap,
+                    siteDescription
                 );
 
                 const shouldUseHostInstallFallback =
@@ -327,7 +360,10 @@ export class AgenticCreateHandler {
                         outcome.result.failedCommand?.kind === 'verifyHost'
                     );
                 if (shouldUseHostInstallFallback) {
-                    const resolution = await resolveMissingHost(confirmedHostSelection.host);
+                    const resolution = await resolveMissingHost(
+                        confirmedHostSelection.host,
+                        siteDescription
+                    );
                     if (shouldStopAfterInstallResolution(
                         resolution,
                         confirmedHostSelection.host
@@ -345,7 +381,9 @@ export class AgenticCreateHandler {
                         confirmedHostSelection.host,
                         getAgentHostDisplayName(confirmedHostSelection.host),
                         folderUri,
-                        params
+                        params,
+                        undefined,
+                        siteDescription
                     );
                 }
 
@@ -362,7 +400,8 @@ export class AgenticCreateHandler {
 
                 selectionToEdit = {
                     folderUri,
-                    hostSelection: confirmedHostSelection
+                    hostSelection: confirmedHostSelection,
+                    siteDescription
                 };
             }
         } catch (error) {

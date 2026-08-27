@@ -59,6 +59,7 @@ export function getAgentHostDisplayName(host: AgentHost): string {
  * @param hostDisplayName Optional already-resolved display name.
  * @param allowEdit Whether the confirmation may return to folder/host selection.
  * @param bootstrap Optional missing-host bootstrap configuration.
+ * @param siteDescription Maker-provided description passed to the create-site skill.
  * @returns Whether the command plan was launched or dropped.
  */
 export async function confirmAndLaunchSelectedAgentHost(
@@ -67,7 +68,8 @@ export async function confirmAndLaunchSelectedAgentHost(
     params: CreateFlowParameters,
     hostDisplayName: string = getAgentHostDisplayName(host),
     allowEdit = true,
-    bootstrap?: AgentHostBootstrapConfig
+    bootstrap?: AgentHostBootstrapConfig,
+    siteDescription = "Create a Power Pages site"
 ): Promise<ConfirmAndLaunchOutcome> {
     const precheckStartedAt = Date.now();
     const setupState: AgentHostSetupState = bootstrap
@@ -100,7 +102,8 @@ export async function confirmAndLaunchSelectedAgentHost(
                 displayName,
                 AGENT_HOST_COMMAND_PLAN_STRINGS,
                 bootstrap,
-                setupState
+                setupState,
+                siteDescription
             ),
         showConfirmPanel: (displayName, folderPath, plan) =>
             showAgenticCreateConfirmPanel(
@@ -116,7 +119,8 @@ export async function confirmAndLaunchSelectedAgentHost(
                     params,
                     'agent',
                     { host }
-                )
+                ),
+                siteDescription
             ),
         launchPlan: (
             selectedFolderUri,
@@ -130,7 +134,7 @@ export async function confirmAndLaunchSelectedAgentHost(
                 plan,
                 displayName,
                 undefined,
-                bootstrap?.shellPath,
+                bootstrap?.shellPath ?? vscode.env.shell,
                 setupStateOverride ?? setupState,
                 onProgress
             )

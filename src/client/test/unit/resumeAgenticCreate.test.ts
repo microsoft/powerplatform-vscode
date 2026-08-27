@@ -39,7 +39,8 @@ const marker: ResumeMarker = {
     environmentId: 'environment-id',
     orgUrl: 'https://secret.crm.dynamics.com',
     websiteId: 'website-id',
-    source: 'powerPagesHome'
+    source: 'powerPagesHome',
+    siteDescription: 'A volunteer management portal'
 };
 
 class FakeResumeMarkerStore implements ResumeMarkerStore {
@@ -253,7 +254,11 @@ describe('resumeAgenticCreate', () => {
             expectedParams,
             'agent'
         )).to.be.true;
-        expect(context.runStages.calledOnceWithExactly(expectedParams, AgentHost.Copilot)).to.be.true;
+        expect(context.runStages.calledOnceWithExactly(
+            expectedParams,
+            AgentHost.Copilot,
+            "A volunteer management portal"
+        )).to.be.true;
         expect(calls).to.deep.equal(['emit', 'stages', 'clear']);
         expect(context.store.value).to.be.undefined;
     });

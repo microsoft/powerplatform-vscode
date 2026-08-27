@@ -71,8 +71,8 @@ export const URI_CONSTANTS = {
         MARKETPLACE_REPO: 'microsoft/power-platform-skills',
         // Power Pages plugin identifier in <plugin>@<marketplace> form understood by both hosts.
         PLUGIN_ID: 'power-pages@power-platform-skills',
-        // Seed prompt used to start the interactive session after the plugin is installed.
-        CREATE_PROMPT: 'How to use Power Pages Plugin for creating a site?'
+        // Skill command used to start an interactive site-creation session.
+        CREATE_SKILL_COMMAND: '/power-pages:create-site'
     },
     // View type identifier for the agentic-create confirmation webview panel.
     AGENTIC_CREATE_CONFIRM_VIEW_TYPE: 'powerPagesAgenticCreateConfirm'
