@@ -93,8 +93,6 @@ export async function selectAgenticCreateInputs(
     state.hostItem = hostItems.find(item =>
         item.host === initialSelection?.hostSelection.host
     );
-    const title = URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.PANEL_TITLE;
-
     const pickHost = async (input: MultiStepInput): Promise<void> => {
         state.currentStep = "host";
         state.hostSelection = undefined;
@@ -141,7 +139,7 @@ export async function selectAgenticCreateInputs(
                     ignoreFocusOut: boolean;
                 }
             >({
-                title,
+                title: URI_HANDLER_STRINGS.TITLES.TARGET_FOLDER,
                 step: 1,
                 totalSteps: 2,
                 placeholder: URI_HANDLER_STRINGS.TITLES.TARGET_FOLDER_PLACEHOLDER,

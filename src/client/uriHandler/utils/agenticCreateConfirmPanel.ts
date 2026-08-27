@@ -76,6 +76,8 @@ const DEFAULT_CONFIRM_PANEL_DEPENDENCIES: ShowConfirmPanelDependencies = {
 
 const RESTORED_PANEL_READY_MESSAGE = "agenticCreateConfirmRestoredPanelReady";
 const RESTORED_PANEL_DISPOSE_TIMEOUT_MS = 5000;
+const ACTIVE_PANEL_READY_MESSAGE = "agenticCreateConfirmReady";
+const ACTIVE_PANEL_READY_TIMEOUT_MS = 4000;
 
 /**
  * Escapes a string for safe interpolation into HTML text/attribute content. Folder paths and
@@ -314,6 +316,7 @@ function buildHtml(
 
     <script nonce="${nonce}">
         const vscode = acquireVsCodeApi();
+        vscode.postMessage({ type: "${ACTIVE_PANEL_READY_MESSAGE}" });
         const startButton = document.getElementById("start");
         const editButton = document.getElementById("edit");
         const cancelButton = document.getElementById("cancel");
@@ -597,22 +600,6 @@ export function showAgenticCreateConfirmPanel(
     hostNeedsInstall = false,
     onTechnicalDetailsExpanded?: () => void
 ): AgenticCreateConfirmPanelSession {
-    const panel = deps.createWebviewPanel(
-        URI_CONSTANTS.AGENTIC_CREATE_CONFIRM_VIEW_TYPE,
-        URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.PANEL_TITLE,
-        vscode.ViewColumn.Active,
-        { enableScripts: true, retainContextWhenHidden: false }
-    );
-
-    panel.webview.html = buildHtml(
-        hostDisplayName,
-        folderPath,
-        plan,
-        panel.webview.cspSource,
-        allowEdit,
-        setupState,
-        hostNeedsInstall
-    );
     const confirm = URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM;
     const progressStageLabels: Record<MakerProgressStage, string> = {
         prepareAssistant: confirm.PREPARE_ASSISTANT_TITLE,
@@ -622,7 +609,6 @@ export function showAgenticCreateConfirmPanel(
     const progressStages = [...new Set(
         plan.map(command => MAKER_PROGRESS_STAGE_BY_COMMAND[command.kind])
     )];
-
     let settleDecision: (decision: ConfirmDecision) => void;
     const decision = new Promise<ConfirmDecision>((resolve) => {
         settleDecision = resolve;
@@ -643,18 +629,21 @@ export function showAgenticCreateConfirmPanel(
     let launchedTerminal: vscode.Terminal | undefined;
     let technicalDetailsExpanded = false;
     let panelDisposed = false;
+    let activePanelReady = false;
+    let panelRetryCount = 0;
     let resolveRecoveryDecision: ((decision: ConfirmRecoveryDecision) => void) | undefined;
+    let panel: vscode.WebviewPanel;
+
     const postLatestState = (): PromiseLike<boolean> => panel.webview.postMessage({
         type: "agenticCreateConfirmState",
         ...latestStateMessage
     });
-    panel.onDidChangeViewState(({ webviewPanel }) => {
-        if (webviewPanel.visible && latestStateMessage) {
-            void postLatestState();
-        }
-    });
 
-    panel.webview.onDidReceiveMessage((message: { decision?: unknown; action?: unknown }) => {
+    const handleMessage = (message: {
+        type?: unknown;
+        decision?: unknown;
+        action?: unknown;
+    }): void => {
         if (message?.action === "close") {
             resolveRecoveryDecision?.("cancel");
             resolveRecoveryDecision = undefined;
@@ -681,15 +670,81 @@ export function showAgenticCreateConfirmPanel(
                 panel.dispose();
             }
         }
-    });
+    };
 
-    // Closing the tab without choosing an action is a possibly-accidental interruption.
-    panel.onDidDispose(() => {
-        panelDisposed = true;
-        resolveRecoveryDecision?.("cancel");
-        resolveRecoveryDecision = undefined;
-        settleWith("dismissed");
-    });
+    const createActivePanel = (): void => {
+        const createdPanel = deps.createWebviewPanel(
+            URI_CONSTANTS.AGENTIC_CREATE_CONFIRM_VIEW_TYPE,
+            URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.PANEL_TITLE,
+            vscode.ViewColumn.Active,
+            {
+                enableScripts: true,
+                retainContextWhenHidden: false,
+                localResourceRoots: []
+            }
+        );
+        panel = createdPanel;
+        activePanelReady = false;
+        panelDisposed = false;
+        createdPanel.webview.html = buildHtml(
+            hostDisplayName,
+            folderPath,
+            plan,
+            createdPanel.webview.cspSource,
+            allowEdit,
+            setupState,
+            hostNeedsInstall
+        );
+
+        const readyTimer = setTimeout(() => {
+            if (
+                createdPanel === panel
+                && !activePanelReady
+                && panelRetryCount === 0
+            ) {
+                panelRetryCount++;
+                createActivePanel();
+                createdPanel.dispose();
+            }
+        }, ACTIVE_PANEL_READY_TIMEOUT_MS);
+        readyTimer.unref?.();
+
+        createdPanel.onDidChangeViewState(({ webviewPanel }) => {
+            if (
+                createdPanel === panel
+                && webviewPanel.visible
+                && latestStateMessage
+            ) {
+                void postLatestState();
+            }
+        });
+        createdPanel.webview.onDidReceiveMessage(message => {
+            if (createdPanel !== panel) {
+                return;
+            }
+            if (message?.type === ACTIVE_PANEL_READY_MESSAGE) {
+                activePanelReady = true;
+                clearTimeout(readyTimer);
+                if (latestStateMessage) {
+                    void postLatestState();
+                }
+                return;
+            }
+            handleMessage(message);
+        });
+        createdPanel.onDidDispose(() => {
+            clearTimeout(readyTimer);
+            if (createdPanel !== panel) {
+                return;
+            }
+            panelDisposed = true;
+            resolveRecoveryDecision?.("cancel");
+            resolveRecoveryDecision = undefined;
+            settleWith("dismissed");
+        });
+    };
+
+    createActivePanel();
 
     return {
         decision,

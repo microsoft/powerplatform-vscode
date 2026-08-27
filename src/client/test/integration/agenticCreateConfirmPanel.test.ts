@@ -102,6 +102,36 @@ describe("showAgenticCreateConfirmPanel", () => {
         }
     });
 
+    it("recreates the panel once when its active webview never reports ready", async () => {
+        const clock = sinon.useFakeTimers();
+        const first = createFakePanel();
+        const second = createFakePanel();
+        const createWebviewPanel = sinon.stub();
+        createWebviewPanel.onFirstCall().returns(first.panel);
+        createWebviewPanel.onSecondCall().returns(second.panel);
+        const session = showAgenticCreateConfirmPanel(
+            "GitHub Copilot CLI",
+            "c:/work/site",
+            plan,
+            { createWebviewPanel }
+        );
+
+        await clock.tickAsync(4000);
+
+        expect(createWebviewPanel.calledTwice).to.be.true;
+        expect(first.disposeCalled()).to.be.true;
+        expect(second.disposeCalled()).to.be.false;
+        expect(second.html()).to.contain("agenticCreateConfirmReady");
+
+        second.emitMessage({ type: "agenticCreateConfirmReady" });
+        await clock.tickAsync(4000);
+        expect(createWebviewPanel.calledTwice).to.be.true;
+
+        second.emitMessage({ decision: "cancel" });
+        expect(await session.decision).to.equal("cancel");
+        clock.restore();
+    });
+
     it("ignores a queued Edit message after Start has already settled", async () => {
         const fake = createFakePanel();
         const session = showAgenticCreateConfirmPanel(
