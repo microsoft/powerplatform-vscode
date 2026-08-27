@@ -59,6 +59,7 @@ import { resumeAgenticCreateOnActivation } from "./uriHandler/resumeAgenticCreat
 import { registerAgenticCreateConfirmPanelSerializer } from "./uriHandler/utils/agenticCreateConfirmPanel";
 import {
     AGENTIC_CREATE_LOCAL_TRIGGER_COMMAND,
+    AGENTIC_CREATE_LOCAL_TRIGGER_CONTEXT,
     AgenticCreateUriHandler
 } from "./uriHandler/agenticCreateUriHandler";
 
@@ -93,7 +94,14 @@ export async function activate(
     // reload recovery cannot be blocked by unrelated setup.
     const uriHandler = new AgenticCreateUriHandler(_context.globalState);
     _context.subscriptions.push(vscode.window.registerUriHandler(uriHandler));
-    if (_context.extensionMode === vscode.ExtensionMode.Development) {
+    const localTriggerEnabled =
+        _context.extensionMode === vscode.ExtensionMode.Development;
+    await vscode.commands.executeCommand(
+        "setContext",
+        AGENTIC_CREATE_LOCAL_TRIGGER_CONTEXT,
+        localTriggerEnabled
+    );
+    if (localTriggerEnabled) {
         _context.subscriptions.push(vscode.commands.registerCommand(
             AGENTIC_CREATE_LOCAL_TRIGGER_COMMAND,
             () => uriHandler.triggerLocalTest()
