@@ -75,7 +75,7 @@ describe("selectAgenticCreateInputs", () => {
         });
         expect(showQuickPick.callCount).to.equal(2);
         expect(showQuickPick.firstCall.firstArg).to.include({
-            title: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.PANEL_TITLE,
+            title: URI_HANDLER_STRINGS.TITLES.TARGET_FOLDER,
             step: 1,
             totalSteps: 2,
             placeholder: URI_HANDLER_STRINGS.TITLES.TARGET_FOLDER_PLACEHOLDER,
