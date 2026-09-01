@@ -87,6 +87,10 @@
         <note>{0} represents the number of web files</note>
         <target state="translated">{0} 件の Web ファイルを追加しています。既存のファイルはスキップされます</target>
       </trans-unit>
+      <trans-unit id="++CODE++4a122057a87c136eb022c2dc03e836d5af660872449154ed18ab8a4bf41c3d62">
+        <source xml:lang="en">Agent host</source>
+        <target state="translated">エージェント ホスト</target>
+      </trans-unit>
       <trans-unit id="++CODE++a52ace420f2175d08b1577a1bea5445e36801229c074ef9ed6c55a73401fd9c2">
         <source xml:lang="en">All</source>
         <target state="translated">すべて</target>
@@ -167,6 +171,18 @@ This action cannot be undone.</source>
         <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
         <target state="translated">認証に失敗しました。再度実行し、承認してください</target>
       </trans-unit>
+      <trans-unit id="++CODE++a90b528b474ea1f3279d587f9f36e5fcbf68b78802182fad5b4b5a39994b97fa">
+        <source xml:lang="en">Automatic command execution could not continue. Use the commands in the confirmation page as a manual reference.</source>
+        <target state="translated">自動コマンド実行を続行できませんでした。確認ページのコマンドを手動リファレンスとして使用してください。</target>
+      </trans-unit>
+      <trans-unit id="++CODE++77a45eee99657e99dc65689cb4bbb41c0e7ad32d66ced5b8fe9b0518ec804b1d">
+        <source xml:lang="en">Automatic execution could not start because terminal Shell Integration is unavailable. Use the commands below as a manual recovery reference.</source>
+        <target state="translated">ターミナルのシェル統合を利用できないため、自動実行を開始できませんでした。以下のコマンドを手動復旧の参照として使用してください。</target>
+      </trans-unit>
+      <trans-unit id="++CODE++69ed01f62586b0f967577d80f893f23dd9138bf2267188c96e4efcc761e79151">
+        <source xml:lang="en">Automatic execution stopped while trying to: {0}. Use the commands below as a manual recovery reference.</source>
+        <target state="translated">自動実行は、以下を試行中に停止しました: {0}。以下のコマンドを手動復旧の参照として使用してください。</target>
+      </trans-unit>
       <trans-unit id="++CODE++bf27ec2e917b9f2578f8e6372f8656370d24cffe2c5a7b900d0b3280f8ec69fb">
         <source xml:lang="en">Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.</source>
         <target state="translated">変更には注意が必要です。行った変更は、すべてのユーザーに即座に表示されます。[サイトの編集] を選択して編集を行うか、エディター タブを閉じて、編集をキャンセルしてください。</target>
@@ -222,6 +238,10 @@ This action cannot be undone.</source>
         <source xml:lang="en">Changing environment...</source>
         <target state="translated">環境を変更しています...</target>
       </trans-unit>
+      <trans-unit id="++CODE++32e60e730d2e6845d352b9c5dd55af8bed341c220b7f94d58325bc1dc75adb63">
+        <source xml:lang="en">Check Again</source>
+        <target state="translated">もう一度確認</target>
+      </trans-unit>
       <trans-unit id="++CODE++9885d66d0771f63c5a4b5d3b8cbe26be8832bc941243f5b18573975750a9986b">
         <source xml:lang="en">Check the URL and verify the parameters are correct</source>
         <target state="translated">URL をチェックして、パラメーターが正しいことを確認してください</target>
@@ -245,6 +265,10 @@ This action cannot be undone.</source>
       <trans-unit id="++CODE++2c8d1f9ca282591926b952dc5949d44df6204f1f0a3f5183bcd5ef7ae5864bad">
         <source xml:lang="en">Choose web template</source>
         <target state="translated">Web テンプレートを選択します</target>
+      </trans-unit>
+      <trans-unit id="++CODE++246ef8c1130d56f5d9df740a4b26c033a8b9c064daba9bb0a052d18993e87373">
+        <source xml:lang="en">Claude Code</source>
+        <target state="translated">Claude Code</target>
       </trans-unit>
       <trans-unit id="++CODE++83b12c2216efb4fdc924e1deb5182e905e4926ed0c1c324d467107f46d5a26a9">
         <source xml:lang="en">Clear</source>
@@ -293,6 +317,14 @@ The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).
       <trans-unit id="++CODE++7d9eb7acb13e24625c404401d8e88b2350e32162455885f18276cf802f7701ed">
         <source xml:lang="en">Close</source>
         <target state="translated">閉じる</target>
+      </trans-unit>
+      <trans-unit id="++CODE++7211aa590388acbd78f73cb66a2bb97d7492c9073e8e251727a0367deb34d7c8">
+        <source xml:lang="en">Close this command reference.</source>
+        <target state="translated">このコマンド リファレンスを閉じてください。</target>
+      </trans-unit>
+      <trans-unit id="++CODE++d1753029a614b1d88cab379a325334a907b5a5f4edd942614fafad016fdc71bc">
+        <source xml:lang="en">Close without running anything.</source>
+        <target state="translated">何も実行せずに閉じてください。</target>
       </trans-unit>
       <trans-unit id="++CODE++eef726ad55117038c05eaa478148144884ab56cadc5a46785e8221040ff7a6ec">
         <source xml:lang="en">Cloud Instance: {0}</source>
@@ -404,6 +436,10 @@ CodeQL 拡張パネルで使用可能なクエリを確認します。</target>
         <source xml:lang="en">Command failed with exit code: {0}</source>
         <target state="translated">終了コードでコマンドが失敗しました: {0}</target>
       </trans-unit>
+      <trans-unit id="++CODE++4430f89d3ccddba65f0ecdcd57ad3d09f447aa32df98fe214338f0a9bbe7fccd">
+        <source xml:lang="en">Command sequence</source>
+        <target state="translated">コマンド シーケンス</target>
+      </trans-unit>
       <trans-unit id="++CODE++d73890ab56fd9e1ff5349b7bdb41fe0d848c5960c096b30357e26b912456f21f">
         <source xml:lang="en">Compare site with environment</source>
         <target state="translated">サイトと環境の比較</target>
@@ -470,6 +506,14 @@ CodeQL 拡張パネルで使用可能なクエリを確認します。</target>
       <trans-unit id="++CODE++92a450b51c228fc0a45836a3cb66a77276511e8b1a48e237c97f27576695288d">
         <source xml:lang="en">Could not locate CodeQL CLI in global storage.</source>
         <target state="translated">グローバル ストレージに CodeQL CLI が見つかりませんでした。</target>
+      </trans-unit>
+      <trans-unit id="++CODE++8c626503b8eae6da7057f956fedf4bb6a0bd4390576fad8aaed347ec7e46bff2">
+        <source xml:lang="en">Create Power Pages Site</source>
+        <target state="translated">Power Pages サイトの作成</target>
+      </trans-unit>
+      <trans-unit id="++CODE++de58e4c94da7cfd5e18d9a884c15e42b595b5b268d566f9db95adbff0df128c4">
+        <source xml:lang="en">Create a Power Pages site with {0}?</source>
+        <target state="translated">{0} を使用して Power Pages サイトを作成しますか?</target>
       </trans-unit>
       <trans-unit id="++CODE++217ec8ef23f31be4473af7c3e69f7965308bd2284d53eba7daf17b791db5fc74">
         <source xml:lang="en">Created On:</source>
@@ -572,6 +616,10 @@ CodeQL 拡張パネルで使用可能なクエリを確認します。</target>
         <source xml:lang="en">Dislike something? Tell us more.</source>
         <target state="translated">ご不満な点を詳しくお聞かせください。</target>
       </trans-unit>
+      <trans-unit id="++CODE++48845bff334a50a59aaecf499f28a7a24c3b4b891b8b18a9f1169ad8e8a6b261">
+        <source xml:lang="en">Dismiss</source>
+        <target state="translated">閉じる</target>
+      </trans-unit>
       <trans-unit id="++CODE++e9f79ac902b11087dd0d34e8afc1de54df4e48d45861a0c0b6e4edd3c204f314">
         <source xml:lang="en">Display Name: {0}
 Unique Name: {1}
@@ -620,6 +668,10 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
         <source xml:lang="en">Downloading {0} site metadata ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show download output"))...</source>
         <note>This is a markdown formatting which must persist across translations.</note>
         <target state="translated">{0} サイト メタデータ ([詳細](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "ダウンロード出力の表示")) をダウンロードしています...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++4ea2d9bfa687c285ad10e5b21ed9c1a67b3c0bf6f79f746038f9fd903b9614c9">
+        <source xml:lang="en">Edit choices</source>
+        <target state="translated">選択肢を編集</target>
       </trans-unit>
       <trans-unit id="++CODE++ac72407b10d30bf47faf11da09b605a85fc649bd3f2e33acb281655cb9021d9d">
         <source xml:lang="en">Edit the site</source>
@@ -946,6 +998,10 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
         <source xml:lang="en">Getting website endpoint...</source>
         <target state="translated">Web サイトのエンドポイントを取得しています...</target>
       </trans-unit>
+      <trans-unit id="++CODE++0f77fb6416bc872ede59a1594352d2ec69abadcc1870800eb9c0191ebc5a335b">
+        <source xml:lang="en">GitHub Copilot CLI</source>
+        <target state="translated">GitHub Copilot CLI</target>
+      </trans-unit>
       <trans-unit id="++CODE++7b9ca5026e65057a17f951928bd53dc4e7724c0850490d6237636e9d568db4b1">
         <source xml:lang="en">HTML report saved successfully to '{0}'.</source>
         <note>Success message when HTML report is saved. {0} is the file path.</note>
@@ -1012,6 +1068,26 @@ Web サイト コードの作成と編集については、このチャットで
       <trans-unit id="++CODE++569ca49f4aaf7846e952c1d4aeca72febd0b79fa1c4f9db08fd3127551218572">
         <source xml:lang="en">Install</source>
         <target state="translated">インストール</target>
+      </trans-unit>
+      <trans-unit id="++CODE++afb9e7208bfe7bad4615e50b2e4d6faed57c184df9eb5d702d44178e6cdb98c8">
+        <source xml:lang="en">Install the Power Pages plugin (user scope).</source>
+        <target state="translated">Power Pages プラグイン (ユーザー スコープ) をインストールします。</target>
+      </trans-unit>
+      <trans-unit id="++CODE++0319a9891908f56a9700981a93a873b705d4be2baaf7cdf63d657e51d4b3e074">
+        <source xml:lang="en">Install the Power Pages plugin.</source>
+        <target state="translated">Power Pages プラグインをインストールします。</target>
+      </trans-unit>
+      <trans-unit id="++CODE++f4e4fc5fabef6cc519fba95f4f04a16af14cbf8ab4184364347685adf9c6c908">
+        <source xml:lang="en">Install {0}.</source>
+        <target state="translated">{0} をインストールします。</target>
+      </trans-unit>
+      <trans-unit id="++CODE++f8b32f4e92bd84ce1fcd177bec17d43093de3ee8303bb40c1b9ea521ed6a70f6">
+        <source xml:lang="en">Installed</source>
+        <target state="translated">インストール済み</target>
+      </trans-unit>
+      <trans-unit id="++CODE++360963aae4ca47256844e205a2496968f7a9bd00dd397aa364a47eaa4eddbfd6">
+        <source xml:lang="en">Installed · {0}</source>
+        <target state="translated">インストール済み · {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++25109e9c19daeeed3977b84ace83722ac8a4daafcfe4e3709082fcc5b228e7a8">
         <source xml:lang="en">Installing Power Pages generator(v{0})...</source>
@@ -1234,6 +1310,10 @@ URL: {1}
         <source xml:lang="en">Not Now</source>
         <target state="translated">後で実行</target>
       </trans-unit>
+      <trans-unit id="++CODE++d2a8b37ce31e400c29e2b2440d5cc286c4b6b9c8b07c2c3c89a785538a60d0d9">
+        <source xml:lang="en">Not installed · Automatic installation will be included.</source>
+        <target state="translated">未インストール · 自動インストールの対象です。</target>
+      </trans-unit>
       <trans-unit id="++CODE++b2b461f3eae470e95fdcfd61a3cbe6680e84d0a7221a305f696ce44843badc89">
         <source xml:lang="en">Object ID: {0}</source>
         <note>{0} is the Object ID</note>
@@ -1360,6 +1440,10 @@ URL: {1}
         <source xml:lang="en">Power Pages</source>
         <target state="translated">Power Pages</target>
       </trans-unit>
+      <trans-unit id="++CODE++4fbcdd14dcc0d2c5a822c2bd039ce2f69a516e77ffc690eced0c386044c0467f">
+        <source xml:lang="en">Power Pages Agent: {0}</source>
+        <target state="translated">Power Pages エージェント: {0}</target>
+      </trans-unit>
       <trans-unit id="++CODE++1bac158cc07a75506df3774db0ad7c188c19ccad4943c4cf03da8b6700ef9ce4">
         <source xml:lang="en">Power Pages Copilot is now connected to the environment: {0} : {1}</source>
         <note>{0} represents the environment name</note>
@@ -1368,6 +1452,10 @@ URL: {1}
       <trans-unit id="++CODE++f519c6aeba20c1a712f6043bf6eb52bf3bb8834f5f1a6c9ea60244dbbb30453c">
         <source xml:lang="en">Power Pages Server Logic detected! You can now debug your server logic files with breakpoints and IntelliSense.</source>
         <target state="translated">Power Pages サーバー ロジックが検出されました。ブレークポイントと IntelliSense を使用してサーバー ロジック ファイルをデバッグできるようになりました。</target>
+      </trans-unit>
+      <trans-unit id="++CODE++7a32dfb1b02f49b639f9005bd389e30e5d496b57bfe8f59b032394e2ef189ae5">
+        <source xml:lang="en">Power Pages create flow could not continue. {0}</source>
+        <target state="translated">Power Pages の作成フローを続行できませんでした。{0}</target>
       </trans-unit>
       <trans-unit id="++CODE++04ac907168ac84b45263503d1306565bece49c4ae3e8ef4af310b304f03ab6d4">
         <source xml:lang="en">Power Pages site download completed successfully. Would you like to open the downloaded site folder?</source>
@@ -1431,10 +1519,22 @@ URL: {1}
         <source xml:lang="en">Ready to select download folder</source>
         <target state="translated">ダウンロード フォルダーを選択する準備ができました</target>
       </trans-unit>
+      <trans-unit id="++CODE++4beee00982258909dff4f083e46a4dabf7716b14e21d96b80450dee39985a2c3">
+        <source xml:lang="en">Refresh the terminal PATH.</source>
+        <target state="translated">ターミナルの PATH を更新します。</target>
+      </trans-unit>
       <trans-unit id="++CODE++fdc383411e8354c470e19c960527019a9bf48c61c08a5c3ec3fb8b7b32ccba34">
         <source xml:lang="en">Refreshing comparison for {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show download output"))...</source>
         <note>This is a markdown formatting which must persist across translations.</note>
         <target state="translated">{0} の比較 ([詳細](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "ダウンロード出力の表示")) を更新しています...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++439dd80d491837c23c81411c8f2a0bb7ddbc7bbc557748cc59b8a8812cb09d86">
+        <source xml:lang="en">Register the Power Platform Skills marketplace.</source>
+        <target state="translated">Power Platform スキル マーケットプレースを登録してください。</target>
+      </trans-unit>
+      <trans-unit id="++CODE++423e44de44431caef68c0c61968777e088fd50d2577feea60b9ba4a14b28a827">
+        <source xml:lang="en">Reload Window</source>
+        <target state="translated">ウィンドウを再度読み込み</target>
       </trans-unit>
       <trans-unit id="++CODE++ffa98e02f7ce33fc935f02b3b668f6ad57661814dade5f41453fbee2b70cdd95">
         <source xml:lang="en">Remote</source>
@@ -1448,6 +1548,18 @@ URL: {1}
         <source xml:lang="en">Results opened in SARIF viewer successfully.</source>
         <target state="translated">結果が SARIF ビューアーで正常に開かれました。</target>
       </trans-unit>
+      <trans-unit id="++CODE++d640c7421da066618a39daf4266da5f61f66a9b1afcd626481b831a17064965d">
+        <source xml:lang="en">Resume</source>
+        <target state="translated">再開</target>
+      </trans-unit>
+      <trans-unit id="++CODE++1dd14e0777f881f5d27788be6a9c7f28aa14242f14ae2da8c53bbf610484b376">
+        <source xml:lang="en">Return to folder and agent host selection.</source>
+        <target state="translated">フォルダーとエージェント ホストの選択に戻ります。</target>
+      </trans-unit>
+      <trans-unit id="++CODE++10037afa84471c0d5cb366245aacce217d85e834f3b91531937d8301c8e88d02">
+        <source xml:lang="en">Review the steps below. Start in Terminal runs them in order. The agent host may ask you to sign in during its first interactive launch.</source>
+        <target state="translated">以下の手順を確認してください。[ターミナルで開始] では、順番に実行されます。初回の対話型起動時に、エージェント ホストからサインインを求められる場合があります。</target>
+      </trans-unit>
       <trans-unit id="++CODE++00d60e31a4e6b8344d4201f25a6a7dee770713107f6d097abb01559d32b17f26">
         <source xml:lang="en">Run</source>
         <target state="translated">実行</target>
@@ -1455,6 +1567,10 @@ URL: {1}
       <trans-unit id="++CODE++ea703d2310b31c503c3e81398804a049aa6e65f78dbe7014f8f52dae263dadfb">
         <source xml:lang="en">Run Server Logic</source>
         <target state="translated">サーバー ロジックの実行</target>
+      </trans-unit>
+      <trans-unit id="++CODE++930491181d9b2842d9fa56433360eab8a11f2f48c08feda732864864286a2d9d">
+        <source xml:lang="en">Run the command sequence shown above.</source>
+        <target state="translated">上記のコマンド シーケンスを実行してください。</target>
       </trans-unit>
       <trans-unit id="++CODE++80b0001b823cb916650c75c5c08b3bdf9be4951036ec14ee4086b487125d05c8">
         <source xml:lang="en">Run this server logic file without debugging</source>
@@ -1512,6 +1628,10 @@ URL: {1}
       <trans-unit id="++CODE++84744ab78214e2fc629e2925963080b5ad6c4ab1db6cce278900c3e6403bbc2f">
         <source xml:lang="en">Select a website to compare with</source>
         <target state="translated">比較する Web サイトを選択してください</target>
+      </trans-unit>
+      <trans-unit id="++CODE++09423c9974048a464769e508ea44c35c066347d438b5551f57999bf635cadac2">
+        <source xml:lang="en">Select an agent host</source>
+        <target state="translated">エージェント ホストの選択</target>
       </trans-unit>
       <trans-unit id="++CODE++87468e6a845b82466220c11dd0ca315a4389dc1cb8e0ee102035bb4ce5cb7e39">
         <source xml:lang="en">Select an environment</source>
@@ -1644,6 +1764,14 @@ URL: {1}
         <source xml:lang="en">Standard Data Model</source>
         <target state="translated">標準データ モデル</target>
       </trans-unit>
+      <trans-unit id="++CODE++ada66949062668868b5f5b59a0d5571a24f90aae1122cd7e7edd2cf97c8bbd87">
+        <source xml:lang="en">Start in Terminal</source>
+        <target state="translated">ターミナルで開始</target>
+      </trans-unit>
+      <trans-unit id="++CODE++a47f76b01246d53541af8d7efbe79fa7e3da233eec3774b617509262765ce0a0">
+        <source xml:lang="en">Start {0} and ask how to create a site.</source>
+        <target state="translated">{0} を開始し、サイトの作成方法を尋ねてください。</target>
+      </trans-unit>
       <trans-unit id="++CODE++1cb2204ec480119230ac755787106a1550d9329553d146abd56da1947079d577">
         <source xml:lang="en">Starting CodeQL analysis for: {0}</source>
         <target state="translated">次のコードQL 分析を開始しています: {0}</target>
@@ -1667,9 +1795,17 @@ URL: {1}
         <note>Success message after discarding all local changes in a folder.</note>
         <target state="translated">'{1}' 内の {0} 個のファイルに対するローカル変更が正常に破棄されました。</target>
       </trans-unit>
+      <trans-unit id="++CODE++8e76a94ac8320d515375e625bef1829238b097ecbd33611b59eeefd4ffefebfb">
+        <source xml:lang="en">Summary</source>
+        <target state="translated">要約</target>
+      </trans-unit>
       <trans-unit id="++CODE++e3a0cecb7c0c51b4a918164be2e4a75795139fbc652adbed3c6a144cf4adc009">
         <source xml:lang="en">Switching environment...</source>
         <target state="translated">環境を切り替えています...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e89c3109e1f14c41c020d764a9d88a91ddd18a4003ff438156d2eb8bd2b4f1c8">
+        <source xml:lang="en">Target folder</source>
+        <target state="translated">ターゲット フォルダー</target>
       </trans-unit>
       <trans-unit id="++CODE++550b4ee4e0ae69ddf9c18f9d46f59e59da633a2644633d140197d62ded3f2657">
         <source xml:lang="en">Tell us more.</source>
@@ -1695,6 +1831,10 @@ URL: {1}
       <trans-unit id="++CODE++98a4cf89a57d927fce50521aaf27e9fd7dc5046e82725348cf6024469a4f2bdf">
         <source xml:lang="en">The account signed in to VS Code differs from the one authenticated in PAC CLI (Power Platform CLI). This mismatch can cause data not to load or actions to fail because UI commands run through the CLI. To fix it, sign in to VS Code using the same account as your PAC CLI. If needed, you can update your PAC CLI authentication separately via the command line.</source>
         <target state="translated">VS Code にサインインしたアカウントは、PAC CLI (Power Platform CLI) で認証されたアカウントとは異なります。この不一致により、UI コマンドが CLI を介して実行されるため、データが読み込まれなくなったり、アクションが失敗したりする可能性があります。この問題を解決するには、PAC CLI と同じアカウントを使用して VS Code にサインインしてください。必要に応じて、コマンド ラインを使用して PAC CLI 認証を個別に更新できます。</target>
+      </trans-unit>
+      <trans-unit id="++CODE++060c9df5fdf6a8377bb3548fb5a8d170c73a312ff8a509c12d8d7e25661a6477">
+        <source xml:lang="en">The approved sequence is running in the terminal. This page remains available as a command reference.</source>
+        <target state="translated">承認されたシーケンスがターミナルで実行されています。このページはコマンド リファレンスとして引き続き利用できます。</target>
       </trans-unit>
       <trans-unit id="++CODE++0bc2e4918b64f82220bde3dae30dc007a45fb59c3677833fb5a0e275a3b6b54b">
         <source xml:lang="en">The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?</source>
@@ -1914,6 +2054,14 @@ URL: {1}
         <source xml:lang="en">Validating authentication...</source>
         <target state="translated">認証を検証中...</target>
       </trans-unit>
+      <trans-unit id="++CODE++e7ff9f2963479e3a67c6681ca691ffcf17d26c6dbfdc73c76961918bce7e2c89">
+        <source xml:lang="en">Verify that {0} is available in this terminal.</source>
+        <target state="translated">このターミナルで {0} を使用できることを確認します。</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e9d8c62d601b715092d29b92eb772eff38e7130e2f8199a3c41196489ef23bf4">
+        <source xml:lang="en">View Installation Guide</source>
+        <target state="translated">インストール ガイドを表示</target>
+      </trans-unit>
       <trans-unit id="++CODE++d941ee96c6f480390012381f9fc0dfd961f2aa803732860e2505a8453700f458">
         <source xml:lang="en">We encountered an error preparing the files for edit.</source>
         <target state="translated">ファイルの編集準備でエラーが発生しました。</target>
@@ -2063,6 +2211,17 @@ URL: {1}
         <source xml:lang="en">{0} files changed (Imported {1})</source>
         <note>Description for imported comparison. {0} is file count, {1} is formatted date.</note>
         <target state="translated">{0} 個のファイルが変更されました ({1} にインポートしました)</target>
+      </trans-unit>
+      <trans-unit id="++CODE++cbb58bf52139fb4500869fc02c2559dc0bcd41de2b78a941bd8ab8c33e665a26">
+        <source xml:lang="en">{0} is now installed. Resume creating your Power Pages site?</source>
+        <target state="translated">{0} がインストールされました。Power Pages サイトの作成を再開しますか?</target>
+      </trans-unit>
+      <trans-unit id="++CODE++dda309fd0551478f2a322c36bc4ce212517a94dc4011163cfb3c23a125779792">
+        <source xml:lang="en">{0} isn't installed. Install it, then choose {1} — most installs are picked up without restarting VS Code.</source>
+        <note>{0} is the agent host display name and is replaced when the message is shown.
+{1} is the localized label of the Check Again button.
+Do not translate 'VS Code' as it is a product name.</note>
+        <target state="translated">{0} がインストールされていません。インストールしてから {1} を選択してください。ほとんどのインストールは、VS Code の再起動なしでピックアップされています。</target>
       </trans-unit>
       <trans-unit id="++CODE++21471e6993c28688e252bf884db38022cef15af0126d3d7f68c5e4a6c4dfd9d3">
         <source xml:lang="en">{0}: {1} (Remote ↔ Local)</source>
