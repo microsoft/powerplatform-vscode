@@ -12,6 +12,7 @@ import { uriHandlerTelemetryEventNames } from "../telemetry/uriHandlerTelemetryE
 import { buildCreateFlowTelemetry, parseCreateFlowParameters } from "./createFlowParams";
 import { emitCreateFlowError, emitCreateFlowEvent } from "../telemetry/createFlowTelemetry";
 import { runCreateFlowCommonStages } from "./createFlowCommonStages";
+import { isSupportedContractVersion } from "./createFlowContractVersion";
 
 /**
  * Handles the `/pacCreate` deep link launched from the Power Pages home page, which will open
@@ -55,6 +56,19 @@ export class PacCreateHandler {
         }
 
         try {
+            if (!isSupportedContractVersion(params.version)) {
+                emitCreateFlowEvent(
+                    uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED,
+                    params,
+                    'pac',
+                    {
+                        reason: 'unsupportedContractVersion',
+                        version: params.version ?? ''
+                    }
+                );
+                return;
+            }
+
             emitCreateFlowEvent(
                 uriHandlerTelemetryEventNames.URI_HANDLER_PAC_CREATE_TRIGGERED,
                 params,

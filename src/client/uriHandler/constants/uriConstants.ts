@@ -34,7 +34,8 @@ export const URI_CONSTANTS = {
         PORTAL_SCHEMA_V2: 'portalschemav2'
     },
     SOURCE_VALUES: {
-        POWER_PAGES_HOME: 'powerPagesHome'
+        POWER_PAGES_HOME: 'powerPagesHome',
+        STUDIO: 'studio'
     },
     AGENT_HOST_VALUES: {
         COPILOT: 'copilot',
@@ -42,7 +43,8 @@ export const URI_CONSTANTS = {
         AUTO: 'auto'
     },
     CONTRACT_VERSION: {
-        CURRENT: '1'
+        CURRENT: '1',
+        SUPPORTED: ['1'] as const
     },
     MODEL_VERSIONS: {
         VERSION_1: 1,
@@ -50,7 +52,30 @@ export const URI_CONSTANTS = {
     },
     TIMEOUTS: {
         COMPLETION_DIALOG: 30000 // 30 seconds
-    }
+    },
+    // TODO: confirm final install-guide URLs with design
+    AGENT_HOST_INSTALL_GUIDE_URLS: {
+        copilot: 'https://docs.github.com/en/copilot/how-tos/copilot-cli/set-up-copilot-cli/install-copilot-cli',
+        claude: 'https://code.claude.com/docs/en/setup'
+    },
+    // Resume markers remain fresh for 10 minutes.
+    RESUME_MARKER: {
+        KEY: 'powerPages.agenticCreate.resumeMarker',
+        TTL_MS: 600000
+    },
+    // Power Pages plugin bootstrap values handed to the selected agent host. Product and CLI
+    // identifiers are intentionally not localized.
+    AGENT_HOST_PLUGIN: {
+        // GitHub repository backing the Power Platform Skills plugin marketplace.
+        // @see https://github.com/microsoft/power-platform-skills
+        MARKETPLACE_REPO: 'microsoft/power-platform-skills',
+        // Power Pages plugin identifier in <plugin>@<marketplace> form understood by both hosts.
+        PLUGIN_ID: 'power-pages@power-platform-skills',
+        // Seed prompt used to start the interactive session after the plugin is installed.
+        CREATE_PROMPT: 'How to use Power Pages Plugin for creating a site?'
+    },
+    // View type identifier for the agentic-create confirmation webview panel.
+    AGENTIC_CREATE_CONFIRM_VIEW_TYPE: 'powerPagesAgenticCreateConfirm'
 } as const;
 
 /**

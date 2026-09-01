@@ -55,6 +55,9 @@ import { activateServerApiAutocomplete } from "../common/intellisense";
 import { EnableServerLogicChanges } from "../common/ecs-features/ecsFeatureGates";
 import { setServerApiTelemetryContext } from "../common/intellisense/ServerApiTelemetryContext";
 import { activateServerLogicDebugger } from "../debugger/server-logic/ServerLogicDebugger";
+import { resumeAgenticCreateOnActivation } from "./uriHandler/resumeAgenticCreateActivation";
+import { registerAgenticCreateConfirmPanelSerializer } from "./uriHandler/utils/agenticCreateConfirmPanel";
+import { AgenticCreateUriHandler } from "./uriHandler/agenticCreateUriHandler";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -71,12 +74,23 @@ export async function activate(
 ): Promise<void> {
     _context = context;
 
+    // Register the transient confirmation serializer before any awaited activation work. VS Code
+    // may be waiting for it while restoring a panel, and authentication can remain interactive.
+    _context.subscriptions.push(registerAgenticCreateConfirmPanelSerializer());
+
     // Logging telemetry in US cluster for unauthenticated scenario
     oneDSLoggerWrapper.instantiate("us");
 
     oneDSLoggerWrapper.getLogger().traceInfo("Start", {
         "pac.userId": readUserSettings().uniqueId
     });
+
+    // Agentic Create does not depend on Microsoft authentication or PAC acquisition. Register the
+    // shared URI router and resume continuation before either awaited operation so cold links and
+    // reload recovery cannot be blocked by unrelated setup.
+    const uriHandler = new AgenticCreateUriHandler(_context.globalState);
+    _context.subscriptions.push(vscode.window.registerUriHandler(uriHandler));
+    void resumeAgenticCreateOnActivation(_context.globalState);
 
     // Cooldown prevents a tight retry loop: failed auth can trigger another session change,
     // which re-invokes authenticateUserInVSCode, causing runaway error telemetry.
@@ -112,7 +126,9 @@ export async function activate(
         );
     }
 
-    await authenticateUserInVSCode(); //Authentication for extension
+    // Authentication is unrelated to Agentic Create and can remain interactive. Do not block URI
+    // activation or reload recovery while the user responds to the sign-in prompt.
+    void authenticateUserInVSCode();
 
     // portal web view panel
     _context.subscriptions.push(
@@ -176,6 +192,7 @@ export async function activate(
                 PortalWebView.revive(webviewPanel);
             },
         });
+
     }
 
     // Add CRUD related callback subscription here
@@ -183,13 +200,26 @@ export async function activate(
 
     const cliContext = new CliAcquisitionContext(_context);
     const cli = new CliAcquisition(cliContext);
-    const cliPath = await cli.ensureInstalled();
-    const pacTerminal = new PacTerminal(_context, cliPath);
     _context.subscriptions.push(cli);
+    let cliPath: string;
+    try {
+        cliPath = await cli.ensureInstalled();
+    } catch (error) {
+        oneDSLoggerWrapper.getLogger().traceError(
+            "PacCliAcquisitionFailed",
+            "PAC CLI acquisition failed during extension activation",
+            error instanceof Error ? error : new Error(String(error))
+        );
+        // The Agentic Create URI handler and reload continuation are already registered and do not
+        // require PAC. Let activation complete so those experiences remain available.
+        return;
+    }
+    const pacTerminal = new PacTerminal(_context, cliPath);
     _context.subscriptions.push(pacTerminal);
 
     // Register auth and env panels
     const pacWrapper = pacTerminal.getWrapper();
+    uriHandler.initializePacWrapper(pacWrapper);
     const basicPanels = RegisterBasicPanels(pacWrapper);
     _context.subscriptions.push(...basicPanels);
 
