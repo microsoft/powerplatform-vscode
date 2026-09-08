@@ -59,7 +59,8 @@
     "email": "PPTools@microsoft.com"
   },
   "engines": {
-    "vscode": "^1.91.0",
+    "vscode": "^1.101.0",
+    "node": ">=22.12.0",
     "npm": ">=8.3.0"
   },
   "extensionPack": [
@@ -1784,12 +1785,11 @@
     "@types/mocha": "^8.0.3",
     "@types/node": "^14.14.6",
     "@types/node-fetch": "^2.6.2",
-    "@types/puppeteer-core": "^5.4.0",
     "@types/recursive-readdir": "^2.2.1",
     "@types/sinon": "^10.0.12",
     "@types/unzip-stream": "^0.3.0",
     "@types/uuid": "^8.3.0",
-    "@types/vscode": "^1.91.0",
+    "@types/vscode": "^1.101.0",
     "@types/vscode-webview": "^1.57.1",
     "@types/webpack": "^5.28.0",
     "@types/webpack-env": "^1.17.0",
@@ -1857,7 +1857,7 @@
     "https-browserify": "^1.0.0",
     "liquidjs": "10.27.1",
     "n-readlines": "^1.0.1",
-    "puppeteer-core": "^22.13.1",
+    "puppeteer-core": "^25.9.0",
     "recursive-readdir": "^2.2.3",
     "stream-http": "^3.2.0",
     "tty-browserify": "^0.0.1",
