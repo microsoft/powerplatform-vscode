@@ -1876,10 +1876,10 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       <source xml:lang="en">Overview</source>
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.title">
-      <source xml:lang="en">POWER PAGES ACTIONS</source>
+      <source xml:lang="en">Power Pages Actions</source>
     </trans-unit>
     <trans-unit id="microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title">
-      <source xml:lang="en">POWER PAGES ACTIONS</source>
+      <source xml:lang="en">Power Pages Actions</source>
     </trans-unit>
     <trans-unit id="power-platform-activitybar.title">
       <source xml:lang="en">Power Platform</source>

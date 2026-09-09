@@ -90,9 +90,9 @@
       "The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.saveConflict-learn-more).', keeping brackets and the text in the parentheses unmodified"
     ]
   },
-  "microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title": "POWER PAGES ACTIONS",
+  "microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title": "Power Pages Actions",
   "powerplatform.pages.previewSite.title": "Preview Site",
-  "microsoft.powerplatform.pages.actionsHub.title": "POWER PAGES ACTIONS",
+  "microsoft.powerplatform.pages.actionsHub.title": "Power Pages Actions",
   "microsoft.powerplatform.pages.actionsHub.refresh.title": "Refresh",
   "microsoft.powerplatform.pages.actionsHub.switchEnvironment.title": "Change Environment",
   "microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails.title": "Show Environment Details",
