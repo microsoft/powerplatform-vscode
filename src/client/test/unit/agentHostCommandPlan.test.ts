@@ -40,9 +40,10 @@ describe("buildAgentHostCommandPlan", () => {
             },
             {
                 kind: "launchHost",
-                commandLine: 'copilot -i "/power-pages:create-site Create a Power Pages site"',
+                commandLine: 'copilot --autopilot -i "/power-pages:create-site Create a Power Pages site"',
                 executable: "copilot",
                 args: [
+                    "--autopilot",
                     "-i",
                     "/power-pages:create-site Create a Power Pages site"
                 ],
@@ -217,10 +218,11 @@ describe("buildAgentHostCommandPlan", () => {
         const launch = plan[0];
 
         expect(launch.commandLine).to.equal(
-            'copilot -i "/power-pages:create-site A volunteer portal with \\"Event signup\\" and donations"'
+            'copilot --autopilot -i "/power-pages:create-site A volunteer portal with \\"Event signup\\" and donations"'
         );
         expect(launch.executable).to.equal("copilot");
         expect(launch.args).to.deep.equal([
+            "--autopilot",
             "-i",
             '/power-pages:create-site A volunteer portal with "Event signup" and donations'
         ]);

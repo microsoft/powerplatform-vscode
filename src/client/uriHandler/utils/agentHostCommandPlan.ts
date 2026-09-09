@@ -234,9 +234,9 @@ export function buildAgentHostCommandPlan(
                 } satisfies PlannedCommand] : []),
                 {
                     kind: "launchHost",
-                    commandLine: `copilot -i ${previewPrompt}`,
+                    commandLine: `copilot --autopilot -i ${previewPrompt}`,
                     executable: "copilot",
-                    args: ["-i", createPrompt],
+                    args: ["--autopilot", "-i", createPrompt],
                     description: launchDescription
                 }
             ];
