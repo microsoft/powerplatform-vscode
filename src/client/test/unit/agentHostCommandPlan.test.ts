@@ -67,9 +67,11 @@ describe("buildAgentHostCommandPlan", () => {
             },
             {
                 kind: "launchHost",
-                commandLine: 'claude "/power-pages:create-site Create a Power Pages site"',
+                commandLine: 'claude --permission-mode auto "/power-pages:create-site Create a Power Pages site"',
                 executable: "claude",
                 args: [
+                    "--permission-mode",
+                    "auto",
                     "/power-pages:create-site Create a Power Pages site"
                 ],
                 description: "start Claude Code"
@@ -221,6 +223,31 @@ describe("buildAgentHostCommandPlan", () => {
         expect(launch.args).to.deep.equal([
             "-i",
             '/power-pages:create-site A volunteer portal with "Event signup" and donations'
+        ]);
+    });
+
+    it("launches Claude in auto permission mode with the maker prompt", () => {
+        const plan = buildAgentHostCommandPlan(
+            AgentHost.Claude,
+            "Claude Code",
+            strings,
+            undefined,
+            {
+                marketplace: "present",
+                plugin: "present"
+            },
+            "A customer support portal"
+        );
+        const launch = plan[0];
+
+        expect(launch.commandLine).to.equal(
+            'claude --permission-mode auto "/power-pages:create-site A customer support portal"'
+        );
+        expect(launch.executable).to.equal("claude");
+        expect(launch.args).to.deep.equal([
+            "--permission-mode",
+            "auto",
+            "/power-pages:create-site A customer support portal"
         ]);
     });
 });
