@@ -220,8 +220,8 @@ This action cannot be undone.</source>
     <trans-unit id="++CODE++2e26d2dfb9cee802cfa45d319a651b63ff4c20c05089a3d340a03aef7210002c">
       <source xml:lang="en">Choose parent page</source>
     </trans-unit>
-    <trans-unit id="++CODE++b4d5be9463a6ea2b10ba23f3a628111df78cd534fec4ea24bfe7162426ff120f">
-      <source xml:lang="en">Choose this if you use Claude. Opens a guided conversation in the VS Code terminal.</source>
+    <trans-unit id="++CODE++3f2ae3811f588d2d950d97a71dfb1f71ed49d022fa6b7dff2033abd1d3ad8232">
+      <source xml:lang="en">Choose this if you use Claude Code. Opens a guided conversation in the VS Code terminal.</source>
     </trans-unit>
     <trans-unit id="++CODE++f52f25757078968b67e2eddb547bfd6f95bb7b9087f061ae903216b1865c4d37">
       <source xml:lang="en">Choose this if you use GitHub Copilot. Opens a guided conversation in the VS Code terminal.</source>

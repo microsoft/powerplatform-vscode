@@ -70,7 +70,7 @@ export const URI_HANDLER_STRINGS = {
         INSTALLED: vscode.l10n.t("Ready to use"),
         INSTALLED_WITH_VERSION: vscode.l10n.t("Ready to use · {0}"),
         COPILOT_DETAIL: vscode.l10n.t("Choose this if you use GitHub Copilot. Opens a guided conversation in the VS Code terminal."),
-        CLAUDE_DETAIL: vscode.l10n.t("Choose this if you use Claude. Opens a guided conversation in the VS Code terminal.")
+        CLAUDE_DETAIL: vscode.l10n.t("Choose this if you use Claude Code. Opens a guided conversation in the VS Code terminal.")
     },
     TITLES: {
         DOWNLOAD_TITLE: vscode.l10n.t("Download Power Pages Site"),

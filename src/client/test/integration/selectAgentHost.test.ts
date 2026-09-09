@@ -37,18 +37,21 @@ describe("selectAgentHost", () => {
         expect(items.map(item => ({
             label: item.label,
             description: item.description,
+            detail: item.detail,
             host: item.host,
             installed: item.installed
         }))).to.deep.equal([
             {
                 label: "GitHub Copilot CLI",
                 description: "Ready to use · 1.2.3",
+                detail: "Choose this if you use GitHub Copilot. Opens a guided conversation in the VS Code terminal.",
                 host: AgentHost.Copilot,
                 installed: true
             },
             {
                 label: "Claude Code",
                 description: "Not installed · VS Code can install it after you review the setup",
+                detail: "Choose this if you use Claude Code. Opens a guided conversation in the VS Code terminal.",
                 host: AgentHost.Claude,
                 installed: false
             }
