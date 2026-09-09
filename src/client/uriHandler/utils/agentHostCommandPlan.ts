@@ -188,9 +188,9 @@ export function buildAgentHostCommandPlan(
                 } satisfies PlannedCommand] : []),
                 {
                     kind: "launchHost",
-                    commandLine: `claude ${previewPrompt}`,
+                    commandLine: `claude --permission-mode auto ${previewPrompt}`,
                     executable: "claude",
-                    args: [createPrompt],
+                    args: ["--permission-mode", "auto", createPrompt],
                     description: launchDescription
                 }
             ];
