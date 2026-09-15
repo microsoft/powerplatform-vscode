@@ -38,7 +38,7 @@ export function parseCreateFlowParameters(uri: vscode.Uri): CreateFlowParameters
         source: urlParams.get(URI_CONSTANTS.PARAMETERS.SOURCE),
         agentHost: urlParams.get(URI_CONSTANTS.PARAMETERS.AGENT_HOST),
         version: urlParams.get(URI_CONSTANTS.PARAMETERS.VERSION),
-        // Power Pages Home does not emit this parameter yet; parse it defensively for the upcoming contract.
+        // Studio supplies its session ID so the web and VS Code portions of the funnel can be joined.
         correlationId: urlParams.get(URI_CONSTANTS.PARAMETERS.REFERRER_SESSION_ID)
     };
 }
@@ -50,8 +50,16 @@ export function parseCreateFlowParameters(uri: vscode.Uri): CreateFlowParameters
  * tenant identifiers remain redacted to presence flags.
  */
 export function buildCreateFlowTelemetry(params: CreateFlowParameters): Record<string, string> {
+    const source = params.source || 'unknown';
+    const isStudioEntryPoint = source === URI_CONSTANTS.SOURCE_VALUES.STUDIO
+        || source === URI_CONSTANTS.SOURCE_VALUES.POWER_PAGES_HOME
+    const entryPoint = isStudioEntryPoint
+        ? URI_CONSTANTS.SOURCE_VALUES.STUDIO
+        : 'unknown';
+
     return {
-        source: params.source || 'unknown',
+        source,
+        entryPoint,
         agentHost: params.agentHost || 'unspecified',
         version: params.version || 'unspecified',
         region: params.region || 'unspecified',
@@ -59,6 +67,7 @@ export function buildCreateFlowTelemetry(params: CreateFlowParameters): Record<s
         hasOrgUrl: params.orgUrl ? 'true' : 'false',
         hasWebsiteId: params.websiteId ? 'true' : 'false',
         hasTenantId: params.tenantId ? 'true' : 'false',
+        hasReferrerSessionId: params.correlationId ? 'true' : 'false',
         environmentId: params.environmentId || '',
         websiteId: params.websiteId || ''
     };

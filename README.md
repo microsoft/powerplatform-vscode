@@ -47,7 +47,7 @@ The extension supports VS Code for the Web with a tailored experience including 
 
 ## Requirements
 
-- VS Code **1.91.0** or later
+- VS Code **1.101.0** or later
 - [.NET 6.0+ SDK](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) (used to install the pac CLI as a dotnet tool)
 
 ## Getting Started
