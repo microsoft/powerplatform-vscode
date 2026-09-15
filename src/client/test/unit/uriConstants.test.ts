@@ -33,8 +33,20 @@ describe("URI_CONSTANTS deep-link contract", () => {
     it("defines the versioned contract and known enumerated values", () => {
         expect(URI_CONSTANTS.CONTRACT_VERSION.CURRENT).to.equal("1");
         expect(URI_CONSTANTS.SOURCE_VALUES.POWER_PAGES_HOME).to.equal("powerPagesHome");
+        expect(URI_CONSTANTS.SOURCE_VALUES.STUDIO).to.equal("studio");
         expect(URI_CONSTANTS.AGENT_HOST_VALUES.COPILOT).to.equal("copilot");
         expect(URI_CONSTANTS.AGENT_HOST_VALUES.CLAUDE).to.equal("claude");
         expect(URI_CONSTANTS.AGENT_HOST_VALUES.AUTO).to.equal("auto");
+    });
+
+    it("defines agent host install metadata", () => {
+        expect(URI_CONSTANTS.AGENT_HOST_INSTALL_GUIDE_URLS.copilot).to.equal(
+            "https://docs.github.com/en/copilot/how-tos/copilot-cli/set-up-copilot-cli/install-copilot-cli"
+        );
+        expect(URI_CONSTANTS.AGENT_HOST_INSTALL_GUIDE_URLS.claude).to.equal(
+            "https://code.claude.com/docs/en/setup"
+        );
+        expect(URI_CONSTANTS.RESUME_MARKER.KEY).to.equal("powerPages.agenticCreate.resumeMarker");
+        expect(URI_CONSTANTS.RESUME_MARKER.TTL_MS).to.equal(600000);
     });
 });

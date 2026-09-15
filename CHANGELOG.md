@@ -1,5 +1,12 @@
 # Change Log - Power Platform Extension
 
+## 2.0.154
+- pac CLI 2.12.1, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- Enhancements
+  - Updated Power Pages Actions titles to match VS Code title casing. [#1682](https://github.com/microsoft/powerplatform-vscode/pull/1682)
+- Security and Compatibility
+  - Updated dependencies to address security vulnerabilities. The minimum supported VS Code version is now 1.101.0. [#1677](https://github.com/microsoft/powerplatform-vscode/pull/1677) [#1679](https://github.com/microsoft/powerplatform-vscode/pull/1679)
+
 ## 2.0.152
 - pac CLI 2.11.2, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 - Bug Fixes and enhancements

@@ -47,7 +47,8 @@ describe("Create-flow telemetry", () => {
             hasEnvironmentId: 'true',
             hasOrgUrl: 'true',
             hasTenantId: 'true',
-            hasWebsiteId: 'true'
+            hasWebsiteId: 'true',
+            hasReferrerSessionId: 'true'
         });
     };
 
@@ -65,7 +66,7 @@ describe("Create-flow telemetry", () => {
     });
 
     it("defines the create-flow funnel events in stage order", () => {
-        expect(Object.values(uriHandlerTelemetryEventNames).slice(-13)).to.deep.equal([
+        expect(Object.values(uriHandlerTelemetryEventNames).slice(-26)).to.deep.equal([
             'UriHandlerCreateAuthStarted',
             'UriHandlerCreateAuthCompleted',
             'UriHandlerCreateAuthFailed',
@@ -76,9 +77,22 @@ describe("Create-flow telemetry", () => {
             'UriHandlerPacCreateTerminalLaunched',
             'UriHandlerAgenticCreateHostDetected',
             'UriHandlerAgenticCreateHostSelected',
+            'UriHandlerAgenticCreateConfirmActionClicked',
             'UriHandlerAgenticCreatePluginSequenceLaunched',
             'UriHandlerAgenticCreateSamplePromptSent',
-            'UriHandlerCreateFlowDropped'
+            'UriHandlerCreateFlowDropped',
+            'UriHandlerAgenticCreateHostInstallPrompted',
+            'UriHandlerAgenticCreateHostInstallGuideOpened',
+            'UriHandlerAgenticCreateHostInstallRechecked',
+            'UriHandlerAgenticCreateHostInstallReloadRequested',
+            'UriHandlerAgenticCreateHostInstallResumed',
+            'UriHandlerAgenticCreateHostInstallDismissed',
+            'UriHandlerAgenticCreateHostBootstrapOffered',
+            'UriHandlerAgenticCreateHostBootstrapStarted',
+            'UriHandlerAgenticCreateHostBootstrapCompleted',
+            'UriHandlerAgenticCreateHostBootstrapRecovery',
+            'UriHandlerAgenticCreateCommandSequenceRecovery',
+            'UriHandlerAgenticCreateHandoffCompleted'
         ]);
     });
 
@@ -108,6 +122,7 @@ describe("Create-flow telemetry", () => {
             channel: 'pac',
             contractVersion: URI_CONSTANTS.CONTRACT_VERSION.CURRENT,
             correlationId: params.correlationId,
+            referrerSessionId: params.correlationId,
             authenticationMode: 'existing',
             region: 'extra-region'
         });
@@ -136,6 +151,7 @@ describe("Create-flow telemetry", () => {
             channel: 'agent',
             contractVersion: URI_CONSTANTS.CONTRACT_VERSION.CURRENT,
             correlationId: params.correlationId,
+            referrerSessionId: params.correlationId,
             dropStage: 'authentication'
         });
         expectIdentifiersHandled(properties);
@@ -155,6 +171,34 @@ describe("Create-flow telemetry", () => {
         const properties = buildCreateFlowTelemetry(params);
 
         expectIdentifiersHandled(properties);
+        expect(properties.entryPoint).to.equal(URI_CONSTANTS.SOURCE_VALUES.STUDIO);
+    });
+
+    it("normalizes the Studio URI source into a stable funnel entry point", () => {
+        const properties = buildCreateFlowTelemetry({
+            ...params,
+            source: URI_CONSTANTS.SOURCE_VALUES.STUDIO
+        });
+
+        expect(properties).to.include({
+            source: URI_CONSTANTS.SOURCE_VALUES.STUDIO,
+            entryPoint: URI_CONSTANTS.SOURCE_VALUES.STUDIO
+        });
+    });
+
+    it("adds stable funnel stage and outcome properties to mapped events", () => {
+        emitCreateFlowEvent(
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_RECEIVED,
+            params,
+            'agent'
+        );
+
+        expect(traceInfoStub.firstCall.args[1]).to.include({
+            funnelStage: 'uriReceipt',
+            funnelOutcome: 'received',
+            referrerSessionId: params.correlationId,
+            environmentId: params.environmentId
+        });
     });
 
     it("uses empty identifier values when website and environment IDs are absent", () => {

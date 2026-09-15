@@ -20,6 +20,7 @@ describe("MultiStepInput", () => {
         buttons: vscode.QuickInputButton[];
         busy: boolean;
         enabled: boolean;
+        ignoreFocusOut: boolean;
         show: sinon.SinonStub;
         dispose: sinon.SinonStub;
         onDidTriggerButton: sinon.SinonStub;
@@ -71,6 +72,7 @@ describe("MultiStepInput", () => {
             buttons: [],
             busy: false,
             enabled: true,
+            ignoreFocusOut: false,
             show: sandbox.stub(),
             dispose: sandbox.stub(),
             onDidTriggerButton: sandbox.stub().callsFake((callback) => {
@@ -186,7 +188,30 @@ describe("MultiStepInput", () => {
             expect(mockQuickPick.totalSteps).to.equal(3);
             expect(mockQuickPick.placeholder).to.equal("Select an item");
             expect(mockQuickPick.items).to.deep.equal(items);
+            expect(mockQuickPick.ignoreFocusOut).to.be.false;
             expect(mockQuickPick.show.calledOnce).to.be.true;
+        });
+
+        it("should keep focus and cancel when hidden when requested", async () => {
+            let completed = false;
+            const startStep = async (input: MultiStepInput): Promise<void> => {
+                await input.showQuickPick({
+                    title: "Test",
+                    step: 1,
+                    totalSteps: 1,
+                    items: [{ label: "Item" }],
+                    placeholder: "Select",
+                    ignoreFocusOut: true
+                });
+                completed = true;
+            };
+
+            setTimeout(() => hideCallbacks[0]?.(), 0);
+
+            await MultiStepInput.run(startStep);
+
+            expect(mockQuickPick.ignoreFocusOut).to.be.true;
+            expect(completed).to.be.false;
         });
 
         it("should resolve with selected item", async () => {
