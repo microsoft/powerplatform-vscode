@@ -2,10 +2,7 @@
 
 ## 2.0.154
 - pac CLI 2.12.1, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
-- New Features
-  - Added an Agentic Create flow for Power Pages that lets you select a target folder and agent host, review or edit generated commands, and launch the approved plan in a terminal. [#1670](https://github.com/microsoft/powerplatform-vscode/pull/1670) [#1671](https://github.com/microsoft/powerplatform-vscode/pull/1671)
 - Enhancements
-  - Improved Agentic Create activation, agent host setup and recovery, and webview accessibility. [#1672](https://github.com/microsoft/powerplatform-vscode/pull/1672)
   - Updated Power Pages Actions titles to match VS Code title casing. [#1682](https://github.com/microsoft/powerplatform-vscode/pull/1682)
 - Security and Compatibility
   - Updated dependencies to address security vulnerabilities. The minimum supported VS Code version is now 1.101.0. [#1677](https://github.com/microsoft/powerplatform-vscode/pull/1677) [#1679](https://github.com/microsoft/powerplatform-vscode/pull/1679)
