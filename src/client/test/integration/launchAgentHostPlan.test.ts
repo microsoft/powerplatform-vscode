@@ -12,6 +12,7 @@ import {
     launchAgentHostPlan,
     LaunchAgentHostPlanDependencies
 } from "../../uriHandler/utils/launchAgentHostPlan";
+import { resolveAgentHostTerminalShell } from "../../uriHandler/utils/agentHostTerminalShell";
 
 describe("launchAgentHostPlan", () => {
     const folderUri = vscode.Uri.file("C:\\sites\\target");
@@ -35,15 +36,19 @@ describe("launchAgentHostPlan", () => {
 
     const buildDependencies = (
         exitCodes: Array<number | undefined> = [0, 0],
-        withShellIntegration = true
+        withShellIntegration = true,
+        processId: Promise<number | undefined> = Promise.resolve(123),
+        shellIntegrationEnabled = true
     ): {
         deps: LaunchAgentHostPlanDependencies;
         createTerminal: sinon.SinonStub;
         executeObservedCommand: sinon.SinonStub;
         executeInteractiveCommand: sinon.SinonStub;
+        waitForShellIntegration: sinon.SinonStub;
     } => {
         const terminal = {
-            show: sinon.stub()
+            show: sinon.stub(),
+            processId
         } as unknown as vscode.Terminal;
         const createTerminal = sinon.stub().returns(terminal);
         const executeInteractiveCommand = sinon.stub().returns({} as vscode.TerminalShellExecution);
@@ -57,18 +62,22 @@ describe("launchAgentHostPlan", () => {
                 output: ""
             })
         );
+        const waitForShellIntegration = sinon.stub().resolves(
+            withShellIntegration ? shellIntegration : undefined
+        );
 
         return {
             deps: {
                 createTerminal,
-                waitForShellIntegration: sinon.stub().resolves(
-                    withShellIntegration ? shellIntegration : undefined
-                ),
-                executeCommand: executeObservedCommand
+                waitForShellIntegration,
+                executeCommand: executeObservedCommand,
+                isShellIntegrationEnabled: sinon.stub().returns(shellIntegrationEnabled),
+                platform: "win32"
             },
             createTerminal,
             executeObservedCommand,
-            executeInteractiveCommand
+            executeInteractiveCommand,
+            waitForShellIntegration
         };
     };
 
@@ -116,6 +125,183 @@ describe("launchAgentHostPlan", () => {
             "install-command"
         ]);
         expect(executeInteractiveCommand.calledOnceWithExactly("launch-command")).to.be.true;
+    });
+
+    it("preserves the selected default terminal profile when no bootstrap shell is required", async () => {
+        const { deps, createTerminal } = buildDependencies();
+
+        const result = await launchAgentHostPlan(
+            folderUri,
+            plan,
+            "GitHub Copilot CLI",
+            deps
+        );
+
+        expect(result.status).to.equal("launched");
+        expect(createTerminal.firstCall.firstArg).to.deep.equal({
+            name: "Power Pages Agent: GitHub Copilot CLI",
+            cwd: folderUri.fsPath,
+            isTransient: true
+        });
+    });
+
+    it("opens PowerShell 7 when cmd.exe is the configured Windows default", async () => {
+        const { deps, createTerminal } = buildDependencies();
+        const terminalShell = resolveAgentHostTerminalShell(
+            "cmd.exe",
+            "win32",
+            command => command === "pwsh"
+                ? "C:\\Program Files\\PowerShell\\7\\pwsh.exe"
+                : undefined
+        );
+
+        const result = await launchAgentHostPlan(
+            folderUri,
+            plan,
+            "GitHub Copilot CLI",
+            deps,
+            terminalShell.terminalShellPath
+        );
+
+        expect(result.status).to.equal("launched");
+        expect(createTerminal.firstCall.firstArg).to.deep.equal({
+            name: "Power Pages Agent: GitHub Copilot CLI",
+            cwd: folderUri.fsPath,
+            isTransient: true,
+            shellPath: "C:\\Program Files\\PowerShell\\7\\pwsh.exe"
+        });
+    });
+
+    it("does not wait indefinitely for the terminal process ID", async () => {
+        const processId = new Promise<number | undefined>(() => undefined);
+        const {
+            deps,
+            waitForShellIntegration
+        } = buildDependencies([0, 0], true, processId);
+
+        const resultPromise = launchAgentHostPlan(
+            folderUri,
+            plan,
+            "GitHub Copilot CLI",
+            deps
+        );
+        const result = await resultPromise;
+
+        expect(result.status).to.equal("launched");
+        expect(waitForShellIntegration.calledOnce).to.be.true;
+    });
+
+    it("opens no terminal when Shell Integration is disabled", async () => {
+        const {
+            deps,
+            createTerminal,
+            executeObservedCommand,
+            executeInteractiveCommand
+        } = buildDependencies([], true, Promise.resolve(123), false);
+
+        const result = await launchAgentHostPlan(
+            folderUri,
+            plan,
+            "GitHub Copilot CLI",
+            deps,
+            "pwsh"
+        );
+
+        expect(result).to.deep.equal({
+            status: "recovery",
+            reason: "shellIntegrationDisabled",
+            completedCommandKinds: [],
+            skippedCommandKinds: [],
+            setupState: {
+                marketplace: "unknown",
+                plugin: "unknown"
+            }
+        });
+        expect(createTerminal.notCalled).to.be.true;
+        expect(executeObservedCommand.notCalled).to.be.true;
+        expect(executeInteractiveCommand.notCalled).to.be.true;
+    });
+
+    it("opens no terminal for a shell without a supported escaping strategy", async () => {
+        const {
+            deps,
+            createTerminal,
+            executeObservedCommand,
+            executeInteractiveCommand
+        } = buildDependencies([]);
+
+        const result = await launchAgentHostPlan(
+            folderUri,
+            plan,
+            "GitHub Copilot CLI",
+            deps,
+            "cmd.exe"
+        );
+
+        expect(result).to.deep.equal({
+            status: "recovery",
+            reason: "unsupportedShell",
+            completedCommandKinds: [],
+            skippedCommandKinds: [],
+            setupState: {
+                marketplace: "unknown",
+                plugin: "unknown"
+            }
+        });
+        expect(createTerminal.notCalled).to.be.true;
+        expect(executeObservedCommand.notCalled).to.be.true;
+        expect(executeInteractiveCommand.notCalled).to.be.true;
+    });
+
+    it("opens no terminal for legacy Windows PowerShell without Shell Integration support", async () => {
+        const {
+            deps,
+            createTerminal
+        } = buildDependencies([]);
+
+        const result = await launchAgentHostPlan(
+            folderUri,
+            plan,
+            "GitHub Copilot CLI",
+            deps,
+            "powershell.exe"
+        );
+
+        expect(result.status).to.equal("recovery");
+        if (result.status !== "recovery") {
+            throw new Error("Expected a recovery result");
+        }
+        expect(result.reason).to.equal("unsupportedShell");
+        expect(createTerminal.notCalled).to.be.true;
+    });
+
+    it("opens no terminal for a Windows batch-only host installation", async () => {
+        const {
+            deps,
+            createTerminal
+        } = buildDependencies([]);
+        const batchPlan: PlannedCommand[] = [{
+            kind: "launchHost",
+            commandLine: "claude prompt",
+            executable: "C:\\tools\\claude.cmd",
+            args: ["prompt"],
+            description: "launch"
+        }];
+
+        const result = await launchAgentHostPlan(
+            folderUri,
+            batchPlan,
+            "Claude Code",
+            deps,
+            "pwsh"
+        );
+
+        expect(result.status).to.equal("recovery");
+        if (result.status !== "recovery") {
+            throw new Error("Expected a recovery result");
+        }
+        expect(result.reason).to.equal("unsupportedHostExecutable");
+        expect(createTerminal.notCalled).to.be.true;
     });
 
     it("stops after a non-zero exit code", async () => {
@@ -357,6 +543,65 @@ describe("launchAgentHostPlan", () => {
         ]);
     });
 
+    it("uses Claude JSON inventory commands before conditional setup", async () => {
+        const claudePlan: PlannedCommand[] = [
+            {
+                kind: "checkMarketplace",
+                commandLine: "claude plugin marketplace list --json",
+                description: "check marketplace",
+                setupCheck: "marketplace"
+            },
+            {
+                kind: "checkPlugin",
+                commandLine: "claude plugin list --json",
+                description: "check plugin",
+                setupCheck: "plugin"
+            },
+            {
+                kind: "launchHost",
+                commandLine: "launch-command",
+                description: "launch"
+            }
+        ];
+        const { deps, executeObservedCommand } = buildDependencies();
+        executeObservedCommand.onFirstCall().resolves({
+            exitCode: 0,
+            output: `${String.fromCharCode(27)}]633;C${String.fromCharCode(7)}${
+                JSON.stringify([{ name: "power-platform-skills" }], null, 2)
+            }${String.fromCharCode(27)}]633;D;0${String.fromCharCode(7)}`
+        });
+        executeObservedCommand.onSecondCall().resolves({
+            exitCode: 0,
+            output: `${String.fromCharCode(27)}]633;C${String.fromCharCode(7)}${
+                JSON.stringify([{
+                    id: "power-pages@power-platform-skills",
+                    scope: "user",
+                    enabled: true
+                }], null, 2)
+            }${String.fromCharCode(27)}]633;D;0${String.fromCharCode(7)}`
+        });
+
+        const result = await launchAgentHostPlan(
+            folderUri,
+            claudePlan,
+            "Claude Code",
+            deps,
+            "pwsh"
+        );
+
+        expect(result.status).to.equal("launched");
+        expect(executeObservedCommand.getCalls().map(
+            call => call.args[2]
+        )).to.deep.equal([
+            "claude plugin marketplace list --json",
+            "claude plugin list --json"
+        ]);
+        expect(result.setupState).to.deep.equal({
+            marketplace: "present",
+            plugin: "present"
+        });
+    });
+
     it("shell-quotes the maker prompt before terminal execution", async () => {
         const prompt = `/power-pages:create-site Build a portal with 'quotes', \`ticks\`, and $(calc)`;
         const argumentPlan: PlannedCommand[] = [{
@@ -394,6 +639,17 @@ describe("launchAgentHostPlan", () => {
             "pwsh.exe"
         )).to.equal(
             `copilot '-i' '/power-pages:create-site A donor''s site with $(calc) and \`ticks\`'`
+        );
+    });
+
+    it("quotes an absolute Windows executable path for PowerShell", () => {
+        expect(buildAgentHostShellCommand(
+            "C:\\Program Files\\Agent Host\\copilot.cmd",
+            ["-i", "/power-pages:create-site test"],
+            "C:\\Program Files\\PowerShell\\7\\pwsh.exe",
+            "win32"
+        )).to.equal(
+            "& 'C:\\Program Files\\Agent Host\\copilot.cmd' '-i' '/power-pages:create-site test'"
         );
     });
 

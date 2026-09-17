@@ -19,6 +19,11 @@ import {
 } from './agentHostSetupPrecheck';
 import { emitCreateFlowEvent } from '../telemetry/createFlowTelemetry';
 import { uriHandlerTelemetryEventNames } from '../telemetry/uriHandlerTelemetryEvents';
+import { resolveAgentHostTerminalShell } from './agentHostTerminalShell';
+import {
+    resolveAgentHostTerminalExecutable,
+    resolveCommandFromPath
+} from './agentHostCommandProbe';
 
 const AGENT_HOST_COMMAND_PLAN_STRINGS = {
     installHost: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.STEP_INSTALL_HOST,
@@ -69,7 +74,8 @@ export async function confirmAndLaunchSelectedAgentHost(
     hostDisplayName: string = getAgentHostDisplayName(host),
     allowEdit = true,
     bootstrap?: AgentHostBootstrapConfig,
-    siteDescription = "Create a Power Pages site"
+    siteDescription = "Create a Power Pages site",
+    detectedHostExecutablePath?: string
 ): Promise<ConfirmAndLaunchOutcome> {
     const precheckStartedAt = Date.now();
     const setupState: AgentHostSetupState = bootstrap
@@ -80,7 +86,7 @@ export async function confirmAndLaunchSelectedAgentHost(
                 title: URI_HANDLER_STRINGS.PROGRESS.CHECKING_ASSISTANT_SETUP,
                 cancellable: false
             },
-            () => detectAgentHostSetup(host)
+            () => detectAgentHostSetup(host, folderUri.fsPath)
         );
     emitCreateFlowEvent(
         uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_SETUP_CHECKED,
@@ -94,17 +100,41 @@ export async function confirmAndLaunchSelectedAgentHost(
             durationMs: String(Date.now() - precheckStartedAt)
         }
     );
-
+    let terminalShell = bootstrap
+        ? {
+            commandShellPath: bootstrap.shellPath,
+            terminalShellPath: bootstrap.shellPath
+        }
+        : resolveAgentHostTerminalShell(vscode.env.shell);
     return confirmAndLaunchAgentHost(host, hostDisplayName, folderUri, params, {
-        buildPlan: (selectedHost, displayName) =>
-            buildAgentHostCommandPlan(
+        buildPlan: (selectedHost, displayName) => {
+            terminalShell = bootstrap
+                ? {
+                    commandShellPath: bootstrap.shellPath,
+                    terminalShellPath: bootstrap.shellPath
+                }
+                : resolveAgentHostTerminalShell(vscode.env.shell);
+            const detectedExecutable = resolveCommandFromPath(selectedHost)
+                ?? detectedHostExecutablePath;
+            const hostExecutable = bootstrap
+                ? selectedHost
+                : resolveAgentHostTerminalExecutable(
+                    detectedExecutable,
+                    terminalShell.commandShellPath
+                )
+                    ?? detectedExecutable
+                    ?? selectedHost;
+            return buildAgentHostCommandPlan(
                 selectedHost,
                 displayName,
                 AGENT_HOST_COMMAND_PLAN_STRINGS,
                 bootstrap,
                 setupState,
-                siteDescription
-            ),
+                siteDescription,
+                terminalShell.commandShellPath,
+                hostExecutable
+            );
+        },
         showConfirmPanel: (displayName, folderPath, plan) =>
             showAgenticCreateConfirmPanel(
                 displayName,
@@ -134,7 +164,7 @@ export async function confirmAndLaunchSelectedAgentHost(
                 plan,
                 displayName,
                 undefined,
-                bootstrap?.shellPath ?? vscode.env.shell,
+                terminalShell.terminalShellPath,
                 setupStateOverride ?? setupState,
                 onProgress
             )

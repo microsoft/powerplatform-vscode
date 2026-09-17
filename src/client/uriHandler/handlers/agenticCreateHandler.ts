@@ -50,7 +50,8 @@ export interface AgenticCreateHandlerDependencies {
         folderUri: vscode.Uri,
         params: CreateFlowParameters,
         bootstrap?: AgentHostBootstrapConfig,
-        siteDescription?: string
+        siteDescription?: string,
+        detectedHostExecutablePath?: string
     ) => Promise<ConfirmAndLaunchOutcome>;
 }
 
@@ -70,7 +71,8 @@ const DEFAULT_DEPENDENCIES: AgenticCreateHandlerDependencies = {
         folderUri,
         params,
         bootstrap,
-        siteDescription
+        siteDescription,
+        detectedHostExecutablePath
     ) =>
         confirmAndLaunchSelectedAgentHost(
             host,
@@ -79,7 +81,8 @@ const DEFAULT_DEPENDENCIES: AgenticCreateHandlerDependencies = {
             hostDisplayName,
             true,
             bootstrap,
-            siteDescription
+            siteDescription,
+            detectedHostExecutablePath
         )
 };
 
@@ -347,14 +350,17 @@ export class AgenticCreateHandler {
                     folderUri,
                     params,
                     bootstrap,
-                    siteDescription
+                    siteDescription,
+                    confirmedHostSelection.executablePath
                 );
 
                 const shouldUseHostInstallFallback =
                     outcome.status === 'recovery' &&
                     !confirmedHostSelection.installed &&
                     (
+                        outcome.result.reason === 'shellIntegrationDisabled' ||
                         outcome.result.reason === 'shellIntegrationUnavailable' ||
+                        outcome.result.reason === 'unsupportedShell' ||
                         outcome.result.failedCommand?.kind === 'installHost' ||
                         outcome.result.failedCommand?.kind === 'refreshPath' ||
                         outcome.result.failedCommand?.kind === 'verifyHost'
@@ -383,7 +389,8 @@ export class AgenticCreateHandler {
                         folderUri,
                         params,
                         undefined,
-                        siteDescription
+                        siteDescription,
+                        confirmedHostSelection.executablePath
                     );
                 }
 

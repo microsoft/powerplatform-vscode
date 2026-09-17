@@ -4,7 +4,6 @@
  */
 
 import * as vscode from "vscode";
-import * as path from "path";
 import { URI_HANDLER_STRINGS } from "../constants/uriStrings";
 import {
     PlannedCommand,
@@ -14,51 +13,15 @@ import {
     AgentHostSetupState,
     classifyAgentHostSetupOutput
 } from "./agentHostSetupPrecheck";
+import {
+    buildAgentHostShellCommand,
+    isAgentHostExecutableSupported,
+    isAgentHostShellIntegrationSupported
+} from "./agentHostShellCommand";
 
-const SHELL_INTEGRATION_TIMEOUT_MS = 3000;
+export { buildAgentHostShellCommand } from "./agentHostShellCommand";
 
-function quotePowerShellArgument(argument: string): string {
-    return `'${argument.replace(/'/g, "''")}'`;
-}
-
-function quotePosixArgument(argument: string): string {
-    return `'${argument.replace(/'/g, `'"'"'`)}'`;
-}
-
-function quoteFishArgument(argument: string): string {
-    return `'${argument.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`;
-}
-
-/**
- * Builds a shell-safe command from a fixed executable and untrusted arguments.
- */
-export function buildAgentHostShellCommand(
-    executable: string,
-    args: string[],
-    shellPath: string
-): string {
-    if (!/^[A-Za-z0-9._/-]+$/u.test(executable)) {
-        throw new Error("Unsupported agent host executable");
-    }
-
-    const shellName = path.basename(shellPath).toLowerCase();
-    let quoteArgument: (argument: string) => string;
-    if (shellName === "pwsh" || shellName === "pwsh.exe"
-        || shellName === "powershell" || shellName === "powershell.exe") {
-        quoteArgument = quotePowerShellArgument;
-    } else if (
-        shellName === "bash" || shellName === "bash.exe"
-        || shellName === "zsh" || shellName === "sh"
-    ) {
-        quoteArgument = quotePosixArgument;
-    } else if (shellName === "fish") {
-        quoteArgument = quoteFishArgument;
-    } else {
-        throw new Error(`Unsupported terminal shell: ${shellName}`);
-    }
-
-    return [executable, ...args.map(quoteArgument)].join(" ");
-}
+const SHELL_INTEGRATION_TIMEOUT_MS = 10000;
 
 export type LaunchAgentHostPlanResult =
     | {
@@ -70,7 +33,12 @@ export type LaunchAgentHostPlanResult =
     }
     | {
         status: "recovery";
-        reason: "shellIntegrationUnavailable" | "commandFailed";
+        reason:
+            | "shellIntegrationDisabled"
+            | "shellIntegrationUnavailable"
+            | "unsupportedShell"
+            | "unsupportedHostExecutable"
+            | "commandFailed";
         failedCommand?: PlannedCommand;
         exitCode?: number;
         completedCommandKinds?: PlannedCommandKind[];
@@ -103,6 +71,8 @@ export interface LaunchAgentHostPlanDependencies {
         shellIntegration: vscode.TerminalShellIntegration,
         commandLine: string
     ) => Promise<AgentHostCommandExecutionResult>;
+    isShellIntegrationEnabled: () => boolean;
+    platform: NodeJS.Platform;
 }
 
 const waitForShellIntegration = async (
@@ -207,7 +177,12 @@ const executeCommand = async (
 const DEFAULT_LAUNCH_DEPENDENCIES: LaunchAgentHostPlanDependencies = {
     createTerminal: (options) => vscode.window.createTerminal(options),
     waitForShellIntegration,
-    executeCommand
+    executeCommand,
+    isShellIntegrationEnabled: () =>
+        vscode.workspace
+            .getConfiguration("terminal.integrated")
+            .get<boolean>("shellIntegration.enabled", true),
+    platform: process.platform
 };
 
 /**
@@ -215,7 +190,7 @@ const DEFAULT_LAUNCH_DEPENDENCIES: LaunchAgentHostPlanDependencies = {
  *
  * Bootstrap and plugin commands must report exit code 0 before the next command starts. The final
  * interactive host command is started without awaiting its exit. When Shell Integration is
- * unavailable, no command is sent so the visible webview remains the manual recovery reference.
+ * disabled, unsupported, or unavailable, no command is sent.
  *
  * @param folderUri Target folder the terminal is opened in.
  * @param plan Ordered command plan previewed and approved by the user.
@@ -238,13 +213,50 @@ export async function launchAgentHostPlan(
     const terminalName = URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.TERMINAL_NAME
         .split("{0}")
         .join(hostDisplayName);
-    const executionShellPath = shellPath ?? vscode.env.shell;
+    const commandShellPath = shellPath ?? vscode.env.shell;
+    const launchCommand = plan.find(command => command.kind === "launchHost");
+
+    if (!deps.isShellIntegrationEnabled()) {
+        return {
+            status: "recovery",
+            reason: "shellIntegrationDisabled",
+            completedCommandKinds: [],
+            skippedCommandKinds: [],
+            setupState: initialSetupState
+        };
+    }
+
+    if (
+        launchCommand?.executable
+        && !isAgentHostExecutableSupported(
+            launchCommand.executable,
+            deps.platform
+        )
+    ) {
+        return {
+            status: "recovery",
+            reason: "unsupportedHostExecutable",
+            completedCommandKinds: [],
+            skippedCommandKinds: [],
+            setupState: initialSetupState
+        };
+    }
+
+    if (!isAgentHostShellIntegrationSupported(commandShellPath, deps.platform)) {
+        return {
+            status: "recovery",
+            reason: "unsupportedShell",
+            completedCommandKinds: [],
+            skippedCommandKinds: [],
+            setupState: initialSetupState
+        };
+    }
 
     const terminal = deps.createTerminal({
         name: terminalName,
         cwd: folderUri.fsPath,
         isTransient: true,
-        ...(executionShellPath ? { shellPath: executionShellPath } : {})
+        ...(shellPath ? { shellPath } : {})
     });
     terminal.show();
 
@@ -291,7 +303,8 @@ export async function launchAgentHostPlan(
                     shellIntegration.executeCommand(buildAgentHostShellCommand(
                         command.executable,
                         command.args,
-                        executionShellPath
+                        commandShellPath,
+                        deps.platform
                     ));
                 } else {
                     shellIntegration.executeCommand(command.commandLine);
@@ -338,7 +351,8 @@ export async function launchAgentHostPlan(
             setupState[command.setupCheck] = executionResult.exitCode === 0
                 ? classifyAgentHostSetupOutput(
                     executionResult.output,
-                    command.setupCheck
+                    command.setupCheck,
+                    folderUri.fsPath
                 )
                 : "unknown";
             completedCommandKinds.push(command.kind);

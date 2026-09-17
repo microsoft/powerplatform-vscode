@@ -50,6 +50,7 @@ describe("Agentic create host resolution", () => {
         {
             host: AgentHost.Copilot,
             installed: true,
+            executablePath: "C:\\tools\\copilot.cmd",
             version: "1.0.0"
         },
         {
@@ -107,7 +108,8 @@ describe("Agentic create host resolution", () => {
             folderUri: selectedFolder,
             hostSelection: {
                 host: AgentHost.Copilot,
-                installed: true
+                installed: true,
+                executablePath: "C:\\tools\\copilot.cmd"
             },
             siteDescription
         });
@@ -230,6 +232,9 @@ describe("Agentic create host resolution", () => {
         expect(confirmAndLaunchAgentHostStub.firstCall.args[2]).to.equal(selectedFolder);
         expect(confirmAndLaunchAgentHostStub.firstCall.args[5]).to.equal(
             siteDescription
+        );
+        expect(confirmAndLaunchAgentHostStub.firstCall.args[6]).to.equal(
+            "C:\\tools\\copilot.cmd"
         );
         expect(resolveAgentHostInstallationStub.notCalled).to.be.true;
         expect(storeUpdateStub.notCalled).to.be.true;

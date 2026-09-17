@@ -19,6 +19,7 @@ const mixedDetection: AgentHostDetectionResult[] = [
     {
         host: AgentHost.Copilot,
         installed: true,
+        executablePath: "C:\\tools\\copilot.cmd",
         version: "1.2.3"
     },
     {
@@ -39,19 +40,23 @@ describe("selectAgentHost", () => {
             description: item.description,
             detail: item.detail,
             host: item.host,
-            installed: item.installed
+            installed: item.installed,
+            ...(item.executablePath
+                ? { executablePath: item.executablePath }
+                : {})
         }))).to.deep.equal([
             {
                 label: "GitHub Copilot CLI",
-                description: "Ready to use · 1.2.3",
-                detail: "Choose this if you use GitHub Copilot. Opens a guided conversation in the VS Code terminal.",
+                description: "Installed",
+                detail: "Start a guided site-creation conversation with GitHub Copilot CLI.",
                 host: AgentHost.Copilot,
-                installed: true
+                installed: true,
+                executablePath: "C:\\tools\\copilot.cmd"
             },
             {
                 label: "Claude Code",
-                description: "Not installed · VS Code can install it after you review the setup",
-                detail: "Choose this if you use Claude Code. Opens a guided conversation in the VS Code terminal.",
+                description: "Not installed",
+                detail: "Start a guided site-creation conversation with Claude Code. Install it in the next step after you review the setup.",
                 host: AgentHost.Claude,
                 installed: false
             }
@@ -71,7 +76,7 @@ describe("selectAgentHost", () => {
         await selectAgentHost(detection, { showQuickPick });
 
         const items = showQuickPick.firstCall.firstArg as vscode.QuickPickItem[];
-        expect(items[0].description).to.equal("Ready to use");
+        expect(items[0].description).to.equal("Installed");
     });
 
     it("shows the installed description when the version is whitespace-only", async () => {
@@ -88,7 +93,7 @@ describe("selectAgentHost", () => {
         await selectAgentHost(detection, { showQuickPick });
 
         const items = showQuickPick.firstCall.firstArg as vscode.QuickPickItem[];
-        expect(items[0].description).to.equal("Ready to use");
+        expect(items[0].description).to.equal("Installed");
     });
 
     it("returns a selection when the chosen host is not installed", async () => {
@@ -109,7 +114,8 @@ describe("selectAgentHost", () => {
 
         expect(result).to.deep.equal({
             host: AgentHost.Copilot,
-            installed: true
+            installed: true,
+            executablePath: "C:\\tools\\copilot.cmd"
         });
     });
 

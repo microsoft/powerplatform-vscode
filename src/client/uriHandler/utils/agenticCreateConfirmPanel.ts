@@ -101,21 +101,51 @@ function formatTemplate(template: string, value: string): string {
 }
 
 /**
+ * Substitutes positional arguments into a localized template.
+ */
+function formatTemplates(template: string, values: string[]): string {
+    return values.reduce(
+        (result, value, index) =>
+            result.split(`{${index}}`).join(value),
+        template
+    );
+}
+
+/**
  * Builds the accessible recovery announcement for a failed execution.
  */
 function formatRecoveryStatus(
-    result: Extract<LaunchAgentHostPlanResult, { status: "recovery" }>
+    result: Extract<LaunchAgentHostPlanResult, { status: "recovery" }>,
+    setupOptionsAvailable: boolean
 ): string {
     const confirm = URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM;
+    if (result.reason === "shellIntegrationDisabled") {
+        return confirm.SHELL_INTEGRATION_DISABLED_RECOVERY_STATUS;
+    }
     if (result.reason === "shellIntegrationUnavailable") {
         return confirm.SHELL_INTEGRATION_RECOVERY_STATUS;
+    }
+    if (result.reason === "unsupportedShell") {
+        return process.platform === "win32"
+            ? confirm.UNSUPPORTED_SHELL_WINDOWS_RECOVERY_STATUS
+            : confirm.UNSUPPORTED_SHELL_POSIX_RECOVERY_STATUS;
+    }
+    if (result.reason === "unsupportedHostExecutable") {
+        return confirm.UNSUPPORTED_HOST_EXECUTABLE_RECOVERY_STATUS;
     }
 
     const failedDescription = (result.failedCommand?.description ?? confirm.SEQUENCE_HEADER)
         .replace(/[\s.!?。！？]+$/u, "");
-    return formatTemplate(
-        confirm.COMMAND_RECOVERY_STATUS,
-        failedDescription
+    return formatTemplates(
+        setupOptionsAvailable
+            ? confirm.COMMAND_RECOVERY_WITH_SETUP_OPTIONS_STATUS
+            : confirm.COMMAND_RECOVERY_STATUS,
+        [
+            failedDescription,
+            setupOptionsAvailable
+                ? confirm.SETUP_OPTIONS_LABEL
+                : confirm.SEQUENCE_HEADER
+        ]
     );
 }
 
@@ -153,11 +183,18 @@ function buildHtml(
     const folderName = path.basename(folderPath);
     const setupReady = setupState.marketplace === "present"
         && setupState.plugin === "present";
-    const setupSummary = hostNeedsInstall
-        ? confirm.SETUP_ASSISTANT_REQUIRED
-        : setupReady
-            ? confirm.SETUP_READY
-            : confirm.SETUP_GUIDANCE_REQUIRED;
+    let setupSummary: string;
+    if (hostNeedsInstall) {
+        setupSummary = formatTemplate(confirm.SETUP_ASSISTANT_REQUIRED, hostDisplayName);
+    } else if (setupReady) {
+        setupSummary = confirm.SETUP_READY;
+    } else if (setupState.plugin === "missing") {
+        setupSummary = confirm.SETUP_GUIDANCE_REQUIRED;
+    } else if (setupState.plugin === "disabled") {
+        setupSummary = confirm.SETUP_ENABLE_REQUIRED;
+    } else {
+        setupSummary = confirm.SETUP_CHECK_REQUIRED;
+    }
     const assistantDetail = hostNeedsInstall
         ? confirm.PREPARE_ASSISTANT_DETAIL
         : confirm.ASSISTANT_READY_DETAIL;
@@ -773,15 +810,18 @@ export function showAgenticCreateConfirmPanel(
             if (panelDisposed) {
                 return Promise.resolve("cancel");
             }
+            const shellSetupUnavailable = result.reason === "shellIntegrationDisabled"
+                || result.reason === "shellIntegrationUnavailable"
+                || result.reason === "unsupportedShell";
             const setupOptionsAvailable = hostNeedsInstall && (
-                result.reason === "shellIntegrationUnavailable"
+                shellSetupUnavailable
                 || result.failedCommand?.kind === "installHost"
                 || result.failedCommand?.kind === "refreshPath"
                 || result.failedCommand?.kind === "verifyHost"
             );
             latestStateMessage = {
                 state: "recovery",
-                message: formatRecoveryStatus(result),
+                message: formatRecoveryStatus(result, setupOptionsAvailable),
                 setupOptionsAvailable
             };
             return new Promise<ConfirmRecoveryDecision>(resolve => {
