@@ -252,7 +252,7 @@ describe("confirmAndLaunchAgentHost", () => {
     });
 
     it("retries the approved plan from the recovery state", async () => {
-        const { deps, launchPlan, showRecovery } = buildDeps("start");
+        const { deps, buildPlan, launchPlan, showRecovery } = buildDeps("start");
         launchPlan
             .onFirstCall()
             .resolves({
@@ -275,10 +275,11 @@ describe("confirmAndLaunchAgentHost", () => {
 
         expect(outcome).to.deep.equal({ status: "launched" });
         expect(launchPlan.calledTwice).to.be.true;
+        expect(buildPlan.calledTwice).to.be.true;
     });
 
     it("does not replay completed mutating setup commands on retry", async () => {
-        const { deps, launchPlan, showRecovery } = buildDeps("start");
+        const { deps, buildPlan, launchPlan, showRecovery } = buildDeps("start");
         launchPlan
             .onFirstCall()
             .resolves({
@@ -310,6 +311,7 @@ describe("confirmAndLaunchAgentHost", () => {
             marketplace: "present",
             plugin: "missing"
         });
+        expect(buildPlan.calledTwice).to.be.true;
     });
 
     it("drops the flow when recovery is cancelled", async () => {

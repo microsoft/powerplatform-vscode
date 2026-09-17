@@ -50,7 +50,8 @@ export async function resumeAgenticCreateOnActivation(
             runStages: async (
                 params: CreateFlowParameters,
                 host: AgentHost,
-                siteDescription: string
+                siteDescription: string,
+                detectedHostExecutablePath?: string
             ) => {
                 const folderUri = await selectTargetFolder();
                 if (!folderUri) {
@@ -73,15 +74,28 @@ export async function resumeAgenticCreateOnActivation(
                     params,
                     'agent'
                 );
-                await confirmAndLaunchSelectedAgentHost(
-                    host,
-                    folderUri,
-                    params,
-                    undefined,
-                    false,
-                    undefined,
-                    siteDescription
-                );
+                if (detectedHostExecutablePath) {
+                    await confirmAndLaunchSelectedAgentHost(
+                        host,
+                        folderUri,
+                        params,
+                        undefined,
+                        false,
+                        undefined,
+                        siteDescription,
+                        detectedHostExecutablePath
+                    );
+                } else {
+                    await confirmAndLaunchSelectedAgentHost(
+                        host,
+                        folderUri,
+                        params,
+                        undefined,
+                        false,
+                        undefined,
+                        siteDescription
+                    );
+                }
             },
             clearMarker: clearResumeMarker
         });

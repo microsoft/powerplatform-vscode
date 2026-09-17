@@ -23,13 +23,17 @@ const createDeferred = <T>() => {
 
 describe('detectAgentHost', () => {
     it('returns the installed host with trimmed version output', async () => {
-        const runProbe = sinon.stub().resolves({ stdout: '  GitHub Copilot CLI 1.2.3\r\n' });
+        const runProbe = sinon.stub().resolves({
+            commandPath: 'C:\\tools\\copilot.cmd',
+            stdout: '  GitHub Copilot CLI 1.2.3\r\n'
+        });
 
         const result = await detectAgentHost(AgentHost.Copilot, runProbe);
 
         expect(result).to.deep.equal({
             host: AgentHost.Copilot,
             installed: true,
+            executablePath: 'C:\\tools\\copilot.cmd',
             version: 'GitHub Copilot CLI 1.2.3'
         });
     });

@@ -170,7 +170,10 @@ export async function confirmAndLaunchAgentHost(
                             completedMutatingCommands.add(commandKind);
                         }
                     }
-                    attemptPlan = plan.filter(
+                    attemptPlan = deps.buildPlan(
+                        host,
+                        hostDisplayName
+                    ).filter(
                         command => !completedMutatingCommands.has(command.kind)
                     );
                     attemptSetupState = launchResult.setupState;
