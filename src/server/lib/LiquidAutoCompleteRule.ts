@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { TagToken, Tokenizer, TokenKind } from "liquidjs";
-import { FilterToken, IdentifierToken, OutputToken, PropertyAccessToken } from "liquidjs/dist/tokens";
+import { TagToken, Tokenizer, TokenKind, TypeGuards } from "liquidjs";
+import { FilterToken, OutputToken } from "liquidjs/dist/tokens";
 import { CompletionItem, CompletionItemKind } from "vscode-languageserver/node";
 import { AUTO_COMPLETE_PLACEHOLDER, EDITABLE_ATTRIBUTES, ENTITY_FORM_ATTRIBUTES, ENTITY_LIST_ATTRIBUTES, PAGE_ATTRIBUTES, PORTAL_FILTERS, PORTAL_OBJECTS, WEB_FORM_ATTRIBUTES, OBJECT_ATTRIBUTES_MAP } from "../constants/AutoComplete";
 import { PortalAttributeNames, PortalEntityNames, PortalObjects, PortalTags } from "../constants/PortalEnums";
@@ -38,13 +38,22 @@ const getSuggestionsForEntity = (entityName: PortalEntityNames, ctx: ILiquidRule
 
 }
 
-const portalObjectBaseRule = (liquidToken: OutputToken, entityName: PortalEntityNames, ctx: ILiquidRuleEngineContext) => {
+const portalObjectBaseRule = (liquidToken: OutputToken, portalObject: PortalObjects, entityName: PortalEntityNames, ctx: ILiquidRuleEngineContext) => {
     const suggestions: CompletionItem[] = []
     const tokenizer = new Tokenizer(liquidToken.content)
-    const valueToken = tokenizer.readValue() as PropertyAccessToken
-    const identifier = (valueToken.props[0] as PropertyAccessToken).variable as IdentifierToken
-    if (identifier?.content.includes(AUTO_COMPLETE_PLACEHOLDER)) {
-        suggestions.push(...getSuggestionsForEntity(entityName, ctx, identifier.content))
+    const valueToken = tokenizer.readValue()
+    // In snippets[name], props[0] is the root object and props[1] is the lookup.
+    if (TypeGuards.isPropertyAccessToken(valueToken)
+        && valueToken.variable === undefined
+        && valueToken.props[0]?.getText() === portalObject) {
+        const lookupToken = valueToken.props[1]
+        // Dot-access identifiers cannot accept the quoted manifest names we insert.
+        if (TypeGuards.isPropertyAccessToken(lookupToken) || TypeGuards.isQuotedToken(lookupToken)) {
+            const lookupText = lookupToken.getText()
+            if (lookupText.includes(AUTO_COMPLETE_PLACEHOLDER)) {
+                suggestions.push(...getSuggestionsForEntity(entityName, ctx, lookupText))
+            }
+        }
     }
     return suggestions
 }
@@ -54,7 +63,7 @@ const snippetObjectRule: ILiquidAutoCompleteRule = {
     isValid: (liquidToken) => liquidToken.kind === TokenKind.Output && liquidToken.content.includes(PortalObjects.SNIPPETS),
     priority: DEFAULT_TAG_PRIORITY,
     apply: (liquidToken, ctx) => {
-        return portalObjectBaseRule(liquidToken as OutputToken, PortalEntityNames.CONTENT_SNIPPET, ctx)
+        return portalObjectBaseRule(liquidToken as OutputToken, PortalObjects.SNIPPETS, PortalEntityNames.CONTENT_SNIPPET, ctx)
     }
 }
 
@@ -63,7 +72,7 @@ const settingsObjectRule: ILiquidAutoCompleteRule = {
     isValid: (liquidToken) => liquidToken.kind === TokenKind.Output && liquidToken.content.includes(PortalObjects.SETTINGS),
     priority: DEFAULT_TAG_PRIORITY,
     apply: (liquidToken, ctx) => {
-        return portalObjectBaseRule(liquidToken as OutputToken, PortalEntityNames.SITE_SETTING, ctx)
+        return portalObjectBaseRule(liquidToken as OutputToken, PortalObjects.SETTINGS, PortalEntityNames.SITE_SETTING, ctx)
     }
 }
 
@@ -72,7 +81,7 @@ const weblinksObjectRule: ILiquidAutoCompleteRule = {
     isValid: (liquidToken) => liquidToken.kind === TokenKind.Output && liquidToken.content.includes(PortalObjects.WEBLINKS),
     priority: DEFAULT_TAG_PRIORITY,
     apply: (liquidToken, ctx) => {
-        return portalObjectBaseRule(liquidToken as OutputToken, PortalEntityNames.WEBLINK_SET, ctx)
+        return portalObjectBaseRule(liquidToken as OutputToken, PortalObjects.WEBLINKS, PortalEntityNames.WEBLINK_SET, ctx)
     }
 }
 
@@ -81,7 +90,7 @@ const sitemakerObjectRule: ILiquidAutoCompleteRule = {
     isValid: (liquidToken) => liquidToken.kind === TokenKind.Output && liquidToken.content.includes(PortalObjects.SITEMARKER),
     priority: DEFAULT_TAG_PRIORITY,
     apply: (liquidToken, ctx) => {
-        return portalObjectBaseRule(liquidToken as OutputToken, PortalEntityNames.SITE_MARKER, ctx)
+        return portalObjectBaseRule(liquidToken as OutputToken, PortalObjects.SITEMARKER, PortalEntityNames.SITE_MARKER, ctx)
     }
 }
 

@@ -29,6 +29,11 @@ Windows, macOS or Linux:
   [Environment]::SetEnvironmentVariable('AZ_DevOps_Read_PAT', '<yourPAT>', [EnvironmentVariableTarget]::User)
   ```
 
+## Dependency Overrides
+
+The `morgan` override pins version `1.12.0` to fix [CVE-2026-15603](https://github.com/expressjs/morgan/security/advisories/GHSA-jxfw-x594-9x9m) in the `@vscode/test-web` -> `koa-morgan` dependency chain.
+Keep this override until the upstream dependency ranges exclude Morgan versions below `1.12.0`.
+
 ## Build and Run
 
 Clone, restore modules, build and run:
