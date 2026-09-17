@@ -4,6 +4,7 @@
  */
 
 import { expect } from "chai";
+import * as path from "path";
 import * as sinon from "sinon";
 import * as vscode from "vscode";
 import { MultiStepInput } from "../../../common/utilities/MultiStepInput";
@@ -190,7 +191,11 @@ describe("selectAgenticCreateInputs", () => {
 
     it("preselects the current browsed folder and host when editing choices", async () => {
         runSteps();
-        const browsedFolder = vscode.Uri.file("C:\\sites\\outside-workspace");
+        const browsedFolder = vscode.Uri.file(path.join(
+            path.parse(process.cwd()).root,
+            "sites",
+            "outside-workspace"
+        ));
         const activeItems: vscode.QuickPickItem[] = [];
         showQuickPick.callsFake(async (options: {
             activeItem?: vscode.QuickPickItem;
@@ -216,7 +221,7 @@ describe("selectAgenticCreateInputs", () => {
         );
 
         expect(activeItems.map(item => item.label)).to.deep.equal([
-            "outside-workspace",
+            path.basename(browsedFolder.fsPath),
             "Claude Code"
         ]);
         expect(result).to.deep.equal({
