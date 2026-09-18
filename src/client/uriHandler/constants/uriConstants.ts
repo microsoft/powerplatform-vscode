@@ -34,6 +34,7 @@ export const URI_CONSTANTS = {
         PORTAL_SCHEMA_V2: 'portalschemav2'
     },
     SOURCE_VALUES: {
+        COMMAND_PALETTE: 'commandPalette',
         POWER_PAGES_HOME: 'powerPagesHome',
         STUDIO: 'studio'
     },

@@ -189,6 +189,22 @@ describe("Create-flow telemetry", () => {
         });
     });
 
+    it("uses the command palette as a distinct funnel entry point", () => {
+        const properties = buildCreateFlowTelemetry({
+            ...params,
+            environmentId: null,
+            orgUrl: null,
+            source: URI_CONSTANTS.SOURCE_VALUES.COMMAND_PALETTE
+        });
+
+        expect(properties).to.include({
+            source: URI_CONSTANTS.SOURCE_VALUES.COMMAND_PALETTE,
+            entryPoint: URI_CONSTANTS.SOURCE_VALUES.COMMAND_PALETTE,
+            hasEnvironmentId: "false",
+            hasOrgUrl: "false"
+        });
+    });
+
     it("adds stable funnel stage and outcome properties to mapped events", () => {
         emitCreateFlowEvent(
             uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_RECEIVED,

@@ -1913,6 +1913,9 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
     <trans-unit id="pacCLI.envAndSolutionsPanel.copyVersionNumber.title">
       <source xml:lang="en">Copy Version Number</source>
     </trans-unit>
+    <trans-unit id="microsoft.powerplatform.agenticCreate.title">
+      <source xml:lang="en">Create a site with AI</source>
+    </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.debugServerLogic.title">
       <source xml:lang="en">Debug Current Server Logic File</source>
     </trans-unit>
@@ -2129,9 +2132,6 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.metadataDiff.sortByStatus.title">
       <source xml:lang="en">Sort by Status</source>
-    </trans-unit>
-    <trans-unit id="microsoft.powerplatform.agenticCreate.testLocal.title">
-      <source xml:lang="en">Test Agent Create locally</source>
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.configuration.downloadSite.description">
       <source xml:lang="en">The folder where site will be downloaded when using Power Pages Actions. Leave this empty to ask for a folder every time you download a site.</source>

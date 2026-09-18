@@ -10,20 +10,19 @@ import { AgenticCreateHandler } from "./handlers/agenticCreateHandler";
 import { UriHandler } from "./uriHandler";
 import { ResumeMarkerStore } from "./utils/resumeMarker";
 
-export const AGENTIC_CREATE_LOCAL_TRIGGER_COMMAND =
-    "microsoft.powerplatform.agenticCreate.testLocal";
-export const AGENTIC_CREATE_LOCAL_TRIGGER_CONTEXT =
-    "powerPlatform.agenticCreate.localTestEnabled";
+export const AGENTIC_CREATE_COMMAND =
+    "microsoft.powerplatform.agenticCreate";
+export const AGENTIC_CREATE_COMMAND_ENABLED_CONTEXT =
+    "powerPlatform.agenticCreate.commandEnabled";
 
 /**
- * Builds a secret-free Studio-shaped URI for local Extension Development Host testing.
+ * Builds the secret-free URI contract used by the Agentic Create command.
  */
-export function buildLocalAgenticCreateUri(now: number = Date.now()): vscode.Uri {
+export function buildAgenticCreateCommandUri(now: number = Date.now()): vscode.Uri {
     const query = new URLSearchParams({
-        [URI_CONSTANTS.PARAMETERS.ENV_ID]: "local-test-environment",
-        [URI_CONSTANTS.PARAMETERS.ORG_URL]: "https://local-test.crm.dynamics.com",
-        [URI_CONSTANTS.PARAMETERS.REFERRER_SESSION_ID]: `local-${now}`,
-        [URI_CONSTANTS.PARAMETERS.SOURCE]: URI_CONSTANTS.SOURCE_VALUES.STUDIO,
+        [URI_CONSTANTS.PARAMETERS.REFERRER_SESSION_ID]: `command-${now}`,
+        [URI_CONSTANTS.PARAMETERS.SOURCE]:
+            URI_CONSTANTS.SOURCE_VALUES.COMMAND_PALETTE,
         [URI_CONSTANTS.PARAMETERS.VERSION]: URI_CONSTANTS.CONTRACT_VERSION.CURRENT
     });
     return vscode.Uri.parse(
@@ -63,12 +62,11 @@ export class AgenticCreateUriHandler implements vscode.UriHandler {
     }
 
     /**
-     * Runs the real Agentic Create flow while bypassing only the ECS gate.
+     * Runs the Agentic Create command through the same gated handler as the URI route.
      */
-    public triggerLocalTest(): Promise<void> {
+    public triggerCommand(): Promise<void> {
         return this.agenticCreateHandler.handle(
-            buildLocalAgenticCreateUri(),
-            { bypassFeatureGate: true }
+            buildAgenticCreateCommandUri()
         );
     }
 }

@@ -58,8 +58,8 @@ import { activateServerLogicDebugger } from "../debugger/server-logic/ServerLogi
 import { resumeAgenticCreateOnActivation } from "./uriHandler/resumeAgenticCreateActivation";
 import { registerAgenticCreateConfirmPanelSerializer } from "./uriHandler/utils/agenticCreateConfirmPanel";
 import {
-    AGENTIC_CREATE_LOCAL_TRIGGER_COMMAND,
-    AGENTIC_CREATE_LOCAL_TRIGGER_CONTEXT,
+    AGENTIC_CREATE_COMMAND,
+    AGENTIC_CREATE_COMMAND_ENABLED_CONTEXT,
     AgenticCreateUriHandler
 } from "./uriHandler/agenticCreateUriHandler";
 
@@ -94,19 +94,15 @@ export async function activate(
     // reload recovery cannot be blocked by unrelated setup.
     const uriHandler = new AgenticCreateUriHandler(_context.globalState);
     _context.subscriptions.push(vscode.window.registerUriHandler(uriHandler));
-    const localTriggerEnabled =
-        _context.extensionMode === vscode.ExtensionMode.Development;
     await vscode.commands.executeCommand(
         "setContext",
-        AGENTIC_CREATE_LOCAL_TRIGGER_CONTEXT,
-        localTriggerEnabled
+        AGENTIC_CREATE_COMMAND_ENABLED_CONTEXT,
+        false
     );
-    if (localTriggerEnabled) {
-        _context.subscriptions.push(vscode.commands.registerCommand(
-            AGENTIC_CREATE_LOCAL_TRIGGER_COMMAND,
-            () => uriHandler.triggerLocalTest()
-        ));
-    }
+    _context.subscriptions.push(vscode.commands.registerCommand(
+        AGENTIC_CREATE_COMMAND,
+        () => uriHandler.triggerCommand()
+    ));
     void resumeAgenticCreateOnActivation(_context.globalState);
 
     // Cooldown prevents a tight retry loop: failed auth can trigger another session change,
