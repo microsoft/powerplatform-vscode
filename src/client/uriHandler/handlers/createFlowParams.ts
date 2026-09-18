@@ -55,7 +55,9 @@ export function buildCreateFlowTelemetry(params: CreateFlowParameters): Record<s
         || source === URI_CONSTANTS.SOURCE_VALUES.POWER_PAGES_HOME
     const entryPoint = isStudioEntryPoint
         ? URI_CONSTANTS.SOURCE_VALUES.STUDIO
-        : 'unknown';
+        : source === URI_CONSTANTS.SOURCE_VALUES.COMMAND_PALETTE
+            ? URI_CONSTANTS.SOURCE_VALUES.COMMAND_PALETTE
+            : 'unknown';
 
     return {
         source,

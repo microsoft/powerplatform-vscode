@@ -55,10 +55,6 @@ export interface AgenticCreateHandlerDependencies {
     ) => Promise<ConfirmAndLaunchOutcome>;
 }
 
-export interface AgenticCreateHandleOptions {
-    bypassFeatureGate?: boolean;
-}
-
 const DEFAULT_DEPENDENCIES: AgenticCreateHandlerDependencies = {
     detectAgentHost,
     selectAgenticCreateInputs,
@@ -127,10 +123,7 @@ export class AgenticCreateHandler {
     /**
      * Entry point wired into the URI route map.
      */
-    public async handle(
-        uri: vscode.Uri,
-        options: AgenticCreateHandleOptions = {}
-    ): Promise<void> {
+    public async handle(uri: vscode.Uri): Promise<void> {
         // Parse the (secret-free) deep-link params up front so the redacted telemetry payload
         // is available on every path, including the flag-off and failure cases.
         const params = parseCreateFlowParameters(uri);
@@ -141,7 +134,7 @@ export class AgenticCreateHandler {
                 'agent'
             );
 
-            if (!options.bypassFeatureGate && !AgenticCreateHandler.isEnabled()) {
+            if (!AgenticCreateHandler.isEnabled()) {
                 this.dependencies.emitCreateFlowEvent(
                     uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_DISABLED,
                     params,
