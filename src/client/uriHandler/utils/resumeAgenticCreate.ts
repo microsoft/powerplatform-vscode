@@ -52,7 +52,12 @@ export interface ResumeAgenticCreateDependencies {
     ): PromiseLike<string | undefined>;
     emitEvent: CreateFlowEventEmitter;
     emitError?: CreateFlowErrorEmitter;
-    runStages(params: CreateFlowParameters, host: AgentHost): PromiseLike<unknown>;
+    runStages(
+        params: CreateFlowParameters,
+        host: AgentHost,
+        siteDescription: string,
+        detectedHostExecutablePath?: string
+    ): PromiseLike<unknown>;
     clearMarker(store: ResumeMarkerStore): PromiseLike<void> | void;
 }
 
@@ -163,7 +168,20 @@ export async function resumeAgenticCreate(
             params,
             'agent'
         );
-        await deps.runStages(params, marker.host);
+        if (detection.executablePath) {
+            await deps.runStages(
+                params,
+                marker.host,
+                marker.siteDescription ?? "Create a Power Pages site",
+                detection.executablePath
+            );
+        } else {
+            await deps.runStages(
+                params,
+                marker.host,
+                marker.siteDescription ?? "Create a Power Pages site"
+            );
+        }
     } catch (error) {
         await deps.emitError?.(
             uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_FAILED,

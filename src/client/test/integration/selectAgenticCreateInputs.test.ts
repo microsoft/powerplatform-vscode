@@ -4,6 +4,7 @@
  */
 
 import { expect } from "chai";
+import * as path from "path";
 import * as sinon from "sinon";
 import * as vscode from "vscode";
 import { MultiStepInput } from "../../../common/utilities/MultiStepInput";
@@ -31,11 +32,15 @@ describe("selectAgenticCreateInputs", () => {
 
     let sandbox: sinon.SinonSandbox;
     let showQuickPick: sinon.SinonStub;
+    let showInputBox: sinon.SinonStub;
     let showOpenDialog: sinon.SinonStub;
 
     beforeEach(() => {
         sandbox = sinon.createSandbox();
         showQuickPick = sandbox.stub();
+        showInputBox = sandbox.stub().callsFake(async (options: {
+            value?: string;
+        }) => options.value || "A community event site");
         showOpenDialog = sandbox.stub();
     });
 
@@ -45,7 +50,10 @@ describe("selectAgenticCreateInputs", () => {
 
     const runSteps = (): void => {
         sandbox.stub(MultiStepInput, "run").callsFake(async (start) => {
-            const input = { showQuickPick } as unknown as MultiStepInput;
+            const input = {
+                showQuickPick,
+                showInputBox
+            } as unknown as MultiStepInput;
             let step = await start(input);
             while (step) {
                 step = await step(input);
@@ -53,7 +61,7 @@ describe("selectAgenticCreateInputs", () => {
         });
     };
 
-    it("collects folder and host in one two-step flow", async () => {
+    it("collects folder, host, and site description in one three-step flow", async () => {
         runSteps();
         showQuickPick.callsFake(async (options: {
             step: number;
@@ -71,24 +79,34 @@ describe("selectAgenticCreateInputs", () => {
             hostSelection: {
                 host: AgentHost.Claude,
                 installed: false
-            }
+            },
+            siteDescription: "A community event site"
         });
         expect(showQuickPick.callCount).to.equal(2);
+        expect(showInputBox.calledOnce).to.be.true;
         expect(showQuickPick.firstCall.firstArg).to.include({
-            title: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.PANEL_TITLE,
+            title: URI_HANDLER_STRINGS.TITLES.TARGET_FOLDER,
             step: 1,
-            totalSteps: 2,
-            placeholder: URI_HANDLER_STRINGS.TITLES.TARGET_FOLDER,
+            totalSteps: 3,
+            placeholder: URI_HANDLER_STRINGS.TITLES.TARGET_FOLDER_PLACEHOLDER,
             ignoreFocusOut: true
         });
         expect(showQuickPick.secondCall.firstArg).to.include({
-            title: URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.PANEL_TITLE,
+            title: URI_HANDLER_STRINGS.TITLES.AI_ASSISTANT,
             step: 2,
-            totalSteps: 2,
+            totalSteps: 3,
             placeholder: URI_HANDLER_STRINGS.PROMPTS.AGENT_HOST_SELECT,
             ignoreFocusOut: true
         });
         expect(showOpenDialog.notCalled).to.be.true;
+        expect(showInputBox.firstCall.firstArg).to.include({
+            title: URI_HANDLER_STRINGS.TITLES.SITE_DESCRIPTION,
+            step: 3,
+            totalSteps: 3,
+            value: "",
+            prompt: URI_HANDLER_STRINGS.PROMPTS.SITE_DESCRIPTION,
+            placeholder: URI_HANDLER_STRINGS.PROMPTS.SITE_DESCRIPTION_PLACEHOLDER
+        });
     });
 
     it("returns to the folder step when Browse is cancelled", async () => {
@@ -173,7 +191,11 @@ describe("selectAgenticCreateInputs", () => {
 
     it("preselects the current browsed folder and host when editing choices", async () => {
         runSteps();
-        const browsedFolder = vscode.Uri.file("C:\\sites\\outside-workspace");
+        const browsedFolder = vscode.Uri.file(path.join(
+            path.parse(process.cwd()).root,
+            "sites",
+            "outside-workspace"
+        ));
         const activeItems: vscode.QuickPickItem[] = [];
         showQuickPick.callsFake(async (options: {
             activeItem?: vscode.QuickPickItem;
@@ -189,7 +211,8 @@ describe("selectAgenticCreateInputs", () => {
                 hostSelection: {
                     host: AgentHost.Claude,
                     installed: false
-                }
+                },
+                siteDescription: "A nonprofit support portal"
             },
             {
                 getWorkspaceFolders: () => [workspaceFolder],
@@ -198,7 +221,7 @@ describe("selectAgenticCreateInputs", () => {
         );
 
         expect(activeItems.map(item => item.label)).to.deep.equal([
-            browsedFolder.fsPath,
+            path.basename(browsedFolder.fsPath),
             "Claude Code"
         ]);
         expect(result).to.deep.equal({
@@ -207,7 +230,108 @@ describe("selectAgenticCreateInputs", () => {
             hostSelection: {
                 host: AgentHost.Claude,
                 installed: false
+            },
+            siteDescription: "A nonprofit support portal"
+        });
+        expect(showInputBox.firstCall.firstArg.value).to.equal(
+            "A nonprofit support portal"
+        );
+    });
+
+    it("reports Esc from the site-description step", async () => {
+        sandbox.stub(MultiStepInput, "run").callsFake(async (start) => {
+            const input = {
+                showQuickPick: sandbox.stub().callsFake(async (options: {
+                    items: vscode.QuickPickItem[];
+                }) => options.items[0]),
+                showInputBox: sandbox.stub().rejects(new Error("cancelled"))
+            } as unknown as MultiStepInput;
+            let step = await start(input);
+            try {
+                while (step) {
+                    step = await step(input);
+                }
+            } catch {
+                // MultiStepInput consumes its private cancellation action.
             }
         });
+
+        const result = await selectAgenticCreateInputs(detection, undefined, {
+            getWorkspaceFolders: () => [workspaceFolder],
+            showOpenDialog
+        });
+
+        expect(result).to.deep.equal({
+            status: "cancelled",
+            step: "siteDescription",
+            folderUri: workspaceFolder.uri
+        });
+    });
+
+    it("does not reuse a prefilled description when Edit is cancelled at that step", async () => {
+        const initialSelection = {
+            folderUri: workspaceFolder.uri,
+            hostSelection: {
+                host: AgentHost.Copilot,
+                installed: true
+            },
+            siteDescription: "The original site description"
+        };
+        sandbox.stub(MultiStepInput, "run").callsFake(async (start) => {
+            const input = {
+                showQuickPick: sandbox.stub().callsFake(async (options: {
+                    activeItem?: vscode.QuickPickItem;
+                    items: vscode.QuickPickItem[];
+                }) => options.activeItem ?? options.items[0]),
+                showInputBox: sandbox.stub().rejects(new Error("cancelled"))
+            } as unknown as MultiStepInput;
+            let step = await start(input);
+            try {
+                while (step) {
+                    step = await step(input);
+                }
+            } catch {
+                // MultiStepInput consumes its private cancellation action.
+            }
+        });
+
+        const result = await selectAgenticCreateInputs(
+            detection,
+            initialSelection,
+            {
+                getWorkspaceFolders: () => [workspaceFolder],
+                showOpenDialog
+            }
+        );
+
+        expect(result).to.deep.equal({
+            status: "cancelled",
+            step: "siteDescription",
+            folderUri: workspaceFolder.uri
+        });
+    });
+
+    it("requires a non-empty site description and limits its length", async () => {
+        runSteps();
+        showQuickPick.callsFake(async (options: {
+            items: vscode.QuickPickItem[];
+        }) => options.items[0]);
+        showInputBox.resolves("A public library portal");
+
+        await selectAgenticCreateInputs(detection, undefined, {
+            getWorkspaceFolders: () => [workspaceFolder],
+            showOpenDialog
+        });
+
+        const validate = showInputBox.firstCall.firstArg.validate as (
+            value: string
+        ) => Promise<string | undefined>;
+        expect(await validate("   ")).to.equal(
+            URI_HANDLER_STRINGS.ERRORS.SITE_DESCRIPTION_REQUIRED
+        );
+        expect(await validate("a".repeat(1001))).to.equal(
+            URI_HANDLER_STRINGS.ERRORS.SITE_DESCRIPTION_TOO_LONG
+        );
+        expect(await validate("A public library portal")).to.be.undefined;
     });
 });

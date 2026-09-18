@@ -18,6 +18,7 @@ export interface ResumeMarker {
     orgUrl: string | null;
     websiteId: string | null;
     source: string | null;
+    siteDescription?: string;
 }
 
 /**
@@ -38,7 +39,8 @@ export interface ResumeMarkerStore {
 export function buildResumeMarker(
     params: CreateFlowParameters,
     host: AgentHost,
-    now: number
+    now: number,
+    siteDescription?: string
 ): ResumeMarker {
     return {
         host,
@@ -47,7 +49,8 @@ export function buildResumeMarker(
         environmentId: params.environmentId,
         orgUrl: params.orgUrl,
         websiteId: params.websiteId,
-        source: params.source
+        source: params.source,
+        ...(siteDescription ? { siteDescription } : {})
     };
 }
 

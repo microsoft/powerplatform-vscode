@@ -23,7 +23,7 @@ describe("showAgenticCreateConfirmPanel", () => {
         },
         {
             kind: "launchHost",
-            commandLine: 'copilot -i "How to use Power Pages Plugin for creating a site?"',
+            commandLine: 'copilot -i "/power-pages:create-site A community event site"',
             description: "start"
         }
     ];
@@ -100,6 +100,36 @@ describe("showAgenticCreateConfirmPanel", () => {
         for (const command of plan) {
             expect(fake.html()).to.contain(command.commandLine.replace(/"/g, "&quot;"));
         }
+    });
+
+    it("recreates the panel once when its active webview never reports ready", async () => {
+        const clock = sinon.useFakeTimers();
+        const first = createFakePanel();
+        const second = createFakePanel();
+        const createWebviewPanel = sinon.stub();
+        createWebviewPanel.onFirstCall().returns(first.panel);
+        createWebviewPanel.onSecondCall().returns(second.panel);
+        const session = showAgenticCreateConfirmPanel(
+            "GitHub Copilot CLI",
+            "c:/work/site",
+            plan,
+            { createWebviewPanel }
+        );
+
+        await clock.tickAsync(4000);
+
+        expect(createWebviewPanel.calledTwice).to.be.true;
+        expect(first.disposeCalled()).to.be.true;
+        expect(second.disposeCalled()).to.be.false;
+        expect(second.html()).to.contain("agenticCreateConfirmReady");
+
+        second.emitMessage({ type: "agenticCreateConfirmReady" });
+        await clock.tickAsync(4000);
+        expect(createWebviewPanel.calledTwice).to.be.true;
+
+        second.emitMessage({ decision: "cancel" });
+        expect(await session.decision).to.equal("cancel");
+        clock.restore();
     });
 
     it("ignores a queued Edit message after Start has already settled", async () => {
@@ -207,9 +237,9 @@ describe("showAgenticCreateConfirmPanel", () => {
         const html = fake.html();
         expect(html).to.contain('id="running-status" role="status" aria-live="polite" aria-atomic="true"');
         expect(html).to.contain('id="recovery-status" role="alert" aria-live="assertive" aria-atomic="true"');
-        expect(html).to.contain('id="close" title="Close this command reference." hidden');
+        expect(html).to.contain('id="close" title="Close this page." hidden');
         expect(html).to.contain("closeButton.focus()");
-        expect(html).to.contain('vscode.setState({ state: "running" })');
+        expect(html).to.contain('saveState({ state: "running" })');
         expect(html).to.contain("const persistedState = vscode.getState()");
     });
 
@@ -222,7 +252,7 @@ describe("showAgenticCreateConfirmPanel", () => {
             depsFor(fake)
         );
 
-        await session.showRecovery({
+        const recoveryDecision = session.showRecovery({
             status: "recovery",
             reason: "commandFailed",
             failedCommand: plan[0],
@@ -232,8 +262,11 @@ describe("showAgenticCreateConfirmPanel", () => {
         expect(fake.postedMessages()).to.deep.equal([{
             type: "agenticCreateConfirmState",
             state: "recovery",
-            message: "Automatic execution stopped while trying to: register. Use the commands below as a manual recovery reference."
+            message: "We couldn't complete this step: register. Review Technical details for more information, or try again. No site files were changed.",
+            setupOptionsAvailable: false
         }]);
+        fake.emitMessage({ action: "retry" });
+        expect(await recoveryDecision).to.equal("retry");
     });
 
     it("reposts the recovery state when a hidden webview becomes visible again", async () => {
@@ -245,7 +278,7 @@ describe("showAgenticCreateConfirmPanel", () => {
             depsFor(fake)
         );
 
-        await session.showRecovery({
+        const recoveryDecision = session.showRecovery({
             status: "recovery",
             reason: "commandFailed",
             failedCommand: plan[0],
@@ -255,6 +288,8 @@ describe("showAgenticCreateConfirmPanel", () => {
 
         expect(fake.postedMessages()).to.have.length(2);
         expect(fake.postedMessages()[1]).to.deep.equal(fake.postedMessages()[0]);
+        fake.emitMessage({ action: "fallback" });
+        expect(await recoveryDecision).to.equal("fallback");
     });
 
     it("posts a specific recovery state when Shell Integration is unavailable", async () => {
@@ -266,7 +301,7 @@ describe("showAgenticCreateConfirmPanel", () => {
             depsFor(fake)
         );
 
-        await session.showRecovery({
+        const recoveryDecision = session.showRecovery({
             status: "recovery",
             reason: "shellIntegrationUnavailable"
         });
@@ -274,8 +309,320 @@ describe("showAgenticCreateConfirmPanel", () => {
         expect(fake.postedMessages()[0]).to.deep.equal({
             type: "agenticCreateConfirmState",
             state: "recovery",
-            message: "Automatic execution could not start because terminal Shell Integration is unavailable. Use the commands below as a manual recovery reference."
+            message: "The terminal wasn't ready in time. Close terminals you don't need, then try again. No site files were changed.",
+            setupOptionsAvailable: false
         });
+        fake.emitMessage({ action: "close" });
+        expect(await recoveryDecision).to.equal("cancel");
+    });
+
+    it("explains how to enable Shell Integration before retrying", async () => {
+        const fake = createFakePanel();
+        const session = showAgenticCreateConfirmPanel(
+            "Claude Code",
+            "c:/work/site",
+            plan,
+            depsFor(fake)
+        );
+
+        const recoveryDecision = session.showRecovery({
+            status: "recovery",
+            reason: "shellIntegrationDisabled"
+        });
+
+        expect(fake.postedMessages()[0]).to.deep.equal({
+            type: "agenticCreateConfirmState",
+            state: "recovery",
+            message: "Terminal shell integration is turned off. Turn on Terminal › Integrated: Shell Integration Enabled in Settings, then try again. No site files were changed.",
+            setupOptionsAvailable: false
+        });
+        fake.emitMessage({ action: "close" });
+        expect(await recoveryDecision).to.equal("cancel");
+    });
+
+    it("explains how to select a supported terminal profile", async () => {
+        const fake = createFakePanel();
+        const session = showAgenticCreateConfirmPanel(
+            "Claude Code",
+            "c:/work/site",
+            plan,
+            depsFor(fake)
+        );
+
+        const recoveryDecision = session.showRecovery({
+            status: "recovery",
+            reason: "unsupportedShell"
+        });
+
+        expect(fake.postedMessages()[0]).to.deep.equal({
+            type: "agenticCreateConfirmState",
+            state: "recovery",
+            message: process.platform === "win32"
+                ? "This terminal profile isn't supported. Choose PowerShell 7 or Bash as your default terminal profile, then try again. No site files were changed."
+                : "This terminal profile isn't supported. Choose PowerShell, Bash, Zsh, or Fish as your default terminal profile, then try again. No site files were changed.",
+            setupOptionsAvailable: false
+        });
+        fake.emitMessage({ action: "close" });
+        expect(await recoveryDecision).to.equal("cancel");
+    });
+
+    it("explains how to recover from a batch-only assistant installation", async () => {
+        const fake = createFakePanel();
+        const session = showAgenticCreateConfirmPanel(
+            "Claude Code",
+            "c:/work/site",
+            plan,
+            depsFor(fake)
+        );
+
+        const recoveryDecision = session.showRecovery({
+            status: "recovery",
+            reason: "unsupportedHostExecutable"
+        });
+
+        expect(fake.postedMessages()[0]).to.deep.equal({
+            type: "agenticCreateConfirmState",
+            state: "recovery",
+            message: "This AI assistant installation can't safely receive your site description. Reinstall the assistant, then try again. No site files were changed.",
+            setupOptionsAvailable: false
+        });
+        fake.emitMessage({ action: "close" });
+        expect(await recoveryDecision).to.equal("cancel");
+    });
+
+    it("cancels recovery when the command-reference panel was already closed", async () => {
+        const fake = createFakePanel();
+        const session = showAgenticCreateConfirmPanel(
+            "Claude Code",
+            "c:/work/site",
+            plan,
+            depsFor(fake)
+        );
+        fake.emitMessage({ decision: "start" });
+        await session.decision;
+        fake.emitMessage({ action: "close" });
+
+        const decision = await session.showRecovery({
+            status: "recovery",
+            reason: "commandFailed",
+            failedCommand: plan[0]
+        });
+
+        expect(decision).to.equal("cancel");
+    });
+
+    it("offers setup options for a failed missing-assistant bootstrap", () => {
+        const fake = createFakePanel();
+        const session = showAgenticCreateConfirmPanel(
+            "Claude Code",
+            "c:/work/site",
+            plan,
+            depsFor(fake),
+            true,
+            {
+                marketplace: "unknown",
+                plugin: "unknown"
+            },
+            true
+        );
+
+        void session.showRecovery({
+            status: "recovery",
+            reason: "commandFailed",
+            failedCommand: {
+                kind: "installHost",
+                commandLine: "install-host",
+                description: "prepare Claude Code"
+            }
+        });
+
+        expect(fake.postedMessages()[0]).to.deep.equal({
+            type: "agenticCreateConfirmState",
+            state: "recovery",
+            message: "We couldn't complete this step: prepare Claude Code. Try again, or select View setup options. No site files were changed.",
+            setupOptionsAvailable: true
+        });
+        fake.emitMessage({ action: "fallback" });
+    });
+
+    it("renders a maker-first hierarchy with collapsed technical details", () => {
+        const fake = createFakePanel();
+        void showAgenticCreateConfirmPanel(
+            "GitHub Copilot CLI",
+            "c:/work/site",
+            plan,
+            depsFor(fake),
+            true,
+            {
+                marketplace: "present",
+                plugin: "present"
+            },
+            false,
+            undefined,
+            "A volunteer portal for a food bank"
+        );
+
+        const html = fake.html();
+        expect(html).to.contain("<h1>Review your site setup</h1>");
+        expect(html).to.contain("You don&#39;t need command-line experience.");
+        expect(html).to.contain('id="summary-title"');
+        expect(html).to.contain("What happens next");
+        expect(html).to.contain("Power Pages Plugin is installed");
+        expect(html).to.contain('<details id="technical-details">');
+        expect(html).to.not.contain('<details id="technical-details" open>');
+        expect(html).to.contain(">Start creating</button>");
+        expect(html).to.contain(">Change choices</button>");
+        expect(html).to.contain("Already set up");
+        expect(html).to.contain("Site to create");
+        expect(html).to.contain("A volunteer portal for a food bank");
+        expect(html).to.contain("Prepare the Power Pages Plugin");
+        expect(html).to.contain("VS Code won&#39;t change your setup until you select Start creating.");
+    });
+
+    it("describes the setup action that matches the current plugin state", () => {
+        const scenarios = [
+            {
+                setupState: {
+                    marketplace: "present" as const,
+                    plugin: "missing" as const
+                },
+                expected: "VS Code will install the Power Pages Plugin"
+            },
+            {
+                setupState: {
+                    marketplace: "present" as const,
+                    plugin: "disabled" as const
+                },
+                expected: "VS Code will enable the Power Pages Plugin"
+            },
+            {
+                setupState: {
+                    marketplace: "unknown" as const,
+                    plugin: "unknown" as const
+                },
+                expected: "VS Code will check the Power Pages Plugin setup"
+            }
+        ];
+
+        for (const scenario of scenarios) {
+            const fake = createFakePanel();
+            void showAgenticCreateConfirmPanel(
+                "Claude Code",
+                "c:/work/site",
+                plan,
+                depsFor(fake),
+                true,
+                scenario.setupState
+            );
+
+            expect(fake.html()).to.contain(scenario.expected);
+        }
+    });
+
+    it("labels conditional setup commands as running only when needed", () => {
+        const fake = createFakePanel();
+        const conditionalPlan: PlannedCommand[] = [{
+            kind: "installPlugin",
+            commandLine: "copilot plugin install power-pages@power-platform-skills",
+            description: "Install the Power Pages Plugin",
+            runWhenSetupState: {
+                component: "plugin",
+                states: ["missing", "unknown"]
+            }
+        }];
+
+        void showAgenticCreateConfirmPanel(
+            "GitHub Copilot CLI",
+            "c:/work/site",
+            conditionalPlan,
+            depsFor(fake)
+        );
+
+        expect(fake.html()).to.contain("Runs only if needed");
+    });
+
+    it("renders WCAG-oriented keyboard, reflow, forced-colors, and reduced-motion support", () => {
+        const fake = createFakePanel();
+        void showAgenticCreateConfirmPanel(
+            "Claude Code",
+            "c:/work/site",
+            plan,
+            depsFor(fake)
+        );
+
+        const html = fake.html();
+        expect(html).to.contain("<main id=\"main-content\">");
+        expect(html).to.contain("@media (max-width: 480px)");
+        expect(html).to.contain("@media (forced-colors: active)");
+        expect(html).to.contain("@media (prefers-reduced-motion: reduce)");
+        expect(html).to.contain("min-height: 32px");
+        expect(html).to.contain("aria-live=\"polite\"");
+        expect(html).to.contain("role=\"alert\"");
+        expect(html).to.contain("technicalDetails.open = true");
+        expect(html).to.contain("technicalDetails.open && event.isTrusted");
+    });
+
+    it("posts progress and launched states and reveals the launched terminal", async () => {
+        const fake = createFakePanel();
+        const show = sinon.stub();
+        const terminal = { show } as unknown as vscode.Terminal;
+        const session = showAgenticCreateConfirmPanel(
+            "GitHub Copilot CLI",
+            "c:/work/site",
+            plan,
+            depsFor(fake)
+        );
+
+        await session.showProgress({
+            command: plan[0],
+            step: 1,
+            totalSteps: 2,
+            status: "running"
+        });
+        await session.showLaunched({
+            status: "launched",
+            terminal
+        });
+        fake.emitMessage({ action: "goToTerminal" });
+
+        expect(fake.postedMessages()).to.deep.equal([
+            {
+                type: "agenticCreateConfirmState",
+                state: "progress",
+                description: "Prepare the Power Pages Plugin",
+                step: 1,
+                totalSteps: 2,
+                status: "running"
+            },
+            {
+                type: "agenticCreateConfirmState",
+                state: "launched"
+            }
+        ]);
+        expect(show.calledOnce).to.be.true;
+    });
+
+    it("reports Technical details expansion only once", () => {
+        const fake = createFakePanel();
+        const onExpanded = sinon.stub();
+        void showAgenticCreateConfirmPanel(
+            "GitHub Copilot CLI",
+            "c:/work/site",
+            plan,
+            depsFor(fake),
+            true,
+            {
+                marketplace: "missing",
+                plugin: "missing"
+            },
+            false,
+            onExpanded
+        );
+
+        fake.emitMessage({ action: "technicalDetailsExpanded" });
+        fake.emitMessage({ action: "technicalDetailsExpanded" });
+
+        expect(onExpanded.calledOnce).to.be.true;
     });
 
     it("renders the host, folder, and every command line in the panel HTML", () => {

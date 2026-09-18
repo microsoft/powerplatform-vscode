@@ -255,7 +255,8 @@ export class MultiStepInput {
               default:
                 break;
             }
-          })
+          }),
+          input.onDidHide(() => reject(InputFlowAction.cancel))
         );
 
         if (this.current) {

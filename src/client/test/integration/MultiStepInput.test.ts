@@ -43,6 +43,7 @@ describe("MultiStepInput", () => {
         onDidTriggerButton: sinon.SinonStub;
         onDidAccept: sinon.SinonStub;
         onDidChangeValue: sinon.SinonStub;
+        onDidHide: sinon.SinonStub;
     };
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let createQuickPickStub: sinon.SinonStub;
@@ -112,6 +113,10 @@ describe("MultiStepInput", () => {
             }),
             onDidChangeValue: sandbox.stub().callsFake((callback) => {
                 valueChangeCallbacks.push(callback);
+                return { dispose: () => { } };
+            }),
+            onDidHide: sandbox.stub().callsFake((callback) => {
+                hideCallbacks.push(callback);
                 return { dispose: () => { } };
             })
         };
@@ -649,6 +654,26 @@ describe("MultiStepInput", () => {
             await MultiStepInput.run(startStep);
 
             expect(mockInputBox.buttons).to.deep.equal([customButton]);
+        });
+
+        it("should cancel when the input box is hidden", async () => {
+            const startStep = sandbox.stub().callsFake(async (input: MultiStepInput) => {
+                const inputPromise = input.showInputBox({
+                    title: "Describe Site",
+                    step: 1,
+                    totalSteps: 1,
+                    value: "",
+                    placeholder: "Site description",
+                    validate: async () => undefined
+                });
+
+                setTimeout(() => hideCallbacks[0]?.(), 0);
+                await inputPromise;
+            });
+
+            await MultiStepInput.run(startStep);
+
+            expect(mockInputBox.dispose.calledOnce).to.be.true;
         });
     });
 

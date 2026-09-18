@@ -13,16 +13,22 @@ import { AgentHost, AgentHostDetectionResult } from "./detectAgentHost";
 export interface AgentHostSelection {
     host: AgentHost;
     installed: boolean;
+    executablePath?: string;
 }
 
 export interface AgentHostQuickPickItem extends vscode.QuickPickItem {
     host: AgentHost;
     installed: boolean;
+    executablePath?: string;
 }
 
 const AGENT_HOST_DISPLAY_NAMES: Record<AgentHost, string> = {
     [AgentHost.Copilot]: URI_HANDLER_STRINGS.AGENT_HOSTS.COPILOT,
     [AgentHost.Claude]: URI_HANDLER_STRINGS.AGENT_HOSTS.CLAUDE
+};
+const AGENT_HOST_DETAILS: Record<AgentHost, string> = {
+    [AgentHost.Copilot]: URI_HANDLER_STRINGS.AGENT_HOSTS.COPILOT_DETAIL,
+    [AgentHost.Claude]: URI_HANDLER_STRINGS.AGENT_HOSTS.CLAUDE_DETAIL
 };
 
 const getAgentHostDescription = (result: AgentHostDetectionResult): string => {
@@ -30,12 +36,7 @@ const getAgentHostDescription = (result: AgentHostDetectionResult): string => {
         return URI_HANDLER_STRINGS.DESCRIPTIONS.AGENT_HOST_NOT_INSTALLED;
     }
 
-    const version = result.version?.trim();
-    if (!version) {
-        return URI_HANDLER_STRINGS.AGENT_HOSTS.INSTALLED;
-    }
-
-    return URI_HANDLER_STRINGS.AGENT_HOSTS.INSTALLED_WITH_VERSION.replace("{0}", version);
+    return URI_HANDLER_STRINGS.AGENT_HOSTS.INSTALLED;
 };
 
 /**
@@ -45,12 +46,21 @@ const getAgentHostDescription = (result: AgentHostDetectionResult): string => {
  */
 export const getAgentHostQuickPickItems = (
     detection: AgentHostDetectionResult[]
-): AgentHostQuickPickItem[] => detection.map(result => ({
-    label: AGENT_HOST_DISPLAY_NAMES[result.host],
-    description: getAgentHostDescription(result),
-    host: result.host,
-    installed: result.installed
-}));
+): AgentHostQuickPickItem[] => detection.map(result => {
+    const detail = result.installed
+        ? AGENT_HOST_DETAILS[result.host]
+        : `${AGENT_HOST_DETAILS[result.host]} ${
+            URI_HANDLER_STRINGS.DESCRIPTIONS.AGENT_HOST_NOT_INSTALLED_DETAIL
+        }`;
+    return {
+        label: AGENT_HOST_DISPLAY_NAMES[result.host],
+        description: getAgentHostDescription(result),
+        detail,
+        host: result.host,
+        installed: result.installed,
+        ...(result.executablePath ? { executablePath: result.executablePath } : {})
+    };
+});
 
 /**
  * Removes Quick Pick presentation fields from an agent-host selection.
@@ -61,7 +71,10 @@ export const toAgentHostSelection = (
     selectedItem: AgentHostQuickPickItem
 ): AgentHostSelection => ({
     host: selectedItem.host,
-    installed: selectedItem.installed
+    installed: selectedItem.installed,
+    ...(selectedItem.executablePath
+        ? { executablePath: selectedItem.executablePath }
+        : {})
 });
 
 /**

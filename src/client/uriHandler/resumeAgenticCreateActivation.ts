@@ -47,7 +47,12 @@ export async function resumeAgenticCreateOnActivation(
                 vscode.window.showInformationMessage(message, ...buttons),
             emitEvent: emitCreateFlowEvent,
             emitError: emitCreateFlowError,
-            runStages: async (params: CreateFlowParameters, host: AgentHost) => {
+            runStages: async (
+                params: CreateFlowParameters,
+                host: AgentHost,
+                siteDescription: string,
+                detectedHostExecutablePath?: string
+            ) => {
                 const folderUri = await selectTargetFolder();
                 if (!folderUri) {
                     emitCreateFlowEvent(
@@ -69,13 +74,28 @@ export async function resumeAgenticCreateOnActivation(
                     params,
                     'agent'
                 );
-                await confirmAndLaunchSelectedAgentHost(
-                    host,
-                    folderUri,
-                    params,
-                    undefined,
-                    false
-                );
+                if (detectedHostExecutablePath) {
+                    await confirmAndLaunchSelectedAgentHost(
+                        host,
+                        folderUri,
+                        params,
+                        undefined,
+                        false,
+                        undefined,
+                        siteDescription,
+                        detectedHostExecutablePath
+                    );
+                } else {
+                    await confirmAndLaunchSelectedAgentHost(
+                        host,
+                        folderUri,
+                        params,
+                        undefined,
+                        false,
+                        undefined,
+                        siteDescription
+                    );
+                }
             },
             clearMarker: clearResumeMarker
         });
