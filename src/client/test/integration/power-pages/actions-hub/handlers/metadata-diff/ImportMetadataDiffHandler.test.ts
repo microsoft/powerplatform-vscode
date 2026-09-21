@@ -2,8 +2,9 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
-
 import * as vscode from "vscode";
+import * as vscode from "vscode";
+import path from "path";
 import { expect } from "chai";
 import sinon from "sinon";
 import * as TelemetryHelper from "../../../../../../power-pages/actions-hub/TelemetryHelper";
@@ -103,6 +104,36 @@ describe("ImportMetadataDiffHandler", () => {
             expect(traceInfoStub.called).to.be.true;
             expect(traceInfoStub.firstCall.args[0]).to.equal("ActionsHubMetadataDiffImportCalled");
         });
+
+        [
+            {
+                fieldName: "remoteWebsiteId",
+                value: "..\\..\\outside"
+            },
+            {
+                fieldName: "environmentId",
+                value: "..\\..\\outside"
+            }
+        ].forEach(({ fieldName, value }) => {
+            it(`should reject an invalid ${fieldName}`, async () => {
+                const importData = {
+                    version: "1.0",
+                    extensionVersion: "1.0.0",
+                    exportedAt: "2024-01-15T10:30:00Z",
+                    localWebsiteId: "11111111-1111-1111-1111-111111111111",
+                    localWebsiteName: "Local Site",
+                    remoteWebsiteId: "22222222-2222-2222-2222-222222222222",
+                    remoteWebsiteName: "Remote Site",
+                    environmentId: "33333333-3333-3333-3333-333333333333",
+                    environmentName: "Test Environment",
+                    files: []
+                };
+                Object.assign(importData, { [fieldName]: value });
+                const { validateImportData } = await import("../../../../../../power-pages/actions-hub/handlers/metadata-diff/ImportMetadataDiffHandler");
+
+                expect(validateImportData(importData)).to.not.be.undefined;
+            });
+        });
     });
 
     describe("IMetadataDiffExport format", () => {
@@ -144,6 +175,39 @@ describe("ImportMetadataDiffHandler", () => {
             expect(legacyExportData.websiteId).to.equal("website-id");
             expect(legacyExportData.websiteName).to.equal("Website Name");
             expect(legacyExportData.localSiteName).to.equal("Local Site Name");
+        });
+    });
+
+    describe("resolveImportedFilePath", () => {
+        it("should resolve nested file paths under the trusted root", async () => {
+            const { resolveImportedFilePath } = await import("../../../../../../power-pages/actions-hub/handlers/metadata-diff/ImportMetadataDiffHandler");
+            const rootPath = path.resolve("safe-import-root");
+
+            const resolvedPath = resolveImportedFilePath(rootPath, "web-pages/home/content.html");
+
+            expect(resolvedPath).to.equal(path.join(rootPath, "web-pages", "home", "content.html"));
+        });
+
+        [
+            "../outside.txt",
+            "..\\outside.txt",
+            "folder/../../outside.txt",
+            "folder\\..\\..\\outside.txt",
+            "/tmp/outside.txt",
+            "C:\\Users\\Alice\\outside.txt",
+            "C:outside.txt",
+            "\\\\server\\share\\outside.txt",
+            "folder/./outside.txt",
+            "folder//outside.txt",
+            "folder/file.txt:stream",
+            "folder/NUL.txt"
+        ].forEach(relativePath => {
+            it(`should reject unsafe path ${relativePath}`, async () => {
+                const { resolveImportedFilePath } = await import("../../../../../../power-pages/actions-hub/handlers/metadata-diff/ImportMetadataDiffHandler");
+                const rootPath = path.resolve("safe-import-root");
+
+                expect(() => resolveImportedFilePath(rootPath, relativePath)).to.throw();
+            });
         });
     });
 });
