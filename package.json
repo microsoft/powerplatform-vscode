@@ -64,7 +64,6 @@
     "npm": ">=8.3.0"
   },
   "extensionPack": [
-    "github.vscode-codeql",
     "ms-sarifvscode.sarif-viewer"
   ],
   "extensionKind": [
