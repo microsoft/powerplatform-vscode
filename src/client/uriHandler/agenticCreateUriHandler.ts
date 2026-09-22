@@ -12,8 +12,6 @@ import { ResumeMarkerStore } from "./utils/resumeMarker";
 
 export const AGENTIC_CREATE_COMMAND =
     "microsoft.powerplatform.agenticCreate";
-export const AGENTIC_CREATE_COMMAND_ENABLED_CONTEXT =
-    "powerPlatform.agenticCreate.commandEnabled";
 
 /**
  * Builds the secret-free URI contract used by the Agentic Create command.

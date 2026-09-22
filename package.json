@@ -216,7 +216,7 @@
         "command": "microsoft.powerplatform.agenticCreate",
         "category": "Power Pages",
         "title": "%microsoft.powerplatform.agenticCreate.title%",
-        "enablement": "!isWeb && powerPlatform.agenticCreate.commandEnabled"
+        "enablement": "!isWeb"
       },
       {
         "command": "powerpages.collaboration.openTeamsChat",

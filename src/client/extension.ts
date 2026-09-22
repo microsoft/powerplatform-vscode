@@ -59,7 +59,6 @@ import { resumeAgenticCreateOnActivation } from "./uriHandler/resumeAgenticCreat
 import { registerAgenticCreateConfirmPanelSerializer } from "./uriHandler/utils/agenticCreateConfirmPanel";
 import {
     AGENTIC_CREATE_COMMAND,
-    AGENTIC_CREATE_COMMAND_ENABLED_CONTEXT,
     AgenticCreateUriHandler
 } from "./uriHandler/agenticCreateUriHandler";
 
@@ -94,11 +93,6 @@ export async function activate(
     // reload recovery cannot be blocked by unrelated setup.
     const uriHandler = new AgenticCreateUriHandler(_context.globalState);
     _context.subscriptions.push(vscode.window.registerUriHandler(uriHandler));
-    await vscode.commands.executeCommand(
-        "setContext",
-        AGENTIC_CREATE_COMMAND_ENABLED_CONTEXT,
-        false
-    );
     _context.subscriptions.push(vscode.commands.registerCommand(
         AGENTIC_CREATE_COMMAND,
         () => uriHandler.triggerCommand()

@@ -9,7 +9,6 @@ import * as vscode from "vscode";
 import { PacWrapper } from "../../pac/PacWrapper";
 import {
     AGENTIC_CREATE_COMMAND,
-    AGENTIC_CREATE_COMMAND_ENABLED_CONTEXT,
     AgenticCreateUriHandler,
     buildAgenticCreateCommandUri
 } from "../../uriHandler/agenticCreateUriHandler";
@@ -88,7 +87,7 @@ describe("AgenticCreateUriHandler", () => {
         expect(agenticCreateStub.firstCall.args).to.have.lengthOf(1);
     });
 
-    it("contributes a disabled production command to the Command Palette", () => {
+    it("contributes an enabled desktop command to the Command Palette", () => {
         const packageJson = vscode.extensions.getExtension(
             URI_CONSTANTS.EXTENSION_ID
         )?.packageJSON;
@@ -101,9 +100,7 @@ describe("AgenticCreateUriHandler", () => {
                 item.command === AGENTIC_CREATE_COMMAND
         );
 
-        expect(command?.enablement).to.equal(
-            `!isWeb && ${AGENTIC_CREATE_COMMAND_ENABLED_CONTEXT}`
-        );
+        expect(command?.enablement).to.equal("!isWeb");
         expect(command?.category).to.equal("Power Pages");
         expect(command?.title).to.equal("Create a site with AI");
         expect(menu).to.be.undefined;
