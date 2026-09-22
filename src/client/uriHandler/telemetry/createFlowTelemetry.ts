@@ -16,8 +16,6 @@ const FUNNEL_EVENT_PROPERTIES: Partial<Record<
 >> = {
     [uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_RECEIVED]:
         { funnelStage: 'uriReceipt', funnelOutcome: 'received' },
-    [uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_DISABLED]:
-        { funnelStage: 'featureGate', funnelOutcome: 'disabled' },
     [uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_TRIGGERED]:
         { funnelStage: 'contractValidation', funnelOutcome: 'accepted' },
     [uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_DETECTED]:

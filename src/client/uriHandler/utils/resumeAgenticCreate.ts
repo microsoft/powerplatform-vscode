@@ -124,8 +124,8 @@ export async function resumeAgenticCreate(
         return;
     }
 
-    // The short-lived marker is written only after the gated Agentic Create flow has already
-    // started, so resuming it must not depend on ECS being initialized again after reload.
+    // The short-lived marker is written only after the Agentic Create flow has already started,
+    // so resuming it can continue directly after reload.
     const detection = await deps.detectHost(marker.host);
     if (!detection.installed) {
         await deps.emitEvent(

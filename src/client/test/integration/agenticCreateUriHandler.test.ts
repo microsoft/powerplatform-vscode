@@ -78,7 +78,7 @@ describe("AgenticCreateUriHandler", () => {
         expect(query.get(URI_CONSTANTS.PARAMETERS.VERSION)).to.equal("1");
     });
 
-    it("runs the command through the gated Agentic Create handler", async () => {
+    it("runs the command through the Agentic Create handler", async () => {
         await handler.triggerCommand();
 
         expect(agenticCreateStub.calledOnce).to.be.true;

@@ -89,7 +89,6 @@ describe("Agentic create host resolution", () => {
 
     beforeEach(() => {
         sandbox = sinon.createSandbox();
-        sandbox.stub(AgenticCreateHandler, "isEnabled").returns(true);
 
         traceInfoStub = sandbox.stub();
         traceErrorStub = sandbox.stub();

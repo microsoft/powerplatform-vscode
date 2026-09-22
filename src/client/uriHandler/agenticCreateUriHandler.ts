@@ -62,7 +62,7 @@ export class AgenticCreateUriHandler implements vscode.UriHandler {
     }
 
     /**
-     * Runs the Agentic Create command through the same gated handler as the URI route.
+     * Runs the Agentic Create command through the same handler as the URI route.
      */
     public triggerCommand(): Promise<void> {
         return this.agenticCreateHandler.handle(
