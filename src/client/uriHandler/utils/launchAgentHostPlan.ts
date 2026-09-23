@@ -262,6 +262,7 @@ export async function launchAgentHostPlan(
 
     const shellIntegration = await deps.waitForShellIntegration(terminal);
     if (!shellIntegration) {
+        terminal.dispose();
         return {
             status: "recovery",
             reason: "shellIntegrationUnavailable",

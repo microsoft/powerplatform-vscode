@@ -257,7 +257,8 @@ describe('resumeAgenticCreate', () => {
         expect(context.runStages.calledOnceWithExactly(
             expectedParams,
             AgentHost.Copilot,
-            "A volunteer management portal"
+            "A volunteer management portal",
+            undefined
         )).to.be.true;
         expect(calls).to.deep.equal(['emit', 'stages', 'clear']);
         expect(context.store.value).to.be.undefined;

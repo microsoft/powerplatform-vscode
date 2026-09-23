@@ -107,7 +107,6 @@
     "onCommand:powerplatform-walkthrough.saveConflict-start-folder",
     "onCommand:powerplatform-walkthrough.advancedCapabilities-learn-more",
     "onCommand:powerplatform-walkthrough.advancedCapabilities-start-coding",
-    "onCommand:microsoft.powerplatform.agenticCreate",
     "onUri",
     "onWebviewPanel:powerPagesAgenticCreateConfirm",
     "onStartupFinished",
@@ -216,7 +215,7 @@
         "command": "microsoft.powerplatform.agenticCreate",
         "category": "Power Pages",
         "title": "%microsoft.powerplatform.agenticCreate.title%",
-        "enablement": "!isWeb"
+        "enablement": "!isWeb && !virtualWorkspace"
       },
       {
         "command": "powerpages.collaboration.openTeamsChat",

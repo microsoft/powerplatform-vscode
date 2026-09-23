@@ -168,20 +168,12 @@ export async function resumeAgenticCreate(
             params,
             'agent'
         );
-        if (detection.executablePath) {
-            await deps.runStages(
-                params,
-                marker.host,
-                marker.siteDescription ?? "Create a Power Pages site",
-                detection.executablePath
-            );
-        } else {
-            await deps.runStages(
-                params,
-                marker.host,
-                marker.siteDescription ?? "Create a Power Pages site"
-            );
-        }
+        await deps.runStages(
+            params,
+            marker.host,
+            marker.siteDescription ?? "Create a Power Pages site",
+            detection.executablePath
+        );
     } catch (error) {
         await deps.emitError?.(
             uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_FAILED,

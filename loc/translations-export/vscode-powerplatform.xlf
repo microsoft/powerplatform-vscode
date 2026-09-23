@@ -1668,6 +1668,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++4164b3068322daf412659fb28d24b8b18f2d9fcdb160a63980bafbd16134231b">
       <source xml:lang="en">VS Code - PAC CLI authentication mismatch detected</source>
     </trans-unit>
+    <trans-unit id="++CODE++c4b3a95eb9ce3bce70b7fd7d6462e24f10cfc7e81edbf5684aa1cf858c3feb09">
+      <source xml:lang="en">VS Code couldn't open the site setup page. Run the command again.</source>
+    </trans-unit>
     <trans-unit id="++CODE++1acc93ac4c64d3eb4ce7ab732ec13e9c225ed10c645415274b729099d3a8074a">
       <source xml:lang="en">VS Code will check the Power Pages Plugin setup</source>
     </trans-unit>

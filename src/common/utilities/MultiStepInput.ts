@@ -38,6 +38,7 @@ interface InputBoxParameters {
   prompt?: string;
   placeholder: string;
   validate: (value: string) => Promise<string | undefined>;
+  onValueChanged?: (value: string) => void;
   buttons?: QuickInputButton[];
 }
 
@@ -200,6 +201,7 @@ export class MultiStepInput {
     prompt,
     placeholder,
     validate,
+    onValueChanged,
     buttons,
   }: P) {
     const disposables: Disposable[] = [];
@@ -244,6 +246,7 @@ export class MultiStepInput {
           }),
 
           input.onDidChangeValue(async (text) => {
+            onValueChanged?.(text);
             const current = validate(text);
             validating = current;
 

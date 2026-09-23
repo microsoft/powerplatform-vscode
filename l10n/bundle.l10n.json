@@ -133,6 +133,7 @@
   "User cancelled folder selection": "User cancelled folder selection",
   "Power Pages create flow could not continue. {0}": "Power Pages create flow could not continue. {0}",
   "We couldn't complete the setup. Review the confirmation page for details.": "We couldn't complete the setup. Review the confirmation page for details.",
+  "VS Code couldn't open the site setup page. Run the command again.": "VS Code couldn't open the site setup page. Run the command again.",
   "Download failed: {0}": "Download failed: {0}",
   "Describe the site you want to create.": "Describe the site you want to create.",
   "Enter 1,000 characters or fewer.": "Enter 1,000 characters or fewer.",

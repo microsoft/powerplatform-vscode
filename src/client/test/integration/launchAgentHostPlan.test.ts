@@ -45,8 +45,11 @@ describe("launchAgentHostPlan", () => {
         executeObservedCommand: sinon.SinonStub;
         executeInteractiveCommand: sinon.SinonStub;
         waitForShellIntegration: sinon.SinonStub;
+        disposeTerminal: sinon.SinonStub;
     } => {
+        const disposeTerminal = sinon.stub();
         const terminal = {
+            dispose: disposeTerminal,
             show: sinon.stub(),
             processId
         } as unknown as vscode.Terminal;
@@ -77,7 +80,8 @@ describe("launchAgentHostPlan", () => {
             createTerminal,
             executeObservedCommand,
             executeInteractiveCommand,
-            waitForShellIntegration
+            waitForShellIntegration,
+            disposeTerminal
         };
     };
 
@@ -338,7 +342,8 @@ describe("launchAgentHostPlan", () => {
         const {
             deps,
             executeObservedCommand,
-            executeInteractiveCommand
+            executeInteractiveCommand,
+            disposeTerminal
         } = buildDependencies([], false);
 
         const result = await launchAgentHostPlan(
@@ -360,6 +365,7 @@ describe("launchAgentHostPlan", () => {
         });
         expect(executeObservedCommand.notCalled).to.be.true;
         expect(executeInteractiveCommand.notCalled).to.be.true;
+        expect(disposeTerminal.calledOnce).to.be.true;
     });
 
     it("stops when an observed command ends without an exit code", async () => {

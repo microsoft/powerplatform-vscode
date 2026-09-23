@@ -100,11 +100,11 @@ describe("AgenticCreateUriHandler", () => {
                 item.command === AGENTIC_CREATE_COMMAND
         );
 
-        expect(command?.enablement).to.equal("!isWeb");
+        expect(command?.enablement).to.equal("!isWeb && !virtualWorkspace");
         expect(command?.category).to.equal("Power Pages");
         expect(command?.title).to.equal("Create a site with AI");
         expect(menu).to.be.undefined;
-        expect(packageJson?.activationEvents).to.include(
+        expect(packageJson?.activationEvents).to.not.include(
             `onCommand:${AGENTIC_CREATE_COMMAND}`
         );
     });

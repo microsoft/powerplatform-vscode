@@ -238,6 +238,72 @@ describe("selectAgenticCreateInputs", () => {
         );
     });
 
+    it("preserves the site description when navigating Back and returning", async () => {
+        const initialDescription = "A nonprofit support portal";
+        let inputBoxCallCount = 0;
+        sandbox.stub(MultiStepInput, "run").callsFake(async (start) => {
+            const input = {
+                showQuickPick: sandbox.stub().callsFake(async (options: {
+                    activeItem?: vscode.QuickPickItem;
+                    items: vscode.QuickPickItem[];
+                }) => options.activeItem ?? options.items[0]),
+                showInputBox: sandbox.stub().callsFake(async (options: {
+                    onValueChanged?: (value: string) => void;
+                    value: string;
+                }) => {
+                    inputBoxCallCount++;
+                    if (inputBoxCallCount === 1) {
+                        expect(options.value).to.equal(initialDescription);
+                        options.onValueChanged?.(
+                            "A partially edited nonprofit support portal"
+                        );
+                        throw new Error("back");
+                    }
+                    expect(options.value).to.equal(
+                        "A partially edited nonprofit support portal"
+                    );
+                    return "An updated nonprofit support portal";
+                })
+            } as unknown as MultiStepInput;
+            const hostStep = await start(input);
+            const descriptionStep = await hostStep?.(input);
+            try {
+                await descriptionStep?.(input);
+            } catch {
+                // Simulate MultiStepInput returning to the previous step.
+            }
+            const returnedDescriptionStep = await hostStep?.(input);
+            await returnedDescriptionStep?.(input);
+        });
+
+        const result = await selectAgenticCreateInputs(
+            detection,
+            {
+                folderUri: workspaceFolder.uri,
+                hostSelection: {
+                    host: AgentHost.Copilot,
+                    installed: true
+                },
+                siteDescription: initialDescription
+            },
+            {
+                getWorkspaceFolders: () => [workspaceFolder],
+                showOpenDialog
+            }
+        );
+
+        expect(inputBoxCallCount).to.equal(2);
+        expect(result).to.deep.equal({
+            status: "selected",
+            folderUri: workspaceFolder.uri,
+            hostSelection: {
+                host: AgentHost.Copilot,
+                installed: true
+            },
+            siteDescription: "An updated nonprofit support portal"
+        });
+    });
+
     it("reports Esc from the site-description step", async () => {
         sandbox.stub(MultiStepInput, "run").callsFake(async (start) => {
             const input = {

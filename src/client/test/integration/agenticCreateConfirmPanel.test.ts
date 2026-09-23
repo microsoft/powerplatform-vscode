@@ -84,7 +84,8 @@ describe("showAgenticCreateConfirmPanel", () => {
     };
 
     const depsFor = (fake: FakePanel): ShowConfirmPanelDependencies => ({
-        createWebviewPanel: () => fake.panel
+        createWebviewPanel: () => fake.panel,
+        showErrorMessage: sinon.stub().resolves(undefined)
     });
 
     it("resolves 'start' without replacing the accessible document", async () => {
@@ -107,13 +108,14 @@ describe("showAgenticCreateConfirmPanel", () => {
         const first = createFakePanel();
         const second = createFakePanel();
         const createWebviewPanel = sinon.stub();
+        const showErrorMessage = sinon.stub().resolves(undefined);
         createWebviewPanel.onFirstCall().returns(first.panel);
         createWebviewPanel.onSecondCall().returns(second.panel);
         const session = showAgenticCreateConfirmPanel(
             "GitHub Copilot CLI",
             "c:/work/site",
             plan,
-            { createWebviewPanel }
+            { createWebviewPanel, showErrorMessage }
         );
 
         await clock.tickAsync(4000);
@@ -129,6 +131,34 @@ describe("showAgenticCreateConfirmPanel", () => {
 
         second.emitMessage({ decision: "cancel" });
         expect(await session.decision).to.equal("cancel");
+        clock.restore();
+    });
+
+    it("dismisses the flow when the replacement webview also fails to report ready", async () => {
+        const clock = sinon.useFakeTimers();
+        const first = createFakePanel();
+        const second = createFakePanel();
+        const createWebviewPanel = sinon.stub();
+        const showErrorMessage = sinon.stub().resolves(undefined);
+        createWebviewPanel.onFirstCall().returns(first.panel);
+        createWebviewPanel.onSecondCall().returns(second.panel);
+        const session = showAgenticCreateConfirmPanel(
+            "GitHub Copilot CLI",
+            "c:/work/site",
+            plan,
+            { createWebviewPanel, showErrorMessage }
+        );
+
+        await clock.tickAsync(4000);
+        await clock.tickAsync(4000);
+
+        expect(createWebviewPanel.calledTwice).to.be.true;
+        expect(first.disposeCalled()).to.be.true;
+        expect(second.disposeCalled()).to.be.true;
+        expect(showErrorMessage.calledOnceWithExactly(
+            "VS Code couldn't open the site setup page. Run the command again."
+        )).to.be.true;
+        expect(await session.decision).to.equal("dismissed");
         clock.restore();
     });
 

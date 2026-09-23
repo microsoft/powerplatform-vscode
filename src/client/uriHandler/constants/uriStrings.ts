@@ -21,6 +21,7 @@ export const URI_HANDLER_STRINGS = {
         USER_CANCELLED_FOLDER_SELECTION: vscode.l10n.t("User cancelled folder selection"),
         CREATE_FLOW_FAILED: vscode.l10n.t("Power Pages create flow could not continue. {0}"),
         AGENT_HOST_SEQUENCE_RECOVERY: vscode.l10n.t("We couldn't complete the setup. Review the confirmation page for details."),
+        AGENTIC_CONFIRM_PANEL_UNAVAILABLE: vscode.l10n.t("VS Code couldn't open the site setup page. Run the command again."),
         DOWNLOAD_FAILED: vscode.l10n.t("Download failed: {0}"),
         SITE_DESCRIPTION_REQUIRED: vscode.l10n.t("Describe the site you want to create."),
         SITE_DESCRIPTION_TOO_LONG: vscode.l10n.t("Enter 1,000 characters or fewer.")

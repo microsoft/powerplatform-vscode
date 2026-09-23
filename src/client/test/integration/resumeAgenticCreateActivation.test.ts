@@ -104,7 +104,8 @@ describe("resumeAgenticCreateOnActivation", () => {
             undefined,
             false,
             undefined,
-            "A volunteer services portal"
+            "A volunteer services portal",
+            undefined
         )).to.be.true;
         expect(traceInfoStub.calledWith(
             uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED

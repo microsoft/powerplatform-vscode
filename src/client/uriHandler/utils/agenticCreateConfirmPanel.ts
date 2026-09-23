@@ -67,11 +67,13 @@ export interface ShowConfirmPanelDependencies {
         showOptions: vscode.ViewColumn,
         options: vscode.WebviewPanelOptions & vscode.WebviewOptions
     ) => vscode.WebviewPanel;
+    showErrorMessage(message: string): Thenable<string | undefined>;
 }
 
 const DEFAULT_CONFIRM_PANEL_DEPENDENCIES: ShowConfirmPanelDependencies = {
     createWebviewPanel: (viewType, title, showOptions, options) =>
-        vscode.window.createWebviewPanel(viewType, title, showOptions, options)
+        vscode.window.createWebviewPanel(viewType, title, showOptions, options),
+    showErrorMessage: (message) => vscode.window.showErrorMessage(message)
 };
 
 const RESTORED_PANEL_READY_MESSAGE = "agenticCreateConfirmRestoredPanelReady";
@@ -727,7 +729,7 @@ export function showAgenticCreateConfirmPanel(
         panel = createdPanel;
         activePanelReady = false;
         panelDisposed = false;
-        createdPanel.webview.html = buildHtml(
+        const html = buildHtml(
             hostDisplayName,
             folderPath,
             plan,
@@ -739,15 +741,22 @@ export function showAgenticCreateConfirmPanel(
         );
 
         const readyTimer = setTimeout(() => {
-            if (
-                createdPanel === panel
-                && !activePanelReady
-                && panelRetryCount === 0
-            ) {
+            if (createdPanel !== panel || activePanelReady) {
+                return;
+            }
+            if (panelRetryCount === 0) {
                 panelRetryCount++;
                 createActivePanel();
                 createdPanel.dispose();
+                return;
             }
+            resolveRecoveryDecision?.("cancel");
+            resolveRecoveryDecision = undefined;
+            settleWith("dismissed");
+            void deps.showErrorMessage(
+                URI_HANDLER_STRINGS.ERRORS.AGENTIC_CONFIRM_PANEL_UNAVAILABLE
+            );
+            createdPanel.dispose();
         }, ACTIVE_PANEL_READY_TIMEOUT_MS);
         readyTimer.unref?.();
 
@@ -784,6 +793,7 @@ export function showAgenticCreateConfirmPanel(
             resolveRecoveryDecision = undefined;
             settleWith("dismissed");
         });
+        createdPanel.webview.html = html;
     };
 
     createActivePanel();

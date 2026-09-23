@@ -50,6 +50,7 @@ interface AgenticCreateInputState {
     hostItem?: AgentHostQuickPickItem;
     hostSelection?: AgentHostSelection;
     siteDescription?: string;
+    siteDescriptionAccepted: boolean;
 }
 
 const MAX_SITE_DESCRIPTION_LENGTH = 1000;
@@ -79,7 +80,8 @@ export async function selectAgenticCreateInputs(
         currentStep: "folder",
         folderUri: initialSelection?.folderUri,
         hostSelection: initialSelection?.hostSelection,
-        siteDescription: initialSelection?.siteDescription
+        siteDescription: initialSelection?.siteDescription,
+        siteDescriptionAccepted: false
     };
     const folderItems = getTargetFolderQuickPickItems(dependencies.getWorkspaceFolders());
     const hostItems = getAgentHostQuickPickItems(detection);
@@ -102,7 +104,7 @@ export async function selectAgenticCreateInputs(
     const pickSiteDescription = async (input: MultiStepInput): Promise<void> => {
         state.currentStep = "siteDescription";
         const existingDescription = state.siteDescription ?? "";
-        state.siteDescription = undefined;
+        state.siteDescriptionAccepted = false;
         const value = await input.showInputBox({
             title: URI_HANDLER_STRINGS.TITLES.SITE_DESCRIPTION,
             step: 3,
@@ -110,6 +112,9 @@ export async function selectAgenticCreateInputs(
             value: existingDescription,
             prompt: URI_HANDLER_STRINGS.PROMPTS.SITE_DESCRIPTION,
             placeholder: URI_HANDLER_STRINGS.PROMPTS.SITE_DESCRIPTION_PLACEHOLDER,
+            onValueChanged: (inputValue: string) => {
+                state.siteDescription = inputValue;
+            },
             validate: async (inputValue: string) => {
                 if (!inputValue.trim()) {
                     return URI_HANDLER_STRINGS.ERRORS.SITE_DESCRIPTION_REQUIRED;
@@ -124,6 +129,7 @@ export async function selectAgenticCreateInputs(
             value,
             MAX_SITE_DESCRIPTION_LENGTH
         ) ?? undefined;
+        state.siteDescriptionAccepted = state.siteDescription !== undefined;
     };
 
     const pickHost = async (
@@ -205,7 +211,7 @@ export async function selectAgenticCreateInputs(
             folderUri: state.folderUri
         };
     }
-    if (!state.siteDescription) {
+    if (!state.siteDescriptionAccepted || !state.siteDescription) {
         return {
             status: "cancelled",
             step: "siteDescription",
