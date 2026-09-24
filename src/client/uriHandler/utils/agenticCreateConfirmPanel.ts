@@ -76,10 +76,38 @@ const DEFAULT_CONFIRM_PANEL_DEPENDENCIES: ShowConfirmPanelDependencies = {
     showErrorMessage: (message) => vscode.window.showErrorMessage(message)
 };
 
-const RESTORED_PANEL_READY_MESSAGE = "agenticCreateConfirmRestoredPanelReady";
-const RESTORED_PANEL_DISPOSE_TIMEOUT_MS = 5000;
 const ACTIVE_PANEL_READY_MESSAGE = "agenticCreateConfirmReady";
 const ACTIVE_PANEL_READY_TIMEOUT_MS = 4000;
+const ACTIVE_PANEL_RECREATE_DELAY_MS = 250;
+const activeConfirmPanels = new Set<vscode.WebviewPanel>();
+const pendingPanelReplacements = new Map<
+    ReturnType<typeof setTimeout>,
+    () => void
+>();
+let confirmPanelsShuttingDown = false;
+
+/**
+ * Closes active transient confirmation panels before extension deactivation or window reload.
+ */
+export function disposeAgenticCreateConfirmPanels(): void {
+    const pendingReplacements = [...pendingPanelReplacements.entries()];
+    pendingPanelReplacements.clear();
+    pendingReplacements.forEach(([timer, cancel]) => {
+        clearTimeout(timer);
+        cancel();
+    });
+    const panels = [...activeConfirmPanels];
+    activeConfirmPanels.clear();
+    panels.forEach(panel => panel.dispose());
+}
+
+/**
+ * Prevents new confirmation panels and closes all current panels during extension deactivation.
+ */
+export function shutdownAgenticCreateConfirmPanels(): void {
+    confirmPanelsShuttingDown = true;
+    disposeAgenticCreateConfirmPanels();
+}
 
 /**
  * Escapes a string for safe interpolation into HTML text/attribute content. Folder paths and
@@ -524,86 +552,6 @@ function buildHtml(
 }
 
 /**
- * Builds the minimal document used to retire a confirmation panel restored after a window reload.
- *
- * The ready message is intentionally sent from inside the webview. Receiving it proves that VS
- * Code has finished initializing the webview host and its service worker, so the extension can
- * dispose the obsolete panel without tearing down a document whose service worker is still being
- * registered.
- */
-function buildRestoredPanelCleanupHtml(): string {
-    const nonce = getNonce();
-
-    return `<!DOCTYPE html>
-<html lang="${escapeHtml(vscode.env.language)}">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-${nonce}';">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${escapeHtml(URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.PANEL_TITLE)}</title>
-</head>
-<body>
-    <script nonce="${nonce}">
-        acquireVsCodeApi().postMessage({ type: "${RESTORED_PANEL_READY_MESSAGE}" });
-    </script>
-</body>
-</html>`;
-}
-
-/**
- * Registers the serializer VS Code uses when it restores a confirmation panel after a window
- * reload, and discards the restored panel.
- *
- * The panel only carries meaning while the promise returned by
- * {@link showAgenticCreateConfirmPanel} is awaiting a decision. A window reload ends that promise
- * along with its message and dispose listeners, so a restored tab can never resolve anything and
- * its buttons post to a listener that no longer exists. The serializer first loads a minimal
- * cleanup document and waits for its ready message before disposing the panel. Disposing directly
- * from `deserializeWebviewPanel` races VS Code's service-worker registration and can leave the tab
- * showing "Could not register service worker: The document is in an invalid state."
- *
- * @returns A disposable that unregisters the serializer.
- */
-export function registerAgenticCreateConfirmPanelSerializer(): vscode.Disposable {
-    return vscode.window.registerWebviewPanelSerializer(
-        URI_CONSTANTS.AGENTIC_CREATE_CONFIRM_VIEW_TYPE,
-        {
-            async deserializeWebviewPanel(panel: vscode.WebviewPanel): Promise<void> {
-                panel.webview.options = {
-                    enableScripts: true,
-                    localResourceRoots: []
-                };
-
-                let disposed = false;
-                const disposePanel = (): void => {
-                    if (!disposed) {
-                        disposed = true;
-                        panel.dispose();
-                    }
-                };
-                const fallbackTimer = setTimeout(
-                    disposePanel,
-                    RESTORED_PANEL_DISPOSE_TIMEOUT_MS
-                );
-                const messageSubscription = panel.webview.onDidReceiveMessage(
-                    (message: { type?: unknown }) => {
-                        if (message?.type === RESTORED_PANEL_READY_MESSAGE) {
-                            disposePanel();
-                        }
-                    }
-                );
-                panel.onDidDispose(() => {
-                    disposed = true;
-                    clearTimeout(fallbackTimer);
-                    messageSubscription.dispose();
-                });
-                panel.webview.html = buildRestoredPanelCleanupHtml();
-            }
-        }
-    );
-}
-
-/**
  * Shows the confirmation gate as a non-blocking webview panel (an editor tab) that both PREVIEWS
  * the exact command plan and collects the decision.
  *
@@ -643,6 +591,15 @@ export function showAgenticCreateConfirmPanel(
     onTechnicalDetailsExpanded?: () => void,
     siteDescription = ""
 ): AgenticCreateConfirmPanelSession {
+    if (confirmPanelsShuttingDown) {
+        return {
+            decision: Promise.resolve("dismissed"),
+            showProgress: () => Promise.resolve(false),
+            showLaunched: () => Promise.resolve(false),
+            showRecovery: () => Promise.resolve("cancel")
+        };
+    }
+
     const confirm = URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM;
     const progressStageLabels: Record<MakerProgressStage, string> = {
         prepareAssistant: confirm.PREPARE_ASSISTANT_TITLE,
@@ -674,13 +631,19 @@ export function showAgenticCreateConfirmPanel(
     let panelDisposed = false;
     let activePanelReady = false;
     let panelRetryCount = 0;
+    let panelReplacementInProgress = false;
     let resolveRecoveryDecision: ((decision: ConfirmRecoveryDecision) => void) | undefined;
     let panel: vscode.WebviewPanel;
 
-    const postLatestState = (): PromiseLike<boolean> => panel.webview.postMessage({
-        type: "agenticCreateConfirmState",
-        ...latestStateMessage
-    });
+    const postLatestState = (): PromiseLike<boolean> => {
+        if (panelDisposed) {
+            return Promise.resolve(false);
+        }
+        return panel.webview.postMessage({
+            type: "agenticCreateConfirmState",
+            ...latestStateMessage
+        });
+    };
 
     const handleMessage = (message: {
         type?: unknown;
@@ -727,6 +690,7 @@ export function showAgenticCreateConfirmPanel(
             }
         );
         panel = createdPanel;
+        activeConfirmPanels.add(createdPanel);
         activePanelReady = false;
         panelDisposed = false;
         const html = buildHtml(
@@ -746,8 +710,22 @@ export function showAgenticCreateConfirmPanel(
             }
             if (panelRetryCount === 0) {
                 panelRetryCount++;
-                createActivePanel();
+                panelReplacementInProgress = true;
                 createdPanel.dispose();
+                const replacementTimer = setTimeout(() => {
+                    pendingPanelReplacements.delete(replacementTimer);
+                    panelReplacementInProgress = false;
+                    if (!settled) {
+                        createActivePanel();
+                    }
+                }, ACTIVE_PANEL_RECREATE_DELAY_MS);
+                pendingPanelReplacements.set(replacementTimer, () => {
+                    panelReplacementInProgress = false;
+                    resolveRecoveryDecision?.("cancel");
+                    resolveRecoveryDecision = undefined;
+                    settleWith("dismissed");
+                });
+                replacementTimer.unref?.();
                 return;
             }
             resolveRecoveryDecision?.("cancel");
@@ -784,11 +762,15 @@ export function showAgenticCreateConfirmPanel(
             handleMessage(message);
         });
         createdPanel.onDidDispose(() => {
+            activeConfirmPanels.delete(createdPanel);
             clearTimeout(readyTimer);
             if (createdPanel !== panel) {
                 return;
             }
             panelDisposed = true;
+            if (panelReplacementInProgress) {
+                return;
+            }
             resolveRecoveryDecision?.("cancel");
             resolveRecoveryDecision = undefined;
             settleWith("dismissed");

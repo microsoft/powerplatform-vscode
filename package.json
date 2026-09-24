@@ -108,7 +108,6 @@
     "onCommand:powerplatform-walkthrough.advancedCapabilities-learn-more",
     "onCommand:powerplatform-walkthrough.advancedCapabilities-start-coding",
     "onUri",
-    "onWebviewPanel:powerPagesAgenticCreateConfirm",
     "onStartupFinished",
     "workspaceContains:**/**.portalconfig",
     "onDebug",

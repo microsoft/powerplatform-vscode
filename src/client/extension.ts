@@ -56,7 +56,7 @@ import { EnableServerLogicChanges } from "../common/ecs-features/ecsFeatureGates
 import { setServerApiTelemetryContext } from "../common/intellisense/ServerApiTelemetryContext";
 import { activateServerLogicDebugger } from "../debugger/server-logic/ServerLogicDebugger";
 import { resumeAgenticCreateOnActivation } from "./uriHandler/resumeAgenticCreateActivation";
-import { registerAgenticCreateConfirmPanelSerializer } from "./uriHandler/utils/agenticCreateConfirmPanel";
+import { shutdownAgenticCreateConfirmPanels } from "./uriHandler/utils/agenticCreateConfirmPanel";
 import {
     AGENTIC_CREATE_COMMAND,
     AgenticCreateUriHandler
@@ -76,10 +76,6 @@ export async function activate(
     context: vscode.ExtensionContext
 ): Promise<void> {
     _context = context;
-
-    // Register the transient confirmation serializer before any awaited activation work. VS Code
-    // may be waiting for it while restoring a panel, and authentication can remain interactive.
-    _context.subscriptions.push(registerAgenticCreateConfirmPanelSerializer());
 
     // Logging telemetry in US cluster for unauthenticated scenario
     oneDSLoggerWrapper.instantiate("us");
@@ -374,6 +370,7 @@ export async function activate(
 
 export async function deactivate(): Promise<void> {
     oneDSLoggerWrapper.getLogger().traceInfo("End");
+    shutdownAgenticCreateConfirmPanels();
 
     if (client) {
         await client.stop();

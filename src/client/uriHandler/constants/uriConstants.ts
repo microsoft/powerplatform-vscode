@@ -76,7 +76,7 @@ export const URI_CONSTANTS = {
         CREATE_SKILL_COMMAND: '/power-pages:create-site'
     },
     // View type identifier for the agentic-create confirmation webview panel.
-    AGENTIC_CREATE_CONFIRM_VIEW_TYPE: 'powerPagesAgenticCreateConfirm'
+    AGENTIC_CREATE_CONFIRM_VIEW_TYPE: 'powerPagesAgenticCreateConfirm.v2'
 } as const;
 
 /**
