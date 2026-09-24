@@ -66,7 +66,7 @@ describe("Create-flow telemetry", () => {
     });
 
     it("defines the create-flow funnel events in stage order", () => {
-        expect(Object.values(uriHandlerTelemetryEventNames).slice(-26)).to.deep.equal([
+        expect(Object.values(uriHandlerTelemetryEventNames).slice(-29)).to.deep.equal([
             'UriHandlerCreateAuthStarted',
             'UriHandlerCreateAuthCompleted',
             'UriHandlerCreateAuthFailed',
@@ -77,6 +77,9 @@ describe("Create-flow telemetry", () => {
             'UriHandlerPacCreateTerminalLaunched',
             'UriHandlerAgenticCreateHostDetected',
             'UriHandlerAgenticCreateHostSelected',
+            'UriHandlerAgenticCreateSiteDescriptionCollected',
+            'UriHandlerAgenticCreateSetupChecked',
+            'UriHandlerAgenticCreateTechnicalDetailsOpened',
             'UriHandlerAgenticCreateConfirmActionClicked',
             'UriHandlerAgenticCreatePluginSequenceLaunched',
             'UriHandlerAgenticCreateSamplePromptSent',
@@ -183,6 +186,22 @@ describe("Create-flow telemetry", () => {
         expect(properties).to.include({
             source: URI_CONSTANTS.SOURCE_VALUES.STUDIO,
             entryPoint: URI_CONSTANTS.SOURCE_VALUES.STUDIO
+        });
+    });
+
+    it("uses the command palette as a distinct funnel entry point", () => {
+        const properties = buildCreateFlowTelemetry({
+            ...params,
+            environmentId: null,
+            orgUrl: null,
+            source: URI_CONSTANTS.SOURCE_VALUES.COMMAND_PALETTE
+        });
+
+        expect(properties).to.include({
+            source: URI_CONSTANTS.SOURCE_VALUES.COMMAND_PALETTE,
+            entryPoint: URI_CONSTANTS.SOURCE_VALUES.COMMAND_PALETTE,
+            hasEnvironmentId: "false",
+            hasOrgUrl: "false"
         });
     });
 

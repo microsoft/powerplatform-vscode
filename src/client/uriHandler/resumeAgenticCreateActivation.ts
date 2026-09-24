@@ -47,7 +47,12 @@ export async function resumeAgenticCreateOnActivation(
                 vscode.window.showInformationMessage(message, ...buttons),
             emitEvent: emitCreateFlowEvent,
             emitError: emitCreateFlowError,
-            runStages: async (params: CreateFlowParameters, host: AgentHost) => {
+            runStages: async (
+                params: CreateFlowParameters,
+                host: AgentHost,
+                siteDescription: string,
+                detectedHostExecutablePath?: string
+            ) => {
                 const folderUri = await selectTargetFolder();
                 if (!folderUri) {
                     emitCreateFlowEvent(
@@ -74,7 +79,10 @@ export async function resumeAgenticCreateOnActivation(
                     folderUri,
                     params,
                     undefined,
-                    false
+                    false,
+                    undefined,
+                    siteDescription,
+                    detectedHostExecutablePath
                 );
             },
             clearMarker: clearResumeMarker

@@ -9,18 +9,54 @@ import {
     PlannedCommand,
     PlannedCommandKind
 } from "./agentHostCommandPlan";
+import {
+    AgentHostSetupState,
+    classifyAgentHostSetupOutput
+} from "./agentHostSetupPrecheck";
+import {
+    buildAgentHostShellCommand,
+    isAgentHostExecutableSupported,
+    isAgentHostShellIntegrationSupported
+} from "./agentHostShellCommand";
 
-const SHELL_INTEGRATION_TIMEOUT_MS = 3000;
+export { buildAgentHostShellCommand } from "./agentHostShellCommand";
+
+const SHELL_INTEGRATION_TIMEOUT_MS = 10000;
 
 export type LaunchAgentHostPlanResult =
-    | { status: "launched"; completedCommandKinds?: PlannedCommandKind[] }
+    | {
+        status: "launched";
+        completedCommandKinds?: PlannedCommandKind[];
+        skippedCommandKinds?: PlannedCommandKind[];
+        setupState?: AgentHostSetupState;
+        terminal?: vscode.Terminal;
+    }
     | {
         status: "recovery";
-        reason: "shellIntegrationUnavailable" | "commandFailed";
+        reason:
+            | "shellIntegrationDisabled"
+            | "shellIntegrationUnavailable"
+            | "unsupportedShell"
+            | "unsupportedHostExecutable"
+            | "commandFailed";
         failedCommand?: PlannedCommand;
         exitCode?: number;
         completedCommandKinds?: PlannedCommandKind[];
+        skippedCommandKinds?: PlannedCommandKind[];
+        setupState?: AgentHostSetupState;
     };
+
+export interface AgentHostCommandExecutionResult {
+    exitCode: number | undefined;
+    output: string;
+}
+
+export interface LaunchAgentHostProgress {
+    command: PlannedCommand;
+    step: number;
+    totalSteps: number;
+    status: "running" | "skipped";
+}
 
 /**
  * Side effects used by {@link launchAgentHostPlan}.
@@ -34,7 +70,9 @@ export interface LaunchAgentHostPlanDependencies {
         terminal: vscode.Terminal,
         shellIntegration: vscode.TerminalShellIntegration,
         commandLine: string
-    ) => Promise<number | undefined>;
+    ) => Promise<AgentHostCommandExecutionResult>;
+    isShellIntegrationEnabled: () => boolean;
+    platform: NodeJS.Platform;
 }
 
 const waitForShellIntegration = async (
@@ -83,10 +121,12 @@ const executeCommand = async (
     terminal: vscode.Terminal,
     shellIntegration: vscode.TerminalShellIntegration,
     commandLine: string
-): Promise<number | undefined> => {
+): Promise<AgentHostCommandExecutionResult> => {
     return new Promise((resolve, reject) => {
         let execution: vscode.TerminalShellExecution;
+        let output = "";
         let settled = false;
+        let outputComplete: Promise<void> = Promise.resolve();
         const subscriptions: vscode.Disposable[] = [];
         const cleanup = (): void => {
             subscriptions.forEach(subscription => subscription.dispose());
@@ -94,8 +134,13 @@ const executeCommand = async (
         const settle = (exitCode: number | undefined): void => {
             if (!settled) {
                 settled = true;
-                cleanup();
-                resolve(exitCode);
+                void (async () => {
+                    if (exitCode !== undefined) {
+                        await outputComplete;
+                    }
+                    cleanup();
+                    resolve({ exitCode, output });
+                })();
             }
         };
         const executionSubscription = vscode.window.onDidEndTerminalShellExecution(event => {
@@ -112,6 +157,15 @@ const executeCommand = async (
 
         try {
             execution = shellIntegration.executeCommand(commandLine);
+            outputComplete = (async () => {
+                try {
+                    for await (const chunk of execution.read()) {
+                        output += chunk;
+                    }
+                } catch {
+                    // The exit code remains the authoritative execution outcome.
+                }
+            })();
         } catch (error) {
             settled = true;
             cleanup();
@@ -123,7 +177,12 @@ const executeCommand = async (
 const DEFAULT_LAUNCH_DEPENDENCIES: LaunchAgentHostPlanDependencies = {
     createTerminal: (options) => vscode.window.createTerminal(options),
     waitForShellIntegration,
-    executeCommand
+    executeCommand,
+    isShellIntegrationEnabled: () =>
+        vscode.workspace
+            .getConfiguration("terminal.integrated")
+            .get<boolean>("shellIntegration.enabled", true),
+    platform: process.platform
 };
 
 /**
@@ -131,7 +190,7 @@ const DEFAULT_LAUNCH_DEPENDENCIES: LaunchAgentHostPlanDependencies = {
  *
  * Bootstrap and plugin commands must report exit code 0 before the next command starts. The final
  * interactive host command is started without awaiting its exit. When Shell Integration is
- * unavailable, no command is sent so the visible webview remains the manual recovery reference.
+ * disabled, unsupported, or unavailable, no command is sent.
  *
  * @param folderUri Target folder the terminal is opened in.
  * @param plan Ordered command plan previewed and approved by the user.
@@ -144,11 +203,54 @@ export async function launchAgentHostPlan(
     plan: PlannedCommand[],
     hostDisplayName: string,
     deps: LaunchAgentHostPlanDependencies = DEFAULT_LAUNCH_DEPENDENCIES,
-    shellPath?: string
+    shellPath?: string,
+    initialSetupState: AgentHostSetupState = {
+        marketplace: "unknown",
+        plugin: "unknown"
+    },
+    onProgress?: (progress: LaunchAgentHostProgress) => void
 ): Promise<LaunchAgentHostPlanResult> {
     const terminalName = URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.TERMINAL_NAME
         .split("{0}")
         .join(hostDisplayName);
+    const commandShellPath = shellPath ?? vscode.env.shell;
+    const launchCommand = plan.find(command => command.kind === "launchHost");
+
+    if (!deps.isShellIntegrationEnabled()) {
+        return {
+            status: "recovery",
+            reason: "shellIntegrationDisabled",
+            completedCommandKinds: [],
+            skippedCommandKinds: [],
+            setupState: initialSetupState
+        };
+    }
+
+    if (
+        launchCommand?.executable
+        && !isAgentHostExecutableSupported(
+            launchCommand.executable,
+            deps.platform
+        )
+    ) {
+        return {
+            status: "recovery",
+            reason: "unsupportedHostExecutable",
+            completedCommandKinds: [],
+            skippedCommandKinds: [],
+            setupState: initialSetupState
+        };
+    }
+
+    if (!isAgentHostShellIntegrationSupported(commandShellPath, deps.platform)) {
+        return {
+            status: "recovery",
+            reason: "unsupportedShell",
+            completedCommandKinds: [],
+            skippedCommandKinds: [],
+            setupState: initialSetupState
+        };
+    }
 
     const terminal = deps.createTerminal({
         name: terminalName,
@@ -160,33 +262,77 @@ export async function launchAgentHostPlan(
 
     const shellIntegration = await deps.waitForShellIntegration(terminal);
     if (!shellIntegration) {
+        terminal.dispose();
         return {
             status: "recovery",
             reason: "shellIntegrationUnavailable",
-            completedCommandKinds: []
+            completedCommandKinds: [],
+            skippedCommandKinds: [],
+            setupState: initialSetupState
         };
     }
 
     const completedCommandKinds: PlannedCommandKind[] = [];
-    for (const command of plan) {
+    const skippedCommandKinds: PlannedCommandKind[] = [];
+    const setupState = { ...initialSetupState };
+    for (const [index, command] of plan.entries()) {
+        if (
+            command.runWhenSetupState
+            && !command.runWhenSetupState.states.includes(
+                setupState[command.runWhenSetupState.component]
+            )
+        ) {
+            skippedCommandKinds.push(command.kind);
+            onProgress?.({
+                command,
+                step: index + 1,
+                totalSteps: plan.length,
+                status: "skipped"
+            });
+            continue;
+        }
+
+        onProgress?.({
+            command,
+            step: index + 1,
+            totalSteps: plan.length,
+            status: "running"
+        });
         if (command.kind === "launchHost") {
             try {
-                shellIntegration.executeCommand(command.commandLine);
+                if (command.executable && command.args) {
+                    shellIntegration.executeCommand(buildAgentHostShellCommand(
+                        command.executable,
+                        command.args,
+                        commandShellPath,
+                        deps.platform
+                    ));
+                } else {
+                    shellIntegration.executeCommand(command.commandLine);
+                }
                 completedCommandKinds.push(command.kind);
-                return { status: "launched", completedCommandKinds };
+                return {
+                    status: "launched",
+                    completedCommandKinds,
+                    skippedCommandKinds,
+                    setupState,
+                    terminal
+                };
             } catch {
                 return {
                     status: "recovery",
                     reason: "commandFailed",
                     failedCommand: command,
-                    completedCommandKinds
+                    completedCommandKinds,
+                    skippedCommandKinds,
+                    setupState
                 };
             }
         }
 
-        let exitCode: number | undefined;
+        let executionResult: AgentHostCommandExecutionResult;
         try {
-            exitCode = await deps.executeCommand(
+            executionResult = await deps.executeCommand(
                 terminal,
                 shellIntegration,
                 command.commandLine
@@ -196,20 +342,51 @@ export async function launchAgentHostPlan(
                 status: "recovery",
                 reason: "commandFailed",
                 failedCommand: command,
-                completedCommandKinds
+                completedCommandKinds,
+                skippedCommandKinds,
+                setupState
             };
         }
-        if (exitCode !== 0) {
+
+        if (command.setupCheck) {
+            setupState[command.setupCheck] = executionResult.exitCode === 0
+                ? classifyAgentHostSetupOutput(
+                    executionResult.output,
+                    command.setupCheck,
+                    folderUri.fsPath
+                )
+                : "unknown";
+            completedCommandKinds.push(command.kind);
+            continue;
+        }
+
+        if (executionResult.exitCode !== 0) {
             return {
                 status: "recovery",
                 reason: "commandFailed",
                 failedCommand: command,
-                exitCode,
-                completedCommandKinds
+                exitCode: executionResult.exitCode,
+                completedCommandKinds,
+                skippedCommandKinds,
+                setupState
             };
+        }
+        if (command.kind === "registerMarketplace") {
+            setupState.marketplace = "present";
+        } else if (
+            command.kind === "installPlugin"
+            || command.kind === "enablePlugin"
+        ) {
+            setupState.plugin = "present";
         }
         completedCommandKinds.push(command.kind);
     }
 
-    return { status: "launched", completedCommandKinds };
+    return {
+        status: "launched",
+        completedCommandKinds,
+        skippedCommandKinds,
+        setupState,
+        terminal
+    };
 }

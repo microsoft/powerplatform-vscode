@@ -3,9 +3,11 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { execFile } from 'child_process';
-import { promisify } from 'util';
 import { URI_CONSTANTS } from '../constants/uriConstants';
+import {
+    AgentHostCommandProbe,
+    runAgentHostCommandProbe
+} from './agentHostCommandProbe';
 
 /**
  * Agent hosts whose CLIs can be detected on PATH.
@@ -26,13 +28,14 @@ export type AgentHost = typeof AgentHost[keyof typeof AgentHost];
 export interface AgentHostDetectionResult {
     host: AgentHost;
     installed: boolean;
+    executablePath?: string;
     version?: string;
 }
 
 /**
  * Runs an agent-host CLI probe command.
  */
-export type AgentHostProbe = (command: string, args: string[]) => Promise<{ stdout: string }>;
+export type AgentHostProbe = AgentHostCommandProbe;
 
 const AGENT_HOST_PROBES: Record<AgentHost, { command: string; args: string[] }> = {
     [AgentHost.Copilot]: {
@@ -47,11 +50,9 @@ const AGENT_HOST_PROBES: Record<AgentHost, { command: string; args: string[] }> 
 
 const AGENT_HOSTS: AgentHost[] = Object.values(AgentHost);
 const AGENT_HOST_PROBE_TIMEOUT_MS = 10000;
-const execFileAsync = promisify(execFile);
 
 const defaultRunProbe: AgentHostProbe = async (command, args) => {
-    const { stdout } = await execFileAsync(command, args, { timeout: AGENT_HOST_PROBE_TIMEOUT_MS });
-    return { stdout };
+    return runAgentHostCommandProbe(command, args, AGENT_HOST_PROBE_TIMEOUT_MS);
 };
 
 /**
@@ -66,10 +67,11 @@ export const detectAgentHost = async (
 ): Promise<AgentHostDetectionResult> => {
     try {
         const { command, args } = AGENT_HOST_PROBES[host];
-        const { stdout } = await runProbe(command, args);
+        const { commandPath, stdout } = await runProbe(command, args);
         return {
             host,
             installed: true,
+            ...(commandPath ? { executablePath: commandPath } : {}),
             version: stdout.trim()
         };
     } catch {

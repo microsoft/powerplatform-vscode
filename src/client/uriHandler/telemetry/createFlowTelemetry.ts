@@ -16,8 +16,6 @@ const FUNNEL_EVENT_PROPERTIES: Partial<Record<
 >> = {
     [uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_RECEIVED]:
         { funnelStage: 'uriReceipt', funnelOutcome: 'received' },
-    [uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_DISABLED]:
-        { funnelStage: 'featureGate', funnelOutcome: 'disabled' },
     [uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_TRIGGERED]:
         { funnelStage: 'contractValidation', funnelOutcome: 'accepted' },
     [uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_DETECTED]:
@@ -28,6 +26,12 @@ const FUNNEL_EVENT_PROPERTIES: Partial<Record<
         { funnelStage: 'folderSelection', funnelOutcome: 'cancelled' },
     [uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_SELECTED]:
         { funnelStage: 'hostSelection', funnelOutcome: 'selected' },
+    [uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_SITE_DESCRIPTION_COLLECTED]:
+        { funnelStage: 'siteDescription', funnelOutcome: 'collected' },
+    [uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_SETUP_CHECKED]:
+        { funnelStage: 'setupPrecheck', funnelOutcome: 'completed' },
+    [uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_TECHNICAL_DETAILS_OPENED]:
+        { funnelStage: 'confirmation', funnelOutcome: 'technicalDetailsOpened' },
     [uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_CONFIRM_ACTION_CLICKED]:
         { funnelStage: 'confirmation', funnelOutcome: 'action' },
     [uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_OFFERED]:

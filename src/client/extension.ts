@@ -56,8 +56,11 @@ import { EnableServerLogicChanges } from "../common/ecs-features/ecsFeatureGates
 import { setServerApiTelemetryContext } from "../common/intellisense/ServerApiTelemetryContext";
 import { activateServerLogicDebugger } from "../debugger/server-logic/ServerLogicDebugger";
 import { resumeAgenticCreateOnActivation } from "./uriHandler/resumeAgenticCreateActivation";
-import { registerAgenticCreateConfirmPanelSerializer } from "./uriHandler/utils/agenticCreateConfirmPanel";
-import { AgenticCreateUriHandler } from "./uriHandler/agenticCreateUriHandler";
+import { shutdownAgenticCreateConfirmPanels } from "./uriHandler/utils/agenticCreateConfirmPanel";
+import {
+    AGENTIC_CREATE_COMMAND,
+    AgenticCreateUriHandler
+} from "./uriHandler/agenticCreateUriHandler";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -74,10 +77,6 @@ export async function activate(
 ): Promise<void> {
     _context = context;
 
-    // Register the transient confirmation serializer before any awaited activation work. VS Code
-    // may be waiting for it while restoring a panel, and authentication can remain interactive.
-    _context.subscriptions.push(registerAgenticCreateConfirmPanelSerializer());
-
     // Logging telemetry in US cluster for unauthenticated scenario
     oneDSLoggerWrapper.instantiate("us");
 
@@ -90,6 +89,10 @@ export async function activate(
     // reload recovery cannot be blocked by unrelated setup.
     const uriHandler = new AgenticCreateUriHandler(_context.globalState);
     _context.subscriptions.push(vscode.window.registerUriHandler(uriHandler));
+    _context.subscriptions.push(vscode.commands.registerCommand(
+        AGENTIC_CREATE_COMMAND,
+        () => uriHandler.triggerCommand()
+    ));
     void resumeAgenticCreateOnActivation(_context.globalState);
 
     // Cooldown prevents a tight retry loop: failed auth can trigger another session change,
@@ -367,6 +370,7 @@ export async function activate(
 
 export async function deactivate(): Promise<void> {
     oneDSLoggerWrapper.getLogger().traceInfo("End");
+    shutdownAgenticCreateConfirmPanels();
 
     if (client) {
         await client.stop();

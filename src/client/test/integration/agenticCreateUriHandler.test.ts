@@ -7,7 +7,11 @@ import { expect } from "chai";
 import * as sinon from "sinon";
 import * as vscode from "vscode";
 import { PacWrapper } from "../../pac/PacWrapper";
-import { AgenticCreateUriHandler } from "../../uriHandler/agenticCreateUriHandler";
+import {
+    AGENTIC_CREATE_COMMAND,
+    AgenticCreateUriHandler,
+    buildAgenticCreateCommandUri
+} from "../../uriHandler/agenticCreateUriHandler";
 import { URI_CONSTANTS } from "../../uriHandler/constants/uriConstants";
 import { AgenticCreateHandler } from "../../uriHandler/handlers/agenticCreateHandler";
 import { UriHandler } from "../../uriHandler/uriHandler";
@@ -55,5 +59,53 @@ describe("AgenticCreateUriHandler", () => {
 
         expect(delegateStub.calledOnceWithExactly(uri)).to.be.true;
         expect(agenticCreateStub.notCalled).to.be.true;
+    });
+
+    it("builds the command URI without environment or organization data", () => {
+        const uri = buildAgenticCreateCommandUri(123);
+        const query = new URLSearchParams(uri.query);
+
+        expect(uri.path).to.equal(URI_CONSTANTS.PATHS.AGENTIC_CREATE);
+        expect(query.has(URI_CONSTANTS.PARAMETERS.ENV_ID)).to.be.false;
+        expect(query.has(URI_CONSTANTS.PARAMETERS.ORG_URL)).to.be.false;
+        expect(query.get(URI_CONSTANTS.PARAMETERS.REFERRER_SESSION_ID)).to.equal(
+            "command-123"
+        );
+        expect(query.get(URI_CONSTANTS.PARAMETERS.SOURCE)).to.equal(
+            URI_CONSTANTS.SOURCE_VALUES.COMMAND_PALETTE
+        );
+        expect(query.get(URI_CONSTANTS.PARAMETERS.VERSION)).to.equal("1");
+    });
+
+    it("runs the command through the Agentic Create handler", async () => {
+        await handler.triggerCommand();
+
+        expect(agenticCreateStub.calledOnce).to.be.true;
+        expect(agenticCreateStub.firstCall.args[0].path).to.equal(
+            URI_CONSTANTS.PATHS.AGENTIC_CREATE
+        );
+        expect(agenticCreateStub.firstCall.args).to.have.lengthOf(1);
+    });
+
+    it("contributes an enabled desktop command to the Command Palette", () => {
+        const packageJson = vscode.extensions.getExtension(
+            URI_CONSTANTS.EXTENSION_ID
+        )?.packageJSON;
+        const command = packageJson?.contributes?.commands?.find(
+            (item: { command?: string }) =>
+                item.command === AGENTIC_CREATE_COMMAND
+        );
+        const menu = packageJson?.contributes?.menus?.commandPalette?.find(
+            (item: { command?: string }) =>
+                item.command === AGENTIC_CREATE_COMMAND
+        );
+
+        expect(command?.enablement).to.equal("!isWeb && !virtualWorkspace");
+        expect(command?.category).to.equal("Power Pages");
+        expect(command?.title).to.equal("Create a site with AI");
+        expect(menu).to.be.undefined;
+        expect(packageJson?.activationEvents).to.not.include(
+            `onCommand:${AGENTIC_CREATE_COMMAND}`
+        );
     });
 });

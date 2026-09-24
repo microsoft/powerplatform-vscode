@@ -33,6 +33,7 @@ describe("Agentic create host resolution", () => {
     let store: ResumeMarkerStore;
 
     const selectedFolder = vscode.Uri.file("C:\\private\\selected-site");
+    const siteDescription = "A community event and volunteer portal";
     const rawOrgUrl = "https://private.crm.dynamics.com";
     const rawTenantId = "private-tenant-id";
     const uri = vscode.Uri.parse(
@@ -49,6 +50,7 @@ describe("Agentic create host resolution", () => {
         {
             host: AgentHost.Copilot,
             installed: true,
+            executablePath: "C:\\tools\\copilot.cmd",
             version: "1.0.0"
         },
         {
@@ -76,6 +78,7 @@ describe("Agentic create host resolution", () => {
             expect(Object.values(properties)).to.not.include(rawOrgUrl);
             expect(Object.values(properties)).to.not.include(rawTenantId);
             expect(Object.values(properties)).to.not.include(selectedFolder.fsPath);
+            expect(Object.values(properties)).to.not.include(siteDescription);
         }
     };
 
@@ -86,7 +89,6 @@ describe("Agentic create host resolution", () => {
 
     beforeEach(() => {
         sandbox = sinon.createSandbox();
-        sandbox.stub(AgenticCreateHandler, "isEnabled").returns(true);
 
         traceInfoStub = sandbox.stub();
         traceErrorStub = sandbox.stub();
@@ -105,8 +107,10 @@ describe("Agentic create host resolution", () => {
             folderUri: selectedFolder,
             hostSelection: {
                 host: AgentHost.Copilot,
-                installed: true
-            }
+                installed: true,
+                executablePath: "C:\\tools\\copilot.cmd"
+            },
+            siteDescription
         });
         resolveAgentHostInstallationStub = sandbox.stub();
         resolveAgentHostBootstrapStub = sandbox.stub().returns({
@@ -193,7 +197,7 @@ describe("Agentic create host resolution", () => {
     it("emits host selected once and confirms + launches for an installed host", async () => {
         await createHandler().handle(uri);
 
-        expect(emitCreateFlowEventStub.callCount).to.equal(4);
+        expect(emitCreateFlowEventStub.callCount).to.equal(5);
         expect(emitCreateFlowEventStub.firstCall.args[0]).to.equal(
             uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_RECEIVED
         );
@@ -215,10 +219,22 @@ describe("Agentic create host resolution", () => {
             host: AgentHost.Copilot,
             installed: "true"
         });
+        expect(emitCreateFlowEventStub.getCall(4).args[0]).to.equal(
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_SITE_DESCRIPTION_COLLECTED
+        );
+        expect(emitCreateFlowEventStub.getCall(4).args[3]).to.deep.equal({
+            lengthCategory: "short"
+        });
         expect(confirmAndLaunchAgentHostStub.calledOnce).to.be.true;
         expect(confirmAndLaunchAgentHostStub.firstCall.args[0]).to.equal(AgentHost.Copilot);
         expect(confirmAndLaunchAgentHostStub.firstCall.args[1]).to.equal("GitHub Copilot CLI");
         expect(confirmAndLaunchAgentHostStub.firstCall.args[2]).to.equal(selectedFolder);
+        expect(confirmAndLaunchAgentHostStub.firstCall.args[5]).to.equal(
+            siteDescription
+        );
+        expect(confirmAndLaunchAgentHostStub.firstCall.args[6]).to.equal(
+            "C:\\tools\\copilot.cmd"
+        );
         expect(resolveAgentHostInstallationStub.notCalled).to.be.true;
         expect(storeUpdateStub.notCalled).to.be.true;
         expectNoInstallEventsFromHandler();
@@ -240,7 +256,8 @@ describe("Agentic create host resolution", () => {
                 hostSelection: {
                     host: AgentHost.Copilot,
                     installed: true
-                }
+                },
+                siteDescription
             })
             .onSecondCall()
             .resolves({
@@ -249,7 +266,8 @@ describe("Agentic create host resolution", () => {
                 hostSelection: {
                     host: AgentHost.Claude,
                     installed: true
-                }
+                },
+                siteDescription: "An edited customer support portal"
             });
         confirmAndLaunchAgentHostStub
             .onFirstCall()
@@ -265,7 +283,8 @@ describe("Agentic create host resolution", () => {
             hostSelection: {
                 host: AgentHost.Copilot,
                 installed: true
-            }
+            },
+            siteDescription
         });
         expect(confirmAndLaunchAgentHostStub.callCount).to.equal(2);
         expect(confirmAndLaunchAgentHostStub.secondCall.args.slice(0, 3)).to.deep.equal([
@@ -273,6 +292,9 @@ describe("Agentic create host resolution", () => {
             "Claude Code",
             editedFolder
         ]);
+        expect(confirmAndLaunchAgentHostStub.secondCall.args[5]).to.equal(
+            "An edited customer support portal"
+        );
         expect(resolveAgentHostInstallationStub.notCalled).to.be.true;
     });
 
@@ -297,7 +319,8 @@ describe("Agentic create host resolution", () => {
                 hostSelection: {
                     host: AgentHost.Claude,
                     installed: false
-                }
+                },
+                siteDescription
             });
             resolveAgentHostBootstrapStub.returns({
                 supported: false,
@@ -308,7 +331,7 @@ describe("Agentic create host resolution", () => {
             await createHandler().handle(uri);
 
             expect(emitCreateFlowEventStub.callCount).to.equal(
-                resolution.status === "dismissed" ? 6 : 5
+                resolution.status === "dismissed" ? 7 : 6
             );
             expect(emitCreateFlowEventStub.getCall(2).args[0]).to.equal(
                 uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED
@@ -321,13 +344,16 @@ describe("Agentic create host resolution", () => {
                 installed: "false"
             });
             expect(emitCreateFlowEventStub.getCall(4).args[0]).to.equal(
+                uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_SITE_DESCRIPTION_COLLECTED
+            );
+            expect(emitCreateFlowEventStub.getCall(5).args[0]).to.equal(
                 uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_BOOTSTRAP_RECOVERY
             );
             if (resolution.status === "dismissed") {
-                expect(emitCreateFlowEventStub.getCall(5).args).to.include(
+                expect(emitCreateFlowEventStub.getCall(6).args).to.include(
                     uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED
                 );
-                expect(emitCreateFlowEventStub.getCall(5).args[3]).to.deep.equal({
+                expect(emitCreateFlowEventStub.getCall(6).args[3]).to.deep.equal({
                     reason: "hostInstallDismissed",
                     host: AgentHost.Claude
                 });
@@ -342,6 +368,9 @@ describe("Agentic create host resolution", () => {
                 "openExternal",
                 "writeResumeMarker",
                 "reloadWindow"
+            );
+            expect(resolveAgentHostInstallationStub.firstCall.args[4]).to.equal(
+                siteDescription
             );
             if (resolution.status === "resolved") {
                 expect(confirmAndLaunchAgentHostStub.calledOnce).to.be.true;
@@ -364,7 +393,8 @@ describe("Agentic create host resolution", () => {
             hostSelection: {
                 host: AgentHost.Claude,
                 installed: false
-            }
+            },
+            siteDescription
         });
 
         await createHandler().handle(uri);
@@ -386,7 +416,8 @@ describe("Agentic create host resolution", () => {
             hostSelection: {
                 host: AgentHost.Claude,
                 installed: false
-            }
+            },
+            siteDescription
         });
         confirmAndLaunchAgentHostStub
             .onFirstCall()
