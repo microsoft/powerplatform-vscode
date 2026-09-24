@@ -34,6 +34,10 @@
         <source xml:lang="en">A webtemplate with the same name already exists. Please enter a different name.</source>
         <target state="translated">Esiste già un webtemplate con lo stesso nome. Immetti un nome diverso.</target>
       </trans-unit>
+      <trans-unit id="++CODE++ab6eb4ac63b58418bc7cdc4e78c3250a824ffc56d3ccad452a97bb95ebe4da16">
+        <source xml:lang="en">AI assistant</source>
+        <target state="new">AI assistant</target>
+      </trans-unit>
       <trans-unit id="++CODE++bcfb3427790816de073090a76469fec945a3c7f5f82bbac338378ea22784c70a">
         <source xml:lang="en">AI features have been disabled by your organization. Contact your admin for details. [Learn more](https://go.microsoft.com/fwlink/?linkid=2285848)</source>
         <target state="translated">Le funzionalità dell'IA sono state disabilitate dall'organizzazione. Contatta l'amministratore per i dettagli. [Altre informazioni](https://go.microsoft.com/fwlink/?linkid=2285848)</target>
@@ -87,10 +91,6 @@
         <note>{0} represents the number of web files</note>
         <target state="translated">Aggiunta di {0} file Web in corso. I file esistenti verranno ignorati</target>
       </trans-unit>
-      <trans-unit id="++CODE++4a122057a87c136eb022c2dc03e836d5af660872449154ed18ab8a4bf41c3d62">
-        <source xml:lang="en">Agent host</source>
-        <target state="translated">Host agente</target>
-      </trans-unit>
       <trans-unit id="++CODE++a52ace420f2175d08b1577a1bea5445e36801229c074ef9ed6c55a73401fd9c2">
         <source xml:lang="en">All</source>
         <target state="translated">Tutto</target>
@@ -98,6 +98,10 @@
       <trans-unit id="++CODE++8890e663481705393ed3b1b4642095a11329e21320824ed567e383a12ea888f4">
         <source xml:lang="en">All changed files are binary files (e.g., images) and cannot be displayed in the diff viewer. You can view them individually in the file tree.</source>
         <target state="translated">Tutti i file modificati sono file binari (ad esempio, immagini) e non possono essere visualizzati nello strumento di visualizzazione delle differenze. Puoi tuttavia visualizzarli singolarmente nell'albero dei file.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++522a491a1161c0d0da1b25d7743c0682ef3e4308b81a9f96d06939dced9ac564">
+        <source xml:lang="en">Already set up</source>
+        <target state="new">Already set up</target>
       </trans-unit>
       <trans-unit id="++CODE++5490d0b16535529301b0cda95abc687e682b2964413863130a9a2debf61c279f">
         <source xml:lang="en">An imported comparison already exists for this site. Do you want to replace it?</source>
@@ -171,18 +175,6 @@ Questa azione non può essere annullata.</target>
         <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
         <target state="translated">Autorizzazione non riuscita. Esegui di nuovo per autorizzarla</target>
       </trans-unit>
-      <trans-unit id="++CODE++a90b528b474ea1f3279d587f9f36e5fcbf68b78802182fad5b4b5a39994b97fa">
-        <source xml:lang="en">Automatic command execution could not continue. Use the commands in the confirmation page as a manual reference.</source>
-        <target state="translated">Non è possibile continuare l'esecuzione automatica dei comandi. Usa i comandi nella pagina di conferma come riferimento manuale.</target>
-      </trans-unit>
-      <trans-unit id="++CODE++77a45eee99657e99dc65689cb4bbb41c0e7ad32d66ced5b8fe9b0518ec804b1d">
-        <source xml:lang="en">Automatic execution could not start because terminal Shell Integration is unavailable. Use the commands below as a manual recovery reference.</source>
-        <target state="translated">Non è stato possibile avviare l'esecuzione automatica perché l'integrazione della shell del terminale non è disponibile. Usa i comandi seguenti come riferimento per il ripristino manuale.</target>
-      </trans-unit>
-      <trans-unit id="++CODE++69ed01f62586b0f967577d80f893f23dd9138bf2267188c96e4efcc761e79151">
-        <source xml:lang="en">Automatic execution stopped while trying to: {0}. Use the commands below as a manual recovery reference.</source>
-        <target state="translated">Esecuzione automatica interrotta durante il tentativo di: {0}. Usa i comandi seguenti come riferimento per il ripristino manuale.</target>
-      </trans-unit>
       <trans-unit id="++CODE++bf27ec2e917b9f2578f8e6372f8656370d24cffe2c5a7b900d0b3280f8ec69fb">
         <source xml:lang="en">Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.</source>
         <target state="translated">Presta attenzione quando apporti le modifiche. Chiunque può vedere le modifiche che hai apportato immediatamente. Scegli Modifica il sito per apportare modifiche o chiudi la scheda dell'editor per annullare senza modificare.</target>
@@ -198,6 +190,14 @@ Questa azione non può essere annullata.</target>
       <trans-unit id="++CODE++c8baac5a74383177a725f6e5cc4254c0cfddfb0ab13f295520b96a30d7c5457e">
         <source xml:lang="en">Binary file content is not available in imported comparisons. The original file was not included in the export.</source>
         <target state="translated">Il contenuto del file binario non è disponibile nei confronti importati. Il file originale non è stato incluso nell'esportazione.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++ca73e05575b1cac04c06cf298deae061d7cad9a8c0a7419db7bc06de314cf089">
+        <source xml:lang="en">Both options start a guided site-creation conversation in the terminal.</source>
+        <target state="new">Both options start a guided site-creation conversation in the terminal.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++3c937e77605ccb35e4393579b0a16fc046a778dc67ff4139783ca76f7b6c9754">
+        <source xml:lang="en">Browse for another folder</source>
+        <target state="new">Browse for another folder</target>
       </trans-unit>
       <trans-unit id="++CODE++c58a6bd402efb06c3e7dfd6d68910412fee2dfc1788ae384dc123089ce912285">
         <source xml:lang="en">Browse...</source>
@@ -230,6 +230,14 @@ Questa azione non può essere annullata.</target>
         <source xml:lang="en">Cannot refresh an imported comparison. Import a new file or run a new comparison.</source>
         <target state="translated">Non è possibile aggiornare un confronto importato. Importa un nuovo file o esegui un nuovo confronto.</target>
       </trans-unit>
+      <trans-unit id="++CODE++07ab1cba74a48bb2a2048c8b2fdd5ea26eeee63b4ef3e5e11c42572e4a72e21f">
+        <source xml:lang="en">Change choices</source>
+        <target state="new">Change choices</target>
+      </trans-unit>
+      <trans-unit id="++CODE++78681d3d5caeb15e078600f1140d8f936ec72b68a77e1e33dff01f5128565239">
+        <source xml:lang="en">Change the folder, AI assistant, or site description.</source>
+        <target state="new">Change the folder, AI assistant, or site description.</target>
+      </trans-unit>
       <trans-unit id="++CODE++cdf024cea6f90cc5aacbe1c08a6c77b322820dc46ff96b1410e30527d7239c49">
         <source xml:lang="en">Changed Files</source>
         <target state="translated">File modificati</target>
@@ -238,13 +246,21 @@ Questa azione non può essere annullata.</target>
         <source xml:lang="en">Changing environment...</source>
         <target state="translated">Modifica dell'ambiente in corso...</target>
       </trans-unit>
-      <trans-unit id="++CODE++32e60e730d2e6845d352b9c5dd55af8bed341c220b7f94d58325bc1dc75adb63">
-        <source xml:lang="en">Check Again</source>
-        <target state="translated">Controlla di nuovo</target>
+      <trans-unit id="++CODE++fb7099ad8e818d42eceefe0d97c824fd54ddb0eeef54c263ec72c77d39198ac9">
+        <source xml:lang="en">Check again</source>
+        <target state="new">Check again</target>
       </trans-unit>
       <trans-unit id="++CODE++9885d66d0771f63c5a4b5d3b8cbe26be8832bc941243f5b18573975750a9986b">
         <source xml:lang="en">Check the URL and verify the parameters are correct</source>
         <target state="translated">Controlla l'URL e verifica che i parametri siano corretti</target>
+      </trans-unit>
+      <trans-unit id="++CODE++948f77a600110ba6ff83340f623612b8e3d53013de48b100669e129232c4edc5">
+        <source xml:lang="en">Check whether the Power Pages Plugin is installed</source>
+        <target state="new">Check whether the Power Pages Plugin is installed</target>
+      </trans-unit>
+      <trans-unit id="++CODE++f6208e79a482ad29648b0dc4cdf886964a06c63af452f5e0959af327ba2d5c38">
+        <source xml:lang="en">Check whether the Power Platform Skills marketplace is registered</source>
+        <target state="new">Check whether the Power Platform Skills marketplace is registered</target>
       </trans-unit>
       <trans-unit id="++CODE++6632cd07f161cbf30f0b3c569bb72daa960ac2c0c49a90daa7cee3185f636e27">
         <source xml:lang="en">Checking environment...</source>
@@ -253,6 +269,14 @@ Questa azione non può essere annullata.</target>
       <trans-unit id="++CODE++c724a9256b7af89455e04cc3611e5df1030c25f92652356f205c15f02c2da28e">
         <source xml:lang="en">Checking for active auth profile...</source>
         <target state="translated">Verifica del profilo di autenticazione attivo in corso...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++5b3d5d102dba2ea53c320fba3ab0b86bcca0d6e85cbe5fa7edf5133840224fb9">
+        <source xml:lang="en">Checking your existing AI assistant setup...</source>
+        <target state="new">Checking your existing AI assistant setup...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++6fc19ae6b053702c7673bae6b8f62db8d1b24e32b8de53b5c401f511d093d301">
+        <source xml:lang="en">Choose an AI assistant</source>
+        <target state="new">Choose an AI assistant</target>
       </trans-unit>
       <trans-unit id="++CODE++e1c3ec6d279ce7c1a208abce1314435297d8369739967d8a9db962ab572c617f">
         <source xml:lang="en">Choose page template</source>
@@ -318,9 +342,9 @@ The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).
         <source xml:lang="en">Close</source>
         <target state="translated">Chiudi</target>
       </trans-unit>
-      <trans-unit id="++CODE++7211aa590388acbd78f73cb66a2bb97d7492c9073e8e251727a0367deb34d7c8">
-        <source xml:lang="en">Close this command reference.</source>
-        <target state="translated">Chiudi queste informazioni di riferimento sui comandi.</target>
+      <trans-unit id="++CODE++66e853f81174c378a2ceb9d2f91b29ed9d573e654cc11f08a04f338c3e82c251">
+        <source xml:lang="en">Close this page.</source>
+        <target state="new">Close this page.</target>
       </trans-unit>
       <trans-unit id="++CODE++d1753029a614b1d88cab379a325334a907b5a5f4edd942614fafad016fdc71bc">
         <source xml:lang="en">Close without running anything.</source>
@@ -436,10 +460,6 @@ Controlla le query disponibili nel pannello dell'estensione CodeQL.</target>
         <source xml:lang="en">Command failed with exit code: {0}</source>
         <target state="translated">Comando non riuscito con codice di uscita: {0}</target>
       </trans-unit>
-      <trans-unit id="++CODE++4430f89d3ccddba65f0ecdcd57ad3d09f447aa32df98fe214338f0a9bbe7fccd">
-        <source xml:lang="en">Command sequence</source>
-        <target state="translated">Sequenza di comandi</target>
-      </trans-unit>
       <trans-unit id="++CODE++d73890ab56fd9e1ff5349b7bdb41fe0d848c5960c096b30357e26b912456f21f">
         <source xml:lang="en">Compare site with environment</source>
         <target state="translated">Confronta sito con ambiente</target>
@@ -479,6 +499,14 @@ Controlla le query disponibili nel pannello dell'estensione CodeQL.</target>
         <source xml:lang="en">Confirm</source>
         <target state="translated">Conferma</target>
       </trans-unit>
+      <trans-unit id="++CODE++31fbef162594de01bab0cd525c51f74de7bcb15063029fa1a54b2cf5944c80d8">
+        <source xml:lang="en">Continue</source>
+        <target state="new">Continue</target>
+      </trans-unit>
+      <trans-unit id="++CODE++d3fb6bb1e97d1aae47ff1cfad7132628b6581982e7ddbc6d3fe38be058d66754">
+        <source xml:lang="en">Continue in the terminal</source>
+        <target state="new">Continue in the terminal</target>
+      </trans-unit>
       <trans-unit id="++CODE++02c3c88b02a43e1818bf427f60d8e58b84d40c0990e09d01c75fff4a934221d0">
         <source xml:lang="en">Continue with Copilot for Power Pages</source>
         <target state="translated">Continua con Copilot per Power Pages</target>
@@ -507,13 +535,9 @@ Controlla le query disponibili nel pannello dell'estensione CodeQL.</target>
         <source xml:lang="en">Could not locate CodeQL CLI in global storage.</source>
         <target state="translated">Non è possibile individuare l'interfaccia della riga di comando di CodeQL nello spazio di archiviazione globale.</target>
       </trans-unit>
-      <trans-unit id="++CODE++8c626503b8eae6da7057f956fedf4bb6a0bd4390576fad8aaed347ec7e46bff2">
-        <source xml:lang="en">Create Power Pages Site</source>
-        <target state="translated">Crea sito di Power Pages</target>
-      </trans-unit>
-      <trans-unit id="++CODE++de58e4c94da7cfd5e18d9a884c15e42b595b5b268d566f9db95adbff0df128c4">
-        <source xml:lang="en">Create a Power Pages site with {0}?</source>
-        <target state="translated">Vuoi creare un sito di Power Pages con {0}?</target>
+      <trans-unit id="++CODE++17df5c921ef303496786b0c317e87e92cdd4702c739633987ced1b202e3aa6ac">
+        <source xml:lang="en">Create a Power Pages site</source>
+        <target state="new">Create a Power Pages site</target>
       </trans-unit>
       <trans-unit id="++CODE++217ec8ef23f31be4473af7c3e69f7965308bd2284d53eba7daf17b791db5fc74">
         <source xml:lang="en">Created On:</source>
@@ -604,6 +628,14 @@ Controlla le query disponibili nel pannello dell'estensione CodeQL.</target>
         <source xml:lang="en">Deleted locally</source>
         <target state="translated">Eliminato in locale</target>
       </trans-unit>
+      <trans-unit id="++CODE++557d3e77489309744cce896504ba575e29103b0a7498597da676cd13f42240b9">
+        <source xml:lang="en">Describe the site you want to create</source>
+        <target state="new">Describe the site you want to create</target>
+      </trans-unit>
+      <trans-unit id="++CODE++8b3854cb79d0029ee240c225f34e3c00b59112fda31401b760b5ebe66d0b5dd9">
+        <source xml:lang="en">Describe the site you want to create.</source>
+        <target state="new">Describe the site you want to create.</target>
+      </trans-unit>
       <trans-unit id="++CODE++4d280a451d04b7a51a7e302e0222ad77bb1e531f922b6193be115358256c245f">
         <source xml:lang="en">Difference</source>
         <target state="translated">Differenza</target>
@@ -669,17 +701,21 @@ Tipo: {3}</target>
         <note>This is a markdown formatting which must persist across translations.</note>
         <target state="translated">Download dei metadati del sito {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Mostra output download"))...</target>
       </trans-unit>
-      <trans-unit id="++CODE++4ea2d9bfa687c285ad10e5b21ed9c1a67b3c0bf6f79f746038f9fd903b9614c9">
-        <source xml:lang="en">Edit choices</source>
-        <target state="translated">Modifica scelte</target>
-      </trans-unit>
       <trans-unit id="++CODE++ac72407b10d30bf47faf11da09b605a85fc649bd3f2e33acb281655cb9021d9d">
         <source xml:lang="en">Edit the site</source>
         <target state="translated">Modifica il sito</target>
       </trans-unit>
+      <trans-unit id="++CODE++82c1eb8342c8d82ef6a31fcfa13b15e6c8805b3fa986d46ec8eaa5ec153f02fd">
+        <source xml:lang="en">Enable the installed Power Pages Plugin</source>
+        <target state="new">Enable the installed Power Pages Plugin</target>
+      </trans-unit>
       <trans-unit id="++CODE++102f547594eb0c68a16e0e5eb6661fa576c7a5fb6ce224ea36194e9fd4f87dac">
         <source xml:lang="en">Enhanced Data Model</source>
         <target state="translated">Modello di dati avanzato</target>
+      </trans-unit>
+      <trans-unit id="++CODE++a846f8996aed4edcb9ae96f5e66d48e0e5d1abd7208e245c3a456a35d14d2da1">
+        <source xml:lang="en">Enter 1,000 characters or fewer.</source>
+        <target state="new">Enter 1,000 characters or fewer.</target>
       </trans-unit>
       <trans-unit id="++CODE++0feefedc5916a0c9a464f4ef9f28fab835a23e1d035878f397e38053381aa3fa">
         <source xml:lang="en">Enter Organization ID</source>
@@ -761,6 +797,10 @@ Tipo: {3}</target>
       <trans-unit id="++CODE++e871c663b45be72da181a9de5bccc1b9e415ed8bab4fbc98f87cd9fe6162ded4">
         <source xml:lang="en">Error updating config file: {0}</source>
         <target state="translated">Errore durante l'aggiornamento del file di configurazione: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++29236f5ede8d976a5700fd49d40779ba4eedb6c516e05c878348d25b1aa76a59">
+        <source xml:lang="en">Example: A food bank site with volunteer signup and donation information</source>
+        <target state="new">Example: A food bank site with volunteer signup and donation information</target>
       </trans-unit>
       <trans-unit id="++CODE++8a6c3a849390110981cd9588c269ec59444485aed2239ad772afdb0d427523d8">
         <source xml:lang="en">Executing: {0}</source>
@@ -937,6 +977,10 @@ Tipo: {3}</target>
         <source xml:lang="en">Find differences between your remote site and local workspace</source>
         <target state="translated">Trova le differenze tra il sito remoto e l'area di lavoro locale</target>
       </trans-unit>
+      <trans-unit id="++CODE++40f6d06e62c09fce2638d1cf17d0e33216ffc9c44b532cbd34434260999cb767">
+        <source xml:lang="en">Follow the prompts to create your Power Pages site.</source>
+        <target state="new">Follow the prompts to create your Power Pages site.</target>
+      </trans-unit>
       <trans-unit id="++CODE++4c152c6eaba506f1e585f1fe8424b694874ccf652f4bdebb5e333ed518e9e428">
         <source xml:lang="en">Found CodeQL CLI at: {0}</source>
         <target state="translated">Trovata interfaccia della riga di comando di CodeQL in: {0}</target>
@@ -1001,6 +1045,10 @@ Tipo: {3}</target>
       <trans-unit id="++CODE++0f77fb6416bc872ede59a1594352d2ec69abadcc1870800eb9c0191ebc5a335b">
         <source xml:lang="en">GitHub Copilot CLI</source>
         <target state="translated">Interfaccia della riga di comando di GitHub Copilot</target>
+      </trans-unit>
+      <trans-unit id="++CODE++89897ae1567765f0180fbb840e4b280ba70c63f91e80834819dbdb1082e1abb4">
+        <source xml:lang="en">Go to terminal</source>
+        <target state="new">Go to terminal</target>
       </trans-unit>
       <trans-unit id="++CODE++7b9ca5026e65057a17f951928bd53dc4e7724c0850490d6237636e9d568db4b1">
         <source xml:lang="en">HTML report saved successfully to '{0}'.</source>
@@ -1069,25 +1117,33 @@ Torna in questa chat e @powerpages potrà aiutarti a scrivere e modificare il co
         <source xml:lang="en">Install</source>
         <target state="translated">Installa</target>
       </trans-unit>
-      <trans-unit id="++CODE++afb9e7208bfe7bad4615e50b2e4d6faed57c184df9eb5d702d44178e6cdb98c8">
-        <source xml:lang="en">Install the Power Pages plugin (user scope).</source>
-        <target state="translated">Installa il plug-in Power Pages (ambito utente).</target>
+      <trans-unit id="++CODE++7bc5941ce7dfa84f34e63d4adfb5823bcd0686ae5abb3e9a3de8993c3033aa30">
+        <source xml:lang="en">Install it in the next step after you review the setup.</source>
+        <target state="new">Install it in the next step after you review the setup.</target>
       </trans-unit>
-      <trans-unit id="++CODE++0319a9891908f56a9700981a93a873b705d4be2baaf7cdf63d657e51d4b3e074">
-        <source xml:lang="en">Install the Power Pages plugin.</source>
-        <target state="translated">Installa il plug-in Power Pages.</target>
+      <trans-unit id="++CODE++05c618aee86213bdcf82f8add35724e1aa0c8db3f51796a8f7eb51c1255321cf">
+        <source xml:lang="en">Install or enable the plugin if needed.</source>
+        <target state="new">Install or enable the plugin if needed.</target>
       </trans-unit>
-      <trans-unit id="++CODE++f4e4fc5fabef6cc519fba95f4f04a16af14cbf8ab4184364347685adf9c6c908">
-        <source xml:lang="en">Install {0}.</source>
-        <target state="translated">Installa {0}.</target>
+      <trans-unit id="++CODE++396f58439868809f256a7a4a63e6d7e72fb07a11c741bb502b0c4b74218f4a6d">
+        <source xml:lang="en">Install the Power Pages Plugin</source>
+        <target state="new">Install the Power Pages Plugin</target>
+      </trans-unit>
+      <trans-unit id="++CODE++33e083fc5ba8d2db8015c3d8a6d3a0831a571f75befac9f6989bce9422b1d103">
+        <source xml:lang="en">Install the Power Pages Plugin for your user account</source>
+        <target state="new">Install the Power Pages Plugin for your user account</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e9a14c3c8fd396e453f2d26bdebeace670ebae2cdbb1169f670beef3defa0599">
+        <source xml:lang="en">Install the assistant if needed.</source>
+        <target state="new">Install the assistant if needed.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++234d862d95a0df201389c806ca8dcc49ca177c8b30abb1afa0e2f1d349adf245">
+        <source xml:lang="en">Install {0}</source>
+        <target state="new">Install {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++f8b32f4e92bd84ce1fcd177bec17d43093de3ee8303bb40c1b9ea521ed6a70f6">
         <source xml:lang="en">Installed</source>
         <target state="translated">Installato</target>
-      </trans-unit>
-      <trans-unit id="++CODE++360963aae4ca47256844e205a2496968f7a9bd00dd397aa364a47eaa4eddbfd6">
-        <source xml:lang="en">Installed · {0}</source>
-        <target state="translated">Installato · {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++25109e9c19daeeed3977b84ace83722ac8a4daafcfe4e3709082fcc5b228e7a8">
         <source xml:lang="en">Installing Power Pages generator(v{0})...</source>
@@ -1310,9 +1366,9 @@ ID organizzazione: {3}</target>
         <source xml:lang="en">Not Now</source>
         <target state="translated">Non ora</target>
       </trans-unit>
-      <trans-unit id="++CODE++d2a8b37ce31e400c29e2b2440d5cc286c4b6b9c8b07c2c3c89a785538a60d0d9">
-        <source xml:lang="en">Not installed · Automatic installation will be included.</source>
-        <target state="translated">Non installato · L'installazione automatica sarà inclusa.</target>
+      <trans-unit id="++CODE++d177cdc09a4ea3f377e5b336e9ff52184be0dc032f29af2e5d346bc7390340a6">
+        <source xml:lang="en">Not installed</source>
+        <target state="new">Not installed</target>
       </trans-unit>
       <trans-unit id="++CODE++b2b461f3eae470e95fdcfd61a3cbe6680e84d0a7221a305f696ce44843badc89">
         <source xml:lang="en">Object ID: {0}</source>
@@ -1335,6 +1391,10 @@ ID organizzazione: {3}</target>
         <source xml:lang="en">Open Results</source>
         <target state="translated">Apri risultati</target>
       </trans-unit>
+      <trans-unit id="++CODE++ae6155619fda79d0e904eeb316d62238aaadaf714bff5cad1f83ea5740527b52">
+        <source xml:lang="en">Open a guided conversation in the VS Code terminal.</source>
+        <target state="new">Open a guided conversation in the VS Code terminal.</target>
+      </trans-unit>
       <trans-unit id="++CODE++c923497edb55fd73ded53b2d43ccaf08ed3ed77118d934fd762fb7a5048b16e4">
         <source xml:lang="en">Open as Text</source>
         <target state="translated">Apri come testo</target>
@@ -1347,9 +1407,17 @@ ID organizzazione: {3}</target>
         <source xml:lang="en">Open in Power Pages studio</source>
         <target state="translated">Apri nello studio di Power Pages</target>
       </trans-unit>
+      <trans-unit id="++CODE++0d86ddf7c02763effed339bbc88db0265e7396af87939356d177eb4b1fb31a0c">
+        <source xml:lang="en">Open in VS Code</source>
+        <target state="new">Open in VS Code</target>
+      </trans-unit>
       <trans-unit id="++CODE++e473d99cc18c8fbc20a562b15d5c16437343c2dc28d5b176e64890b7b3d350d1">
         <source xml:lang="en">Open in VS Code Desktop</source>
         <target state="translated">Apri in VS Code Desktop</target>
+      </trans-unit>
+      <trans-unit id="++CODE++6dc2f9495e93cbb3f6e1c43832f9465a45ac93bc56c801a3ed34b72a5b1e02cd">
+        <source xml:lang="en">Open installation and reload options.</source>
+        <target state="new">Open installation and reload options.</target>
       </trans-unit>
       <trans-unit id="++CODE++87fe691d426d47ee588ac957e12a9936b94fe6d70fd9ef97c92f7af1671ed9a0">
         <source xml:lang="en">Opening in VS Code Desktop. If it doesn't open or shows an error, you may need to install VS Code or update the Power Platform extension.</source>
@@ -1449,6 +1517,14 @@ ID organizzazione: {3}</target>
         <note>{0} represents the environment name</note>
         <target state="translated">Copilot di Power Pages è ora connesso all'ambiente: {0}: {1}</target>
       </trans-unit>
+      <trans-unit id="++CODE++c302d6758ca811ffe896e8d7be62e19622fcd54b53751d3307ff72dee82094ae">
+        <source xml:lang="en">Power Pages Plugin</source>
+        <target state="new">Power Pages Plugin</target>
+      </trans-unit>
+      <trans-unit id="++CODE++5a999d3e8ebbea218d45c65a2ba8a1d925653e4ae7460aa5a1d5cdab0e79d5c4">
+        <source xml:lang="en">Power Pages Plugin is installed</source>
+        <target state="new">Power Pages Plugin is installed</target>
+      </trans-unit>
       <trans-unit id="++CODE++f519c6aeba20c1a712f6043bf6eb52bf3bb8834f5f1a6c9ea60244dbbb30453c">
         <source xml:lang="en">Power Pages Server Logic detected! You can now debug your server logic files with breakpoints and IntelliSense.</source>
         <target state="translated">Logica server di Power Pages rilevata! Puoi ora eseguire il debug dei file di logica server con punti di interruzione e IntelliSense.</target>
@@ -1464,6 +1540,10 @@ ID organizzazione: {3}</target>
       <trans-unit id="++CODE++cce89cd3a0f118dafd3173f6444abdcd2b9782153af1b6bfa8f63ef3d4b68268">
         <source xml:lang="en">Power Pages studio URL is not available</source>
         <target state="translated">L'URL dello studio di Power Pages non è disponibile</target>
+      </trans-unit>
+      <trans-unit id="++CODE++bb8f6297e71e62de5d4c51cc368c429676d52e6ee636672009c4064a77e734b1">
+        <source xml:lang="en">Power Platform Skills marketplace</source>
+        <target state="new">Power Platform Skills marketplace</target>
       </trans-unit>
       <trans-unit id="++CODE++41024d68d0b449f0dfc48541fe0be218aa6acc1cc982ef1a701b759f037fecfa">
         <source xml:lang="en">Power Platform Tools - Site Comparison</source>
@@ -1485,6 +1565,18 @@ ID organizzazione: {3}</target>
         <source xml:lang="en">PowerPages config file updated successfully: {0}</source>
         <target state="translated">Aggiornamento del file di configurazione di PowerPages completato: {0}</target>
       </trans-unit>
+      <trans-unit id="++CODE++28bcc1d3dfff25ec70aa101c7a086a8c44ed0aa66f7fd5d6aa29a70045100c0d">
+        <source xml:lang="en">Prepare the Power Pages Plugin</source>
+        <target state="new">Prepare the Power Pages Plugin</target>
+      </trans-unit>
+      <trans-unit id="++CODE++b3bd8e83df2f6be7037ed0a3dc8fa15c074d072892fba84e95aadf69f5c0c107">
+        <source xml:lang="en">Prepare the selected AI assistant and start a guided site-creation conversation.</source>
+        <target state="new">Prepare the selected AI assistant and start a guided site-creation conversation.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++2455acf43e90db03fb5e0757a8d3eb6532e3385a2059ec04a191910a84c89334">
+        <source xml:lang="en">Prepare your AI assistant</source>
+        <target state="new">Prepare your AI assistant</target>
+      </trans-unit>
       <trans-unit id="++CODE++777d5f3afd46e18d42c0baad6d9a0c7a6867cdf31ae4d342ad5e695486f05ae7">
         <source xml:lang="en">Preparing pac CLI (v{0})...</source>
         <note>{0} represents the version number</note>
@@ -1493,6 +1585,10 @@ ID organizzazione: {3}</target>
       <trans-unit id="++CODE++a8994ac993c5dbea35b5267f2c2ee800ee8ce17569ba51a699748b406c5170fd">
         <source xml:lang="en">Preparing to open Power Pages site...</source>
         <target state="translated">Preparazione per aprire il sito di Power Pages...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++515524c5237a78472c04cb30bbd064a1fa2d75b961a7e1cad4b6d204c711b41e">
+        <source xml:lang="en">Preparing your AI assistant...</source>
+        <target state="new">Preparing your AI assistant...</target>
       </trans-unit>
       <trans-unit id="++CODE++f6412ced721a26ac3e3cb55d3ff713d8403c3dfc2efa0cff07b48478bdd57555">
         <source xml:lang="en">Preview site</source>
@@ -1515,26 +1611,30 @@ ID organizzazione: {3}</target>
         <note>The {0} represents the profile type (Admin vs Dataverse)</note>
         <target state="translated">Tipo di profilo: {0}</target>
       </trans-unit>
+      <trans-unit id="++CODE++5c7aca4002894e8b320d53d82f2514ada6896cb1471293665d6a1ae56f5ab384">
+        <source xml:lang="en">Read-only check</source>
+        <target state="new">Read-only check</target>
+      </trans-unit>
       <trans-unit id="++CODE++6e31aef31ad6cc82d8d8d41fd45043885761a11b9222b1ec7ce9d78a36dd4451">
         <source xml:lang="en">Ready to select download folder</source>
         <target state="translated">Pronto per selezionare la cartella di download</target>
       </trans-unit>
-      <trans-unit id="++CODE++4beee00982258909dff4f083e46a4dabf7716b14e21d96b80450dee39985a2c3">
-        <source xml:lang="en">Refresh the terminal PATH.</source>
-        <target state="translated">Aggiorna il PERCORSO del terminale.</target>
+      <trans-unit id="++CODE++5dc8158798e5d22948f8b9e9944a502bfed7eb07b9ed53be27b337a3549dbd71">
+        <source xml:lang="en">Refresh the terminal PATH</source>
+        <target state="new">Refresh the terminal PATH</target>
       </trans-unit>
       <trans-unit id="++CODE++fdc383411e8354c470e19c960527019a9bf48c61c08a5c3ec3fb8b7b32ccba34">
         <source xml:lang="en">Refreshing comparison for {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show download output"))...</source>
         <note>This is a markdown formatting which must persist across translations.</note>
         <target state="translated">Aggiornamento del confronto per {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Mostra output download"))...</target>
       </trans-unit>
-      <trans-unit id="++CODE++439dd80d491837c23c81411c8f2a0bb7ddbc7bbc557748cc59b8a8812cb09d86">
-        <source xml:lang="en">Register the Power Platform Skills marketplace.</source>
-        <target state="translated">Registra il marketplace delle competenze di Power Platform.</target>
+      <trans-unit id="++CODE++fc6aac630dc45d2a81a82d788bbd21b8766b47e83981fb57ad69656406a515dd">
+        <source xml:lang="en">Register the Power Platform Skills marketplace</source>
+        <target state="new">Register the Power Platform Skills marketplace</target>
       </trans-unit>
-      <trans-unit id="++CODE++423e44de44431caef68c0c61968777e088fd50d2577feea60b9ba4a14b28a827">
-        <source xml:lang="en">Reload Window</source>
-        <target state="translated">Ricarica la finestra</target>
+      <trans-unit id="++CODE++e580706fe7698bd8f6f44f050b118ead14cadd42ae14f85a7353e85ea2bb3c97">
+        <source xml:lang="en">Reload window</source>
+        <target state="new">Reload window</target>
       </trans-unit>
       <trans-unit id="++CODE++ffa98e02f7ce33fc935f02b3b668f6ad57661814dade5f41453fbee2b70cdd95">
         <source xml:lang="en">Remote</source>
@@ -1548,17 +1648,13 @@ ID organizzazione: {3}</target>
         <source xml:lang="en">Results opened in SARIF viewer successfully.</source>
         <target state="translated">I risultati sono stati aperti nel visualizzatore SARIF.</target>
       </trans-unit>
-      <trans-unit id="++CODE++d640c7421da066618a39daf4266da5f61f66a9b1afcd626481b831a17064965d">
-        <source xml:lang="en">Resume</source>
-        <target state="translated">Riprendi</target>
+      <trans-unit id="++CODE++110263b2ea0ce4fd85fdbbf9a6f2c7e5f0cda8f6867e799702198a55ad507b2d">
+        <source xml:lang="en">Review the details, then start a guided conversation with {0}. You don't need command-line experience.</source>
+        <target state="new">Review the details, then start a guided conversation with {0}. You don't need command-line experience.</target>
       </trans-unit>
-      <trans-unit id="++CODE++1dd14e0777f881f5d27788be6a9c7f28aa14242f14ae2da8c53bbf610484b376">
-        <source xml:lang="en">Return to folder and agent host selection.</source>
-        <target state="translated">Torna alla selezione della cartella e dell'host agente.</target>
-      </trans-unit>
-      <trans-unit id="++CODE++10037afa84471c0d5cb366245aacce217d85e834f3b91531937d8301c8e88d02">
-        <source xml:lang="en">Review the steps below. Start in Terminal runs them in order. The agent host may ask you to sign in during its first interactive launch.</source>
-        <target state="translated">Rivedi i passaggi seguenti. L'opzione Avvia nel terminale consente l'esecuzione nell'ordine indicato. L'host dell'agente potrebbe chiedere di eseguire l'accesso durante il primo avvio interattivo.</target>
+      <trans-unit id="++CODE++dfee35e0c32f307b88ebe74c69a782c5ad225152d753e19fc9226c7e7d375c4e">
+        <source xml:lang="en">Review your site setup</source>
+        <target state="new">Review your site setup</target>
       </trans-unit>
       <trans-unit id="++CODE++00d60e31a4e6b8344d4201f25a6a7dee770713107f6d097abb01559d32b17f26">
         <source xml:lang="en">Run</source>
@@ -1568,10 +1664,6 @@ ID organizzazione: {3}</target>
         <source xml:lang="en">Run Server Logic</source>
         <target state="translated">Esegui logica del server</target>
       </trans-unit>
-      <trans-unit id="++CODE++930491181d9b2842d9fa56433360eab8a11f2f48c08feda732864864286a2d9d">
-        <source xml:lang="en">Run the command sequence shown above.</source>
-        <target state="translated">Esegui la sequenza di comandi indicata in precedenza.</target>
-      </trans-unit>
       <trans-unit id="++CODE++80b0001b823cb916650c75c5c08b3bdf9be4951036ec14ee4086b487125d05c8">
         <source xml:lang="en">Run this server logic file without debugging</source>
         <target state="translated">Esegui questo file di logica server senza debug</target>
@@ -1579,6 +1671,10 @@ ID organizzazione: {3}</target>
       <trans-unit id="++CODE++9eb3810da0fd0dbacf4b6f4d7ad58e6e631ab807c0dd404dcb9f03066da8443b">
         <source xml:lang="en">Running CodeQL analysis...</source>
         <target state="translated">Esecuzione dell'analisi di CodeQL in corso...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++d1a9bf9a1335c6ef7acdb07f1f5b47e1fce1db2a03cc6a29df3f878e45ae10b1">
+        <source xml:lang="en">Runs only if needed</source>
+        <target state="new">Runs only if needed</target>
       </trans-unit>
       <trans-unit id="++CODE++3a74613b70fb8cc650773d71501f0c370322e9ae7d7739857db61c95a3b1bc80">
         <source xml:lang="en">SARIF viewer extension does not expose expected API. Falling back to text editor...</source>
@@ -1604,6 +1700,10 @@ ID organizzazione: {3}</target>
         <source xml:lang="en">Saving your file ...</source>
         <target state="translated">Salvataggio del file in corso...</target>
       </trans-unit>
+      <trans-unit id="++CODE++05b1250bd1ca036d3168f272f645bbbbd30c3a500b39a05f5e6cdabb726da5de">
+        <source xml:lang="en">See the exact commands VS Code might run.</source>
+        <target state="new">See the exact commands VS Code might run.</target>
+      </trans-unit>
       <trans-unit id="++CODE++e597da9c984517f802536a83c825cd4f017898c5f28030fe1f62fb94f5228828">
         <source xml:lang="en">Select Folder</source>
         <target state="translated">Seleziona cartella</target>
@@ -1617,21 +1717,21 @@ ID organizzazione: {3}</target>
         <source xml:lang="en">Select Folder to Download Power Pages Site</source>
         <target state="translated">Seleziona la cartella per scaricare il sito di Power Pages</target>
       </trans-unit>
-      <trans-unit id="++CODE++3fa3357e7ab619e582aa9350ee57f1679de1609ce6a53a5dd27fd2c6a07f0a10">
-        <source xml:lang="en">Select Target Folder</source>
-        <target state="translated">Seleziona cartella di destinazione</target>
-      </trans-unit>
       <trans-unit id="++CODE++a40f78f3a7f5c5ab1b101e95cdf044552542712fdcf45a83dfea3f455b6f638a">
         <source xml:lang="en">Select Type</source>
         <target state="translated">Seleziona tipo</target>
       </trans-unit>
+      <trans-unit id="++CODE++5238cf0c566a66e212e53387e578b500b6d96f563ce34ff81be1474f1b882cc4">
+        <source xml:lang="en">Select a folder for your site</source>
+        <target state="new">Select a folder for your site</target>
+      </trans-unit>
+      <trans-unit id="++CODE++7fb8ad41c6f2f9e3d72c933b02fee94ce142a6bdd874869e4a817b19a2c8d4a2">
+        <source xml:lang="en">Select a folder on your device</source>
+        <target state="new">Select a folder on your device</target>
+      </trans-unit>
       <trans-unit id="++CODE++84744ab78214e2fc629e2925963080b5ad6c4ab1db6cce278900c3e6403bbc2f">
         <source xml:lang="en">Select a website to compare with</source>
         <target state="translated">Seleziona un sito Web con cui eseguire il confronto</target>
-      </trans-unit>
-      <trans-unit id="++CODE++09423c9974048a464769e508ea44c35c066347d438b5551f57999bf635cadac2">
-        <source xml:lang="en">Select an agent host</source>
-        <target state="translated">Seleziona un host agente</target>
       </trans-unit>
       <trans-unit id="++CODE++87468e6a845b82466220c11dd0ca315a4389dc1cb8e0ee102035bb4ce5cb7e39">
         <source xml:lang="en">Select an environment</source>
@@ -1640,6 +1740,14 @@ ID organizzazione: {3}</target>
       <trans-unit id="++CODE++fafd4e6859e28fd1f76851b8a08f6d3ccb58402fb65e44f3c342575741b056e6">
         <source xml:lang="en">Select an environment to compare with</source>
         <target state="translated">Seleziona un ambiente con cui effettuare il confronto</target>
+      </trans-unit>
+      <trans-unit id="++CODE++b9d49e9fac1343c887ab9067167f3a89003bc882104e78a6453650fd74d15ba4">
+        <source xml:lang="en">Select an open folder, or browse for another</source>
+        <target state="new">Select an open folder, or browse for another</target>
+      </trans-unit>
+      <trans-unit id="++CODE++2ed6bf93669da474bfe4a4ea5d3b29da49725e6327353408847be8d15e6e682e">
+        <source xml:lang="en">Select folder</source>
+        <target state="new">Select folder</target>
       </trans-unit>
       <trans-unit id="++CODE++58ea04f09a2cbf67d55e70c45a6da4998e72e8e50f91e63862c0d65d14dfb1f5">
         <source xml:lang="en">Select folder for CodeQL database</source>
@@ -1652,6 +1760,10 @@ ID organizzazione: {3}</target>
       <trans-unit id="++CODE++26297069e403c73e147151f2964757b7e9149762cf3a8e04ffd833907fb979e4">
         <source xml:lang="en">Select the folder that will contain your project root for your site</source>
         <target state="translated">Seleziona la cartella che conterrà la radice del progetto per il sito</target>
+      </trans-unit>
+      <trans-unit id="++CODE++0cf59bef45cfea95855e61502b14de9addb31e2544246e64bc5bf56e59151676">
+        <source xml:lang="en">Selected folder</source>
+        <target state="new">Selected folder</target>
       </trans-unit>
       <trans-unit id="++CODE++4d6f03fa73020c945e651c34d40c5529f3477ac02df254c1764a68d576575e14">
         <source xml:lang="en">Selection is empty.</source>
@@ -1674,6 +1786,10 @@ ID organizzazione: {3}</target>
         <note>{0} is the Session ID</note>
         <target state="translated">ID sessione: {0}</target>
       </trans-unit>
+      <trans-unit id="++CODE++7013af4c42fe43802a9e8b0affc4f521fcd126160569969fb2ec09e1b7c422b1">
+        <source xml:lang="en">Setup</source>
+        <target state="new">Setup</target>
+      </trans-unit>
       <trans-unit id="++CODE++a525be98c4abc148f352c9f9069ef7adf9dccd3047d6d92cfd49282d7ac71ba4">
         <source xml:lang="en">Show Details</source>
         <target state="translated">Mostra dettagli</target>
@@ -1685,6 +1801,10 @@ ID organizzazione: {3}</target>
       <trans-unit id="++CODE++899fb203e6c2faac8093e21a2fa8db0d4b13d16ea5492461d8b72dbcee3ecf2a">
         <source xml:lang="en">Show Output Panel</source>
         <target state="translated">Mostra pannello di output</target>
+      </trans-unit>
+      <trans-unit id="++CODE++40a9e6eb397acb5ffc19806ea9c98e52b0705a2a7f90eff59a91fad48453e508">
+        <source xml:lang="en">Show your AI assistant conversation in the terminal.</source>
+        <target state="new">Show your AI assistant conversation in the terminal.</target>
       </trans-unit>
       <trans-unit id="++CODE++2f65ba5aa38a9acac3a9a9c0a9aeecd7b32796008dc63432bedbe6ef62982558">
         <source xml:lang="en">Sign in to VS Code with PAC CLI account</source>
@@ -1735,6 +1855,10 @@ ID organizzazione: {3}</target>
         <source xml:lang="en">Site download failed. Please try again later.</source>
         <target state="translated">Download del sito non riuscito. Riprova più tardi.</target>
       </trans-unit>
+      <trans-unit id="++CODE++d76027e0c7605fe9a19470f285ea734943aac5799470b81cb358589a88c63f43">
+        <source xml:lang="en">Site files</source>
+        <target state="new">Site files</target>
+      </trans-unit>
       <trans-unit id="++CODE++a72357d268bce5e1643bfd74563495784179f75ace0d652db8f808f293586b63">
         <source xml:lang="en">Site management URL not found for the selected site. Please try again after refreshing the environment.</source>
         <target state="translated">URL di gestione del sito non trovato per il sito selezionato. Riprova dopo aver aggiornato l'ambiente.</target>
@@ -1746,6 +1870,10 @@ ID organizzazione: {3}</target>
       <trans-unit id="++CODE++f7094162bd4c4b59aa706387714347223e1569c79c5b37eb19ac754a33a0fdd0">
         <source xml:lang="en">Site runtime preview feature is not enabled.</source>
         <target state="translated">La funzionalità di anteprima di esecuzione del sito non è abilitata.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++0ea960698b0abec21cd3b087e649239b8936d019e5b5e09f813233872f14a00f">
+        <source xml:lang="en">Site to create</source>
+        <target state="new">Site to create</target>
       </trans-unit>
       <trans-unit id="++CODE++a2eb2f1a32eedafa3e666685f09ee073175d309d6137b80edac517b51bffd84d">
         <source xml:lang="en">Site visibility: {0}</source>
@@ -1764,17 +1892,33 @@ ID organizzazione: {3}</target>
         <source xml:lang="en">Standard Data Model</source>
         <target state="translated">Modello di dati standard</target>
       </trans-unit>
-      <trans-unit id="++CODE++ada66949062668868b5f5b59a0d5571a24f90aae1122cd7e7edd2cf97c8bbd87">
-        <source xml:lang="en">Start in Terminal</source>
-        <target state="translated">Avvia nel terminale</target>
+      <trans-unit id="++CODE++ca3d7d544d4963a761171323a5343d4ba53bf539604437cfb91f84b57b886896">
+        <source xml:lang="en">Start a guided site-creation conversation with Claude Code.</source>
+        <target state="new">Start a guided site-creation conversation with Claude Code.</target>
       </trans-unit>
-      <trans-unit id="++CODE++a47f76b01246d53541af8d7efbe79fa7e3da233eec3774b617509262765ce0a0">
-        <source xml:lang="en">Start {0} and ask how to create a site.</source>
-        <target state="translated">Avvia {0} e chiedi come creare un sito.</target>
+      <trans-unit id="++CODE++33037d4506e08f028117ac835f888680f80119d27ba64e93566fb9489ec3114c">
+        <source xml:lang="en">Start a guided site-creation conversation with GitHub Copilot CLI.</source>
+        <target state="new">Start a guided site-creation conversation with GitHub Copilot CLI.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++eff3d8eb555872949291263e9281c28cfda8474e4a0062deb4b54d9f059f14a8">
+        <source xml:lang="en">Start creating</source>
+        <target state="new">Start creating</target>
+      </trans-unit>
+      <trans-unit id="++CODE++fd4e0003390fb5118455962a7f96131947b8007751328d8105b7a99b0126abb3">
+        <source xml:lang="en">Start your site</source>
+        <target state="new">Start your site</target>
+      </trans-unit>
+      <trans-unit id="++CODE++23a09d36c59aba99f2443799e555d47416d8d30e61f648ef885120dd9b2db964">
+        <source xml:lang="en">Start {0} with your site description</source>
+        <target state="new">Start {0} with your site description</target>
       </trans-unit>
       <trans-unit id="++CODE++1cb2204ec480119230ac755787106a1550d9329553d146abd56da1947079d577">
         <source xml:lang="en">Starting CodeQL analysis for: {0}</source>
         <target state="translated">Avvio dell'analisi di CodeQL per: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++aa7e18bcc9e1af5b82b8ffc8cfc0e009d4aa7396e21dad5173567347b6f67b5a">
+        <source xml:lang="en">Step {0} of {1}: {2}</source>
+        <target state="new">Step {0} of {1}: {2}</target>
       </trans-unit>
       <trans-unit id="++CODE++155f816c0407310c0dab222493370773e045ee7fe04e6c9a951b07f495531264">
         <source xml:lang="en">Submit</source>
@@ -1803,9 +1947,9 @@ ID organizzazione: {3}</target>
         <source xml:lang="en">Switching environment...</source>
         <target state="translated">Cambio dell'ambiente in corso...</target>
       </trans-unit>
-      <trans-unit id="++CODE++e89c3109e1f14c41c020d764a9d88a91ddd18a4003ff438156d2eb8bd2b4f1c8">
-        <source xml:lang="en">Target folder</source>
-        <target state="translated">Cartella di destinazione</target>
+      <trans-unit id="++CODE++890ab358a55d7fcefe7527f675efb96865cf84d1d54e8d52d9692e3b599031e3">
+        <source xml:lang="en">Technical details</source>
+        <target state="new">Technical details</target>
       </trans-unit>
       <trans-unit id="++CODE++550b4ee4e0ae69ddf9c18f9d46f59e59da633a2644633d140197d62ded3f2657">
         <source xml:lang="en">Tell us more.</source>
@@ -1815,6 +1959,10 @@ ID organizzazione: {3}</target>
         <source xml:lang="en">Tenant ID: {0}</source>
         <note>{0} is the Tenant ID</note>
         <target state="translated">ID tenant: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++a27cc27da14433694d70798df825768186b79aa0773e9eda9e040c7281dd6f49">
+        <source xml:lang="en">Terminal shell integration is turned off. Turn on Terminal › Integrated: Shell Integration Enabled in Settings, then try again. No site files were changed.</source>
+        <target state="new">Terminal shell integration is turned off. Turn on Terminal › Integrated: Shell Integration Enabled in Settings, then try again. No site files were changed.</target>
       </trans-unit>
       <trans-unit id="++CODE++438c442a839dca3bb4dbecd0421f454f268650517fe631e5900233b73a874bc7">
         <source xml:lang="en">The CodeQL extension is required to run this command. Do you want to install it now?</source>
@@ -1832,10 +1980,6 @@ ID organizzazione: {3}</target>
         <source xml:lang="en">The account signed in to VS Code differs from the one authenticated in PAC CLI (Power Platform CLI). This mismatch can cause data not to load or actions to fail because UI commands run through the CLI. To fix it, sign in to VS Code using the same account as your PAC CLI. If needed, you can update your PAC CLI authentication separately via the command line.</source>
         <target state="translated">L'account connesso a VS Code è diverso da quello che ha eseguito l'autenticazione nell'interfaccia della riga di comando PAC (Power Platform CLI). A causa di questa mancata corrispondenza, è possibile che i dati non vengano caricati o che le azioni non vengano eseguite correttamente perché i comandi dell'interfaccia utente vengono eseguiti tramite l'interfaccia della riga di comando. Per risolvere il problema, accedi a VS Code usando lo stesso account dell'interfaccia della riga di comando PAC. Se necessario, puoi aggiornare separatamente l'autenticazione dell'interfaccia della riga di comando PAC tramite la riga di comando.</target>
       </trans-unit>
-      <trans-unit id="++CODE++060c9df5fdf6a8377bb3548fb5a8d170c73a312ff8a509c12d8d7e25661a6477">
-        <source xml:lang="en">The approved sequence is running in the terminal. This page remains available as a command reference.</source>
-        <target state="translated">La sequenza approvata è in esecuzione nel terminale. Questa pagina rimane disponibile come informazioni di riferimento sui comandi.</target>
-      </trans-unit>
       <trans-unit id="++CODE++0bc2e4918b64f82220bde3dae30dc007a45fb59c3677833fb5a0e275a3b6b54b">
         <source xml:lang="en">The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?</source>
         <note>Do not translate 'Microsoft Edge Tools' </note>
@@ -1852,6 +1996,10 @@ ID organizzazione: {3}</target>
       <trans-unit id="++CODE++51d2fcbba3e5fc15afbd85f1d179e58b9c4328b466cd7872ec77dc0c9cb34afe">
         <source xml:lang="en">The preview shown is for published changes. Please publish any pending changes to see them in the preview.</source>
         <target state="translated">L'anteprima mostrata è per le modifiche pubblicate. Pubblica tutte le modifiche in sospeso per vederle nell'anteprima.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++87d2c1cf91965bad3c2bd4611607bdcab295c9136027635e287726a1c1b7cf4c">
+        <source xml:lang="en">The terminal wasn't ready in time. Close terminals you don't need, then try again. No site files were changed.</source>
+        <target state="new">The terminal wasn't ready in time. Close terminals you don't need, then try again. No site files were changed.</target>
       </trans-unit>
       <trans-unit id="++CODE++1f362261e8bb9564245fa7e590732de71b5f6cbb3e9963a8d8573b51ae18cbfe">
         <source xml:lang="en">The website was not found in the selected environment. Please select a different environment.</source>
@@ -1873,9 +2021,21 @@ ID organizzazione: {3}</target>
         <source xml:lang="en">There's a problem on the back end</source>
         <target state="translated">Si è verificato un problema nel back-end</target>
       </trans-unit>
+      <trans-unit id="++CODE++f7f5ca75496675a27d2aec3a9ec03d0919bdcfec6106d3090b53e5dadfde99bf">
+        <source xml:lang="en">This AI assistant installation can't safely receive your site description. Reinstall the assistant, then try again. No site files were changed.</source>
+        <target state="new">This AI assistant installation can't safely receive your site description. Reinstall the assistant, then try again. No site files were changed.</target>
+      </trans-unit>
       <trans-unit id="++CODE++bcfc420c0358eb6f248fa6328797cfa38fa121baea6320a623280a0d34eeee75">
         <source xml:lang="en">This file was exported with a newer version of the extension. Please update your extension to import this file.</source>
         <target state="translated">Questo file è stato esportato con una versione più recente dell'estensione. Aggiorna l'estensione per importare il file.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++d3cc212460528b716560738493b1e00d46a647d9f84fa29d39618ad3d02a7868">
+        <source xml:lang="en">This terminal profile isn't supported. Choose PowerShell 7 or Bash as your default terminal profile, then try again. No site files were changed.</source>
+        <target state="new">This terminal profile isn't supported. Choose PowerShell 7 or Bash as your default terminal profile, then try again. No site files were changed.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++44faf29eeab668e73b536af1c309bf3245a39fd5b3d1bc98a0be7d9253a9d29b">
+        <source xml:lang="en">This terminal profile isn't supported. Choose PowerShell, Bash, Zsh, or Fish as your default terminal profile, then try again. No site files were changed.</source>
+        <target state="new">This terminal profile isn't supported. Choose PowerShell, Bash, Zsh, or Fish as your default terminal profile, then try again. No site files were changed.</target>
       </trans-unit>
       <trans-unit id="++CODE++e7de2855a45712e1d967171e4d86f37d4014c2f80a515bc552ed4c4a2984c3e4">
         <source xml:lang="en">This will close all active comparison views. Your local files will not be affected.</source>
@@ -1925,6 +2085,10 @@ ID organizzazione: {3}</target>
       <trans-unit id="++CODE++dabe9e12f081a01200dc7e96c5ae45a75ca20e6805dcf047778012f41ee33f31">
         <source xml:lang="en">Try and be as specific as possible. Your feedback will be used to improve Copilot. &lt;a href="https://privacy.microsoft.com/en-US/data-privacy-notice"&gt; View privacy details &lt;/a&gt;</source>
         <target state="translated">Prova a essere il più specifico possibile. Il tuo feedback verrà utilizzato per migliorare Copilot. &lt;a href="https://privacy.microsoft.com/en-US/data-privacy-notice"&gt; Visualizza i dettagli sulla privacy&lt;/a&gt;</target>
+      </trans-unit>
+      <trans-unit id="++CODE++2e0c2844f4cc45aae9b3a245a58fc426214f112dec1c78523725b659695e9955">
+        <source xml:lang="en">Try the setup again.</source>
+        <target state="new">Try the setup again.</target>
       </trans-unit>
       <trans-unit id="++CODE++34077c1b18e274ca17c858b0521d9ff1edd6a164eccb2a24888fc6ed0eb3df35">
         <source xml:lang="en">Unable to clear cache</source>
@@ -2050,17 +2214,61 @@ ID organizzazione: {3}</target>
         <source xml:lang="en">VS Code - PAC CLI authentication mismatch detected</source>
         <target state="translated">VS Code - Rilevata mancata corrispondenza dell'autenticazione dell'interfaccia della riga di comando PAC</target>
       </trans-unit>
+      <trans-unit id="++CODE++c4b3a95eb9ce3bce70b7fd7d6462e24f10cfc7e81edbf5684aa1cf858c3feb09">
+        <source xml:lang="en">VS Code couldn't open the site setup page. Run the command again.</source>
+        <target state="new">VS Code couldn't open the site setup page. Run the command again.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++1acc93ac4c64d3eb4ce7ab732ec13e9c225ed10c645415274b729099d3a8074a">
+        <source xml:lang="en">VS Code will check the Power Pages Plugin setup</source>
+        <target state="new">VS Code will check the Power Pages Plugin setup</target>
+      </trans-unit>
+      <trans-unit id="++CODE++bf10e9a4cf71b304375cb211f38eeccad9b9879815f4a597a548153d22b1f51e">
+        <source xml:lang="en">VS Code will enable the Power Pages Plugin</source>
+        <target state="new">VS Code will enable the Power Pages Plugin</target>
+      </trans-unit>
+      <trans-unit id="++CODE++69df8bdc49e19c41088c234cd86ac915fba9f9b15288166f1dbc38778739a3eb">
+        <source xml:lang="en">VS Code will install the Power Pages Plugin</source>
+        <target state="new">VS Code will install the Power Pages Plugin</target>
+      </trans-unit>
+      <trans-unit id="++CODE++9876e2de21f25abd894c314b36f6041972ee80c46a61ea7d90d96e34d78bbde2">
+        <source xml:lang="en">VS Code will install {0} and the Power Pages Plugin</source>
+        <target state="new">VS Code will install {0} and the Power Pages Plugin</target>
+      </trans-unit>
+      <trans-unit id="++CODE++02eadfe90172342b438f27c0be4d64a0b4588869e626f25eb6653416c839d79f">
+        <source xml:lang="en">VS Code won't change your setup until you select Start creating. Your AI assistant might ask you to sign in.</source>
+        <target state="new">VS Code won't change your setup until you select Start creating. Your AI assistant might ask you to sign in.</target>
+      </trans-unit>
       <trans-unit id="++CODE++527423ed0138373aa91233083f12eceeae92aa1998e6706d7a260524dafbe6c4">
         <source xml:lang="en">Validating authentication...</source>
         <target state="translated">Convalida dell'autenticazione in corso...</target>
       </trans-unit>
-      <trans-unit id="++CODE++e7ff9f2963479e3a67c6681ca691ffcf17d26c6dbfdc73c76961918bce7e2c89">
-        <source xml:lang="en">Verify that {0} is available in this terminal.</source>
-        <target state="translated">Verifica che {0} sia disponibile in questo terminale.</target>
+      <trans-unit id="++CODE++f5830590f575580b2e92fa127ceaed14197aeb78855c4c218b9b67247e740d4f">
+        <source xml:lang="en">Verify that {0} is available in this terminal</source>
+        <target state="new">Verify that {0} is available in this terminal</target>
       </trans-unit>
-      <trans-unit id="++CODE++e9d8c62d601b715092d29b92eb772eff38e7130e2f8199a3c41196489ef23bf4">
-        <source xml:lang="en">View Installation Guide</source>
-        <target state="translated">Visualizza guida all'installazione</target>
+      <trans-unit id="++CODE++27ce43e2a226ec490d516062d0d927ef2c965197813f8d9ce06f2aeba4617057">
+        <source xml:lang="en">View installation guide</source>
+        <target state="new">View installation guide</target>
+      </trans-unit>
+      <trans-unit id="++CODE++28aeb75bbd6c2ff3c2d97d36cb236af7f1d075978428b27c98b53b1f76d87849">
+        <source xml:lang="en">View setup options</source>
+        <target state="new">View setup options</target>
+      </trans-unit>
+      <trans-unit id="++CODE++5a0534c093715fddd304f16e9e97295491b5d9bc199f0af9a043f28458a681fb">
+        <source xml:lang="en">We couldn't complete the setup. Review the confirmation page for details.</source>
+        <target state="new">We couldn't complete the setup. Review the confirmation page for details.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++21962f46ea239176b92249347f4f9a5d837f458465608f54cc17b800f8a4f5a3">
+        <source xml:lang="en">We couldn't complete this step: {0}. Review {1} for more information, or try again. No site files were changed.</source>
+        <target state="new">We couldn't complete this step: {0}. Review {1} for more information, or try again. No site files were changed.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++1d1cb2809cf2c3db087ad98da5b7425c61ae9528a4d51dd2a77c20e08eac64c6">
+        <source xml:lang="en">We couldn't complete this step: {0}. Try again, or select {1}. No site files were changed.</source>
+        <target state="new">We couldn't complete this step: {0}. Try again, or select {1}. No site files were changed.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++d3931a85c3e6d17fc7abba40fd4f4497852784b8298407ac65d09d908c4989e3">
+        <source xml:lang="en">We couldn't prepare your AI assistant</source>
+        <target state="new">We couldn't prepare your AI assistant</target>
       </trans-unit>
       <trans-unit id="++CODE++d941ee96c6f480390012381f9fc0dfd961f2aa803732860e2505a8453700f458">
         <source xml:lang="en">We encountered an error preparing the files for edit.</source>
@@ -2116,6 +2324,10 @@ ID organizzazione: {3}</target>
         <source xml:lang="en">What do you need help with?</source>
         <target state="translated">Per cosa hai bisogno di aiuto?</target>
       </trans-unit>
+      <trans-unit id="++CODE++8f9b77e6e0b4eebac0a0786b761ecfaf5782fd7223b1fb34ae6c6bbe2fd63a9b">
+        <source xml:lang="en">What happens next</source>
+        <target state="new">What happens next</target>
+      </trans-unit>
       <trans-unit id="++CODE++ab06f2880f954cfbc6788988300346315e8372cc05d92ce26ff6635c607e1406">
         <source xml:lang="en">Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.</source>
         <target state="translated">Indipendentemente dal codice che vuoi usare, HTML, CSS, JS o Liquid, descrivi ciò che ti serve e l'IA farà il resto.</target>
@@ -2160,9 +2372,17 @@ ID organizzazione: {3}</target>
         <source xml:lang="en">You need to authenticate with Power Platform to download the site. Would you like to authenticate now?</source>
         <target state="translated">Devi eseguire l'autenticazione con Power Platform per scaricare il sito. Vuoi eseguire l'autenticazione ora?</target>
       </trans-unit>
+      <trans-unit id="++CODE++97307525fefb8aeffac9e80f7f0d876b53d277eb5f03a4abaa9931d0bc32bbee">
+        <source xml:lang="en">Your AI assistant uses this description to create the site. Include the purpose, audience, and key features.</source>
+        <target state="new">Your AI assistant uses this description to create the site. Include the purpose, audience, and key features.</target>
+      </trans-unit>
       <trans-unit id="++CODE++eeb25aaca6a9e3f6c670334480b8e56e2a362ecfec23f8e63617915b22ddc8a0">
         <source xml:lang="en">Your preview isn't updated. Please upload your site to see the latest changes.</source>
         <target state="translated">L'anteprima non è aggiornata. Carica il sito per vedere le modifiche più recenti.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++2f331fb1a2dc318220551bfe23cce130229c1383789e8d8c376fae81af846206">
+        <source xml:lang="en">Your selected AI assistant is installed.</source>
+        <target state="new">Your selected AI assistant is installed.</target>
       </trans-unit>
       <trans-unit id="++CODE++3a928d0a6dd0e0c6b56eb3bf08b20e6361e876fd6b2eeca59f718cbfdc310472">
         <source xml:lang="en">dotnet sdk 6.0 or greater must be installed</source>
@@ -2212,16 +2432,20 @@ ID organizzazione: {3}</target>
         <note>Description for imported comparison. {0} is file count, {1} is formatted date.</note>
         <target state="translated">{0} file modificati (importati in data {1})</target>
       </trans-unit>
-      <trans-unit id="++CODE++cbb58bf52139fb4500869fc02c2559dc0bcd41de2b78a941bd8ab8c33e665a26">
-        <source xml:lang="en">{0} is now installed. Resume creating your Power Pages site?</source>
-        <target state="translated">{0} ora è installato. Vuoi riprendere la creazione del sito Power Pages?</target>
+      <trans-unit id="++CODE++0dcc2278c50b376ea997b1a6036e8bc2b7082b226e8e6b6f2fc30bd47c215245">
+        <source xml:lang="en">{0} is already set up.</source>
+        <target state="new">{0} is already set up.</target>
       </trans-unit>
-      <trans-unit id="++CODE++dda309fd0551478f2a322c36bc4ce212517a94dc4011163cfb3c23a125779792">
-        <source xml:lang="en">{0} isn't installed. Install it, then choose {1} — most installs are picked up without restarting VS Code.</source>
+      <trans-unit id="++CODE++d46c7d516a2134a23bf069c10ddf25d0781c48418c6b4e85480705e9248b29ae">
+        <source xml:lang="en">{0} is installed. Continue creating your Power Pages site?</source>
+        <target state="new">{0} is installed. Continue creating your Power Pages site?</target>
+      </trans-unit>
+      <trans-unit id="++CODE++1bbd7b1793bfc139d75d94c2dce7cbb3e80d63ec9e3702ea10402ffeed581490">
+        <source xml:lang="en">{0} isn't installed. Install it, then select {1}. VS Code usually detects it without restarting.</source>
         <note>{0} is the agent host display name and is replaced when the message is shown.
-{1} is the localized label of the Check Again button.
+{1} is the localized label of the Check again button.
 Do not translate 'VS Code' as it is a product name.</note>
-        <target state="translated">{0} non è installato. Installalo, poi scegli {1}; la maggior parte delle installazioni viene rilevata senza riavviare VS Code.</target>
+        <target state="new">{0} isn't installed. Install it, then select {1}. VS Code usually detects it without restarting.</target>
       </trans-unit>
       <trans-unit id="++CODE++21471e6993c28688e252bf884db38022cef15af0126d3d7f68c5e4a6c4dfd9d3">
         <source xml:lang="en">{0}: {1} (Remote ↔ Local)</source>
@@ -2317,6 +2541,10 @@ Per altre informazioni, vedi [Impedire le sovrascritture accidentali](command:po
       <trans-unit id="pacCLI.envAndSolutionsPanel.copyVersionNumber.title">
         <source xml:lang="en">Copy Version Number</source>
         <target state="translated">Copia numero versione</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.agenticCreate.title">
+        <source xml:lang="en">Create a site with AI</source>
+        <target state="new">Create a site with AI</target>
       </trans-unit>
       <trans-unit id="microsoft.powerplatform.pages.debugServerLogic.title">
         <source xml:lang="en">Debug Current Server Logic File</source>
