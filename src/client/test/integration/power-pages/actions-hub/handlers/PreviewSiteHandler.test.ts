@@ -32,12 +32,12 @@ describe('PreviewSiteHandler', () => {
 
     describe('previewSite', () => {
         let mockPreviewSiteClearCache: sinon.SinonStub;
-        let mockLaunchBrowserAndDevTools: sinon.SinonStub;
+        let mockLaunchSitePreview: sinon.SinonStub;
         let mockSiteInfo: IWebsiteInfo;
 
         beforeEach(() => {
             mockPreviewSiteClearCache = sandbox.stub(PreviewSite, 'clearCache');
-            mockLaunchBrowserAndDevTools = sandbox.stub(PreviewSite, 'launchBrowserAndDevToolsWithinVsCode');
+            mockLaunchSitePreview = sandbox.stub(PreviewSite, 'launchSitePreviewWithinVsCode');
             mockSiteInfo = {
                 name: "Test Site",
                 websiteId: "test-id",
@@ -53,13 +53,13 @@ describe('PreviewSiteHandler', () => {
             };
         });
 
-        it('should clear cache and launch browser with dev tools', async () => {
+        it('should clear cache and launch site preview', async () => {
             const siteTreeItem = new SiteTreeItem(mockSiteInfo);
 
             await previewSite(siteTreeItem);
 
             expect(mockPreviewSiteClearCache.calledOnceWith('https://test-site.com')).to.be.true;
-            expect(mockLaunchBrowserAndDevTools.calledOnceWith('https://test-site.com', 1)).to.be.true;
+            expect(mockLaunchSitePreview.calledOnceWith('https://test-site.com', 1)).to.be.true;
         });
     });
 });
