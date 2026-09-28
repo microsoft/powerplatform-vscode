@@ -73,9 +73,8 @@ describe("Agentic create host resolution", () => {
     const expectTelemetryPrivacy = (): void => {
         for (const call of traceInfoStub.getCalls()) {
             const properties = call.args[1] as Record<string, string>;
+            expect(properties.orgUrl).to.equal(rawOrgUrl);
             expect(properties.tenantId).to.equal(rawTenantId);
-            expect(properties).to.not.have.property("orgUrl");
-            expect(Object.values(properties)).to.not.include(rawOrgUrl);
             expect(Object.values(properties)).to.not.include(selectedFolder.fsPath);
             expect(Object.values(properties)).to.not.include(siteDescription);
         }

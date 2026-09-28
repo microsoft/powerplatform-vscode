@@ -57,15 +57,21 @@ describe("Create-flow common stages", () => {
 
         for (const eventProperties of properties) {
             expect(eventProperties).to.not.have.property('folderPath');
-            expect(eventProperties).to.not.have.property('orgUrl');
             expect(Object.values(eventProperties)).to.not.include(selectedFolder.fsPath);
-            expect(Object.values(eventProperties)).to.not.include(params.orgUrl);
             expect(eventProperties).to.include({
                 environmentId: params.environmentId,
-                tenantId: params.tenantId,
                 websiteId: params.websiteId,
                 correlationId: params.correlationId
             });
+            if (eventProperties.channel === 'agent') {
+                expect(eventProperties).to.include({
+                    orgUrl: params.orgUrl,
+                    tenantId: params.tenantId
+                });
+            } else {
+                expect(eventProperties).to.not.have.property('orgUrl');
+                expect(eventProperties).to.not.have.property('tenantId');
+            }
         }
     };
 

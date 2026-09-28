@@ -36,12 +36,11 @@ describe("Create-flow telemetry", () => {
         correlationId: 'correlation-123'
     };
 
-    const expectIdentifiersHandled = (properties: Record<string, string>): void => {
+    const expectCommonIdentifiersHandled = (properties: Record<string, string>): void => {
         expect(properties.environmentId).to.equal(params.environmentId);
-        expect(properties.tenantId).to.equal(params.tenantId);
         expect(properties.websiteId).to.equal(params.websiteId);
         expect(properties).to.not.have.property('orgUrl');
-        expect(Object.values(properties)).to.not.include(params.orgUrl);
+        expect(properties).to.not.have.property('tenantId');
         expect(properties).to.include({
             hasEnvironmentId: 'true',
             hasOrgUrl: 'true',
@@ -49,6 +48,15 @@ describe("Create-flow telemetry", () => {
             hasWebsiteId: 'true',
             hasReferrerSessionId: 'true'
         });
+    };
+
+    const expectAgentIdentifiersHandled = (
+        properties: Record<string, string>
+    ): void => {
+        expect(properties.environmentId).to.equal(params.environmentId);
+        expect(properties.orgUrl).to.equal(params.orgUrl);
+        expect(properties.tenantId).to.equal(params.tenantId);
+        expect(properties.websiteId).to.equal(params.websiteId);
     };
 
     beforeEach(() => {
@@ -128,7 +136,7 @@ describe("Create-flow telemetry", () => {
             authenticationMode: 'existing',
             region: 'extra-region'
         });
-        expectIdentifiersHandled(properties);
+        expectCommonIdentifiersHandled(properties);
     });
 
     it("emits normalized errors with common, extra, and redacted properties", () => {
@@ -156,7 +164,7 @@ describe("Create-flow telemetry", () => {
             referrerSessionId: params.correlationId,
             dropStage: 'authentication'
         });
-        expectIdentifiersHandled(properties);
+        expectAgentIdentifiersHandled(properties);
     });
 
     it("uses an empty correlation ID when the referrer session ID is absent", () => {
@@ -169,10 +177,10 @@ describe("Create-flow telemetry", () => {
         expect((traceInfoStub.firstCall.args[1] as Record<string, string>).correlationId).to.equal('');
     });
 
-    it("includes website, environment, and tenant IDs while redacting organization URL", () => {
+    it("keeps raw organization and tenant identifiers out of the common payload", () => {
         const properties = buildCreateFlowTelemetry(params);
 
-        expectIdentifiersHandled(properties);
+        expectCommonIdentifiersHandled(properties);
         expect(properties.entryPoint).to.equal(URI_CONSTANTS.SOURCE_VALUES.STUDIO);
     });
 
@@ -215,7 +223,9 @@ describe("Create-flow telemetry", () => {
             funnelStage: 'uriReceipt',
             funnelOutcome: 'received',
             referrerSessionId: params.correlationId,
-            environmentId: params.environmentId
+            environmentId: params.environmentId,
+            orgUrl: params.orgUrl,
+            tenantId: params.tenantId
         });
     });
 
@@ -230,9 +240,9 @@ describe("Create-flow telemetry", () => {
 
         expect(properties).to.include({
             environmentId: '',
-            tenantId: '',
             websiteId: ''
         });
         expect(properties).to.not.have.property('orgUrl');
+        expect(properties).to.not.have.property('tenantId');
     });
 });

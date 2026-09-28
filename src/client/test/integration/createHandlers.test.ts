@@ -55,10 +55,19 @@ describe("Create deep-link handlers", () => {
     const expectIdentifiers = (
         properties: Record<string, string>,
         environmentId: string,
-        websiteId: string
+        websiteId: string,
+        agentIdentifiers?: {
+            orgUrl: string;
+            tenantId: string;
+        }
     ): void => {
         expect(properties).to.include({ environmentId, websiteId });
-        expect(properties).to.not.have.property('orgUrl');
+        if (agentIdentifiers) {
+            expect(properties).to.include(agentIdentifiers);
+        } else {
+            expect(properties).to.not.have.property('orgUrl');
+            expect(properties).to.not.have.property('tenantId');
+        }
     };
 
     beforeEach(() => {
@@ -94,7 +103,11 @@ describe("Create deep-link handlers", () => {
             source: URI_CONSTANTS.SOURCE_VALUES.POWER_PAGES_HOME,
             hasEnvironmentId: "true"
         });
-        expectIdentifiers(disabled?.args[1] as Record<string, string>, 'env-1', 'pac-website');
+        expectIdentifiers(
+            disabled?.args[1] as Record<string, string>,
+            'env-1',
+            'pac-website'
+        );
         expect(disabled?.args[1]).to.not.have.property('channel');
         expect(traceInfoStub.calledWith(uriHandlerTelemetryEventNames.URI_HANDLER_PAC_CREATE_TRIGGERED)).to.be.false;
         expect(runCreateFlowCommonStagesStub.called).to.be.false;
@@ -120,7 +133,11 @@ describe("Create deep-link handlers", () => {
             contractVersion: URI_CONSTANTS.CONTRACT_VERSION.CURRENT,
             correlationId: 'pac-correlation'
         });
-        expectIdentifiers(triggered?.args[1] as Record<string, string>, 'env-1', 'pac-website');
+        expectIdentifiers(
+            triggered?.args[1] as Record<string, string>,
+            'env-1',
+            'pac-website'
+        );
         expect(runCreateFlowCommonStagesStub.calledOnce).to.be.true;
         expect(runCreateFlowCommonStagesStub.firstCall.args[0]).to.include({
             environmentId: 'env-1',
@@ -198,7 +215,15 @@ describe("Create deep-link handlers", () => {
             contractVersion: URI_CONSTANTS.CONTRACT_VERSION.CURRENT,
             correlationId: 'agent-correlation'
         });
-        expectIdentifiers(triggered?.args[1] as Record<string, string>, 'agent-env', 'agent-website');
+        expectIdentifiers(
+            triggered?.args[1] as Record<string, string>,
+            'agent-env',
+            'agent-website',
+            {
+                orgUrl: 'https://agent.crm.dynamics.com',
+                tenantId: ''
+            }
+        );
         expect(runCreateFlowCommonStagesStub.called).to.be.false;
         expect(traceInfoStub.calledWith(
             uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED
@@ -243,7 +268,11 @@ describe("Create deep-link handlers", () => {
         expectIdentifiers(
             traceErrorStub.firstCall.args[3] as Record<string, string>,
             'agent-env',
-            'agent-website'
+            'agent-website',
+            {
+                orgUrl: 'https://agent.crm.dynamics.com',
+                tenantId: ''
+            }
         );
     });
 });

@@ -80,6 +80,12 @@ function buildCreateFlowEventProperties(
         contractVersion: URI_CONSTANTS.CONTRACT_VERSION.CURRENT,
         correlationId: params.correlationId || '',
         referrerSessionId: params.correlationId || '',
+        ...(channel === 'agent'
+            ? {
+                orgUrl: params.orgUrl || '',
+                tenantId: params.tenantId || ''
+            }
+            : {}),
         ...(FUNNEL_EVENT_PROPERTIES[eventName as uriHandlerTelemetryEventNames] ?? {}),
         ...extraProps
     };

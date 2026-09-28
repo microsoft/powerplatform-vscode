@@ -305,7 +305,7 @@ describe('resumeAgenticCreate', () => {
         expect(context.store.value).to.be.undefined;
     });
 
-    it('redacts the raw organization URL and never emits folder data', async () => {
+    it('emits Agentic identifiers and never emits folder data', async () => {
         const context = createContext();
         let eventName: string | undefined;
         let properties: Record<string, string> | undefined;
@@ -314,7 +314,13 @@ describe('resumeAgenticCreate', () => {
             properties = {
                 ...buildCreateFlowTelemetry(params),
                 channel,
-                correlationId: params.correlationId || ''
+                correlationId: params.correlationId || '',
+                ...(channel === 'agent'
+                    ? {
+                        orgUrl: params.orgUrl || '',
+                        tenantId: params.tenantId || ''
+                    }
+                    : {})
             };
         };
         context.runStages.resolves({ fsPath: 'C:\\secret\\site' });
@@ -325,8 +331,8 @@ describe('resumeAgenticCreate', () => {
             uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_RESUMED
         );
         expect(properties).to.not.be.undefined;
-        expect(properties).to.not.have.property('orgUrl');
-        expect(Object.values(properties ?? {})).to.not.include(marker.orgUrl);
+        expect(properties?.orgUrl).to.equal(marker.orgUrl);
+        expect(properties?.tenantId).to.equal(marker.tenantId);
         expect(Object.keys(properties ?? {})).to.not.include.members(['folder', 'folderUri', 'path']);
         expect(Object.values(properties ?? {})).to.not.include('C:\\secret\\site');
     });
