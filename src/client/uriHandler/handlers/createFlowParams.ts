@@ -13,6 +13,7 @@ import { URI_CONSTANTS } from "../constants/uriConstants";
  */
 export interface CreateFlowParameters {
     environmentId: string | null;
+    orgId?: string | null;
     orgUrl: string | null;
     region: string | null;
     tenantId: string | null;
@@ -31,6 +32,7 @@ export function parseCreateFlowParameters(uri: vscode.Uri): CreateFlowParameters
 
     return {
         environmentId: urlParams.get(URI_CONSTANTS.PARAMETERS.ENV_ID),
+        orgId: urlParams.get(URI_CONSTANTS.PARAMETERS.ORG_ID),
         orgUrl: urlParams.get(URI_CONSTANTS.PARAMETERS.ORG_URL),
         region: urlParams.get(URI_CONSTANTS.PARAMETERS.REGION),
         tenantId: urlParams.get(URI_CONSTANTS.PARAMETERS.TENANT_ID),
@@ -46,8 +48,8 @@ export function parseCreateFlowParameters(uri: vscode.Uri): CreateFlowParameters
 /**
  * Builds a non-sensitive telemetry payload describing a create-flow deep link.
  * Only low-cardinality, non-secret values (source, agent host, contract version, region)
- * and the requested website/environment identifiers are recorded. Organization URLs and
- * tenant identifiers remain redacted to presence flags.
+ * and requested website/environment identifiers are recorded. Raw organization and tenant
+ * identifiers are added only by Agentic-channel telemetry.
  */
 export function buildCreateFlowTelemetry(params: CreateFlowParameters): Record<string, string> {
     const source = params.source || 'unknown';

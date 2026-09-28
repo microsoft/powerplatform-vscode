@@ -32,7 +32,9 @@ describe("resumeAgenticCreateOnActivation", () => {
             timestamp: Date.now(),
             correlationId: "correlation-id",
             environmentId: "environment-id",
+            orgId: "organization-id",
             orgUrl: "https://org.crm.dynamics.com",
+            tenantId: "tenant-id",
             websiteId: "website-id",
             source: "powerPagesHome",
             siteDescription: "A volunteer services portal"
@@ -88,9 +90,10 @@ describe("resumeAgenticCreateOnActivation", () => {
         const params = confirmAndLaunchStub.firstCall.args[2];
         expect(params).to.deep.equal({
             environmentId: "environment-id",
+            orgId: "organization-id",
             orgUrl: "https://org.crm.dynamics.com",
             region: null,
-            tenantId: null,
+            tenantId: "tenant-id",
             websiteId: "website-id",
             source: "powerPagesHome",
             agentHost: AgentHost.Copilot,
