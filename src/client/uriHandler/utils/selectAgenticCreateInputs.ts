@@ -4,7 +4,9 @@
  */
 
 import * as vscode from "vscode";
+import * as path from "path";
 import { MultiStepInput } from "../../../common/utilities/MultiStepInput";
+import { validateAndSanitizeUserInput } from "../../../common/utilities/InputValidator";
 import { URI_HANDLER_STRINGS } from "../constants/uriStrings";
 import {
     AgentHostQuickPickItem,
@@ -22,13 +24,14 @@ import {
 export interface AgenticCreateInputsSelection {
     folderUri: vscode.Uri;
     hostSelection: AgentHostSelection;
+    siteDescription: string;
 }
 
 export type AgenticCreateInputsResult =
     | ({ status: "selected" } & AgenticCreateInputsSelection)
     | {
         status: "cancelled";
-        step: "folder" | "host";
+        step: "folder" | "host" | "siteDescription";
         folderUri?: vscode.Uri;
     };
 
@@ -41,12 +44,16 @@ export interface SelectAgenticCreateInputsDependencies {
 }
 
 interface AgenticCreateInputState {
-    currentStep: "folder" | "host";
+    currentStep: "folder" | "host" | "siteDescription";
     folderItem?: TargetFolderQuickPickItem;
     folderUri?: vscode.Uri;
     hostItem?: AgentHostQuickPickItem;
     hostSelection?: AgentHostSelection;
+    siteDescription?: string;
+    siteDescriptionAccepted: boolean;
 }
+
+const MAX_SITE_DESCRIPTION_LENGTH = 1000;
 
 const DEFAULT_DEPENDENCIES: SelectAgenticCreateInputsDependencies = {
     getWorkspaceFolders: () => vscode.workspace.workspaceFolders ?? [],
@@ -54,10 +61,10 @@ const DEFAULT_DEPENDENCIES: SelectAgenticCreateInputsDependencies = {
 };
 
 /**
- * Collects target-folder and agent-host choices in one two-step input flow.
+ * Collects target folder, AI assistant, and site description in one three-step input flow.
  *
- * Back from the host step returns to folder selection. Browse cancellation reopens the folder
- * step, while Esc ends the wizard and reports the step that was cancelled.
+ * Back navigates between steps. Browse cancellation reopens folder selection, while Esc ends the
+ * wizard and reports the step that was cancelled.
  *
  * @param detection Agent-host detection results shown in step two.
  * @param initialSelection Existing folder and host choices when editing a confirmation.
@@ -72,7 +79,9 @@ export async function selectAgenticCreateInputs(
     const state: AgenticCreateInputState = {
         currentStep: "folder",
         folderUri: initialSelection?.folderUri,
-        hostSelection: initialSelection?.hostSelection
+        hostSelection: initialSelection?.hostSelection,
+        siteDescription: initialSelection?.siteDescription,
+        siteDescriptionAccepted: false
     };
     const folderItems = getTargetFolderQuickPickItems(dependencies.getWorkspaceFolders());
     const hostItems = getAgentHostQuickPickItems(detection);
@@ -81,7 +90,9 @@ export async function selectAgenticCreateInputs(
     );
     if (initialSelection && !state.folderItem) {
         state.folderItem = {
-            label: initialSelection.folderUri.fsPath,
+            label: path.basename(initialSelection.folderUri.fsPath),
+            description: URI_HANDLER_STRINGS.DESCRIPTIONS.SELECTED_FOLDER,
+            detail: initialSelection.folderUri.fsPath,
             iconPath: new vscode.ThemeIcon("folder"),
             uri: initialSelection.folderUri
         };
@@ -90,9 +101,40 @@ export async function selectAgenticCreateInputs(
     state.hostItem = hostItems.find(item =>
         item.host === initialSelection?.hostSelection.host
     );
-    const title = URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.PANEL_TITLE;
+    const pickSiteDescription = async (input: MultiStepInput): Promise<void> => {
+        state.currentStep = "siteDescription";
+        const existingDescription = state.siteDescription ?? "";
+        state.siteDescriptionAccepted = false;
+        const value = await input.showInputBox({
+            title: URI_HANDLER_STRINGS.TITLES.SITE_DESCRIPTION,
+            step: 3,
+            totalSteps: 3,
+            value: existingDescription,
+            prompt: URI_HANDLER_STRINGS.PROMPTS.SITE_DESCRIPTION,
+            placeholder: URI_HANDLER_STRINGS.PROMPTS.SITE_DESCRIPTION_PLACEHOLDER,
+            onValueChanged: (inputValue: string) => {
+                state.siteDescription = inputValue;
+            },
+            validate: async (inputValue: string) => {
+                if (!inputValue.trim()) {
+                    return URI_HANDLER_STRINGS.ERRORS.SITE_DESCRIPTION_REQUIRED;
+                }
+                if (inputValue.length > MAX_SITE_DESCRIPTION_LENGTH) {
+                    return URI_HANDLER_STRINGS.ERRORS.SITE_DESCRIPTION_TOO_LONG;
+                }
+                return undefined;
+            }
+        });
+        state.siteDescription = validateAndSanitizeUserInput(
+            value,
+            MAX_SITE_DESCRIPTION_LENGTH
+        ) ?? undefined;
+        state.siteDescriptionAccepted = state.siteDescription !== undefined;
+    };
 
-    const pickHost = async (input: MultiStepInput): Promise<void> => {
+    const pickHost = async (
+        input: MultiStepInput
+    ): Promise<typeof pickSiteDescription> => {
         state.currentStep = "host";
         state.hostSelection = undefined;
         const selectedItem = await input.showQuickPick<
@@ -107,9 +149,9 @@ export async function selectAgenticCreateInputs(
                 ignoreFocusOut: boolean;
             }
         >({
-            title,
+            title: URI_HANDLER_STRINGS.TITLES.AI_ASSISTANT,
             step: 2,
-            totalSteps: 2,
+            totalSteps: 3,
             placeholder: URI_HANDLER_STRINGS.PROMPTS.AGENT_HOST_SELECT,
             items: hostItems,
             activeItem: state.hostItem,
@@ -117,6 +159,7 @@ export async function selectAgenticCreateInputs(
         });
         state.hostItem = selectedItem;
         state.hostSelection = toAgentHostSelection(selectedItem);
+        return pickSiteDescription;
     };
 
     const pickFolder = async (
@@ -138,10 +181,10 @@ export async function selectAgenticCreateInputs(
                     ignoreFocusOut: boolean;
                 }
             >({
-                title,
+                title: URI_HANDLER_STRINGS.TITLES.TARGET_FOLDER,
                 step: 1,
-                totalSteps: 2,
-                placeholder: URI_HANDLER_STRINGS.TITLES.TARGET_FOLDER,
+                totalSteps: 3,
+                placeholder: URI_HANDLER_STRINGS.TITLES.TARGET_FOLDER_PLACEHOLDER,
                 items: folderItems,
                 activeItem: state.folderItem,
                 ignoreFocusOut: true
@@ -168,10 +211,18 @@ export async function selectAgenticCreateInputs(
             folderUri: state.folderUri
         };
     }
+    if (!state.siteDescriptionAccepted || !state.siteDescription) {
+        return {
+            status: "cancelled",
+            step: "siteDescription",
+            folderUri: state.folderUri
+        };
+    }
 
     return {
         status: "selected",
         folderUri: state.folderUri,
-        hostSelection: state.hostSelection
+        hostSelection: state.hostSelection,
+        siteDescription: state.siteDescription
     };
 }

@@ -19,6 +19,7 @@ const mixedDetection: AgentHostDetectionResult[] = [
     {
         host: AgentHost.Copilot,
         installed: true,
+        executablePath: "C:\\tools\\copilot.cmd",
         version: "1.2.3"
     },
     {
@@ -37,18 +38,25 @@ describe("selectAgentHost", () => {
         expect(items.map(item => ({
             label: item.label,
             description: item.description,
+            detail: item.detail,
             host: item.host,
-            installed: item.installed
+            installed: item.installed,
+            ...(item.executablePath
+                ? { executablePath: item.executablePath }
+                : {})
         }))).to.deep.equal([
             {
                 label: "GitHub Copilot CLI",
-                description: "Installed · 1.2.3",
+                description: "Installed",
+                detail: "Start a guided site-creation conversation with GitHub Copilot CLI.",
                 host: AgentHost.Copilot,
-                installed: true
+                installed: true,
+                executablePath: "C:\\tools\\copilot.cmd"
             },
             {
                 label: "Claude Code",
-                description: "Not installed · Automatic installation will be included.",
+                description: "Not installed",
+                detail: "Start a guided site-creation conversation with Claude Code. Install it in the next step after you review the setup.",
                 host: AgentHost.Claude,
                 installed: false
             }
@@ -106,7 +114,8 @@ describe("selectAgentHost", () => {
 
         expect(result).to.deep.equal({
             host: AgentHost.Copilot,
-            installed: true
+            installed: true,
+            executablePath: "C:\\tools\\copilot.cmd"
         });
     });
 

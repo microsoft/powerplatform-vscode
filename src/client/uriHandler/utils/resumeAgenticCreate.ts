@@ -52,7 +52,12 @@ export interface ResumeAgenticCreateDependencies {
     ): PromiseLike<string | undefined>;
     emitEvent: CreateFlowEventEmitter;
     emitError?: CreateFlowErrorEmitter;
-    runStages(params: CreateFlowParameters, host: AgentHost): PromiseLike<unknown>;
+    runStages(
+        params: CreateFlowParameters,
+        host: AgentHost,
+        siteDescription: string,
+        detectedHostExecutablePath?: string
+    ): PromiseLike<unknown>;
     clearMarker(store: ResumeMarkerStore): PromiseLike<void> | void;
 }
 
@@ -66,7 +71,9 @@ function formatResumePrompt(template: string, hostDisplayName: string): string {
 
 function buildResumeParams(marker: {
     environmentId: string | null;
+    orgId?: string | null;
     orgUrl: string | null;
+    tenantId?: string | null;
     websiteId: string | null;
     source: string | null;
     host: string;
@@ -74,9 +81,10 @@ function buildResumeParams(marker: {
 }): CreateFlowParameters {
     return {
         environmentId: marker.environmentId,
+        orgId: marker.orgId ?? null,
         orgUrl: marker.orgUrl,
         region: null,
-        tenantId: null,
+        tenantId: marker.tenantId ?? null,
         websiteId: marker.websiteId,
         source: marker.source,
         agentHost: marker.host,
@@ -119,8 +127,8 @@ export async function resumeAgenticCreate(
         return;
     }
 
-    // The short-lived marker is written only after the gated Agentic Create flow has already
-    // started, so resuming it must not depend on ECS being initialized again after reload.
+    // The short-lived marker is written only after the Agentic Create flow has already started,
+    // so resuming it can continue directly after reload.
     const detection = await deps.detectHost(marker.host);
     if (!detection.installed) {
         await deps.emitEvent(
@@ -163,7 +171,12 @@ export async function resumeAgenticCreate(
             params,
             'agent'
         );
-        await deps.runStages(params, marker.host);
+        await deps.runStages(
+            params,
+            marker.host,
+            marker.siteDescription ?? "Create a Power Pages site",
+            detection.executablePath
+        );
     } catch (error) {
         await deps.emitError?.(
             uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_FAILED,
