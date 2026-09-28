@@ -17,7 +17,6 @@ export const URI_CONSTANTS = {
     PARAMETERS: {
         WEBSITE_ID: 'websiteid',
         ENV_ID: 'envid',
-        ORG_ID: 'orgid',
         ORG_URL: 'orgurl',
         SCHEMA: 'schema',
         SITE_NAME: 'sitename',

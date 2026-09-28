@@ -27,7 +27,6 @@ const strings: AgentHostInstallationStrings = {
 
 const params: CreateFlowParameters = {
     environmentId: 'environment-id',
-    orgId: 'organization-id',
     orgUrl: 'https://org.crm.dynamics.com',
     region: 'NAM',
     tenantId: 'tenant-id',
@@ -214,9 +213,7 @@ describe('resolveAgentHostInstallation', () => {
             timestamp: 123456,
             correlationId: 'correlation-id',
             environmentId: 'environment-id',
-            orgId: 'organization-id',
             orgUrl: 'https://org.crm.dynamics.com',
-            tenantId: 'tenant-id',
             websiteId: 'website-id',
             source: 'powerPagesHome',
             siteDescription: 'A volunteer management portal'

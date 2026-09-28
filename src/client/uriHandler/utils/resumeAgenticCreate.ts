@@ -71,9 +71,7 @@ function formatResumePrompt(template: string, hostDisplayName: string): string {
 
 function buildResumeParams(marker: {
     environmentId: string | null;
-    orgId?: string | null;
     orgUrl: string | null;
-    tenantId?: string | null;
     websiteId: string | null;
     source: string | null;
     host: string;
@@ -81,10 +79,9 @@ function buildResumeParams(marker: {
 }): CreateFlowParameters {
     return {
         environmentId: marker.environmentId,
-        orgId: marker.orgId ?? null,
         orgUrl: marker.orgUrl,
         region: null,
-        tenantId: marker.tenantId ?? null,
+        tenantId: null,
         websiteId: marker.websiteId,
         source: marker.source,
         agentHost: marker.host,
