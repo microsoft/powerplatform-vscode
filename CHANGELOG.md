@@ -5,7 +5,6 @@
 - New Features and Enhancements
   - Added **Power Pages: Create a site with AI** for supported desktop workspaces, with guided setup and more reliable terminal and plugin handling. [#1689](https://github.com/microsoft/powerplatform-vscode/pull/1689)
   - Improved metadata diff import validation to reject invalid identifiers and file paths before importing. [#1692](https://github.com/microsoft/powerplatform-vscode/pull/1692)
-  - Added localized strings for the guided site-creation experience. [#1694](https://github.com/microsoft/powerplatform-vscode/pull/1694)
 - Bug Fixes
   - Removed CodeQL from the extension pack to avoid installation and activation errors; SARIF Viewer remains included. [#1693](https://github.com/microsoft/powerplatform-vscode/pull/1693)
   - Fixed Liquid template autocomplete for bracketed property names and unrelated root objects. [#1690](https://github.com/microsoft/powerplatform-vscode/pull/1690)
