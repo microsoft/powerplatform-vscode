@@ -35,6 +35,7 @@ describe("Create deep-link handlers", () => {
         `?${URI_CONSTANTS.PARAMETERS.SOURCE}=${URI_CONSTANTS.SOURCE_VALUES.POWER_PAGES_HOME}` +
         `&${URI_CONSTANTS.PARAMETERS.AGENT_HOST}=${URI_CONSTANTS.AGENT_HOST_VALUES.COPILOT}` +
         `&${URI_CONSTANTS.PARAMETERS.ENV_ID}=agent-env` +
+        `&${URI_CONSTANTS.PARAMETERS.ORG_ID}=agent-org-id` +
         `&${URI_CONSTANTS.PARAMETERS.ORG_URL}=https%3A%2F%2Fagent.crm.dynamics.com` +
         `&${URI_CONSTANTS.PARAMETERS.WEBSITE_ID}=agent-website` +
         `&${URI_CONSTANTS.PARAMETERS.REFERRER_SESSION_ID}=agent-correlation`
@@ -57,7 +58,7 @@ describe("Create deep-link handlers", () => {
         environmentId: string,
         websiteId: string,
         agentIdentifiers?: {
-            orgUrl: string;
+            orgId: string;
             tenantId: string;
         }
     ): void => {
@@ -220,7 +221,7 @@ describe("Create deep-link handlers", () => {
             'agent-env',
             'agent-website',
             {
-                orgUrl: 'https://agent.crm.dynamics.com',
+                orgId: 'agent-org-id',
                 tenantId: ''
             }
         );
@@ -270,7 +271,7 @@ describe("Create deep-link handlers", () => {
             'agent-env',
             'agent-website',
             {
-                orgUrl: 'https://agent.crm.dynamics.com',
+                orgId: 'agent-org-id',
                 tenantId: ''
             }
         );

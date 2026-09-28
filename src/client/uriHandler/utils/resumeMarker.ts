@@ -15,6 +15,7 @@ export interface ResumeMarker {
     timestamp: number;
     correlationId: string | null;
     environmentId: string | null;
+    orgId?: string | null;
     orgUrl: string | null;
     tenantId?: string | null;
     websiteId: string | null;
@@ -48,6 +49,7 @@ export function buildResumeMarker(
         timestamp: now,
         correlationId: params.correlationId,
         environmentId: params.environmentId,
+        orgId: params.orgId,
         orgUrl: params.orgUrl,
         tenantId: params.tenantId,
         websiteId: params.websiteId,

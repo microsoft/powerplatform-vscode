@@ -82,7 +82,8 @@ function buildCreateFlowEventProperties(
         referrerSessionId: params.correlationId || '',
         ...(channel === 'agent'
             ? {
-                orgUrl: params.orgUrl || '',
+                hasOrgId: params.orgId ? 'true' : 'false',
+                orgId: params.orgId || '',
                 tenantId: params.tenantId || ''
             }
             : {}),

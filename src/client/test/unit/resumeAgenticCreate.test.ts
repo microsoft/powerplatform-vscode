@@ -37,6 +37,7 @@ const marker: ResumeMarker = {
     timestamp: NOW,
     correlationId: 'correlation-id',
     environmentId: 'environment-id',
+    orgId: 'organization-id',
     orgUrl: 'https://secret.crm.dynamics.com',
     tenantId: 'tenant-id',
     websiteId: 'website-id',
@@ -241,6 +242,7 @@ describe('resumeAgenticCreate', () => {
 
         const expectedParams: CreateFlowParameters = {
             environmentId: marker.environmentId,
+            orgId: marker.orgId ?? null,
             orgUrl: marker.orgUrl,
             region: null,
             tenantId: marker.tenantId ?? null,
@@ -265,9 +267,10 @@ describe('resumeAgenticCreate', () => {
         expect(context.store.value).to.be.undefined;
     });
 
-    it('supports resume markers created before tenant ID persistence', async () => {
+    it('supports resume markers created before identifier persistence', async () => {
         const legacyMarker: ResumeMarker = {
             ...marker,
+            orgId: undefined,
             tenantId: undefined
         };
         const context = createContext(legacyMarker);
@@ -275,6 +278,7 @@ describe('resumeAgenticCreate', () => {
         await resumeAgenticCreate(context.deps);
 
         expect(context.runStages.firstCall.args[0]).to.include({
+            orgId: null,
             tenantId: null
         });
     });
@@ -317,7 +321,7 @@ describe('resumeAgenticCreate', () => {
                 correlationId: params.correlationId || '',
                 ...(channel === 'agent'
                     ? {
-                        orgUrl: params.orgUrl || '',
+                        orgId: params.orgId || '',
                         tenantId: params.tenantId || ''
                     }
                     : {})
@@ -331,8 +335,10 @@ describe('resumeAgenticCreate', () => {
             uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_RESUMED
         );
         expect(properties).to.not.be.undefined;
-        expect(properties?.orgUrl).to.equal(marker.orgUrl);
+        expect(properties?.orgId).to.equal(marker.orgId);
         expect(properties?.tenantId).to.equal(marker.tenantId);
+        expect(properties).to.not.have.property('orgUrl');
+        expect(Object.values(properties ?? {})).to.not.include(marker.orgUrl);
         expect(Object.keys(properties ?? {})).to.not.include.members(['folder', 'folderUri', 'path']);
         expect(Object.values(properties ?? {})).to.not.include('C:\\secret\\site');
     });

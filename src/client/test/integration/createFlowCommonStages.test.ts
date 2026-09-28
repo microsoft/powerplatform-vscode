@@ -36,6 +36,7 @@ describe("Create-flow common stages", () => {
 
     const params: CreateFlowParameters = {
         environmentId: 'environment-id',
+        orgId: 'organization-id',
         orgUrl: 'https://sensitive.crm.dynamics.com',
         region: 'NAM',
         tenantId: 'sensitive-tenant-id',
@@ -65,11 +66,12 @@ describe("Create-flow common stages", () => {
             });
             if (eventProperties.channel === 'agent') {
                 expect(eventProperties).to.include({
-                    orgUrl: params.orgUrl,
+                    orgId: params.orgId,
                     tenantId: params.tenantId
                 });
             } else {
-                expect(eventProperties).to.not.have.property('orgUrl');
+                expect(eventProperties).to.not.have.property('hasOrgId');
+                expect(eventProperties).to.not.have.property('orgId');
                 expect(eventProperties).to.not.have.property('tenantId');
             }
         }

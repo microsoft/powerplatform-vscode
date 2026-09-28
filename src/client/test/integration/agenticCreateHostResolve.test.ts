@@ -35,11 +35,13 @@ describe("Agentic create host resolution", () => {
     const selectedFolder = vscode.Uri.file("C:\\private\\selected-site");
     const siteDescription = "A community event and volunteer portal";
     const rawOrgUrl = "https://private.crm.dynamics.com";
+    const rawOrgId = "private-org-id";
     const rawTenantId = "private-tenant-id";
     const uri = vscode.Uri.parse(
         `vscode://${URI_CONSTANTS.EXTENSION_ID}${URI_CONSTANTS.PATHS.AGENTIC_CREATE}` +
         `?${URI_CONSTANTS.PARAMETERS.SOURCE}=${URI_CONSTANTS.SOURCE_VALUES.POWER_PAGES_HOME}` +
         `&${URI_CONSTANTS.PARAMETERS.ENV_ID}=environment-id` +
+        `&${URI_CONSTANTS.PARAMETERS.ORG_ID}=${rawOrgId}` +
         `&${URI_CONSTANTS.PARAMETERS.ORG_URL}=${encodeURIComponent(rawOrgUrl)}` +
         `&${URI_CONSTANTS.PARAMETERS.TENANT_ID}=${rawTenantId}` +
         `&${URI_CONSTANTS.PARAMETERS.WEBSITE_ID}=website-id` +
@@ -73,8 +75,10 @@ describe("Agentic create host resolution", () => {
     const expectTelemetryPrivacy = (): void => {
         for (const call of traceInfoStub.getCalls()) {
             const properties = call.args[1] as Record<string, string>;
-            expect(properties.orgUrl).to.equal(rawOrgUrl);
+            expect(properties.orgId).to.equal(rawOrgId);
             expect(properties.tenantId).to.equal(rawTenantId);
+            expect(properties).to.not.have.property("orgUrl");
+            expect(Object.values(properties)).to.not.include(rawOrgUrl);
             expect(Object.values(properties)).to.not.include(selectedFolder.fsPath);
             expect(Object.values(properties)).to.not.include(siteDescription);
         }

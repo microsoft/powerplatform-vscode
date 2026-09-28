@@ -13,6 +13,7 @@ import { URI_CONSTANTS } from "../constants/uriConstants";
  */
 export interface CreateFlowParameters {
     environmentId: string | null;
+    orgId?: string | null;
     orgUrl: string | null;
     region: string | null;
     tenantId: string | null;
@@ -31,6 +32,7 @@ export function parseCreateFlowParameters(uri: vscode.Uri): CreateFlowParameters
 
     return {
         environmentId: urlParams.get(URI_CONSTANTS.PARAMETERS.ENV_ID),
+        orgId: urlParams.get(URI_CONSTANTS.PARAMETERS.ORG_ID),
         orgUrl: urlParams.get(URI_CONSTANTS.PARAMETERS.ORG_URL),
         region: urlParams.get(URI_CONSTANTS.PARAMETERS.REGION),
         tenantId: urlParams.get(URI_CONSTANTS.PARAMETERS.TENANT_ID),
