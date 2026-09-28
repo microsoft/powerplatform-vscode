@@ -26,6 +26,7 @@ describe("Create-flow telemetry", () => {
 
     const params: CreateFlowParameters = {
         environmentId: 'environment-secret',
+        orgId: 'organization-secret',
         orgUrl: 'https://secret.crm.dynamics.com',
         region: 'NAM',
         tenantId: 'tenant-secret',
@@ -36,13 +37,13 @@ describe("Create-flow telemetry", () => {
         correlationId: 'correlation-123'
     };
 
-    const expectIdentifiersHandled = (properties: Record<string, string>): void => {
+    const expectCommonIdentifiersHandled = (properties: Record<string, string>): void => {
         expect(properties.environmentId).to.equal(params.environmentId);
         expect(properties.websiteId).to.equal(params.websiteId);
         expect(properties).to.not.have.property('orgUrl');
+        expect(properties).to.not.have.property('orgId');
         expect(properties).to.not.have.property('tenantId');
-        expect(Object.values(properties)).to.not.include(params.orgUrl);
-        expect(Object.values(properties)).to.not.include(params.tenantId);
+        expect(properties).to.not.have.property('hasOrgId');
         expect(properties).to.include({
             hasEnvironmentId: 'true',
             hasOrgUrl: 'true',
@@ -50,6 +51,16 @@ describe("Create-flow telemetry", () => {
             hasWebsiteId: 'true',
             hasReferrerSessionId: 'true'
         });
+    };
+
+    const expectAgentIdentifiersHandled = (
+        properties: Record<string, string>
+    ): void => {
+        expect(properties.environmentId).to.equal(params.environmentId);
+        expect(properties.orgId).to.equal(params.orgId);
+        expect(properties.tenantId).to.equal(params.tenantId);
+        expect(properties.websiteId).to.equal(params.websiteId);
+        expect(properties.hasOrgId).to.equal('true');
     };
 
     beforeEach(() => {
@@ -108,6 +119,18 @@ describe("Create-flow telemetry", () => {
         expect(parseCreateFlowParameters(uri).correlationId).to.equal('correlation-456');
     });
 
+    it("parses organization and tenant IDs from the create URI", () => {
+        const uri = vscode.Uri.parse(
+            `vscode://${URI_CONSTANTS.EXTENSION_ID}${URI_CONSTANTS.PATHS.AGENTIC_CREATE}` +
+            `?${URI_CONSTANTS.PARAMETERS.ORG_ID}=organization-123` +
+            `&${URI_CONSTANTS.PARAMETERS.TENANT_ID}=tenant-456`
+        );
+        const parsed = parseCreateFlowParameters(uri);
+
+        expect(parsed.orgId).to.equal("organization-123");
+        expect(parsed.tenantId).to.equal("tenant-456");
+    });
+
     it("emits information events with common, extra, and redacted properties", () => {
         emitCreateFlowEvent(
             uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_AUTH_STARTED,
@@ -129,7 +152,7 @@ describe("Create-flow telemetry", () => {
             authenticationMode: 'existing',
             region: 'extra-region'
         });
-        expectIdentifiersHandled(properties);
+        expectCommonIdentifiersHandled(properties);
     });
 
     it("emits normalized errors with common, extra, and redacted properties", () => {
@@ -157,7 +180,7 @@ describe("Create-flow telemetry", () => {
             referrerSessionId: params.correlationId,
             dropStage: 'authentication'
         });
-        expectIdentifiersHandled(properties);
+        expectAgentIdentifiersHandled(properties);
     });
 
     it("uses an empty correlation ID when the referrer session ID is absent", () => {
@@ -170,10 +193,10 @@ describe("Create-flow telemetry", () => {
         expect((traceInfoStub.firstCall.args[1] as Record<string, string>).correlationId).to.equal('');
     });
 
-    it("includes website and environment IDs while redacting organization URL and tenant ID", () => {
+    it("keeps raw organization and tenant identifiers out of the common payload", () => {
         const properties = buildCreateFlowTelemetry(params);
 
-        expectIdentifiersHandled(properties);
+        expectCommonIdentifiersHandled(properties);
         expect(properties.entryPoint).to.equal(URI_CONSTANTS.SOURCE_VALUES.STUDIO);
     });
 
@@ -193,6 +216,7 @@ describe("Create-flow telemetry", () => {
         const properties = buildCreateFlowTelemetry({
             ...params,
             environmentId: null,
+            orgId: null,
             orgUrl: null,
             source: URI_CONSTANTS.SOURCE_VALUES.COMMAND_PALETTE
         });
@@ -216,7 +240,9 @@ describe("Create-flow telemetry", () => {
             funnelStage: 'uriReceipt',
             funnelOutcome: 'received',
             referrerSessionId: params.correlationId,
-            environmentId: params.environmentId
+            environmentId: params.environmentId,
+            orgId: params.orgId,
+            tenantId: params.tenantId
         });
     });
 
@@ -225,6 +251,7 @@ describe("Create-flow telemetry", () => {
             ...params,
             environmentId: null,
             orgUrl: null,
+            tenantId: null,
             websiteId: null
         });
 
@@ -233,5 +260,28 @@ describe("Create-flow telemetry", () => {
             websiteId: ''
         });
         expect(properties).to.not.have.property('orgUrl');
+        expect(properties).to.not.have.property('tenantId');
+    });
+
+    it("uses empty Agentic identifiers and false presence flags when IDs are absent", () => {
+        emitCreateFlowEvent(
+            uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_RECEIVED,
+            {
+                ...params,
+                orgId: null,
+                orgUrl: null,
+                tenantId: null
+            },
+            "agent"
+        );
+
+        expect(traceInfoStub.firstCall.args[1]).to.include({
+            orgId: "",
+            tenantId: "",
+            hasOrgId: "false",
+            hasOrgUrl: "false",
+            hasTenantId: "false"
+        });
+        expect(traceInfoStub.firstCall.args[1]).to.not.have.property("orgUrl");
     });
 });

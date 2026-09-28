@@ -37,7 +37,9 @@ const marker: ResumeMarker = {
     timestamp: NOW,
     correlationId: 'correlation-id',
     environmentId: 'environment-id',
+    orgId: 'organization-id',
     orgUrl: 'https://secret.crm.dynamics.com',
+    tenantId: 'tenant-id',
     websiteId: 'website-id',
     source: 'powerPagesHome',
     siteDescription: 'A volunteer management portal'
@@ -240,9 +242,10 @@ describe('resumeAgenticCreate', () => {
 
         const expectedParams: CreateFlowParameters = {
             environmentId: marker.environmentId,
+            orgId: marker.orgId ?? null,
             orgUrl: marker.orgUrl,
             region: null,
-            tenantId: null,
+            tenantId: marker.tenantId ?? null,
             websiteId: marker.websiteId,
             source: marker.source,
             agentHost: marker.host,
@@ -262,6 +265,22 @@ describe('resumeAgenticCreate', () => {
         )).to.be.true;
         expect(calls).to.deep.equal(['emit', 'stages', 'clear']);
         expect(context.store.value).to.be.undefined;
+    });
+
+    it('supports resume markers created before identifier persistence', async () => {
+        const legacyMarker: ResumeMarker = {
+            ...marker,
+            orgId: undefined,
+            tenantId: undefined
+        };
+        const context = createContext(legacyMarker);
+
+        await resumeAgenticCreate(context.deps);
+
+        expect(context.runStages.firstCall.args[0]).to.include({
+            orgId: null,
+            tenantId: null
+        });
     });
 
     it('clears the consumed marker when common stages throw', async () => {
@@ -290,7 +309,7 @@ describe('resumeAgenticCreate', () => {
         expect(context.store.value).to.be.undefined;
     });
 
-    it('redacts the raw organization URL and never emits folder data', async () => {
+    it('emits Agentic identifiers and never emits folder data', async () => {
         const context = createContext();
         let eventName: string | undefined;
         let properties: Record<string, string> | undefined;
@@ -299,7 +318,13 @@ describe('resumeAgenticCreate', () => {
             properties = {
                 ...buildCreateFlowTelemetry(params),
                 channel,
-                correlationId: params.correlationId || ''
+                correlationId: params.correlationId || '',
+                ...(channel === 'agent'
+                    ? {
+                        orgId: params.orgId || '',
+                        tenantId: params.tenantId || ''
+                    }
+                    : {})
             };
         };
         context.runStages.resolves({ fsPath: 'C:\\secret\\site' });
@@ -310,6 +335,8 @@ describe('resumeAgenticCreate', () => {
             uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HOST_INSTALL_RESUMED
         );
         expect(properties).to.not.be.undefined;
+        expect(properties?.orgId).to.equal(marker.orgId);
+        expect(properties?.tenantId).to.equal(marker.tenantId);
         expect(properties).to.not.have.property('orgUrl');
         expect(Object.values(properties ?? {})).to.not.include(marker.orgUrl);
         expect(Object.keys(properties ?? {})).to.not.include.members(['folder', 'folderUri', 'path']);
