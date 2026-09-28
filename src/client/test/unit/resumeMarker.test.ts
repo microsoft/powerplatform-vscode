@@ -18,6 +18,7 @@ import {
 
 const params: CreateFlowParameters = {
     environmentId: 'environment-id',
+    orgId: 'organization-id',
     orgUrl: 'https://org.crm.dynamics.com',
     region: 'NAM',
     tenantId: 'tenant-id',
@@ -46,16 +47,24 @@ class FakeResumeMarkerStore implements ResumeMarkerStore {
 
 describe('resumeMarker', () => {
     it('builds the locked resumable context with the supplied timestamp', () => {
-        const marker = buildResumeMarker(params, AgentHost.Copilot, 123456);
+        const marker = buildResumeMarker(
+            params,
+            AgentHost.Copilot,
+            123456,
+            'A volunteer management portal'
+        );
 
         expect(marker).to.deep.equal({
             host: AgentHost.Copilot,
             timestamp: 123456,
             correlationId: 'correlation-id',
             environmentId: 'environment-id',
+            orgId: 'organization-id',
             orgUrl: 'https://org.crm.dynamics.com',
+            tenantId: 'tenant-id',
             websiteId: 'website-id',
-            source: 'powerPagesHome'
+            source: 'powerPagesHome',
+            siteDescription: 'A volunteer management portal'
         });
     });
 

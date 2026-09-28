@@ -32,9 +32,12 @@ describe("resumeAgenticCreateOnActivation", () => {
             timestamp: Date.now(),
             correlationId: "correlation-id",
             environmentId: "environment-id",
+            orgId: "organization-id",
             orgUrl: "https://org.crm.dynamics.com",
+            tenantId: "tenant-id",
             websiteId: "website-id",
-            source: "powerPagesHome"
+            source: "powerPagesHome",
+            siteDescription: "A volunteer services portal"
         };
         store = {
             get: <T>() => marker as T | undefined,
@@ -87,9 +90,10 @@ describe("resumeAgenticCreateOnActivation", () => {
         const params = confirmAndLaunchStub.firstCall.args[2];
         expect(params).to.deep.equal({
             environmentId: "environment-id",
+            orgId: "organization-id",
             orgUrl: "https://org.crm.dynamics.com",
             region: null,
-            tenantId: null,
+            tenantId: "tenant-id",
             websiteId: "website-id",
             source: "powerPagesHome",
             agentHost: AgentHost.Copilot,
@@ -101,7 +105,10 @@ describe("resumeAgenticCreateOnActivation", () => {
             folderUri,
             params,
             undefined,
-            false
+            false,
+            undefined,
+            "A volunteer services portal",
+            undefined
         )).to.be.true;
         expect(traceInfoStub.calledWith(
             uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FOLDER_SELECTED

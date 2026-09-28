@@ -13,6 +13,69 @@ import { FileComparisonStatus, IFileComparisonResult } from "../../models/IFileC
 import MetadataDiffContext from "../../MetadataDiffContext";
 import { getExtensionVersion } from "../../../../../common/utilities/Utils";
 
+const WINDOWS_DRIVE_PATH_PATTERN = /^[a-zA-Z]:/;
+const WINDOWS_RESERVED_NAME_PATTERN = /^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\..*)?$/i;
+const GUID_PATTERN = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|\{[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\})$/i;
+
+function getValidatedRelativePathSegments(relativePath: string): string[] {
+    if (!relativePath || relativePath.includes("\0")) {
+        throw new Error(Constants.Strings.METADATA_DIFF_EXPORT_INVALID_FILE);
+    }
+
+    if (
+        path.posix.isAbsolute(relativePath) ||
+        path.win32.isAbsolute(relativePath) ||
+        WINDOWS_DRIVE_PATH_PATTERN.test(relativePath)
+    ) {
+        throw new Error(Constants.Strings.METADATA_DIFF_EXPORT_INVALID_FILE);
+    }
+
+    const segments = relativePath.replace(/\\/g, "/").split("/");
+    const hasInvalidSegment = segments.some(segment =>
+        !segment ||
+        segment === "." ||
+        segment === ".." ||
+        segment.includes(":") ||
+        segment.endsWith(".") ||
+        segment.endsWith(" ") ||
+        WINDOWS_RESERVED_NAME_PATTERN.test(segment)
+    );
+
+    if (hasInvalidSegment) {
+        throw new Error(Constants.Strings.METADATA_DIFF_EXPORT_INVALID_FILE);
+    }
+
+    return segments;
+}
+
+/**
+ * Resolves an imported relative path and ensures it remains under the provided root.
+ * @param rootPath Trusted root directory for imported file content.
+ * @param relativePath Untrusted relative path from the import file.
+ * @returns The resolved path under the trusted root.
+ */
+export function resolveImportedFilePath(rootPath: string, relativePath: string): string {
+    const segments = getValidatedRelativePathSegments(relativePath);
+    const resolvedRoot = path.resolve(rootPath);
+    const resolvedTarget = path.resolve(resolvedRoot, ...segments);
+    const relativeTarget = path.relative(resolvedRoot, resolvedTarget);
+
+    if (
+        relativeTarget === "" ||
+        relativeTarget === ".." ||
+        relativeTarget.startsWith(`..${path.sep}`) ||
+        path.isAbsolute(relativeTarget)
+    ) {
+        throw new Error(Constants.Strings.METADATA_DIFF_EXPORT_INVALID_FILE);
+    }
+
+    return resolvedTarget;
+}
+
+function isValidGuid(value: unknown): value is string {
+    return typeof value === "string" && GUID_PATTERN.test(value);
+}
+
 /**
  * Compares two semantic version strings
  * @param v1 First version string (e.g., "1.2.3")
@@ -41,7 +104,7 @@ function compareVersions(v1: string, v2: string): number {
  * @param data The parsed JSON data
  * @returns Error message if invalid, undefined if valid
  */
-function validateImportData(data: unknown): string | undefined {
+export function validateImportData(data: unknown): string | undefined {
     if (!data || typeof data !== "object") {
         return Constants.Strings.METADATA_DIFF_EXPORT_INVALID_FILE;
     }
@@ -75,6 +138,13 @@ function validateImportData(data: unknown): string | undefined {
     if (!hasNewFormat && !hasLegacyFormat) {
         return Constants.StringFunctions.METADATA_DIFF_MISSING_REQUIRED_FIELD("localWebsiteId/remoteWebsiteId");
     }
+    if (
+        !isValidGuid(importData.environmentId) ||
+        (hasNewFormat && (!isValidGuid(importData.localWebsiteId) || !isValidGuid(importData.remoteWebsiteId))) ||
+        (!hasNewFormat && !isValidGuid(importData.websiteId))
+    ) {
+        return Constants.Strings.METADATA_DIFF_EXPORT_INVALID_FILE;
+    }
 
     // Check for website names - either new format or legacy format
     const hasNewNameFormat = importData.localWebsiteName && importData.remoteWebsiteName;
@@ -100,6 +170,11 @@ function validateImportData(data: unknown): string | undefined {
     for (const file of importData.files) {
         if (!file.relativePath || typeof file.relativePath !== "string") {
             return Constants.StringFunctions.METADATA_DIFF_MISSING_REQUIRED_FIELD("files[].relativePath");
+        }
+        try {
+            getValidatedRelativePathSegments(file.relativePath);
+        } catch {
+            return Constants.Strings.METADATA_DIFF_EXPORT_INVALID_FILE;
         }
         if (!file.status || !Object.values(FileComparisonStatus).includes(file.status)) {
             return Constants.StringFunctions.METADATA_DIFF_MISSING_REQUIRED_FIELD("files[].status");
@@ -207,6 +282,13 @@ export async function importMetadataDiff(): Promise<void> {
                     "imported-diffs",
                     `${websiteId}_${importData.environmentId}`
                 );
+                const localRoot = path.join(importedDiffsPath, "local");
+                const remoteRoot = path.join(importedDiffsPath, "remote");
+                const validatedFiles = importData.files.map(file => ({
+                    file,
+                    localPath: resolveImportedFilePath(localRoot, file.relativePath),
+                    remotePath: resolveImportedFilePath(remoteRoot, file.relativePath)
+                }));
 
                 // Clean up and recreate the directory to avoid stale data conflicts
                 if (fs.existsSync(importedDiffsPath)) {
@@ -217,10 +299,7 @@ export async function importMetadataDiff(): Promise<void> {
                 // Write the file contents to the storage
                 const comparisonResults: IFileComparisonResult[] = [];
 
-                for (const file of importData.files) {
-                    const localPath = path.join(importedDiffsPath, "local", file.relativePath);
-                    const remotePath = path.join(importedDiffsPath, "remote", file.relativePath);
-
+                for (const { file, localPath, remotePath } of validatedFiles) {
                     // Ensure directories exist
                     const localDir = path.dirname(localPath);
                     const remoteDir = path.dirname(remotePath);

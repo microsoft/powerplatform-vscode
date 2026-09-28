@@ -132,16 +132,6 @@ export const {
 });
 
 export const {
-    feature: EnableAgenticCreateFromHome
-} = getFeatureConfigs({
-    teamName: PowerPagesClientName,
-    description: 'Enable the agentic create deep link (agenticCreate) launched from the Power Pages home page',
-    fallback: {
-        enableAgenticCreateFromHome: false,
-    }
-});
-
-export const {
     feature: EnablePacCreateFromHome
 } = getFeatureConfigs({
     teamName: PowerPagesClientName,

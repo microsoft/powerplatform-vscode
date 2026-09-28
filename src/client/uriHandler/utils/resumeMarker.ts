@@ -15,9 +15,12 @@ export interface ResumeMarker {
     timestamp: number;
     correlationId: string | null;
     environmentId: string | null;
+    orgId?: string | null;
     orgUrl: string | null;
+    tenantId?: string | null;
     websiteId: string | null;
     source: string | null;
+    siteDescription?: string;
 }
 
 /**
@@ -38,16 +41,20 @@ export interface ResumeMarkerStore {
 export function buildResumeMarker(
     params: CreateFlowParameters,
     host: AgentHost,
-    now: number
+    now: number,
+    siteDescription?: string
 ): ResumeMarker {
     return {
         host,
         timestamp: now,
         correlationId: params.correlationId,
         environmentId: params.environmentId,
+        orgId: params.orgId,
         orgUrl: params.orgUrl,
+        tenantId: params.tenantId,
         websiteId: params.websiteId,
-        source: params.source
+        source: params.source,
+        ...(siteDescription ? { siteDescription } : {})
     };
 }
 

@@ -5,10 +5,28 @@
 
 import * as vscode from "vscode";
 import { PacWrapper } from "../pac/PacWrapper";
-import { UriPath } from "./constants/uriConstants";
+import { URI_CONSTANTS, UriPath } from "./constants/uriConstants";
 import { AgenticCreateHandler } from "./handlers/agenticCreateHandler";
 import { UriHandler } from "./uriHandler";
 import { ResumeMarkerStore } from "./utils/resumeMarker";
+
+export const AGENTIC_CREATE_COMMAND =
+    "microsoft.powerplatform.agenticCreate";
+
+/**
+ * Builds the secret-free URI contract used by the Agentic Create command.
+ */
+export function buildAgenticCreateCommandUri(now: number = Date.now()): vscode.Uri {
+    const query = new URLSearchParams({
+        [URI_CONSTANTS.PARAMETERS.REFERRER_SESSION_ID]: `command-${now}`,
+        [URI_CONSTANTS.PARAMETERS.SOURCE]:
+            URI_CONSTANTS.SOURCE_VALUES.COMMAND_PALETTE,
+        [URI_CONSTANTS.PARAMETERS.VERSION]: URI_CONSTANTS.CONTRACT_VERSION.CURRENT
+    });
+    return vscode.Uri.parse(
+        `vscode://${URI_CONSTANTS.EXTENSION_ID}${UriPath.AgenticCreate}?${query.toString()}`
+    );
+}
 
 /**
  * Handles Agentic Create before PAC initialization, then delegates all URI routes to the existing
@@ -39,5 +57,14 @@ export class AgenticCreateUriHandler implements vscode.UriHandler {
         } else if (uri.path === UriPath.AgenticCreate) {
             await this.agenticCreateHandler.handle(uri);
         }
+    }
+
+    /**
+     * Runs the Agentic Create command through the same handler as the URI route.
+     */
+    public triggerCommand(): Promise<void> {
+        return this.agenticCreateHandler.handle(
+            buildAgenticCreateCommandUri()
+        );
     }
 }

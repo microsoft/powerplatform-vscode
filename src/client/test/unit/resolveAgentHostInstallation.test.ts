@@ -27,6 +27,7 @@ const strings: AgentHostInstallationStrings = {
 
 const params: CreateFlowParameters = {
     environmentId: 'environment-id',
+    orgId: 'organization-id',
     orgUrl: 'https://org.crm.dynamics.com',
     region: 'NAM',
     tenantId: 'tenant-id',
@@ -106,7 +107,8 @@ describe('resolveAgentHostInstallation', () => {
             AgentHost.Copilot,
             'GitHub Copilot CLI',
             params,
-            context.deps
+            context.deps,
+            'A volunteer management portal'
         );
 
         expect(context.showInformationMessage.calledOnceWithExactly(
@@ -158,7 +160,8 @@ describe('resolveAgentHostInstallation', () => {
             AgentHost.Copilot,
             'GitHub Copilot CLI',
             params,
-            context.deps
+            context.deps,
+            'A volunteer management portal'
         );
 
         expect(context.detectHost.calledOnceWithExactly(AgentHost.Copilot)).to.be.true;
@@ -201,7 +204,8 @@ describe('resolveAgentHostInstallation', () => {
             AgentHost.Copilot,
             'GitHub Copilot CLI',
             params,
-            context.deps
+            context.deps,
+            'A volunteer management portal'
         );
 
         const marker = context.writeMarker.firstCall.args[0] as ResumeMarker;
@@ -210,9 +214,12 @@ describe('resolveAgentHostInstallation', () => {
             timestamp: 123456,
             correlationId: 'correlation-id',
             environmentId: 'environment-id',
+            orgId: 'organization-id',
             orgUrl: 'https://org.crm.dynamics.com',
+            tenantId: 'tenant-id',
             websiteId: 'website-id',
-            source: 'powerPagesHome'
+            source: 'powerPagesHome',
+            siteDescription: 'A volunteer management portal'
         });
         expect(calls).to.deep.equal(['marker', 'event', 'reload']);
         expect(context.events).to.deep.include({

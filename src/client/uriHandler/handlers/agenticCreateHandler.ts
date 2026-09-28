@@ -4,8 +4,6 @@
  */
 
 import * as vscode from "vscode";
-import { ECSFeaturesClient } from "../../../common/ecs-features/ecsFeatureClient";
-import { EnableAgenticCreateFromHome } from "../../../common/ecs-features/ecsFeatureGates";
 import { uriHandlerTelemetryEventNames } from "../telemetry/uriHandlerTelemetryEvents";
 import { CreateFlowParameters, parseCreateFlowParameters } from "./createFlowParams";
 import { emitCreateFlowError, emitCreateFlowEvent } from "../telemetry/createFlowTelemetry";
@@ -49,7 +47,9 @@ export interface AgenticCreateHandlerDependencies {
         hostDisplayName: string,
         folderUri: vscode.Uri,
         params: CreateFlowParameters,
-        bootstrap?: AgentHostBootstrapConfig
+        bootstrap?: AgentHostBootstrapConfig,
+        siteDescription?: string,
+        detectedHostExecutablePath?: string
     ) => Promise<ConfirmAndLaunchOutcome>;
 }
 
@@ -59,14 +59,24 @@ const DEFAULT_DEPENDENCIES: AgenticCreateHandlerDependencies = {
     resolveAgentHostInstallation,
     resolveAgentHostBootstrap,
     emitCreateFlowEvent,
-    confirmAndLaunchAgentHost: (host, hostDisplayName, folderUri, params, bootstrap) =>
+    confirmAndLaunchAgentHost: (
+        host,
+        hostDisplayName,
+        folderUri,
+        params,
+        bootstrap,
+        siteDescription,
+        detectedHostExecutablePath
+    ) =>
         confirmAndLaunchSelectedAgentHost(
             host,
             folderUri,
             params,
             hostDisplayName,
             true,
-            bootstrap
+            bootstrap,
+            siteDescription,
+            detectedHostExecutablePath
         )
 };
 
@@ -83,10 +93,9 @@ const AGENT_HOST_INSTALLATION_STRINGS: AgentHostInstallationStrings = {
  * Handles the `/agenticCreate` deep link launched from the Power Pages home page, which will
  * open VS Code into an agentic (terminal CLI agent host) create experience.
  *
- * This is a dark, flag-gated scaffold. When {@link EnableAgenticCreateFromHome} is off (the
- * default) the handler is a no-op. When enabled it collects folder and host in one multi-step
- * flow, then confirms and launches the selected agent host. Authentication is intentionally left
- * to the selected agent experience.
+ * It collects the folder, agent host, and site description in one multi-step flow, then confirms
+ * and launches the selected agent host. Authentication is intentionally left to the selected
+ * agent experience.
  */
 export class AgenticCreateHandler {
     private readonly resumeMarkerStore?: ResumeMarkerStore;
@@ -101,19 +110,11 @@ export class AgenticCreateHandler {
     }
 
     /**
-     * Whether the agentic create deep link is enabled via ECS. Defaults to false.
-     */
-    public static isEnabled(): boolean {
-        const enabled = ECSFeaturesClient.getConfig(EnableAgenticCreateFromHome).enableAgenticCreateFromHome;
-        return enabled === undefined ? false : enabled;
-    }
-
-    /**
      * Entry point wired into the URI route map.
      */
     public async handle(uri: vscode.Uri): Promise<void> {
         // Parse the (secret-free) deep-link params up front so the redacted telemetry payload
-        // is available on every path, including the flag-off and failure cases.
+        // is available on every path, including validation and failure cases.
         const params = parseCreateFlowParameters(uri);
         try {
             this.dependencies.emitCreateFlowEvent(
@@ -121,15 +122,6 @@ export class AgenticCreateHandler {
                 params,
                 'agent'
             );
-
-            if (!AgenticCreateHandler.isEnabled()) {
-                this.dependencies.emitCreateFlowEvent(
-                    uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_DISABLED,
-                    params,
-                    'agent'
-                );
-                return;
-            }
 
             if (!isSupportedContractVersion(params.version)) {
                 emitCreateFlowEvent(
@@ -178,7 +170,8 @@ export class AgenticCreateHandler {
             );
             let selectionToEdit: AgenticCreateInputsSelection | undefined;
             const resolveMissingHost = async (
-                host: AgentHost
+                host: AgentHost,
+                siteDescription: string
             ): ReturnType<typeof resolveAgentHostInstallation> =>
                 this.dependencies.resolveAgentHostInstallation(
                     host,
@@ -198,7 +191,8 @@ export class AgenticCreateHandler {
                         reloadWindow: async () => {
                             await vscode.commands.executeCommand('workbench.action.reloadWindow');
                         }
-                    }
+                    },
+                    siteDescription
                 );
             const shouldStopAfterInstallResolution = (
                 resolution: Awaited<ReturnType<typeof resolveAgentHostInstallation>>,
@@ -237,12 +231,18 @@ export class AgenticCreateHandler {
                         uriHandlerTelemetryEventNames.URI_HANDLER_CREATE_FLOW_DROPPED,
                         params,
                         'agent',
-                        { reason: inputs.step === "folder" ? "folderSelectionCancelled" : "hostSelectionCancelled" }
+                        {
+                            reason: inputs.step === "folder"
+                                ? "folderSelectionCancelled"
+                                : inputs.step === "host"
+                                    ? "hostSelectionCancelled"
+                                    : "siteDescriptionCancelled"
+                        }
                     );
                     return;
                 }
 
-                const { folderUri, hostSelection } = inputs;
+                const { folderUri, hostSelection, siteDescription } = inputs;
                 let confirmedHostSelection = hostSelection;
                 let bootstrap: AgentHostBootstrapConfig | undefined;
                 this.dependencies.emitCreateFlowEvent(
@@ -257,6 +257,18 @@ export class AgenticCreateHandler {
                     {
                         host: hostSelection.host,
                         installed: String(hostSelection.installed)
+                    }
+                );
+                this.dependencies.emitCreateFlowEvent(
+                    uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_SITE_DESCRIPTION_COLLECTED,
+                    params,
+                    'agent',
+                    {
+                        lengthCategory: siteDescription.length <= 200
+                            ? 'short'
+                            : siteDescription.length <= 500
+                                ? 'medium'
+                                : 'long'
                     }
                 );
 
@@ -288,7 +300,10 @@ export class AgenticCreateHandler {
                                 exitCodeCategory: 'notStarted'
                             }
                         );
-                        const resolution = await resolveMissingHost(hostSelection.host);
+                        const resolution = await resolveMissingHost(
+                            hostSelection.host,
+                            siteDescription
+                        );
                         if (shouldStopAfterInstallResolution(resolution, hostSelection.host)) {
                             return;
                         }
@@ -307,20 +322,27 @@ export class AgenticCreateHandler {
                     getAgentHostDisplayName(confirmedHostSelection.host),
                     folderUri,
                     params,
-                    bootstrap
+                    bootstrap,
+                    siteDescription,
+                    confirmedHostSelection.executablePath
                 );
 
                 const shouldUseHostInstallFallback =
                     outcome.status === 'recovery' &&
                     !confirmedHostSelection.installed &&
                     (
+                        outcome.result.reason === 'shellIntegrationDisabled' ||
                         outcome.result.reason === 'shellIntegrationUnavailable' ||
+                        outcome.result.reason === 'unsupportedShell' ||
                         outcome.result.failedCommand?.kind === 'installHost' ||
                         outcome.result.failedCommand?.kind === 'refreshPath' ||
                         outcome.result.failedCommand?.kind === 'verifyHost'
                     );
                 if (shouldUseHostInstallFallback) {
-                    const resolution = await resolveMissingHost(confirmedHostSelection.host);
+                    const resolution = await resolveMissingHost(
+                        confirmedHostSelection.host,
+                        siteDescription
+                    );
                     if (shouldStopAfterInstallResolution(
                         resolution,
                         confirmedHostSelection.host
@@ -338,7 +360,10 @@ export class AgenticCreateHandler {
                         confirmedHostSelection.host,
                         getAgentHostDisplayName(confirmedHostSelection.host),
                         folderUri,
-                        params
+                        params,
+                        undefined,
+                        siteDescription,
+                        confirmedHostSelection.executablePath
                     );
                 }
 
@@ -355,7 +380,8 @@ export class AgenticCreateHandler {
 
                 selectionToEdit = {
                     folderUri,
-                    hostSelection: confirmedHostSelection
+                    hostSelection: confirmedHostSelection,
+                    siteDescription
                 };
             }
         } catch (error) {

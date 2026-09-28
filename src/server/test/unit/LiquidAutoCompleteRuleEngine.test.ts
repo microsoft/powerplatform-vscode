@@ -274,6 +274,52 @@ describe('LiquidAutoCompleteRuleEngine', () => {
 
     })
 
+    for (const { lookup, insertText } of [
+        { lookup: 'Sam_X_', insertText: "'Sample Name'" },
+        { lookup: "'Sam_X_'", insertText: "Sample Name" },
+        { lookup: '"Sam_X_"', insertText: "Sample Name" },
+    ]) {
+        it(`snippets object partial match auto complete for [${lookup}]`, () => {
+            const inputLine = `{{ snippets[${lookup}] }}`
+            const mockManifestRecords = [
+                { DisplayName: "Sample Name", RecordId: "SampleID" },
+                { DisplayName: "Different Name", RecordId: "DifferentID" },
+            ]
+            const mockCompletionItems = [{ label: "Sample Name", insertText, kind: 12 }]
+
+            suggestionTestUtil(inputLine, mockManifestRecords, mockCompletionItems, PortalEntityNames.CONTENT_SNIPPET);
+        })
+    }
+
+    for (const inputLine of [
+        '{{ snippets._X_ }}',
+        '{{ snippets["Sample Name"]._X_ }}',
+    ]) {
+        it(`does not insert quoted manifest names for ${inputLine}`, () => {
+            const colIndex = inputLine.indexOf('_X_')
+            getEditedLineContent.returns(inputLine.replace('_X_', ''))
+
+            const completionItems = getSuggestions(1, colIndex, 'path', [], {} as any, {} as any)
+
+            Sinon.assert.notCalled(getMatchedManifestRecords);
+            expect(completionItems).deep.equal([]);
+        })
+    }
+
+    for (const inputLine of [
+        '{{ page[snippets_X_] }}',
+        '{{ page["snippets_X_"] }}',
+    ]) {
+        it(`does not query snippet names for another root object in ${inputLine}`, () => {
+            const colIndex = inputLine.indexOf('_X_')
+            getEditedLineContent.returns(inputLine.replace('_X_', ''))
+
+            getSuggestions(1, colIndex, 'path', [], {} as any, {} as any)
+
+            Sinon.assert.notCalled(getMatchedManifestRecords);
+        })
+    }
+
     it('portal filters in tag auto complete', () => {
 
         const inputLine = `{% assign redmond = entityview.records | _X_ %}`
