@@ -38,11 +38,10 @@ describe("Create-flow telemetry", () => {
 
     const expectIdentifiersHandled = (properties: Record<string, string>): void => {
         expect(properties.environmentId).to.equal(params.environmentId);
+        expect(properties.tenantId).to.equal(params.tenantId);
         expect(properties.websiteId).to.equal(params.websiteId);
         expect(properties).to.not.have.property('orgUrl');
-        expect(properties).to.not.have.property('tenantId');
         expect(Object.values(properties)).to.not.include(params.orgUrl);
-        expect(Object.values(properties)).to.not.include(params.tenantId);
         expect(properties).to.include({
             hasEnvironmentId: 'true',
             hasOrgUrl: 'true',
@@ -170,7 +169,7 @@ describe("Create-flow telemetry", () => {
         expect((traceInfoStub.firstCall.args[1] as Record<string, string>).correlationId).to.equal('');
     });
 
-    it("includes website and environment IDs while redacting organization URL and tenant ID", () => {
+    it("includes website, environment, and tenant IDs while redacting organization URL", () => {
         const properties = buildCreateFlowTelemetry(params);
 
         expectIdentifiersHandled(properties);
@@ -225,11 +224,13 @@ describe("Create-flow telemetry", () => {
             ...params,
             environmentId: null,
             orgUrl: null,
+            tenantId: null,
             websiteId: null
         });
 
         expect(properties).to.include({
             environmentId: '',
+            tenantId: '',
             websiteId: ''
         });
         expect(properties).to.not.have.property('orgUrl');

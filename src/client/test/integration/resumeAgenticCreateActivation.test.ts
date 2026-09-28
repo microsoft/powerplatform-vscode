@@ -33,6 +33,7 @@ describe("resumeAgenticCreateOnActivation", () => {
             correlationId: "correlation-id",
             environmentId: "environment-id",
             orgUrl: "https://org.crm.dynamics.com",
+            tenantId: "tenant-id",
             websiteId: "website-id",
             source: "powerPagesHome",
             siteDescription: "A volunteer services portal"
@@ -90,7 +91,7 @@ describe("resumeAgenticCreateOnActivation", () => {
             environmentId: "environment-id",
             orgUrl: "https://org.crm.dynamics.com",
             region: null,
-            tenantId: null,
+            tenantId: "tenant-id",
             websiteId: "website-id",
             source: "powerPagesHome",
             agentHost: AgentHost.Copilot,

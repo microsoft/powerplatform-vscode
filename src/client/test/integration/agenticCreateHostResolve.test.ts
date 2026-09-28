@@ -70,13 +70,12 @@ describe("Agentic create host resolution", () => {
     const createHandler = (): AgenticCreateHandler =>
         new AgenticCreateHandler(store, dependencies);
 
-    const expectNoSensitiveTelemetry = (): void => {
+    const expectTelemetryPrivacy = (): void => {
         for (const call of traceInfoStub.getCalls()) {
             const properties = call.args[1] as Record<string, string>;
+            expect(properties.tenantId).to.equal(rawTenantId);
             expect(properties).to.not.have.property("orgUrl");
-            expect(properties).to.not.have.property("tenantId");
             expect(Object.values(properties)).to.not.include(rawOrgUrl);
-            expect(Object.values(properties)).to.not.include(rawTenantId);
             expect(Object.values(properties)).to.not.include(selectedFolder.fsPath);
             expect(Object.values(properties)).to.not.include(siteDescription);
         }
@@ -191,7 +190,7 @@ describe("Agentic create host resolution", () => {
         expect(confirmAndLaunchAgentHostStub.notCalled).to.be.true;
         expect(storeUpdateStub.notCalled).to.be.true;
         expectNoInstallEventsFromHandler();
-        expectNoSensitiveTelemetry();
+        expectTelemetryPrivacy();
     });
 
     it("emits host selected once and confirms + launches for an installed host", async () => {
@@ -238,7 +237,7 @@ describe("Agentic create host resolution", () => {
         expect(resolveAgentHostInstallationStub.notCalled).to.be.true;
         expect(storeUpdateStub.notCalled).to.be.true;
         expectNoInstallEventsFromHandler();
-        expectNoSensitiveTelemetry();
+        expectTelemetryPrivacy();
     });
 
     it("reopens the picker with current choices and confirms the edited selection", async () => {
@@ -381,7 +380,7 @@ describe("Agentic create host resolution", () => {
                 expect(confirmAndLaunchAgentHostStub.notCalled).to.be.true;
             }
             expect(storeUpdateStub.notCalled).to.be.true;
-            expectNoSensitiveTelemetry();
+            expectTelemetryPrivacy();
             expect(traceErrorStub.notCalled).to.be.true;
         });
     }

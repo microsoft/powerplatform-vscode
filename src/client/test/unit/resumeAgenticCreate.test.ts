@@ -38,6 +38,7 @@ const marker: ResumeMarker = {
     correlationId: 'correlation-id',
     environmentId: 'environment-id',
     orgUrl: 'https://secret.crm.dynamics.com',
+    tenantId: 'tenant-id',
     websiteId: 'website-id',
     source: 'powerPagesHome',
     siteDescription: 'A volunteer management portal'
@@ -242,7 +243,7 @@ describe('resumeAgenticCreate', () => {
             environmentId: marker.environmentId,
             orgUrl: marker.orgUrl,
             region: null,
-            tenantId: null,
+            tenantId: marker.tenantId ?? null,
             websiteId: marker.websiteId,
             source: marker.source,
             agentHost: marker.host,
@@ -262,6 +263,20 @@ describe('resumeAgenticCreate', () => {
         )).to.be.true;
         expect(calls).to.deep.equal(['emit', 'stages', 'clear']);
         expect(context.store.value).to.be.undefined;
+    });
+
+    it('supports resume markers created before tenant ID persistence', async () => {
+        const legacyMarker: ResumeMarker = {
+            ...marker,
+            tenantId: undefined
+        };
+        const context = createContext(legacyMarker);
+
+        await resumeAgenticCreate(context.deps);
+
+        expect(context.runStages.firstCall.args[0]).to.include({
+            tenantId: null
+        });
     });
 
     it('clears the consumed marker when common stages throw', async () => {

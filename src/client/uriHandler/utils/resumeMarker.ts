@@ -16,6 +16,7 @@ export interface ResumeMarker {
     correlationId: string | null;
     environmentId: string | null;
     orgUrl: string | null;
+    tenantId?: string | null;
     websiteId: string | null;
     source: string | null;
     siteDescription?: string;
@@ -48,6 +49,7 @@ export function buildResumeMarker(
         correlationId: params.correlationId,
         environmentId: params.environmentId,
         orgUrl: params.orgUrl,
+        tenantId: params.tenantId,
         websiteId: params.websiteId,
         source: params.source,
         ...(siteDescription ? { siteDescription } : {})

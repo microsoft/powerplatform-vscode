@@ -46,8 +46,8 @@ export function parseCreateFlowParameters(uri: vscode.Uri): CreateFlowParameters
 /**
  * Builds a non-sensitive telemetry payload describing a create-flow deep link.
  * Only low-cardinality, non-secret values (source, agent host, contract version, region)
- * and the requested website/environment identifiers are recorded. Organization URLs and
- * tenant identifiers remain redacted to presence flags.
+ * and the requested website/environment/tenant identifiers are recorded. Organization URLs
+ * remain redacted to a presence flag.
  */
 export function buildCreateFlowTelemetry(params: CreateFlowParameters): Record<string, string> {
     const source = params.source || 'unknown';
@@ -71,6 +71,7 @@ export function buildCreateFlowTelemetry(params: CreateFlowParameters): Record<s
         hasTenantId: params.tenantId ? 'true' : 'false',
         hasReferrerSessionId: params.correlationId ? 'true' : 'false',
         environmentId: params.environmentId || '',
+        tenantId: params.tenantId || '',
         websiteId: params.websiteId || ''
     };
 }

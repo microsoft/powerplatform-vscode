@@ -214,6 +214,7 @@ describe('resolveAgentHostInstallation', () => {
             correlationId: 'correlation-id',
             environmentId: 'environment-id',
             orgUrl: 'https://org.crm.dynamics.com',
+            tenantId: 'tenant-id',
             websiteId: 'website-id',
             source: 'powerPagesHome',
             siteDescription: 'A volunteer management portal'
