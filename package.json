@@ -1890,7 +1890,7 @@
     },
     "axios": "1.18.0",
     "basic-ftp": "5.3.1",
-    "fast-uri": "3.1.6",
+    "fast-uri": "3.1.7",
     "ip-address": "10.3.1",
     "tmp": "0.2.7",
     "form-data": "^4.0.6",
@@ -1913,7 +1913,7 @@
     "serialize-javascript": "^7.0.3",
     "diff": "^8.0.3",
     "socket.io-parser": "4.2.7",
-    "undici": "^7.29.0",
+    "undici": "^7.29.1",
     "pacote": "21.5.1",
     "release-it": {
       "undici": "^6.28.0"
