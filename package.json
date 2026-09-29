@@ -1913,7 +1913,7 @@
     "serialize-javascript": "^7.0.3",
     "diff": "^8.0.3",
     "socket.io-parser": "4.2.7",
-    "undici": "^7.29.0",
+    "undici": "^7.30.0",
     "pacote": "21.5.1",
     "release-it": {
       "undici": "^6.28.0"
