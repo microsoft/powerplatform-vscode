@@ -113,7 +113,9 @@ export function buildAgentHostCommandPlan(
     const normalizedSiteDescription = siteDescription.replace(/\s+/gu, " ").trim();
     const createPrompt = `${CREATE_SKILL_COMMAND} ${normalizedSiteDescription}`;
     const buildLaunchCommandLine = (executable: string, args: string[]): string =>
-        shellPath && isAgentHostShellSupported(shellPath, platform)
+        shellPath !== undefined && !isAgentHostShellSupported(shellPath, platform)
+            ? ""
+            : shellPath
             ? buildAgentHostShellCommand(executable, args, shellPath, platform)
             : [
                 executable,
