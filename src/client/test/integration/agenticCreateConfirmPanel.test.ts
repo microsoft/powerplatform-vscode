@@ -13,6 +13,8 @@ import {
 } from "../../uriHandler/utils/agenticCreateConfirmPanel";
 import { URI_CONSTANTS } from "../../uriHandler/constants/uriConstants";
 import { PlannedCommand } from "../../uriHandler/utils/agentHostCommandPlan";
+import { URI_HANDLER_STRINGS } from "../../uriHandler/constants/uriStrings";
+import { runInNewContext } from "vm";
 
 describe("showAgenticCreateConfirmPanel", () => {
     const plan: PlannedCommand[] = [
@@ -85,8 +87,17 @@ describe("showAgenticCreateConfirmPanel", () => {
 
     const depsFor = (fake: FakePanel): ShowConfirmPanelDependencies => ({
         createWebviewPanel: () => fake.panel,
-        showErrorMessage: sinon.stub().resolves(undefined)
+        showErrorMessage: sinon.stub().resolves(undefined),
+        writeClipboard: sinon.stub().resolves()
     });
+    const confirm = URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM;
+    const recoveryMetadata = {
+        recoveryRevision: 1,
+        commandStates: {},
+        focusRecovery: true
+    };
+
+    afterEach(() => disposeAgenticCreateConfirmPanels());
 
     it("resolves 'start' without replacing the accessible document", async () => {
         const fake = createFakePanel();
@@ -358,7 +369,7 @@ describe("showAgenticCreateConfirmPanel", () => {
         expect(html).to.contain('id="close" title="Close this page." hidden');
         expect(html).to.contain("closeButton.focus()");
         expect(html).to.contain('saveState({ state: "running" })');
-        expect(html).to.contain("const persistedState = vscode.getState()");
+        expect(html).to.contain("const previousState = vscode.getState()");
     });
 
     it("posts an assertive recovery state with the failed command description", async () => {
@@ -380,8 +391,9 @@ describe("showAgenticCreateConfirmPanel", () => {
         expect(fake.postedMessages()).to.deep.equal([{
             type: "agenticCreateConfirmState",
             state: "recovery",
-            message: "We couldn't complete this step: register. Review Technical details for more information, or try again. No site files were changed.",
-            setupOptionsAvailable: false
+            message: confirm.COMMAND_RECOVERY_STATUS.replace("{0}", "register").replace("{1}", "Technical details"),
+            setupOptionsAvailable: false,
+            ...recoveryMetadata
         }]);
         fake.emitMessage({ action: "retry" });
         expect(await recoveryDecision).to.equal("retry");
@@ -405,7 +417,10 @@ describe("showAgenticCreateConfirmPanel", () => {
         fake.emitViewState();
 
         expect(fake.postedMessages()).to.have.length(2);
-        expect(fake.postedMessages()[1]).to.deep.equal(fake.postedMessages()[0]);
+        expect(fake.postedMessages()[1]).to.deep.equal({
+            ...fake.postedMessages()[0] as object,
+            focusRecovery: false
+        });
         fake.emitMessage({ action: "fallback" });
         expect(await recoveryDecision).to.equal("fallback");
     });
@@ -427,8 +442,9 @@ describe("showAgenticCreateConfirmPanel", () => {
         expect(fake.postedMessages()[0]).to.deep.equal({
             type: "agenticCreateConfirmState",
             state: "recovery",
-            message: "The terminal wasn't ready in time. Close terminals you don't need, then try again. No site files were changed.",
-            setupOptionsAvailable: false
+            message: confirm.SHELL_INTEGRATION_RECOVERY_STATUS,
+            setupOptionsAvailable: false,
+            ...recoveryMetadata
         });
         fake.emitMessage({ action: "close" });
         expect(await recoveryDecision).to.equal("cancel");
@@ -451,14 +467,15 @@ describe("showAgenticCreateConfirmPanel", () => {
         expect(fake.postedMessages()[0]).to.deep.equal({
             type: "agenticCreateConfirmState",
             state: "recovery",
-            message: "Terminal shell integration is turned off. Turn on Terminal › Integrated: Shell Integration Enabled in Settings, then try again. No site files were changed.",
-            setupOptionsAvailable: false
+            message: confirm.SHELL_INTEGRATION_DISABLED_RECOVERY_STATUS,
+            setupOptionsAvailable: false,
+            ...recoveryMetadata
         });
         fake.emitMessage({ action: "close" });
         expect(await recoveryDecision).to.equal("cancel");
     });
 
-    it("explains how to select a supported terminal profile", async () => {
+    it("explains how to configure an installed shell without relying on the default profile", async () => {
         const fake = createFakePanel();
         const session = showAgenticCreateConfirmPanel(
             "Claude Code",
@@ -476,9 +493,10 @@ describe("showAgenticCreateConfirmPanel", () => {
             type: "agenticCreateConfirmState",
             state: "recovery",
             message: process.platform === "win32"
-                ? "This terminal profile isn't supported. Choose PowerShell 7 or Bash as your default terminal profile, then try again. No site files were changed."
-                : "This terminal profile isn't supported. Choose PowerShell, Bash, Zsh, or Fish as your default terminal profile, then try again. No site files were changed.",
-            setupOptionsAvailable: false
+                ? confirm.UNSUPPORTED_SHELL_WINDOWS_RECOVERY_STATUS
+                : confirm.UNSUPPORTED_SHELL_POSIX_RECOVERY_STATUS,
+            setupOptionsAvailable: false,
+            ...recoveryMetadata
         });
         fake.emitMessage({ action: "close" });
         expect(await recoveryDecision).to.equal("cancel");
@@ -501,11 +519,19 @@ describe("showAgenticCreateConfirmPanel", () => {
         expect(fake.postedMessages()[0]).to.deep.equal({
             type: "agenticCreateConfirmState",
             state: "recovery",
-            message: "This AI assistant installation can't safely receive your site description. Reinstall the assistant, then try again. No site files were changed.",
-            setupOptionsAvailable: false
+            message: confirm.UNSUPPORTED_HOST_EXECUTABLE_RECOVERY_STATUS,
+            setupOptionsAvailable: false,
+            ...recoveryMetadata
         });
         fake.emitMessage({ action: "close" });
         expect(await recoveryDecision).to.equal("cancel");
+    });
+
+    it("keeps the shared notification concise without promising unavailable Copy actions", () => {
+        expect(URI_HANDLER_STRINGS.ERRORS.AGENT_HOST_SEQUENCE_RECOVERY)
+            .to.equal("We couldn't finish setup. Review the site setup page for next steps.");
+        expect(confirm.UNSUPPORTED_HOST_EXECUTABLE_RECOVERY_STATUS).to.contain("Copy isn't available");
+        expect(confirm.UNSUPPORTED_SHELL_WINDOWS_RECOVERY_STATUS).not.to.contain("default terminal profile");
     });
 
     it("cancels recovery when the command-reference panel was already closed", async () => {
@@ -557,8 +583,10 @@ describe("showAgenticCreateConfirmPanel", () => {
         expect(fake.postedMessages()[0]).to.deep.equal({
             type: "agenticCreateConfirmState",
             state: "recovery",
-            message: "We couldn't complete this step: prepare Claude Code. Try again, or select View setup options. No site files were changed.",
-            setupOptionsAvailable: true
+            message: confirm.COMMAND_RECOVERY_WITH_SETUP_OPTIONS_STATUS
+                .replace("{0}", "prepare Claude Code").replace("{1}", "View setup options"),
+            setupOptionsAvailable: true,
+            ...recoveryMetadata
         });
         fake.emitMessage({ action: "fallback" });
     });
@@ -741,6 +769,363 @@ describe("showAgenticCreateConfirmPanel", () => {
         fake.emitMessage({ action: "technicalDetailsExpanded" });
 
         expect(onExpanded.calledOnce).to.be.true;
+    });
+
+    describe("individual command copy", () => {
+        const showCopyPanel = (
+            fake: FakePanel,
+            deps = depsFor(fake),
+            commands = plan,
+            shellPath = "pwsh"
+        ) => showAgenticCreateConfirmPanel(
+            "Claude Code", "c:/work/site", commands, deps, true,
+            undefined, false, undefined, "", shellPath
+        );
+
+        it("renders one accessible Copy button per command, not per already-setup item", () => {
+            const fake = createFakePanel();
+            showAgenticCreateConfirmPanel(
+                "Claude Code", "c:/work/site", plan, depsFor(fake), true,
+                { marketplace: "present", plugin: "present" }, false, undefined, "", "pwsh"
+            );
+
+            expect(fake.html().match(/class="secondary copy-command"/g)).to.have.length(plan.length);
+            expect(fake.html().match(/class="command already-set-up"/g)).to.have.length(2);
+            expect(fake.html()).to.contain('data-command-index="0" aria-label="Copy command: register"');
+            expect(fake.html()).to.contain('data-command-index="1" aria-label="Copy command: start"');
+            expect(fake.html()).to.contain("Open pwsh in your site folder: c:/work/site");
+            expect(fake.html()).to.contain("Use the read-only checks before steps marked Runs only if needed");
+            expect(fake.html()).to.contain('aria-describedby="recovery-status recovery-manual"');
+            expect(fake.html()).to.contain(`<p id="recovery-manual">${confirm.RECOVERY_MANUAL_DETAIL}</p>`);
+            expect(fake.html()).to.not.contain("Copy all");
+        });
+
+        it("escapes the command and accessible label without changing copied text", async () => {
+            const fake = createFakePanel();
+            const deps = depsFor(fake);
+            const command = {
+                ...plan[1],
+                description: 'Start "assistant" <script>unsafe</script>',
+                commandLine: "copilot -i '<script>not markup</script> & $prompt'"
+            };
+            showCopyPanel(fake, deps, [command]);
+            fake.emitMessage({ action: "copyCommand", index: 0, planVersion: 0 });
+            await Promise.resolve();
+
+            expect(fake.html()).to.contain('aria-label="Copy command: Start &quot;assistant&quot; &lt;script&gt;unsafe&lt;/script&gt;"');
+            expect(fake.html()).to.contain("&lt;script&gt;not markup&lt;/script&gt; &amp; $prompt");
+            expect(fake.html()).not.to.contain("<script>unsafe</script>");
+            expect((deps.writeClipboard as sinon.SinonStub).calledOnceWithExactly(command.commandLine)).to.be.true;
+        });
+
+        it("copies only the indexed trusted command, ignoring webview text", async () => {
+            const fake = createFakePanel();
+            const deps = depsFor(fake);
+            showCopyPanel(fake, deps);
+
+            fake.emitMessage({ action: "copyCommand", index: 1, planVersion: 0, commandLine: "malicious replacement" });
+            await Promise.resolve();
+
+            expect((deps.writeClipboard as sinon.SinonStub).calledOnceWithExactly(plan[1].commandLine)).to.be.true;
+            expect(fake.postedMessages()).to.deep.equal([{
+                type: "agenticCreateCopyResult",
+                planVersion: 0,
+                success: true,
+                message: "Command copied: start."
+            }]);
+        });
+
+        it("rejects invalid indexes and stale plan revisions without writing to the clipboard", async () => {
+            const fake = createFakePanel();
+            const deps = depsFor(fake);
+            const session = showCopyPanel(fake, deps);
+            for (const index of [-1, 2, 0.5, "0", null, undefined, NaN, Infinity]) {
+                fake.emitMessage({ action: "copyCommand", index, planVersion: 0 });
+            }
+            session.updatePlan?.([{ ...plan[0], commandLine: "updated command" }], "pwsh");
+            fake.emitMessage({ action: "copyCommand", index: 0, planVersion: 0 });
+            await Promise.resolve();
+
+            expect((deps.writeClipboard as sinon.SinonStub).notCalled).to.be.true;
+            expect(fake.postedMessages()).to.have.length(9);
+            fake.postedMessages().forEach(message =>
+                expect(message).to.include({ success: false, message: confirm.COPY_COMMAND_UNAVAILABLE })
+            );
+            expect(fake.html()).to.contain("updated command");
+            expect(fake.html()).to.contain("const planVersion = 1;");
+        });
+
+        it("reports clipboard failures without returning or logging the prompt or exception", async () => {
+            const fake = createFakePanel();
+            const deps = depsFor(fake);
+            (deps.writeClipboard as sinon.SinonStub).rejects(new Error("private clipboard diagnostic"));
+            showCopyPanel(fake, deps);
+
+            fake.emitMessage({ action: "copyCommand", index: 1, planVersion: 0 });
+            await Promise.resolve();
+
+            expect(fake.postedMessages()).to.deep.equal([{
+                type: "agenticCreateCopyResult",
+                planVersion: 0,
+                success: false,
+                message: confirm.COPY_COMMAND_FAILURE
+            }]);
+            expect((deps.showErrorMessage as sinon.SinonStub).calledOnceWithExactly(confirm.COPY_COMMAND_FAILURE)).to.be.true;
+        });
+
+        it("uses the refreshed preview's trusted command and shell on a retry", async () => {
+            const fake = createFakePanel();
+            const deps = depsFor(fake);
+            const session = showCopyPanel(fake, deps);
+            fake.emitMessage({ decision: "start" });
+            const recovery = session.showRecovery({ status: "recovery", reason: "unsupportedShell" });
+            fake.emitMessage({ action: "retry" });
+            expect(await recovery).to.equal("retry");
+            const updatedPlan = [{ ...plan[1], commandLine: "copilot '-i' 'updated safe prompt'" }];
+            session.updatePlan?.(updatedPlan, "bash");
+            void session.showRecovery({ status: "recovery", reason: "shellIntegrationUnavailable" });
+            fake.emitMessage({ type: "agenticCreateConfirmReady" });
+            fake.emitMessage({ action: "copyCommand", index: 0, planVersion: 1 });
+            await Promise.resolve();
+
+            expect(fake.html()).to.contain("Open bash in your site folder");
+            expect(fake.html()).to.contain("updated safe prompt");
+            expect(fake.html()).not.to.contain('data-command-index="1"');
+            expect((deps.writeClipboard as sinon.SinonStub).calledOnceWithExactly(updatedPlan[0].commandLine)).to.be.true;
+            const messages = fake.postedMessages();
+            expect(messages[messages.length - 1]).to.include({ success: true, planVersion: 1 });
+        });
+
+        it("brings an immediate retry failure into view once the refreshed document is ready", () => {
+            const fake = createFakePanel();
+            const session = showCopyPanel(fake);
+            fake.emitMessage({ type: "agenticCreateConfirmReady" });
+            session.updatePlan?.([...plan], "bash");
+            void session.showRecovery({ status: "recovery", reason: "shellIntegrationDisabled" });
+            fake.emitMessage({ type: "agenticCreateConfirmReady" });
+            fake.emitMessage({ type: "agenticCreateConfirmReady" });
+
+            const messages = fake.postedMessages();
+            expect(messages[1]).to.include({ state: "recovery", focusRecovery: true });
+            expect(messages[2]).to.include({ state: "recovery", focusRecovery: false });
+        });
+
+        it("blocks copying during execution and labels completed or skipped commands after failure", async () => {
+            const fake = createFakePanel();
+            const deps = depsFor(fake);
+            const commands: PlannedCommand[] = [...plan, { ...plan[0], kind: "installPlugin" }];
+            const session = showCopyPanel(fake, deps, commands);
+            fake.emitMessage({ decision: "start" });
+            fake.emitMessage({ action: "copyCommand", index: 0, planVersion: 0 });
+            void session.showRecovery({
+                status: "recovery", reason: "commandFailed", failedCommand: commands[1],
+                completedCommandKinds: ["registerMarketplace"], skippedCommandKinds: ["installPlugin"]
+            });
+            fake.emitMessage({ action: "copyCommand", index: 0, planVersion: 0 });
+            fake.emitMessage({ action: "copyCommand", index: 2, planVersion: 0 });
+            await Promise.resolve();
+
+            expect((deps.writeClipboard as sinon.SinonStub).notCalled).to.be.true;
+            expect(fake.postedMessages()[1]).to.include({
+                type: "agenticCreateConfirmState", state: "recovery"
+            });
+            expect(fake.postedMessages()[1]).to.have.property("commandStates").deep.equal({
+                0: confirm.COMMAND_COMPLETED,
+                2: confirm.COMMAND_SKIPPED
+            });
+            fake.emitMessage({ action: "copyCommand", index: 1, planVersion: 0 });
+            await Promise.resolve();
+            expect((deps.writeClipboard as sinon.SinonStub).calledOnceWithExactly(commands[1].commandLine)).to.be.true;
+        });
+
+        it("disables Copy and rejects requests when there is no safe manual shell", async () => {
+            const fake = createFakePanel();
+            const deps = depsFor(fake);
+            showCopyPanel(fake, deps, plan, "cmd.exe");
+            fake.emitMessage({ action: "copyCommand", index: 1, planVersion: 0 });
+            await Promise.resolve();
+
+            expect((deps.writeClipboard as sinon.SinonStub).notCalled).to.be.true;
+            expect(fake.html()).to.contain("Copy isn&#39;t available with this shell");
+            expect(fake.html()).to.contain('aria-label="Copy command: start" disabled');
+            expect(fake.html()).to.contain('aria-describedby="recovery-status"');
+            expect(fake.html()).not.to.contain('id="recovery-manual"');
+        });
+
+        it("shows an explicit unavailable preview instead of an empty runnable command", async () => {
+            const fake = createFakePanel();
+            const deps = depsFor(fake);
+            showCopyPanel(fake, deps, [{ ...plan[1], commandLine: "" }], "cmd.exe");
+            fake.emitMessage({ action: "copyCommand", index: 0, planVersion: 0 });
+            await Promise.resolve();
+
+            expect(fake.html()).to.contain(confirm.COMMAND_PREVIEW_UNAVAILABLE);
+            expect(fake.html()).not.to.contain('<code class="command-line"></code>');
+            expect((deps.writeClipboard as sinon.SinonStub).notCalled).to.be.true;
+        });
+
+        it("allows quoted manual-only Windows PowerShell commands without executing them", async function () {
+            if (process.platform !== "win32") {
+                this.skip();
+            }
+            const fake = createFakePanel();
+            const deps = depsFor(fake);
+            const commands = [{
+                ...plan[1], commandLine: "& 'C:\\tools\\copilot.exe' '-i' 'safe $prompt'",
+                executable: "C:\\tools\\copilot.exe"
+            }];
+            const shell = "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe";
+            showCopyPanel(fake, deps, commands, shell);
+            fake.emitMessage({ action: "copyCommand", index: 0, planVersion: 0 });
+            await Promise.resolve();
+
+            expect(fake.html()).to.contain(`Open ${shell} in your site folder`);
+            expect((deps.writeClipboard as sinon.SinonStub).calledOnceWithExactly(commands[0].commandLine)).to.be.true;
+        });
+
+        it("ignores copying after the panel is closed", async () => {
+            const fake = createFakePanel();
+            const deps = depsFor(fake);
+            showCopyPanel(fake, deps);
+            fake.emitDispose();
+            fake.emitMessage({ action: "copyCommand", index: 1, planVersion: 0 });
+            await Promise.resolve();
+
+            expect((deps.writeClipboard as sinon.SinonStub).notCalled).to.be.true;
+            expect(fake.postedMessages()).to.be.empty;
+        });
+
+        it("does not offer manual commands for a Windows batch-only assistant", async function () {
+            if (process.platform !== "win32") {
+                this.skip();
+            }
+            const fake = createFakePanel();
+            const deps = depsFor(fake);
+            showCopyPanel(fake, deps, [{ ...plan[1], executable: "C:\\tools\\claude.cmd" }]);
+            fake.emitMessage({ action: "copyCommand", index: 0, planVersion: 0 });
+            await Promise.resolve();
+
+            expect((deps.writeClipboard as sinon.SinonStub).notCalled).to.be.true;
+            expect(fake.html()).to.contain('aria-label="Copy command: start" disabled');
+        });
+    });
+
+    describe("recovery webview behavior", () => {
+        const runWebview = (persistedState?: Record<string, unknown>) => {
+            const fake = createFakePanel();
+            showAgenticCreateConfirmPanel(
+                "Claude Code", "c:/work/site", plan, depsFor(fake),
+                true, undefined, false, undefined, "", "pwsh"
+            );
+            const elements = new Map<string, {
+                hidden: boolean;
+                disabled: boolean;
+                open: boolean;
+                textContent: string;
+                dataset: Record<string, string>;
+                listeners: Record<string, () => void>;
+                focus: sinon.SinonSpy;
+                scrollIntoView: sinon.SinonSpy;
+                setAttribute: sinon.SinonSpy;
+                addEventListener: (event: string, callback: () => void) => void;
+            }>();
+            const getElement = (id: string) => {
+                let element = elements.get(id);
+                if (!element) {
+                    const listeners: Record<string, () => void> = {};
+                    element = {
+                        hidden: true, disabled: false, open: false, textContent: "",
+                        dataset: {}, listeners, focus: sinon.spy(), scrollIntoView: sinon.spy(),
+                        setAttribute: sinon.spy(),
+                        addEventListener: (event, callback) => { listeners[event] = callback; }
+                    };
+                    elements.set(id, element);
+                }
+                return element;
+            };
+            const copyButtons = plan.map((_, index) => {
+                const button = getElement(`copy-${index}`);
+                button.dataset.commandIndex = String(index);
+                return button;
+            });
+            const frames: Array<() => void> = [];
+            let receiveMessage: (event: { data: Record<string, unknown> }) => void = () => undefined;
+            let state = persistedState;
+            const postMessage = sinon.spy();
+            const script = /<script nonce="[^"]+">([\s\S]+?)<\/script>/.exec(fake.html());
+            expect(script).not.to.be.null;
+            runInNewContext(script?.[1] ?? "", {
+                acquireVsCodeApi: () => ({
+                    postMessage,
+                    getState: () => state,
+                    setState: (value: Record<string, unknown>) => { state = value; }
+                }),
+                document: { getElementById: getElement, querySelectorAll: () => copyButtons },
+                window: {
+                    addEventListener: (_event: string, callback: typeof receiveMessage) => { receiveMessage = callback; }
+                },
+                requestAnimationFrame: (callback: () => void) => frames.push(callback)
+            });
+            return {
+                fake, getElement, postMessage, frames,
+                receive: (data: Record<string, unknown>) => receiveMessage({ data })
+            };
+        };
+
+        it("places the recovery alert immediately before actions, after Technical details", () => {
+            const { fake } = runWebview();
+            expect(fake.html()).to.match(/<\/details>\s*<section[^>]+id="recovery-panel"[\s\S]+?<\/section>\s*<div class="actions">/);
+            expect(fake.html()).to.contain('aria-describedby="recovery-status recovery-manual" tabindex="-1"');
+        });
+
+        it("expands details before scrolling and focusing the new failure alert", () => {
+            const webview = runWebview();
+            webview.receive({
+                type: "agenticCreateConfirmState", state: "recovery",
+                message: "Recover", recoveryRevision: 1, focusRecovery: true,
+                commandStates: { 0: confirm.COMMAND_COMPLETED }
+            });
+
+            expect(webview.getElement("technical-details").open).to.be.true;
+            expect(webview.getElement("recovery-panel").hidden).to.be.false;
+            expect(webview.frames).to.have.length(1);
+            webview.frames[0]();
+            expect(webview.getElement("recovery-panel").focus.calledWith({ preventScroll: true })).to.be.true;
+            expect(webview.getElement("recovery-panel").scrollIntoView.calledWith({ block: "start", behavior: "auto" })).to.be.true;
+            expect(webview.getElement("copy-0").disabled).to.be.true;
+            expect(webview.getElement("copy-1").disabled).to.be.false;
+            expect(webview.getElement("command-state-0").textContent).to.equal(confirm.COMMAND_COMPLETED);
+        });
+
+        it("restores passive recovery without stealing focus, scrolling, or reopening collapsed details", () => {
+            const webview = runWebview({
+                state: "recovery", message: "Recover", recoveryRevision: 1, technicalDetailsOpen: false,
+                planVersion: 0
+            });
+            webview.receive({
+                type: "agenticCreateConfirmState", state: "recovery",
+                message: "Recover", recoveryRevision: 1, focusRecovery: false
+            });
+
+            expect(webview.frames).to.be.empty;
+            expect(webview.getElement("technical-details").open).to.be.false;
+            expect(webview.getElement("recovery-panel").focus.notCalled).to.be.true;
+            expect(webview.getElement("retry").focus.notCalled).to.be.true;
+        });
+
+        it("sends only the index and revision and announces copy success or failure without moving focus", () => {
+            const webview = runWebview();
+            webview.getElement("copy-1").listeners.click();
+            expect(webview.postMessage.lastCall.args).to.deep.equal([{
+                action: "copyCommand", index: 1, planVersion: 0
+            }]);
+            webview.receive({ type: "agenticCreateCopyResult", planVersion: 0, success: true, message: "Copied" });
+            expect(webview.getElement("copy-status").textContent).to.equal("Copied");
+            webview.receive({ type: "agenticCreateCopyResult", planVersion: 0, success: false, message: "Failed" });
+            expect(webview.getElement("copy-error").textContent).to.equal("Failed");
+            expect(webview.getElement("copy-status").textContent).to.equal("");
+            expect(webview.frames).to.be.empty;
+        });
     });
 
     it("renders the host, folder, and every command line in the panel HTML", () => {

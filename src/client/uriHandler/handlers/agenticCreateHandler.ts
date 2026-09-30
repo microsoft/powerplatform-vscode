@@ -25,7 +25,8 @@ import { ResumeMarkerStore, writeResumeMarker } from "../utils/resumeMarker";
 import { ConfirmAndLaunchOutcome } from "../utils/confirmAndLaunchAgentHost";
 import {
     confirmAndLaunchSelectedAgentHost,
-    getAgentHostDisplayName
+    getAgentHostDisplayName,
+    getAgentHostTerminalShellOptions
 } from "../utils/agenticCreateLaunch";
 import { URI_HANDLER_STRINGS } from "../constants/uriStrings";
 import {
@@ -274,7 +275,10 @@ export class AgenticCreateHandler {
 
                 if (!hostSelection.installed) {
                     const bootstrapResolution = this.dependencies.resolveAgentHostBootstrap(
-                        hostSelection.host
+                        hostSelection.host,
+                        process.platform,
+                        undefined,
+                        getAgentHostTerminalShellOptions(folderUri)
                     );
                     if (bootstrapResolution.supported) {
                         bootstrap = bootstrapResolution.config;
