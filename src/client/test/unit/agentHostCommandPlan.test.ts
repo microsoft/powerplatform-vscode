@@ -347,8 +347,29 @@ describe("buildAgentHostCommandPlan", () => {
             "cmd.exe"
         );
 
+        expect(plan[0].commandLine).to.equal("");
+        expect(plan[0].args).to.deep.equal(["-i", "/power-pages:create-site A customer portal"]);
+    });
+
+    it("does not render an executable preview when no usable shell is installed", () => {
+        const plan = buildAgentHostCommandPlan(
+            AgentHost.Copilot, "Copilot", strings, undefined,
+            { marketplace: "missing", plugin: "missing" },
+            '$(Start-Process calc); "quoted" & unsafe', "", "copilot.exe", "win32"
+        );
+        expect(plan.every(command => command.commandLine === "")).to.be.true;
+    });
+
+    it("uses PowerShell literal quoting for a manual Windows PowerShell preview", () => {
+        const plan = buildAgentHostCommandPlan(
+            AgentHost.Copilot, "Copilot", strings, undefined,
+            { marketplace: "present", plugin: "present" },
+            'Maker\'s "site" $(Start-Process calc); & echo unsafe',
+            "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+            "C:\\Agent\\copilot.exe", "win32"
+        );
         expect(plan[0].commandLine).to.equal(
-            'copilot -i "/power-pages:create-site A customer portal"'
+            "& 'C:\\Agent\\copilot.exe' '-i' '/power-pages:create-site Maker''s \"site\" $(Start-Process calc); & echo unsafe'"
         );
     });
 

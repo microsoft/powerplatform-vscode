@@ -5,6 +5,8 @@
 
 import commandExists from "command-exists";
 import { AgentHost } from "./detectAgentHost";
+import { CommandPathResolver, resolveCommandFromPath } from "./agentHostCommandProbe";
+import { AgentHostTerminalShellOptions, resolveAgentHostPowerShell } from "./agentHostTerminalShell";
 
 export type SupportedAgentHostPlatform = "win32" | "darwin" | "linux";
 export type AgentHostInstaller = "winget" | "brew" | "script";
@@ -29,17 +31,22 @@ export type CommandAvailability = (command: string) => boolean;
  * @param host Selected agent host.
  * @param platform Runtime platform.
  * @param isCommandAvailable Injectable executable lookup.
+ * @param shellOptions Windows profile paths and shell validation inputs.
+ * @param resolveCommand Injectable Windows shell PATH lookup.
  * @returns Supported bootstrap configuration or an actionable prerequisite failure.
  */
 export function resolveAgentHostBootstrap(
     host: AgentHost,
     platform: NodeJS.Platform = process.platform,
-    isCommandAvailable: CommandAvailability = commandExists.sync
+    isCommandAvailable: CommandAvailability = commandExists.sync,
+    shellOptions: AgentHostTerminalShellOptions = {},
+    resolveCommand: CommandPathResolver = resolveCommandFromPath
 ): AgentHostBootstrapResolution {
     switch (platform) {
         case "win32": {
-            // VS Code Shell Integration and the agent hosts require PowerShell 7+.
-            if (!isCommandAvailable("pwsh")) {
+            // The winget PATH-refresh command is PowerShell-specific, not compatible with Git Bash.
+            const shellPath = resolveAgentHostPowerShell(resolveCommand, shellOptions);
+            if (!shellPath) {
                 return { supported: false, reason: "missingPowerShell" };
             }
             if (!isCommandAvailable("winget")) {
@@ -50,7 +57,7 @@ export function resolveAgentHostBootstrap(
                 config: {
                     platform,
                     installer: "winget",
-                    shellPath: "pwsh"
+                    shellPath
                 }
             };
         }

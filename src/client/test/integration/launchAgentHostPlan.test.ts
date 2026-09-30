@@ -156,7 +156,11 @@ describe("launchAgentHostPlan", () => {
             "win32",
             command => command === "pwsh"
                 ? "C:\\Program Files\\PowerShell\\7\\pwsh.exe"
-                : undefined
+                : undefined,
+            {
+                environment: {},
+                isFile: candidate => candidate === "C:\\Program Files\\PowerShell\\7\\pwsh.exe"
+            }
         );
 
         const result = await launchAgentHostPlan(
@@ -194,6 +198,54 @@ describe("launchAgentHostPlan", () => {
         expect(result.status).to.equal("launched");
         expect(waitForShellIntegration.calledOnce).to.be.true;
     });
+
+    for (const shellPath of [
+        "C:\\Program Files\\PowerShell\\7\\pwsh.exe",
+        "C:\\Program Files\\Git\\bin\\bash.exe"
+    ]) {
+        it(`executes exactly the preview quoted for the discovered shell: ${shellPath}`, async () => {
+            const { deps, createTerminal, executeInteractiveCommand } = buildDependencies([]);
+            const terminalShell = resolveAgentHostTerminalShell(
+                "cmd.exe", "win32", () => undefined, {
+                    environment: { ProgramFiles: "C:\\Program Files" },
+                    isFile: candidate => candidate === shellPath
+                        || candidate === "C:\\Program Files\\Git\\cmd\\git.exe"
+                }
+            );
+            const executable = "C:\\Agent\\copilot.exe";
+            const args = ["-i", 'A maker\'s "site" $(echo unsafe) & echo unsafe'];
+            const commandLine = buildAgentHostShellCommand(
+                executable, args, terminalShell.commandShellPath, "win32"
+            );
+            const result = await launchAgentHostPlan(folderUri, [{
+                kind: "launchHost", executable, args, commandLine, description: "launch"
+            }], "Copilot", deps, terminalShell.terminalShellPath);
+
+            expect(result.status).to.equal("launched");
+            expect(createTerminal.firstCall.args[0].shellPath).to.equal(shellPath);
+            expect(executeInteractiveCommand.calledOnceWithExactly(commandLine)).to.be.true;
+        });
+    }
+
+    for (const manualShell of [
+        "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+        ""
+    ]) {
+        it(`never creates an automatic terminal for a manual-only resolution: ${manualShell || "none"}`, async () => {
+            const { deps, createTerminal } = buildDependencies([]);
+            const terminalShell = resolveAgentHostTerminalShell(
+                "cmd.exe", "win32", () => undefined, {
+                    environment: { SystemRoot: "C:\\Windows" },
+                    isFile: candidate => candidate === manualShell
+                }
+            );
+            const result = await launchAgentHostPlan(
+                folderUri, plan, "Copilot", deps, terminalShell.terminalShellPath
+            );
+            expect(result).to.include({ status: "recovery", reason: "unsupportedShell" });
+            expect(createTerminal.notCalled).to.be.true;
+        });
+    }
 
     it("opens no terminal when Shell Integration is disabled", async () => {
         const {
