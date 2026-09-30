@@ -1823,7 +1823,7 @@
     "http-server": "^14.1.1",
     "jwt-decode": "2.2.0",
     "mocha": "^11.1.0",
-    "moment": "^2.29.4",
+    "moment": "^2.31.0",
     "nanoid": "^3.3.12",
     "node-fetch": "^2.6.7",
     "nyc": "^15.1.0",
