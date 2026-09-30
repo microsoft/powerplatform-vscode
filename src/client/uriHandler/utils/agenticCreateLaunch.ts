@@ -19,7 +19,7 @@ import {
 } from './agentHostSetupPrecheck';
 import { emitCreateFlowEvent } from '../telemetry/createFlowTelemetry';
 import { uriHandlerTelemetryEventNames } from '../telemetry/uriHandlerTelemetryEvents';
-import { resolveAgentHostTerminalShell } from './agentHostTerminalShell';
+import { AgentHostTerminalShellOptions, resolveAgentHostTerminalShell } from './agentHostTerminalShell';
 import {
     resolveAgentHostTerminalExecutable,
     resolveCommandFromPath
@@ -50,6 +50,31 @@ const AGENT_HOST_DISPLAY_NAMES: Record<AgentHost, string> = {
  */
 export function getAgentHostDisplayName(host: AgentHost): string {
     return AGENT_HOST_DISPLAY_NAMES[host];
+}
+
+/**
+ * Collects user-configured Windows terminal paths without trusting workspace-supplied executables.
+ * @param folderUri Resource used to inspect terminal settings; only user-level values are accepted.
+ * @returns Shell discovery inputs shared by installed-host launch and missing-host bootstrap.
+ */
+export function getAgentHostTerminalShellOptions(folderUri?: vscode.Uri): AgentHostTerminalShellOptions {
+    const configuration = vscode.workspace.getConfiguration('terminal.integrated', folderUri);
+    const profiles = configuration.inspect<Record<string, { path?: string | string[] } | null>>(
+        'profiles.windows'
+    )?.globalValue ?? {};
+    const defaultProfile = configuration.inspect<string>('defaultProfile.windows')?.globalValue;
+    const orderedProfiles = [
+        ...(defaultProfile ? [profiles[defaultProfile]] : []),
+        ...Object.values(profiles)
+    ];
+    return {
+        profilePaths: orderedProfiles.flatMap(profile =>
+            typeof profile?.path === 'string'
+                ? [profile.path]
+                : Array.isArray(profile?.path)
+                    ? profile.path.filter((value): value is string => typeof value === 'string')
+                    : [])
+    };
 }
 
 /**
@@ -105,7 +130,11 @@ export async function confirmAndLaunchSelectedAgentHost(
             commandShellPath: bootstrap.shellPath,
             terminalShellPath: bootstrap.shellPath
         }
-        : resolveAgentHostTerminalShell(vscode.env.shell);
+        : resolveAgentHostTerminalShell(
+            vscode.env.shell, process.platform, resolveCommandFromPath,
+            getAgentHostTerminalShellOptions(folderUri)
+        );
+    let confirmPanel: ReturnType<typeof showAgenticCreateConfirmPanel> | undefined;
     return confirmAndLaunchAgentHost(host, hostDisplayName, folderUri, params, {
         buildPlan: (selectedHost, displayName) => {
             terminalShell = bootstrap
@@ -113,7 +142,10 @@ export async function confirmAndLaunchSelectedAgentHost(
                     commandShellPath: bootstrap.shellPath,
                     terminalShellPath: bootstrap.shellPath
                 }
-                : resolveAgentHostTerminalShell(vscode.env.shell);
+                : resolveAgentHostTerminalShell(
+                    vscode.env.shell, process.platform, resolveCommandFromPath,
+                    getAgentHostTerminalShellOptions(folderUri)
+                );
             const detectedExecutable = resolveCommandFromPath(selectedHost)
                 ?? detectedHostExecutablePath;
             const hostExecutable = bootstrap
@@ -135,8 +167,8 @@ export async function confirmAndLaunchSelectedAgentHost(
                 hostExecutable
             );
         },
-        showConfirmPanel: (displayName, folderPath, plan) =>
-            showAgenticCreateConfirmPanel(
+        showConfirmPanel: (displayName, folderPath, plan) => {
+            confirmPanel = showAgenticCreateConfirmPanel(
                 displayName,
                 folderPath,
                 plan,
@@ -150,16 +182,20 @@ export async function confirmAndLaunchSelectedAgentHost(
                     'agent',
                     { host }
                 ),
-                siteDescription
-            ),
+                siteDescription,
+                terminalShell.commandShellPath
+            );
+            return confirmPanel;
+        },
         launchPlan: (
             selectedFolderUri,
             plan,
             displayName,
             onProgress,
             setupStateOverride
-        ) =>
-            launchAgentHostPlan(
+        ) => {
+            confirmPanel?.updatePlan?.(plan, terminalShell.commandShellPath);
+            return launchAgentHostPlan(
                 selectedFolderUri,
                 plan,
                 displayName,
@@ -167,6 +203,7 @@ export async function confirmAndLaunchSelectedAgentHost(
                 terminalShell.terminalShellPath,
                 setupStateOverride ?? setupState,
                 onProgress
-            )
+            );
+        }
     });
 }

@@ -12,6 +12,10 @@ import { PlannedCommand } from "./agentHostCommandPlan";
 import type { LaunchAgentHostPlanResult } from "./launchAgentHostPlan";
 import type { LaunchAgentHostProgress } from "./launchAgentHostPlan";
 import {
+    isAgentHostExecutableSupported,
+    isAgentHostShellSupported
+} from "./agentHostShellCommand";
+import {
     AgentHostSetupState,
     UNKNOWN_AGENT_HOST_SETUP
 } from "./agentHostSetupPrecheck";
@@ -54,6 +58,7 @@ export interface AgenticCreateConfirmPanelSession {
     showLaunched(
         result: Extract<LaunchAgentHostPlanResult, { status: "launched" }>
     ): PromiseLike<boolean>;
+    updatePlan?(plan: PlannedCommand[], manualShellPath?: string): void;
 }
 
 /**
@@ -68,12 +73,14 @@ export interface ShowConfirmPanelDependencies {
         options: vscode.WebviewPanelOptions & vscode.WebviewOptions
     ) => vscode.WebviewPanel;
     showErrorMessage(message: string): Thenable<string | undefined>;
+    writeClipboard?(text: string): Thenable<void>;
 }
 
 const DEFAULT_CONFIRM_PANEL_DEPENDENCIES: ShowConfirmPanelDependencies = {
     createWebviewPanel: (viewType, title, showOptions, options) =>
         vscode.window.createWebviewPanel(viewType, title, showOptions, options),
-    showErrorMessage: (message) => vscode.window.showErrorMessage(message)
+    showErrorMessage: (message) => vscode.window.showErrorMessage(message),
+    writeClipboard: (text) => vscode.env.clipboard.writeText(text)
 };
 
 const ACTIVE_PANEL_READY_MESSAGE = "agenticCreateConfirmReady";
@@ -141,6 +148,12 @@ function formatTemplates(template: string, values: string[]): string {
     );
 }
 
+function canCopyPlan(plan: PlannedCommand[], shellPath: string): boolean {
+    return isAgentHostShellSupported(shellPath)
+        && plan.every(command => command.commandLine.trim().length > 0
+            && (!command.executable || isAgentHostExecutableSupported(command.executable)));
+}
+
 /**
  * Builds the accessible recovery announcement for a failed execution.
  */
@@ -205,7 +218,9 @@ function buildHtml(
     allowEdit: boolean,
     setupState: AgentHostSetupState,
     hostNeedsInstall: boolean,
-    siteDescription: string
+    siteDescription: string,
+    manualShellPath: string,
+    planVersion: number
 ): string {
     const nonce = getNonce();
     const confirm = URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM;
@@ -243,9 +258,10 @@ function buildHtml(
             : ""
     ].join("");
 
+    const copyAvailable = canCopyPlan(plan, manualShellPath);
     const commandItems = plan
         .map(
-            (command) => `
+            (command, index) => `
             <li class="command">
                 <div class="command-heading">
                     <span class="command-desc">${escapeHtml(command.description)}</span>
@@ -256,7 +272,13 @@ function buildHtml(
                         ? `<span class="command-meta">${escapeHtml(confirm.CONDITIONAL_COMMAND)}</span>`
                         : ""}
                 </div>
-                <code class="command-line">${escapeHtml(command.commandLine)}</code>
+                <div class="command-body">
+                    ${command.commandLine
+                        ? `<code class="command-line">${escapeHtml(command.commandLine)}</code>`
+                        : `<span class="command-meta">${escapeHtml(confirm.COMMAND_PREVIEW_UNAVAILABLE)}</span>`}
+                    <button class="secondary copy-command" data-command-index="${index}" aria-label="${escapeHtml(formatTemplate(confirm.COPY_COMMAND_ACCESSIBLE_LABEL, command.description))}"${copyAvailable ? "" : " disabled"}>${escapeHtml(confirm.COPY_COMMAND_LABEL)}</button>
+                </div>
+                <span class="command-meta" id="command-state-${index}"></span>
             </li>`
         )
         .join("");
@@ -277,6 +299,7 @@ function buildHtml(
         .state-panel { background: var(--vscode-textBlockQuote-background, rgba(127, 127, 127, 0.12)); border: 1px solid var(--vscode-widget-border, rgba(127, 127, 127, 0.35)); border-radius: 6px; padding: 14px 16px; margin: 1em 0; }
         .state-panel h2 { font-size: 1.05em; margin: 0 0 0.35em; }
         .state-panel p { margin: 0; line-height: 1.5; }
+        .state-panel p + p { margin-top: 0.5em; }
         .state-panel.recovery { border-color: var(--vscode-notificationsWarningIcon-foreground, #b89500); }
         h2.section-header { font-size: 1.05em; font-weight: 600; margin: 1.7em 0 0.8em; }
         dl.summary { display: grid; grid-template-columns: minmax(110px, max-content) minmax(0, 1fr); gap: 10px 20px; margin: 0; padding: 14px 16px; border: 1px solid var(--vscode-widget-border, rgba(127, 127, 127, 0.35)); border-radius: 6px; }
@@ -291,16 +314,24 @@ function buildHtml(
         .trust-note { margin: 0.7em 0 1.5em; padding: 10px 12px; background: var(--vscode-textBlockQuote-background, rgba(127, 127, 127, 0.12)); border-radius: 4px; line-height: 1.45; }
         details { margin-top: 1.6em; border-top: 1px solid var(--vscode-widget-border, rgba(127, 127, 127, 0.35)); border-bottom: 1px solid var(--vscode-widget-border, rgba(127, 127, 127, 0.35)); padding: 12px 0; }
         summary { cursor: pointer; min-height: 32px; padding: 4px 2px; font-weight: 600; }
-        summary:focus-visible, button:focus-visible { outline: 2px solid var(--vscode-focusBorder, currentColor); outline-offset: 2px; }
+        summary:focus-visible, button:focus-visible, #recovery-panel:focus-visible { outline: 2px solid var(--vscode-focusBorder, currentColor); outline-offset: 2px; }
         .technical-detail { margin: 4px 0 16px 22px; color: var(--vscode-descriptionForeground, inherit); }
         ol.commands { list-style: none; margin: 0; padding: 0; }
         li.command { margin-bottom: 1em; }
         .command-heading { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 5px; }
         .command-desc { font-weight: 500; }
         .command-meta { color: var(--vscode-descriptionForeground, inherit); font-size: 0.82em; }
+        .command-body { display: flex; align-items: flex-start; gap: 8px; }
+        .command-body code { flex: 1; min-width: 0; }
+        .copy-command { flex: none; }
+        .manual-detail { overflow-wrap: anywhere; line-height: 1.5; }
+        .copy-feedback { min-height: 1.5em; overflow-wrap: anywhere; }
+        #copy-error { color: var(--vscode-errorForeground, #f48771); }
         .already-set-up { padding: 8px 10px; border: 1px solid var(--vscode-widget-border, rgba(127, 127, 127, 0.35)); border-radius: 4px; }
         code.command-line { display: block; font-family: var(--vscode-editor-font-family, monospace); font-size: 0.9em; background: var(--vscode-textCodeBlock-background, rgba(127, 127, 127, 0.18)); padding: 8px 11px; border-radius: 4px; white-space: pre-wrap; overflow-wrap: anywhere; }
         .actions { display: flex; gap: 10px; margin-top: 2em; flex-wrap: wrap; }
+        #recovery-panel { scroll-margin-block: 16px; }
+        #recovery-panel:not([hidden]) + .actions { margin-top: 1em; }
         button { min-height: 32px; min-width: 32px; font-family: inherit; font-size: 0.95em; padding: 7px 18px; border: 1px solid var(--vscode-contrastBorder, transparent); border-radius: 2px; cursor: pointer; }
         button.primary { background: var(--vscode-button-background, #0078d4); color: var(--vscode-button-foreground, #ffffff); }
         button.primary:hover { background: var(--vscode-button-hoverBackground, #026ec1); }
@@ -313,6 +344,7 @@ function buildHtml(
             dl.summary dd { margin-bottom: 10px; }
             .actions { flex-direction: column; align-items: stretch; }
             button { width: 100%; }
+            .copy-command { width: auto; padding-inline: 10px; }
         }
         @media (forced-colors: active) {
             .state-panel, dl.summary, details, .already-set-up { border-color: CanvasText; }
@@ -339,11 +371,6 @@ function buildHtml(
             <p id="handoff-status" role="status" aria-live="polite" aria-atomic="true"
                 data-message="${escapeHtml(confirm.HANDOFF_DETAIL)}"></p>
         </section>
-        <section class="state-panel recovery" id="recovery-panel" aria-labelledby="recovery-title" hidden>
-            <h2 id="recovery-title">${escapeHtml(confirm.RECOVERY_TITLE)}</h2>
-            <p id="recovery-status" role="alert" aria-live="assertive" aria-atomic="true"></p>
-        </section>
-
         <section aria-labelledby="summary-title">
             <h2 class="section-header" id="summary-title">${escapeHtml(confirm.SUMMARY_HEADER)}</h2>
             <dl class="summary">
@@ -369,9 +396,19 @@ function buildHtml(
         <details id="technical-details">
             <summary>${escapeHtml(confirm.SEQUENCE_HEADER)}</summary>
             <p class="technical-detail">${escapeHtml(confirm.SEQUENCE_DETAIL)}</p>
+            <p class="manual-detail">${escapeHtml(copyAvailable
+                ? formatTemplates(confirm.MANUAL_COMMAND_DETAIL, [manualShellPath, folderPath])
+                : confirm.MANUAL_COMMAND_UNAVAILABLE)}</p>
             <ol class="commands">${alreadySetupItems}${commandItems}</ol>
+            <p class="copy-feedback" id="copy-status" role="status" aria-live="polite" aria-atomic="true"></p>
+            <p class="copy-feedback" id="copy-error" role="alert" aria-live="assertive" aria-atomic="true"></p>
         </details>
 
+        <section class="state-panel recovery" id="recovery-panel" aria-labelledby="recovery-title" aria-describedby="recovery-status${copyAvailable ? " recovery-manual" : ""}" tabindex="-1" hidden>
+            <h2 id="recovery-title">${escapeHtml(confirm.RECOVERY_TITLE)}</h2>
+            <p id="recovery-status" role="alert" aria-live="assertive" aria-atomic="true"></p>
+            ${copyAvailable ? `<p id="recovery-manual">${escapeHtml(confirm.RECOVERY_MANUAL_DETAIL)}</p>` : ""}
+        </section>
         <div class="actions">
             <button class="primary" id="start" title="${escapeHtml(confirm.START_DETAIL)}">${escapeHtml(confirm.START_LABEL)}</button>
             ${allowEdit ? `<button class="secondary" id="edit" title="${escapeHtml(confirm.EDIT_DETAIL)}">${escapeHtml(confirm.EDIT_LABEL)}</button>` : ""}
@@ -385,7 +422,6 @@ function buildHtml(
 
     <script nonce="${nonce}">
         const vscode = acquireVsCodeApi();
-        vscode.postMessage({ type: "${ACTIVE_PANEL_READY_MESSAGE}" });
         const startButton = document.getElementById("start");
         const editButton = document.getElementById("edit");
         const cancelButton = document.getElementById("cancel");
@@ -400,10 +436,18 @@ function buildHtml(
         const recoveryPanel = document.getElementById("recovery-panel");
         const recoveryStatus = document.getElementById("recovery-status");
         const technicalDetails = document.getElementById("technical-details");
+        const copyButtons = Array.from(document.querySelectorAll(".copy-command"));
+        const copyStatus = document.getElementById("copy-status");
+        const copyError = document.getElementById("copy-error");
+        const copyAvailable = ${copyAvailable};
+        const planVersion = ${planVersion};
+        let commandStates = {};
+        let copyBlocked = false;
         let launchedStateShown = false;
+        let recoveryRevision;
 
         function saveState(patch) {
-            vscode.setState({ ...(vscode.getState() ?? {}), ...patch });
+            vscode.setState({ ...(vscode.getState() ?? {}), ...patch, planVersion });
         }
 
         function format(template, values) {
@@ -419,7 +463,24 @@ function buildHtml(
             recoveryPanel.hidden = panel !== recoveryPanel;
         }
 
+        function updateCopyButtons(blocked) {
+            copyBlocked = blocked;
+            copyButtons.forEach(button => {
+                button.disabled = !copyAvailable || blocked || Boolean(commandStates[button.dataset.commandIndex]);
+            });
+        }
+
+        function showCommandStates(states) {
+            commandStates = states ?? {};
+            copyButtons.forEach(button => {
+                const label = document.getElementById("command-state-" + button.dataset.commandIndex);
+                label.textContent = commandStates[button.dataset.commandIndex] ?? "";
+            });
+            updateCopyButtons(copyBlocked);
+        }
+
         function showStartedState(shouldFocus, shouldPersist) {
+            updateCopyButtons(true);
             startButton.disabled = true;
             editButton?.setAttribute("disabled", "");
             cancelButton.hidden = true;
@@ -447,6 +508,7 @@ function buildHtml(
         }
 
         function showHandoffState(shouldFocus, shouldPersist) {
+            updateCopyButtons(true);
             startButton.hidden = true;
             editButton?.setAttribute("hidden", "");
             cancelButton.hidden = true;
@@ -464,7 +526,8 @@ function buildHtml(
             }
         }
 
-        function showRecoveryState(message, setupOptionsAvailable, shouldPersist) {
+        function showRecoveryState(message, setupOptionsAvailable, shouldPersist, shouldFocus) {
+            updateCopyButtons(false);
             startButton.disabled = true;
             editButton?.setAttribute("disabled", "");
             cancelButton.hidden = true;
@@ -474,18 +537,38 @@ function buildHtml(
             closeButton.hidden = false;
             showOnlyState(recoveryPanel);
             recoveryStatus.textContent = message;
-            technicalDetails.open = true;
+            if (shouldFocus) {
+                technicalDetails.open = true;
+            }
             if (shouldPersist) {
                 saveState({
                     state: "recovery",
                     message,
                     setupOptionsAvailable,
-                    technicalDetailsOpen: true
+                    technicalDetailsOpen: technicalDetails.open,
+                    commandStates,
+                    recoveryRevision
                 });
             }
-            retryButton.focus();
+            if (shouldFocus) {
+                requestAnimationFrame(() => {
+                    recoveryPanel.focus({ preventScroll: true });
+                    recoveryPanel.scrollIntoView({ block: "start", behavior: "auto" });
+                });
+            }
         }
 
+        copyButtons.forEach(button => button.addEventListener("click", () => {
+            if (!button.disabled) {
+                copyStatus.textContent = "";
+                copyError.textContent = "";
+                vscode.postMessage({
+                    action: "copyCommand",
+                    index: Number(button.dataset.commandIndex),
+                    planVersion
+                });
+            }
+        }));
         startButton.addEventListener("click", () => {
             if (!startButton.disabled) {
                 showStartedState(true, true);
@@ -495,7 +578,10 @@ function buildHtml(
         editButton?.addEventListener("click", () => vscode.postMessage({ decision: "edit" }));
         cancelButton.addEventListener("click", () => vscode.postMessage({ decision: "cancel" }));
         goToTerminalButton.addEventListener("click", () => vscode.postMessage({ action: "goToTerminal" }));
-        retryButton.addEventListener("click", () => vscode.postMessage({ action: "retry" }));
+        retryButton.addEventListener("click", () => {
+            showStartedState(true, true);
+            vscode.postMessage({ action: "retry" });
+        });
         setupOptionsButton.addEventListener("click", () => vscode.postMessage({ action: "fallback" }));
         closeButton.addEventListener("click", () => vscode.postMessage({ action: "close" }));
         technicalDetails.addEventListener("toggle", (event) => {
@@ -507,6 +593,12 @@ function buildHtml(
 
         window.addEventListener("message", (event) => {
             const message = event.data;
+            if (message?.type === "agenticCreateCopyResult"
+                && message.planVersion === planVersion && typeof message.message === "string") {
+                copyStatus.textContent = message.success ? message.message : "";
+                copyError.textContent = message.success ? "" : message.message;
+                return;
+            }
             if (message?.type !== "agenticCreateConfirmState") {
                 return;
             }
@@ -523,15 +615,23 @@ function buildHtml(
                 showHandoffState(!launchedStateShown, true);
                 launchedStateShown = true;
             } else if (message.state === "recovery" && typeof message.message === "string") {
+                const shouldFocus = message.recoveryRevision !== recoveryRevision
+                    && message.focusRecovery !== false;
+                recoveryRevision = message.recoveryRevision;
+                showCommandStates(message.commandStates);
                 showRecoveryState(
                     message.message,
                     Boolean(message.setupOptionsAvailable),
-                    true
+                    true,
+                    shouldFocus
                 );
             }
         });
 
-        const persistedState = vscode.getState();
+        const previousState = vscode.getState();
+        const persistedState = previousState?.planVersion === planVersion ? previousState : undefined;
+        recoveryRevision = persistedState?.recoveryRevision;
+        showCommandStates(persistedState?.commandStates);
         technicalDetails.open = Boolean(persistedState?.technicalDetailsOpen);
         if (persistedState?.state === "running") {
             showProgressState(persistedState.message ?? runningStatus.dataset.message, false);
@@ -543,9 +643,11 @@ function buildHtml(
             showRecoveryState(
                 persistedState.message,
                 Boolean(persistedState.setupOptionsAvailable),
+                false,
                 false
             );
         }
+        vscode.postMessage({ type: "${ACTIVE_PANEL_READY_MESSAGE}" });
     </script>
 </body>
 </html>`;
@@ -578,6 +680,7 @@ function buildHtml(
  * @param hostNeedsInstall Whether the selected assistant must be installed first.
  * @param onTechnicalDetailsExpanded Called once when the user first opens Technical details.
  * @param siteDescription Maker-provided description shown in the summary.
+ * @param manualShellPath Shell used to quote the preview and manual commands.
  * @returns The active panel session, including the user's decision and recovery-state updater.
  */
 export function showAgenticCreateConfirmPanel(
@@ -589,7 +692,8 @@ export function showAgenticCreateConfirmPanel(
     setupState: AgentHostSetupState = UNKNOWN_AGENT_HOST_SETUP,
     hostNeedsInstall = false,
     onTechnicalDetailsExpanded?: () => void,
-    siteDescription = ""
+    siteDescription = "",
+    manualShellPath = vscode.env.shell
 ): AgenticCreateConfirmPanelSession {
     if (confirmPanelsShuttingDown) {
         return {
@@ -630,33 +734,78 @@ export function showAgenticCreateConfirmPanel(
     let technicalDetailsExpanded = false;
     let panelDisposed = false;
     let activePanelReady = false;
+    let focusRecoveryOnReady = false;
     let panelRetryCount = 0;
     let panelReplacementInProgress = false;
     let resolveRecoveryDecision: ((decision: ConfirmRecoveryDecision) => void) | undefined;
     let panel: vscode.WebviewPanel;
+    let planVersion = 0;
+    let recoveryRevision = 0;
+    let copyBlocked = false;
+    let commandStates: Record<number, string> = {};
 
-    const postLatestState = (): PromiseLike<boolean> => {
+    const postLatestState = (focusRecovery = false): PromiseLike<boolean> => {
         if (panelDisposed) {
             return Promise.resolve(false);
         }
         return panel.webview.postMessage({
             type: "agenticCreateConfirmState",
-            ...latestStateMessage
+            ...latestStateMessage,
+            ...(latestStateMessage?.state === "recovery" ? { focusRecovery } : {})
         });
+    };
+
+    const copyCommand = async (index: unknown, version: unknown): Promise<void> => {
+        const targetPanel = panel;
+        let success = false;
+        let message: string = confirm.COPY_COMMAND_UNAVAILABLE;
+        if (
+            !panelDisposed && version === planVersion
+            && typeof index === "number" && Number.isInteger(index)
+            && index >= 0 && index < plan.length
+            && !copyBlocked && !commandStates[index]
+            && canCopyPlan(plan, manualShellPath)
+        ) {
+            const command = plan[index];
+            try {
+                const writeClipboard = deps.writeClipboard ?? ((text: string) => vscode.env.clipboard.writeText(text));
+                await writeClipboard(command.commandLine);
+                success = true;
+                message = formatTemplate(confirm.COPY_COMMAND_SUCCESS, command.description);
+            } catch {
+                message = confirm.COPY_COMMAND_FAILURE;
+                void deps.showErrorMessage(message);
+            }
+        }
+        if (!panelDisposed && targetPanel === panel) {
+            void targetPanel.webview.postMessage({
+                type: "agenticCreateCopyResult",
+                planVersion: version,
+                success,
+                message
+            });
+        }
     };
 
     const handleMessage = (message: {
         type?: unknown;
         decision?: unknown;
         action?: unknown;
+        index?: unknown;
+        planVersion?: unknown;
     }): void => {
-        if (message?.action === "close") {
+        if (message?.action === "copyCommand") {
+            void copyCommand(message.index, message.planVersion);
+        } else if (message?.action === "close") {
             resolveRecoveryDecision?.("cancel");
             resolveRecoveryDecision = undefined;
             panel.dispose();
         } else if (message?.action === "goToTerminal") {
             launchedTerminal?.show();
         } else if (message?.action === "retry") {
+            if (resolveRecoveryDecision) {
+                copyBlocked = true;
+            }
             resolveRecoveryDecision?.("retry");
             resolveRecoveryDecision = undefined;
         } else if (message?.action === "fallback") {
@@ -670,7 +819,9 @@ export function showAgenticCreateConfirmPanel(
             technicalDetailsExpanded = true;
             onTechnicalDetailsExpanded?.();
         } else if (message?.decision === "start") {
-            settleWith("start");
+            if (settleWith("start")) {
+                copyBlocked = true;
+            }
         } else if (message?.decision === "edit" || message?.decision === "cancel") {
             if (settleWith(message.decision)) {
                 panel.dispose();
@@ -701,7 +852,9 @@ export function showAgenticCreateConfirmPanel(
             allowEdit,
             setupState,
             hostNeedsInstall,
-            siteDescription
+            siteDescription,
+            manualShellPath,
+            planVersion
         );
 
         const readyTimer = setTimeout(() => {
@@ -755,8 +908,9 @@ export function showAgenticCreateConfirmPanel(
                 activePanelReady = true;
                 clearTimeout(readyTimer);
                 if (latestStateMessage) {
-                    void postLatestState();
+                    void postLatestState(focusRecoveryOnReady);
                 }
+                focusRecoveryOnReady = false;
                 return;
             }
             handleMessage(message);
@@ -782,7 +936,30 @@ export function showAgenticCreateConfirmPanel(
 
     return {
         decision,
+        updatePlan: (updatedPlan, updatedShellPath = manualShellPath) => {
+            if (panelDisposed || (updatedPlan === plan && updatedShellPath === manualShellPath)) {
+                return;
+            }
+            plan = updatedPlan;
+            manualShellPath = updatedShellPath;
+            planVersion++;
+            activePanelReady = false;
+            copyBlocked = true;
+            commandStates = {};
+            latestStateMessage = {
+                state: "progress",
+                description: confirm.PREPARE_ASSISTANT_TITLE,
+                step: 1,
+                totalSteps: progressStages.length,
+                status: "running"
+            };
+            panel.webview.html = buildHtml(
+                hostDisplayName, folderPath, plan, panel.webview.cspSource,
+                allowEdit, setupState, hostNeedsInstall, siteDescription, manualShellPath, planVersion
+            );
+        },
         showProgress: (progress) => {
+            copyBlocked = true;
             const stage = MAKER_PROGRESS_STAGE_BY_COMMAND[progress.command.kind];
             latestStateMessage = {
                 state: "progress",
@@ -794,6 +971,7 @@ export function showAgenticCreateConfirmPanel(
             return postLatestState();
         },
         showLaunched: (result) => {
+            copyBlocked = true;
             launchedTerminal = result.terminal;
             latestStateMessage = { state: "launched" };
             return postLatestState();
@@ -811,14 +989,25 @@ export function showAgenticCreateConfirmPanel(
                 || result.failedCommand?.kind === "refreshPath"
                 || result.failedCommand?.kind === "verifyHost"
             );
+            copyBlocked = false;
+            focusRecoveryOnReady = !activePanelReady;
+            plan.forEach((command, index) => {
+                if (result.completedCommandKinds?.includes(command.kind)) {
+                    commandStates[index] = confirm.COMMAND_COMPLETED;
+                } else if (result.skippedCommandKinds?.includes(command.kind)) {
+                    commandStates[index] = confirm.COMMAND_SKIPPED;
+                }
+            });
             latestStateMessage = {
                 state: "recovery",
                 message: formatRecoveryStatus(result, setupOptionsAvailable),
-                setupOptionsAvailable
+                setupOptionsAvailable,
+                recoveryRevision: ++recoveryRevision,
+                commandStates: { ...commandStates }
             };
             return new Promise<ConfirmRecoveryDecision>(resolve => {
                 resolveRecoveryDecision = resolve;
-                void postLatestState();
+                void postLatestState(true);
             });
         }
     };

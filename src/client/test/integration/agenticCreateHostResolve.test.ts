@@ -401,7 +401,11 @@ describe("Agentic create host resolution", () => {
 
         await createHandler().handle(uri);
 
-        expect(resolveAgentHostBootstrapStub.calledOnceWithExactly(AgentHost.Claude)).to.be.true;
+        expect(resolveAgentHostBootstrapStub.calledOnce).to.be.true;
+        expect(resolveAgentHostBootstrapStub.firstCall.args.slice(0, 3)).to.deep.equal([
+            AgentHost.Claude, process.platform, undefined
+        ]);
+        expect(resolveAgentHostBootstrapStub.firstCall.args[3]).to.have.property("profilePaths");
         expect(confirmAndLaunchAgentHostStub.calledOnce).to.be.true;
         expect(confirmAndLaunchAgentHostStub.firstCall.args[4]).to.deep.equal({
             platform: "win32",
