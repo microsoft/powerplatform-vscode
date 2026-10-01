@@ -6,12 +6,14 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { createNewAuthProfile } from '../../../../../power-pages/actions-hub/handlers/CreateNewAuthProfileHandler';
+import { createNewAuthProfile, syncAuthFromPacCli } from '../../../../../power-pages/actions-hub/handlers/CreateNewAuthProfileHandler';
 import { PacWrapper } from '../../../../../pac/PacWrapper';
 import * as authProvider from '../../../../../../common/services/AuthenticationProvider';
 import * as PacAuthUtil from '../../../../../../common/utilities/PacAuthUtil';
+import * as CommonUtility from '../../../../../power-pages/commonUtility';
 import PacContext from '../../../../../pac/PacContext';
 import * as TelemetryHelper from '../../../../../power-pages/actions-hub/TelemetryHelper';
+import { AuthInfo, CloudInstance, EnvironmentType, OrgInfo, PacAuthWhoOutput, PacOrgWhoOutput } from '../../../../../pac/PacTypes';
 
 describe('CreateNewAuthProfileHandler', () => {
     let sandbox: sinon.SinonSandbox;
@@ -98,6 +100,134 @@ describe('CreateNewAuthProfileHandler', () => {
             expect(mockAuthenticationInVsCode.called).to.be.false;
             expect(traceErrorStub.calledOnce).to.be.true;
             expect(traceErrorStub.firstCall.args[0]).to.equal('ActionsHubCreateAuthProfileFailed');
+        });
+
+        it('should sync auth from PAC CLI and authenticate in VS Code when PAC has active auth but PacContext is not populated', async () => {
+            const mockAuthResults = [
+                { Key: 'OrganizationFriendlyName', Value: 'Test Organization' },
+                { Key: 'EntraIdObjectId', Value: 'test-object-id' }
+            ];
+            mockPacWrapper.activeAuth.resolves({ Status: 'Success', Results: mockAuthResults } as unknown as PacAuthWhoOutput);
+            mockPacWrapper.activeOrg.resolves({
+                Status: 'Success',
+                Results: { OrgId: 'org-id', UniqueName: 'testorg', FriendlyName: 'Test Organization', OrgUrl: 'https://test.crm.dynamics.com', UserEmail: 'test@test.com', UserId: 'user-id', EnvironmentId: 'env-id' }
+            } as unknown as PacOrgWhoOutput);
+            sandbox.stub(CommonUtility, 'extractAuthInfo').returns({
+                OrganizationFriendlyName: 'Test Organization',
+                EntraIdObjectId: 'test-object-id'
+            } as unknown as AuthInfo);
+            sandbox.stub(CommonUtility, 'extractOrgInfo').returns({
+                OrgId: 'org-id',
+                OrgUrl: 'https://test.crm.dynamics.com'
+            } as OrgInfo);
+            const setContextStub = sandbox.stub(PacContext, 'setContext');
+
+            await createNewAuthProfile(mockPacWrapper);
+
+            expect(mockPacWrapper.activeAuth.calledOnce).to.be.true;
+            expect(setContextStub.calledOnce).to.be.true;
+            expect(mockAuthenticationInVsCode.calledOnce).to.be.true;
+            expect(mockCreateAuthProfileExp.called).to.be.false;
+        });
+
+        it('should fall through to createAuthProfileExp when PAC CLI has no active auth', async () => {
+            mockPacWrapper.activeAuth.resolves({ Status: 'Failed', Results: [] } as unknown as PacAuthWhoOutput);
+            mockCreateAuthProfileExp.resolves({ Status: 'Failed', Results: null });
+
+            await createNewAuthProfile(mockPacWrapper);
+
+            expect(mockPacWrapper.activeAuth.calledOnce).to.be.true;
+            expect(mockCreateAuthProfileExp.calledOnce).to.be.true;
+        });
+
+        it('should fall through to createAuthProfileExp when PAC CLI activeAuth throws', async () => {
+            mockPacWrapper.activeAuth.rejects(new Error('PAC CLI error'));
+            mockCreateAuthProfileExp.resolves({ Status: 'Failed', Results: null });
+
+            await createNewAuthProfile(mockPacWrapper);
+
+            expect(mockPacWrapper.activeAuth.calledOnce).to.be.true;
+            expect(mockCreateAuthProfileExp.calledOnce).to.be.true;
+        });
+    });
+
+    describe('syncAuthFromPacCli', () => {
+        let mockPacWrapper: sinon.SinonStubbedInstance<PacWrapper>;
+
+        beforeEach(() => {
+            mockPacWrapper = sandbox.createStubInstance(PacWrapper);
+        });
+
+        it('should return true and set context when PAC CLI has valid auth with OrganizationFriendlyName', async () => {
+            const mockAuthResults = [
+                { Key: 'OrganizationFriendlyName', Value: 'Test Organization' }
+            ];
+            mockPacWrapper.activeAuth.resolves({ Status: 'Success', Results: mockAuthResults } as unknown as PacAuthWhoOutput);
+            mockPacWrapper.activeOrg.resolves({
+                Status: 'Success',
+                Results: { OrgId: 'org-id', UniqueName: 'testorg', FriendlyName: 'Test Org', OrgUrl: 'https://test.crm.dynamics.com', UserEmail: 'test@test.com', UserId: 'user-id', EnvironmentId: 'env-id' }
+            } as unknown as PacOrgWhoOutput);
+            sandbox.stub(CommonUtility, 'extractAuthInfo').returns({
+                OrganizationFriendlyName: 'Test Organization'
+            } as unknown as AuthInfo);
+            sandbox.stub(CommonUtility, 'extractOrgInfo').returns({
+                OrgId: 'org-id', OrgUrl: 'https://test.crm.dynamics.com'
+            } as OrgInfo);
+            const setContextStub = sandbox.stub(PacContext, 'setContext');
+
+            const result = await syncAuthFromPacCli(mockPacWrapper);
+
+            expect(result).to.be.true;
+            expect(setContextStub.calledOnce).to.be.true;
+        });
+
+        it('should return false when PAC CLI has no active auth', async () => {
+            mockPacWrapper.activeAuth.resolves({ Status: 'Failed', Results: [] } as unknown as PacAuthWhoOutput);
+
+            const result = await syncAuthFromPacCli(mockPacWrapper);
+
+            expect(result).to.be.false;
+        });
+
+        it('should return false when PAC CLI auth has empty OrganizationFriendlyName', async () => {
+            const mockAuthResults = [
+                { Key: 'OrganizationFriendlyName', Value: '' }
+            ];
+            mockPacWrapper.activeAuth.resolves({ Status: 'Success', Results: mockAuthResults } as unknown as PacAuthWhoOutput);
+            sandbox.stub(CommonUtility, 'extractAuthInfo').returns({
+                OrganizationFriendlyName: ''
+            } as unknown as AuthInfo);
+
+            const result = await syncAuthFromPacCli(mockPacWrapper);
+
+            expect(result).to.be.false;
+        });
+
+        it('should return false when PAC CLI activeAuth throws', async () => {
+            mockPacWrapper.activeAuth.rejects(new Error('PAC CLI error'));
+
+            const result = await syncAuthFromPacCli(mockPacWrapper);
+
+            expect(result).to.be.false;
+        });
+
+        it('should still succeed when activeOrg fails', async () => {
+            const mockAuthResults = [
+                { Key: 'OrganizationFriendlyName', Value: 'Test Organization' }
+            ];
+            mockPacWrapper.activeAuth.resolves({ Status: 'Success', Results: mockAuthResults } as unknown as PacAuthWhoOutput);
+            mockPacWrapper.activeOrg.rejects(new Error('Org fetch failed'));
+            sandbox.stub(CommonUtility, 'extractAuthInfo').returns({
+                OrganizationFriendlyName: 'Test Organization'
+            } as unknown as AuthInfo);
+            const setContextStub = sandbox.stub(PacContext, 'setContext');
+
+            const result = await syncAuthFromPacCli(mockPacWrapper);
+
+            expect(result).to.be.true;
+            expect(setContextStub.calledOnce).to.be.true;
+            // Should be called with authInfo and null orgInfo
+            expect(setContextStub.firstCall.args[1]).to.be.null;
         });
     });
 });
