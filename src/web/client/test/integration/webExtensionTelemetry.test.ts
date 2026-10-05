@@ -34,6 +34,21 @@ describe("webExtensionTelemetry", () => {
     });
     const webExtensionTelemetry = new WebExtensionTelemetry();
 
+    it("serializes logical download outcomes into EventInfo properties, excluding absent fields", () => {
+        webExtensionTelemetry.sendFileDownloadTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_FILE_DOWNLOAD_COMPLETED, {
+            downloadOperationId: 'operation-id', mode: 'reload', schema: 'enhanced', featureEnabled: true,
+            mechanism: 'blocks', initialHttpStatus: 413, finalHttpStatus: 200,
+            sizeBucket: '16To128MiB', blockCount: 25, retryCount: 1, durationMs: 4000, outcome: 'succeeded',
+        });
+        assert.calledOnce(traceInfoStub);
+        expect(traceInfoStub.firstCall.args[1]).to.deep.equal({
+            downloadOperationId: 'operation-id', mode: 'reload', schema: 'enhanced', featureEnabled: 'true',
+            mechanism: 'blocks', initialHttpStatus: '413', finalHttpStatus: '200',
+            sizeBucket: '16To128MiB', blockCount: '25', retryCount: '1', durationMs: '4000', outcome: 'succeeded',
+        });
+        expect(traceInfoStub.firstCall.args[1]).not.to.have.property('failureStage');
+    });
+
     it("sendExtensionInitPathParametersTelemetry_whenSendProperValues_shouldCallWithAllValidData", () => {
         //Act
         const appName: string | undefined = "PowerPages";

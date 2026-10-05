@@ -31,7 +31,8 @@ import {
     updateFileDirtyChanges,
     updateFileEntityEtag,
 } from "../utilities/fileAndEntityUtil";
-import { getImageFileContent, getRangeForMultilineMatch, isImageFileSupportedForEdit, isPortalVersionV1, isVersionControlEnabled, updateFileContentInFileDataMap } from "../utilities/commonUtil";
+import { getImageFileContent, getRangeForMultilineMatch, isImageFileSupportedForEdit, isPortalVersionV1, isPortalVersionV2, isVersionControlEnabled, updateFileContentInFileDataMap } from "../utilities/commonUtil";
+import { schemaEntityName } from "../schema/constants";
 import { IFileInfo, ISearchQueryMatch, ISearchQueryResults } from "../common/interfaces";
 import { ERROR_CONSTANTS } from "../../../common/ErrorConstants";
 import { EnableServerLogicChanges } from "../../../common/ecs-features/ecsFeatureGates";
@@ -137,8 +138,12 @@ export class PortalsFS implements vscode.FileSystemProvider {
         let data = await this._lookup(uri, true);
 
         const isLazyLoadedWebFile = isWebFileWithLazyLoad(uri.fsPath);
+        const fileDetails = WebExtensionContext.fileDataMap.getFileMap.get(uri.fsPath);
+        const isUnloadedEnhancedContent = isPortalVersionV2() && fileDetails?.attributePath.source === 'filecontent'
+            && (fileDetails.entityName === schemaEntityName.WEBFILES || fileDetails.entityName === schemaEntityName.SERVERLOGICS)
+            && !fileDetails.isContentLoaded;
         if ((!data && isValidFilePath(uri.fsPath))
-            || isLazyLoadedWebFile) {
+            || isLazyLoadedWebFile || isUnloadedEnhancedContent) {
             await this._loadFileFromDataverseToVFS(uri);
             data = await this._lookup(uri, true);
         }
@@ -265,7 +270,11 @@ export class PortalsFS implements vscode.FileSystemProvider {
         throw new Error("Method not implemented.");
     }
 
-    async updateMtime(uri: vscode.Uri, latestContent: string): Promise<void> {
+    async readCommittedFile(uri: vscode.Uri): Promise<Uint8Array> {
+        return (await this._lookupAsFile(uri, false)).data;
+    }
+
+    async updateMtime(uri: vscode.Uri, latestContent: string | Uint8Array): Promise<void> {
         const basename = path.posix.basename(uri.path);
         const parent = await this._lookupParentDirectory(uri);
         const entry = parent.entries.get(basename);
@@ -279,8 +288,8 @@ export class PortalsFS implements vscode.FileSystemProvider {
         }
 
         entry.mtime = entry.mtime + 1;
-        entry.data = new TextEncoder().encode(latestContent);
-        entry.size = entry.size + 1;
+        entry.data = typeof latestContent === 'string' ? new TextEncoder().encode(latestContent) : latestContent;
+        entry.size = typeof latestContent === 'string' ? entry.size + 1 : latestContent.byteLength;
         this._fireSoon({ type: vscode.FileChangeType.Changed, uri });
     }
 
@@ -643,14 +652,22 @@ export class PortalsFS implements vscode.FileSystemProvider {
         }
 
         // load rest of the files
-        await fetchDataFromDataverseAndUpdateVFS(this);
+        const summary = await fetchDataFromDataverseAndUpdateVFS(this);
 
         WebExtensionContext.telemetry.sendInfoTelemetry(
-            webExtensionTelemetryEventNames.WEB_EXTENSION_PREPARE_WORKSPACE_SUCCESS,
+            summary.failedContentLoads > 0
+                ? webExtensionTelemetryEventNames.WEB_EXTENSION_PREPARE_WORKSPACE_PARTIAL
+                : webExtensionTelemetryEventNames.WEB_EXTENSION_PREPARE_WORKSPACE_SUCCESS,
             {
                 duration: (new Date().getTime() - WebExtensionContext.extensionActivationTime).toString(),
+                outcome: summary.failedContentLoads === 0 ? 'complete'
+                    : summary.preparedRecords > 0 ? 'partial' : 'failed',
+                failedContentLoads: String(summary.failedContentLoads),
             }
         );
+        if (summary.failedContentLoads > 0) {
+            vscode.window.showErrorMessage(vscode.l10n.t("Some file content could not be loaded from Dataverse. Open the affected files to retry."));
+        }
     }
 
     private async _loadFileFromDataverseToVFS(uri: vscode.Uri) {
@@ -668,7 +685,8 @@ export class PortalsFS implements vscode.FileSystemProvider {
                     entityId: entityId,
                     entityName: entityName,
                     fileName: fileName
-                } as IFileInfo
+                } as IFileInfo,
+                WebExtensionContext.fileDataMap.getFileMap.get(uri.fsPath)?.isContentLoaded ? 'reload' : 'lazy',
             );
 
             WebExtensionContext.telemetry.sendInfoTelemetry(

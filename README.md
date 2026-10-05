@@ -45,6 +45,8 @@ Debug Power Apps component framework (PCF) controls with a built-in debugger tha
 
 The extension supports VS Code for the Web with a tailored experience including a Power Pages file explorer, real-time collaboration view (see who's editing the site), and a getting-started walkthrough.
 
+Enhanced-model file-column downloads can recover HTTP 413 through a controlled-rollout Dataverse block-download fallback. See [web file download recovery and reliability](docs/web-file-downloads.md) for scope, storage limitations, and the logical-operation dashboard contract.
+
 ## Requirements
 
 - VS Code **1.101.0** or later

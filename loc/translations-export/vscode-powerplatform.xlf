@@ -1439,6 +1439,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
       <source xml:lang="en">Site visibility: {0}</source>
       <note>{0} is the site visibility</note>
     </trans-unit>
+    <trans-unit id="++CODE++596fcd00b5762c043bf0ff23b63f2417586fe489f421e0a53e528d47d002789a">
+      <source xml:lang="en">Some file content could not be loaded from Dataverse. Open the affected files to retry.</source>
+    </trans-unit>
     <trans-unit id="++CODE++27dd8c8e67d15783f51c6b71ed60d5350731daa85b418f1e84c2e5828ae2d54e">
       <source xml:lang="en">Some references might be broken. Please check diagnostics for details.</source>
     </trans-unit>
@@ -1606,6 +1609,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++01e5c349da59b88cb8c4552d036f670c1a5d824abf91fe9539d408e89d9c9445">
       <source xml:lang="en">Unable to generate VS Code Desktop URL</source>
+    </trans-unit>
+    <trans-unit id="++CODE++cba2166f4a7e24db42e4e84b2b31055442bf519a9e58106ea645e06911dc796d">
+      <source xml:lang="en">Unable to load file content from Dataverse.</source>
     </trans-unit>
     <trans-unit id="++CODE++3747890a3bfddec3123ce9a40cdd15f278d1335b382f80beb52bf18101ab02c2">
       <source xml:lang="en">Unable to locate website root folder.</source>

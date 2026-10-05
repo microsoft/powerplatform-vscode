@@ -10,17 +10,21 @@ import { httpMethod, ODATA_ETAG } from "../common/constants";
 import { IAttributePath } from "../common/interfaces";
 import { PortalsFS } from "../dal/fileSystemProvider";
 import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
-import { getAttributeContent } from "../utilities/commonUtil";
+import { getAttributeContent, isPortalVersionV2 } from "../utilities/commonUtil";
 import {
     getFileEntityEtag,
     getFileEntityId,
     getFileEntityName,
     updateEntityEtag,
     updateFileEntityEtag,
+    updateDiffViewTriggered,
 } from "../utilities/fileAndEntityUtil";
 import { getRequestURL } from "../utilities/urlBuilderUtil";
 import WebExtensionContext from "../WebExtensionContext";
 import { createHttpResponseError, isHttpResponseError } from "../utilities/errorHandlerUtil";
+import { schemaEntityName } from "../schema/constants";
+import { downloadDataverseFileContent } from "./dataverseFileContentDownloadService";
+import { FileContentDownloadError } from "./fileContentDownloadService";
 
 export class EtagHandlerService {
     public static async getLatestFileContentAndUpdateMetadata(
@@ -48,6 +52,8 @@ export class EtagHandlerService {
         const attributePath: IAttributePath =
             WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath)
                 ?.attributePath as IAttributePath;
+        const enhancedFileColumn = isPortalVersionV2() && attributePath?.source === 'filecontent'
+            && (entityName === schemaEntityName.WEBFILES || entityName === schemaEntityName.SERVERLOGICS);
 
         try {
             const requestInit: RequestInit = {
@@ -84,6 +90,23 @@ export class EtagHandlerService {
 
             if (response.ok) {
                 const result = await response.json();
+                if (enhancedFileColumn) {
+                    const contentUrl = getRequestURL(dataverseOrgUrl, entityName, entityId, httpMethod.GET,
+                        false, true, '({entityId})/filecontent');
+                    await downloadDataverseFileContent(contentUrl, entityName, entityId, 'etag', async (bytes) => {
+                        const uri = WebExtensionContext.rootDirectory.with({ path: fileFsPath.replace(/\\/g, '/') });
+                        const current = await portalFs.readCommittedFile(uri);
+                        const changed = current.length !== bytes.length || current.some((byte, index) => byte !== bytes[index]);
+                        if (changed) {
+                            await portalFs.updateMtime(uri, bytes);
+                            updateDiffViewTriggered(fileFsPath, true);
+                            updateFileEntityEtag(fileFsPath, result[ODATA_ETAG]);
+                            WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_DIFF_VIEW_TRIGGERED);
+                        }
+                        updateEntityEtag(entityId, result[ODATA_ETAG]);
+                    });
+                    return '';
+                }
                 const currentContent = new TextDecoder().decode(
                     await portalFs.readFile(vscode.Uri.parse(fileFsPath))
                 );
@@ -117,6 +140,18 @@ export class EtagHandlerService {
                 this.getLatestFileContentAndUpdateMetadata.name
             );
         } catch (error) {
+            if (enhancedFileColumn) {
+                const diagnostic = error instanceof FileContentDownloadError ? error
+                    : new Error('Enhanced file content refresh failed');
+                WebExtensionContext.telemetry.sendErrorTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_ETAG_HANDLER_SERVICE_ERROR,
+                    this.getLatestFileContentAndUpdateMetadata.name, diagnostic.message, diagnostic
+                );
+                throw error instanceof FileContentDownloadError && error.status === 404
+                    || isHttpResponseError(error) && error.httpDetails?.statusCode === 404
+                    ? vscode.FileSystemError.FileNotFound()
+                    : vscode.FileSystemError.Unavailable(vscode.l10n.t("Unable to load file content from Dataverse."));
+            }
             const errorMessage = (error as Error)?.message;
             if (isHttpResponseError(error) && error.httpDetails) {
                 // HTTP error - use API failure telemetry with status code

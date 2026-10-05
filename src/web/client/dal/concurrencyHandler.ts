@@ -35,13 +35,15 @@ export class ConcurrencyHandler {
     public async handleRequest(
         requestInfo: RequestInfo,
         requestInit?: RequestInit,
-        onUnauthorized?: () => Promise<string>
+        onUnauthorized?: () => Promise<string>,
+        onRetry?: () => void
     ) {
         let retryCount = 0;
 
         try {
             return await this._wrappedPolicy.execute(async (context) => {
                 if (context.attempt > 0) {
+                    onRetry?.();
                     retryCount = context.attempt;
                     WebExtensionContext.telemetry.sendInfoTelemetry(
                         webExtensionTelemetryEventNames.WEB_EXTENSION_REQUEST_RETRY,
@@ -62,6 +64,7 @@ export class ConcurrencyHandler {
                 if (response.status === 401 && onUnauthorized) {
                     const newToken = await onUnauthorized();
                     if (newToken) {
+                        onRetry?.();
                         WebExtensionContext.telemetry.sendInfoTelemetry(
                             webExtensionTelemetryEventNames.WEB_EXTENSION_TOKEN_REFRESH_RETRY,
                             {
