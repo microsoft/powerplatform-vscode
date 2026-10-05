@@ -14,6 +14,12 @@ on:
 jobs:
   translations-export:
     name: Export Translations
+    # Dependabot-triggered runs get no Actions secrets, so the app token step
+    # fails on POWER_PAGES_PUBLIC_GITHUB_APP_PRIVATE_KEY. Dependabot only edits
+    # manifests, lockfiles, and workflows, never localized source strings, so
+    # the export has nothing to update on its PRs.
+    # https://docs.github.com/en/code-security/dependabot/troubleshooting-dependabot/troubleshooting-dependabot-on-github-actions
+    if: github.actor != 'dependabot[bot]'
     runs-on: windows-latest
     permissions:
       contents: write
