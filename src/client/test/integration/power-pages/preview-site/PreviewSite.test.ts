@@ -13,6 +13,7 @@ import { Events } from '../../../../power-pages/preview-site/Constants';
 import ArtemisContext from '../../../../ArtemisContext';
 import PacContext from '../../../../pac/PacContext';
 import * as sinon from 'sinon';
+import { SiteVisibility } from '../../../../power-pages/actions-hub/models/SiteVisibility';
 
 describe('PreviewSite', () => {
     let sandbox: sinon.SinonSandbox;
@@ -180,6 +181,46 @@ describe('PreviewSite', () => {
             // Assert
             expect(PreviewSite['_websiteDetails']).to.deep.equal({ url: '', dataModel: 'Enhanced' });
             expect(getWebSiteUrlStub.calledOnceWith(mockWorkspaceFolders)).to.be.true;
+        });
+    });
+
+    describe('launchSitePreviewWithinVsCode', () => {
+        let executeCommandStub: sinon.SinonStub;
+
+        beforeEach(() => {
+            executeCommandStub = sandbox.stub(vscode.commands, 'executeCommand');
+            sandbox.stub(vscode.window, 'withProgress').callsFake(async (_options, task) => {
+                return await task({ report: sandbox.stub() }, {} as vscode.CancellationToken);
+            });
+            sandbox.stub(PreviewSite as unknown as { showUploadWarning: () => Promise<void> }, 'showUploadWarning').resolves();
+        });
+
+        it('should open the integrated browser when the VS Code command is available', async () => {
+            sandbox.stub(vscode.commands, 'getCommands').resolves(['workbench.action.browser.open']);
+
+            await PreviewSite.launchSitePreviewWithinVsCode('https://test-site.com', 1, SiteVisibility.Public);
+
+            expect(executeCommandStub.calledOnceWith('workbench.action.browser.open', 'https://test-site.com')).to.be.true;
+        });
+
+        it('should fall back to Edge Tools when the integrated browser command is not available', async () => {
+            sandbox.stub(vscode.commands, 'getCommands').resolves(['vscode-edge-devtools.launch']);
+            sandbox.stub(vscode.extensions, 'getExtension').withArgs('ms-edgedevtools.vscode-edge-devtools').returns({} as vscode.Extension<unknown>);
+
+            await PreviewSite.launchSitePreviewWithinVsCode('https://test-site.com', 1, SiteVisibility.Public);
+
+            expect(executeCommandStub.calledOnceWith('vscode-edge-devtools.launch', { launchUrl: 'https://test-site.com' })).to.be.true;
+        });
+
+        it('should prompt to install Edge Tools when no preview browser is available', async () => {
+            sandbox.stub(vscode.commands, 'getCommands').resolves([]);
+            sandbox.stub(vscode.extensions, 'getExtension').withArgs('ms-edgedevtools.vscode-edge-devtools').returns(undefined);
+            const showWarningMessageStub = sandbox.stub(vscode.window, 'showWarningMessage');
+
+            await PreviewSite.launchSitePreviewWithinVsCode('https://test-site.com', 1, SiteVisibility.Public);
+
+            expect(showWarningMessageStub.calledOnce).to.be.true;
+            expect(executeCommandStub.called).to.be.false;
         });
     });
 });
