@@ -452,6 +452,10 @@ Check the CodeQL extension panel for available queries.</source>
         <source xml:lang="en">Command completed successfully.</source>
         <target state="translated">Команда выполнена.</target>
       </trans-unit>
+      <trans-unit id="++CODE++e8cacfa068b4ad8d4a3091ed1cb3b2a523474946a4d6f02e1e46743b51ef12a2">
+        <source xml:lang="en">Command copied: {0}.</source>
+        <target state="translated">Команда скопирована: {0}.</target>
+      </trans-unit>
       <trans-unit id="++CODE++ff61c2f710070e267638038dfbd105cfffe4de4d37580f566f4537b304b6ca84">
         <source xml:lang="en">Command failed with exit code {0}: {1}</source>
         <target state="translated">Сбой команды с кодом завершения {0}: {1}</target>
@@ -495,6 +499,10 @@ Check the CodeQL extension panel for available queries.</source>
         <source xml:lang="en">Comparison has been refreshed with the latest data from the environment.</source>
         <target state="translated">Сравнение обновлено с использованием последних данных из среды.</target>
       </trans-unit>
+      <trans-unit id="++CODE++22a970d2e5b1cc233e462be7c7b64e135a275bb09d83d87683bf4236c43113a1">
+        <source xml:lang="en">Completed</source>
+        <target state="translated">Завершено</target>
+      </trans-unit>
       <trans-unit id="++CODE++eebdd24a77d9ad32222660c07777163bf5f6732df2b172351f3f8d5783e4f529">
         <source xml:lang="en">Confirm</source>
         <target state="translated">Подтвердить</target>
@@ -522,6 +530,18 @@ Check the CodeQL extension panel for available queries.</source>
       <trans-unit id="++CODE++b04e6767bf84555605710be1a94e48ddcbcb820353b859da427d189cf25395b4">
         <source xml:lang="en">Copilot illustration</source>
         <target state="translated">Иллюстрация Copilot</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e21f935f11d7e966dbbae78da9daa378fe8142a14e7c0cd7434183005faa6c5c">
+        <source xml:lang="en">Copy</source>
+        <target state="translated">Копировать</target>
+      </trans-unit>
+      <trans-unit id="++CODE++c6cac21fa62a9d3dce28334dea3259b5206110c5f970b1e324b074b8027e7e2d">
+        <source xml:lang="en">Copy command: {0}</source>
+        <target state="translated">Копировать команду: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++4ba9f9990571f8101520dacd32eee1b3b5ba250d0334a59a3bc32754d44b75fc">
+        <source xml:lang="en">Copy isn't available with this shell or AI assistant. Set up a supported shell or assistant, then select Try again.</source>
+        <target state="translated">Копирование недоступно в этой оболочке или ИИ-помощнике. Настройте поддерживаемую оболочку или помощника, а затем выберите "Повторить попытку".</target>
       </trans-unit>
       <trans-unit id="++CODE++b749e205302cc21952a1e9646569ca0af9017cc5f39dd741830551bdd4ae823e">
         <source xml:lang="en">Copy to clipboard</source>
@@ -1370,6 +1390,10 @@ URL-адрес: {1}
         <source xml:lang="en">Not installed</source>
         <target state="translated">Не установлено</target>
       </trans-unit>
+      <trans-unit id="++CODE++9ccacf99fee1e01744bd9b63ba2e979e1531a5416e451af206875fb6be192a43">
+        <source xml:lang="en">Not needed</source>
+        <target state="translated">Не требуется</target>
+      </trans-unit>
       <trans-unit id="++CODE++b2b461f3eae470e95fdcfd61a3cbe6680e84d0a7221a305f696ce44843badc89">
         <source xml:lang="en">Object ID: {0}</source>
         <note>{0} is the Object ID</note>
@@ -1418,6 +1442,10 @@ URL-адрес: {1}
       <trans-unit id="++CODE++6dc2f9495e93cbb3f6e1c43832f9465a45ac93bc56c801a3ed34b72a5b1e02cd">
         <source xml:lang="en">Open installation and reload options.</source>
         <target state="translated">Открыть параметры установки и перезагрузки.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++1f5d35890264925fe4d7994f37e97eacaa417c77079d875475f138cea85e6e33">
+        <source xml:lang="en">Open {0} in your site folder: {1}. Copy and run only the commands you still need, one at a time and in order. Use the read-only checks before steps marked Runs only if needed. Stop if a command fails.</source>
+        <target state="translated">Откройте {0} в папке сайта: {1}. Скопируйте и выполните только те команды, которые по-прежнему нужно выполнить, по одной и по порядку. Перед шагами с пометкой "Выполняется только при необходимости" используйте проверки только для чтения. Если команда завершится с ошибкой, остановитесь.</target>
       </trans-unit>
       <trans-unit id="++CODE++87fe691d426d47ee588ac957e12a9936b94fe6d70fd9ef97c92f7af1671ed9a0">
         <source xml:lang="en">Opening in VS Code Desktop. If it doesn't open or shows an error, you may need to install VS Code or update the Power Platform extension.</source>
@@ -1648,6 +1676,10 @@ URL-адрес: {1}
         <source xml:lang="en">Results opened in SARIF viewer successfully.</source>
         <target state="translated">Результаты успешно открыты в средстве просмотра SARIF.</target>
       </trans-unit>
+      <trans-unit id="++CODE++bc29982d06f17760bebfb504da8ca76a0c27c9d4b01d0d43c5cc4a0810ea21db">
+        <source xml:lang="en">Review the commands for this setup.</source>
+        <target state="translated">Просмотрите команды для этой настройки.</target>
+      </trans-unit>
       <trans-unit id="++CODE++110263b2ea0ce4fd85fdbbf9a6f2c7e5f0cda8f6867e799702198a55ad507b2d">
         <source xml:lang="en">Review the details, then start a guided conversation with {0}. You don't need command-line experience.</source>
         <target state="translated">Ознакомьтесь с подробными сведениями, а затем начните управляемую беседу с {0}. Опыт работы с командной строкой не требуется.</target>
@@ -1699,10 +1731,6 @@ URL-адрес: {1}
       <trans-unit id="++CODE++0134bc37f2fdeb11daa9e760ecee0ef9706989b33f77a38daadb8b7aae685749">
         <source xml:lang="en">Saving your file ...</source>
         <target state="translated">Сохранение файла...</target>
-      </trans-unit>
-      <trans-unit id="++CODE++05b1250bd1ca036d3168f272f645bbbbd30c3a500b39a05f5e6cdabb726da5de">
-        <source xml:lang="en">See the exact commands VS Code might run.</source>
-        <target state="translated">Просмотрите точные команды, которые может выполнить VS Code.</target>
       </trans-unit>
       <trans-unit id="++CODE++e597da9c984517f802536a83c825cd4f017898c5f28030fe1f62fb94f5228828">
         <source xml:lang="en">Select Folder</source>
@@ -1785,6 +1813,10 @@ URL-адрес: {1}
         <source xml:lang="en">Session ID: {0}</source>
         <note>{0} is the Session ID</note>
         <target state="translated">ИД сеанса: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e5b2f2a712b0f13982d3061761231ae5d94cca96331ced7b6bef9c83b1758062">
+        <source xml:lang="en">Set up a compatible shell to see this command.</source>
+        <target state="translated">Настройте совместимую оболочку, чтобы просмотреть эту команду.</target>
       </trans-unit>
       <trans-unit id="++CODE++7013af4c42fe43802a9e8b0affc4f521fcd126160569969fb2ec09e1b7c422b1">
         <source xml:lang="en">Setup</source>
@@ -1960,10 +1992,6 @@ URL-адрес: {1}
         <note>{0} is the Tenant ID</note>
         <target state="translated">ИД клиента: {0}</target>
       </trans-unit>
-      <trans-unit id="++CODE++a27cc27da14433694d70798df825768186b79aa0773e9eda9e040c7281dd6f49">
-        <source xml:lang="en">Terminal shell integration is turned off. Turn on Terminal › Integrated: Shell Integration Enabled in Settings, then try again. No site files were changed.</source>
-        <target state="translated">Интеграция оболочки терминала отключена. Включите параметр "Терминал" › "Интеграция: интеграция оболочки включена" в параметрах и повторите попытку. Файлы сайта не изменены.</target>
-      </trans-unit>
       <trans-unit id="++CODE++438c442a839dca3bb4dbecd0421f454f268650517fe631e5900233b73a874bc7">
         <source xml:lang="en">The CodeQL extension is required to run this command. Do you want to install it now?</source>
         <target state="translated">Для выполнения этой команды требуется расширение CodeQL. Установить?</target>
@@ -1997,10 +2025,6 @@ URL-адрес: {1}
         <source xml:lang="en">The preview shown is for published changes. Please publish any pending changes to see them in the preview.</source>
         <target state="translated">Предварительный просмотр предназначен для опубликованных изменений. Опубликуйте все ожидающие изменения, чтобы увидеть их в режиме предварительного просмотра.</target>
       </trans-unit>
-      <trans-unit id="++CODE++87d2c1cf91965bad3c2bd4611607bdcab295c9136027635e287726a1c1b7cf4c">
-        <source xml:lang="en">The terminal wasn't ready in time. Close terminals you don't need, then try again. No site files were changed.</source>
-        <target state="translated">Терминал не был готов вовремя. Закройте ненужные терминалы и повторите попытку. Файлы сайта не изменены.</target>
-      </trans-unit>
       <trans-unit id="++CODE++1f362261e8bb9564245fa7e590732de71b5f6cbb3e9963a8d8573b51ae18cbfe">
         <source xml:lang="en">The website was not found in the selected environment. Please select a different environment.</source>
         <target state="translated">Веб-сайт не найден в выбранной среде. Выберите другую среду.</target>
@@ -2021,21 +2045,13 @@ URL-адрес: {1}
         <source xml:lang="en">There's a problem on the back end</source>
         <target state="translated">Возникла проблема на серверной стороне</target>
       </trans-unit>
-      <trans-unit id="++CODE++f7f5ca75496675a27d2aec3a9ec03d0919bdcfec6106d3090b53e5dadfde99bf">
-        <source xml:lang="en">This AI assistant installation can't safely receive your site description. Reinstall the assistant, then try again. No site files were changed.</source>
-        <target state="translated">Эта установка ИИ-помощника не может безопасно получить описание сайта. Переустановите помощника и повторите попытку. Файлы сайта не изменены.</target>
+      <trans-unit id="++CODE++1be1e2bab29bc0b801421557148a27b906249cc1a286e9717a03a8ed1a16cf81">
+        <source xml:lang="en">This command can't be copied. Check its status and the manual setup instructions.</source>
+        <target state="translated">Эту команду нельзя скопировать. Проверьте ее состояние и инструкции по настройке вручную.</target>
       </trans-unit>
       <trans-unit id="++CODE++bcfc420c0358eb6f248fa6328797cfa38fa121baea6320a623280a0d34eeee75">
         <source xml:lang="en">This file was exported with a newer version of the extension. Please update your extension to import this file.</source>
         <target state="translated">Этот файл был экспортирован в более новой версии расширения. Обновите расширение для импорта этого файла.</target>
-      </trans-unit>
-      <trans-unit id="++CODE++d3cc212460528b716560738493b1e00d46a647d9f84fa29d39618ad3d02a7868">
-        <source xml:lang="en">This terminal profile isn't supported. Choose PowerShell 7 or Bash as your default terminal profile, then try again. No site files were changed.</source>
-        <target state="translated">Этот профиль терминала не поддерживается. Выберите PowerShell 7 или Bash в качестве профиля терминала по умолчанию и повторите попытку. Файлы сайта не изменены.</target>
-      </trans-unit>
-      <trans-unit id="++CODE++44faf29eeab668e73b536af1c309bf3245a39fd5b3d1bc98a0be7d9253a9d29b">
-        <source xml:lang="en">This terminal profile isn't supported. Choose PowerShell, Bash, Zsh, or Fish as your default terminal profile, then try again. No site files were changed.</source>
-        <target state="translated">Этот профиль терминала не поддерживается. Выберите PowerShell, Bash, Zsh или Fish в качестве профиля терминала по умолчанию и повторите попытку. Файлы сайта не изменены.</target>
       </trans-unit>
       <trans-unit id="++CODE++e7de2855a45712e1d967171e4d86f37d4014c2f80a515bc552ed4c4a2984c3e4">
         <source xml:lang="en">This will close all active comparison views. Your local files will not be affected.</source>
@@ -2057,6 +2073,10 @@ URL-адрес: {1}
         <source xml:lang="en">Timestamp: {0}</source>
         <note>{0} is the timestamp</note>
         <target state="translated">Метка времени: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++34098ed5be77dc7ed419b3a1e3cadc347b13e439bca4db44e5db701411766e82">
+        <source xml:lang="en">To continue manually, open Technical details and select Copy for the commands you still need.</source>
+        <target state="translated">Чтобы продолжить вручную, откройте раздел "Технические сведения" и выберите "Копировать" для команд, которые по-прежнему требуются.</target>
       </trans-unit>
       <trans-unit id="++CODE++4f8c4d58a87feaaff06fd5f9cb84370ab4a42220bf1e8cbedbca716f8f21c9ee">
         <source xml:lang="en">To know more, see &lt;a href="https://go.microsoft.com/fwlink/?linkid=2206366"&gt;Copilot in Power Pages documentation.</source>
@@ -2214,9 +2234,29 @@ URL-адрес: {1}
         <source xml:lang="en">VS Code - PAC CLI authentication mismatch detected</source>
         <target state="translated">VS Code — обнаружено несоответствие проверки подлинности PAC CLI</target>
       </trans-unit>
+      <trans-unit id="++CODE++5a160eefb4aedc6bcc21a26052eb1f57ebe821a48a00ce4aba595189d22b4286">
+        <source xml:lang="en">VS Code can't run setup in this shell. Choose PowerShell, Bash, Zsh, or Fish as your default shell, restart VS Code, then reopen site setup. Setup commands didn't run.</source>
+        <target state="translated">VS Code не может выполнить настройку в этой оболочке. Выберите PowerShell, Bash, Zsh или Fish в качестве оболочки по умолчанию, перезапустите VS Code, а затем снова откройте настройку сайта. Команды настройки не выполнены.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++973bc39b5d032171d724e1a60afb8fc63ee1b80361645934289434e8b42fb4d9">
+        <source xml:lang="en">VS Code can't safely start this AI assistant with your site description. Install a version with an executable or PowerShell script, then select Try again. Copy isn't available for this installation.</source>
+        <target state="translated">VS Code не может безопасно запустить этот ИИ-помощник с описанием сайта. Установите версию с исполняемым файлом или скриптом PowerShell, а затем выберите "Повторить попытку". Копирование недоступно для этой установки.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++ebe477e775a54cc641bf8adf8942573e4539a66028b0ac0cb8e2ddd7c2e9149b">
+        <source xml:lang="en">VS Code couldn't find PowerShell 7 or Git Bash. Install one, or set its path in the user-level Terminal › Integrated: Profiles: Windows setting. Select Try again. Setup commands didn't run.</source>
+        <target state="translated">VS Code не удалось найти PowerShell 7 или Git Bash. Установите одну из этих оболочек или настройте ее путь в параметре "Терминал" › "Интегрированный: профили: Windows" на уровне пользователя. Выберите "Повторить попытку". Команды настройки не выполнены.</target>
+      </trans-unit>
       <trans-unit id="++CODE++c4b3a95eb9ce3bce70b7fd7d6462e24f10cfc7e81edbf5684aa1cf858c3feb09">
         <source xml:lang="en">VS Code couldn't open the site setup page. Run the command again.</source>
         <target state="translated">VS Code не удалось открыть страницу настройки сайта. Повторите выполнение команды.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++9128159300e2c4763058f0d72424b025162604d7cad504c6a047dfe64db78601">
+        <source xml:lang="en">VS Code couldn't run setup because terminal shell integration is off. Turn on Terminal › Integrated: Shell Integration Enabled in Settings, then select Try again. Setup commands didn't run.</source>
+        <target state="translated">VS Code не удалось выполнить настройку, так как интеграция оболочки терминала отключена. Включите параметр "Терминал" › "Интеграция: интеграция оболочки включена" в параметрах и нажмите "Повторить попытку". Команды настройки не выполнены.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++6c23706c301c0044dc0139f3ade45d60beee0c0e23b404b6c4403e1607eb7a5b">
+        <source xml:lang="en">VS Code couldn't run setup because terminal shell integration wasn't ready. Select Try again. If the issue continues, check the terminal's startup settings. Setup commands didn't run.</source>
+        <target state="translated">VS Code не удалось выполнить настройку, так как интеграция оболочки терминала не была готова. Выберите "Повторить попытку". Если проблема не исчезнет, проверьте параметры запуска терминала. Команды настройки не выполнены.</target>
       </trans-unit>
       <trans-unit id="++CODE++1acc93ac4c64d3eb4ce7ab732ec13e9c225ed10c645415274b729099d3a8074a">
         <source xml:lang="en">VS Code will check the Power Pages Plugin setup</source>
@@ -2254,17 +2294,21 @@ URL-адрес: {1}
         <source xml:lang="en">View setup options</source>
         <target state="translated">Просмотреть параметры настройки</target>
       </trans-unit>
-      <trans-unit id="++CODE++5a0534c093715fddd304f16e9e97295491b5d9bc199f0af9a043f28458a681fb">
-        <source xml:lang="en">We couldn't complete the setup. Review the confirmation page for details.</source>
-        <target state="translated">Не удалось завершить настройку. Ознакомьтесь с подробными сведениями на странице подтверждения.</target>
+      <trans-unit id="++CODE++31b2edd15a101e3d2921ca2aa0329a33fd862d8b380084da718c3f3e6a374e18">
+        <source xml:lang="en">We couldn't complete this step: {0}. Select Try again, or open {1} to review the commands.</source>
+        <target state="translated">Не удалось выполнить этот шаг: {0}. Выберите "Повторить попытку" или откройте {1}, чтобы просмотреть команды.</target>
       </trans-unit>
-      <trans-unit id="++CODE++21962f46ea239176b92249347f4f9a5d837f458465608f54cc17b800f8a4f5a3">
-        <source xml:lang="en">We couldn't complete this step: {0}. Review {1} for more information, or try again. No site files were changed.</source>
-        <target state="translated">Не удалось выполнить этот шаг: {0}. Ознакомьтесь с дополнительными сведениями в {1} или повторите попытку. Файлы сайта не изменены.</target>
+      <trans-unit id="++CODE++0d2d00965d69f953fb734a46f1f59ec3470eb974c916e3ead5138564efd2c52e">
+        <source xml:lang="en">We couldn't complete this step: {0}. Select {1} for installation and reload options, or select Try again.</source>
+        <target state="translated">Не удалось выполнить этот шаг: {0}. Выберите {1} для установки и перезагрузки или нажмите "Повторить попытку".</target>
       </trans-unit>
-      <trans-unit id="++CODE++1d1cb2809cf2c3db087ad98da5b7425c61ae9528a4d51dd2a77c20e08eac64c6">
-        <source xml:lang="en">We couldn't complete this step: {0}. Try again, or select {1}. No site files were changed.</source>
-        <target state="translated">Не удалось выполнить этот шаг: {0}. Повторите попытку или выберите {1}. Файлы сайта не изменены.</target>
+      <trans-unit id="++CODE++b84a701a227722ecce6fccc7605bdefcc2e73342b23ed3b5af46897dbb25ea02">
+        <source xml:lang="en">We couldn't copy the command. Select Copy to try again.</source>
+        <target state="translated">Не удалось скопировать команду. Выберите "Копировать", чтобы повторить попытку.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++96f1abdc79bc5e834e804288e07dafa9207ece7b0fbe52d45156295d0462537a">
+        <source xml:lang="en">We couldn't finish setup. Review the site setup page for next steps.</source>
+        <target state="translated">Не удалось завершить настройку. Ознакомьтесь со страницей настройки сайта, чтобы узнать дальнейшие действия.</target>
       </trans-unit>
       <trans-unit id="++CODE++d3931a85c3e6d17fc7abba40fd4f4497852784b8298407ac65d09d908c4989e3">
         <source xml:lang="en">We couldn't prepare your AI assistant</source>
