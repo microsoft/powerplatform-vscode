@@ -99,6 +99,18 @@ Fix Dependabot security vulnerability in <package-name>
 - <any additional context about breaking changes handled>
 ```
 
+### Referencing Alerts
+
+In commit messages, PR titles and bodies, and comments, cite each alert by its CVE ID (or GHSA ID when it has no CVE), linked to the alert page from the alert's `html_url`:
+
+```markdown
+[CVE-2026-12345](https://github.com/microsoft/powerplatform-vscode/security/dependabot/283)
+```
+
+Write the alert number only inside that full URL.
+GitHub autolinks `#<number>` to the issue or PR with that number, so `#283` points at an unrelated issue or PR, not at Dependabot alert 283.
+Upstream issues and PRs keep the `owner/repo#<number>` form, since those are real issues and PRs.
+
 ## Important Notes
 
 - **Never skip tests** - security fixes should not break functionality
