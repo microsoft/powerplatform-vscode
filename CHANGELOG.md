@@ -1,11 +1,8 @@
 # Change Log - Power Platform Extension
 
 ## 2.0.157
-- Updated Power Platform CLI (pac CLI) to 2.13.1. See the [CLI release notes on NuGet](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/2.13.1). [#1714](https://github.com/microsoft/powerplatform-vscode/pull/1714)
-- Enhancements
-  - Updated translations for Power Pages site setup, including command copying and setup recovery messages. [#1709](https://github.com/microsoft/powerplatform-vscode/pull/1709) [#1711](https://github.com/microsoft/powerplatform-vscode/pull/1711) [#1713](https://github.com/microsoft/powerplatform-vscode/pull/1713)
-- Security
-  - Updated the Axios dependency to 1.20.0 to address security vulnerabilities. [#1710](https://github.com/microsoft/powerplatform-vscode/pull/1710)
+- Updated Power Platform CLI (pac CLI) to 2.13.1. See the [CLI release notes on NuGet](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/2.13.1).
+- Bug fixes and enhancements
 
 ## 2.0.156
 - pac CLI 2.12.2, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
