@@ -149,16 +149,65 @@ function buildHtml(hostDisplayName: string, folderPath: string, plan: PlannedCom
 }
 
 /**
+ * Message a restored panel posts once its document has finished initializing.
+ */
+const RESTORED_PANEL_READY = "agenticCreateRestoredPanelReady";
+
+/**
+ * How long to wait for a restored panel's ready handshake before discarding it anyway. Only
+ * reached if the restored webview never runs scripts, so it is a safety net rather than a timing
+ * assumption.
+ */
+const RESTORED_PANEL_DISPOSE_TIMEOUT_MS = 5000;
+
+/**
+ * Builds the throwaway document shown in a restored panel for the moment before it is discarded.
+ *
+ * It renders nothing. Its only job is to be a complete, self-contained document that reaches a
+ * running script, so the panel can tell us it is safe to dispose.
+ */
+function buildRestoredPanelHtml(): string {
+    const nonce = getNonce();
+
+    return `<!DOCTYPE html>
+<html lang="${escapeHtml(vscode.env.language)}">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-${nonce}';">
+</head>
+<body>
+    <script nonce="${nonce}">
+        acquireVsCodeApi().postMessage({ ready: "${RESTORED_PANEL_READY}" });
+    </script>
+</body>
+</html>`;
+}
+
+/**
  * Registers the serializer VS Code uses when it restores a confirmation panel after a window
  * reload, and discards the restored panel.
  *
  * The panel only carries meaning while the promise returned by
  * {@link showAgenticCreateConfirmPanel} is awaiting a decision. A window reload ends that promise
  * along with its message and dispose listeners, so a restored tab can never resolve anything and
- * its buttons post to a listener that no longer exists. VS Code additionally fails to initialize a
- * webview whose view type has no registered serializer, which reaches the user as
- * "Error loading webview: Could not register service worker". Disposing the panel replaces that
- * dead tab with no tab at all.
+ * its buttons post to a listener that no longer exists. Discarding it replaces that dead tab with
+ * no tab at all.
+ *
+ * Two things make this work, and both are easy to regress:
+ *
+ * 1. `package.json` must declare the `onWebviewPanel:` activation event for this view type.
+ *    VS Code restores webview tabs during workbench startup and fires that event to find an
+ *    owner. `onStartupFinished` is deliberately later, so without the dedicated event this
+ *    serializer is registered after VS Code has already given up, and the restored tab is left
+ *    unclaimed — which the user sees as "Error loading webview: Could not register service
+ *    worker". That tab is then re-restored on every subsequent start, so the error repeats until
+ *    the tab is closed by hand.
+ *
+ * 2. The panel is disposed only once it reports that it has initialized. Tearing down a webview
+ *    that is still loading detaches its document mid-flight, and the service worker registration
+ *    VS Code runs inside every webview then fails with `InvalidStateError` — reaching the user as
+ *    the very same error this serializer exists to prevent. A timeout still discards the panel if
+ *    the handshake never arrives, so a restored tab is never left behind.
  *
  * @returns A disposable that unregisters the serializer.
  */
@@ -167,7 +216,34 @@ export function registerAgenticCreateConfirmPanelSerializer(): vscode.Disposable
         URI_CONSTANTS.AGENTIC_CREATE_CONFIRM_VIEW_TYPE,
         {
             async deserializeWebviewPanel(panel: vscode.WebviewPanel): Promise<void> {
-                panel.dispose();
+                let disposed = false;
+
+                const discard = (): void => {
+                    if (disposed) {
+                        return;
+                    }
+                    disposed = true;
+                    clearTimeout(fallback);
+                    panel.dispose();
+                };
+
+                // Declared after `discard` only because each needs the other; `discard` never
+                // runs before this assignment, since both triggers below are asynchronous.
+                const fallback = setTimeout(discard, RESTORED_PANEL_DISPOSE_TIMEOUT_MS);
+
+                panel.webview.onDidReceiveMessage((message: { ready?: unknown }) => {
+                    if (message?.ready === RESTORED_PANEL_READY) {
+                        discard();
+                    }
+                });
+
+                // Closing the tab by hand beats us to it and leaves nothing to discard.
+                panel.onDidDispose(() => {
+                    disposed = true;
+                    clearTimeout(fallback);
+                });
+
+                panel.webview.html = buildRestoredPanelHtml();
             }
         }
     );

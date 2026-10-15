@@ -192,6 +192,19 @@ describe("showAgenticCreateConfirmPanel", () => {
 describe("registerAgenticCreateConfirmPanelSerializer", () => {
     let sandbox: sinon.SinonSandbox;
 
+    // Must match RESTORED_PANEL_READY in the panel module. Duplicated deliberately so the test
+    // pins the contract rather than restating whatever the implementation happens to use.
+    const READY_MESSAGE = "agenticCreateRestoredPanelReady";
+    const DISPOSE_TIMEOUT_MS = 5000;
+
+    interface FakeRestoredPanel {
+        panel: vscode.WebviewPanel;
+        emitMessage: (message: unknown) => void;
+        emitReady: () => void;
+        dispose: sinon.SinonStub;
+        html: () => string;
+    }
+
     beforeEach(() => {
         sandbox = sinon.createSandbox();
     });
@@ -200,15 +213,58 @@ describe("registerAgenticCreateConfirmPanelSerializer", () => {
         sandbox.restore();
     });
 
-    it("discards a panel restored after a window reload", async () => {
+    const createFakeRestoredPanel = (): FakeRestoredPanel => {
+        const messageEmitter = new vscode.EventEmitter<unknown>();
+        const disposeEmitter = new vscode.EventEmitter<void>();
+        let htmlValue = "";
+        const dispose = sandbox.stub();
+
+        const panel = {
+            webview: {
+                get html() {
+                    return htmlValue;
+                },
+                set html(value: string) {
+                    htmlValue = value;
+                },
+                onDidReceiveMessage: messageEmitter.event,
+                asWebviewUri: (uri: vscode.Uri) => uri,
+                cspSource: "vscode-webview://fake-webview-id"
+            },
+            onDidDispose: disposeEmitter.event,
+            dispose
+        } as unknown as vscode.WebviewPanel;
+
+        return {
+            panel,
+            emitMessage: (message) => messageEmitter.fire(message),
+            emitReady: () => messageEmitter.fire({ ready: READY_MESSAGE }),
+            dispose,
+            html: () => htmlValue
+        };
+    };
+
+    const registerAndCaptureSerializer = (): vscode.WebviewPanelSerializer => {
+        let captured: vscode.WebviewPanelSerializer | undefined;
+
+        sandbox.stub(vscode.window, "registerWebviewPanelSerializer").callsFake(
+            (_viewType: string, panelSerializer: vscode.WebviewPanelSerializer) => {
+                captured = panelSerializer;
+                return { dispose: () => undefined } as vscode.Disposable;
+            }
+        );
+        registerAgenticCreateConfirmPanelSerializer();
+
+        return captured as vscode.WebviewPanelSerializer;
+    };
+
+    it("registers a serializer for the confirmation view type", () => {
         let registeredViewType: string | undefined;
-        let serializer: vscode.WebviewPanelSerializer | undefined;
         const disposable = { dispose: () => undefined } as vscode.Disposable;
 
         sandbox.stub(vscode.window, "registerWebviewPanelSerializer").callsFake(
-            (viewType: string, panelSerializer: vscode.WebviewPanelSerializer) => {
+            (viewType: string) => {
                 registeredViewType = viewType;
-                serializer = panelSerializer;
                 return disposable;
             }
         );
@@ -217,12 +273,90 @@ describe("registerAgenticCreateConfirmPanelSerializer", () => {
 
         expect(registeredViewType).to.equal(URI_CONSTANTS.AGENTIC_CREATE_CONFIRM_VIEW_TYPE);
         expect(result).to.equal(disposable);
+    });
 
-        // The flow that owned the restored panel ended with the previous window, so the tab is
-        // closed rather than left behind unable to answer anything.
-        const dispose = sandbox.stub();
-        await serializer?.deserializeWebviewPanel({ dispose } as unknown as vscode.WebviewPanel, undefined);
+    // VS Code restores webview tabs during workbench startup and fires this event to find an
+    // owner. The extension's other activation events are later, so without this one the
+    // serializer below is registered after VS Code has already given up on the tab, which
+    // surfaces as "Error loading webview: Could not register service worker" on every start.
+    it("declares the activation event VS Code needs to restore the panel", () => {
+        const packageJson = vscode.extensions.getExtension(URI_CONSTANTS.EXTENSION_ID)?.packageJSON;
 
-        expect(dispose.calledOnce).to.be.true;
+        expect(packageJson, "extension manifest is available").to.not.be.undefined;
+        expect(packageJson.activationEvents).to.contain(
+            `onWebviewPanel:${URI_CONSTANTS.AGENTIC_CREATE_CONFIRM_VIEW_TYPE}`
+        );
+    });
+
+    it("gives the restored panel a document that can report readiness", async () => {
+        const serializer = registerAndCaptureSerializer();
+        const fake = createFakeRestoredPanel();
+
+        await serializer.deserializeWebviewPanel(fake.panel, undefined);
+
+        const html = fake.html();
+        expect(html).to.contain(READY_MESSAGE);
+        const scriptSrc = /script-src 'nonce-([A-Za-z0-9]+)';/.exec(html);
+        expect(scriptSrc, "restored document should still restrict scripts to a nonce").to.not.be.null;
+        expect(html).to.contain(`<script nonce="${(scriptSrc as RegExpExecArray)[1]}">`);
+    });
+
+    // Disposing a webview that is still loading detaches its document mid-flight, and the
+    // service worker VS Code registers inside every webview then fails with InvalidStateError -
+    // the exact error this serializer exists to prevent.
+    it("waits for the restored panel to initialize before discarding it", async () => {
+        const serializer = registerAndCaptureSerializer();
+        const fake = createFakeRestoredPanel();
+
+        await serializer.deserializeWebviewPanel(fake.panel, undefined);
+
+        expect(fake.dispose.called).to.be.false;
+    });
+
+    it("discards the restored panel once it reports it has initialized", async () => {
+        const serializer = registerAndCaptureSerializer();
+        const fake = createFakeRestoredPanel();
+
+        await serializer.deserializeWebviewPanel(fake.panel, undefined);
+        fake.emitReady();
+
+        expect(fake.dispose.calledOnce).to.be.true;
+    });
+
+    it("ignores unrelated messages from the restored panel", async () => {
+        const serializer = registerAndCaptureSerializer();
+        const fake = createFakeRestoredPanel();
+
+        await serializer.deserializeWebviewPanel(fake.panel, undefined);
+        fake.emitMessage({ decision: "start" });
+        fake.emitMessage({ ready: "something-else" });
+
+        expect(fake.dispose.called).to.be.false;
+    });
+
+    // A restored panel that never runs scripts would otherwise be left behind for good.
+    it("discards the restored panel even if readiness is never reported", async () => {
+        const clock = sandbox.useFakeTimers();
+        const serializer = registerAndCaptureSerializer();
+        const fake = createFakeRestoredPanel();
+
+        await serializer.deserializeWebviewPanel(fake.panel, undefined);
+        expect(fake.dispose.called).to.be.false;
+
+        clock.tick(DISPOSE_TIMEOUT_MS);
+
+        expect(fake.dispose.calledOnce).to.be.true;
+    });
+
+    it("discards the restored panel only once when readiness and the timeout both fire", async () => {
+        const clock = sandbox.useFakeTimers();
+        const serializer = registerAndCaptureSerializer();
+        const fake = createFakeRestoredPanel();
+
+        await serializer.deserializeWebviewPanel(fake.panel, undefined);
+        fake.emitReady();
+        clock.tick(DISPOSE_TIMEOUT_MS * 2);
+
+        expect(fake.dispose.calledOnce).to.be.true;
     });
 });
