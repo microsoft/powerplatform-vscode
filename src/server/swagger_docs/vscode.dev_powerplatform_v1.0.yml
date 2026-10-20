@@ -1,0 +1,764 @@
+openapi: "3.1.0"
+info:
+  title: VSCode.dev API for PowerPlatform
+  version: "1.0"
+servers:
+  - url: https://vscode.dev/power
+    description: released version
+  - url: https://insiders.vscode.dev/power
+    description: pre-released version
+tags:
+  - name: portal
+    description: Everything about editing portal in vscode
+paths:
+  /portal/webpages/{webpageId}:
+    get:
+      tags:
+        - portal
+      description: "Edit a specific webpage"
+      parameters:
+        - name: "webpageId"
+          in: "path"
+          description: "ID of the webpage"
+          required: true
+          schema:
+            type: string
+            format: guid
+        - name: "orgUrl"
+          in: "query"
+          description: "Dataverse OrgUrl"
+          required: true
+          schema:
+            type: string
+          example: https://contoso.crm.dynamics.com
+        - name: "dataSource"
+          in: "query"
+          description: "Location where the portal data is saved"
+          required: true
+          schema:
+            type: string
+          example: Dataverse
+        - name: "schema"
+          in: "query"
+          description: "Schema file name of the app"
+          required: true
+          schema:
+            type: string
+          examples:
+            portal old schema:
+              value: portalSchemaV1
+              summary: portal old schema
+            portal new schema:
+              value: portalSchemaV2
+              summary: portal new schema
+        - name: "websiteId"
+          in: "query"
+          description: "ID of the website"
+          required: true
+          schema:
+            type: string
+            format: guid
+        - name: "websiteName"
+          in: "query"
+          description: "Name of the portal you want to edit"
+          required: false
+          schema:
+            type: string
+            default: site
+        - name: "websitePreviewUrl"
+          in: "query"
+          description: "Preview URL of the website"
+          required: false
+          schema:
+            type: string
+        - name: "websitePreviewId"
+          in: "query"
+          description: "Preview Id of the website"
+          required: false
+          schema:
+            type: string
+        - name: "referrerSessionId"
+          in: "query"
+          description: "Referrer SessionId - this serves as the correlationId between Referrer and VSCode extension"
+          required: false
+          schema:
+            type: string
+        - name: "referrer"
+          in: "query"
+          description: "Name of the referrer from where vscode is launched. This is used only for analytics."
+          required: false
+          schema:
+            type: string
+          examples:
+            PowerPagesStudio:
+              value: PowerPagesStudio
+              summary: Power Pages Studio
+            PowerPagesHome:
+              value: PowerPagesHome
+              summary: Power Pages Home
+      responses:
+        "200":
+          description: OK
+  /portal/webfiles/{webfileId}:
+    get:
+      tags:
+        - portal
+      description: "Edit a specific webfile"
+      parameters:
+        - name: "webfileId"
+          in: "path"
+          description: "ID of the webfile"
+          required: true
+          schema:
+            type: string
+            format: guid
+        - name: "orgUrl"
+          in: "query"
+          description: "Dataverse OrgUrl"
+          required: true
+          schema:
+            type: string
+          example: https://contoso.crm.dynamics.com
+        - name: "dataSource"
+          in: "query"
+          description: "Location where the portal data is saved"
+          required: true
+          schema:
+            type: string
+          example: Dataverse
+        - name: "schema"
+          in: "query"
+          description: "Schema file name of the app"
+          required: true
+          schema:
+            type: string
+          examples:
+            portal old schema:
+              value: portalSchemaV1
+              summary: portal old schema
+            portal new schema:
+              value: portalSchemaV2
+              summary: portal new schema
+        - name: "websiteId"
+          in: "query"
+          description: "ID of the website"
+          required: true
+          schema:
+            type: string
+            format: guid
+        - name: "websiteName"
+          in: "query"
+          description: "Name of the portal you want to edit"
+          required: false
+          schema:
+            type: string
+            default: site
+        - name: "websitePreviewUrl"
+          in: "query"
+          description: "Preview URL of the website"
+          required: false
+          schema:
+            type: string
+        - name: "websitePreviewId"
+          in: "query"
+          description: "Preview Id of the website"
+          required: false
+          schema:
+            type: string
+        - name: "referrerSessionId"
+          in: "query"
+          description: "Referrer SessionId - this serves as the correlationId between Referrer and VSCode extension"
+          required: false
+          schema:
+            type: string
+        - name: "referrer"
+          in: "query"
+          description: "Name of the referrer from where vscode is launched. This is used only for analytics."
+          required: false
+          schema:
+            type: string
+          examples:
+            PowerPagesStudio:
+              value: PowerPagesStudio
+              summary: Power Pages Studio
+            PowerPagesHome:
+              value: PowerPagesHome
+              summary: Power Pages Home
+      responses:
+        "200":
+          description: OK
+  /portal/webtemplates/{webtemplateId}:
+    get:
+      tags:
+        - portal
+      description: "Edit a specific webtemplate"
+      parameters:
+        - name: "webtemplateId"
+          in: "path"
+          description: "ID of the webtemplate"
+          required: true
+          schema:
+            type: string
+            format: guid
+        - name: "orgUrl"
+          in: "query"
+          description: "Dataverse OrgUrl"
+          required: true
+          schema:
+            type: string
+          example: https://contoso.crm.dynamics.com
+        - name: "dataSource"
+          in: "query"
+          description: "Location where the portal data is saved"
+          required: true
+          schema:
+            type: string
+          example: Dataverse
+        - name: "schema"
+          in: "query"
+          description: "Schema file name of the app"
+          required: true
+          schema:
+            type: string
+          examples:
+            portal old schema:
+              value: portalSchemaV1
+              summary: portal old schema
+            portal new schema:
+              value: portalSchemaV2
+              summary: portal new schema
+        - name: "websiteId"
+          in: "query"
+          description: "ID of the website"
+          required: true
+          schema:
+            type: string
+            format: guid
+        - name: "websiteName"
+          in: "query"
+          description: "Name of the portal you want to edit"
+          required: false
+          schema:
+            type: string
+            default: site
+        - name: "websitePreviewUrl"
+          in: "query"
+          description: "Preview URL of the website"
+          required: false
+          schema:
+            type: string
+        - name: "websitePreviewId"
+          in: "query"
+          description: "Preview Id of the website"
+          required: false
+          schema:
+            type: string
+        - name: "referrerSessionId"
+          in: "query"
+          description: "Referrer SessionId - this serves as the correlationId between Referrer and VSCode extension"
+          required: false
+          schema:
+            type: string
+        - name: "referrer"
+          in: "query"
+          description: "Name of the referrer from where vscode is launched. This is used only for analytics."
+          required: false
+          schema:
+            type: string
+          examples:
+            PowerPagesStudio:
+              value: PowerPagesStudio
+              summary: Power Pages Studio
+            PowerPagesHome:
+              value: PowerPagesHome
+              summary: Power Pages Home
+      responses:
+        "200":
+          description: OK
+  /portal/pagetemplates/{pagetemplateId}:
+    get:
+      tags:
+        - portal
+      description: "Edit a specific pagetemplate"
+      parameters:
+        - name: "pagetemplateId"
+          in: "path"
+          description: "ID of the pagetemplate"
+          required: true
+          schema:
+            type: string
+            format: guid
+        - name: "orgUrl"
+          in: "query"
+          description: "Dataverse OrgUrl"
+          required: true
+          schema:
+            type: string
+          example: https://contoso.crm.dynamics.com
+        - name: "dataSource"
+          in: "query"
+          description: "Location where the portal data is saved"
+          required: true
+          schema:
+            type: string
+          example: Dataverse
+        - name: "schema"
+          in: "query"
+          description: "Schema file name of the app"
+          required: true
+          schema:
+            type: string
+          examples:
+            portal old schema:
+              value: portalSchemaV1
+              summary: portal old schema
+            portal new schema:
+              value: portalSchemaV2
+              summary: portal new schema
+        - name: "websiteId"
+          in: "query"
+          description: "ID of the website"
+          required: true
+          schema:
+            type: string
+            format: guid
+        - name: "websiteName"
+          in: "query"
+          description: "Name of the portal you want to edit"
+          required: false
+          schema:
+            type: string
+            default: site
+        - name: "websitePreviewUrl"
+          in: "query"
+          description: "Preview URL of the website"
+          required: false
+          schema:
+            type: string
+        - name: "websitePreviewId"
+          in: "query"
+          description: "Preview Id of the website"
+          required: false
+          schema:
+            type: string
+        - name: "referrerSessionId"
+          in: "query"
+          description: "Referrer SessionId - this serves as the correlationId between Referrer and VSCode extension"
+          required: false
+          schema:
+            type: string
+        - name: "referrer"
+          in: "query"
+          description: "Name of the referrer from where vscode is launched. This is used only for analytics."
+          required: false
+          schema:
+            type: string
+          examples:
+            PowerPagesStudio:
+              value: PowerPagesStudio
+              summary: Power Pages Studio
+            PowerPagesHome:
+              value: PowerPagesHome
+              summary: Power Pages Home
+      responses:
+        "200":
+          description: OK
+  /portal/contentsnippets/{contentsnippetId}:
+    get:
+      tags:
+        - portal
+      description: "Edit a specific contentsnippet"
+      parameters:
+        - name: "contentsnippetId"
+          in: "path"
+          description: "ID of the contentsnippet"
+          required: true
+          schema:
+            type: string
+            format: guid
+        - name: "orgUrl"
+          in: "query"
+          description: "Dataverse OrgUrl"
+          required: true
+          schema:
+            type: string
+          example: https://contoso.crm.dynamics.com
+        - name: "dataSource"
+          in: "query"
+          description: "Location where the portal data is saved"
+          required: true
+          schema:
+            type: string
+          example: Dataverse
+        - name: "schema"
+          in: "query"
+          description: "Schema file name of the app"
+          required: true
+          schema:
+            type: string
+          examples:
+            portal old schema:
+              value: portalSchemaV1
+              summary: portal old schema
+            portal new schema:
+              value: portalSchemaV2
+              summary: portal new schema
+        - name: "websiteId"
+          in: "query"
+          description: "ID of the website"
+          required: true
+          schema:
+            type: string
+            format: guid
+        - name: "websiteName"
+          in: "query"
+          description: "Name of the portal you want to edit"
+          required: false
+          schema:
+            type: string
+            default: site
+        - name: "websitePreviewUrl"
+          in: "query"
+          description: "Preview URL of the website"
+          required: false
+          schema:
+            type: string
+        - name: "websitePreviewId"
+          in: "query"
+          description: "Preview Id of the website"
+          required: false
+          schema:
+            type: string
+        - name: "referrerSessionId"
+          in: "query"
+          description: "Referrer SessionId - this serves as the correlationId between Referrer and VSCode extension"
+          required: false
+          schema:
+            type: string
+        - name: "referrer"
+          in: "query"
+          description: "Name of the referrer from where vscode is launched. This is used only for analytics."
+          required: false
+          schema:
+            type: string
+          examples:
+            PowerPagesStudio:
+              value: PowerPagesStudio
+              summary: Power Pages Studio
+            PowerPagesHome:
+              value: PowerPagesHome
+              summary: Power Pages Home
+      responses:
+        "200":
+          description: OK
+  /portal/basicforms/{basicformId}:
+    get:
+      tags:
+        - portal
+      description: "Edit a specific basic form"
+      parameters:
+        - name: "basicformId"
+          in: "path"
+          description: "ID of the basic form"
+          required: true
+          schema:
+            type: string
+            format: guid
+        - name: "orgUrl"
+          in: "query"
+          description: "Dataverse OrgUrl"
+          required: true
+          schema:
+            type: string
+          example: https://contoso.crm.dynamics.com
+        - name: "dataSource"
+          in: "query"
+          description: "Location where the portal data is saved"
+          required: true
+          schema:
+            type: string
+          example: Dataverse
+        - name: "schema"
+          in: "query"
+          description: "Schema file name of the app"
+          required: true
+          schema:
+            type: string
+          examples:
+            portal old schema:
+              value: portalSchemaV1
+              summary: portal old schema
+            portal new schema:
+              value: portalSchemaV2
+              summary: portal new schema
+        - name: "websiteId"
+          in: "query"
+          description: "ID of the website"
+          required: true
+          schema:
+            type: string
+            format: guid
+        - name: "websiteName"
+          in: "query"
+          description: "Name of the portal you want to edit"
+          required: false
+          schema:
+            type: string
+            default: site
+        - name: "websitePreviewUrl"
+          in: "query"
+          description: "Preview URL of the website"
+          required: false
+          schema:
+            type: string
+        - name: "websitePreviewId"
+          in: "query"
+          description: "Preview Id of the website"
+          required: false
+          schema:
+            type: string
+        - name: "referrerSessionId"
+          in: "query"
+          description: "Referrer SessionId - this serves as the correlationId between Referrer and VSCode extension"
+          required: false
+          schema:
+            type: string
+        - name: "referrer"
+          in: "query"
+          description: "Name of the referrer from where vscode is launched. This is used only for analytics."
+          required: false
+          schema:
+            type: string
+          examples:
+            PowerPagesStudio:
+              value: PowerPagesStudio
+              summary: Power Pages Studio
+            PowerPagesHome:
+              value: PowerPagesHome
+              summary: Power Pages Home
+      responses:
+        "200":
+          description: OK
+  /portal/{entity}/{entityId}:
+    get:
+      tags:
+        - portal
+      description: "Edit multiple portal entities: webpages, webfiles, webtemplates, pagetemplates and content snippets"
+      parameters:
+        - name: "entity"
+          in: "path"
+          description: "Plural Name of the entity"
+          required: true
+          schema:
+            type: string
+          examples:
+            webpages:
+              value: webpages
+              summary: webpages
+            webfiles:
+              value: webfiles
+              summary: webfiles
+            webtemplates:
+              value: webtemplates
+              summary: webtemplates
+            pagetemplates:
+              value: pagetemplates
+              summary: pagetemplates
+            contentsnippets:
+              value: contentsnippets
+              summary: contentsnippets
+            basicforms:
+              value: basicforms
+              summary: basicforms
+        - name: "entityId"
+          in: "path"
+          description: "ID of the entity"
+          required: true
+          schema:
+            type: string
+            format: guid
+        - name: "orgUrl"
+          in: "query"
+          description: "Dataverse OrgUrl"
+          required: true
+          schema:
+            type: string
+          example: https://contoso.crm.dynamics.com
+        - name: "dataSource"
+          in: "query"
+          description: "Location where the portal data is saved"
+          required: true
+          schema:
+            type: string
+          example: Dataverse
+        - name: "enableMultifile"
+          in: "query"
+          description: "Enable Multifile load"
+          required: true
+          schema:
+            type: boolean
+          examples:
+            enable multifile:
+              value: true
+            disable multifile:
+              value: false
+        - name: "schema"
+          in: "query"
+          description: "Schema file name of the app"
+          required: true
+          schema:
+            type: string
+          examples:
+            portal old schema:
+              value: portalSchemaV1
+              summary: portal old schema
+            portal new schema:
+              value: portalSchemaV2
+              summary: portal new schema
+        - name: "websiteId"
+          in: "query"
+          description: "ID of the website"
+          required: true
+          schema:
+            type: string
+            format: guid
+        - name: "websiteName"
+          in: "query"
+          description: "Name of the portal you want to edit"
+          required: false
+          schema:
+            type: string
+            default: site
+        - name: "websitePreviewUrl"
+          in: "query"
+          description: "Preview URL of the website"
+          required: false
+          schema:
+            type: string
+        - name: "websitePreviewId"
+          in: "query"
+          description: "Preview Id of the website"
+          required: false
+          schema:
+            type: string
+        - name: "referrerSessionId"
+          in: "query"
+          description: "Referrer SessionId - this serves as the correlationId between Referrer and VSCode extension"
+          required: false
+          schema:
+            type: string
+        - name: "referrer"
+          in: "query"
+          description: "Name of the referrer from where vscode is launched. This is used only for analytics."
+          required: false
+          schema:
+            type: string
+          examples:
+            PowerPagesStudio:
+              value: PowerPagesStudio
+              summary: Power Pages Studio
+            PowerPagesHome:
+              value: PowerPagesHome
+              summary: Power Pages Home
+      responses:
+        "200":
+          description: OK
+  /portal:
+      get:
+        summary: "Pre-released"
+        servers:
+          - url: https://insiders.vscode.dev/power
+        tags:
+          - portal
+        description: "Edit portal"
+        parameters:
+          - name: "orgUrl"
+            in: "query"
+            description: "Dataverse OrgUrl"
+            required: true
+            schema:
+              type: string
+            example: https://contoso.crm.dynamics.com
+          - name: "dataSource"
+            in: "query"
+            description: "Location where the portal data is saved"
+            required: true
+            schema:
+              type: string
+            example: Dataverse
+          - name: "enableMultifile"
+            in: "query"
+            description: "Enable Multifile load"
+            required: true
+            schema:
+              type: boolean
+              enum:
+                - true
+          - name: "schema"
+            in: "query"
+            description: "Schema file name of the app"
+            required: true
+            schema:
+              type: string
+            examples:
+              portal old schema:
+                value: portalSchemaV1
+                summary: portal old schema
+              portal new schema:
+                value: portalSchemaV2
+                summary: portal new schema
+          - name: "websiteId"
+            in: "query"
+            description: "ID of the website"
+            required: true
+            schema:
+              type: string
+              format: guid
+          - name: "websiteName"
+            in: "query"
+            description: "Name of the portal you want to edit"
+            required: false
+            schema:
+              type: string
+              default: site
+          - name: "websitePreviewUrl"
+            in: "query"
+            description: "Preview URL of the website"
+            required: false
+            schema:
+              type: string
+          - name: "websitePreviewId"
+            in: "query"
+            description: "Preview Id of the website"
+            required: false
+            schema:
+              type: string
+          - name: "referrerSessionId"
+            in: "query"
+            description: "Referrer SessionId - this serves as the correlationId between Referrer and VSCode extension"
+            required: false
+            schema:
+              type: string
+          - name: "referrer"
+            in: "query"
+            description: "Name of the referrer from where vscode is launched. This is used only for analytics."
+            required: false
+            schema:
+              type: string
+            examples:
+              PowerPagesStudio:
+                value: PowerPagesStudio
+                summary: Power Pages Studio
+              PowerPagesHome:
+                value: PowerPagesHome
+                summary: Power Pages Home
+          - name: "organizationId"
+            in: "query"
+            description: "ID of the organization"
+            required: true
+            schema:
+              type: string
+              format: guid
+        responses:
+          "200":
+            description: OK
