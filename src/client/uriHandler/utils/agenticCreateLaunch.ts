@@ -13,6 +13,11 @@ import { confirmAndLaunchAgentHost, ConfirmAndLaunchOutcome } from './confirmAnd
 import { AgentHost } from './detectAgentHost';
 import { launchAgentHostPlan } from './launchAgentHostPlan';
 import {
+    createLaunchAgentHostPlanDirectDependencies,
+    launchAgentHostPlanDirect,
+    launchAgentHostPlanPreferDirect
+} from './launchAgentHostPlanDirect';
+import {
     AgentHostSetupState,
     detectAgentHostSetup,
     UNKNOWN_AGENT_HOST_SETUP
@@ -195,14 +200,27 @@ export async function confirmAndLaunchSelectedAgentHost(
             setupStateOverride
         ) => {
             confirmPanel?.updatePlan?.(plan, terminalShell.commandShellPath);
-            return launchAgentHostPlan(
-                selectedFolderUri,
+            return launchAgentHostPlanPreferDirect(
                 plan,
-                displayName,
-                undefined,
-                terminalShell.terminalShellPath,
                 setupStateOverride ?? setupState,
-                onProgress
+                (directPlan, directSetupState) => launchAgentHostPlanDirect(
+                    selectedFolderUri.fsPath,
+                    directPlan,
+                    host,
+                    URI_HANDLER_STRINGS.AGENT_HOST_CONFIRM.TERMINAL_NAME.split('{0}').join(displayName),
+                    createLaunchAgentHostPlanDirectDependencies(options => vscode.window.createTerminal(options)),
+                    directSetupState,
+                    onProgress
+                ),
+                (terminalPlan, terminalSetupState) => launchAgentHostPlan(
+                    selectedFolderUri,
+                    terminalPlan,
+                    displayName,
+                    undefined,
+                    terminalShell.terminalShellPath,
+                    terminalSetupState,
+                    onProgress
+                )
             );
         }
     });
