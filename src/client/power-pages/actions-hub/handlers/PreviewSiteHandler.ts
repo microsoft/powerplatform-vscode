@@ -13,7 +13,7 @@ export const previewSite = async (siteTreeItem: SiteTreeItem) => {
     try {
         await PreviewSite.clearCache(siteTreeItem.siteInfo.websiteUrl);
 
-        await PreviewSite.launchBrowserAndDevToolsWithinVsCode(siteTreeItem.siteInfo.websiteUrl, siteTreeItem.siteInfo.dataModelVersion, siteTreeItem.siteInfo.siteVisibility);
+        await PreviewSite.launchSitePreviewWithinVsCode(siteTreeItem.siteInfo.websiteUrl, siteTreeItem.siteInfo.dataModelVersion, siteTreeItem.siteInfo.siteVisibility);
     } catch (error) {
         traceError(Constants.EventNames.ACTIONS_HUB_PREVIEW_SITE_FAILED, error as Error, { methodName: previewSite.name });
     }
