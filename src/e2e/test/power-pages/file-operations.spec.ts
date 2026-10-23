@@ -5,6 +5,7 @@
 
 import { test, expect } from '../../fixtures/vscode-web.fixture';
 import { Selectors } from '../../helpers/selectors';
+import { expandExplorerFolder } from '../../helpers/explorer';
 
 test.describe('File Operations', () => {
     test('should open a file from the tree and display content in editor', async ({ vsCodeWeb }) => {
@@ -14,13 +15,8 @@ test.describe('File Operations', () => {
         const treeRows = explorer.locator(Selectors.treeRow);
         await expect(treeRows.first()).toBeVisible({ timeout: 60000 });
 
-        // Expand "Web Pages" folder if present
-        const webPagesFolder = explorer.locator(Selectors.treeRowLabel, { hasText: 'Web Pages' });
-        if (await webPagesFolder.isVisible()) {
-            await webPagesFolder.dblclick();
-            // Wait for child tree nodes to appear after expanding
-            await expect(explorer.locator(Selectors.treeRow).nth(1)).toBeVisible({ timeout: 10000 });
-        }
+        await expandExplorerFolder(explorer, 'web-pages');
+        await expandExplorerFolder(explorer, 'Home');
 
         // Click the first available file (leaf node) in the tree.
         // Leaf nodes are tree rows that lack a collapsible twistie (folders have one).
