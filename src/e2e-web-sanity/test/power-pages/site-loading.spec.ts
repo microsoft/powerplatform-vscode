@@ -5,6 +5,7 @@
 
 import { test, expect } from '../../fixtures/vscode-web-local.fixture';
 import { Selectors } from '../../helpers/selectors';
+import { expandExplorerFolder } from '../../../e2e/helpers/explorer';
 
 /**
  * E2E web sanity test that verifies the locally-built extension
@@ -20,16 +21,8 @@ test.describe('Web Sanity', () => {
     test('should edit and save a file then revert', async ({ vsCodeWeb }) => {
         const explorer = vsCodeWeb.locator(Selectors.explorerViewlet);
 
-        // Expand web-pages folder if not already expanded
-        const webPagesFolder = explorer.locator(Selectors.treeRowLabel, { hasText: 'web-pages' });
-        await expect(webPagesFolder).toBeVisible({ timeout: 60000 });
-
-        const homeFolder = explorer.locator(Selectors.treeRowLabel, { hasText: /^Home$/ });
-        if (!await homeFolder.isVisible()) {
-            await webPagesFolder.dblclick({ force: true });
-            await expect(homeFolder).toBeVisible({ timeout: 15000 });
-        }
-        await homeFolder.dblclick({ force: true });
+        await expandExplorerFolder(explorer, 'web-pages');
+        await expandExplorerFolder(explorer, 'Home');
 
         // Click the Home.en-US.webpage.copy.html file
         const homeHtmlFile = explorer.locator(Selectors.treeRowLabel, { hasText: 'Home.en-US.webpage.copy.html' });
