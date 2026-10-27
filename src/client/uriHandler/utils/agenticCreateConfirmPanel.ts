@@ -259,6 +259,19 @@ function buildHtml(
     ].join("");
 
     const copyAvailable = canCopyPlan(plan, manualShellPath);
+    let manualDetail: string;
+    if (copyAvailable) {
+        manualDetail = formatTemplates(
+            plan.some(command => command.runWhenSetupState)
+                ? confirm.MANUAL_COMMAND_WITH_CHECKS_DETAIL
+                : confirm.MANUAL_COMMAND_DETAIL,
+            [manualShellPath, folderPath]
+        );
+    } else if (!isAgentHostShellSupported(manualShellPath)) {
+        manualDetail = confirm.MANUAL_COMMAND_UNAVAILABLE;
+    } else {
+        manualDetail = confirm.MANUAL_COMMAND_UNAVAILABLE_HOST_EXECUTABLE;
+    }
     const commandItems = plan
         .map(
             (command, index) => `
@@ -396,9 +409,7 @@ function buildHtml(
         <details id="technical-details">
             <summary>${escapeHtml(confirm.SEQUENCE_HEADER)}</summary>
             <p class="technical-detail">${escapeHtml(confirm.SEQUENCE_DETAIL)}</p>
-            <p class="manual-detail">${escapeHtml(copyAvailable
-                ? formatTemplates(confirm.MANUAL_COMMAND_DETAIL, [manualShellPath, folderPath])
-                : confirm.MANUAL_COMMAND_UNAVAILABLE)}</p>
+            <p class="manual-detail">${escapeHtml(manualDetail)}</p>
             <ol class="commands">${alreadySetupItems}${commandItems}</ol>
             <p class="copy-feedback" id="copy-status" role="status" aria-live="polite" aria-atomic="true"></p>
             <p class="copy-feedback" id="copy-error" role="alert" aria-live="assertive" aria-atomic="true"></p>
@@ -603,13 +614,16 @@ function buildHtml(
                 return;
             }
             if (message.state === "progress" && typeof message.description === "string") {
-                const status = message.status === "skipped"
-                    ? format(runningStatus.dataset.skippedTemplate, [message.description])
-                    : format(runningStatus.dataset.progressTemplate, [
+                const status = format(
+                    message.status === "skipped"
+                        ? runningStatus.dataset.skippedTemplate
+                        : runningStatus.dataset.progressTemplate,
+                    [
                         String(message.step),
                         String(message.totalSteps),
                         message.description
-                    ]);
+                    ]
+                );
                 showProgressState(status, true);
             } else if (message.state === "launched") {
                 showHandoffState(!launchedStateShown, true);

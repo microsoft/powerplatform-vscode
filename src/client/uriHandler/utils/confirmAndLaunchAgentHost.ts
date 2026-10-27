@@ -58,6 +58,13 @@ const defaultEmitEvent: CreateFlowEventEmitter = async (eventName, params, chann
     emitCreateFlowEvent(eventName, params, channel, extraProps);
 };
 
+function getExecutionTelemetry(result: LaunchAgentHostPlanResult): Record<string, string> {
+    return {
+        ...(result.executionMode ? { executionMode: result.executionMode } : {}),
+        ...(result.directFallbackReason ? { directFallbackReason: result.directFallbackReason } : {})
+    };
+}
+
 /**
  * Builds the host command plan, previews it in the confirmation panel, and — only on explicit
  * approval — launches it in a terminal. Emits launch telemetry on start and drop telemetry when
@@ -160,7 +167,8 @@ export async function confirmAndLaunchAgentHost(
                         host,
                         reason: launchResult.reason,
                         commandKind: launchResult.failedCommand?.kind ?? '',
-                        exitCodeCategory: launchResult.exitCode === undefined ? 'unknown' : 'nonZero'
+                        exitCodeCategory: launchResult.exitCode === undefined ? 'unknown' : 'nonZero',
+                        ...getExecutionTelemetry(launchResult)
                     }
                 );
                 const recoveryDecision = await confirmPanel.showRecovery(launchResult);
@@ -219,7 +227,8 @@ export async function confirmAndLaunchAgentHost(
                         launchResult.setupState?.plugin === 'present'
                         && !launchResult.completedCommandKinds?.includes('installPlugin')
                         && !launchResult.completedCommandKinds?.includes('enablePlugin')
-                    )
+                    ),
+                    ...getExecutionTelemetry(launchResult)
                 }
             );
             return { status: 'launched' };
