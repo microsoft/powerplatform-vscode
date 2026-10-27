@@ -433,15 +433,19 @@ export class PacWrapper {
     /**
      * Uploads a site with output streamed to a VS Code Output Channel.
      * @param uploadPath Path from where the site content is uploaded
-     * @param modelVersion Data model version
+     * @param modelVersion Optional data model version override
+     * @param cancellationToken Optional token used to abort the upload
      * @returns Promise that resolves to true if upload succeeded, false otherwise
      */
     public async uploadSiteWithProgress(
         uploadPath: string,
-        modelVersion: string,
+        modelVersion?: string,
         cancellationToken?: vscode.CancellationToken
     ): Promise<boolean> {
-        const pacArguments = ["pages", "upload", "--path", uploadPath, "--modelVersion", modelVersion];
+        const pacArguments = ["pages", "upload", "--path", uploadPath];
+        if (modelVersion !== undefined) {
+            pacArguments.push("--modelVersion", modelVersion);
+        }
 
         return this.pacInterop.executeCommandWithProgress(
             new PacArguments(...pacArguments),
@@ -452,15 +456,24 @@ export class PacWrapper {
     /**
      * Uploads a code site with output streamed to a VS Code Output Channel.
      * @param rootPath Root source folder of the code site
-     * @param siteName Name of the site
+     * @param siteName Optional site name override; otherwise use the site configuration
+     * @param cancellationToken Optional token used to abort the upload
+     * @param compiledPath Optional compiled output folder override
      * @returns Promise that resolves to true if upload succeeded, false otherwise
      */
     public async uploadCodeSiteWithProgress(
         rootPath: string,
-        siteName: string,
-        cancellationToken?: vscode.CancellationToken
+        siteName?: string,
+        cancellationToken?: vscode.CancellationToken,
+        compiledPath?: string
     ): Promise<boolean> {
-        const pacArguments = ["pages", "upload-code-site", "--rootPath", rootPath, "--siteName", siteName];
+        const pacArguments = ["pages", "upload-code-site", "--rootPath", rootPath];
+        if (compiledPath !== undefined) {
+            pacArguments.push("--compiledPath", compiledPath);
+        }
+        if (siteName !== undefined) {
+            pacArguments.push("--siteName", siteName);
+        }
 
         return this.pacInterop.executeCommandWithProgress(
             new PacArguments(...pacArguments),
