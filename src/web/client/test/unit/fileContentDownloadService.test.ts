@@ -34,7 +34,6 @@ describe("fileContentDownloadService", () => {
             actionUrl: 'https://example.test/api/data/v9.2',
             entityId: 'id',
             schema: 'enhanced',
-            featureEnabled: true,
             mode: 'lazy',
             commit,
         };
@@ -248,13 +247,23 @@ describe("fileContentDownloadService", () => {
         expect(request.callCount).to.equal(3);
     });
 
-    it("instruments disabled fallback with the same logical denominator but no POST", async () => {
-        options.featureEnabled = false;
-        request.resolves(response(413));
-        await expectFailure('get');
-        expect(request.callCount).to.equal(1);
-        expect(events).to.have.length(2);
-        expect(events[1].data.featureEnabled).to.equal(false);
+    it("counts an automatic fallback initialization failure as one logical download", async () => {
+        request.onCall(0).resolves(response(413));
+        request.onCall(1).resolves(response(403));
+        await expectFailure('initialize');
+        expect(request.callCount).to.equal(2);
+        expect(request.getCalls().map(call => call.args[1])).to.deep.equal(['GET', 'POST']);
+        expect(events.map(event => event.event)).to.deep.equal([
+            Events.WEB_EXTENSION_FILE_DOWNLOAD_STARTED,
+            Events.WEB_EXTENSION_FILE_DOWNLOAD_FALLBACK_STARTED,
+            Events.WEB_EXTENSION_FILE_DOWNLOAD_COMPLETED,
+        ]);
+        const terminal = events[2].data;
+        expect(terminal.initialHttpStatus).to.equal(413);
+        expect(terminal.finalHttpStatus).to.equal(403);
+        expect(terminal.blockCount).to.equal(0);
+        expect(terminal.retryCount).to.equal(0);
+        expect(delay.called).to.equal(false);
     });
 
     it("does not add another retry policy around transport failures", async () => {

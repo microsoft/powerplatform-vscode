@@ -86,7 +86,7 @@ describe("enhanced file-column download integration", () => {
         entityName = schemaEntityName.WEBFILES;
         fileName = 'sample.txt';
         flags = sinon.stub(ECSFeaturesClient, 'getConfig').returns({
-            enableWebFileBlockDownload: true, enableServerLogicChanges: true,
+            enableServerLogicChanges: true,
             enableDuplicateFileHandling: false, enableBlogSupport: false,
         });
         sinon.stub(folderUtility, 'getRequestUrlForEntities').callsFake(() => [
@@ -255,18 +255,24 @@ describe("enhanced file-column download integration", () => {
 
     it("does not fetch disabled server logic", async () => {
         entityName = schemaEntityName.SERVERLOGICS;
-        flags.returns({ enableServerLogicChanges: false, enableWebFileBlockDownload: true });
+        flags.returns({ enableServerLogicChanges: false });
         await fetchDataFromDataverseAndUpdateVFS(fs);
         expect(requests.called).to.equal(false);
         expect(downloadTelemetry.called).to.equal(false);
     });
 
-    it("disabled fallback fails visibly after GET 413 without any POST", async () => {
-        flags.returns({ enableWebFileBlockDownload: false });
-        await expectFsFailure(() => load());
-        expect(requests.getCalls().some(call => call.args[1]?.method === 'POST')).to.equal(false);
-        expect(terminals()[0].featureEnabled).to.equal(false);
-        expect(terminals()[0].outcome).to.equal('failed');
+    it("recovers web files after GET 413 without download-specific ECS configuration", async () => {
+        flags.returns({});
+        await load();
+        const contentRequests = requests.getCalls().filter(call => !String(call.args[0]).endsWith('?metadata'));
+        expect(contentRequests.map(call => call.args[1]?.method)).to.deep.equal(['GET', 'POST', 'POST']);
+        expect(String(contentRequests[1].args[0])).to.match(/\/InitializeFileBlocksDownload$/);
+        expect(String(contentRequests[2].args[0])).to.match(/\/DownloadBlock$/);
+        expect(Array.from(await fs.readCommittedFile(fileUri()))).to.deep.equal([0, 1, 255]);
+        expect(WebExtensionContext.fileDataMap.getFileMap.get(fileUri().fsPath)?.isContentLoaded).to.equal(true);
+        expect(terminals()).to.have.length(1);
+        expect(terminals()[0].initialHttpStatus).to.equal(413);
+        expect(terminals()[0].outcome).to.equal('succeeded');
     });
 
     it("404 is notFound, not successfully loaded empty content", async () => {

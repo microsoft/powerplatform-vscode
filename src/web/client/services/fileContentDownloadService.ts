@@ -28,7 +28,6 @@ export interface IFileDownloadOptions {
     entityId: string;
     mode: FileDownloadMode;
     schema: string;
-    featureEnabled: boolean;
     commit(bytes: Uint8Array): Promise<void>;
 }
 
@@ -83,7 +82,6 @@ export async function downloadFileContent(options: IFileDownloadOptions, depende
         downloadOperationId: crypto.randomUUID(),
         mode: options.mode,
         schema: options.schema,
-        featureEnabled: options.featureEnabled,
         mechanism: 'get',
         sizeBucket: 'unknown',
         blockCount: 0,
@@ -128,7 +126,7 @@ export async function downloadFileContent(options: IFileDownloadOptions, depende
     try {
         const response = await request(options.requestUrl, 'GET');
         let bytes: Uint8Array;
-        if (response.status === 413 && options.featureEnabled) {
+        if (response.status === 413) {
             stage = 'initialize';
             data.mechanism = 'blocks';
             emit(Events.WEB_EXTENSION_FILE_DOWNLOAD_FALLBACK_STARTED);

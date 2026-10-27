@@ -82,7 +82,6 @@ export interface IWebExtensionFileDownloadTelemetryData {
     downloadOperationId: string;
     mode: FileDownloadMode;
     schema: string;
-    featureEnabled: boolean;
     mechanism: 'get' | 'blocks' | 'singleBlock';
     initialHttpStatus?: number;
     finalHttpStatus?: number;

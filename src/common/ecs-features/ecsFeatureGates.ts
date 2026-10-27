@@ -81,16 +81,6 @@ export const {
 })
 
 export const {
-    feature: EnableWebFileBlockDownload
-} = getFeatureConfigs({
-    teamName: PowerPagesClientName,
-    description: 'Recover enhanced-model file-column HTTP 413 downloads in VS Code Web',
-    fallback: {
-        enableWebFileBlockDownload: false,
-    },
-});
-
-export const {
     feature: EnableCodeQlScan
 } = getFeatureConfigs({
     teamName: PowerPagesClientName,

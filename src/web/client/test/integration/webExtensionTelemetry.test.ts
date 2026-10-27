@@ -36,13 +36,13 @@ describe("webExtensionTelemetry", () => {
 
     it("serializes logical download outcomes into EventInfo properties, excluding absent fields", () => {
         webExtensionTelemetry.sendFileDownloadTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_FILE_DOWNLOAD_COMPLETED, {
-            downloadOperationId: 'operation-id', mode: 'reload', schema: 'enhanced', featureEnabled: true,
+            downloadOperationId: 'operation-id', mode: 'reload', schema: 'enhanced',
             mechanism: 'blocks', initialHttpStatus: 413, finalHttpStatus: 200,
             sizeBucket: '16To128MiB', blockCount: 25, retryCount: 1, durationMs: 4000, outcome: 'succeeded',
         });
         assert.calledOnce(traceInfoStub);
         expect(traceInfoStub.firstCall.args[1]).to.deep.equal({
-            downloadOperationId: 'operation-id', mode: 'reload', schema: 'enhanced', featureEnabled: 'true',
+            downloadOperationId: 'operation-id', mode: 'reload', schema: 'enhanced',
             mechanism: 'blocks', initialHttpStatus: '413', finalHttpStatus: '200',
             sizeBucket: '16To128MiB', blockCount: '25', retryCount: '1', durationMs: '4000', outcome: 'succeeded',
         });

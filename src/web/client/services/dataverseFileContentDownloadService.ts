@@ -4,8 +4,6 @@
  */
 
 import { getCommonHeadersForDataverse } from "../../../common/services/AuthenticationProvider";
-import { ECSFeaturesClient } from "../../../common/ecs-features/ecsFeatureClient";
-import { EnableWebFileBlockDownload } from "../../../common/ecs-features/ecsFeatureGates";
 import { FileDownloadMode } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryInterface";
 import WebExtensionContext from "../WebExtensionContext";
 import { portalSchemaVersion } from "../common/constants";
@@ -23,11 +21,9 @@ export async function downloadDataverseFileContent(
 ): Promise<void> {
     const properties = WebExtensionContext.schemaDataSourcePropertiesMap;
     const actionUrl = `${WebExtensionContext.orgUrl.replace(/\/$/, '')}/${properties.get(schemaKey.API)}/${properties.get(schemaKey.DATA)}/${properties.get(schemaKey.DATAVERSE_API_VERSION)}`;
-    const { enableWebFileBlockDownload } = ECSFeaturesClient.getConfig(EnableWebFileBlockDownload);
     await downloadFileContent({
         requestUrl, actionUrl, entityId, mode, commit,
         schema: portalSchemaVersion.V2,
-        featureEnabled: enableWebFileBlockDownload,
     }, {
         request: async (url, method, body, onRetry) => {
             const startedAt = Date.now();
