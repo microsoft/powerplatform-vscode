@@ -8,11 +8,13 @@ import * as sinon from "sinon";
 import * as vscode from "vscode";
 import { CreateFlowParameters } from "../../uriHandler/handlers/createFlowParams";
 import * as telemetry from "../../uriHandler/telemetry/createFlowTelemetry";
+import { uriHandlerTelemetryEventNames } from "../../uriHandler/telemetry/uriHandlerTelemetryEvents";
 import * as panel from "../../uriHandler/utils/agenticCreateConfirmPanel";
 import * as probe from "../../uriHandler/utils/agentHostCommandProbe";
 import * as setup from "../../uriHandler/utils/agentHostSetupPrecheck";
 import * as shell from "../../uriHandler/utils/agentHostTerminalShell";
 import * as launcher from "../../uriHandler/utils/launchAgentHostPlan";
+import * as directLauncher from "../../uriHandler/utils/launchAgentHostPlanDirect";
 import {
     confirmAndLaunchSelectedAgentHost,
     getAgentHostTerminalShellOptions
@@ -31,12 +33,14 @@ describeWindows("agenticCreateLaunch shell selection", () => {
     let resolveShell: sinon.SinonStub;
     let showPanel: sinon.SinonStub;
     let launch: sinon.SinonStub;
+    let launchDirect: sinon.SinonStub;
+    let emitEvent: sinon.SinonStub;
     let updatePlan: sinon.SinonStub;
     let showRecovery: sinon.SinonStub;
 
     beforeEach(() => {
         sandbox = sinon.createSandbox();
-        sandbox.stub(telemetry, "emitCreateFlowEvent");
+        emitEvent = sandbox.stub(telemetry, "emitCreateFlowEvent");
         sandbox.stub(vscode.workspace, "getConfiguration").returns({
             inspect: (key: string) => {
                 if (key === "profiles.windows") {
@@ -76,9 +80,34 @@ describeWindows("agenticCreateLaunch shell selection", () => {
             updatePlan
         });
         launch = sandbox.stub(launcher, "launchAgentHostPlan").resolves({ status: "launched" });
+        launchDirect = sandbox.stub(directLauncher, "launchAgentHostPlanDirect").callsFake(
+            async (_folderPath, _plan, _host, _terminalName, _deps, setupState) => ({
+                status: "unavailable",
+                reason: "hostNotFound",
+                completedCommandKinds: [],
+                skippedCommandKinds: [],
+                setupState: setupState ?? setup.UNKNOWN_AGENT_HOST_SETUP
+            })
+        );
     });
 
     afterEach(() => sandbox.restore());
+
+    it("starts the agent directly without a terminal shell when it can", async () => {
+        launchDirect.resolves({ status: "launched", completedCommandKinds: ["launchHost"] });
+        resolveShell.returns({ commandShellPath: "", terminalShellPath: "" });
+
+        await confirmAndLaunchSelectedAgentHost(AgentHost.Copilot, folder, params);
+
+        expect(launchDirect.firstCall.args[0]).to.equal(folder.fsPath);
+        expect(launchDirect.firstCall.args[1]).to.equal(showPanel.firstCall.args[2]);
+        expect(launchDirect.firstCall.args[2]).to.equal(AgentHost.Copilot);
+        expect(launch.notCalled).to.be.true;
+        expect(emitEvent.getCalls().some(call =>
+            call.args[0] === uriHandlerTelemetryEventNames.URI_HANDLER_AGENTIC_CREATE_HANDOFF_COMPLETED
+            && call.args[3]?.executionMode === "direct"
+        )).to.be.true;
+    });
 
     it("collects only user profile paths with the user default first, ignoring workspace overrides", () => {
         expect(getAgentHostTerminalShellOptions(folder)).to.deep.equal({

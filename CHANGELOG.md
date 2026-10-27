@@ -1,5 +1,12 @@
 # Change Log - Power Platform Extension
 
+## 2.0.158
+- Updated Power Platform CLI (pac CLI) to 2.14.1. See the [CLI release notes on NuGet](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/2.14.1). [#1720](https://github.com/microsoft/powerplatform-vscode/pull/1720)
+
+## 2.0.157
+- Updated Power Platform CLI (pac CLI) to 2.13.1. See the [CLI release notes on NuGet](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/2.13.1).
+- Bug fixes and enhancements
+
 ## 2.0.156
 - pac CLI 2.12.2, (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 - Bug Fixes and enhancements

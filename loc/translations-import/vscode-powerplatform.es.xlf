@@ -454,7 +454,7 @@ Consulte el panel de la extensión CodeQL para ver las consultas disponibles.</t
       </trans-unit>
       <trans-unit id="++CODE++e8cacfa068b4ad8d4a3091ed1cb3b2a523474946a4d6f02e1e46743b51ef12a2">
         <source xml:lang="en">Command copied: {0}.</source>
-        <target state="new">Command copied: {0}.</target>
+        <target state="translated">Comando copiado: {0}.</target>
       </trans-unit>
       <trans-unit id="++CODE++ff61c2f710070e267638038dfbd105cfffe4de4d37580f566f4537b304b6ca84">
         <source xml:lang="en">Command failed with exit code {0}: {1}</source>
@@ -501,7 +501,7 @@ Consulte el panel de la extensión CodeQL para ver las consultas disponibles.</t
       </trans-unit>
       <trans-unit id="++CODE++22a970d2e5b1cc233e462be7c7b64e135a275bb09d83d87683bf4236c43113a1">
         <source xml:lang="en">Completed</source>
-        <target state="new">Completed</target>
+        <target state="translated">Completado</target>
       </trans-unit>
       <trans-unit id="++CODE++eebdd24a77d9ad32222660c07777163bf5f6732df2b172351f3f8d5783e4f529">
         <source xml:lang="en">Confirm</source>
@@ -533,15 +533,15 @@ Consulte el panel de la extensión CodeQL para ver las consultas disponibles.</t
       </trans-unit>
       <trans-unit id="++CODE++e21f935f11d7e966dbbae78da9daa378fe8142a14e7c0cd7434183005faa6c5c">
         <source xml:lang="en">Copy</source>
-        <target state="new">Copy</target>
+        <target state="translated">Copiar</target>
       </trans-unit>
       <trans-unit id="++CODE++c6cac21fa62a9d3dce28334dea3259b5206110c5f970b1e324b074b8027e7e2d">
         <source xml:lang="en">Copy command: {0}</source>
-        <target state="new">Copy command: {0}</target>
+        <target state="translated">Copiar comando: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++4ba9f9990571f8101520dacd32eee1b3b5ba250d0334a59a3bc32754d44b75fc">
         <source xml:lang="en">Copy isn't available with this shell or AI assistant. Set up a supported shell or assistant, then select Try again.</source>
-        <target state="new">Copy isn't available with this shell or AI assistant. Set up a supported shell or assistant, then select Try again.</target>
+        <target state="translated">La copia no está disponible con este shell ni con este asistente de IA. Configure un shell o asistente compatible y seleccione Intentar de nuevo.</target>
       </trans-unit>
       <trans-unit id="++CODE++b749e205302cc21952a1e9646569ca0af9017cc5f39dd741830551bdd4ae823e">
         <source xml:lang="en">Copy to clipboard</source>
@@ -1392,7 +1392,7 @@ Id. de organización: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++9ccacf99fee1e01744bd9b63ba2e979e1531a5416e451af206875fb6be192a43">
         <source xml:lang="en">Not needed</source>
-        <target state="new">Not needed</target>
+        <target state="translated">No se necesita</target>
       </trans-unit>
       <trans-unit id="++CODE++b2b461f3eae470e95fdcfd61a3cbe6680e84d0a7221a305f696ce44843badc89">
         <source xml:lang="en">Object ID: {0}</source>
@@ -1445,7 +1445,7 @@ Id. de organización: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++1f5d35890264925fe4d7994f37e97eacaa417c77079d875475f138cea85e6e33">
         <source xml:lang="en">Open {0} in your site folder: {1}. Copy and run only the commands you still need, one at a time and in order. Use the read-only checks before steps marked Runs only if needed. Stop if a command fails.</source>
-        <target state="new">Open {0} in your site folder: {1}. Copy and run only the commands you still need, one at a time and in order. Use the read-only checks before steps marked Runs only if needed. Stop if a command fails.</target>
+        <target state="translated">Abra {0} en la carpeta del sitio: {1}. Copie y ejecute solo los comandos que aún necesite, uno cada vez y en orden. Use las comprobaciones de solo lectura antes de los pasos marcados como Solo se ejecuta si es necesario. Deténgase si se produce un error en un comando.</target>
       </trans-unit>
       <trans-unit id="++CODE++87fe691d426d47ee588ac957e12a9936b94fe6d70fd9ef97c92f7af1671ed9a0">
         <source xml:lang="en">Opening in VS Code Desktop. If it doesn't open or shows an error, you may need to install VS Code or update the Power Platform extension.</source>
@@ -1678,7 +1678,7 @@ Id. de organización: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++bc29982d06f17760bebfb504da8ca76a0c27c9d4b01d0d43c5cc4a0810ea21db">
         <source xml:lang="en">Review the commands for this setup.</source>
-        <target state="new">Review the commands for this setup.</target>
+        <target state="translated">Revise los comandos de esta configuración.</target>
       </trans-unit>
       <trans-unit id="++CODE++110263b2ea0ce4fd85fdbbf9a6f2c7e5f0cda8f6867e799702198a55ad507b2d">
         <source xml:lang="en">Review the details, then start a guided conversation with {0}. You don't need command-line experience.</source>
@@ -1816,7 +1816,7 @@ Id. de organización: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++e5b2f2a712b0f13982d3061761231ae5d94cca96331ced7b6bef9c83b1758062">
         <source xml:lang="en">Set up a compatible shell to see this command.</source>
-        <target state="new">Set up a compatible shell to see this command.</target>
+        <target state="translated">Configure un shell compatible para ver este comando.</target>
       </trans-unit>
       <trans-unit id="++CODE++7013af4c42fe43802a9e8b0affc4f521fcd126160569969fb2ec09e1b7c422b1">
         <source xml:lang="en">Setup</source>
@@ -2047,7 +2047,7 @@ Id. de organización: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++1be1e2bab29bc0b801421557148a27b906249cc1a286e9717a03a8ed1a16cf81">
         <source xml:lang="en">This command can't be copied. Check its status and the manual setup instructions.</source>
-        <target state="new">This command can't be copied. Check its status and the manual setup instructions.</target>
+        <target state="translated">No se puede copiar este comando. Compruebe su estado y siga las instrucciones de configuración manual.</target>
       </trans-unit>
       <trans-unit id="++CODE++bcfc420c0358eb6f248fa6328797cfa38fa121baea6320a623280a0d34eeee75">
         <source xml:lang="en">This file was exported with a newer version of the extension. Please update your extension to import this file.</source>
@@ -2076,7 +2076,7 @@ Id. de organización: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++34098ed5be77dc7ed419b3a1e3cadc347b13e439bca4db44e5db701411766e82">
         <source xml:lang="en">To continue manually, open Technical details and select Copy for the commands you still need.</source>
-        <target state="new">To continue manually, open Technical details and select Copy for the commands you still need.</target>
+        <target state="translated">Para continuar manualmente, abra Detalles técnicos y seleccione Copiar para los comandos que aún necesita.</target>
       </trans-unit>
       <trans-unit id="++CODE++4f8c4d58a87feaaff06fd5f9cb84370ab4a42220bf1e8cbedbca716f8f21c9ee">
         <source xml:lang="en">To know more, see &lt;a href="https://go.microsoft.com/fwlink/?linkid=2206366"&gt;Copilot in Power Pages documentation.</source>
@@ -2236,15 +2236,15 @@ Id. de organización: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++5a160eefb4aedc6bcc21a26052eb1f57ebe821a48a00ce4aba595189d22b4286">
         <source xml:lang="en">VS Code can't run setup in this shell. Choose PowerShell, Bash, Zsh, or Fish as your default shell, restart VS Code, then reopen site setup. Setup commands didn't run.</source>
-        <target state="new">VS Code can't run setup in this shell. Choose PowerShell, Bash, Zsh, or Fish as your default shell, restart VS Code, then reopen site setup. Setup commands didn't run.</target>
+        <target state="translated">VS Code no puede ejecutar la configuración en este shell. Elija PowerShell, Bash, Zsh o Fish como shell predeterminado, reinicie VS Code y vuelva a abrir la configuración del sitio. Los comandos de configuración no se ejecutaron.</target>
       </trans-unit>
       <trans-unit id="++CODE++973bc39b5d032171d724e1a60afb8fc63ee1b80361645934289434e8b42fb4d9">
         <source xml:lang="en">VS Code can't safely start this AI assistant with your site description. Install a version with an executable or PowerShell script, then select Try again. Copy isn't available for this installation.</source>
-        <target state="new">VS Code can't safely start this AI assistant with your site description. Install a version with an executable or PowerShell script, then select Try again. Copy isn't available for this installation.</target>
+        <target state="translated">VS Code no puede iniciar de forma segura este asistente de IA con la descripción del sitio. Instale una versión con un archivo ejecutable o un script de PowerShell y seleccione Intentar de nuevo. La copia no está disponible para esta instalación.</target>
       </trans-unit>
       <trans-unit id="++CODE++ebe477e775a54cc641bf8adf8942573e4539a66028b0ac0cb8e2ddd7c2e9149b">
         <source xml:lang="en">VS Code couldn't find PowerShell 7 or Git Bash. Install one, or set its path in the user-level Terminal › Integrated: Profiles: Windows setting. Select Try again. Setup commands didn't run.</source>
-        <target state="new">VS Code couldn't find PowerShell 7 or Git Bash. Install one, or set its path in the user-level Terminal › Integrated: Profiles: Windows setting. Select Try again. Setup commands didn't run.</target>
+        <target state="translated">VS Code no pudo encontrar PowerShell 7 ni Git Bash. Instale uno de ellos o establezca su ruta en la configuración a nivel de usuario Terminal › Integrado: Perfiles: Windows. Seleccione Intentar de nuevo. Los comandos de configuración no se ejecutaron.</target>
       </trans-unit>
       <trans-unit id="++CODE++c4b3a95eb9ce3bce70b7fd7d6462e24f10cfc7e81edbf5684aa1cf858c3feb09">
         <source xml:lang="en">VS Code couldn't open the site setup page. Run the command again.</source>
@@ -2252,11 +2252,11 @@ Id. de organización: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++9128159300e2c4763058f0d72424b025162604d7cad504c6a047dfe64db78601">
         <source xml:lang="en">VS Code couldn't run setup because terminal shell integration is off. Turn on Terminal › Integrated: Shell Integration Enabled in Settings, then select Try again. Setup commands didn't run.</source>
-        <target state="new">VS Code couldn't run setup because terminal shell integration is off. Turn on Terminal › Integrated: Shell Integration Enabled in Settings, then select Try again. Setup commands didn't run.</target>
+        <target state="translated">VS Code no se pudo ejecutar el programa de instalación porque la integración de Terminal Shell está desactivada. Active Terminal › Integrado: Integración de Shell habilitada en Configuración y, a continuación, seleccione Intentar de nuevo. Los comandos de configuración no se ejecutaron.</target>
       </trans-unit>
       <trans-unit id="++CODE++6c23706c301c0044dc0139f3ade45d60beee0c0e23b404b6c4403e1607eb7a5b">
         <source xml:lang="en">VS Code couldn't run setup because terminal shell integration wasn't ready. Select Try again. If the issue continues, check the terminal's startup settings. Setup commands didn't run.</source>
-        <target state="new">VS Code couldn't run setup because terminal shell integration wasn't ready. Select Try again. If the issue continues, check the terminal's startup settings. Setup commands didn't run.</target>
+        <target state="translated">VS Code no pudo ejecutar la configuración porque la integración del shell del terminal no estaba lista. Seleccione Intentar de nuevo. Si el problema continúa, compruebe la configuración de inicio del terminal. Los comandos de configuración no se ejecutaron.</target>
       </trans-unit>
       <trans-unit id="++CODE++1acc93ac4c64d3eb4ce7ab732ec13e9c225ed10c645415274b729099d3a8074a">
         <source xml:lang="en">VS Code will check the Power Pages Plugin setup</source>
@@ -2296,19 +2296,19 @@ Id. de organización: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++31b2edd15a101e3d2921ca2aa0329a33fd862d8b380084da718c3f3e6a374e18">
         <source xml:lang="en">We couldn't complete this step: {0}. Select Try again, or open {1} to review the commands.</source>
-        <target state="new">We couldn't complete this step: {0}. Select Try again, or open {1} to review the commands.</target>
+        <target state="translated">No hemos podido completar este paso: {0}. Seleccione Intentar de nuevo o abra {1} para revisar los comandos.</target>
       </trans-unit>
       <trans-unit id="++CODE++0d2d00965d69f953fb734a46f1f59ec3470eb974c916e3ead5138564efd2c52e">
         <source xml:lang="en">We couldn't complete this step: {0}. Select {1} for installation and reload options, or select Try again.</source>
-        <target state="new">We couldn't complete this step: {0}. Select {1} for installation and reload options, or select Try again.</target>
+        <target state="translated">No hemos podido completar este paso: {0}. Seleccione {1} para las opciones de instalación y recarga, o bien vuelva a intentarlo.</target>
       </trans-unit>
       <trans-unit id="++CODE++b84a701a227722ecce6fccc7605bdefcc2e73342b23ed3b5af46897dbb25ea02">
         <source xml:lang="en">We couldn't copy the command. Select Copy to try again.</source>
-        <target state="new">We couldn't copy the command. Select Copy to try again.</target>
+        <target state="translated">No pudimos copiar el comando. Seleccione Copiar para volver a intentarlo.</target>
       </trans-unit>
       <trans-unit id="++CODE++96f1abdc79bc5e834e804288e07dafa9207ece7b0fbe52d45156295d0462537a">
         <source xml:lang="en">We couldn't finish setup. Review the site setup page for next steps.</source>
-        <target state="new">We couldn't finish setup. Review the site setup page for next steps.</target>
+        <target state="translated">No pudimos finalizar la configuración. Revise la página de configuración del sitio para conocer los pasos siguientes.</target>
       </trans-unit>
       <trans-unit id="++CODE++d3931a85c3e6d17fc7abba40fd4f4497852784b8298407ac65d09d908c4989e3">
         <source xml:lang="en">We couldn't prepare your AI assistant</source>

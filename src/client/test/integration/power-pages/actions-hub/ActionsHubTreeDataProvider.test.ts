@@ -239,8 +239,8 @@ describe("ActionsHubTreeDataProvider", () => {
 
         //command "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite"
         it("should register uploadSite command", async () => {
-            const mockCommandHandler = sinon.stub(UploadSiteHandler, 'uploadSite');
-            mockCommandHandler.resolves();
+            const mockCommandHandler = sinon.stub().resolves();
+            const createHandler = sinon.stub(UploadSiteHandler, 'uploadSite').returns(mockCommandHandler);
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, false);
             actionsHubTreeDataProvider["registerPanel"]();
 
@@ -248,6 +248,7 @@ describe("ActionsHubTreeDataProvider", () => {
 
             await registerCommandStub.getCall(11).args[1]();
             expect(mockCommandHandler.calledOnce).to.be.true;
+            expect(createHandler.calledWith(pacTerminal)).to.be.true;
         });
 
         it("should register siteDetails command", async () => {

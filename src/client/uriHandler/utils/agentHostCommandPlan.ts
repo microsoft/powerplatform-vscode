@@ -7,6 +7,7 @@ import { URI_CONSTANTS } from "../constants/uriConstants";
 import {
     AgentHostBootstrapConfig,
     getAgentHostInstallCommand,
+    getAgentHostInstallInvocation,
     getAgentHostPathRefreshCommand
 } from "./agentHostBootstrap";
 import { AgentHost } from "./detectAgentHost";
@@ -127,11 +128,17 @@ export function buildAgentHostCommandPlan(
             ].join(" ");
     const buildHostCommandLine = (args: string[]): string =>
         buildLaunchCommandLine(hostExecutable, args);
+    const buildHostCommand = (args: string[]): Pick<PlannedCommand, "commandLine" | "executable" | "args"> => ({
+        commandLine: buildHostCommandLine(args),
+        executable: hostExecutable,
+        args
+    });
     const bootstrapCommands: PlannedCommand[] = bootstrap
         ? [
             {
                 kind: "installHost",
                 commandLine: getAgentHostInstallCommand(host, bootstrap),
+                ...getAgentHostInstallInvocation(host, bootstrap),
                 description: strings.installHost.replace("{0}", hostDisplayName)
             },
             {
@@ -142,6 +149,8 @@ export function buildAgentHostCommandPlan(
             {
                 kind: "verifyHost",
                 commandLine: `${host} --version`,
+                executable: host,
+                args: ["--version"],
                 description: strings.verifyHost.replace("{0}", hostDisplayName)
             }
         ]
@@ -154,7 +163,7 @@ export function buildAgentHostCommandPlan(
         ...(shouldCheckMarketplace ? [
             {
                 kind: "checkMarketplace",
-                commandLine: buildHostCommandLine(
+                ...buildHostCommand(
                     getAgentHostSetupCheckCommand(host, "marketplace")
                         .split(" ")
                         .slice(1)
@@ -166,7 +175,7 @@ export function buildAgentHostCommandPlan(
         ...(shouldCheckPlugin ? [
             {
                 kind: "checkPlugin",
-                commandLine: buildHostCommandLine(
+                ...buildHostCommand(
                     getAgentHostSetupCheckCommand(host, "plugin")
                         .split(" ")
                         .slice(1)
@@ -192,7 +201,7 @@ export function buildAgentHostCommandPlan(
                 ...setupChecks,
                 ...(includeMarketplaceSetup ? [{
                     kind: "registerMarketplace",
-                    commandLine: buildHostCommandLine([
+                    ...buildHostCommand([
                         "plugin",
                         "marketplace",
                         "add",
@@ -208,7 +217,7 @@ export function buildAgentHostCommandPlan(
                 } satisfies PlannedCommand] : []),
                 ...(includePluginSetup ? [{
                     kind: "installPlugin",
-                    commandLine: buildHostCommandLine([
+                    ...buildHostCommand([
                         "plugin",
                         "install",
                         PLUGIN_ID,
@@ -225,7 +234,7 @@ export function buildAgentHostCommandPlan(
                 } satisfies PlannedCommand] : []),
                 ...(includePluginEnable ? [{
                     kind: "enablePlugin",
-                    commandLine: buildHostCommandLine([
+                    ...buildHostCommand([
                         "plugin",
                         "enable",
                         PLUGIN_ID
@@ -256,7 +265,7 @@ export function buildAgentHostCommandPlan(
                 ...setupChecks,
                 ...(includeMarketplaceSetup ? [{
                     kind: "registerMarketplace",
-                    commandLine: buildHostCommandLine([
+                    ...buildHostCommand([
                         "plugin",
                         "marketplace",
                         "add",
@@ -272,7 +281,7 @@ export function buildAgentHostCommandPlan(
                 } satisfies PlannedCommand] : []),
                 ...(includePluginSetup ? [{
                     kind: "installPlugin",
-                    commandLine: buildHostCommandLine([
+                    ...buildHostCommand([
                         "plugin",
                         "install",
                         PLUGIN_ID
@@ -287,7 +296,7 @@ export function buildAgentHostCommandPlan(
                 } satisfies PlannedCommand] : []),
                 ...(includePluginEnable ? [{
                     kind: "enablePlugin",
-                    commandLine: buildHostCommandLine([
+                    ...buildHostCommand([
                         "plugin",
                         "enable",
                         PLUGIN_ID

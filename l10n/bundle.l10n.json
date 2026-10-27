@@ -124,6 +124,10 @@
   "Generating a new Power Pages site...": "Generating a new Power Pages site...",
   "Failed to create a new Power Pages site. Please try again.": "Failed to create a new Power Pages site. Please try again.",
   "Unable to locate website root folder.": "Unable to locate website root folder.",
+  "Start creating": "Start creating",
+  "Copy": "Copy",
+  "Technical details": "Technical details",
+  "Runs only if needed": "Runs only if needed",
   "Failed to handle Power Pages URI: {0}": "Failed to handle Power Pages URI: {0}",
   "Website ID is required": "Website ID is required",
   "Environment ID is required": "Environment ID is required",
@@ -134,7 +138,7 @@
   "User cancelled environment switch": "User cancelled environment switch",
   "User cancelled folder selection": "User cancelled folder selection",
   "Power Pages create flow could not continue. {0}": "Power Pages create flow could not continue. {0}",
-  "We couldn't finish setup. Review the site setup page for next steps.": "We couldn't finish setup. Review the site setup page for next steps.",
+  "VS Code couldn't finish setup. Review the site setup page for next steps.": "VS Code couldn't finish setup. Review the site setup page for next steps.",
   "VS Code couldn't open the site setup page. Run the command again.": "VS Code couldn't open the site setup page. Run the command again.",
   "Download failed: {0}": "Download failed: {0}",
   "Describe the site you want to create.": "Describe the site you want to create.",
@@ -206,54 +210,111 @@
   "Create a Power Pages site": "Create a Power Pages site",
   "Review your site setup": "Review your site setup",
   "Review the details, then start a guided conversation with {0}. You don't need command-line experience.": "Review the details, then start a guided conversation with {0}. You don't need command-line experience.",
-  "Preparing your AI assistant...": "Preparing your AI assistant...",
+  "Preparing your AI assistant": "Preparing your AI assistant",
   "Step {0} of {1}: {2}": "Step {0} of {1}: {2}",
-  "{0} is already set up.": "{0} is already set up.",
-  "VS Code couldn't run setup because terminal shell integration is off. Turn on Terminal › Integrated: Shell Integration Enabled in Settings, then select Try again. Setup commands didn't run.": "VS Code couldn't run setup because terminal shell integration is off. Turn on Terminal › Integrated: Shell Integration Enabled in Settings, then select Try again. Setup commands didn't run.",
-  "VS Code couldn't run setup because terminal shell integration wasn't ready. Select Try again. If the issue continues, check the terminal's startup settings. Setup commands didn't run.": "VS Code couldn't run setup because terminal shell integration wasn't ready. Select Try again. If the issue continues, check the terminal's startup settings. Setup commands didn't run.",
-  "VS Code couldn't find PowerShell 7 or Git Bash. Install one, or set its path in the user-level Terminal › Integrated: Profiles: Windows setting. Select Try again. Setup commands didn't run.": "VS Code couldn't find PowerShell 7 or Git Bash. Install one, or set its path in the user-level Terminal › Integrated: Profiles: Windows setting. Select Try again. Setup commands didn't run.",
-  "VS Code can't run setup in this shell. Choose PowerShell, Bash, Zsh, or Fish as your default shell, restart VS Code, then reopen site setup. Setup commands didn't run.": "VS Code can't run setup in this shell. Choose PowerShell, Bash, Zsh, or Fish as your default shell, restart VS Code, then reopen site setup. Setup commands didn't run.",
-  "VS Code can't safely start this AI assistant with your site description. Install a version with an executable or PowerShell script, then select Try again. Copy isn't available for this installation.": "VS Code can't safely start this AI assistant with your site description. Install a version with an executable or PowerShell script, then select Try again. Copy isn't available for this installation.",
-  "We couldn't complete this step: {0}. Select Try again, or open {1} to review the commands.": "We couldn't complete this step: {0}. Select Try again, or open {1} to review the commands.",
-  "We couldn't complete this step: {0}. Select {1} for installation and reload options, or select Try again.": "We couldn't complete this step: {0}. Select {1} for installation and reload options, or select Try again.",
+  "Step {0} of {1}: {2}. Skipping a setup step that isn't needed.": "Step {0} of {1}: {2}. Skipping a setup step that isn't needed.",
+  "VS Code couldn't run setup because terminal shell integration is turned off. The remaining setup commands didn't run. Turn on the Terminal › Integrated › Shell Integration: Enabled setting, and then select {0}./{0} is the localized label of the Try again button.'Terminal › Integrated › Shell Integration: Enabled' is the name of a VS Code setting.": {
+    "message": "VS Code couldn't run setup because terminal shell integration is turned off. The remaining setup commands didn't run. Turn on the Terminal › Integrated › Shell Integration: Enabled setting, and then select {0}.",
+    "comment": [
+      "{0} is the localized label of the Try again button.",
+      "'Terminal › Integrated › Shell Integration: Enabled' is the name of a VS Code setting."
+    ]
+  },
+  "VS Code couldn't run setup because terminal shell integration wasn't ready. The remaining setup commands didn't run. Select {0}. If the problem continues, check the terminal's startup settings./{0} is the localized label of the Try again button.": {
+    "message": "VS Code couldn't run setup because terminal shell integration wasn't ready. The remaining setup commands didn't run. Select {0}. If the problem continues, check the terminal's startup settings.",
+    "comment": [
+      "{0} is the localized label of the Try again button."
+    ]
+  },
+  "VS Code couldn't find PowerShell 7 or Git Bash. The remaining setup commands didn't run. Install one of them, or add its path to the Terminal › Integrated › Profiles: Windows user setting, and then select {0}./{0} is the localized label of the Try again button.'Terminal › Integrated › Profiles: Windows' is the name of a VS Code setting.": {
+    "message": "VS Code couldn't find PowerShell 7 or Git Bash. The remaining setup commands didn't run. Install one of them, or add its path to the Terminal › Integrated › Profiles: Windows user setting, and then select {0}.",
+    "comment": [
+      "{0} is the localized label of the Try again button.",
+      "'Terminal › Integrated › Profiles: Windows' is the name of a VS Code setting."
+    ]
+  },
+  "VS Code can't run setup in your default terminal shell. The remaining setup commands didn't run. Set your default terminal shell to PowerShell, Bash, Zsh, or Fish, restart VS Code, and then start creating your site again.": "VS Code can't run setup in your default terminal shell. The remaining setup commands didn't run. Set your default terminal shell to PowerShell, Bash, Zsh, or Fish, restart VS Code, and then start creating your site again.",
+  "VS Code can't safely pass your site description to this AI assistant installation because it starts from a batch file (.cmd or .bat). Install a version that starts from an .exe file or a PowerShell script (.ps1), and then select {0}. Copy isn't available for this installation./{0} is the localized label of the Try again button.": {
+    "message": "VS Code can't safely pass your site description to this AI assistant installation because it starts from a batch file (.cmd or .bat). Install a version that starts from an .exe file or a PowerShell script (.ps1), and then select {0}. Copy isn't available for this installation.",
+    "comment": [
+      "{0} is the localized label of the Try again button."
+    ]
+  },
+  "VS Code couldn't complete this step: {0}. Select {2}, or open {1} to review the commands./{0} is the localized description of the command that failed and is replaced when the message is shown.{1} is the localized label of the Technical details section and is replaced when the message is shown.{2} is the localized label of the Try again button.": {
+    "message": "VS Code couldn't complete this step: {0}. Select {2}, or open {1} to review the commands.",
+    "comment": [
+      "{0} is the localized description of the command that failed and is replaced when the message is shown.",
+      "{1} is the localized label of the Technical details section and is replaced when the message is shown.",
+      "{2} is the localized label of the Try again button."
+    ]
+  },
+  "VS Code couldn't complete this step: {0}. Select {1} for installation and reload options, or select {2}./{0} is the localized description of the command that failed and is replaced when the message is shown.{1} is the localized label of the View setup options button and is replaced when the message is shown.{2} is the localized label of the Try again button.": {
+    "message": "VS Code couldn't complete this step: {0}. Select {1} for installation and reload options, or select {2}.",
+    "comment": [
+      "{0} is the localized description of the command that failed and is replaced when the message is shown.",
+      "{1} is the localized label of the View setup options button and is replaced when the message is shown.",
+      "{2} is the localized label of the Try again button."
+    ]
+  },
   "Summary": "Summary",
-  "Technical details": "Technical details",
   "Review the commands for this setup.": "Review the commands for this setup.",
-  "Open {0} in your site folder: {1}. Copy and run only the commands you still need, one at a time and in order. Use the read-only checks before steps marked Runs only if needed. Stop if a command fails.": "Open {0} in your site folder: {1}. Copy and run only the commands you still need, one at a time and in order. Use the read-only checks before steps marked Runs only if needed. Stop if a command fails.",
-  "Copy isn't available with this shell or AI assistant. Set up a supported shell or assistant, then select Try again.": "Copy isn't available with this shell or AI assistant. Set up a supported shell or assistant, then select Try again.",
-  "Set up a compatible shell to see this command.": "Set up a compatible shell to see this command.",
-  "To continue manually, open Technical details and select Copy for the commands you still need.": "To continue manually, open Technical details and select Copy for the commands you still need.",
-  "Copy": "Copy",
+  "To set up manually, open {0} in your site folder ({1}). Copy and run only the commands you still need, in order and one at a time. Stop if a command fails.": "To set up manually, open {0} in your site folder ({1}). Copy and run only the commands you still need, in order and one at a time. Stop if a command fails.",
+  "To set up manually, open {0} in your site folder ({1}). Copy and run only the commands you still need, in order and one at a time. Run a command marked {2} only if the related read-only check shows that it's needed. Stop if a command fails./{0} is the path of the terminal shell and is replaced when the message is shown.{1} is the path of the site folder and is replaced when the message is shown.{2} is the localized Runs only if needed label shown next to conditional commands.": {
+    "message": "To set up manually, open {0} in your site folder ({1}). Copy and run only the commands you still need, in order and one at a time. Run a command marked {2} only if the related read-only check shows that it's needed. Stop if a command fails.",
+    "comment": [
+      "{0} is the path of the terminal shell and is replaced when the message is shown.",
+      "{1} is the path of the site folder and is replaced when the message is shown.",
+      "{2} is the localized Runs only if needed label shown next to conditional commands."
+    ]
+  },
+  "Copy isn't available for this terminal shell. Copy works with PowerShell, Bash, Zsh, and Fish.": "Copy isn't available for this terminal shell. Copy works with PowerShell, Bash, Zsh, and Fish.",
+  "Copy isn't available for this AI assistant installation because it starts from a batch file (.cmd or .bat).": "Copy isn't available for this AI assistant installation because it starts from a batch file (.cmd or .bat).",
+  "Command preview isn't available for this terminal shell.": "Command preview isn't available for this terminal shell.",
+  "To continue manually, open {0} and select {1} for each command you still need./{0} is the localized label of the Technical details section.{1} is the localized label of the Copy button.": {
+    "message": "To continue manually, open {0} and select {1} for each command you still need.",
+    "comment": [
+      "{0} is the localized label of the Technical details section.",
+      "{1} is the localized label of the Copy button."
+    ]
+  },
   "Copy command: {0}": "Copy command: {0}",
   "Command copied: {0}.": "Command copied: {0}.",
-  "We couldn't copy the command. Select Copy to try again.": "We couldn't copy the command. Select Copy to try again.",
-  "This command can't be copied. Check its status and the manual setup instructions.": "This command can't be copied. Check its status and the manual setup instructions.",
+  "VS Code couldn't copy the command. Select {0} to try again./{0} is the localized label of the Copy button.": {
+    "message": "VS Code couldn't copy the command. Select {0} to try again.",
+    "comment": [
+      "{0} is the localized label of the Copy button."
+    ]
+  },
+  "You can't copy this command now. Check its status and the manual setup instructions.": "You can't copy this command now. Check its status and the manual setup instructions.",
   "Completed": "Completed",
   "Not needed": "Not needed",
   "AI assistant": "AI assistant",
   "Site files": "Site files",
   "Setup": "Setup",
-  "Power Pages Plugin is installed": "Power Pages Plugin is installed",
-  "VS Code will install the Power Pages Plugin": "VS Code will install the Power Pages Plugin",
-  "VS Code will enable the Power Pages Plugin": "VS Code will enable the Power Pages Plugin",
-  "VS Code will check the Power Pages Plugin setup": "VS Code will check the Power Pages Plugin setup",
-  "VS Code will install {0} and the Power Pages Plugin": "VS Code will install {0} and the Power Pages Plugin",
+  "Power Pages plugin is installed": "Power Pages plugin is installed",
+  "VS Code will install the Power Pages plugin": "VS Code will install the Power Pages plugin",
+  "VS Code will enable the Power Pages plugin": "VS Code will enable the Power Pages plugin",
+  "VS Code will check the Power Pages plugin setup": "VS Code will check the Power Pages plugin setup",
+  "VS Code will install {0} and the Power Pages plugin": "VS Code will install {0} and the Power Pages plugin",
   "What happens next": "What happens next",
   "Prepare your AI assistant": "Prepare your AI assistant",
   "Install the assistant if needed.": "Install the assistant if needed.",
-  "Prepare the Power Pages Plugin": "Prepare the Power Pages Plugin",
+  "Prepare the Power Pages plugin": "Prepare the Power Pages plugin",
   "Install or enable the plugin if needed.": "Install or enable the plugin if needed.",
   "Start your site": "Start your site",
   "Open a guided conversation in the VS Code terminal.": "Open a guided conversation in the VS Code terminal.",
-  "VS Code won't change your setup until you select Start creating. Your AI assistant might ask you to sign in.": "VS Code won't change your setup until you select Start creating. Your AI assistant might ask you to sign in.",
+  "VS Code won't change your setup until you select {0}. Your AI assistant might ask you to sign in./{0} is the localized label of the Start creating button.": {
+    "message": "VS Code won't change your setup until you select {0}. Your AI assistant might ask you to sign in.",
+    "comment": [
+      "{0} is the localized label of the Start creating button."
+    ]
+  },
   "Read-only check": "Read-only check",
-  "Runs only if needed": "Runs only if needed",
   "Already set up": "Already set up",
   "Power Platform Skills marketplace": "Power Platform Skills marketplace",
-  "Power Pages Plugin": "Power Pages Plugin",
+  "Power Pages plugin": "Power Pages plugin",
   "Site to create": "Site to create",
   "Your selected AI assistant is installed.": "Your selected AI assistant is installed.",
-  "Start creating": "Start creating",
   "Prepare the selected AI assistant and start a guided site-creation conversation.": "Prepare the selected AI assistant and start a guided site-creation conversation.",
   "Change choices": "Change choices",
   "Change the folder, AI assistant, or site description.": "Change the folder, AI assistant, or site description.",
@@ -265,20 +326,20 @@
   "Follow the prompts to create your Power Pages site.": "Follow the prompts to create your Power Pages site.",
   "Go to terminal": "Go to terminal",
   "Show your AI assistant conversation in the terminal.": "Show your AI assistant conversation in the terminal.",
-  "We couldn't prepare your AI assistant": "We couldn't prepare your AI assistant",
+  "VS Code couldn't prepare your AI assistant": "VS Code couldn't prepare your AI assistant",
   "Try the setup again.": "Try the setup again.",
   "View setup options": "View setup options",
   "Open installation and reload options.": "Open installation and reload options.",
   "Power Pages Agent: {0}": "Power Pages Agent: {0}",
   "Install {0}": "Install {0}",
-  "Refresh the terminal PATH": "Refresh the terminal PATH",
-  "Verify that {0} is available in this terminal": "Verify that {0} is available in this terminal",
+  "Refresh the PATH environment variable": "Refresh the PATH environment variable",
+  "Verify that {0} is available": "Verify that {0} is available",
   "Check whether the Power Platform Skills marketplace is registered": "Check whether the Power Platform Skills marketplace is registered",
-  "Check whether the Power Pages Plugin is installed": "Check whether the Power Pages Plugin is installed",
+  "Check whether the Power Pages plugin is installed": "Check whether the Power Pages plugin is installed",
   "Register the Power Platform Skills marketplace": "Register the Power Platform Skills marketplace",
-  "Install the Power Pages Plugin": "Install the Power Pages Plugin",
-  "Install the Power Pages Plugin for your user account": "Install the Power Pages Plugin for your user account",
-  "Enable the installed Power Pages Plugin": "Enable the installed Power Pages Plugin",
+  "Install the Power Pages plugin": "Install the Power Pages plugin",
+  "Install the Power Pages plugin for your user account": "Install the Power Pages plugin for your user account",
+  "Enable the installed Power Pages plugin": "Enable the installed Power Pages plugin",
   "Start {0} with your site description": "Start {0} with your site description",
   "File might be referenced by name {0} here./{0} represents the name of the file": {
     "message": "File might be referenced by name {0} here.",
@@ -392,7 +453,8 @@
   "Select Folder": "Select Folder",
   "Environment changed successfully.": "Environment changed successfully.",
   "Please select the folder that contains your compiled output to upload your site.": "Please select the folder that contains your compiled output to upload your site.",
-  "Upload failed. Please try again later.": "Upload failed. Please try again later.",
+  "Couldn't upload the site. Check the Power Platform Tools: PAC CLI output for details.": "Couldn't upload the site. Check the Power Platform Tools: PAC CLI output for details.",
+  "Trust this workspace before you upload a site.": "Trust this workspace before you upload a site.",
   "Missing required site information for reactivation.": "Missing required site information for reactivation.",
   "VS Code - PAC CLI authentication mismatch detected": "VS Code - PAC CLI authentication mismatch detected",
   "Accounts don't match, data may not load.": "Accounts don't match, data may not load.",

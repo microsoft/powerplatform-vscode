@@ -31,18 +31,24 @@ describe("buildAgentHostCommandPlan", () => {
             {
                 kind: "checkMarketplace",
                 commandLine: "copilot plugin marketplace list",
+                executable: "copilot",
+                args: ["plugin", "marketplace", "list"],
                 description: "check marketplace",
                 setupCheck: "marketplace"
             },
             {
                 kind: "checkPlugin",
                 commandLine: "copilot plugin list",
+                executable: "copilot",
+                args: ["plugin", "list"],
                 description: "check plugin",
                 setupCheck: "plugin"
             },
             {
                 kind: "registerMarketplace",
                 commandLine: 'copilot plugin marketplace add "microsoft/power-platform-skills"',
+                executable: "copilot",
+                args: ["plugin", "marketplace", "add", "microsoft/power-platform-skills"],
                 description: "register",
                 runWhenSetupState: {
                     component: "marketplace",
@@ -52,6 +58,8 @@ describe("buildAgentHostCommandPlan", () => {
             {
                 kind: "installPlugin",
                 commandLine: 'copilot plugin install "power-pages@power-platform-skills"',
+                executable: "copilot",
+                args: ["plugin", "install", "power-pages@power-platform-skills"],
                 description: "install",
                 runWhenSetupState: {
                     component: "plugin",
@@ -61,6 +69,8 @@ describe("buildAgentHostCommandPlan", () => {
             {
                 kind: "enablePlugin",
                 commandLine: 'copilot plugin enable "power-pages@power-platform-skills"',
+                executable: "copilot",
+                args: ["plugin", "enable", "power-pages@power-platform-skills"],
                 description: "enable plugin",
                 runWhenSetupState: {
                     component: "plugin",
@@ -87,18 +97,24 @@ describe("buildAgentHostCommandPlan", () => {
             {
                 kind: "checkMarketplace",
                 commandLine: "claude plugin marketplace list --json",
+                executable: "claude",
+                args: ["plugin", "marketplace", "list", "--json"],
                 description: "check marketplace",
                 setupCheck: "marketplace"
             },
             {
                 kind: "checkPlugin",
                 commandLine: "claude plugin list --json",
+                executable: "claude",
+                args: ["plugin", "list", "--json"],
                 description: "check plugin",
                 setupCheck: "plugin"
             },
             {
                 kind: "registerMarketplace",
                 commandLine: 'claude plugin marketplace add "microsoft/power-platform-skills"',
+                executable: "claude",
+                args: ["plugin", "marketplace", "add", "microsoft/power-platform-skills"],
                 description: "register",
                 runWhenSetupState: {
                     component: "marketplace",
@@ -108,6 +124,8 @@ describe("buildAgentHostCommandPlan", () => {
             {
                 kind: "installPlugin",
                 commandLine: 'claude plugin install "power-pages@power-platform-skills" --scope user',
+                executable: "claude",
+                args: ["plugin", "install", "power-pages@power-platform-skills", "--scope", "user"],
                 description: "install user scope",
                 runWhenSetupState: {
                     component: "plugin",
@@ -117,6 +135,8 @@ describe("buildAgentHostCommandPlan", () => {
             {
                 kind: "enablePlugin",
                 commandLine: 'claude plugin enable "power-pages@power-platform-skills"',
+                executable: "claude",
+                args: ["plugin", "enable", "power-pages@power-platform-skills"],
                 description: "enable plugin",
                 runWhenSetupState: {
                     component: "plugin",
@@ -159,6 +179,8 @@ describe("buildAgentHostCommandPlan", () => {
             {
                 kind: "installHost",
                 commandLine: "winget install --id GitHub.Copilot --exact --accept-package-agreements --accept-source-agreements",
+                executable: "winget",
+                args: ["install", "--id", "GitHub.Copilot", "--exact", "--accept-package-agreements", "--accept-source-agreements"],
                 description: "install GitHub Copilot CLI"
             },
             {
@@ -169,6 +191,8 @@ describe("buildAgentHostCommandPlan", () => {
             {
                 kind: "verifyHost",
                 commandLine: "copilot --version",
+                executable: "copilot",
+                args: ["--version"],
                 description: "verify GitHub Copilot CLI"
             }
         ]);
@@ -200,6 +224,8 @@ describe("buildAgentHostCommandPlan", () => {
         expect(plan[0]).to.deep.equal({
             kind: "installHost",
             commandLine: "curl -fsSL https://claude.ai/install.sh | bash",
+            executable: "bash",
+            args: ["-o", "pipefail", "-c", "curl -fsSL https://claude.ai/install.sh | bash"],
             description: "install Claude Code"
         });
         expect(plan[1].commandLine).to.equal('export PATH="$HOME/.local/bin:$PATH"; hash -r');
