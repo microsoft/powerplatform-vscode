@@ -529,7 +529,7 @@ describe("showAgenticCreateConfirmPanel", () => {
 
     it("keeps the shared notification concise without promising unavailable Copy actions", () => {
         expect(URI_HANDLER_STRINGS.ERRORS.AGENT_HOST_SEQUENCE_RECOVERY)
-            .to.equal("We couldn't finish setup. Review the site setup page for next steps.");
+            .to.equal("VS Code couldn't finish setup. Review the site setup page for next steps.");
         expect(confirm.UNSUPPORTED_HOST_EXECUTABLE_RECOVERY_STATUS).to.contain("Copy isn't available");
         expect(confirm.UNSUPPORTED_SHELL_WINDOWS_RECOVERY_STATUS).not.to.contain("default terminal profile");
     });
@@ -613,7 +613,7 @@ describe("showAgenticCreateConfirmPanel", () => {
         expect(html).to.contain("You don&#39;t need command-line experience.");
         expect(html).to.contain('id="summary-title"');
         expect(html).to.contain("What happens next");
-        expect(html).to.contain("Power Pages Plugin is installed");
+        expect(html).to.contain("Power Pages plugin is installed");
         expect(html).to.contain('<details id="technical-details">');
         expect(html).to.not.contain('<details id="technical-details" open>');
         expect(html).to.contain(">Start creating</button>");
@@ -621,7 +621,7 @@ describe("showAgenticCreateConfirmPanel", () => {
         expect(html).to.contain("Already set up");
         expect(html).to.contain("Site to create");
         expect(html).to.contain("A volunteer portal for a food bank");
-        expect(html).to.contain("Prepare the Power Pages Plugin");
+        expect(html).to.contain("Prepare the Power Pages plugin");
         expect(html).to.contain("VS Code won&#39;t change your setup until you select Start creating.");
     });
 
@@ -632,21 +632,21 @@ describe("showAgenticCreateConfirmPanel", () => {
                     marketplace: "present" as const,
                     plugin: "missing" as const
                 },
-                expected: "VS Code will install the Power Pages Plugin"
+                expected: "VS Code will install the Power Pages plugin"
             },
             {
                 setupState: {
                     marketplace: "present" as const,
                     plugin: "disabled" as const
                 },
-                expected: "VS Code will enable the Power Pages Plugin"
+                expected: "VS Code will enable the Power Pages plugin"
             },
             {
                 setupState: {
                     marketplace: "unknown" as const,
                     plugin: "unknown" as const
                 },
-                expected: "VS Code will check the Power Pages Plugin setup"
+                expected: "VS Code will check the Power Pages plugin setup"
             }
         ];
 
@@ -670,7 +670,7 @@ describe("showAgenticCreateConfirmPanel", () => {
         const conditionalPlan: PlannedCommand[] = [{
             kind: "installPlugin",
             commandLine: "copilot plugin install power-pages@power-platform-skills",
-            description: "Install the Power Pages Plugin",
+            description: "Install the Power Pages plugin",
             runWhenSetupState: {
                 component: "plugin",
                 states: ["missing", "unknown"]
@@ -681,10 +681,17 @@ describe("showAgenticCreateConfirmPanel", () => {
             "GitHub Copilot CLI",
             "c:/work/site",
             conditionalPlan,
-            depsFor(fake)
+            depsFor(fake),
+            true,
+            undefined,
+            false,
+            undefined,
+            "",
+            "pwsh"
         );
 
         expect(fake.html()).to.contain("Runs only if needed");
+        expect(fake.html()).to.contain("Run a command marked Runs only if needed only if the related read-only check shows that it&#39;s needed.");
     });
 
     it("renders WCAG-oriented keyboard, reflow, forced-colors, and reduced-motion support", () => {
@@ -735,7 +742,7 @@ describe("showAgenticCreateConfirmPanel", () => {
             {
                 type: "agenticCreateConfirmState",
                 state: "progress",
-                description: "Prepare the Power Pages Plugin",
+                description: "Prepare the Power Pages plugin",
                 step: 1,
                 totalSteps: 2,
                 status: "running"
@@ -793,8 +800,9 @@ describe("showAgenticCreateConfirmPanel", () => {
             expect(fake.html().match(/class="command already-set-up"/g)).to.have.length(2);
             expect(fake.html()).to.contain('data-command-index="0" aria-label="Copy command: register"');
             expect(fake.html()).to.contain('data-command-index="1" aria-label="Copy command: start"');
-            expect(fake.html()).to.contain("Open pwsh in your site folder: c:/work/site");
-            expect(fake.html()).to.contain("Use the read-only checks before steps marked Runs only if needed");
+            expect(fake.html()).to.contain("To set up manually, open pwsh in your site folder (c:/work/site).");
+            expect(fake.html()).to.contain("Copy and run only the commands you still need, in order and one at a time. Stop if a command fails.");
+            expect(fake.html()).not.to.contain("Run a command marked");
             expect(fake.html()).to.contain('aria-describedby="recovery-status recovery-manual"');
             expect(fake.html()).to.contain(`<p id="recovery-manual">${confirm.RECOVERY_MANUAL_DETAIL}</p>`);
             expect(fake.html()).to.not.contain("Copy all");
@@ -888,7 +896,7 @@ describe("showAgenticCreateConfirmPanel", () => {
             fake.emitMessage({ action: "copyCommand", index: 0, planVersion: 1 });
             await Promise.resolve();
 
-            expect(fake.html()).to.contain("Open bash in your site folder");
+            expect(fake.html()).to.contain("open bash in your site folder");
             expect(fake.html()).to.contain("updated safe prompt");
             expect(fake.html()).not.to.contain('data-command-index="1"');
             expect((deps.writeClipboard as sinon.SinonStub).calledOnceWithExactly(updatedPlan[0].commandLine)).to.be.true;
@@ -946,7 +954,7 @@ describe("showAgenticCreateConfirmPanel", () => {
             await Promise.resolve();
 
             expect((deps.writeClipboard as sinon.SinonStub).notCalled).to.be.true;
-            expect(fake.html()).to.contain("Copy isn&#39;t available with this shell");
+            expect(fake.html()).to.contain("Copy isn&#39;t available for this terminal shell.");
             expect(fake.html()).to.contain('aria-label="Copy command: start" disabled');
             expect(fake.html()).to.contain('aria-describedby="recovery-status"');
             expect(fake.html()).not.to.contain('id="recovery-manual"');
@@ -959,7 +967,7 @@ describe("showAgenticCreateConfirmPanel", () => {
             fake.emitMessage({ action: "copyCommand", index: 0, planVersion: 0 });
             await Promise.resolve();
 
-            expect(fake.html()).to.contain(confirm.COMMAND_PREVIEW_UNAVAILABLE);
+            expect(fake.html()).to.contain("Command preview isn&#39;t available for this terminal shell.");
             expect(fake.html()).not.to.contain('<code class="command-line"></code>');
             expect((deps.writeClipboard as sinon.SinonStub).notCalled).to.be.true;
         });
@@ -979,7 +987,7 @@ describe("showAgenticCreateConfirmPanel", () => {
             fake.emitMessage({ action: "copyCommand", index: 0, planVersion: 0 });
             await Promise.resolve();
 
-            expect(fake.html()).to.contain(`Open ${shell} in your site folder`);
+            expect(fake.html()).to.contain(`open ${shell} in your site folder`);
             expect((deps.writeClipboard as sinon.SinonStub).calledOnceWithExactly(commands[0].commandLine)).to.be.true;
         });
 
@@ -1007,6 +1015,8 @@ describe("showAgenticCreateConfirmPanel", () => {
 
             expect((deps.writeClipboard as sinon.SinonStub).notCalled).to.be.true;
             expect(fake.html()).to.contain('aria-label="Copy command: start" disabled');
+            expect(fake.html()).to.contain("Copy isn&#39;t available for this AI assistant installation because it starts from a batch file (.cmd or .bat).");
+            expect(fake.html()).not.to.contain("Copy isn&#39;t available for this terminal shell.");
         });
     });
 
@@ -1111,6 +1121,19 @@ describe("showAgenticCreateConfirmPanel", () => {
             expect(webview.getElement("technical-details").open).to.be.false;
             expect(webview.getElement("recovery-panel").focus.notCalled).to.be.true;
             expect(webview.getElement("retry").focus.notCalled).to.be.true;
+        });
+
+        it("announces skipped steps with the step position and stage title", () => {
+            const webview = runWebview();
+            webview.getElement("running-status").dataset.progressTemplate = confirm.PROGRESS_STATUS;
+            webview.getElement("running-status").dataset.skippedTemplate = confirm.SKIPPED_STATUS;
+            webview.receive({
+                type: "agenticCreateConfirmState", state: "progress",
+                description: confirm.CHECK_GUIDANCE_TITLE, step: 2, totalSteps: 3, status: "skipped"
+            });
+
+            expect(webview.getElement("running-status").textContent)
+                .to.equal("Step 2 of 3: Prepare the Power Pages plugin. Skipping a setup step that isn't needed.");
         });
 
         it("sends only the index and revision and announces copy success or failure without moving focus", () => {

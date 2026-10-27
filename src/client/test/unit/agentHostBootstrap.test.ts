@@ -6,6 +6,7 @@
 import { expect } from "chai";
 import {
     getAgentHostInstallCommand,
+    getAgentHostInstallInvocation,
     resolveAgentHostBootstrap
 } from "../../uriHandler/utils/agentHostBootstrap";
 import { AgentHost } from "../../uriHandler/utils/detectAgentHost";
@@ -36,16 +37,33 @@ describe("resolveAgentHostBootstrap", () => {
         });
     });
 
-    it("rejects legacy Windows PowerShell when PowerShell 7 is unavailable", () => {
+    it("falls back to Windows PowerShell when PowerShell 7 is unavailable", () => {
+        const windowsPowerShell = "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe";
         expect(resolveAgentHostBootstrap(
             AgentHost.Claude,
             "win32",
-            availability("powershell", "winget"),
+            availability("winget"),
+            {
+                environment: { SystemRoot: "C:\\Windows" },
+                isFile: candidate => candidate === windowsPowerShell
+            },
+            () => undefined
+        )).to.deep.equal({
+            supported: true,
+            config: { platform: "win32", installer: "winget", shellPath: windowsPowerShell }
+        });
+    });
+
+    it("does not require any PowerShell installation to bootstrap with winget", () => {
+        expect(resolveAgentHostBootstrap(
+            AgentHost.Claude,
+            "win32",
+            availability("winget"),
             shellOptions,
             () => undefined
         )).to.deep.equal({
-            supported: false,
-            reason: "missingPowerShell"
+            supported: true,
+            config: { platform: "win32", installer: "winget", shellPath: "powershell.exe" }
         });
     });
 
@@ -70,13 +88,16 @@ describe("resolveAgentHostBootstrap", () => {
         });
     });
 
-    it("never substitutes Git Bash for the PowerShell-specific winget flow", () => {
+    it("never substitutes Git Bash for the PowerShell-specific winget preview", () => {
         const bash = "C:\\Program Files\\Git\\bin\\bash.exe";
         expect(resolveAgentHostBootstrap(
             AgentHost.Claude, "win32", availability("bash", "winget"),
             { environment: {}, profilePaths: [bash], isFile: () => true },
             command => command === "bash" ? bash : undefined
-        )).to.deep.equal({ supported: false, reason: "missingPowerShell" });
+        )).to.deep.equal({
+            supported: true,
+            config: { platform: "win32", installer: "winget", shellPath: "powershell.exe" }
+        });
     });
 
     it("still requires winget when PowerShell is installed", () => {
@@ -140,5 +161,43 @@ describe("resolveAgentHostBootstrap", () => {
             installer: "script",
             shellPath: "bash"
         })).to.equal("curl -fsSL https://gh.io/copilot-install | bash");
+    });
+
+    it("builds shell-free installer invocations that match the previewed commands", () => {
+        expect(getAgentHostInstallInvocation(AgentHost.Copilot, {
+            platform: "win32",
+            installer: "winget",
+            shellPath: "powershell.exe"
+        })).to.deep.equal({
+            executable: "winget",
+            args: [
+                "install",
+                "--id",
+                "GitHub.Copilot",
+                "--exact",
+                "--accept-package-agreements",
+                "--accept-source-agreements"
+            ]
+        });
+        expect(getAgentHostInstallInvocation(AgentHost.Claude, {
+            platform: "darwin",
+            installer: "brew",
+            shellPath: "bash"
+        })).to.deep.equal({ executable: "brew", args: ["install", "--cask", "claude-code"] });
+        expect(getAgentHostInstallInvocation(AgentHost.Claude, {
+            platform: "linux",
+            installer: "script",
+            shellPath: "bash"
+        })).to.deep.equal({
+            executable: "bash",
+            args: ["-o", "pipefail", "-c", "curl -fsSL https://claude.ai/install.sh | bash"]
+        });
+        expect(getAgentHostInstallCommand(AgentHost.Claude, {
+            platform: "win32",
+            installer: "winget",
+            shellPath: "pwsh"
+        })).to.equal(
+            "winget install --id Anthropic.ClaudeCode --exact --accept-package-agreements --accept-source-agreements"
+        );
     });
 });
