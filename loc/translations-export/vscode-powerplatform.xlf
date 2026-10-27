@@ -422,6 +422,9 @@ Check the CodeQL extension panel for available queries.</source>
     <trans-unit id="++CODE++92a450b51c228fc0a45836a3cb66a77276511e8b1a48e237c97f27576695288d">
       <source xml:lang="en">Could not locate CodeQL CLI in global storage.</source>
     </trans-unit>
+    <trans-unit id="++CODE++ff00a78f2baf3706b528696e70919c4b123a4b8c7461ec1dd221b14b55e1adce">
+      <source xml:lang="en">Couldn't upload the site. Check the Power Platform Tools: PAC CLI output for details.</source>
+    </trans-unit>
     <trans-unit id="++CODE++17df5c921ef303496786b0c317e87e92cdd4702c739633987ced1b202e3aa6ac">
       <source xml:lang="en">Create a Power Pages site</source>
     </trans-unit>
@@ -1588,6 +1591,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++1ad14134a4f26b4cf2f8e203eb324fab77722a2f5368f489162d3d2319d01060">
       <source xml:lang="en">Total Files:</source>
     </trans-unit>
+    <trans-unit id="++CODE++61c95cf36f1a9bc1e6ea37d8358fe22a0abdcbe0c6751b5d409aadc4e8624c71">
+      <source xml:lang="en">Trust this workspace before you upload a site.</source>
+    </trans-unit>
     <trans-unit id="++CODE++4a7c431a6572c68bba17c3a5d858adbf5112462574953baf4d7d2fd0619807fe">
       <source xml:lang="en">Try @powerpages with GitHub Copilot</source>
     </trans-unit>
@@ -1651,9 +1657,6 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++7fce0124a7cb74955461f08e39ceaaed1e2850492f077f4e6defd82ef3ca6b0e">
       <source xml:lang="en">Upload changes</source>
-    </trans-unit>
-    <trans-unit id="++CODE++8a91e7caf57148c6be78b3986477464b36f0282a9e9a09b635b0db4fe6246132">
-      <source xml:lang="en">Upload failed. Please try again later.</source>
     </trans-unit>
     <trans-unit id="++CODE++920e379f234bd08346445db66f6a8eafc99b8b453405c8ffa02abbaba57b6a46">
       <source xml:lang="en">Uploading site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel &quot;Show output&quot;))...</source>

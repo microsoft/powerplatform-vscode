@@ -9,10 +9,15 @@ import { PreviewSite } from '../../../../power-pages/preview-site/PreviewSite';
 import { ECSFeaturesClient } from '../../../../../common/ecs-features/ecsFeatureClient';
 import { EnableSiteRuntimePreview } from '../../../../../common/ecs-features/ecsFeatureGates';
 import { oneDSLoggerWrapper } from '../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
-import { Events } from '../../../../power-pages/preview-site/Constants';
+import { Events, Messages } from '../../../../power-pages/preview-site/Constants';
 import ArtemisContext from '../../../../ArtemisContext';
 import PacContext from '../../../../pac/PacContext';
 import * as sinon from 'sinon';
+import { PacTerminal } from '../../../../lib/PacTerminal';
+import { PacWrapper } from '../../../../pac/PacWrapper';
+import * as UploadSiteHandler from '../../../../power-pages/actions-hub/handlers/UploadSiteHandler';
+import { SiteVisibility } from '../../../../power-pages/actions-hub/models/SiteVisibility';
+import { SUCCESS, TRUE } from '../../../../../common/constants';
 
 describe('PreviewSite', () => {
     let sandbox: sinon.SinonSandbox;
@@ -23,6 +28,32 @@ describe('PreviewSite', () => {
 
     afterEach(() => {
         sandbox.restore();
+    });
+
+    it('should dispatch preview uploads through the initialized PAC integration', async () => {
+        const pacTerminal = sandbox.createStubInstance(PacTerminal);
+        const pacWrapper = sandbox.createStubInstance(PacWrapper);
+        pacWrapper.pendingChanges.resolves({ Status: SUCCESS, Errors: [], Information: [TRUE] });
+        pacTerminal.getWrapper.returns(pacWrapper);
+        const handler = sandbox.stub().resolves();
+        const createHandler = sandbox.stub(UploadSiteHandler, 'uploadSite').returns(handler);
+        const showInformationMessage: sinon.SinonStub = sandbox.stub(vscode.window, 'showInformationMessage');
+        showInformationMessage.resolves(Messages.UPLOAD_CHANGES);
+        const previousPacTerminal = PreviewSite['_pacTerminal'];
+        PreviewSite['_pacTerminal'] = pacTerminal;
+
+        try {
+            await PreviewSite['showUploadWarning']('site root', 2, SiteVisibility.Private);
+
+            expect(createHandler.calledOnceWithExactly(pacTerminal)).to.be.true;
+            expect(handler.calledOnce).to.be.true;
+            expect(handler.firstCall.args[0].siteInfo).to.deep.equal({
+                dataModelVersion: 2, siteVisibility: SiteVisibility.Private
+            });
+            expect(handler.firstCall.args[1]).to.equal('site root');
+        } finally {
+            PreviewSite['_pacTerminal'] = previousPacTerminal;
+        }
     });
 
     describe('isSiteRuntimePreviewEnabled', () => {

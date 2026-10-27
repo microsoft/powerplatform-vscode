@@ -89,7 +89,8 @@ export const Constants = {
         CONFIGURATION_NAME: "powerPlatform.pages",
         DOWNLOAD_SETTING_NAME: "downloadSiteFolder",
         UPLOAD_CODE_SITE_COMPILED_OUTPUT_FOLDER_NOT_FOUND: vscode.l10n.t("Please select the folder that contains your compiled output to upload your site."),
-        UPLOAD_CODE_SITE_FAILED: vscode.l10n.t("Upload failed. Please try again later."),
+        UPLOAD_CODE_SITE_FAILED: vscode.l10n.t("Couldn't upload the site. Check the Power Platform Tools: PAC CLI output for details."),
+        UPLOAD_SITE_REQUIRES_TRUST: vscode.l10n.t("Trust this workspace before you upload a site."),
         POWER_PAGES_CONFIG_FILE_NAME: "powerpages.config.json",
         MISSING_REACTIVATION_URL_INFO: vscode.l10n.t("Missing required site information for reactivation."),
         // Account mismatch strings
