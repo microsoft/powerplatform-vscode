@@ -38,6 +38,24 @@ import { showErrorDialog } from "../../../common/utilities/errorHandlerUtil";
 import { createHttpResponseError, isHttpResponseError } from "../utilities/errorHandlerUtil";
 import { EnableServerLogicChanges, EnableDuplicateFileHandling, EnableBlogSupport } from "../../../common/ecs-features/ecsFeatureGates";
 import { ECSFeaturesClient } from "../../../common/ecs-features/ecsFeatureClient";
+import { FileContentDownloadError } from "../services/fileContentDownloadService";
+import { downloadDataverseFileContent } from "../services/dataverseFileContentDownloadService";
+import { FileDownloadMode } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryInterface";
+
+class FileContentLoadError extends Error {
+    constructor(public readonly fileSystemError: vscode.FileSystemError) {
+        super('Enhanced file content load failed');
+    }
+}
+
+export interface IFileLoadSummary {
+    failedContentLoads: number;
+    preparedRecords: number;
+}
+
+const isEnhancedFileColumn = (entityName: string, attribute = 'filecontent') =>
+    isPortalVersionV2() && attribute === 'filecontent'
+    && (entityName === schemaEntityName.WEBFILES || entityName === schemaEntityName.SERVERLOGICS);
 
 /**
  * Interface to hold feature flag values fetched once at the start of the fetch operation.
@@ -48,12 +66,15 @@ interface IFeatureFlags {
     enableDuplicateFileHandling: boolean;
     disallowedDuplicateFileHandlingOrgs: string;
     enableBlogSupport: boolean;
+    downloadMode: FileDownloadMode;
 }
 
 export async function fetchDataFromDataverseAndUpdateVFS(
     portalFs: PortalsFS,
     defaultFileInfo?: IFileInfo,
+    downloadMode: FileDownloadMode = defaultFileInfo ? 'initial' : 'preload',
 ) {
+    const summary: IFileLoadSummary = { failedContentLoads: 0, preparedRecords: 0 };
     try {
         // Clear webpage names tracking for fresh start
         WebExtensionContext.getWebpageNames().clear();
@@ -69,25 +90,37 @@ export async function fetchDataFromDataverseAndUpdateVFS(
             enableDuplicateFileHandling,
             disallowedDuplicateFileHandlingOrgs: disallowedDuplicateFileHandlingOrgs ?? '',
             enableBlogSupport,
+            downloadMode,
         };
 
         await Promise.all(entityRequestURLs.map(async (entity) => {
             const startTime = new Date().getTime();
             if(entity.entityName != schemaEntityName.SERVERLOGICS || featureFlags.enableServerLogicChanges) {
-                await fetchFromDataverseAndCreateFiles(entity.entityName, entity.requestUrl, dataverseOrgUrl, portalFs, defaultFileInfo, featureFlags);
+                const entitySummary: IFileLoadSummary = { failedContentLoads: 0, preparedRecords: 0 };
+                await fetchFromDataverseAndCreateFiles(entity.entityName, entity.requestUrl, dataverseOrgUrl, portalFs, defaultFileInfo, featureFlags, entitySummary);
+                summary.failedContentLoads += entitySummary.failedContentLoads;
+                summary.preparedRecords += entitySummary.preparedRecords;
 
                 if (defaultFileInfo === undefined) { // This will be undefined for bulk entity load
                     WebExtensionContext.telemetry.sendInfoTelemetry(
-                        webExtensionTelemetryEventNames.WEB_EXTENSION_FILES_LOAD_SUCCESS,
+                        entitySummary.failedContentLoads > 0
+                            ? webExtensionTelemetryEventNames.WEB_EXTENSION_FILES_LOAD_PARTIAL
+                            : webExtensionTelemetryEventNames.WEB_EXTENSION_FILES_LOAD_SUCCESS,
                         {
                             entityName: entity.entityName,
                             duration: (new Date().getTime() - startTime).toString(),
+                            outcome: entitySummary.failedContentLoads === 0 ? 'complete'
+                                : entitySummary.preparedRecords > 0 ? 'partial' : 'failed',
+                            failedContentLoads: String(entitySummary.failedContentLoads),
                         }
                     );
                 }
             }
         }));
     } catch (error) {
+        if (error instanceof FileContentLoadError) {
+            throw error.fileSystemError;
+        }
         const errorMsg = (error as Error)?.message;
         showErrorDialog(
             vscode.l10n.t("There was a problem opening the workspace"),
@@ -97,6 +130,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
         );
         WebExtensionContext.telemetry.sendErrorTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_FAILED_TO_PREPARE_WORKSPACE, fetchDataFromDataverseAndUpdateVFS.name, errorMsg, error as Error);
     }
+    return summary;
 }
 
 async function fetchFromDataverseAndCreateFiles(
@@ -106,6 +140,7 @@ async function fetchFromDataverseAndCreateFiles(
     portalFs?: PortalsFS,
     defaultFileInfo?: IFileInfo,
     featureFlags?: IFeatureFlags,
+    summary?: IFileLoadSummary,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> {
     let requestSentAtTime = new Date().getTime();
@@ -161,6 +196,9 @@ async function fetchFromDataverseAndCreateFiles(
             }
 
             if (result[Constants.ODATA_COUNT] !== 0 && data.length === 0) {
+                if (defaultFileInfo && isEnhancedFileColumn(entityName)) {
+                    throw new FileContentLoadError(vscode.FileSystemError.FileNotFound());
+                }
                 makeRequestCall = false;
                 WebExtensionContext.telemetry.sendInfoTelemetry(
                     webExtensionTelemetryEventNames.WEB_EXTENSION_EMPTY_DATAVERSE_RESPONSE,
@@ -180,19 +218,40 @@ async function fetchFromDataverseAndCreateFiles(
             if (portalFs && dataverseOrgUrl) {
                 data = await preprocessData(data, entityName);
                 for (; counter < data.length; counter++) {
-                    await createContentFiles(
-                        data[counter],
-                        entityName,
-                        portalFs,
-                        dataverseOrgUrl,
-                        undefined,
-                        defaultFileInfo,
-                        featureFlags
-                    );
+                    try {
+                        const created = await createContentFiles(
+                            data[counter],
+                            entityName,
+                            portalFs,
+                            dataverseOrgUrl,
+                            undefined,
+                            defaultFileInfo,
+                            featureFlags
+                        );
+                        if (defaultFileInfo && isEnhancedFileColumn(entityName) && !created) {
+                            throw new FileContentLoadError(vscode.FileSystemError.FileNotFound());
+                        }
+                        if (summary) {
+                            summary.preparedRecords++;
+                        }
+                    } catch (error) {
+                        if (!(error instanceof FileContentLoadError) || defaultFileInfo) {
+                            throw error;
+                        }
+                        if (summary) {
+                            summary.failedContentLoads++;
+                        }
+                    }
+                }
+                if (defaultFileInfo && isEnhancedFileColumn(entityName) && data.length === 0) {
+                    throw new FileContentLoadError(vscode.FileSystemError.FileNotFound());
                 }
             }
         } catch (error) {
             makeRequestCall = false;
+            if (error instanceof FileContentLoadError) {
+                throw error;
+            }
             const errorMsg = (error as Error)?.message;
             console.error(vscode.l10n.t("Failed to fetch some files."));
             if (isHttpResponseError(error) && error.httpDetails) {
@@ -215,6 +274,18 @@ async function fetchFromDataverseAndCreateFiles(
                     errorMsg,
                     error as Error
                 );
+            }
+            if (isEnhancedFileColumn(entityName)) {
+                if (defaultFileInfo) {
+                    throw new FileContentLoadError(
+                        isHttpResponseError(error) && error.httpDetails?.statusCode === 404
+                            ? vscode.FileSystemError.FileNotFound()
+                            : vscode.FileSystemError.Unavailable(vscode.l10n.t("Unable to load file content from Dataverse."))
+                    );
+                }
+                if (summary) {
+                    summary.failedContentLoads++;
+                }
             }
         }
     }
@@ -324,7 +395,7 @@ async function createContentFiles(
         // Get rootpage id Attribute
         const rootWebPageIdAttribute = entityDetails?.get(schemaEntityKey.ROOT_WEB_PAGE_ID);
 
-        await processDataAndCreateFile(attributeArray,
+        return await processDataAndCreateFile(attributeArray,
             attributeExtension,
             entityName,
             result,
@@ -350,6 +421,12 @@ async function createContentFiles(
             errorMsg,
             error as Error
         );
+        if (error instanceof FileContentLoadError) {
+            throw error;
+        }
+        if (isEnhancedFileColumn(entityName)) {
+            throw new FileContentLoadError(vscode.FileSystemError.Unavailable(vscode.l10n.t("Unable to load file content from Dataverse.")));
+        }
     }
 }
 
@@ -378,6 +455,7 @@ async function processDataAndCreateFile(
     >;
     let counter = 0;
     let fileUri = "";
+    let fileCreated = false;
 
     let rootWebPageId = undefined;
     if (rootWebPageIdAttribute) {
@@ -502,7 +580,9 @@ async function processDataAndCreateFile(
                     portalsFS,
                     rootWebPageId,
                     featureFlags,
+                    defaultFileInfo !== undefined,
                 );
+                fileCreated = true;
             }
         }
     }
@@ -539,6 +619,7 @@ async function processDataAndCreateFile(
             );
         }
     }
+    return fileCreated;
 }
 
 async function processExpandedData(
@@ -578,6 +659,7 @@ async function createFile(
     portalsFS: PortalsFS,
     rootWebPageId?: string,
     featureFlags?: IFeatureFlags,
+    forceContentLoad = false,
 ) {
     const base64Encoded: boolean = isBase64Encoded(
         entityName,
@@ -587,12 +669,56 @@ async function createFile(
     let mimeType = undefined;
     let mappingEntityId = null
     // By default content is preloaded for all the files except for non-text webfiles for V2
-    const isPreloadedContent = mappingEntityFetchQuery ? isWebfileContentLoadNeeded(fileNameWithExtension, fileUri) : true;
+    const enhancedFileColumn = isEnhancedFileColumn(entityName, attribute);
+    const isPreloadedContent = mappingEntityFetchQuery
+        ? (enhancedFileColumn && forceContentLoad) || isWebfileContentLoadNeeded(fileNameWithExtension, fileUri) : true;
 
     // update func for webfiles for V2
     const attributePath: IAttributePath = getAttributePath(
         attribute
     );
+
+    if (enhancedFileColumn && mappingEntityFetchQuery && isPreloadedContent) {
+        const requestUrl = getMappingContentRequestUrl(mappingEntityFetchQuery, attribute, entityName, entityId, dataverseOrgUrl);
+        try {
+            await downloadDataverseFileContent(requestUrl, entityName, entityId, featureFlags?.downloadMode ?? 'preload',
+                async (bytes) => {
+                    const metadataKeys = getEntityParameters(entityName);
+                    await createVirtualFile(
+                        portalsFS, fileUri, bytes, entityId, attributePath,
+                        encodeAsBase64(entityName, attribute), entityName, fileNameWithExtension,
+                        result[attributePath.source] ?? Constants.NO_CONTENT, fileExtension,
+                        result[Constants.ODATA_ETAG], result[Constants.MIMETYPE], true, undefined,
+                        getMetadataInfo(result, metadataKeys.filter(key => key !== undefined) as string[]),
+                        rootWebPageId, featureFlags, true,
+                    );
+                });
+        } catch (error) {
+            // Keep failed bulk-preload files discoverable and retryable, never marked loaded.
+            // A reload already has committed bytes and metadata, which must remain untouched.
+            const loadError = new FileContentLoadError(error instanceof FileContentDownloadError && error.status === 404
+                ? vscode.FileSystemError.FileNotFound(vscode.Uri.parse(fileUri))
+                : vscode.FileSystemError.Unavailable(vscode.l10n.t("Unable to load file content from Dataverse.")));
+            try {
+                if (error instanceof FileContentDownloadError && error.stage !== 'commit'
+                    && !WebExtensionContext.fileDataMap.getFileMap.has(vscode.Uri.parse(fileUri).fsPath)) {
+                    await createVirtualFile(
+                        portalsFS, fileUri, new Uint8Array(), entityId, attributePath,
+                        encodeAsBase64(entityName, attribute), entityName, fileNameWithExtension,
+                        result[attributePath.source] ?? Constants.NO_CONTENT, fileExtension,
+                        result[Constants.ODATA_ETAG], result[Constants.MIMETYPE], false,
+                    );
+                }
+            } catch (placeholderError) {
+                WebExtensionContext.telemetry.sendErrorTelemetry(
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED,
+                    createFile.name, 'Failed to retain an unloaded file placeholder', placeholderError as Error
+                );
+            }
+            throw loadError;
+        }
+        return;
+    }
 
     if (mappingEntityFetchQuery && isPreloadedContent) {
         const mappingContent = await fetchMappingEntityContent(
@@ -643,18 +769,7 @@ async function fetchMappingEntityContent(
     dataverseOrgUrl: string
 ) {
     let requestSentAtTime = new Date().getTime();
-    const mappingEntityFetchQueryMap =
-        mappingEntityFetchQuery as unknown as Map<string, string>;
-    const requestUrl = getRequestURL(
-        dataverseOrgUrl,
-        entity,
-        entityId,
-        Constants.httpMethod.GET,
-        false,
-        true,
-        mappingEntityFetchQueryMap?.get(attributeKey) as string,
-        getEntity(entity)?.get(schemaEntityKey.MAPPING_ENTITY)
-    );
+    const requestUrl = getMappingContentRequestUrl(mappingEntityFetchQuery, attributeKey, entity, entityId, dataverseOrgUrl);
 
     WebExtensionContext.telemetry.sendAPITelemetry(
         requestUrl,
@@ -716,6 +831,12 @@ async function fetchMappingEntityContent(
     }
 
     return isPortalVersionV2() ? data : Constants.NO_CONTENT;
+}
+
+function getMappingContentRequestUrl(mappingEntityFetchQuery: string, attributeKey: string, entity: string, entityId: string, dataverseOrgUrl: string): string {
+    const queryMap = mappingEntityFetchQuery as unknown as Map<string, string>;
+    return getRequestURL(dataverseOrgUrl, entity, entityId, Constants.httpMethod.GET, false, true,
+        queryMap.get(attributeKey), getEntity(entity)?.get(schemaEntityKey.MAPPING_ENTITY));
 }
 
 export async function preprocessData(
@@ -806,7 +927,12 @@ async function createVirtualFile(
     entityMetadata?: SchemaEntityMetadata,
     rootWebPageId?: string,
     featureFlags?: IFeatureFlags,
+    commitBeforeMetadata = false,
 ) {
+    const fileUriParsed = vscode.Uri.parse(fileUri);
+    if (commitBeforeMetadata) {
+        await portalsFS.writeFile(fileUriParsed, fileContent, { create: true, overwrite: true }, true);
+    }
     // Maintain file information in context
     await WebExtensionContext.updateFileDetailsInContext(
         fileUri,
@@ -821,8 +947,6 @@ async function createVirtualFile(
         isPreloadedContent,
         entityMetadata
     );
-
-    const fileUriParsed = vscode.Uri.parse(fileUri);
 
     // Ensure parent directory exists before writing file for conditional entities
     // This enables lazy folder creation for blogs, ideas, ideaforums, forum announcements, and forum posts
@@ -840,12 +964,14 @@ async function createVirtualFile(
     }
 
     // Call file system provider write call for buffering file data in VFS
-    await portalsFS.writeFile(
-        fileUriParsed,
-        fileContent,
-        { create: true, overwrite: true },
-        true
-    );
+    if (!commitBeforeMetadata) {
+        await portalsFS.writeFile(
+            fileUriParsed,
+            fileContent,
+            { create: true, overwrite: true },
+            true
+        );
+    }
 
     // Maintain entity details in context
     await WebExtensionContext.updateEntityDetailsInContext(

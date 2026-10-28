@@ -6,7 +6,7 @@
 import { queryParameters } from "../common/constants";
 import { sanitizeURL } from "../utilities/urlBuilderUtil";
 import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
-import { IPortalWebExtensionInitQueryParametersTelemetryData, IWebExtensionAPITelemetryData, IWebExtensionExceptionTelemetryData, IWebExtensionInitPathTelemetryData, IWebExtensionPerfTelemetryData } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryInterface";
+import { IPortalWebExtensionInitQueryParametersTelemetryData, IWebExtensionAPITelemetryData, IWebExtensionExceptionTelemetryData, IWebExtensionFileDownloadTelemetryData, IWebExtensionInitPathTelemetryData, IWebExtensionPerfTelemetryData } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryInterface";
 import { getEnvironmentIdFromUrl, isNullOrUndefined } from '../utilities/commonUtil';
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import WebExtensionContext from "../WebExtensionContext";
@@ -78,6 +78,16 @@ export class WebExtensionTelemetry {
     }
 
     public sendInfoTelemetry(eventName: string, properties?: Record<string, string>) {
+        oneDSLoggerWrapper.getLogger().traceInfo(eventName, properties);
+    }
+
+    public sendFileDownloadTelemetry(eventName: webExtensionTelemetryEventNames, data: IWebExtensionFileDownloadTelemetryData) {
+        const properties: Record<string, string> = {};
+        for (const [key, value] of Object.entries(data)) {
+            if (value !== undefined) {
+                properties[key] = String(value);
+            }
+        }
         oneDSLoggerWrapper.getLogger().traceInfo(eventName, properties);
     }
 

@@ -73,3 +73,22 @@ export interface IWebExtensionTelemetryData {
     properties?: Record<string, string>;
     measurements?: Record<string, number>;
 }
+
+export type FileDownloadMode = 'preload' | 'initial' | 'lazy' | 'reload' | 'etag';
+export type FileDownloadOutcome = 'succeeded' | 'failed' | 'notFound' | 'cancelled';
+export type FileDownloadStage = 'get' | 'initialize' | 'block' | 'validation' | 'commit';
+
+export interface IWebExtensionFileDownloadTelemetryData {
+    downloadOperationId: string;
+    mode: FileDownloadMode;
+    schema: string;
+    mechanism: 'get' | 'blocks' | 'singleBlock';
+    initialHttpStatus?: number;
+    finalHttpStatus?: number;
+    sizeBucket: string;
+    blockCount: number;
+    retryCount: number;
+    durationMs: number;
+    failureStage?: FileDownloadStage;
+    outcome?: FileDownloadOutcome;
+}
