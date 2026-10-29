@@ -23,15 +23,31 @@ export { buildAgentHostShellCommand } from "./agentHostShellCommand";
 
 const SHELL_INTEGRATION_TIMEOUT_MS = 10000;
 
+/** How the approved plan ran: as direct processes, or through a Shell Integration terminal. */
+export type AgentHostExecutionMode = "direct" | "terminal";
+
+/** Why direct execution handed the remaining plan to the Shell Integration terminal. */
+export type DirectLaunchUnavailableReason =
+    | "planUnsupported"
+    | "hostNotFound"
+    | "hostExecutableUnsupported"
+    | "installerNotFound"
+    | "spawnFailed";
+
+interface LaunchAgentHostPlanExecutionDetails {
+    executionMode?: AgentHostExecutionMode;
+    directFallbackReason?: DirectLaunchUnavailableReason;
+}
+
 export type LaunchAgentHostPlanResult =
-    | {
+    | ({
         status: "launched";
         completedCommandKinds?: PlannedCommandKind[];
         skippedCommandKinds?: PlannedCommandKind[];
         setupState?: AgentHostSetupState;
         terminal?: vscode.Terminal;
-    }
-    | {
+    } & LaunchAgentHostPlanExecutionDetails)
+    | ({
         status: "recovery";
         reason:
             | "shellIntegrationDisabled"
@@ -44,7 +60,7 @@ export type LaunchAgentHostPlanResult =
         completedCommandKinds?: PlannedCommandKind[];
         skippedCommandKinds?: PlannedCommandKind[];
         setupState?: AgentHostSetupState;
-    };
+    } & LaunchAgentHostPlanExecutionDetails);
 
 export interface AgentHostCommandExecutionResult {
     exitCode: number | undefined;

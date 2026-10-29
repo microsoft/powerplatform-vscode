@@ -102,6 +102,18 @@ describe('PacWrapper', () => {
                 '--modelVersion', '2'
             ]);
         });
+
+        it('should omit the model version when it is not specified', async () => {
+            const interop = new MockPacInterop();
+            const executeSpy = sinon.spy(interop, 'executeCommandWithProgress');
+            const wrapper = new PacWrapper(new MockContext, interop);
+
+            await wrapper.uploadSiteWithProgress('site "quoted"; $(value)');
+
+            expect(executeSpy.firstCall.args[0].Arguments).to.deep.equal([
+                'pages', 'upload', '--path', 'site "quoted"; $(value)'
+            ]);
+        });
     });
 
     describe('uploadCodeSiteWithProgress', () => {
@@ -120,6 +132,42 @@ describe('PacWrapper', () => {
                 '--rootPath', '/root/path',
                 '--siteName', 'My Code Site'
             ]);
+        });
+
+        it('should use configuration values when overrides are not specified', async () => {
+            const interop = new MockPacInterop();
+            const executeSpy = sinon.spy(interop, 'executeCommandWithProgress');
+            const wrapper = new PacWrapper(new MockContext, interop);
+
+            await wrapper.uploadCodeSiteWithProgress('site root');
+
+            expect(executeSpy.firstCall.args[0].Arguments).to.deep.equal([
+                'pages', 'upload-code-site', '--rootPath', 'site root'
+            ]);
+        });
+
+        it('should preserve each override as one literal argument and forward cancellation', async () => {
+            const interop = new MockPacInterop();
+            const executeSpy = sinon.spy(interop, 'executeCommandWithProgress');
+            const wrapper = new PacWrapper(new MockContext, interop);
+            const rootPath = 'site "quoted"; $(value)';
+            const compiledPath = 'compiled output & %PATH%';
+            const siteName = 'Site "quoted"; $(`value`)\nnext';
+            const tokenSource = new vscode.CancellationTokenSource();
+
+            try {
+                await wrapper.uploadCodeSiteWithProgress(rootPath, siteName, tokenSource.token, compiledPath);
+
+                expect(executeSpy.firstCall.args[0].Arguments).to.deep.equal([
+                    'pages', 'upload-code-site',
+                    '--rootPath', rootPath,
+                    '--compiledPath', compiledPath,
+                    '--siteName', siteName
+                ]);
+                expect(executeSpy.firstCall.args[1]).to.equal(tokenSource.token);
+            } finally {
+                tokenSource.dispose();
+            }
         });
     });
 });

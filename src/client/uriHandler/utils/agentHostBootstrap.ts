@@ -4,8 +4,10 @@
  */
 
 import commandExists from "command-exists";
+import * as path from "path";
 import { AgentHost } from "./detectAgentHost";
 import { CommandPathResolver, resolveCommandFromPath } from "./agentHostCommandProbe";
+import { getEnvironmentValue, isLaunchableFile } from "./agentHostSearchPath";
 import { AgentHostTerminalShellOptions, resolveAgentHostPowerShell } from "./agentHostTerminalShell";
 
 export type SupportedAgentHostPlatform = "win32" | "darwin" | "linux";
@@ -17,14 +19,30 @@ export interface AgentHostBootstrapConfig {
     shellPath: string;
 }
 
+/** Installer executable and arguments that run without shell parsing. */
+export interface AgentHostInstallInvocation {
+    executable: string;
+    args: string[];
+}
+
 export type AgentHostBootstrapResolution =
     | { supported: true; config: AgentHostBootstrapConfig }
     | {
         supported: false;
-        reason: "unsupportedPlatform" | "missingPowerShell" | "missingWinget" | "missingBash" | "missingInstaller";
+        reason: "unsupportedPlatform" | "missingWinget" | "missingBash" | "missingInstaller";
     };
 
 export type CommandAvailability = (command: string) => boolean;
+
+function resolveWindowsPowerShell(options: AgentHostTerminalShellOptions): string {
+    const systemRoot = getEnvironmentValue(options.environment ?? process.env, "SystemRoot", "win32");
+    const candidate = systemRoot
+        ? path.win32.join(systemRoot, "System32", "WindowsPowerShell", "v1.0", "powershell.exe")
+        : undefined;
+    return candidate && (options.isFile ?? isLaunchableFile)(candidate)
+        ? candidate
+        : "powershell.exe";
+}
 
 /**
  * Resolves a deterministic shell and official installer for a missing agent host.
@@ -44,11 +62,10 @@ export function resolveAgentHostBootstrap(
 ): AgentHostBootstrapResolution {
     switch (platform) {
         case "win32": {
-            // The winget PATH-refresh command is PowerShell-specific, not compatible with Git Bash.
-            const shellPath = resolveAgentHostPowerShell(resolveCommand, shellOptions);
-            if (!shellPath) {
-                return { supported: false, reason: "missingPowerShell" };
-            }
+            // Setup runs without a shell. PowerShell quotes the preview and runs the terminal
+            // fallback; Windows PowerShell keeps the plan available for manual copying.
+            const shellPath = resolveAgentHostPowerShell(resolveCommand, shellOptions)
+                ?? resolveWindowsPowerShell(shellOptions);
             if (!isCommandAvailable("winget")) {
                 return { supported: false, reason: "missingWinget" };
             }
@@ -113,21 +130,51 @@ export function getAgentHostInstallCommand(
     host: AgentHost,
     config: AgentHostBootstrapConfig
 ): string {
+    const { executable, args } = getAgentHostInstallInvocation(host, config);
+    return config.installer === "script"
+        ? args[args.length - 1]
+        : [executable, ...args].join(" ");
+}
+
+/**
+ * Returns the official installer as an executable and arguments for shell-free execution.
+ * @param host Selected agent host.
+ * @param config Bootstrap configuration.
+ * @returns Installer executable name and arguments.
+ */
+export function getAgentHostInstallInvocation(
+    host: AgentHost,
+    config: AgentHostBootstrapConfig
+): AgentHostInstallInvocation {
     if (config.installer === "winget") {
         const packageId = host === AgentHost.Copilot
             ? "GitHub.Copilot"
             : "Anthropic.ClaudeCode";
-        return `winget install --id ${packageId} --exact --accept-package-agreements --accept-source-agreements`;
+        return {
+            executable: "winget",
+            args: [
+                "install",
+                "--id",
+                packageId,
+                "--exact",
+                "--accept-package-agreements",
+                "--accept-source-agreements"
+            ]
+        };
     }
 
     if (config.installer === "brew") {
         const cask = host === AgentHost.Copilot ? "copilot-cli" : "claude-code";
-        return `brew install --cask ${cask}`;
+        return { executable: "brew", args: ["install", "--cask", cask] };
     }
 
-    return host === AgentHost.Copilot
-        ? "curl -fsSL https://gh.io/copilot-install | bash"
-        : "curl -fsSL https://claude.ai/install.sh | bash";
+    const scriptUrl = host === AgentHost.Copilot
+        ? "https://gh.io/copilot-install"
+        : "https://claude.ai/install.sh";
+    return {
+        executable: "bash",
+        args: ["-o", "pipefail", "-c", `curl -fsSL ${scriptUrl} | bash`]
+    };
 }
 
 /**

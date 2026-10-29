@@ -160,7 +160,7 @@ export class PreviewSite {
             if (pendingChangesResult.Status === SUCCESS && pendingChangesResult.Information[pendingChangesResult.Information.length - 1].includes(TRUE)) {
                 const result = await vscode.window.showInformationMessage(Messages.PREVIEW_WARNING, Messages.UPLOAD_CHANGES, Messages.CANCEL);
                 if (result === Messages.UPLOAD_CHANGES) {
-                    await uploadSite({
+                    await uploadSite(PreviewSite._pacTerminal)({
                         siteInfo: {
                             dataModelVersion: dataModelVersion,
                             siteVisibility: siteVisibility
