@@ -1,5 +1,10 @@
 # Change Log - Power Platform Extension
 
+## 2.0.160
+- Improved setup reliability for GitHub Copilot CLI and Claude Code when creating Power Pages sites, reducing the need to configure your terminal.
+- Improved Power Pages uploads for site names and folder paths that contain spaces or special characters, and added clearer upload error messages. Uploads now require a trusted workspace.
+- Fixed an issue that prevented large web files and server logic files from downloading in VS Code web for Power Pages sites that use the enhanced data model. Previously loaded content is preserved if a reload fails.
+
 ## 2.0.158
 - Updated Power Platform CLI (pac CLI) to 2.14.1. See the [CLI release notes on NuGet](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/2.14.1). [#1720](https://github.com/microsoft/powerplatform-vscode/pull/1720)
 

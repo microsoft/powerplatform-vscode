@@ -18,6 +18,7 @@ import { UTF8_ENCODING } from "../../../../common/constants";
 import PacContext from "../../../pac/PacContext";
 import { dataverseAuthentication } from "../../../../common/services/AuthenticationProvider";
 import { isEdmEnvironment } from "../../../../common/copilot/dataverseMetadata";
+import { PacWrapper } from "../../../pac/PacWrapper";
 
 /**
  * Reads and parses the powerpages.config.json file
@@ -41,40 +42,6 @@ const readPowerPagesConfig = (configFilePath: string): IPowerPagesConfigData => 
         traceError(Constants.EventNames.POWER_PAGES_CONFIG_PARSE_FAILED, configError as Error, { methodName: readPowerPagesConfig.name });
     }
     return { hasCompiledPath: false, hasSiteName: false };
-};
-
-/**
- * Builds the upload code site command for pac pages upload-code-site
- * @param uploadPath Root path for the upload
- * @param siteInfo Site information
- * @param configData Configuration data
- * @returns The complete upload command as a string
- */
-const buildUploadCodeSiteCommand = async (
-    uploadPath: string,
-    siteInfo: IWebsiteInfo,
-    configData: IPowerPagesConfigData
-): Promise<string> => {
-    const commandParts = ["pac", "pages", "upload-code-site"];
-
-    commandParts.push("--rootPath", `"${uploadPath}"`);
-
-    if (!configData.hasCompiledPath) {
-        const compiledPath = await getCompiledOutputFolderPath();
-        if (!compiledPath) {
-            await vscode.window.showErrorMessage(
-                vscode.l10n.t(Constants.Strings.UPLOAD_CODE_SITE_COMPILED_OUTPUT_FOLDER_NOT_FOUND)
-            );
-            return "";
-        }
-        commandParts.push("--compiledPath", `"${compiledPath}"`);
-    }
-
-    if (!configData.hasSiteName) {
-        commandParts.push("--siteName", `"${siteInfo.name}"`);
-    }
-
-    return commandParts.join(" ");
 };
 
 const getCompiledOutputFolderOptions = () => {
@@ -118,8 +85,9 @@ const getCompiledOutputFolderPath = async () => {
  * Uploads a Power Pages code site to the environment
  * @param siteInfo Information about the site to upload
  * @param uploadPath Path to the site folder to upload
+ * @param pacWrapper PAC CLI wrapper used to execute the upload
  */
-const uploadCodeSite = async (siteInfo: IWebsiteInfo, uploadPath: string) => {
+const uploadCodeSite = async (siteInfo: IWebsiteInfo, uploadPath: string, pacWrapper: PacWrapper) => {
     traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_CODE_SITE_CALLED, {
         methodName: uploadCodeSite.name,
         siteIdToUpload: siteInfo.websiteId
@@ -129,13 +97,9 @@ const uploadCodeSite = async (siteInfo: IWebsiteInfo, uploadPath: string) => {
         const configFilePath = path.join(uploadPath, Constants.Strings.POWER_PAGES_CONFIG_FILE_NAME);
         const configData = readPowerPagesConfig(configFilePath);
 
-        const uploadCommand = await buildUploadCodeSiteCommand(
-            uploadPath,
-            siteInfo,
-            configData
-        );
-
-        if (!uploadCommand) {
+        const compiledPath = configData.hasCompiledPath ? undefined : await getCompiledOutputFolderPath();
+        if (!configData.hasCompiledPath && !compiledPath) {
+            await vscode.window.showErrorMessage(Constants.Strings.UPLOAD_CODE_SITE_COMPILED_OUTPUT_FOLDER_NOT_FOUND);
             return;
         }
 
@@ -144,21 +108,31 @@ const uploadCodeSite = async (siteInfo: IWebsiteInfo, uploadPath: string) => {
             siteIdToUpload: siteInfo.websiteId
         });
 
-        PacTerminal.getTerminal().sendText(uploadCommand);
+        pacWrapper.showOutputChannel();
+        const uploadSucceeded = await pacWrapper.uploadCodeSiteWithProgress(
+            uploadPath,
+            configData.hasSiteName ? undefined : siteInfo.name,
+            undefined,
+            compiledPath
+        );
+        if (!uploadSucceeded) {
+            throw new Error("Code site upload failed");
+        }
     } catch (error) {
         traceError(Constants.EventNames.ACTIONS_HUB_UPLOAD_CODE_SITE_FAILED, error as Error, {
             methodName: uploadCodeSite.name,
             siteIdToUpload: siteInfo.websiteId
         });
-        await vscode.window.showErrorMessage(vscode.l10n.t(Constants.Strings.UPLOAD_CODE_SITE_FAILED));
+        await vscode.window.showErrorMessage(Constants.Strings.UPLOAD_CODE_SITE_FAILED);
     }
 };
 
 /**
  * Uploads a site that isn't in the current environment
  * @param siteTreeItem The site tree item containing site information
+ * @param pacWrapper PAC CLI wrapper used to execute the upload
  */
-async function uploadOtherSite(siteTreeItem: SiteTreeItem): Promise<void> {
+async function uploadOtherSite(siteTreeItem: SiteTreeItem, pacWrapper: PacWrapper): Promise<void> {
     traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_OTHER_SITE_CALLED, { methodName: uploadSite.name, siteIdToUpload: siteTreeItem.siteInfo.websiteId });
     const websitePath = siteTreeItem.siteInfo.folderPath;
 
@@ -167,12 +141,12 @@ async function uploadOtherSite(siteTreeItem: SiteTreeItem): Promise<void> {
     }
 
     if (siteTreeItem.siteInfo.isCodeSite) {
-        await uploadCodeSite(siteTreeItem.siteInfo, websitePath);
+        await uploadCodeSite(siteTreeItem.siteInfo, websitePath, pacWrapper);
         return;
     }
 
     // Check if EDM is supported to determine the correct model version
-    let modelVersionParam = '';
+    let modelVersionParam: string | undefined;
     let dataModelVersion = 1;
     const currentOrgUrl = PacContext.OrgInfo?.OrgUrl ?? '';
     const dataverseAccessToken = await dataverseAuthentication(currentOrgUrl, true);
@@ -180,20 +154,25 @@ async function uploadOtherSite(siteTreeItem: SiteTreeItem): Promise<void> {
     if (dataverseAccessToken) {
         const isEdmSupported = await isEdmEnvironment(currentOrgUrl, dataverseAccessToken.accessToken);
         if (isEdmSupported) {
-            modelVersionParam = '--modelVersion 2';
+            modelVersionParam = '2';
             dataModelVersion = 2;
         }
     }
 
     traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_OTHER_SITE_PAC_TRIGGERED, { methodName: uploadSite.name, siteIdToUpload: siteTreeItem.siteInfo.websiteId, dataModelVersion });
-    PacTerminal.getTerminal().sendText(`pac pages upload --path "${websitePath}" ${modelVersionParam}`);
+    pacWrapper.showOutputChannel();
+    if (!await pacWrapper.uploadSiteWithProgress(websitePath, modelVersionParam)) {
+        throw new Error("Site upload failed");
+    }
 }
 
 /**
  * Uploads a site that's in the current environment
  * @param siteTreeItem The site tree item containing site information
+ * @param websitePath Path to the site folder to upload
+ * @param pacWrapper PAC CLI wrapper used to execute the upload
  */
-async function uploadCurrentSite(siteTreeItem: SiteTreeItem, websitePath: string): Promise<void> {
+async function uploadCurrentSite(siteTreeItem: SiteTreeItem, websitePath: string, pacWrapper: PacWrapper): Promise<void> {
     traceInfo(
         Constants.EventNames.ACTIONS_HUB_UPLOAD_CURRENT_SITE_CALLED,
         {
@@ -228,37 +207,48 @@ async function uploadCurrentSite(siteTreeItem: SiteTreeItem, websitePath: string
     }
 
     if (siteTreeItem.siteInfo.isCodeSite) {
-        await uploadCodeSite(siteTreeItem.siteInfo, websitePathToUpload);
+        await uploadCodeSite(siteTreeItem.siteInfo, websitePathToUpload, pacWrapper);
         return;
     }
 
     const modelVersion = siteTreeItem.siteInfo.dataModelVersion || 1;
 
     traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_CURRENT_SITE_PAC_TRIGGERED, { methodName: uploadSite.name, siteIdToUpload: siteTreeItem.siteInfo.websiteId, dataModelVersion: modelVersion });
-    PacTerminal.getTerminal().sendText(`pac pages upload --path "${websitePathToUpload}" --modelVersion "${modelVersion}"`);
+    pacWrapper.showOutputChannel();
+    if (!await pacWrapper.uploadSiteWithProgress(websitePathToUpload, modelVersion.toString())) {
+        throw new Error("Site upload failed");
+    }
 }
 
 /**
- * Uploads a Power Pages site to the environment
- * @param siteTreeItem The site tree item containing site information
- * @param websitePath The path to the website folder to upload. If not passed the current site context will be used.
+ * Creates a handler that uploads a Power Pages site without invoking a shell.
+ * @param pacTerminal PAC CLI integration used to execute uploads
+ * @returns Upload handler accepting a site tree item and an optional site folder path
  */
-export const uploadSite = async (siteTreeItem: SiteTreeItem, websitePath: string) => {
+export const uploadSite = (pacTerminal: PacTerminal) => async (siteTreeItem: SiteTreeItem, websitePath: string) => {
     traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE_CALLED, { methodName: uploadSite.name, siteIdToUpload: siteTreeItem.siteInfo.websiteId });
     try {
+        if (!vscode.workspace.isTrusted) {
+            await vscode.window.showErrorMessage(Constants.Strings.UPLOAD_SITE_REQUIRES_TRUST);
+            return;
+        }
+
+        const pacWrapper = pacTerminal.getWrapper();
+
         // Handle upload for "other" sites (sites not in the current environment)
         if (siteTreeItem && siteTreeItem.contextValue === Constants.ContextValues.OTHER_SITE) {
-            await uploadOtherSite(siteTreeItem);
+            await uploadOtherSite(siteTreeItem, pacWrapper);
             return;
         }
 
         // Handle upload for active/inactive sites
-        await uploadCurrentSite(siteTreeItem, websitePath);
+        await uploadCurrentSite(siteTreeItem, websitePath, pacWrapper);
     } catch (error) {
         traceError(
             Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE_FAILED,
             error as Error,
             { methodName: uploadSite.name, siteIdToUpload: siteTreeItem.siteInfo.websiteId }
         );
+        await vscode.window.showErrorMessage(Constants.Strings.UPLOAD_CODE_SITE_FAILED);
     }
 };
