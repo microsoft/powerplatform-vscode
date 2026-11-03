@@ -251,8 +251,14 @@ describe("GenerateHtmlReportHandler", () => {
 
             const allElements = [...headers.values(), ...elementsById.values()];
             const controlsSelector = /^\[aria-controls="([^"]+)"\]$/;
-            const script = /<script>([\s\S]+?)<\/script>/.exec(htmlContent);
-            expect(script).not.to.be.null;
+            // The renderer emits exactly one inline script in the report head, and file
+            // content is HTML-escaped, so the first literal script tag pair is that block.
+            const scriptOpenTag = "<script>";
+            const scriptStart = htmlContent.indexOf(scriptOpenTag);
+            const scriptEnd = htmlContent.indexOf("</script>", scriptStart);
+            expect(scriptStart, "inline script start").to.be.greaterThan(-1);
+            expect(scriptEnd, "inline script end").to.be.greaterThan(scriptStart);
+            const script = htmlContent.slice(scriptStart + scriptOpenTag.length, scriptEnd);
 
             const context: Record<string, unknown> = {
                 document: {
@@ -266,7 +272,7 @@ describe("GenerateHtmlReportHandler", () => {
                         : []
                 }
             };
-            runInNewContext(script?.[1] ?? "", context);
+            runInNewContext(script, context);
 
             const getRequired = (elements: Map<string, IFakeElement>, id: string): IFakeElement => {
                 const element = elements.get(id);
