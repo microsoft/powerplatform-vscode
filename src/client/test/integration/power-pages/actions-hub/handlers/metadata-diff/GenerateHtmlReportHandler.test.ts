@@ -170,6 +170,24 @@ describe("GenerateHtmlReportHandler", () => {
         });
     });
 
+    describe("report layout", () => {
+        const layoutResults: IFileComparisonResult[] = [
+            { localPath: "/local/web-pages/home/home.html", remotePath: "/remote/web-pages/home/home.html", relativePath: "web-pages/home/home.html", status: FileComparisonStatus.MODIFIED }
+        ];
+
+        it("should place the tab panels after the tab list", async () => {
+            const htmlContent = await generateReportHtml(layoutResults);
+
+            expect(htmlContent).to.match(/<div class="tabs-header">[\s\S]*?<\/div>\s*<div class="tabs-panels">\s*<div class="tab-content active" id="tab-all">/);
+        });
+
+        it("should stack component tabs in a vertical list", async () => {
+            const htmlContent = await generateReportHtml(layoutResults);
+
+            expect(htmlContent).to.match(/\.tabs-header \{\s*display: flex;\s*flex-direction: column;/);
+        });
+    });
+
     describe("report accessibility", () => {
         interface IFakeElement {
             readonly style: { display: string };
