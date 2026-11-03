@@ -1861,7 +1861,7 @@
     "https-browserify": "^1.0.0",
     "liquidjs": "10.27.2",
     "n-readlines": "^1.0.1",
-    "puppeteer-core": "^25.9.0",
+    "puppeteer-core": "^25.16.0",
     "recursive-readdir": "^2.2.3",
     "stream-http": "^3.2.0",
     "tty-browserify": "^0.0.1",
@@ -1888,14 +1888,15 @@
     "@azure/msal-node": {
       "uuid": "^11.0.0"
     },
+    "@azure/identity": "4.14.1",
     "axios": "1.20.0",
     "basic-ftp": "5.3.1",
-    "fast-uri": "3.1.8",
-    "ip-address": "10.7.1",
+    "fast-uri": "3.1.9",
+    "ip-address": "10.7.4",
     "tmp": "0.2.7",
     "form-data": "^4.0.6",
     "js-yaml": "^4.3.1",
-    "markdown-it": "^14.3.1",
+    "markdown-it": "^14.3.3",
     "@babel/core": "^7.29.6",
     "@octokit/request": "^8.4.1",
     "@octokit/plugin-paginate-rest": "^9.2.2",
@@ -1913,10 +1914,10 @@
     "serialize-javascript": "^7.0.3",
     "diff": "^8.0.3",
     "socket.io-parser": "4.2.7",
-    "undici": "^7.29.1",
+    "undici": "^7.30.1",
     "pacote": "21.5.1",
     "release-it": {
-      "undici": "^6.28.1"
+      "undici": "^6.29.1"
     },
     "@koa/router": {
       "path-to-regexp": "^8.4.0"
@@ -1931,7 +1932,7 @@
     "picomatch@4": "^4.0.4",
     "flatted": "^3.4.2",
     "defu": "^6.1.5",
-    "follow-redirects": "1.16.0",
+    "follow-redirects": "1.16.1",
     "ws": "^8.21.0"
   }
 }
