@@ -617,11 +617,11 @@ function generateHtmlContent(
 
             return `
             <div class="file-item">
-                <div class="file-header" onclick="toggleDiff('diff-${uniqueId}')">
+                <button type="button" class="file-header" aria-expanded="false" aria-controls="diff-${uniqueId}" onclick="toggleDiff('diff-${uniqueId}')">
                     <span class="file-path">${escapeHtml(result.relativePath)}</span>
                     <span class="status-badge ${getStatusClass(result.status)}">${escapeHtml(getStatusText(result.status))}</span>
-                    <span class="toggle-icon" id="icon-${uniqueId}">▶</span>
-                </div>
+                    <span class="toggle-icon" id="icon-${uniqueId}" aria-hidden="true">▶</span>
+                </button>
                 <div class="diff-container" id="diff-${uniqueId}" style="display: none;">
                     ${diffHtml}
                 </div>
@@ -959,10 +959,21 @@ function generateHtmlContent(
             cursor: pointer;
             transition: background-color 0.2s;
             gap: 12px;
+            width: 100%;
+            border: none;
+            background: none;
+            font: inherit;
+            color: inherit;
+            text-align: left;
         }
 
         .file-header:hover {
             background-color: #faf9f8;
+        }
+
+        .file-header:focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: -2px;
         }
 
         .file-path {
@@ -1208,13 +1219,16 @@ function generateHtmlContent(
             const diffContainer = document.getElementById(diffId);
             const iconId = diffId.replace('diff-', 'icon-');
             const icon = document.getElementById(iconId);
+            const header = document.querySelector('[aria-controls="' + diffId + '"]');
 
             if (diffContainer.style.display === 'none') {
                 diffContainer.style.display = 'block';
                 icon.classList.add('expanded');
+                header.setAttribute('aria-expanded', 'true');
             } else {
                 diffContainer.style.display = 'none';
                 icon.classList.remove('expanded');
+                header.setAttribute('aria-expanded', 'false');
             }
         }
 
@@ -1222,12 +1236,14 @@ function generateHtmlContent(
             // Expand all diffs across all tabs
             document.querySelectorAll('.diff-container').forEach(el => el.style.display = 'block');
             document.querySelectorAll('.toggle-icon').forEach(el => el.classList.add('expanded'));
+            document.querySelectorAll('.file-header').forEach(el => el.setAttribute('aria-expanded', 'true'));
         }
 
         function collapseAll() {
             // Collapse all diffs across all tabs
             document.querySelectorAll('.diff-container').forEach(el => el.style.display = 'none');
             document.querySelectorAll('.toggle-icon').forEach(el => el.classList.remove('expanded'));
+            document.querySelectorAll('.file-header').forEach(el => el.setAttribute('aria-expanded', 'false'));
         }
 
         function switchTab(tabId) {
