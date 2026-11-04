@@ -77,7 +77,8 @@ body {
 }
 
 .input-field::placeholder {
-  color: var(--vscode-input-placeholderForeground);
+  color: var(--vscode-editor-foreground);
+  opacity: 1;
 }
 
 .send-button {
