@@ -104,17 +104,18 @@ export class GeneratorAcquisition implements IDisposable {
             fs.writeFileSync(path.join(this._ppagesGlobalPath, "package.json"), JSON.stringify(packageJson), 'utf-8');
 
             const child = this.npm(['install']);
-            if (child.error) {
+            if (child.error || child.status !== 0) {
+                const errorMessage = child.error ? String(child.error) : `npm install exited with code ${child.status}`;
                 oneDSLoggerWrapper.getLogger().traceError(
                     'PowerPagesGeneratorInstallComplete',
-                    String(child.error),
-                    { name: 'PowerPagesGeneratorInstallComplete', message: String(child.error) } as Error,
-                    { cliVersion: this._generatorVersion }, {}
+                    errorMessage,
+                    { name: 'PowerPagesGeneratorInstallComplete', message: errorMessage } as Error,
+                    { cliVersion: this._generatorVersion, exitCode: child.status || -1 }, {}
                 );
 
                 this._context.showErrorMessage(vscode.l10n.t({
                     message: "Cannot install Power Pages generator: {0}",
-                    args: [String(child.error)],
+                    args: [errorMessage],
                     comment: ["{0} represents the error message returned from the exception"]
                 }));
             } else {
