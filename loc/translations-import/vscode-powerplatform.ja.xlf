@@ -254,9 +254,9 @@ This action cannot be undone.</source>
         <source xml:lang="en">Check the URL and verify the parameters are correct</source>
         <target state="translated">URL をチェックして、パラメーターが正しいことを確認してください</target>
       </trans-unit>
-      <trans-unit id="++CODE++948f77a600110ba6ff83340f623612b8e3d53013de48b100669e129232c4edc5">
-        <source xml:lang="en">Check whether the Power Pages Plugin is installed</source>
-        <target state="translated">Power Pages プラグインがインストールされているかどうかを確認する</target>
+      <trans-unit id="++CODE++7424ca73a0adfee022bf72f73f2134a83c8cd1213f58d74373b0a0fab6155092">
+        <source xml:lang="en">Check whether the Power Pages plugin is installed</source>
+        <target state="new">Check whether the Power Pages plugin is installed</target>
       </trans-unit>
       <trans-unit id="++CODE++f6208e79a482ad29648b0dc4cdf886964a06c63af452f5e0959af327ba2d5c38">
         <source xml:lang="en">Check whether the Power Platform Skills marketplace is registered</source>
@@ -464,6 +464,10 @@ CodeQL 拡張パネルで使用可能なクエリを確認します。</target>
         <source xml:lang="en">Command failed with exit code: {0}</source>
         <target state="translated">終了コードでコマンドが失敗しました: {0}</target>
       </trans-unit>
+      <trans-unit id="++CODE++d444962337a1b2520a1fca76e255737e5529cc5533acaefeeb6c3c351e7c3050">
+        <source xml:lang="en">Command preview isn't available for this terminal shell.</source>
+        <target state="new">Command preview isn't available for this terminal shell.</target>
+      </trans-unit>
       <trans-unit id="++CODE++d73890ab56fd9e1ff5349b7bdb41fe0d848c5960c096b30357e26b912456f21f">
         <source xml:lang="en">Compare site with environment</source>
         <target state="translated">サイトと環境の比較</target>
@@ -539,9 +543,13 @@ CodeQL 拡張パネルで使用可能なクエリを確認します。</target>
         <source xml:lang="en">Copy command: {0}</source>
         <target state="translated">コマンドをコピー: {0}</target>
       </trans-unit>
-      <trans-unit id="++CODE++4ba9f9990571f8101520dacd32eee1b3b5ba250d0334a59a3bc32754d44b75fc">
-        <source xml:lang="en">Copy isn't available with this shell or AI assistant. Set up a supported shell or assistant, then select Try again.</source>
-        <target state="translated">このシェルまたは AI アシスタントではコピーを使用できません。サポートされているシェルまたはアシスタントをセットアップしてから、[再試行] を選択してください。</target>
+      <trans-unit id="++CODE++abdedfb58466107494892fd395c31b4821cbc3433345ec4563dc21ab919335d8">
+        <source xml:lang="en">Copy isn't available for this AI assistant installation because it starts from a batch file (.cmd or .bat).</source>
+        <target state="new">Copy isn't available for this AI assistant installation because it starts from a batch file (.cmd or .bat).</target>
+      </trans-unit>
+      <trans-unit id="++CODE++2678a370928b1ffd0bc8110229e42230419ddf91f198cd9864f4c8f6f8753efd">
+        <source xml:lang="en">Copy isn't available for this terminal shell. Copy works with PowerShell, Bash, Zsh, and Fish.</source>
+        <target state="new">Copy isn't available for this terminal shell. Copy works with PowerShell, Bash, Zsh, and Fish.</target>
       </trans-unit>
       <trans-unit id="++CODE++b749e205302cc21952a1e9646569ca0af9017cc5f39dd741830551bdd4ae823e">
         <source xml:lang="en">Copy to clipboard</source>
@@ -554,6 +562,10 @@ CodeQL 拡張パネルで使用可能なクエリを確認します。</target>
       <trans-unit id="++CODE++92a450b51c228fc0a45836a3cb66a77276511e8b1a48e237c97f27576695288d">
         <source xml:lang="en">Could not locate CodeQL CLI in global storage.</source>
         <target state="translated">グローバル ストレージに CodeQL CLI が見つかりませんでした。</target>
+      </trans-unit>
+      <trans-unit id="++CODE++ff00a78f2baf3706b528696e70919c4b123a4b8c7461ec1dd221b14b55e1adce">
+        <source xml:lang="en">Couldn't upload the site. Check the Power Platform Tools: PAC CLI output for details.</source>
+        <target state="new">Couldn't upload the site. Check the Power Platform Tools: PAC CLI output for details.</target>
       </trans-unit>
       <trans-unit id="++CODE++17df5c921ef303496786b0c317e87e92cdd4702c739633987ced1b202e3aa6ac">
         <source xml:lang="en">Create a Power Pages site</source>
@@ -725,9 +737,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
         <source xml:lang="en">Edit the site</source>
         <target state="translated">サイトの編集</target>
       </trans-unit>
-      <trans-unit id="++CODE++82c1eb8342c8d82ef6a31fcfa13b15e6c8805b3fa986d46ec8eaa5ec153f02fd">
-        <source xml:lang="en">Enable the installed Power Pages Plugin</source>
-        <target state="translated">インストールされている Power Pages プラグインを有効にする</target>
+      <trans-unit id="++CODE++726cbb2fc81ea0ff165ef53254ae2769cf5db51de9d329add905ff545ca99f26">
+        <source xml:lang="en">Enable the installed Power Pages plugin</source>
+        <target state="new">Enable the installed Power Pages plugin</target>
       </trans-unit>
       <trans-unit id="++CODE++102f547594eb0c68a16e0e5eb6661fa576c7a5fb6ce224ea36194e9fd4f87dac">
         <source xml:lang="en">Enhanced Data Model</source>
@@ -1145,13 +1157,13 @@ Web サイト コードの作成と編集については、このチャットで
         <source xml:lang="en">Install or enable the plugin if needed.</source>
         <target state="translated">必要に応じてプラグインをインストールまたは有効にしてください。</target>
       </trans-unit>
-      <trans-unit id="++CODE++396f58439868809f256a7a4a63e6d7e72fb07a11c741bb502b0c4b74218f4a6d">
-        <source xml:lang="en">Install the Power Pages Plugin</source>
-        <target state="translated">Power Pages プラグインをインストールする</target>
+      <trans-unit id="++CODE++6f11ed38926d7ac7f16fe4467ffdcf4f2996f643f33d776a1523d157f0109e10">
+        <source xml:lang="en">Install the Power Pages plugin</source>
+        <target state="new">Install the Power Pages plugin</target>
       </trans-unit>
-      <trans-unit id="++CODE++33e083fc5ba8d2db8015c3d8a6d3a0831a571f75befac9f6989bce9422b1d103">
-        <source xml:lang="en">Install the Power Pages Plugin for your user account</source>
-        <target state="translated">ユーザー アカウントの Power Pages プラグインをインストールする</target>
+      <trans-unit id="++CODE++00bf0083080d06de545fbb67522791fa6773e0762af68cef79d4c98cfe41853a">
+        <source xml:lang="en">Install the Power Pages plugin for your user account</source>
+        <target state="new">Install the Power Pages plugin for your user account</target>
       </trans-unit>
       <trans-unit id="++CODE++e9a14c3c8fd396e453f2d26bdebeace670ebae2cdbb1169f670beef3defa0599">
         <source xml:lang="en">Install the assistant if needed.</source>
@@ -1443,10 +1455,6 @@ URL: {1}
         <source xml:lang="en">Open installation and reload options.</source>
         <target state="translated">インストールを開き、オプションを再度読み込んでください。</target>
       </trans-unit>
-      <trans-unit id="++CODE++1f5d35890264925fe4d7994f37e97eacaa417c77079d875475f138cea85e6e33">
-        <source xml:lang="en">Open {0} in your site folder: {1}. Copy and run only the commands you still need, one at a time and in order. Use the read-only checks before steps marked Runs only if needed. Stop if a command fails.</source>
-        <target state="translated">サイト フォルダーで {0} を開きます: {1}まだ必要なコマンドだけをコピーし、1 つずつ順番に実行してください。「必要な場合にのみ実行されます」と記載された手順の前に、読み取り専用のチェックを実行してください。コマンドが失敗した場合は中止してください。</target>
-      </trans-unit>
       <trans-unit id="++CODE++87fe691d426d47ee588ac957e12a9936b94fe6d70fd9ef97c92f7af1671ed9a0">
         <source xml:lang="en">Opening in VS Code Desktop. If it doesn't open or shows an error, you may need to install VS Code or update the Power Platform extension.</source>
         <target state="translated">VS Code デスクトップで開こうとしています。開けない場合やエラーが表示される場合は、VS Code のインストールまたは Power Platform 拡張機能の更新が必要である可能性があります。</target>
@@ -1545,14 +1553,6 @@ URL: {1}
         <note>{0} represents the environment name</note>
         <target state="translated">Power Pages Copilot が現在接続されている環境: {0} : {1}</target>
       </trans-unit>
-      <trans-unit id="++CODE++c302d6758ca811ffe896e8d7be62e19622fcd54b53751d3307ff72dee82094ae">
-        <source xml:lang="en">Power Pages Plugin</source>
-        <target state="translated">Power Pages プラグイン</target>
-      </trans-unit>
-      <trans-unit id="++CODE++5a999d3e8ebbea218d45c65a2ba8a1d925653e4ae7460aa5a1d5cdab0e79d5c4">
-        <source xml:lang="en">Power Pages Plugin is installed</source>
-        <target state="translated">Power Pages プラグインがインストールされています</target>
-      </trans-unit>
       <trans-unit id="++CODE++f519c6aeba20c1a712f6043bf6eb52bf3bb8834f5f1a6c9ea60244dbbb30453c">
         <source xml:lang="en">Power Pages Server Logic detected! You can now debug your server logic files with breakpoints and IntelliSense.</source>
         <target state="translated">Power Pages サーバー ロジックが検出されました。ブレークポイントと IntelliSense を使用してサーバー ロジック ファイルをデバッグできるようになりました。</target>
@@ -1560,6 +1560,14 @@ URL: {1}
       <trans-unit id="++CODE++7a32dfb1b02f49b639f9005bd389e30e5d496b57bfe8f59b032394e2ef189ae5">
         <source xml:lang="en">Power Pages create flow could not continue. {0}</source>
         <target state="translated">Power Pages の作成フローを続行できませんでした。{0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++0a9e18b60a9d4bb596309ea65d747891ad45732901f1a9b76da256521baa03fb">
+        <source xml:lang="en">Power Pages plugin</source>
+        <target state="new">Power Pages plugin</target>
+      </trans-unit>
+      <trans-unit id="++CODE++8075efd3a927d7a466112af4aef312a2b2fb142e01dc6d4ab5de65e760d16e0c">
+        <source xml:lang="en">Power Pages plugin is installed</source>
+        <target state="new">Power Pages plugin is installed</target>
       </trans-unit>
       <trans-unit id="++CODE++04ac907168ac84b45263503d1306565bece49c4ae3e8ef4af310b304f03ab6d4">
         <source xml:lang="en">Power Pages site download completed successfully. Would you like to open the downloaded site folder?</source>
@@ -1593,9 +1601,9 @@ URL: {1}
         <source xml:lang="en">PowerPages config file updated successfully: {0}</source>
         <target state="translated">PowerPages 構成ファイルが正常に更新されました: {0}</target>
       </trans-unit>
-      <trans-unit id="++CODE++28bcc1d3dfff25ec70aa101c7a086a8c44ed0aa66f7fd5d6aa29a70045100c0d">
-        <source xml:lang="en">Prepare the Power Pages Plugin</source>
-        <target state="translated">Power Pages プラグインを準備する</target>
+      <trans-unit id="++CODE++7b505b4ae79123a45c4972f677dfc36c985244f1c3a8ea096b1677e0f84c2f6c">
+        <source xml:lang="en">Prepare the Power Pages plugin</source>
+        <target state="new">Prepare the Power Pages plugin</target>
       </trans-unit>
       <trans-unit id="++CODE++b3bd8e83df2f6be7037ed0a3dc8fa15c074d072892fba84e95aadf69f5c0c107">
         <source xml:lang="en">Prepare the selected AI assistant and start a guided site-creation conversation.</source>
@@ -1614,9 +1622,9 @@ URL: {1}
         <source xml:lang="en">Preparing to open Power Pages site...</source>
         <target state="translated">Power Pages サイトを開く準備をしています...</target>
       </trans-unit>
-      <trans-unit id="++CODE++515524c5237a78472c04cb30bbd064a1fa2d75b961a7e1cad4b6d204c711b41e">
-        <source xml:lang="en">Preparing your AI assistant...</source>
-        <target state="translated">AI アシスタントを準備しています...</target>
+      <trans-unit id="++CODE++e4085ff6c94284a38c090be2ea810dff4fc1698dd3499295125d2fc43bd8e84b">
+        <source xml:lang="en">Preparing your AI assistant</source>
+        <target state="new">Preparing your AI assistant</target>
       </trans-unit>
       <trans-unit id="++CODE++f6412ced721a26ac3e3cb55d3ff713d8403c3dfc2efa0cff07b48478bdd57555">
         <source xml:lang="en">Preview site</source>
@@ -1647,9 +1655,9 @@ URL: {1}
         <source xml:lang="en">Ready to select download folder</source>
         <target state="translated">ダウンロード フォルダーを選択する準備ができました</target>
       </trans-unit>
-      <trans-unit id="++CODE++5dc8158798e5d22948f8b9e9944a502bfed7eb07b9ed53be27b337a3549dbd71">
-        <source xml:lang="en">Refresh the terminal PATH</source>
-        <target state="translated">ターミナルの PATH を更新する</target>
+      <trans-unit id="++CODE++69352e2f233289d899ef78f92860cec8d30a5ecf9f624e5239faa20724d69251">
+        <source xml:lang="en">Refresh the PATH environment variable</source>
+        <target state="new">Refresh the PATH environment variable</target>
       </trans-unit>
       <trans-unit id="++CODE++fdc383411e8354c470e19c960527019a9bf48c61c08a5c3ec3fb8b7b32ccba34">
         <source xml:lang="en">Refreshing comparison for {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show download output"))...</source>
@@ -1814,10 +1822,6 @@ URL: {1}
         <note>{0} is the Session ID</note>
         <target state="translated">セッション ID: {0}</target>
       </trans-unit>
-      <trans-unit id="++CODE++e5b2f2a712b0f13982d3061761231ae5d94cca96331ced7b6bef9c83b1758062">
-        <source xml:lang="en">Set up a compatible shell to see this command.</source>
-        <target state="translated">このコマンドを表示するには、互換性のあるシェルを設定してください。</target>
-      </trans-unit>
       <trans-unit id="++CODE++7013af4c42fe43802a9e8b0affc4f521fcd126160569969fb2ec09e1b7c422b1">
         <source xml:lang="en">Setup</source>
         <target state="translated">セットアップ</target>
@@ -1952,6 +1956,10 @@ URL: {1}
         <source xml:lang="en">Step {0} of {1}: {2}</source>
         <target state="translated">ステップ {0}/{1}: {2}</target>
       </trans-unit>
+      <trans-unit id="++CODE++c4e01b9dde420ccd86454dddb70e83041f4808e047a5d91cb72650f243da1b8c">
+        <source xml:lang="en">Step {0} of {1}: {2}. Skipping a setup step that isn't needed.</source>
+        <target state="new">Step {0} of {1}: {2}. Skipping a setup step that isn't needed.</target>
+      </trans-unit>
       <trans-unit id="++CODE++155f816c0407310c0dab222493370773e045ee7fe04e6c9a951b07f495531264">
         <source xml:lang="en">Submit</source>
         <target state="translated">送信</target>
@@ -2045,10 +2053,6 @@ URL: {1}
         <source xml:lang="en">There's a problem on the back end</source>
         <target state="translated">バック エンドに問題が発生しています</target>
       </trans-unit>
-      <trans-unit id="++CODE++1be1e2bab29bc0b801421557148a27b906249cc1a286e9717a03a8ed1a16cf81">
-        <source xml:lang="en">This command can't be copied. Check its status and the manual setup instructions.</source>
-        <target state="translated">このコマンドはコピーできません。状態と手動セットアップの手順を確認してください。</target>
-      </trans-unit>
       <trans-unit id="++CODE++bcfc420c0358eb6f248fa6328797cfa38fa121baea6320a623280a0d34eeee75">
         <source xml:lang="en">This file was exported with a newer version of the extension. Please update your extension to import this file.</source>
         <target state="translated">このファイルは、新しいバージョンの拡張機能を使用してエクスポートされました。このファイルをインポートするには、拡張機能を更新してください。</target>
@@ -2074,13 +2078,26 @@ URL: {1}
         <note>{0} is the timestamp</note>
         <target state="translated">タイムスタンプ: {0}</target>
       </trans-unit>
-      <trans-unit id="++CODE++34098ed5be77dc7ed419b3a1e3cadc347b13e439bca4db44e5db701411766e82">
-        <source xml:lang="en">To continue manually, open Technical details and select Copy for the commands you still need.</source>
-        <target state="translated">手動で続行するには、[技術的な詳細] を開き、引き続き必要なコマンドの [コピー] を選択してください。</target>
+      <trans-unit id="++CODE++ef20adb63b009b34ba7e8b73c5a19d674df03f50a524ead03c3a814ab710b766">
+        <source xml:lang="en">To continue manually, open {0} and select {1} for each command you still need.</source>
+        <note>{0} is the localized label of the Technical details section.
+{1} is the localized label of the Copy button.</note>
+        <target state="new">To continue manually, open {0} and select {1} for each command you still need.</target>
       </trans-unit>
       <trans-unit id="++CODE++4f8c4d58a87feaaff06fd5f9cb84370ab4a42220bf1e8cbedbca716f8f21c9ee">
         <source xml:lang="en">To know more, see &lt;a href="https://go.microsoft.com/fwlink/?linkid=2206366"&gt;Copilot in Power Pages documentation.</source>
         <target state="translated">詳細については &lt;a href="https://go.microsoft.com/fwlink/?linkid=2206366"&gt;Power Pages の Copilot に関するドキュメントを参照してください。</target>
+      </trans-unit>
+      <trans-unit id="++CODE++aa35aa52e18c7f497f8d5e1e80386f17a5275e0ee251eecfa0c75fcb0af11508">
+        <source xml:lang="en">To set up manually, open {0} in your site folder ({1}). Copy and run only the commands you still need, in order and one at a time. Run a command marked {2} only if the related read-only check shows that it's needed. Stop if a command fails.</source>
+        <note>{0} is the path of the terminal shell and is replaced when the message is shown.
+{1} is the path of the site folder and is replaced when the message is shown.
+{2} is the localized Runs only if needed label shown next to conditional commands.</note>
+        <target state="new">To set up manually, open {0} in your site folder ({1}). Copy and run only the commands you still need, in order and one at a time. Run a command marked {2} only if the related read-only check shows that it's needed. Stop if a command fails.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++146895a7cbe169cd415f67e9d09afd78a1b0fae2fb059433f6908c56bb4f760f">
+        <source xml:lang="en">To set up manually, open {0} in your site folder ({1}). Copy and run only the commands you still need, in order and one at a time. Stop if a command fails.</source>
+        <target state="new">To set up manually, open {0} in your site folder ({1}). Copy and run only the commands you still need, in order and one at a time. Stop if a command fails.</target>
       </trans-unit>
       <trans-unit id="++CODE++ea93d6a262ecb87a9fa4d09edbd7654c046597936a8e235fc3949eb01775ff99">
         <source xml:lang="en">Tools</source>
@@ -2093,6 +2110,10 @@ URL: {1}
       <trans-unit id="++CODE++1ad14134a4f26b4cf2f8e203eb324fab77722a2f5368f489162d3d2319d01060">
         <source xml:lang="en">Total Files:</source>
         <target state="translated">ファイルの合計:</target>
+      </trans-unit>
+      <trans-unit id="++CODE++61c95cf36f1a9bc1e6ea37d8358fe22a0abdcbe0c6751b5d409aadc4e8624c71">
+        <source xml:lang="en">Trust this workspace before you upload a site.</source>
+        <target state="new">Trust this workspace before you upload a site.</target>
       </trans-unit>
       <trans-unit id="++CODE++4a7c431a6572c68bba17c3a5d858adbf5112462574953baf4d7d2fd0619807fe">
         <source xml:lang="en">Try @powerpages with GitHub Copilot</source>
@@ -2179,10 +2200,6 @@ URL: {1}
         <source xml:lang="en">Upload changes</source>
         <target state="translated">変更内容をアップロードする</target>
       </trans-unit>
-      <trans-unit id="++CODE++8a91e7caf57148c6be78b3986477464b36f0282a9e9a09b635b0db4fe6246132">
-        <source xml:lang="en">Upload failed. Please try again later.</source>
-        <target state="translated">アップロードに失敗しました。後でやり直してください。</target>
-      </trans-unit>
       <trans-unit id="++CODE++920e379f234bd08346445db66f6a8eafc99b8b453405c8ffa02abbaba57b6a46">
         <source xml:lang="en">Uploading site ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show output"))...</source>
         <note>This is a markdown formatting which must persist across translations.</note>
@@ -2234,57 +2251,91 @@ URL: {1}
         <source xml:lang="en">VS Code - PAC CLI authentication mismatch detected</source>
         <target state="translated">VS Code - PAC CLI 認証の不一致が検出されました</target>
       </trans-unit>
-      <trans-unit id="++CODE++5a160eefb4aedc6bcc21a26052eb1f57ebe821a48a00ce4aba595189d22b4286">
-        <source xml:lang="en">VS Code can't run setup in this shell. Choose PowerShell, Bash, Zsh, or Fish as your default shell, restart VS Code, then reopen site setup. Setup commands didn't run.</source>
-        <target state="translated">VS Code はこのシェルでセットアップを実行できません。PowerShell、Bash、Zsh、または Fish を既定のシェルとして選択し、VS Code を再起動してから、サイトのセットアップをもう一度開いてください。セットアップ コマンドは実行されませんでした。</target>
+      <trans-unit id="++CODE++ec4c94c99c8c27fb33ff5a58150d2ff3b9f2c9d44bf26db3be74732fde112877">
+        <source xml:lang="en">VS Code can't run setup in your default terminal shell. The remaining setup commands didn't run. Set your default terminal shell to PowerShell, Bash, Zsh, or Fish, restart VS Code, and then start creating your site again.</source>
+        <target state="new">VS Code can't run setup in your default terminal shell. The remaining setup commands didn't run. Set your default terminal shell to PowerShell, Bash, Zsh, or Fish, restart VS Code, and then start creating your site again.</target>
       </trans-unit>
-      <trans-unit id="++CODE++973bc39b5d032171d724e1a60afb8fc63ee1b80361645934289434e8b42fb4d9">
-        <source xml:lang="en">VS Code can't safely start this AI assistant with your site description. Install a version with an executable or PowerShell script, then select Try again. Copy isn't available for this installation.</source>
-        <target state="translated">VS Code は、サイトの説明を使用してこの AI アシスタントを安全に起動できません。実行可能ファイルまたは PowerShell スクリプトが含まれるバージョンをインストールしてから、[再試行] を選択してください。このインストールではコピーを使用できません。</target>
+      <trans-unit id="++CODE++2bb27fa5ae07ce237646b3d6b2c574332ba6602aee87a9a15e3ab24850c1516e">
+        <source xml:lang="en">VS Code can't safely pass your site description to this AI assistant installation because it starts from a batch file (.cmd or .bat). Install a version that starts from an .exe file or a PowerShell script (.ps1), and then select {0}. Copy isn't available for this installation.</source>
+        <note>{0} is the localized label of the Try again button.</note>
+        <target state="new">VS Code can't safely pass your site description to this AI assistant installation because it starts from a batch file (.cmd or .bat). Install a version that starts from an .exe file or a PowerShell script (.ps1), and then select {0}. Copy isn't available for this installation.</target>
       </trans-unit>
-      <trans-unit id="++CODE++ebe477e775a54cc641bf8adf8942573e4539a66028b0ac0cb8e2ddd7c2e9149b">
-        <source xml:lang="en">VS Code couldn't find PowerShell 7 or Git Bash. Install one, or set its path in the user-level Terminal › Integrated: Profiles: Windows setting. Select Try again. Setup commands didn't run.</source>
-        <target state="translated">VS Code で PowerShell 7 または Git Bash が見つかりませんでした。いずれかをインストールするか、ユーザーレベルの [ターミナル › 統合: プロファイル: Windows] 設定でパスを設定してください。[再試行] を選択してください。セットアップ コマンドは実行されませんでした。</target>
+      <trans-unit id="++CODE++9524c0e2d0da87faf33eeac301ad14ae3f9a91486bcd028e4ef4f6ead57f8c8f">
+        <source xml:lang="en">VS Code couldn't complete this step: {0}. Select {1} for installation and reload options, or select {2}.</source>
+        <note>{0} is the localized description of the command that failed and is replaced when the message is shown.
+{1} is the localized label of the View setup options button and is replaced when the message is shown.
+{2} is the localized label of the Try again button.</note>
+        <target state="new">VS Code couldn't complete this step: {0}. Select {1} for installation and reload options, or select {2}.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++4add58f49b86be7a56e20eac917b607cbe6ea33426573b284be4d7d546603dab">
+        <source xml:lang="en">VS Code couldn't complete this step: {0}. Select {2}, or open {1} to review the commands.</source>
+        <note>{0} is the localized description of the command that failed and is replaced when the message is shown.
+{1} is the localized label of the Technical details section and is replaced when the message is shown.
+{2} is the localized label of the Try again button.</note>
+        <target state="new">VS Code couldn't complete this step: {0}. Select {2}, or open {1} to review the commands.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++c254baf7a2dc0784cf22e12de3eb73386cb324ec2c8f28d97744dd25e21aa51c">
+        <source xml:lang="en">VS Code couldn't copy the command. Select {0} to try again.</source>
+        <note>{0} is the localized label of the Copy button.</note>
+        <target state="new">VS Code couldn't copy the command. Select {0} to try again.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++b45557cb75054ec822eb07317d33f43ffdf37340a8ab6d989d87587f36960fff">
+        <source xml:lang="en">VS Code couldn't find PowerShell 7 or Git Bash. The remaining setup commands didn't run. Install one of them, or add its path to the Terminal › Integrated › Profiles: Windows user setting, and then select {0}.</source>
+        <note>{0} is the localized label of the Try again button.
+'Terminal › Integrated › Profiles: Windows' is the name of a VS Code setting.</note>
+        <target state="new">VS Code couldn't find PowerShell 7 or Git Bash. The remaining setup commands didn't run. Install one of them, or add its path to the Terminal › Integrated › Profiles: Windows user setting, and then select {0}.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++07d8e03771a807b0a8332b0de06cf0136542f90b45331e0070ce9e01f2c471d1">
+        <source xml:lang="en">VS Code couldn't finish setup. Review the site setup page for next steps.</source>
+        <target state="new">VS Code couldn't finish setup. Review the site setup page for next steps.</target>
       </trans-unit>
       <trans-unit id="++CODE++c4b3a95eb9ce3bce70b7fd7d6462e24f10cfc7e81edbf5684aa1cf858c3feb09">
         <source xml:lang="en">VS Code couldn't open the site setup page. Run the command again.</source>
         <target state="translated">VS Code はサイト セットアップ ページを開けませんでした。コマンドをもう一度実行してください。</target>
       </trans-unit>
-      <trans-unit id="++CODE++9128159300e2c4763058f0d72424b025162604d7cad504c6a047dfe64db78601">
-        <source xml:lang="en">VS Code couldn't run setup because terminal shell integration is off. Turn on Terminal › Integrated: Shell Integration Enabled in Settings, then select Try again. Setup commands didn't run.</source>
-        <target state="translated">VS Code は、ターミナル シェル統合がオフのため、セットアップを実行できませんでした。設定で [ターミナル › 統合: シェル統合を有効にする] を有効にしてから、[再試行] を選択してください。セットアップ コマンドは実行されませんでした。</target>
+      <trans-unit id="++CODE++7835405be4104208466f736175f383019deb286289be6ae101bfdbbf3bd5cee7">
+        <source xml:lang="en">VS Code couldn't prepare your AI assistant</source>
+        <target state="new">VS Code couldn't prepare your AI assistant</target>
       </trans-unit>
-      <trans-unit id="++CODE++6c23706c301c0044dc0139f3ade45d60beee0c0e23b404b6c4403e1607eb7a5b">
-        <source xml:lang="en">VS Code couldn't run setup because terminal shell integration wasn't ready. Select Try again. If the issue continues, check the terminal's startup settings. Setup commands didn't run.</source>
-        <target state="translated">VS Code は、ターミナル シェル統合がまだ準備できていなかったため、セットアップを実行できませんでした。[再試行] を選択してください。問題が解決しない場合は、ターミナルのスタートアップ設定を確認してください。セットアップ コマンドは実行されませんでした。</target>
+      <trans-unit id="++CODE++6276ef37315fdbb73b7c293e409824ab1a5cec3fd1871534d0d904b64b9a09b3">
+        <source xml:lang="en">VS Code couldn't run setup because terminal shell integration is turned off. The remaining setup commands didn't run. Turn on the Terminal › Integrated › Shell Integration: Enabled setting, and then select {0}.</source>
+        <note>{0} is the localized label of the Try again button.
+'Terminal › Integrated › Shell Integration: Enabled' is the name of a VS Code setting.</note>
+        <target state="new">VS Code couldn't run setup because terminal shell integration is turned off. The remaining setup commands didn't run. Turn on the Terminal › Integrated › Shell Integration: Enabled setting, and then select {0}.</target>
       </trans-unit>
-      <trans-unit id="++CODE++1acc93ac4c64d3eb4ce7ab732ec13e9c225ed10c645415274b729099d3a8074a">
-        <source xml:lang="en">VS Code will check the Power Pages Plugin setup</source>
-        <target state="translated">VS Codeは、Power Pages プラグインのセットアップを確認します</target>
+      <trans-unit id="++CODE++31f0ea2cb85c89861fc112818cdb3fe810092dcc224f9af093bd2981db7f8847">
+        <source xml:lang="en">VS Code couldn't run setup because terminal shell integration wasn't ready. The remaining setup commands didn't run. Select {0}. If the problem continues, check the terminal's startup settings.</source>
+        <note>{0} is the localized label of the Try again button.</note>
+        <target state="new">VS Code couldn't run setup because terminal shell integration wasn't ready. The remaining setup commands didn't run. Select {0}. If the problem continues, check the terminal's startup settings.</target>
       </trans-unit>
-      <trans-unit id="++CODE++bf10e9a4cf71b304375cb211f38eeccad9b9879815f4a597a548153d22b1f51e">
-        <source xml:lang="en">VS Code will enable the Power Pages Plugin</source>
-        <target state="translated">VS Code が Power Pages プラグインを有効にします</target>
+      <trans-unit id="++CODE++bc9480762f0caf93872822c330bb1399fdb4aa808ed3922def0d99902d77092f">
+        <source xml:lang="en">VS Code will check the Power Pages plugin setup</source>
+        <target state="new">VS Code will check the Power Pages plugin setup</target>
       </trans-unit>
-      <trans-unit id="++CODE++69df8bdc49e19c41088c234cd86ac915fba9f9b15288166f1dbc38778739a3eb">
-        <source xml:lang="en">VS Code will install the Power Pages Plugin</source>
-        <target state="translated">VS Codeは Power Pages プラグインをインストールします</target>
+      <trans-unit id="++CODE++302aa8b2f830b794469ac367deca9eaebec7a764038a4d667dbaddc763cec4b9">
+        <source xml:lang="en">VS Code will enable the Power Pages plugin</source>
+        <target state="new">VS Code will enable the Power Pages plugin</target>
       </trans-unit>
-      <trans-unit id="++CODE++9876e2de21f25abd894c314b36f6041972ee80c46a61ea7d90d96e34d78bbde2">
-        <source xml:lang="en">VS Code will install {0} and the Power Pages Plugin</source>
-        <target state="translated">VS Codeは {0} と Power Pages プラグインをインストールします</target>
+      <trans-unit id="++CODE++0499acddfdaa3a4cc0c3a50bb092dbc29d1dd70032040331b6381fc57da6af04">
+        <source xml:lang="en">VS Code will install the Power Pages plugin</source>
+        <target state="new">VS Code will install the Power Pages plugin</target>
       </trans-unit>
-      <trans-unit id="++CODE++02eadfe90172342b438f27c0be4d64a0b4588869e626f25eb6653416c839d79f">
-        <source xml:lang="en">VS Code won't change your setup until you select Start creating. Your AI assistant might ask you to sign in.</source>
-        <target state="translated">VS Code は、[作成を開始] が選択されるまで設定を変更しません。AI アシスタントからサインインが求められる場合があります。</target>
+      <trans-unit id="++CODE++9a8e032171d3806e036fd559edfb7c9ec5f0e175651b3ec93c0dfb35984c2569">
+        <source xml:lang="en">VS Code will install {0} and the Power Pages plugin</source>
+        <target state="new">VS Code will install {0} and the Power Pages plugin</target>
+      </trans-unit>
+      <trans-unit id="++CODE++d252c044db63e7b02e155508a2800734a2e887ad72fe5bffb0f36bda4949a8a8">
+        <source xml:lang="en">VS Code won't change your setup until you select {0}. Your AI assistant might ask you to sign in.</source>
+        <note>{0} is the localized label of the Start creating button.</note>
+        <target state="new">VS Code won't change your setup until you select {0}. Your AI assistant might ask you to sign in.</target>
       </trans-unit>
       <trans-unit id="++CODE++527423ed0138373aa91233083f12eceeae92aa1998e6706d7a260524dafbe6c4">
         <source xml:lang="en">Validating authentication...</source>
         <target state="translated">認証を検証中...</target>
       </trans-unit>
-      <trans-unit id="++CODE++f5830590f575580b2e92fa127ceaed14197aeb78855c4c218b9b67247e740d4f">
-        <source xml:lang="en">Verify that {0} is available in this terminal</source>
-        <target state="translated">このターミナルで {0} を使用できることを確認する</target>
+      <trans-unit id="++CODE++8674b8ca0c7de1096fe2122aa71ffdf7f1b37dc500146542ab930f1ae7b75b8d">
+        <source xml:lang="en">Verify that {0} is available</source>
+        <target state="new">Verify that {0} is available</target>
       </trans-unit>
       <trans-unit id="++CODE++27ce43e2a226ec490d516062d0d927ef2c965197813f8d9ce06f2aeba4617057">
         <source xml:lang="en">View installation guide</source>
@@ -2293,26 +2344,6 @@ URL: {1}
       <trans-unit id="++CODE++28aeb75bbd6c2ff3c2d97d36cb236af7f1d075978428b27c98b53b1f76d87849">
         <source xml:lang="en">View setup options</source>
         <target state="translated">セットアップ オプションを表示する</target>
-      </trans-unit>
-      <trans-unit id="++CODE++31b2edd15a101e3d2921ca2aa0329a33fd862d8b380084da718c3f3e6a374e18">
-        <source xml:lang="en">We couldn't complete this step: {0}. Select Try again, or open {1} to review the commands.</source>
-        <target state="translated">この手順を完了できませんでした: {0}[再試行] を選択するか、コマンドを確認するために {1} を開いてください。</target>
-      </trans-unit>
-      <trans-unit id="++CODE++0d2d00965d69f953fb734a46f1f59ec3470eb974c916e3ead5138564efd2c52e">
-        <source xml:lang="en">We couldn't complete this step: {0}. Select {1} for installation and reload options, or select Try again.</source>
-        <target state="translated">この手順を完了できませんでした: {0}インストールと再読み込みのオプションを表示するために {1} を選択するか、[再試行] を選択してください。</target>
-      </trans-unit>
-      <trans-unit id="++CODE++b84a701a227722ecce6fccc7605bdefcc2e73342b23ed3b5af46897dbb25ea02">
-        <source xml:lang="en">We couldn't copy the command. Select Copy to try again.</source>
-        <target state="translated">コマンドをコピーできませんでした。[コピー] を選択して、もう一度お試しください。</target>
-      </trans-unit>
-      <trans-unit id="++CODE++96f1abdc79bc5e834e804288e07dafa9207ece7b0fbe52d45156295d0462537a">
-        <source xml:lang="en">We couldn't finish setup. Review the site setup page for next steps.</source>
-        <target state="translated">セットアップを完了できませんでした。次の手順については、サイトのセットアップ ページを確認してください。</target>
-      </trans-unit>
-      <trans-unit id="++CODE++d3931a85c3e6d17fc7abba40fd4f4497852784b8298407ac65d09d908c4989e3">
-        <source xml:lang="en">We couldn't prepare your AI assistant</source>
-        <target state="translated">AI アシスタントを準備できませんでした</target>
       </trans-unit>
       <trans-unit id="++CODE++d941ee96c6f480390012381f9fc0dfd961f2aa803732860e2505a8453700f458">
         <source xml:lang="en">We encountered an error preparing the files for edit.</source>
@@ -2412,6 +2443,10 @@ URL: {1}
         <source xml:lang="en">You can use this in &lt;a href="#" id="github-copilot-link"&gt;GitHub Copilot with @powerpages&lt;/a&gt; and leverage best of both world.</source>
         <target state="translated">これを &lt;a href="#" id="github-copilot-link"&gt;@powerpages に対応した GitHub Copilot&lt;/a&gt; で使用し、両者の強みを活用できます。</target>
       </trans-unit>
+      <trans-unit id="++CODE++d4ef36d5ce1874060126d0f6c9819dfb24b1bc850858165f1cf8282de24f2072">
+        <source xml:lang="en">You can't copy this command now. Check its status and the manual setup instructions.</source>
+        <target state="new">You can't copy this command now. Check its status and the manual setup instructions.</target>
+      </trans-unit>
       <trans-unit id="++CODE++87eb9aa1f1ac1b6b141aedc4c21a9cb7cf786453c529babe30c8760072bb34d6">
         <source xml:lang="en">You need to authenticate with Power Platform to download the site. Would you like to authenticate now?</source>
         <target state="translated">サイトをダウンロードするには、Power Platform で認証する必要があります。今すぐ認証しますか?</target>
@@ -2475,10 +2510,6 @@ URL: {1}
         <source xml:lang="en">{0} files changed (Imported {1})</source>
         <note>Description for imported comparison. {0} is file count, {1} is formatted date.</note>
         <target state="translated">{0} 個のファイルが変更されました ({1} にインポートしました)</target>
-      </trans-unit>
-      <trans-unit id="++CODE++0dcc2278c50b376ea997b1a6036e8bc2b7082b226e8e6b6f2fc30bd47c215245">
-        <source xml:lang="en">{0} is already set up.</source>
-        <target state="translated">{0} は既に設定されています。</target>
       </trans-unit>
       <trans-unit id="++CODE++d46c7d516a2134a23bf069c10ddf25d0781c48418c6b4e85480705e9248b29ae">
         <source xml:lang="en">{0} is installed. Continue creating your Power Pages site?</source>
