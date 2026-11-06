@@ -1,5 +1,11 @@
 # Change Log - Power Platform Extension
 
+## 2.0.161
+- Fixed an issue that prevented server logic files from loading in VS Code web when their folder had not yet been created.
+- Improved keyboard and screen reader access to file diffs in site comparison HTML reports. Component tabs now appear in a sidebar and wrap above the file list in narrow windows.
+- Improved the visibility of the Copilot input placeholder across light, dark, and high-contrast themes.
+- Updated dependencies to address security vulnerabilities.
+
 ## 2.0.160
 - Improved setup reliability for GitHub Copilot CLI and Claude Code when creating Power Pages sites, reducing the need to configure your terminal.
 - Improved Power Pages uploads for site names and folder paths that contain spaces or special characters, and added clearer upload error messages. Uploads now require a trusted workspace.
