@@ -930,6 +930,14 @@ async function createVirtualFile(
     commitBeforeMetadata = false,
 ) {
     const fileUriParsed = vscode.Uri.parse(fileUri);
+    // Conditional folders, including server logic, are omitted during workspace setup.
+    // Create the parent before committing bytes, and publish loaded metadata only after the write succeeds.
+    if (featureFlags?.enableBlogSupport && conditionalFolderEntities.includes(entityName as schemaEntityName)) {
+        const parentDirPath = fileUriParsed.path.substring(0, fileUriParsed.path.lastIndexOf('/'));
+        const parentDirUri = fileUriParsed.with({ path: parentDirPath });
+        await portalsFS.createDirectory(parentDirUri);
+    }
+
     if (commitBeforeMetadata) {
         await portalsFS.writeFile(fileUriParsed, fileContent, { create: true, overwrite: true }, true);
     }
@@ -947,21 +955,6 @@ async function createVirtualFile(
         isPreloadedContent,
         entityMetadata
     );
-
-    // Ensure parent directory exists before writing file for conditional entities
-    // This enables lazy folder creation for blogs, ideas, ideaforums, forum announcements, and forum posts
-    if (featureFlags?.enableBlogSupport && conditionalFolderEntities.includes(entityName as schemaEntityName)) {
-        const parentDirPath = fileUriParsed.path.substring(0, fileUriParsed.path.lastIndexOf('/'));
-        const parentDirUri = fileUriParsed.with({ path: parentDirPath });
-
-        try {
-            // createDirectory is idempotent - it checks if directory exists before creating
-            await portalsFS.createDirectory(parentDirUri);
-        } catch (error) {
-            //Directory might already exist or parent lookup might succeed anyway
-
-        }
-    }
 
     // Call file system provider write call for buffering file data in VFS
     if (!commitBeforeMetadata) {
