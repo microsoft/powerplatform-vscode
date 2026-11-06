@@ -7,6 +7,7 @@ import * as vscode from "vscode";
 import * as fs from "fs/promises";
 import * as os from "os";
 import * as path from "path";
+import { runInNewContext } from "vm";
 import { expect } from "chai";
 import sinon from "sinon";
 import { generateHtmlReport, getComponentTypeFromPath, getComponentTypeDisplayName } from "../../../../../../power-pages/actions-hub/handlers/metadata-diff/GenerateHtmlReportHandler";
@@ -54,6 +55,19 @@ describe("GenerateHtmlReportHandler", () => {
 
     function createMockTreeItem(comparisonResults: IFileComparisonResult[], siteName = "Test Site", localSiteName = "Local Test Site", environmentName = "Test Environment"): MetadataDiffSiteTreeItem {
         return new MetadataDiffSiteTreeItem(createSiteResults(comparisonResults, siteName, localSiteName, environmentName));
+    }
+
+    async function generateReportHtml(comparisonResults: IFileComparisonResult[]): Promise<string> {
+        const testDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "metadata-diff-report-"));
+        const reportPath = path.join(testDirectory, "report.html");
+        showSaveDialogStub.resolves(vscode.Uri.file(reportPath));
+
+        try {
+            await generateHtmlReport(createMockTreeItem(comparisonResults));
+            return await fs.readFile(reportPath, "utf8");
+        } finally {
+            await fs.rm(testDirectory, { recursive: true, force: true });
+        }
     }
 
     describe("generateHtmlReport", () => {
@@ -145,24 +159,191 @@ describe("GenerateHtmlReportHandler", () => {
         });
 
         it("should include the extension version in the generated report", async () => {
-            const mockResults: IFileComparisonResult[] = [
-                { localPath: "/local/file.html", remotePath: "/remote/file.html", relativePath: "file.html", status: FileComparisonStatus.ADDED }
-            ];
-            const treeItem = createMockTreeItem(mockResults);
-            const testDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "metadata-diff-report-"));
-            const reportPath = path.join(testDirectory, "report.html");
-            const reportUri = vscode.Uri.file(reportPath);
             sandbox.stub(CommonUtils, "getExtensionVersion").returns("9.8.7");
-            showSaveDialogStub.resolves(reportUri);
 
-            try {
-                await generateHtmlReport(treeItem);
+            const htmlContent = await generateReportHtml([
+                { localPath: "/local/file.html", remotePath: "/remote/file.html", relativePath: "file.html", status: FileComparisonStatus.ADDED }
+            ]);
 
-                const htmlContent = await fs.readFile(reportPath, "utf8");
-                expect(htmlContent).to.include("Extension Version:");
-                expect(htmlContent).to.include("9.8.7");
-            } finally {
-                await fs.rm(testDirectory, { recursive: true, force: true });
+            expect(htmlContent).to.include("Extension Version:");
+            expect(htmlContent).to.include("9.8.7");
+        });
+    });
+
+    describe("report layout", () => {
+        const layoutResults: IFileComparisonResult[] = [
+            { localPath: "/local/web-pages/home/home.html", remotePath: "/remote/web-pages/home/home.html", relativePath: "web-pages/home/home.html", status: FileComparisonStatus.MODIFIED }
+        ];
+
+        it("should place the tab panels after the tab list", async () => {
+            const htmlContent = await generateReportHtml(layoutResults);
+
+            expect(htmlContent).to.match(/<div class="tabs-header">[\s\S]*?<\/div>\s*<div class="tabs-panels">\s*<div class="tab-content active" id="tab-all">/);
+        });
+
+        it("should stack component tabs in a vertical list", async () => {
+            const htmlContent = await generateReportHtml(layoutResults);
+
+            expect(htmlContent).to.match(/\.tabs-header \{\s*display: flex;\s*flex-direction: column;/);
+        });
+    });
+
+    describe("report accessibility", () => {
+        interface IFakeElement {
+            readonly style: { display: string };
+            readonly classList: {
+                add(name: string): void;
+                remove(name: string): void;
+                contains(name: string): boolean;
+            };
+            getAttribute(name: string): string | undefined;
+            setAttribute(name: string, value: string): void;
+        }
+
+        interface IReportPage {
+            readonly diffIds: string[];
+            header(diffId: string): IFakeElement;
+            diff(diffId: string): IFakeElement;
+            icon(diffId: string): IFakeElement;
+            toggleDiff(diffId: string): void;
+            expandAll(): void;
+            collapseAll(): void;
+        }
+
+        const homePageResult: IFileComparisonResult = {
+            localPath: "/local/web-pages/home/home.html",
+            remotePath: "/remote/web-pages/home/home.html",
+            relativePath: "web-pages/home/home.html",
+            status: FileComparisonStatus.MODIFIED
+        };
+
+        function createFakeElement(className: string, attributes: Record<string, string> = {}): IFakeElement {
+            const classes = new Set([className]);
+            const attributeValues = new Map(Object.entries(attributes));
+            return {
+                style: { display: "none" },
+                classList: {
+                    add: (name) => { classes.add(name); },
+                    remove: (name) => { classes.delete(name); },
+                    contains: (name) => classes.has(name)
+                },
+                getAttribute: (name) => attributeValues.get(name),
+                setAttribute: (name, value) => { attributeValues.set(name, value); }
+            };
+        }
+
+        // Runs the report's inline script against a minimal DOM that mirrors each
+        // rendered file row: the header button, its diff container, and its toggle icon.
+        function loadReportPage(htmlContent: string): IReportPage {
+            const diffIds: string[] = [];
+            const headers = new Map<string, IFakeElement>();
+            const elementsById = new Map<string, IFakeElement>();
+            const headerPattern = /<button type="button" class="file-header" aria-expanded="false" aria-controls="(diff-[^"]+)"/g;
+            let headerMatch: RegExpExecArray | null;
+
+            while ((headerMatch = headerPattern.exec(htmlContent)) !== null) {
+                const diffId = headerMatch[1];
+                diffIds.push(diffId);
+                headers.set(diffId, createFakeElement("file-header", { "aria-expanded": "false", "aria-controls": diffId }));
+                elementsById.set(diffId, createFakeElement("diff-container"));
+                elementsById.set(diffId.replace("diff-", "icon-"), createFakeElement("toggle-icon"));
+            }
+
+            const allElements = [...headers.values(), ...elementsById.values()];
+            const controlsSelector = /^\[aria-controls="([^"]+)"\]$/;
+            // The renderer emits exactly one inline script in the report head, and file
+            // content is HTML-escaped, so the first literal script tag pair is that block.
+            const scriptOpenTag = "<script>";
+            const scriptStart = htmlContent.indexOf(scriptOpenTag);
+            const scriptEnd = htmlContent.indexOf("</script>", scriptStart);
+            expect(scriptStart, "inline script start").to.be.greaterThan(-1);
+            expect(scriptEnd, "inline script end").to.be.greaterThan(scriptStart);
+            const script = htmlContent.slice(scriptStart + scriptOpenTag.length, scriptEnd);
+
+            const context: Record<string, unknown> = {
+                document: {
+                    getElementById: (id: string) => elementsById.get(id) ?? null,
+                    querySelector: (selector: string) => {
+                        const match = controlsSelector.exec(selector);
+                        return match ? headers.get(match[1]) ?? null : null;
+                    },
+                    querySelectorAll: (selector: string) => selector.startsWith(".")
+                        ? allElements.filter(element => element.classList.contains(selector.slice(1)))
+                        : []
+                }
+            };
+            runInNewContext(script, context);
+
+            const getRequired = (elements: Map<string, IFakeElement>, id: string): IFakeElement => {
+                const element = elements.get(id);
+                expect(element, id).to.not.be.undefined;
+                return element as IFakeElement;
+            };
+
+            return {
+                diffIds,
+                header: (diffId) => getRequired(headers, diffId),
+                diff: (diffId) => getRequired(elementsById, diffId),
+                icon: (diffId) => getRequired(elementsById, diffId.replace("diff-", "icon-")),
+                toggleDiff: context.toggleDiff as (diffId: string) => void,
+                expandAll: context.expandAll as () => void,
+                collapseAll: context.collapseAll as () => void
+            };
+        }
+
+        it("should render each file header as a collapsed button that controls its diff", async () => {
+            const htmlContent = await generateReportHtml([homePageResult]);
+
+            expect(htmlContent).to.include(
+                `<button type="button" class="file-header" aria-expanded="false" aria-controls="diff-all-0" onclick="toggleDiff('diff-all-0')">`
+            );
+            expect(htmlContent).to.include(`<div class="diff-container" id="diff-all-0" style="display: none;">`);
+            expect(htmlContent).to.include(`<span class="toggle-icon" id="icon-all-0" aria-hidden="true">▶</span>`);
+            expect(htmlContent).to.not.include(`<div class="file-header"`);
+        });
+
+        it("should show a visible focus indicator on file headers", async () => {
+            const htmlContent = await generateReportHtml([homePageResult]);
+
+            expect(htmlContent).to.match(/\.file-header:focus-visible\s*\{\s*outline: 2px solid var\(--primary-color\);\s*outline-offset: -2px;\s*\}/);
+        });
+
+        it("should update aria-expanded only on the header whose diff is toggled", async () => {
+            const page = loadReportPage(await generateReportHtml([homePageResult]));
+            expect(page.diffIds).to.have.length(2);
+            const [toggledId, otherId] = page.diffIds;
+
+            page.toggleDiff(toggledId);
+
+            expect(page.header(toggledId).getAttribute("aria-expanded")).to.equal("true");
+            expect(page.diff(toggledId).style.display).to.equal("block");
+            expect(page.icon(toggledId).classList.contains("expanded")).to.be.true;
+            expect(page.header(otherId).getAttribute("aria-expanded")).to.equal("false");
+            expect(page.diff(otherId).style.display).to.equal("none");
+
+            page.toggleDiff(toggledId);
+
+            expect(page.header(toggledId).getAttribute("aria-expanded")).to.equal("false");
+            expect(page.diff(toggledId).style.display).to.equal("none");
+            expect(page.icon(toggledId).classList.contains("expanded")).to.be.false;
+        });
+
+        it("should update aria-expanded on every header when expanding or collapsing all", async () => {
+            const page = loadReportPage(await generateReportHtml([homePageResult]));
+            expect(page.diffIds).to.have.length(2);
+
+            page.expandAll();
+
+            for (const diffId of page.diffIds) {
+                expect(page.header(diffId).getAttribute("aria-expanded"), diffId).to.equal("true");
+                expect(page.diff(diffId).style.display, diffId).to.equal("block");
+            }
+
+            page.collapseAll();
+
+            for (const diffId of page.diffIds) {
+                expect(page.header(diffId).getAttribute("aria-expanded"), diffId).to.equal("false");
+                expect(page.diff(diffId).style.display, diffId).to.equal("none");
             }
         });
     });

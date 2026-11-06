@@ -617,11 +617,11 @@ function generateHtmlContent(
 
             return `
             <div class="file-item">
-                <div class="file-header" onclick="toggleDiff('diff-${uniqueId}')">
+                <button type="button" class="file-header" aria-expanded="false" aria-controls="diff-${uniqueId}" onclick="toggleDiff('diff-${uniqueId}')">
                     <span class="file-path">${escapeHtml(result.relativePath)}</span>
                     <span class="status-badge ${getStatusClass(result.status)}">${escapeHtml(getStatusText(result.status))}</span>
-                    <span class="toggle-icon" id="icon-${uniqueId}">▶</span>
-                </div>
+                    <span class="toggle-icon" id="icon-${uniqueId}" aria-hidden="true">▶</span>
+                </button>
                 <div class="diff-container" id="diff-${uniqueId}" style="display: none;">
                     ${diffHtml}
                 </div>
@@ -959,10 +959,21 @@ function generateHtmlContent(
             cursor: pointer;
             transition: background-color 0.2s;
             gap: 12px;
+            width: 100%;
+            border: none;
+            background: none;
+            font: inherit;
+            color: inherit;
+            text-align: left;
         }
 
         .file-header:hover {
             background-color: #faf9f8;
+        }
+
+        .file-header:focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: -2px;
         }
 
         .file-path {
@@ -1130,39 +1141,38 @@ function generateHtmlContent(
             .file-header {
                 padding: 10px 12px;
             }
-
-            .tabs-header {
-                flex-wrap: wrap;
-            }
-
-            .tab-button {
-                flex: 1 1 auto;
-                min-width: 80px;
-            }
         }
 
         .tabs-container {
-            margin-top: 0;
+            display: flex;
+            align-items: stretch;
         }
 
         .tabs-header {
             display: flex;
-            border-bottom: 2px solid var(--border-color);
+            flex-direction: column;
+            flex-shrink: 0;
+            width: 220px;
+            border-right: 1px solid var(--border-color);
             background-color: #faf9f8;
-            padding: 0 20px;
-            gap: 4px;
+            padding: 8px 0;
+        }
+
+        .tabs-panels {
+            flex: 1;
+            min-width: 0;
         }
 
         .tab-button {
-            padding: 12px 20px;
+            padding: 10px 20px;
             border: none;
+            border-left: 3px solid transparent;
             background-color: transparent;
             cursor: pointer;
             font-size: 14px;
             font-weight: 500;
             color: var(--text-secondary);
-            border-bottom: 2px solid transparent;
-            margin-bottom: -2px;
+            text-align: left;
             transition: all 0.2s ease;
         }
 
@@ -1173,7 +1183,7 @@ function generateHtmlContent(
 
         .tab-button.active {
             color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
+            border-left-color: var(--primary-color);
             background-color: var(--card-background);
         }
 
@@ -1196,6 +1206,34 @@ function generateHtmlContent(
             display: block;
         }
 
+        /* Below tablet width a 220px sidebar leaves file paths too little room, so the tabs wrap into rows above the files. */
+        @media (max-width: 768px) {
+            .tabs-container {
+                flex-direction: column;
+            }
+
+            .tabs-header {
+                flex-direction: row;
+                flex-wrap: wrap;
+                width: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                padding: 0;
+            }
+
+            .tab-button {
+                flex: 1 1 auto;
+                min-width: 80px;
+                text-align: center;
+                border-left: none;
+                border-bottom: 2px solid transparent;
+            }
+
+            .tab-button.active {
+                border-bottom-color: var(--primary-color);
+            }
+        }
+
         .no-files-message {
             padding: 40px 20px;
             text-align: center;
@@ -1208,13 +1246,16 @@ function generateHtmlContent(
             const diffContainer = document.getElementById(diffId);
             const iconId = diffId.replace('diff-', 'icon-');
             const icon = document.getElementById(iconId);
+            const header = document.querySelector('[aria-controls="' + diffId + '"]');
 
             if (diffContainer.style.display === 'none') {
                 diffContainer.style.display = 'block';
                 icon.classList.add('expanded');
+                header.setAttribute('aria-expanded', 'true');
             } else {
                 diffContainer.style.display = 'none';
                 icon.classList.remove('expanded');
+                header.setAttribute('aria-expanded', 'false');
             }
         }
 
@@ -1222,12 +1263,14 @@ function generateHtmlContent(
             // Expand all diffs across all tabs
             document.querySelectorAll('.diff-container').forEach(el => el.style.display = 'block');
             document.querySelectorAll('.toggle-icon').forEach(el => el.classList.add('expanded'));
+            document.querySelectorAll('.file-header').forEach(el => el.setAttribute('aria-expanded', 'true'));
         }
 
         function collapseAll() {
             // Collapse all diffs across all tabs
             document.querySelectorAll('.diff-container').forEach(el => el.style.display = 'none');
             document.querySelectorAll('.toggle-icon').forEach(el => el.classList.remove('expanded'));
+            document.querySelectorAll('.file-header').forEach(el => el.setAttribute('aria-expanded', 'false'));
         }
 
         function switchTab(tabId) {
@@ -1349,7 +1392,9 @@ function generateHtmlContent(
                 <div class="tabs-header">
                     ${tabButtons}
                 </div>
-                ${tabContents}
+                <div class="tabs-panels">
+                    ${tabContents}
+                </div>
             </div>
         </section>
 

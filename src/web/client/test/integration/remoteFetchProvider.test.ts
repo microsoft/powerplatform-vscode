@@ -1373,7 +1373,7 @@ describe("remoteFetchProvider", () => {
         assert.callCount(sendAPISuccessTelemetry, 4);
     });
 
-    it("fetchDataFromDataverseAndUpdateVFS_forWebFile_when404Response_shouldReturnNoContentAndLogTelemetry", async () => {
+    it("fetchDataFromDataverseAndUpdateVFS_forWebFile_when404Response_shouldRejectNotFoundAndLogTelemetry", async () => {
         const entityName = "webfiles";
         const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
         const queryParamsMap = new Map<string, string>([
@@ -1489,17 +1489,21 @@ describe("remoteFetchProvider", () => {
         );
         await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
-        await fetchDataFromDataverseAndUpdateVFS(portalFs, { entityId: entityId, entityName: entityName });
+        try {
+            await fetchDataFromDataverseAndUpdateVFS(portalFs, { entityId: entityId, entityName: entityName });
+            expect.fail('Expected a missing enhanced file to reject');
+        } catch (error) {
+            expect(error).to.be.instanceOf(vscode.FileSystemError);
+            expect((error as vscode.FileSystemError).code).to.equal('FileNotFound');
+        }
 
-        // Verify that 404 response logs WEB_EXTENSION_WEBFILE_NOT_FOUND telemetry
         assert.calledWithMatch(
             sendInfoTelemetry,
             webExtensionTelemetryEventNames.WEB_EXTENSION_WEBFILE_NOT_FOUND,
             { entityId: entityId, entity: "webfiles" }
         );
 
-        // Verify that NO_CONTENT is used (the content should be " " which is Constants.NO_CONTENT)
-        assert.calledWith(convertContentToUint8Array, Constants.NO_CONTENT, true);
+        assert.notCalled(convertContentToUint8Array);
 
         assert.called(_mockFetch);
     });
