@@ -31,6 +31,7 @@ describe("enhanced file-column download integration", () => {
     let apiFailure: sinon.SinonStub;
     let downloadTelemetry: sinon.SinonStub;
     let flags: sinon.SinonStub;
+    let folderSubUris: sinon.SinonStub;
     let entityName: schemaEntityName;
     let fileName: string;
     let model: portalSchemaVersion;
@@ -92,7 +93,7 @@ describe("enhanced file-column download integration", () => {
         sinon.stub(folderUtility, 'getRequestUrlForEntities').callsFake(() => [
             { entityName, requestUrl: 'https://example.test/api/data/v9.2/powerpagecomponents?metadata' },
         ]);
-        sinon.stub(folderUtility, 'getFolderSubUris').returns(['web-files', 'server-logic']);
+        folderSubUris = sinon.stub(folderUtility, 'getFolderSubUris').returns(['web-files', 'server-logic']);
         requests = sinon.stub(WebExtensionContext.concurrencyHandler, 'handleRequest').callsFake(async (url) => {
             const address = String(url);
             if (address.endsWith('/filecontent')) {
@@ -251,6 +252,58 @@ describe("enhanced file-column download integration", () => {
         await fetchDataFromDataverseAndUpdateVFS(fs);
         expect(Array.from(await fs.readFile(fileUri()))).to.deep.equal([0, 1, 255]);
         expect(terminals()[0].outcome).to.equal('succeeded');
+    });
+
+    for (const status of [200, 413]) {
+        for (const mode of ['initial', 'preload'] as const) {
+            it(`creates the lazy server logic folder before committing an HTTP ${status} ${mode} download`, async () => {
+                entityName = schemaEntityName.SERVERLOGICS;
+                fileName = 'server.js';
+                flags.returns({ enableServerLogicChanges: true, enableBlogSupport: true });
+                folderSubUris.restore();
+                expect(folderUtility.getFolderSubUris()).not.to.include('server-logic');
+                fs = new PortalsFS();
+                await fs.createDirectory(root);
+                const write = sinon.spy(fs, 'writeFile');
+                if (status === 200) {
+                    requests.withArgs(sinon.match(/\/filecontent$/)).resolves(jsonResponse(200, { value: 'AAH/' }));
+                }
+
+                if (mode === 'initial') {
+                    await fetchDataFromDataverseAndUpdateVFS(fs, { entityId, entityName });
+                } else {
+                    await fs.readDirectory(root, true);
+                    expect(info.getCalls().some(call => call.args[0] === Events.WEB_EXTENSION_PREPARE_WORKSPACE_PARTIAL)).to.equal(false);
+                }
+
+                expect(Array.from(await fs.readCommittedFile(fileUri()))).to.deep.equal([0, 1, 255]);
+                expect(write.callCount).to.equal(1);
+                expect(WebExtensionContext.fileDataMap.getFileMap.get(fileUri().fsPath)?.isContentLoaded).to.equal(true);
+                expect(terminals()).to.have.length(1);
+                expect(terminals()[0].mode).to.equal(mode);
+                expect(terminals()[0].outcome).to.equal('succeeded');
+            });
+        }
+    }
+
+    it("surfaces lazy server logic folder creation failures without publishing content or loaded metadata", async () => {
+        entityName = schemaEntityName.SERVERLOGICS;
+        fileName = 'server.js';
+        flags.returns({ enableServerLogicChanges: true, enableBlogSupport: true });
+        fs = new PortalsFS();
+        await fs.createDirectory(root);
+        sinon.stub(fs, 'createDirectory').callThrough()
+            .withArgs(sinon.match({ path: vscode.Uri.joinPath(root, 'server-logic').path }))
+            .rejects(vscode.FileSystemError.Unavailable());
+        const write = sinon.spy(fs, 'writeFile');
+
+        await expectFsFailure(() => fetchDataFromDataverseAndUpdateVFS(fs, { entityId, entityName }));
+
+        expect(write.called).to.equal(false);
+        expect(WebExtensionContext.fileDataMap.getFileMap.has(fileUri().fsPath)).to.equal(false);
+        expect(terminals()).to.have.length(1);
+        expect(terminals()[0].failureStage).to.equal('commit');
+        expect(terminals()[0].outcome).to.equal('failed');
     });
 
     it("does not fetch disabled server logic", async () => {

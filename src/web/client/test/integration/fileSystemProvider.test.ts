@@ -44,7 +44,7 @@ describe("fileSystemProvider", () => {
     });
 
     it("readFile", async () => {
-        const fileUri: vscode.Uri = { path: "testuri" } as vscode.Uri;
+        const fileUri = vscode.Uri.parse('powerplatform-vfs:/testuri');
         portalsFS.root = new Directory("");
         portalsFS.root.name = "name";
         portalsFS.root.type = vscode.FileType.File;
