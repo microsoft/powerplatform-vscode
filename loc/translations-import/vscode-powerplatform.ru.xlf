@@ -256,7 +256,7 @@ This action cannot be undone.</source>
       </trans-unit>
       <trans-unit id="++CODE++7424ca73a0adfee022bf72f73f2134a83c8cd1213f58d74373b0a0fab6155092">
         <source xml:lang="en">Check whether the Power Pages plugin is installed</source>
-        <target state="new">Check whether the Power Pages plugin is installed</target>
+        <target state="translated">Проверьте, установлен ли плагин Power Pages</target>
       </trans-unit>
       <trans-unit id="++CODE++f6208e79a482ad29648b0dc4cdf886964a06c63af452f5e0959af327ba2d5c38">
         <source xml:lang="en">Check whether the Power Platform Skills marketplace is registered</source>
@@ -466,7 +466,7 @@ Check the CodeQL extension panel for available queries.</source>
       </trans-unit>
       <trans-unit id="++CODE++d444962337a1b2520a1fca76e255737e5529cc5533acaefeeb6c3c351e7c3050">
         <source xml:lang="en">Command preview isn't available for this terminal shell.</source>
-        <target state="new">Command preview isn't available for this terminal shell.</target>
+        <target state="translated">Предварительный просмотр команды недоступен для этой оболочки терминала.</target>
       </trans-unit>
       <trans-unit id="++CODE++d73890ab56fd9e1ff5349b7bdb41fe0d848c5960c096b30357e26b912456f21f">
         <source xml:lang="en">Compare site with environment</source>
@@ -545,11 +545,11 @@ Check the CodeQL extension panel for available queries.</source>
       </trans-unit>
       <trans-unit id="++CODE++abdedfb58466107494892fd395c31b4821cbc3433345ec4563dc21ab919335d8">
         <source xml:lang="en">Copy isn't available for this AI assistant installation because it starts from a batch file (.cmd or .bat).</source>
-        <target state="new">Copy isn't available for this AI assistant installation because it starts from a batch file (.cmd or .bat).</target>
+        <target state="translated">Копирование недоступно для этой установки ИИ-помощника, поскольку она начинается с пакетного файла (.cmd или .bat).</target>
       </trans-unit>
       <trans-unit id="++CODE++2678a370928b1ffd0bc8110229e42230419ddf91f198cd9864f4c8f6f8753efd">
         <source xml:lang="en">Copy isn't available for this terminal shell. Copy works with PowerShell, Bash, Zsh, and Fish.</source>
-        <target state="new">Copy isn't available for this terminal shell. Copy works with PowerShell, Bash, Zsh, and Fish.</target>
+        <target state="translated">Копирование недоступно для этой оболочки терминала. Копирование работает с PowerShell, Bash, Zsh и Fish.</target>
       </trans-unit>
       <trans-unit id="++CODE++b749e205302cc21952a1e9646569ca0af9017cc5f39dd741830551bdd4ae823e">
         <source xml:lang="en">Copy to clipboard</source>
@@ -565,7 +565,7 @@ Check the CodeQL extension panel for available queries.</source>
       </trans-unit>
       <trans-unit id="++CODE++ff00a78f2baf3706b528696e70919c4b123a4b8c7461ec1dd221b14b55e1adce">
         <source xml:lang="en">Couldn't upload the site. Check the Power Platform Tools: PAC CLI output for details.</source>
-        <target state="new">Couldn't upload the site. Check the Power Platform Tools: PAC CLI output for details.</target>
+        <target state="translated">Не удалось отправить сайт. Проверьте выходные данные Power Platform Tools: PAC CLI для получения сведений.</target>
       </trans-unit>
       <trans-unit id="++CODE++17df5c921ef303496786b0c317e87e92cdd4702c739633987ced1b202e3aa6ac">
         <source xml:lang="en">Create a Power Pages site</source>
@@ -739,7 +739,7 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
       </trans-unit>
       <trans-unit id="++CODE++726cbb2fc81ea0ff165ef53254ae2769cf5db51de9d329add905ff545ca99f26">
         <source xml:lang="en">Enable the installed Power Pages plugin</source>
-        <target state="new">Enable the installed Power Pages plugin</target>
+        <target state="translated">Включить установленный плагин Power Pages</target>
       </trans-unit>
       <trans-unit id="++CODE++102f547594eb0c68a16e0e5eb6661fa576c7a5fb6ce224ea36194e9fd4f87dac">
         <source xml:lang="en">Enhanced Data Model</source>
@@ -1159,11 +1159,11 @@ Return to this chat and @powerpages can help you write and edit your website cod
       </trans-unit>
       <trans-unit id="++CODE++6f11ed38926d7ac7f16fe4467ffdcf4f2996f643f33d776a1523d157f0109e10">
         <source xml:lang="en">Install the Power Pages plugin</source>
-        <target state="new">Install the Power Pages plugin</target>
+        <target state="translated">Установить плагин Power Pages</target>
       </trans-unit>
       <trans-unit id="++CODE++00bf0083080d06de545fbb67522791fa6773e0762af68cef79d4c98cfe41853a">
         <source xml:lang="en">Install the Power Pages plugin for your user account</source>
-        <target state="new">Install the Power Pages plugin for your user account</target>
+        <target state="translated">Установить плагин Power Pages для учетной записи пользователя</target>
       </trans-unit>
       <trans-unit id="++CODE++e9a14c3c8fd396e453f2d26bdebeace670ebae2cdbb1169f670beef3defa0599">
         <source xml:lang="en">Install the assistant if needed.</source>
@@ -1563,11 +1563,11 @@ URL-адрес: {1}
       </trans-unit>
       <trans-unit id="++CODE++0a9e18b60a9d4bb596309ea65d747891ad45732901f1a9b76da256521baa03fb">
         <source xml:lang="en">Power Pages plugin</source>
-        <target state="new">Power Pages plugin</target>
+        <target state="translated">Плагин Power Pages</target>
       </trans-unit>
       <trans-unit id="++CODE++8075efd3a927d7a466112af4aef312a2b2fb142e01dc6d4ab5de65e760d16e0c">
         <source xml:lang="en">Power Pages plugin is installed</source>
-        <target state="new">Power Pages plugin is installed</target>
+        <target state="translated">Плагин Power Pages установлен</target>
       </trans-unit>
       <trans-unit id="++CODE++04ac907168ac84b45263503d1306565bece49c4ae3e8ef4af310b304f03ab6d4">
         <source xml:lang="en">Power Pages site download completed successfully. Would you like to open the downloaded site folder?</source>
@@ -1603,7 +1603,7 @@ URL-адрес: {1}
       </trans-unit>
       <trans-unit id="++CODE++7b505b4ae79123a45c4972f677dfc36c985244f1c3a8ea096b1677e0f84c2f6c">
         <source xml:lang="en">Prepare the Power Pages plugin</source>
-        <target state="new">Prepare the Power Pages plugin</target>
+        <target state="translated">Подготовить плагин Power Pages</target>
       </trans-unit>
       <trans-unit id="++CODE++b3bd8e83df2f6be7037ed0a3dc8fa15c074d072892fba84e95aadf69f5c0c107">
         <source xml:lang="en">Prepare the selected AI assistant and start a guided site-creation conversation.</source>
@@ -1624,7 +1624,7 @@ URL-адрес: {1}
       </trans-unit>
       <trans-unit id="++CODE++e4085ff6c94284a38c090be2ea810dff4fc1698dd3499295125d2fc43bd8e84b">
         <source xml:lang="en">Preparing your AI assistant</source>
-        <target state="new">Preparing your AI assistant</target>
+        <target state="translated">Подготовка ИИ-помощника</target>
       </trans-unit>
       <trans-unit id="++CODE++f6412ced721a26ac3e3cb55d3ff713d8403c3dfc2efa0cff07b48478bdd57555">
         <source xml:lang="en">Preview site</source>
@@ -1657,7 +1657,7 @@ URL-адрес: {1}
       </trans-unit>
       <trans-unit id="++CODE++69352e2f233289d899ef78f92860cec8d30a5ecf9f624e5239faa20724d69251">
         <source xml:lang="en">Refresh the PATH environment variable</source>
-        <target state="new">Refresh the PATH environment variable</target>
+        <target state="translated">Обновить переменную среды PATH</target>
       </trans-unit>
       <trans-unit id="++CODE++fdc383411e8354c470e19c960527019a9bf48c61c08a5c3ec3fb8b7b32ccba34">
         <source xml:lang="en">Refreshing comparison for {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show download output"))...</source>
@@ -1916,6 +1916,10 @@ URL-адрес: {1}
         <note>{0} is the site visibility</note>
         <target state="translated">Видимость сайта: {0}</target>
       </trans-unit>
+      <trans-unit id="++CODE++596fcd00b5762c043bf0ff23b63f2417586fe489f421e0a53e528d47d002789a">
+        <source xml:lang="en">Some file content could not be loaded from Dataverse. Open the affected files to retry.</source>
+        <target state="translated">Не удалось загрузить часть содержимого файлов из Dataverse. Откройте затронутые файлы, чтобы повторить попытку.</target>
+      </trans-unit>
       <trans-unit id="++CODE++27dd8c8e67d15783f51c6b71ed60d5350731daa85b418f1e84c2e5828ae2d54e">
         <source xml:lang="en">Some references might be broken. Please check diagnostics for details.</source>
         <target state="translated">Некоторые ссылки могут не работать. Подробную информацию см. в диагностике.</target>
@@ -1958,7 +1962,7 @@ URL-адрес: {1}
       </trans-unit>
       <trans-unit id="++CODE++c4e01b9dde420ccd86454dddb70e83041f4808e047a5d91cb72650f243da1b8c">
         <source xml:lang="en">Step {0} of {1}: {2}. Skipping a setup step that isn't needed.</source>
-        <target state="new">Step {0} of {1}: {2}. Skipping a setup step that isn't needed.</target>
+        <target state="translated">Шаг {0} из {1}: {2}. Пропуск ненужного шага настройки.</target>
       </trans-unit>
       <trans-unit id="++CODE++155f816c0407310c0dab222493370773e045ee7fe04e6c9a951b07f495531264">
         <source xml:lang="en">Submit</source>
@@ -2082,7 +2086,7 @@ URL-адрес: {1}
         <source xml:lang="en">To continue manually, open {0} and select {1} for each command you still need.</source>
         <note>{0} is the localized label of the Technical details section.
 {1} is the localized label of the Copy button.</note>
-        <target state="new">To continue manually, open {0} and select {1} for each command you still need.</target>
+        <target state="translated">Чтобы продолжить вручную, откройте {0} и выберите {1} для каждой команды, которая по-прежнему нужна.</target>
       </trans-unit>
       <trans-unit id="++CODE++4f8c4d58a87feaaff06fd5f9cb84370ab4a42220bf1e8cbedbca716f8f21c9ee">
         <source xml:lang="en">To know more, see &lt;a href="https://go.microsoft.com/fwlink/?linkid=2206366"&gt;Copilot in Power Pages documentation.</source>
@@ -2093,11 +2097,11 @@ URL-адрес: {1}
         <note>{0} is the path of the terminal shell and is replaced when the message is shown.
 {1} is the path of the site folder and is replaced when the message is shown.
 {2} is the localized Runs only if needed label shown next to conditional commands.</note>
-        <target state="new">To set up manually, open {0} in your site folder ({1}). Copy and run only the commands you still need, in order and one at a time. Run a command marked {2} only if the related read-only check shows that it's needed. Stop if a command fails.</target>
+        <target state="translated">Чтобы настроить вручную, откройте {0} в папке сайта ({1}). Скопируйте и выполните только те команды, которые по-прежнему нужны, по порядку и по одной. Запускайте команду с пометкой {2}, только если связанная проверка только для чтения показывает, что она нужна. Если команда завершится с ошибкой, остановитесь.</target>
       </trans-unit>
       <trans-unit id="++CODE++146895a7cbe169cd415f67e9d09afd78a1b0fae2fb059433f6908c56bb4f760f">
         <source xml:lang="en">To set up manually, open {0} in your site folder ({1}). Copy and run only the commands you still need, in order and one at a time. Stop if a command fails.</source>
-        <target state="new">To set up manually, open {0} in your site folder ({1}). Copy and run only the commands you still need, in order and one at a time. Stop if a command fails.</target>
+        <target state="translated">Чтобы настроить вручную, откройте {0} в папке сайта ({1}). Скопируйте и выполните только те команды, которые по-прежнему нужны, по порядку и по одной. Если команда завершится с ошибкой, остановитесь.</target>
       </trans-unit>
       <trans-unit id="++CODE++ea93d6a262ecb87a9fa4d09edbd7654c046597936a8e235fc3949eb01775ff99">
         <source xml:lang="en">Tools</source>
@@ -2113,7 +2117,7 @@ URL-адрес: {1}
       </trans-unit>
       <trans-unit id="++CODE++61c95cf36f1a9bc1e6ea37d8358fe22a0abdcbe0c6751b5d409aadc4e8624c71">
         <source xml:lang="en">Trust this workspace before you upload a site.</source>
-        <target state="new">Trust this workspace before you upload a site.</target>
+        <target state="translated">Доверьте эту рабочую область, прежде чем отправлять сайт.</target>
       </trans-unit>
       <trans-unit id="++CODE++4a7c431a6572c68bba17c3a5d858adbf5112462574953baf4d7d2fd0619807fe">
         <source xml:lang="en">Try @powerpages with GitHub Copilot</source>
@@ -2154,6 +2158,10 @@ URL-адрес: {1}
       <trans-unit id="++CODE++01e5c349da59b88cb8c4552d036f670c1a5d824abf91fe9539d408e89d9c9445">
         <source xml:lang="en">Unable to generate VS Code Desktop URL</source>
         <target state="translated">Не удается сгенерировать URL-адрес классического приложения VS Code</target>
+      </trans-unit>
+      <trans-unit id="++CODE++cba2166f4a7e24db42e4e84b2b31055442bf519a9e58106ea645e06911dc796d">
+        <source xml:lang="en">Unable to load file content from Dataverse.</source>
+        <target state="translated">Не удалось загрузить содержимое файла из Dataverse.</target>
       </trans-unit>
       <trans-unit id="++CODE++3747890a3bfddec3123ce9a40cdd15f278d1335b382f80beb52bf18101ab02c2">
         <source xml:lang="en">Unable to locate website root folder.</source>
@@ -2253,41 +2261,41 @@ URL-адрес: {1}
       </trans-unit>
       <trans-unit id="++CODE++ec4c94c99c8c27fb33ff5a58150d2ff3b9f2c9d44bf26db3be74732fde112877">
         <source xml:lang="en">VS Code can't run setup in your default terminal shell. The remaining setup commands didn't run. Set your default terminal shell to PowerShell, Bash, Zsh, or Fish, restart VS Code, and then start creating your site again.</source>
-        <target state="new">VS Code can't run setup in your default terminal shell. The remaining setup commands didn't run. Set your default terminal shell to PowerShell, Bash, Zsh, or Fish, restart VS Code, and then start creating your site again.</target>
+        <target state="translated">VS Code не удается запустить настройку в оболочке терминала по умолчанию. Оставшиеся команды настройки не выполнены. Установите оболочку терминала по умолчанию: PowerShell, Bash, Zsh или Fish, перезапустите VS Code, затем снова начните создавать сайт.</target>
       </trans-unit>
       <trans-unit id="++CODE++2bb27fa5ae07ce237646b3d6b2c574332ba6602aee87a9a15e3ab24850c1516e">
         <source xml:lang="en">VS Code can't safely pass your site description to this AI assistant installation because it starts from a batch file (.cmd or .bat). Install a version that starts from an .exe file or a PowerShell script (.ps1), and then select {0}. Copy isn't available for this installation.</source>
         <note>{0} is the localized label of the Try again button.</note>
-        <target state="new">VS Code can't safely pass your site description to this AI assistant installation because it starts from a batch file (.cmd or .bat). Install a version that starts from an .exe file or a PowerShell script (.ps1), and then select {0}. Copy isn't available for this installation.</target>
+        <target state="translated">VS Code не удается безопасно передать описание вашего сайта этой установке ИИ-помощника, поскольку она начинается с пакетного файла (.cmd или .bat). Установите версию, которая начинается с файла .exe или сценария PowerShell (.ps1), затем выберите {0}. Копирование недоступно для этой установки.</target>
       </trans-unit>
       <trans-unit id="++CODE++9524c0e2d0da87faf33eeac301ad14ae3f9a91486bcd028e4ef4f6ead57f8c8f">
         <source xml:lang="en">VS Code couldn't complete this step: {0}. Select {1} for installation and reload options, or select {2}.</source>
         <note>{0} is the localized description of the command that failed and is replaced when the message is shown.
 {1} is the localized label of the View setup options button and is replaced when the message is shown.
 {2} is the localized label of the Try again button.</note>
-        <target state="new">VS Code couldn't complete this step: {0}. Select {1} for installation and reload options, or select {2}.</target>
+        <target state="translated">VS Code не удалось выполнить этот шаг: {0}. Выберите {1} для параметров установки и перезагрузки или выберите {2}.</target>
       </trans-unit>
       <trans-unit id="++CODE++4add58f49b86be7a56e20eac917b607cbe6ea33426573b284be4d7d546603dab">
         <source xml:lang="en">VS Code couldn't complete this step: {0}. Select {2}, or open {1} to review the commands.</source>
         <note>{0} is the localized description of the command that failed and is replaced when the message is shown.
 {1} is the localized label of the Technical details section and is replaced when the message is shown.
 {2} is the localized label of the Try again button.</note>
-        <target state="new">VS Code couldn't complete this step: {0}. Select {2}, or open {1} to review the commands.</target>
+        <target state="translated">VS Code не удалось выполнить этот шаг: {0}. Выберите {2} или откройте {1}, чтобы проверить команды.</target>
       </trans-unit>
       <trans-unit id="++CODE++c254baf7a2dc0784cf22e12de3eb73386cb324ec2c8f28d97744dd25e21aa51c">
         <source xml:lang="en">VS Code couldn't copy the command. Select {0} to try again.</source>
         <note>{0} is the localized label of the Copy button.</note>
-        <target state="new">VS Code couldn't copy the command. Select {0} to try again.</target>
+        <target state="translated">VS Code не удалось скопировать команду. Выберите {0}, чтобы повторить попытку.</target>
       </trans-unit>
       <trans-unit id="++CODE++b45557cb75054ec822eb07317d33f43ffdf37340a8ab6d989d87587f36960fff">
         <source xml:lang="en">VS Code couldn't find PowerShell 7 or Git Bash. The remaining setup commands didn't run. Install one of them, or add its path to the Terminal › Integrated › Profiles: Windows user setting, and then select {0}.</source>
         <note>{0} is the localized label of the Try again button.
 'Terminal › Integrated › Profiles: Windows' is the name of a VS Code setting.</note>
-        <target state="new">VS Code couldn't find PowerShell 7 or Git Bash. The remaining setup commands didn't run. Install one of them, or add its path to the Terminal › Integrated › Profiles: Windows user setting, and then select {0}.</target>
+        <target state="translated">VS Code не удалось найти PowerShell 7 или Git Bash. Оставшиеся команды настройки не выполнены. Установите один из них или добавьте его путь в параметр пользователя Terminal &gt; Integrated &gt; Profiles: Windows, затем выберите {0}.</target>
       </trans-unit>
       <trans-unit id="++CODE++07d8e03771a807b0a8332b0de06cf0136542f90b45331e0070ce9e01f2c471d1">
         <source xml:lang="en">VS Code couldn't finish setup. Review the site setup page for next steps.</source>
-        <target state="new">VS Code couldn't finish setup. Review the site setup page for next steps.</target>
+        <target state="translated">VS Code не удалось завершить настройку. Ознакомьтесь со страницей настройки сайта, чтобы узнать дальнейшие действия.</target>
       </trans-unit>
       <trans-unit id="++CODE++c4b3a95eb9ce3bce70b7fd7d6462e24f10cfc7e81edbf5684aa1cf858c3feb09">
         <source xml:lang="en">VS Code couldn't open the site setup page. Run the command again.</source>
@@ -2295,39 +2303,39 @@ URL-адрес: {1}
       </trans-unit>
       <trans-unit id="++CODE++7835405be4104208466f736175f383019deb286289be6ae101bfdbbf3bd5cee7">
         <source xml:lang="en">VS Code couldn't prepare your AI assistant</source>
-        <target state="new">VS Code couldn't prepare your AI assistant</target>
+        <target state="translated">VS Code не удалось подготовить ИИ-помощник</target>
       </trans-unit>
       <trans-unit id="++CODE++6276ef37315fdbb73b7c293e409824ab1a5cec3fd1871534d0d904b64b9a09b3">
         <source xml:lang="en">VS Code couldn't run setup because terminal shell integration is turned off. The remaining setup commands didn't run. Turn on the Terminal › Integrated › Shell Integration: Enabled setting, and then select {0}.</source>
         <note>{0} is the localized label of the Try again button.
 'Terminal › Integrated › Shell Integration: Enabled' is the name of a VS Code setting.</note>
-        <target state="new">VS Code couldn't run setup because terminal shell integration is turned off. The remaining setup commands didn't run. Turn on the Terminal › Integrated › Shell Integration: Enabled setting, and then select {0}.</target>
+        <target state="translated">VS Code не удалось запустить настройку, поскольку интеграция оболочки терминала отключена. Оставшиеся команды настройки не выполнены. Включите параметр Terminal &gt; Integrated &gt; Shell Integration: Enabled, затем выберите {0}.</target>
       </trans-unit>
       <trans-unit id="++CODE++31f0ea2cb85c89861fc112818cdb3fe810092dcc224f9af093bd2981db7f8847">
         <source xml:lang="en">VS Code couldn't run setup because terminal shell integration wasn't ready. The remaining setup commands didn't run. Select {0}. If the problem continues, check the terminal's startup settings.</source>
         <note>{0} is the localized label of the Try again button.</note>
-        <target state="new">VS Code couldn't run setup because terminal shell integration wasn't ready. The remaining setup commands didn't run. Select {0}. If the problem continues, check the terminal's startup settings.</target>
+        <target state="translated">VS Code не удалось выполнить настройку, так как интеграция оболочки терминала не была готова. Оставшиеся команды настройки не выполнены. Выберите {0}. Если проблема сохраняется, проверьте параметры запуска терминала.</target>
       </trans-unit>
       <trans-unit id="++CODE++bc9480762f0caf93872822c330bb1399fdb4aa808ed3922def0d99902d77092f">
         <source xml:lang="en">VS Code will check the Power Pages plugin setup</source>
-        <target state="new">VS Code will check the Power Pages plugin setup</target>
+        <target state="translated">VS Code проверит настройку плагина Power Pages</target>
       </trans-unit>
       <trans-unit id="++CODE++302aa8b2f830b794469ac367deca9eaebec7a764038a4d667dbaddc763cec4b9">
         <source xml:lang="en">VS Code will enable the Power Pages plugin</source>
-        <target state="new">VS Code will enable the Power Pages plugin</target>
+        <target state="translated">VS Code включит плагин Power Pages</target>
       </trans-unit>
       <trans-unit id="++CODE++0499acddfdaa3a4cc0c3a50bb092dbc29d1dd70032040331b6381fc57da6af04">
         <source xml:lang="en">VS Code will install the Power Pages plugin</source>
-        <target state="new">VS Code will install the Power Pages plugin</target>
+        <target state="translated">VS Code установит плагин Power Pages</target>
       </trans-unit>
       <trans-unit id="++CODE++9a8e032171d3806e036fd559edfb7c9ec5f0e175651b3ec93c0dfb35984c2569">
         <source xml:lang="en">VS Code will install {0} and the Power Pages plugin</source>
-        <target state="new">VS Code will install {0} and the Power Pages plugin</target>
+        <target state="translated">VS Code установит {0} и плагин Power Pages</target>
       </trans-unit>
       <trans-unit id="++CODE++d252c044db63e7b02e155508a2800734a2e887ad72fe5bffb0f36bda4949a8a8">
         <source xml:lang="en">VS Code won't change your setup until you select {0}. Your AI assistant might ask you to sign in.</source>
         <note>{0} is the localized label of the Start creating button.</note>
-        <target state="new">VS Code won't change your setup until you select {0}. Your AI assistant might ask you to sign in.</target>
+        <target state="translated">VS Code не изменит настройку, пока вы не выберете {0}. ИИ-помощник может попросить вас войти в систему.</target>
       </trans-unit>
       <trans-unit id="++CODE++527423ed0138373aa91233083f12eceeae92aa1998e6706d7a260524dafbe6c4">
         <source xml:lang="en">Validating authentication...</source>
@@ -2335,7 +2343,7 @@ URL-адрес: {1}
       </trans-unit>
       <trans-unit id="++CODE++8674b8ca0c7de1096fe2122aa71ffdf7f1b37dc500146542ab930f1ae7b75b8d">
         <source xml:lang="en">Verify that {0} is available</source>
-        <target state="new">Verify that {0} is available</target>
+        <target state="translated">Проверьте, доступен ли {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++27ce43e2a226ec490d516062d0d927ef2c965197813f8d9ce06f2aeba4617057">
         <source xml:lang="en">View installation guide</source>
@@ -2445,7 +2453,7 @@ URL-адрес: {1}
       </trans-unit>
       <trans-unit id="++CODE++d4ef36d5ce1874060126d0f6c9819dfb24b1bc850858165f1cf8282de24f2072">
         <source xml:lang="en">You can't copy this command now. Check its status and the manual setup instructions.</source>
-        <target state="new">You can't copy this command now. Check its status and the manual setup instructions.</target>
+        <target state="translated">Сейчас нельзя скопировать эту команду. Проверьте ее состояние и инструкции по настройке вручную.</target>
       </trans-unit>
       <trans-unit id="++CODE++87eb9aa1f1ac1b6b141aedc4c21a9cb7cf786453c529babe30c8760072bb34d6">
         <source xml:lang="en">You need to authenticate with Power Platform to download the site. Would you like to authenticate now?</source>
