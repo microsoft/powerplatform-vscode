@@ -27,9 +27,6 @@ import { readUserSettings } from "./telemetry/localfileusersettings";
 import { initializeGenerator } from "./power-pages/create/CreateCommandWrapper";
 import { disposeDiagnostics } from "./power-pages/validationDiagnostics";
 import { bootstrapDiff } from "./power-pages/bootstrapdiff/BootstrapDiff";
-import { CopilotNotificationShown } from "../common/copilot/telemetry/telemetryConstants";
-import { copilotNotificationPanel, disposeNotificationPanel } from "../common/copilot/welcome-notification/CopilotNotificationPanel";
-import { COPILOT_NOTIFICATION_DISABLED, EXTENSION_VERSION_KEY } from "../common/copilot/constants";
 import { oneDSLoggerWrapper } from "../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { OrgChangeNotifier, orgChangeErrorEvent, orgChangeEvent } from "./OrgChangeNotifier";
 import { ActiveOrgOutput } from "./pac/PacTypes";
@@ -37,7 +34,7 @@ import { desktopTelemetryEventNames } from "../common/OneDSLoggerTelemetry/clien
 import { ArtemisService } from "../common/services/ArtemisService";
 import { workspaceContainsPortalConfigFolder } from "../common/utilities/PathFinderUtil";
 import { getPortalsOrgURLs } from "../common/utilities/WorkspaceInfoFinderUtil";
-import { EXTENSION_ID, SUCCESS } from "../common/constants";
+import { SUCCESS } from "../common/constants";
 import { PowerPagesAppName, PowerPagesClientName } from "../common/ecs-features/constants";
 import { ECSFeaturesClient } from "../common/ecs-features/ecsFeatureClient";
 import { getECSOrgLocationValue, getWorkspaceFolders } from "../common/utilities/Utils";
@@ -229,7 +226,7 @@ export async function activate(
     // Activate Server Logic debugger (always available, doesn't require authentication)
     activateServerLogicDebugger(_context);
 
-    let copilotNotificationShown = false;
+    let portalUsageLogged = false;
 
     const workspaceFolders = getWorkspaceFolders();
 
@@ -308,7 +305,7 @@ export async function activate(
                 oneDSLoggerWrapper.getLogger().traceInfo(desktopTelemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, initContext);
             }
 
-            if (!copilotNotificationShown && workspaceContainsPortalConfigFolder(workspaceFolders)) {
+            if (!portalUsageLogged && workspaceContainsPortalConfigFolder(workspaceFolders)) {
                 let telemetryData = '';
                 let listOfActivePortals = [];
                 try {
@@ -320,10 +317,7 @@ export async function activate(
                     oneDSLoggerWrapper.getLogger().traceError(exceptionError.name, exceptionError.message, exceptionError, { eventName: 'VscodeDesktopUsage' });
                 }
 
-                // Show Copilot notification after ECS initialization and workspace check
-                showNotificationForCopilot(telemetryData, listOfActivePortals.length.toString());
-                copilotNotificationShown = true;
-
+                portalUsageLogged = true;
             }
 
             await Promise.allSettled([
@@ -378,7 +372,6 @@ export async function deactivate(): Promise<void> {
 
     disposeDiagnostics();
     deactivateDebugger();
-    disposeNotificationPanel();
 }
 
 function didOpenTextDocument(document: vscode.TextDocument): void {
@@ -519,33 +512,6 @@ function handleWorkspaceFolderChange() {
     else {
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);
     }
-}
-
-function showNotificationForCopilot(telemetryData: string, countOfActivePortals: string) {
-    if (vscode.workspace.getConfiguration('powerPlatform').get('experimental.copilotEnabled') === false) {
-        return;
-    }
-
-    const currentVersion = vscode.extensions.getExtension(EXTENSION_ID)?.packageJSON.version;
-    const storedVersion = _context.globalState.get(EXTENSION_VERSION_KEY);
-
-    if (!storedVersion || storedVersion !== currentVersion) {
-        // Show notification panel for the first load or after an update
-        oneDSLoggerWrapper.getLogger().traceInfo(CopilotNotificationShown, { listOfOrgs: telemetryData, countOfActivePortals });
-        copilotNotificationPanel(_context, telemetryData, countOfActivePortals);
-
-        // Update the stored version to the current version
-        _context.globalState.update(EXTENSION_VERSION_KEY, currentVersion);
-        return;
-    }
-
-    const isCopilotNotificationDisabled = _context.globalState.get(COPILOT_NOTIFICATION_DISABLED, false);
-
-    if (!isCopilotNotificationDisabled) {
-        oneDSLoggerWrapper.getLogger().traceInfo(CopilotNotificationShown, { listOfOrgs: telemetryData, countOfActivePortals });
-        copilotNotificationPanel(_context, telemetryData, countOfActivePortals);
-    }
-
 }
 
 /**
