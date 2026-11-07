@@ -401,6 +401,9 @@ Check the CodeQL extension panel for available queries.</source>
     <trans-unit id="++CODE++b04e6767bf84555605710be1a94e48ddcbcb820353b859da427d189cf25395b4">
       <source xml:lang="en">Copilot illustration</source>
     </trans-unit>
+    <trans-unit id="++CODE++7af8e1d878debd40533d443b93b106dcac26f4a9ac42515c29e0bd904b6296fa">
+      <source xml:lang="en">Copilot in Power Pages (deprecated)</source>
+    </trans-unit>
     <trans-unit id="++CODE++e21f935f11d7e966dbbae78da9daa378fe8142a14e7c0cd7434183005faa6c5c">
       <source xml:lang="en">Copy</source>
     </trans-unit>
@@ -1130,9 +1133,6 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++aba96e0c43da62e6c721a35c5d5eb5ffecaf8316ddea5379049172acfe6c7152">
       <source xml:lang="en">PAC Telemetry enabled</source>
-    </trans-unit>
-    <trans-unit id="++CODE++59e1f415bf9d7761b450dcb4785daac53307323451bc453bfaa06a46d4649e2a">
-      <source xml:lang="en">PREVIEW</source>
     </trans-unit>
     <trans-unit id="++CODE++1514b12ec249ca33bc0568c872840126e82cc964aaa7f028393674c17d554444">
       <source xml:lang="en">Page Template name cannot be empty.</source>
@@ -1956,8 +1956,11 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.compareWithLocal.title">
       <source xml:lang="en">Compare with Local</source>
     </trans-unit>
+    <trans-unit id="powerpages.chatParticipant.title">
+      <source xml:lang="en">Copilot for Power Pages (deprecated)</source>
+    </trans-unit>
     <trans-unit id="powerpages.copilotPanel.title">
-      <source xml:lang="en">Copilot In Power Pages</source>
+      <source xml:lang="en">Copilot in Power Pages (deprecated)</source>
     </trans-unit>
     <trans-unit id="pacCLI.envAndSolutionsPanel.copyDisplayName.title">
       <source xml:lang="en">Copy Display Name</source>

@@ -134,8 +134,8 @@
       {
         "id": "powerpages",
         "name": "powerpages",
-        "fullName": "Copilot for Power Pages",
-        "description": "Copilot for Power Pages",
+        "fullName": "%powerpages.chatParticipant.title%",
+        "description": "%powerpages.chatParticipant.title%",
         "isSticky": true,
         "disambiguation": [
           {
@@ -1660,7 +1660,7 @@
       },
       {
         "id": "microsoft-powerapps-portals.powerpages-copilot",
-        "label": "Copilot In Power Pages"
+        "label": "%powerpages.copilotPanel.title%"
       }
     ],
     "viewsContainers": {
