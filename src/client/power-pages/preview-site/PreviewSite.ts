@@ -26,6 +26,8 @@ import { SiteVisibility } from '../actions-hub/models/SiteVisibility';
 import { uploadSite } from '../actions-hub/handlers/UploadSiteHandler';
 
 export const SITE_PREVIEW_COMMAND_ID = "microsoft.powerplatform.pages.preview-site";
+const INTEGRATED_BROWSER_COMMAND_ID = 'workbench.action.browser.open';
+const EDGE_DEVTOOLS_COMMAND_ID = 'vscode-edge-devtools.launch';
 
 export class PreviewSite {
     private static _websiteDetails: IWebsiteDetails | undefined = undefined;
@@ -126,15 +128,13 @@ export class PreviewSite {
         }
     }
 
-    public static async launchBrowserAndDevToolsWithinVsCode(webSitePreviewURL: string | undefined, dataModelVersion: 1 | 2, siteVisibility: SiteVisibility | undefined): Promise<void> {
+    public static async launchSitePreviewWithinVsCode(webSitePreviewURL: string | undefined, dataModelVersion: 1 | 2, siteVisibility: SiteVisibility | undefined): Promise<void> {
         if (!webSitePreviewURL || webSitePreviewURL === "" || !siteVisibility) {
             return;
         }
 
-        const edgeToolsExtension = vscode.extensions.getExtension(EDGE_TOOLS_EXTENSION_ID);
-
-        if (!edgeToolsExtension) {
-            await PreviewSite.promptInstallEdgeTools();
+        const previewBrowser = await PreviewSite.getSitePreviewBrowser();
+        if (!previewBrowser) {
             return;
         }
 
@@ -142,8 +142,7 @@ export class PreviewSite {
             Messages.OPENING_SITE_PREVIEW,
             false,
             async () => {
-                PreviewSite.closeExistingPreview();
-                await vscode.commands.executeCommand('vscode-edge-devtools.launch', { launchUrl: webSitePreviewURL });
+                await PreviewSite.openSitePreviewBrowser(webSitePreviewURL, previewBrowser);
             }
         );
 
@@ -151,6 +150,37 @@ export class PreviewSite {
         if (websitePath) {
             await PreviewSite.showUploadWarning(websitePath, dataModelVersion, siteVisibility);
         }
+    }
+
+    private static async getSitePreviewBrowser(): Promise<'integratedBrowser' | 'edgeTools' | undefined> {
+        const commands = await vscode.commands.getCommands(true);
+
+        // VS Code's integrated browser is available through a workbench command in
+        // newer builds. Older builds fall back to the existing Edge Tools path because
+        // Simple Browser does not fully render Power Pages sites.
+        // See https://github.com/microsoft/vscode/blob/main/extensions/simple-browser/src/extension.ts
+        if (commands.includes(INTEGRATED_BROWSER_COMMAND_ID)) {
+            return 'integratedBrowser';
+        }
+
+        const edgeToolsExtension = vscode.extensions.getExtension(EDGE_TOOLS_EXTENSION_ID);
+
+        if (!edgeToolsExtension) {
+            await PreviewSite.promptInstallEdgeTools();
+            return undefined;
+        }
+
+        return 'edgeTools';
+    }
+
+    private static async openSitePreviewBrowser(webSitePreviewURL: string, previewBrowser: 'integratedBrowser' | 'edgeTools'): Promise<void> {
+        if (previewBrowser === 'integratedBrowser') {
+            await vscode.commands.executeCommand(INTEGRATED_BROWSER_COMMAND_ID, webSitePreviewURL);
+            return;
+        }
+
+        PreviewSite.closeExistingPreview();
+        await vscode.commands.executeCommand(EDGE_DEVTOOLS_COMMAND_ID, { launchUrl: webSitePreviewURL });
     }
 
     private static async showUploadWarning(websitePath: string, dataModelVersion: 1 | 2, siteVisibility: SiteVisibility) {
@@ -219,7 +249,7 @@ export class PreviewSite {
 
         await PreviewSite.clearCache(PreviewSite._websiteDetails.websiteUrl);
 
-        await PreviewSite.launchBrowserAndDevToolsWithinVsCode(
+        await PreviewSite.launchSitePreviewWithinVsCode(
             PreviewSite._websiteDetails.websiteUrl,
             PreviewSite._websiteDetails.dataModel === WebsiteDataModel.Standard ? 1 : 2,
             PreviewSite._websiteDetails.siteVisibility
