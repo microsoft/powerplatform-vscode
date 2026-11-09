@@ -87,7 +87,8 @@
   "power-platform-activitybar.title": "Power Platform",
   "powerPlatform.auth.cloud.description": "Какие инструменты Power Platform Tools облака Azure следует использовать для проверки подлинности.",
   "powerPlatform.experimental.auth.testCloudOverride.description": "Переопределяет `#powerPlatform.auth.cloud#` для тестовых целей. Оставьте пустым, чтобы действовали параметры по умолчанию.",
+  "powerpages.chatParticipant.title": "Copilot for Power Pages (deprecated)",
   "powerpages.copilotPanel.clearConversation.title": "Удалить разговор",
-  "powerpages.copilotPanel.title": "Copilot в Power Pages",
+  "powerpages.copilotPanel.title": "Copilot in Power Pages (deprecated)",
   "powerplatform.pages.previewSite.title": "Предварительный просмотр сайта"
 }

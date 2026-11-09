@@ -87,7 +87,8 @@
   "power-platform-activitybar.title": "Power Platform",
   "powerPlatform.auth.cloud.description": "應使用些 Azure 雲端 Power Platform Tools 來進行驗證。",
   "powerPlatform.experimental.auth.testCloudOverride.description": "覆寫測試目標的 `#powerPlatform.auth.cloud#`。預設行為請保留空白。",
+  "powerpages.chatParticipant.title": "Copilot for Power Pages (deprecated)",
   "powerpages.copilotPanel.clearConversation.title": "清除交談",
-  "powerpages.copilotPanel.title": "Power Pages 中的 Copilot",
+  "powerpages.copilotPanel.title": "Copilot in Power Pages (deprecated)",
   "powerplatform.pages.previewSite.title": "預覽網站"
 }
