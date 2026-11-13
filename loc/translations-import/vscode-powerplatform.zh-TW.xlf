@@ -256,7 +256,7 @@ This action cannot be undone.</source>
       </trans-unit>
       <trans-unit id="++CODE++7424ca73a0adfee022bf72f73f2134a83c8cd1213f58d74373b0a0fab6155092">
         <source xml:lang="en">Check whether the Power Pages plugin is installed</source>
-        <target state="new">Check whether the Power Pages plugin is installed</target>
+        <target state="translated">檢查是否已安裝 Power Pages 外掛程式</target>
       </trans-unit>
       <trans-unit id="++CODE++f6208e79a482ad29648b0dc4cdf886964a06c63af452f5e0959af327ba2d5c38">
         <source xml:lang="en">Check whether the Power Platform Skills marketplace is registered</source>
@@ -466,7 +466,7 @@ Check the CodeQL extension panel for available queries.</source>
       </trans-unit>
       <trans-unit id="++CODE++d444962337a1b2520a1fca76e255737e5529cc5533acaefeeb6c3c351e7c3050">
         <source xml:lang="en">Command preview isn't available for this terminal shell.</source>
-        <target state="new">Command preview isn't available for this terminal shell.</target>
+        <target state="translated">命令預覽不適用於此終端殼層。</target>
       </trans-unit>
       <trans-unit id="++CODE++d73890ab56fd9e1ff5349b7bdb41fe0d848c5960c096b30357e26b912456f21f">
         <source xml:lang="en">Compare site with environment</source>
@@ -535,6 +535,10 @@ Check the CodeQL extension panel for available queries.</source>
         <source xml:lang="en">Copilot illustration</source>
         <target state="translated">Copilot 插圖</target>
       </trans-unit>
+      <trans-unit id="++CODE++7af8e1d878debd40533d443b93b106dcac26f4a9ac42515c29e0bd904b6296fa">
+        <source xml:lang="en">Copilot in Power Pages (deprecated)</source>
+        <target state="translated">Power Pages 中的 Copilot（已淘汰）</target>
+      </trans-unit>
       <trans-unit id="++CODE++e21f935f11d7e966dbbae78da9daa378fe8142a14e7c0cd7434183005faa6c5c">
         <source xml:lang="en">Copy</source>
         <target state="translated">複製</target>
@@ -545,11 +549,11 @@ Check the CodeQL extension panel for available queries.</source>
       </trans-unit>
       <trans-unit id="++CODE++abdedfb58466107494892fd395c31b4821cbc3433345ec4563dc21ab919335d8">
         <source xml:lang="en">Copy isn't available for this AI assistant installation because it starts from a batch file (.cmd or .bat).</source>
-        <target state="new">Copy isn't available for this AI assistant installation because it starts from a batch file (.cmd or .bat).</target>
+        <target state="translated">此 AI 助理安裝無法使用複製，因為它從批次檔 (.cmd 或 .bat) 啟動。</target>
       </trans-unit>
       <trans-unit id="++CODE++2678a370928b1ffd0bc8110229e42230419ddf91f198cd9864f4c8f6f8753efd">
         <source xml:lang="en">Copy isn't available for this terminal shell. Copy works with PowerShell, Bash, Zsh, and Fish.</source>
-        <target state="new">Copy isn't available for this terminal shell. Copy works with PowerShell, Bash, Zsh, and Fish.</target>
+        <target state="translated">此終端殼層無法使用複製功能。複製適用於 PowerShell、Bash、Zsh 和 Fish。</target>
       </trans-unit>
       <trans-unit id="++CODE++b749e205302cc21952a1e9646569ca0af9017cc5f39dd741830551bdd4ae823e">
         <source xml:lang="en">Copy to clipboard</source>
@@ -565,7 +569,7 @@ Check the CodeQL extension panel for available queries.</source>
       </trans-unit>
       <trans-unit id="++CODE++ff00a78f2baf3706b528696e70919c4b123a4b8c7461ec1dd221b14b55e1adce">
         <source xml:lang="en">Couldn't upload the site. Check the Power Platform Tools: PAC CLI output for details.</source>
-        <target state="new">Couldn't upload the site. Check the Power Platform Tools: PAC CLI output for details.</target>
+        <target state="translated">無法上傳網站。檢查 Power Platform Tools: PAC CLI 輸出以取得詳細資料。</target>
       </trans-unit>
       <trans-unit id="++CODE++17df5c921ef303496786b0c317e87e92cdd4702c739633987ced1b202e3aa6ac">
         <source xml:lang="en">Create a Power Pages site</source>
@@ -739,7 +743,7 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
       </trans-unit>
       <trans-unit id="++CODE++726cbb2fc81ea0ff165ef53254ae2769cf5db51de9d329add905ff545ca99f26">
         <source xml:lang="en">Enable the installed Power Pages plugin</source>
-        <target state="new">Enable the installed Power Pages plugin</target>
+        <target state="translated">啟用已安裝的 Power Pages 外掛程式</target>
       </trans-unit>
       <trans-unit id="++CODE++102f547594eb0c68a16e0e5eb6661fa576c7a5fb6ce224ea36194e9fd4f87dac">
         <source xml:lang="en">Enhanced Data Model</source>
@@ -1159,11 +1163,11 @@ Return to this chat and @powerpages can help you write and edit your website cod
       </trans-unit>
       <trans-unit id="++CODE++6f11ed38926d7ac7f16fe4467ffdcf4f2996f643f33d776a1523d157f0109e10">
         <source xml:lang="en">Install the Power Pages plugin</source>
-        <target state="new">Install the Power Pages plugin</target>
+        <target state="translated">安裝 Power Pages 外掛程式</target>
       </trans-unit>
       <trans-unit id="++CODE++00bf0083080d06de545fbb67522791fa6773e0762af68cef79d4c98cfe41853a">
         <source xml:lang="en">Install the Power Pages plugin for your user account</source>
-        <target state="new">Install the Power Pages plugin for your user account</target>
+        <target state="translated">為您的使用者帳戶安裝 Power Pages 外掛程式</target>
       </trans-unit>
       <trans-unit id="++CODE++e9a14c3c8fd396e453f2d26bdebeace670ebae2cdbb1169f670beef3defa0599">
         <source xml:lang="en">Install the assistant if needed.</source>
@@ -1504,10 +1508,6 @@ URL: {1}
         <source xml:lang="en">PAC Telemetry enabled</source>
         <target state="translated">PAC 遙測已啟用</target>
       </trans-unit>
-      <trans-unit id="++CODE++59e1f415bf9d7761b450dcb4785daac53307323451bc453bfaa06a46d4649e2a">
-        <source xml:lang="en">PREVIEW</source>
-        <target state="translated">預覽版</target>
-      </trans-unit>
       <trans-unit id="++CODE++1514b12ec249ca33bc0568c872840126e82cc964aaa7f028393674c17d554444">
         <source xml:lang="en">Page Template name cannot be empty.</source>
         <target state="translated">頁面範本名稱不可為空白。</target>
@@ -1563,11 +1563,11 @@ URL: {1}
       </trans-unit>
       <trans-unit id="++CODE++0a9e18b60a9d4bb596309ea65d747891ad45732901f1a9b76da256521baa03fb">
         <source xml:lang="en">Power Pages plugin</source>
-        <target state="new">Power Pages plugin</target>
+        <target state="translated">Power Pages 外掛程式</target>
       </trans-unit>
       <trans-unit id="++CODE++8075efd3a927d7a466112af4aef312a2b2fb142e01dc6d4ab5de65e760d16e0c">
         <source xml:lang="en">Power Pages plugin is installed</source>
-        <target state="new">Power Pages plugin is installed</target>
+        <target state="translated">Power Pages 外掛程式已安裝</target>
       </trans-unit>
       <trans-unit id="++CODE++04ac907168ac84b45263503d1306565bece49c4ae3e8ef4af310b304f03ab6d4">
         <source xml:lang="en">Power Pages site download completed successfully. Would you like to open the downloaded site folder?</source>
@@ -1603,7 +1603,7 @@ URL: {1}
       </trans-unit>
       <trans-unit id="++CODE++7b505b4ae79123a45c4972f677dfc36c985244f1c3a8ea096b1677e0f84c2f6c">
         <source xml:lang="en">Prepare the Power Pages plugin</source>
-        <target state="new">Prepare the Power Pages plugin</target>
+        <target state="translated">準備 Power Pages 外掛程式</target>
       </trans-unit>
       <trans-unit id="++CODE++b3bd8e83df2f6be7037ed0a3dc8fa15c074d072892fba84e95aadf69f5c0c107">
         <source xml:lang="en">Prepare the selected AI assistant and start a guided site-creation conversation.</source>
@@ -1624,7 +1624,7 @@ URL: {1}
       </trans-unit>
       <trans-unit id="++CODE++e4085ff6c94284a38c090be2ea810dff4fc1698dd3499295125d2fc43bd8e84b">
         <source xml:lang="en">Preparing your AI assistant</source>
-        <target state="new">Preparing your AI assistant</target>
+        <target state="translated">正在準備您的 AI 助理...</target>
       </trans-unit>
       <trans-unit id="++CODE++f6412ced721a26ac3e3cb55d3ff713d8403c3dfc2efa0cff07b48478bdd57555">
         <source xml:lang="en">Preview site</source>
@@ -1657,7 +1657,7 @@ URL: {1}
       </trans-unit>
       <trans-unit id="++CODE++69352e2f233289d899ef78f92860cec8d30a5ecf9f624e5239faa20724d69251">
         <source xml:lang="en">Refresh the PATH environment variable</source>
-        <target state="new">Refresh the PATH environment variable</target>
+        <target state="translated">重新整理 PATH 環境變數</target>
       </trans-unit>
       <trans-unit id="++CODE++fdc383411e8354c470e19c960527019a9bf48c61c08a5c3ec3fb8b7b32ccba34">
         <source xml:lang="en">Refreshing comparison for {0} ([details](command:microsoft.powerplatform.pages.actionsHub.showOutputChannel "Show download output"))...</source>
@@ -1916,6 +1916,10 @@ URL: {1}
         <note>{0} is the site visibility</note>
         <target state="translated">網站顯示性: {0}</target>
       </trans-unit>
+      <trans-unit id="++CODE++596fcd00b5762c043bf0ff23b63f2417586fe489f421e0a53e528d47d002789a">
+        <source xml:lang="en">Some file content could not be loaded from Dataverse. Open the affected files to retry.</source>
+        <target state="translated">無法從 Dataverse 載入某些檔案內容。請開啟受影響的檔案，再試一次。</target>
+      </trans-unit>
       <trans-unit id="++CODE++27dd8c8e67d15783f51c6b71ed60d5350731daa85b418f1e84c2e5828ae2d54e">
         <source xml:lang="en">Some references might be broken. Please check diagnostics for details.</source>
         <target state="translated">部分參考可能已中斷。請檢查診斷以取得詳細資料。</target>
@@ -1958,7 +1962,7 @@ URL: {1}
       </trans-unit>
       <trans-unit id="++CODE++c4e01b9dde420ccd86454dddb70e83041f4808e047a5d91cb72650f243da1b8c">
         <source xml:lang="en">Step {0} of {1}: {2}. Skipping a setup step that isn't needed.</source>
-        <target state="new">Step {0} of {1}: {2}. Skipping a setup step that isn't needed.</target>
+        <target state="translated">步驟 {0}/{1}: {2}。跳過不需要的設定步驟。</target>
       </trans-unit>
       <trans-unit id="++CODE++155f816c0407310c0dab222493370773e045ee7fe04e6c9a951b07f495531264">
         <source xml:lang="en">Submit</source>
@@ -2082,7 +2086,7 @@ URL: {1}
         <source xml:lang="en">To continue manually, open {0} and select {1} for each command you still need.</source>
         <note>{0} is the localized label of the Technical details section.
 {1} is the localized label of the Copy button.</note>
-        <target state="new">To continue manually, open {0} and select {1} for each command you still need.</target>
+        <target state="translated">若要手動繼續，請開啟 {0} 並針對您仍然需要的每個命令選取 {1}。</target>
       </trans-unit>
       <trans-unit id="++CODE++4f8c4d58a87feaaff06fd5f9cb84370ab4a42220bf1e8cbedbca716f8f21c9ee">
         <source xml:lang="en">To know more, see &lt;a href="https://go.microsoft.com/fwlink/?linkid=2206366"&gt;Copilot in Power Pages documentation.</source>
@@ -2093,11 +2097,11 @@ URL: {1}
         <note>{0} is the path of the terminal shell and is replaced when the message is shown.
 {1} is the path of the site folder and is replaced when the message is shown.
 {2} is the localized Runs only if needed label shown next to conditional commands.</note>
-        <target state="new">To set up manually, open {0} in your site folder ({1}). Copy and run only the commands you still need, in order and one at a time. Run a command marked {2} only if the related read-only check shows that it's needed. Stop if a command fails.</target>
+        <target state="translated">若要手動設定，請開啟您網站資料夾 ({1}) 中的 {0}。請僅複製並依序逐一執行仍然需要的命令。只有在相關的唯讀檢查顯示需要時，才執行標示為 {2} 的命令。如果命令失敗，請停止執行。</target>
       </trans-unit>
       <trans-unit id="++CODE++146895a7cbe169cd415f67e9d09afd78a1b0fae2fb059433f6908c56bb4f760f">
         <source xml:lang="en">To set up manually, open {0} in your site folder ({1}). Copy and run only the commands you still need, in order and one at a time. Stop if a command fails.</source>
-        <target state="new">To set up manually, open {0} in your site folder ({1}). Copy and run only the commands you still need, in order and one at a time. Stop if a command fails.</target>
+        <target state="translated">若要手動設定，請開啟您網站資料夾 ({1}) 中的 {0}。請僅複製並依序逐一執行仍然需要的命令。如果命令失敗，請停止執行。</target>
       </trans-unit>
       <trans-unit id="++CODE++ea93d6a262ecb87a9fa4d09edbd7654c046597936a8e235fc3949eb01775ff99">
         <source xml:lang="en">Tools</source>
@@ -2113,7 +2117,7 @@ URL: {1}
       </trans-unit>
       <trans-unit id="++CODE++61c95cf36f1a9bc1e6ea37d8358fe22a0abdcbe0c6751b5d409aadc4e8624c71">
         <source xml:lang="en">Trust this workspace before you upload a site.</source>
-        <target state="new">Trust this workspace before you upload a site.</target>
+        <target state="translated">上傳網站之前，請先信任此工作區。</target>
       </trans-unit>
       <trans-unit id="++CODE++4a7c431a6572c68bba17c3a5d858adbf5112462574953baf4d7d2fd0619807fe">
         <source xml:lang="en">Try @powerpages with GitHub Copilot</source>
@@ -2154,6 +2158,10 @@ URL: {1}
       <trans-unit id="++CODE++01e5c349da59b88cb8c4552d036f670c1a5d824abf91fe9539d408e89d9c9445">
         <source xml:lang="en">Unable to generate VS Code Desktop URL</source>
         <target state="translated">無法產生 VS Code 桌面版 URL</target>
+      </trans-unit>
+      <trans-unit id="++CODE++cba2166f4a7e24db42e4e84b2b31055442bf519a9e58106ea645e06911dc796d">
+        <source xml:lang="en">Unable to load file content from Dataverse.</source>
+        <target state="translated">無法從 Dataverse 載入檔案內容。</target>
       </trans-unit>
       <trans-unit id="++CODE++3747890a3bfddec3123ce9a40cdd15f278d1335b382f80beb52bf18101ab02c2">
         <source xml:lang="en">Unable to locate website root folder.</source>
@@ -2253,41 +2261,41 @@ URL: {1}
       </trans-unit>
       <trans-unit id="++CODE++ec4c94c99c8c27fb33ff5a58150d2ff3b9f2c9d44bf26db3be74732fde112877">
         <source xml:lang="en">VS Code can't run setup in your default terminal shell. The remaining setup commands didn't run. Set your default terminal shell to PowerShell, Bash, Zsh, or Fish, restart VS Code, and then start creating your site again.</source>
-        <target state="new">VS Code can't run setup in your default terminal shell. The remaining setup commands didn't run. Set your default terminal shell to PowerShell, Bash, Zsh, or Fish, restart VS Code, and then start creating your site again.</target>
+        <target state="translated">VS Code 無法執行您預設終端殼層中的設定。未執行其餘的設定命令。將您的預設終端殼層設定為 PowerShell、Bash、Zsh 或 Fish，接著重新啟動 VS Code，然後再次開始建立您的網站。</target>
       </trans-unit>
       <trans-unit id="++CODE++2bb27fa5ae07ce237646b3d6b2c574332ba6602aee87a9a15e3ab24850c1516e">
         <source xml:lang="en">VS Code can't safely pass your site description to this AI assistant installation because it starts from a batch file (.cmd or .bat). Install a version that starts from an .exe file or a PowerShell script (.ps1), and then select {0}. Copy isn't available for this installation.</source>
         <note>{0} is the localized label of the Try again button.</note>
-        <target state="new">VS Code can't safely pass your site description to this AI assistant installation because it starts from a batch file (.cmd or .bat). Install a version that starts from an .exe file or a PowerShell script (.ps1), and then select {0}. Copy isn't available for this installation.</target>
+        <target state="translated">VS Code 無法安全地將您的網站描述傳遞至此 AI 助理安裝，因為它從批次檔 (.cmd 或 .bat) 啟動。請安裝從 .exe 檔案或 PowerShell 指令碼 (.ps1) 啟動的版本，然後選取 {0}。此安裝無法使用複製功能。</target>
       </trans-unit>
       <trans-unit id="++CODE++9524c0e2d0da87faf33eeac301ad14ae3f9a91486bcd028e4ef4f6ead57f8c8f">
         <source xml:lang="en">VS Code couldn't complete this step: {0}. Select {1} for installation and reload options, or select {2}.</source>
         <note>{0} is the localized description of the command that failed and is replaced when the message is shown.
 {1} is the localized label of the View setup options button and is replaced when the message is shown.
 {2} is the localized label of the Try again button.</note>
-        <target state="new">VS Code couldn't complete this step: {0}. Select {1} for installation and reload options, or select {2}.</target>
+        <target state="translated">VS Code 無法完成此步驟: {0}。請選取 {1} 以檢視安裝和重新載入選項，或選取 {2}。</target>
       </trans-unit>
       <trans-unit id="++CODE++4add58f49b86be7a56e20eac917b607cbe6ea33426573b284be4d7d546603dab">
         <source xml:lang="en">VS Code couldn't complete this step: {0}. Select {2}, or open {1} to review the commands.</source>
         <note>{0} is the localized description of the command that failed and is replaced when the message is shown.
 {1} is the localized label of the Technical details section and is replaced when the message is shown.
 {2} is the localized label of the Try again button.</note>
-        <target state="new">VS Code couldn't complete this step: {0}. Select {2}, or open {1} to review the commands.</target>
+        <target state="translated">VS Code 無法完成此步驟: {0}。選取 {2}，或開啟 {1} 以檢閱命令。</target>
       </trans-unit>
       <trans-unit id="++CODE++c254baf7a2dc0784cf22e12de3eb73386cb324ec2c8f28d97744dd25e21aa51c">
         <source xml:lang="en">VS Code couldn't copy the command. Select {0} to try again.</source>
         <note>{0} is the localized label of the Copy button.</note>
-        <target state="new">VS Code couldn't copy the command. Select {0} to try again.</target>
+        <target state="translated">VS Code 無法複製命令。請選取 {0} 再試一次。</target>
       </trans-unit>
       <trans-unit id="++CODE++b45557cb75054ec822eb07317d33f43ffdf37340a8ab6d989d87587f36960fff">
         <source xml:lang="en">VS Code couldn't find PowerShell 7 or Git Bash. The remaining setup commands didn't run. Install one of them, or add its path to the Terminal › Integrated › Profiles: Windows user setting, and then select {0}.</source>
         <note>{0} is the localized label of the Try again button.
 'Terminal › Integrated › Profiles: Windows' is the name of a VS Code setting.</note>
-        <target state="new">VS Code couldn't find PowerShell 7 or Git Bash. The remaining setup commands didn't run. Install one of them, or add its path to the Terminal › Integrated › Profiles: Windows user setting, and then select {0}.</target>
+        <target state="translated">VS Code 找不到 PowerShell 7 或 Git Bash。未執行其餘的設定命令。請安裝其中一個，或將其路徑新增至 [終端] › [整合] › [設定檔: Windows 使用者設定]，然後選取 {0}。</target>
       </trans-unit>
       <trans-unit id="++CODE++07d8e03771a807b0a8332b0de06cf0136542f90b45331e0070ce9e01f2c471d1">
         <source xml:lang="en">VS Code couldn't finish setup. Review the site setup page for next steps.</source>
-        <target state="new">VS Code couldn't finish setup. Review the site setup page for next steps.</target>
+        <target state="translated">VS Code 無法完成設定。請檢閱網站設定頁面以了解後續步驟。</target>
       </trans-unit>
       <trans-unit id="++CODE++c4b3a95eb9ce3bce70b7fd7d6462e24f10cfc7e81edbf5684aa1cf858c3feb09">
         <source xml:lang="en">VS Code couldn't open the site setup page. Run the command again.</source>
@@ -2295,39 +2303,39 @@ URL: {1}
       </trans-unit>
       <trans-unit id="++CODE++7835405be4104208466f736175f383019deb286289be6ae101bfdbbf3bd5cee7">
         <source xml:lang="en">VS Code couldn't prepare your AI assistant</source>
-        <target state="new">VS Code couldn't prepare your AI assistant</target>
+        <target state="translated">VS Code 無法準備您的 AI 助理</target>
       </trans-unit>
       <trans-unit id="++CODE++6276ef37315fdbb73b7c293e409824ab1a5cec3fd1871534d0d904b64b9a09b3">
         <source xml:lang="en">VS Code couldn't run setup because terminal shell integration is turned off. The remaining setup commands didn't run. Turn on the Terminal › Integrated › Shell Integration: Enabled setting, and then select {0}.</source>
         <note>{0} is the localized label of the Try again button.
 'Terminal › Integrated › Shell Integration: Enabled' is the name of a VS Code setting.</note>
-        <target state="new">VS Code couldn't run setup because terminal shell integration is turned off. The remaining setup commands didn't run. Turn on the Terminal › Integrated › Shell Integration: Enabled setting, and then select {0}.</target>
+        <target state="translated">VS Code 無法執行設定，因為終端殼層整合已關閉。未執行其餘的設定命令。請開啟 [終端] › [整合] › [殼層整合: 已啟用] 設定，然後選取 {0}。</target>
       </trans-unit>
       <trans-unit id="++CODE++31f0ea2cb85c89861fc112818cdb3fe810092dcc224f9af093bd2981db7f8847">
         <source xml:lang="en">VS Code couldn't run setup because terminal shell integration wasn't ready. The remaining setup commands didn't run. Select {0}. If the problem continues, check the terminal's startup settings.</source>
         <note>{0} is the localized label of the Try again button.</note>
-        <target state="new">VS Code couldn't run setup because terminal shell integration wasn't ready. The remaining setup commands didn't run. Select {0}. If the problem continues, check the terminal's startup settings.</target>
+        <target state="translated">VS Code 無法執行設定，因為終端殼層整合尚未準備就緒。未執行其餘的設定命令。選取 {0}。如果問題持續發生，請檢查終端的啟動設定。</target>
       </trans-unit>
       <trans-unit id="++CODE++bc9480762f0caf93872822c330bb1399fdb4aa808ed3922def0d99902d77092f">
         <source xml:lang="en">VS Code will check the Power Pages plugin setup</source>
-        <target state="new">VS Code will check the Power Pages plugin setup</target>
+        <target state="translated">VS Code 將檢查 Power Pages 外掛程式設定</target>
       </trans-unit>
       <trans-unit id="++CODE++302aa8b2f830b794469ac367deca9eaebec7a764038a4d667dbaddc763cec4b9">
         <source xml:lang="en">VS Code will enable the Power Pages plugin</source>
-        <target state="new">VS Code will enable the Power Pages plugin</target>
+        <target state="translated">VS Code 將啟用 Power Pages 外掛程式</target>
       </trans-unit>
       <trans-unit id="++CODE++0499acddfdaa3a4cc0c3a50bb092dbc29d1dd70032040331b6381fc57da6af04">
         <source xml:lang="en">VS Code will install the Power Pages plugin</source>
-        <target state="new">VS Code will install the Power Pages plugin</target>
+        <target state="translated">VS Code 將安裝 Power Pages 外掛程式</target>
       </trans-unit>
       <trans-unit id="++CODE++9a8e032171d3806e036fd559edfb7c9ec5f0e175651b3ec93c0dfb35984c2569">
         <source xml:lang="en">VS Code will install {0} and the Power Pages plugin</source>
-        <target state="new">VS Code will install {0} and the Power Pages plugin</target>
+        <target state="translated">VS Code 將安裝 {0} 和 Power Pages 外掛程式</target>
       </trans-unit>
       <trans-unit id="++CODE++d252c044db63e7b02e155508a2800734a2e887ad72fe5bffb0f36bda4949a8a8">
         <source xml:lang="en">VS Code won't change your setup until you select {0}. Your AI assistant might ask you to sign in.</source>
         <note>{0} is the localized label of the Start creating button.</note>
-        <target state="new">VS Code won't change your setup until you select {0}. Your AI assistant might ask you to sign in.</target>
+        <target state="translated">在您選取 {0} 前，VS Code 將不會變更您的設定。您的 AI 助理可能會要求您登入。</target>
       </trans-unit>
       <trans-unit id="++CODE++527423ed0138373aa91233083f12eceeae92aa1998e6706d7a260524dafbe6c4">
         <source xml:lang="en">Validating authentication...</source>
@@ -2335,7 +2343,7 @@ URL: {1}
       </trans-unit>
       <trans-unit id="++CODE++8674b8ca0c7de1096fe2122aa71ffdf7f1b37dc500146542ab930f1ae7b75b8d">
         <source xml:lang="en">Verify that {0} is available</source>
-        <target state="new">Verify that {0} is available</target>
+        <target state="translated">請確認 {0} 是否可用</target>
       </trans-unit>
       <trans-unit id="++CODE++27ce43e2a226ec490d516062d0d927ef2c965197813f8d9ce06f2aeba4617057">
         <source xml:lang="en">View installation guide</source>
@@ -2445,7 +2453,7 @@ URL: {1}
       </trans-unit>
       <trans-unit id="++CODE++d4ef36d5ce1874060126d0f6c9819dfb24b1bc850858165f1cf8282de24f2072">
         <source xml:lang="en">You can't copy this command now. Check its status and the manual setup instructions.</source>
-        <target state="new">You can't copy this command now. Check its status and the manual setup instructions.</target>
+        <target state="translated">您現在無法複製此命令。請檢查其狀態和手動設定指示。</target>
       </trans-unit>
       <trans-unit id="++CODE++87eb9aa1f1ac1b6b141aedc4c21a9cb7cf786453c529babe30c8760072bb34d6">
         <source xml:lang="en">You need to authenticate with Power Platform to download the site. Would you like to authenticate now?</source>
@@ -2581,9 +2589,13 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
         <source xml:lang="en">Compare with Local</source>
         <target state="translated">與本機比較</target>
       </trans-unit>
+      <trans-unit id="powerpages.chatParticipant.title">
+        <source xml:lang="en">Copilot for Power Pages (deprecated)</source>
+        <target state="translated">適用於 Power Pages 的 Copilot（已淘汰）</target>
+      </trans-unit>
       <trans-unit id="powerpages.copilotPanel.title">
-        <source xml:lang="en">Copilot In Power Pages</source>
-        <target state="translated">Power Pages 中的 Copilot</target>
+        <source xml:lang="en">Copilot in Power Pages (deprecated)</source>
+        <target state="translated">Power Pages 中的 Copilot（已淘汰）</target>
       </trans-unit>
       <trans-unit id="pacCLI.envAndSolutionsPanel.copyDisplayName.title">
         <source xml:lang="en">Copy Display Name</source>
