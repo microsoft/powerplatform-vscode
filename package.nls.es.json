@@ -87,8 +87,8 @@
   "power-platform-activitybar.title": "Power Platform",
   "powerPlatform.auth.cloud.description": "Las Power Platform Tools en la nube de Azure que se deben usar para la autenticación.",
   "powerPlatform.experimental.auth.testCloudOverride.description": "Reemplaza `#powerPlatform.auth.cloud#` para los destinos de prueba. Deje en blanco este valor si desea que tenga el comportamiento predeterminado.",
-  "powerpages.chatParticipant.title": "Copilot for Power Pages (deprecated)",
+  "powerpages.chatParticipant.title": "Copilot para Power Pages (en desuso)",
   "powerpages.copilotPanel.clearConversation.title": "Borrar conversación",
-  "powerpages.copilotPanel.title": "Copilot in Power Pages (deprecated)",
+  "powerpages.copilotPanel.title": "Copilot en Power Pages (en desuso)",
   "powerplatform.pages.previewSite.title": "Obtener una vista previa del sitio"
 }
