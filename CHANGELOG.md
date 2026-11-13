@@ -1,5 +1,10 @@
 # Change Log - Power Platform Extension
 
+## 2.0.163
+- Updated Power Platform CLI (pac CLI) to 2.15.1. See the [CLI release notes on NuGet](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/2.15.1).
+- Power Pages site previews now open in the VS Code integrated browser when available. Older VS Code versions continue to use Microsoft Edge Tools.
+- Marked Power Pages Copilot as deprecated and removed its automatic welcome notifications on desktop and web.
+
 ## 2.0.161
 - Fixed an issue that prevented server logic files from loading in VS Code web when their folder had not yet been created.
 - Improved keyboard and screen reader access to file diffs in site comparison HTML reports. Component tabs now appear in a sidebar and wrap above the file list in narrow windows.
