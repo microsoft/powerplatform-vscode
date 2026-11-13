@@ -28,8 +28,6 @@ import { webExtensionTelemetryEventNames } from "../../common/OneDSLoggerTelemet
 import { PowerPagesNavigationProvider } from "./webViews/powerPagesNavigationProvider";
 import * as copilot from "../../common/copilot/PowerPagesCopilot";
 import { IOrgInfo } from "../../common/copilot/model";
-import { copilotNotificationPanel, disposeNotificationPanel } from "../../common/copilot/welcome-notification/CopilotNotificationPanel";
-import { COPILOT_NOTIFICATION_DISABLED, EXTENSION_VERSION_KEY } from "../../common/copilot/constants";
 import * as Constants from "./common/constants"
 import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { GeoNames } from "../../common/OneDSLoggerTelemetry/telemetryConstants";
@@ -38,7 +36,6 @@ import { ECSFeaturesClient } from "../../common/ecs-features/ecsFeatureClient";
 import { PowerPagesAppName, PowerPagesClientName } from "../../common/ecs-features/constants";
 import { ArtemisService } from "../../common/services/ArtemisService";
 import { showErrorDialog } from "../../common/utilities/errorHandlerUtil";
-import { EXTENSION_ID } from "../../common/constants";
 import { getECSOrgLocationValue } from "../../common/utilities/Utils";
 import { authenticateUserInVSCode } from "../../common/services/AuthenticationProvider";
 import { activateServerApiAutocomplete } from "../../common/intellisense";
@@ -631,7 +628,6 @@ export function registerCopilot(context: vscode.ExtensionContext) {
             }
         }));
 
-        showNotificationForCopilot(context, orgInfo.orgId);
     } catch (error) {
         WebExtensionContext.telemetry.sendErrorTelemetry(
             webExtensionTelemetryEventNames.WEB_EXTENSION_WEB_COPILOT_REGISTRATION_FAILED,
@@ -641,41 +637,11 @@ export function registerCopilot(context: vscode.ExtensionContext) {
     }
 }
 
-function showNotificationForCopilot(context: vscode.ExtensionContext, orgId: string) {
-    if (vscode.workspace.getConfiguration('powerPlatform').get('experimental.enableWebCopilot') === false) {
-        return;
-    }
-
-    const currentVersion = vscode.extensions.getExtension(EXTENSION_ID)?.packageJSON.version;
-    const storedVersion = context.globalState.get(EXTENSION_VERSION_KEY);
-
-    if (!storedVersion || storedVersion !== currentVersion) {
-        // Show notification panel for the first load or after an update
-        WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_WEB_COPILOT_NOTIFICATION_SHOWN,
-            { orgId: orgId });
-        const telemetryData = JSON.stringify({ orgId: orgId });
-        copilotNotificationPanel(context, telemetryData);
-
-        // Update the stored version to the current version
-        context.globalState.update(EXTENSION_VERSION_KEY, currentVersion);
-        return;
-    }
-
-    const isCopilotNotificationDisabled = context.globalState.get(COPILOT_NOTIFICATION_DISABLED, false);
-    if (!isCopilotNotificationDisabled) {
-        WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_WEB_COPILOT_NOTIFICATION_SHOWN,
-            { orgId: orgId });
-        const telemetryData = JSON.stringify({ orgId: orgId });
-        copilotNotificationPanel(context, telemetryData);
-    }
-}
-
 export async function deactivate(): Promise<void> {
     const telemetry = WebExtensionContext.telemetry;
     if (telemetry) {
         telemetry.sendInfoTelemetry("End");
     }
-    disposeNotificationPanel();
 }
 
 function isActiveDocument(fileFsPath: string): boolean {

@@ -10,7 +10,8 @@
   "pacCLI.disableTelemetry.title": "Disable PAC Telemetry",
   "pacCLI.enableTelemetry.title": "Enable PAC telemetry",
   "power-platform-activitybar.title": "Power Platform",
-  "powerpages.copilotPanel.title": "Copilot In Power Pages",
+  "powerpages.chatParticipant.title": "Copilot for Power Pages (deprecated)",
+  "powerpages.copilotPanel.title": "Copilot in Power Pages (deprecated)",
   "powerpages.copilotPanel.clearConversation.title": "Clear Conversation",
   "pacCLI.authPanel.title": "Auth Profiles",
   "pacCLI.authPanel.welcome.whenInteractiveSupported": {

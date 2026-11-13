@@ -20,10 +20,14 @@ permissions:
 
 jobs:
   build:
+    # Branch protection requires the existing build (ubuntu-latest) check name.
+    name: build (${{ matrix.os == 'ubuntu-24.04' && 'ubuntu-latest' || matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        # Playwright 1.58.2 has no Chromium download for Ubuntu 26.04.
+        # Keep Linux on 24.04 until the locked Playwright version supports 26.04.
+        os: [windows-latest, macos-latest, ubuntu-24.04]
       fail-fast: false
 
     steps:
@@ -32,7 +36,7 @@ jobs:
           lfs: true
 
       - name: Setup .NET 9
-        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
         with:
           dotnet-version: "9.0.x"
 
@@ -93,7 +97,7 @@ jobs:
   web-sanity:
     if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'release/stable'
     continue-on-error: true
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
 
     steps:
