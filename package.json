@@ -1928,6 +1928,12 @@
     "@types/minimatch": {
       "minimatch": "^11.0.1"
     },
+    "glob@^7.1.7": {
+      "minimatch": "^3.1.5"
+    },
+    "glob@8": {
+      "minimatch": "^5.1.9"
+    },
     "@npmcli/package-json": {
       "glob": "^14.0.2"
     },
