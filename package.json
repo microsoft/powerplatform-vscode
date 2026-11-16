@@ -1890,7 +1890,7 @@
     },
     "@azure/identity": "4.14.1",
     "axios": "1.20.0",
-    "basic-ftp": "5.3.1",
+    "basic-ftp": "6.2.4",
     "fast-uri": "3.1.9",
     "ip-address": "10.7.4",
     "tmp": "0.2.7",
@@ -1901,17 +1901,17 @@
     "@octokit/request": "^8.4.1",
     "@octokit/plugin-paginate-rest": "^9.2.2",
     "@octokit/request-error": "^5.1.1",
-    "qs": "6.16.0",
+    "qs": "6.16.1",
     "@nevware21/ts-utils": "0.14.0",
     "tar": "^7.5.16",
     "@tootallnate/once": "^3.0.1",
     "lodash": "^4.18.0",
-    "minimatch": "^10.2.3",
+    "minimatch": "^11.0.1",
     "morgan": "1.12.1",
     "brace-expansion": "5.0.12",
     "browserslist": "4.28.8",
-    "decode-uri-component": "0.5.0",
-    "serialize-javascript": "^7.0.3",
+    "decode-uri-component": "0.5.1",
+    "serialize-javascript": "^7.1.3",
     "diff": "^8.0.3",
     "socket.io-parser": "4.2.7",
     "undici": "^7.30.1",
@@ -1926,13 +1926,28 @@
       "schema-utils": "^4.3.3"
     },
     "@types/minimatch": {
-      "minimatch": "^10.2.3"
+      "minimatch": "^11.0.1"
+    },
+    "@npmcli/package-json": {
+      "glob": "^14.0.2"
+    },
+    "@vscode/l10n-dev": {
+      "glob": "^14.0.2"
+    },
+    "@vscode/vsce": {
+      "glob": "^14.0.2"
+    },
+    "cacache": {
+      "glob": "^14.0.2"
+    },
+    "mocha@^11.1.0": {
+      "glob": "^14.0.2"
     },
     "picomatch@2": "^2.3.2",
     "picomatch@4": "^4.0.4",
     "flatted": "^3.4.2",
     "defu": "^6.1.5",
-    "follow-redirects": "1.16.1",
+    "follow-redirects": "1.16.2",
     "ws": "^8.21.0"
   }
 }
